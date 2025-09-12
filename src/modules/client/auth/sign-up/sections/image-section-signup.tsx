@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
-const SignUpImageSection: React.FC = () => {
+const SignUpImageSection = () => {
   return (
     <div className="relative hidden lg:flex lg:flex-1">
       {/* Background gradient overlay */}

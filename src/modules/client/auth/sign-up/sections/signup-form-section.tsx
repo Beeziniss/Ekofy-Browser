@@ -10,7 +10,7 @@ interface SignUpFormSectionProps {
   onNext: () => void;
 }
 
-const SignUpFormSection: React.FC<SignUpFormSectionProps> = ({ onNext }) => {
+const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 

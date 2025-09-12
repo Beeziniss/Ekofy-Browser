@@ -15,7 +15,7 @@ interface ProfileCompletionSectionProps {
   onBack: () => void;
 }
 
-const ProfileCompletionSection: React.FC<ProfileCompletionSectionProps> = ({ onBack }) => {
+const ProfileCompletionSection = ({ onBack }: ProfileCompletionSectionProps) => {
   const [displayName, setDisplayName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
   const [gender, setGender] = useState('');

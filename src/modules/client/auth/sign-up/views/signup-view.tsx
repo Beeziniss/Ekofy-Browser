@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import SignUpLayout from '../layouts';
+import SignUpLayout from '../layouts/signup-layout';
 import { 
   SignUpImageSection, 
   SignUpFormSection, 

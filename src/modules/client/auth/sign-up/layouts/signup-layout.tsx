@@ -4,7 +4,7 @@ interface SignUpLayoutProps {
   children: React.ReactNode;
 }
 
-const SignUpLayout: React.FC<SignUpLayoutProps> = ({ children }) => {
+const SignUpLayout = ({ children }: SignUpLayoutProps) => {
   return (
     <div className="min-h-screen bg-background flex">
       {children}

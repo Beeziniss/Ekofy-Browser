@@ -12,7 +12,7 @@ interface OTPVerificationSectionProps {
   onBack: () => void;
 }
 
-const OTPVerificationSection: React.FC<OTPVerificationSectionProps> = ({ onNext, onBack }) => {
+const OTPVerificationSection = ({ onNext, onBack }: OTPVerificationSectionProps) => {
   const [otp, setOtp] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
