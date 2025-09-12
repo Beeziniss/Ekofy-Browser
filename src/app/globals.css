@@ -41,6 +41,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --color-gradient-primary: var(--gradient-primary);
 }
 
 :root {
@@ -79,7 +81,7 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: oklch(14.479% 0.00002 271.152);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -110,6 +112,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --gradient-primary: linear-gradient(to right, #3b54ea, #ab4ee5);
 }
 
 @layer base {
