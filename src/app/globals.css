@@ -133,3 +133,7 @@
 .primary_gradient {
   @apply bg-gradient-to-r from-[#3B54EA] to-[#AB4EE5];
 }
+
+.text-primary-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#3B54EA] to-[#AB4EE5];
+}
