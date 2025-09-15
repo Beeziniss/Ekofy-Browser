@@ -5,6 +5,7 @@ import Image from 'next/image';
 import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 
 interface SignUpFormSectionProps {
   onNext: () => void;
@@ -29,15 +30,15 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-8 bg-gray-900 min-h-screen">
+    <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-8 bg-[#121212] min-h-screen">
       <div className="w-full max-w-sm space-y-6">
         {/* Logo and Title */}
         <div className="text-center">
           <div className="flex items-center justify-center mb-6">
             <div className="rounded-full flex items-center justify-center mr-3">
-              <Image src={EkofyLogo} alt="Logo" width={32} height={32} />
+              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
             </div>
-            <h1 className="text-2xl font-bold text-primary-gradient">Ekofy</h1>
+            <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
           </div>
           <h2 className="text-4xl font-bold text-white mb-4">Let's get started</h2>
           <p className="text-gray-300 text-sm mb-8">
@@ -93,9 +94,9 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
         {/* Login Link */}
         <div className="text-center mt-6">
           <span className="text-white text-sm">Already have an account? </span>
-          <a href="/login" className="text-white hover:text-blue-400 transition-colors underline font-medium">
+          <Link href="/login" className="text-white hover:text-blue-400 transition-colors underline font-medium">
             Log in to Ekofy.
-          </a>
+          </Link>
         </div>
 
         {/* Divider */}

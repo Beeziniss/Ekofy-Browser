@@ -1,10 +1,10 @@
 import React from 'react';
 
-interface SignUpLayoutProps {
+interface ArtistLoginLayoutProps {
   children: React.ReactNode;
 }
 
-const SignUpLayout = ({ children }: SignUpLayoutProps) => {
+const ArtistLoginLayout = ({ children }: ArtistLoginLayoutProps) => {
   return (
     <div className="w-full flex">
       {children}
@@ -12,4 +12,4 @@ const SignUpLayout = ({ children }: SignUpLayoutProps) => {
   );
 };
 
-export default SignUpLayout;
+export default ArtistLoginLayout;

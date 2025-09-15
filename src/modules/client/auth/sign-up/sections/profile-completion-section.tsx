@@ -68,7 +68,7 @@ const ProfileCompletionSection = ({ onBack }: ProfileCompletionSectionProps) => 
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 px-6 py-12">
+    <div className="flex items-center justify-center min-h-screen bg-[#121212] px-6 py-12">
       <div className="w-full max-w-4xl">
         {/* Back Button */}
         <button 
@@ -83,9 +83,9 @@ const ProfileCompletionSection = ({ onBack }: ProfileCompletionSectionProps) => 
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-6">
             <div className="rounded-full flex items-center justify-center mr-3">
-              <Image src={EkofyLogo} alt="Logo" width={32} height={32} />
+              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
             </div>
-            <h1 className="text-2xl font-bold text-primary-gradient">Ekofy</h1>
+            <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
           </div>
           <h2 className="text-3xl font-bold text-white mb-4">Welcome</h2>
           <p className="text-gray-300 text-sm">

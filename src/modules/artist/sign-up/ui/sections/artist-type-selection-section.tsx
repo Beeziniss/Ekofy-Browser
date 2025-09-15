@@ -1,0 +1,164 @@
+"use client";
+
+import React, { useState } from 'react';
+import Image from 'next/image';
+import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+interface ArtistTypeSelectionSectionProps {
+  onNext: () => void;
+  onBack: () => void;
+}
+
+const ArtistTypeSelectionSection = ({ onNext, onBack }: ArtistTypeSelectionSectionProps) => {
+  const [artistType, setArtistType] = useState<'solo' | 'band' | null>(null);
+  const [successfulRegistration, setSuccessfulRegistration] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const router = useRouter();
+
+  const handleSubmit = () => {
+    if (!artistType) {
+      setErrors({ artistType: "Please choose your artist type" });
+      return;
+    }
+    
+    setErrors({});
+    console.log('Artist type:', artistType);
+    if (artistType === 'band') {
+      onNext();
+    } else {
+      setSuccessfulRegistration({ artistType: "Registration successful! Redirecting to login page..." });
+      setTimeout(() => {
+      router.push('/artist/login');
+      }, 2000);
+    }
+
+  };
+
+  // Custom SVG Components with Gradient
+  const UserRoundGradient = () => (
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gradient-user" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#3B54EA" />
+          <stop offset="100%" stopColor="#AB4EE5" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="8" r="5" stroke="url(#gradient-user)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M20 21a8 8 0 0 0-16 0" stroke="url(#gradient-user)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  const UsersGradient = () => (
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gradient-users" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#3B54EA" />
+          <stop offset="100%" stopColor="#AB4EE5" />
+        </linearGradient>
+      </defs>
+      <path d="M18 21a8 8 0 0 0-16 0" stroke="url(#gradient-users)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="10" cy="8" r="5" stroke="url(#gradient-users)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" stroke="url(#gradient-users)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-[#121212] px-6 py-12">
+      <div className="w-full max-w-4xl">
+        {/* Back Button */}
+        <button 
+          onClick={onBack}
+          className="flex items-center text-white hover:text-blue-400 transition-colors mb-8"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </button>
+
+        {/* Logo and Title */}
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center mb-6">
+            <div className="rounded-full flex items-center justify-center mr-3">
+              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+            </div>
+            <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-4">Choose Your Artist Type</h2>
+          <p className="text-gray-300 text-sm mb-8">
+            Tell us how you bring your music to the stage.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          {/* Solo Artist Option */}
+          <div 
+            className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
+              artistType === 'solo' 
+                ? 'border-blue-500 bg-blue-500/10' 
+                : 'border-gray-600 hover:border-gray-500 bg-gray-800/30'
+            }`}
+            onClick={() => {
+              setArtistType('solo');
+              setErrors({});
+            }}
+          >
+            <div className="text-center">
+              <div className="flex justify-center mb-6">
+                <UserRoundGradient />
+              </div>
+              <h3 className="text-white text-xl font-semibold mb-3">Solo Artist</h3>
+              <p className="text-gray-400 text-sm"> 
+                Perform and share your music as an individual creator
+              </p>
+            </div>
+          </div>
+
+          {/* Band/Group Option */}
+          <div 
+            className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
+              artistType === 'band' 
+                ? 'border-blue-500 bg-blue-500/10' 
+                : 'border-gray-600 hover:border-gray-500 bg-gray-800/30'
+            }`}
+            onClick={() => {
+              setArtistType('band');
+              setErrors({});
+            }}
+          >
+            <div className="text-center">
+              <div className="flex justify-center mb-6">
+                <UsersGradient />
+              </div>
+              <h3 className="text-white text-xl font-semibold mb-3">Band / Group</h3>
+              <p className="text-gray-400 text-sm">
+                Collaborate with your members, release music together, and connect with fans as one.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {successfulRegistration.artistType && (
+          <p className="text-center text-sm text-green-400 mb-4">{successfulRegistration.artistType}</p>
+        )}
+        {errors.artistType && (
+          <p className="text-center text-sm text-red-400 mb-4">{errors.artistType}</p>
+        )}
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            onClick={handleSubmit}
+            className="primary_gradient hover:opacity-60 text-white font-medium py-3 px-8 rounded-md transition duration-300 ease-in-out"
+            size="lg"
+          >
+            Continue
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ArtistTypeSelectionSection;
