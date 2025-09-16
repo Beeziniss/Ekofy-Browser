@@ -5,19 +5,16 @@ import Image from 'next/image';
 import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 interface ArtistTypeSelectionSectionProps {
-  onNext: () => void;
+  onNext: (data: { type: 'solo' | 'group' }) => void;
   onBack: () => void;
+  initialData?: { type: 'solo' | 'group' | null };
 }
 
-const ArtistTypeSelectionSection = ({ onNext, onBack }: ArtistTypeSelectionSectionProps) => {
-  const [artistType, setArtistType] = useState<'solo' | 'band' | null>(null);
-  const [successfulRegistration, setSuccessfulRegistration] = useState<Record<string, string>>({});
+const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeSelectionSectionProps) => {
+  const [artistType, setArtistType] = useState<'solo' | 'group' | null>(initialData?.type || null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const router = useRouter();
 
   const handleSubmit = () => {
     if (!artistType) {
@@ -27,15 +24,7 @@ const ArtistTypeSelectionSection = ({ onNext, onBack }: ArtistTypeSelectionSecti
     
     setErrors({});
     console.log('Artist type:', artistType);
-    if (artistType === 'band') {
-      onNext();
-    } else {
-      setSuccessfulRegistration({ artistType: "Registration successful! Redirecting to login page..." });
-      setTimeout(() => {
-      router.push('/artist/login');
-      }, 2000);
-    }
-
+    onNext({ type: artistType });
   };
 
   // Custom SVG Components with Gradient
@@ -97,7 +86,7 @@ const ArtistTypeSelectionSection = ({ onNext, onBack }: ArtistTypeSelectionSecti
           <div 
             className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
               artistType === 'solo' 
-                ? 'border-blue-500 bg-blue-500/10' 
+                ? 'border-gradient-input' 
                 : 'border-gray-600 hover:border-gray-500 bg-gray-800/30'
             }`}
             onClick={() => {
@@ -119,12 +108,12 @@ const ArtistTypeSelectionSection = ({ onNext, onBack }: ArtistTypeSelectionSecti
           {/* Band/Group Option */}
           <div 
             className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
-              artistType === 'band' 
-                ? 'border-blue-500 bg-blue-500/10' 
+              artistType === 'group' 
+                ? 'border-gradient-input' 
                 : 'border-gray-600 hover:border-gray-500 bg-gray-800/30'
             }`}
             onClick={() => {
-              setArtistType('band');
+              setArtistType('group');
               setErrors({});
             }}
           >
@@ -140,9 +129,6 @@ const ArtistTypeSelectionSection = ({ onNext, onBack }: ArtistTypeSelectionSecti
           </div>
         </div>
 
-        {successfulRegistration.artistType && (
-          <p className="text-center text-sm text-green-400 mb-4">{successfulRegistration.artistType}</p>
-        )}
         {errors.artistType && (
           <p className="text-center text-sm text-red-400 mb-4">{errors.artistType}</p>
         )}

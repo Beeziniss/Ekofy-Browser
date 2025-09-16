@@ -11,24 +11,40 @@ import {
 } from "../components";
 
 interface ArtistCCCDVerificationSectionProps {
-  onNext: () => void;
+  onNext: (data?: any) => void;
   onBack: () => void;
+  initialData?: {
+    frontId: File | null;
+    backId: File | null;
+    authorizationLetter: File | null;
+    citizenId: string;
+    fullName: string;
+    gender: string;
+    placeOfOrigin: string;
+    placeOfResidence: string;
+    dateOfExpiration: string;
+    phoneNumber: string;
+    dateOfBirth: string;
+    managerEmail: string;
+    managerPassword: string;
+    hasManager: boolean;
+  };
 }
 
-const ArtistCCCDVerificationSection = ({ onNext, onBack }: ArtistCCCDVerificationSectionProps) => {
-  const [frontId, setFrontId] = useState<File | null>(null);
-  const [backId, setBackId] = useState<File | null>(null);
-  const [citizenId, setCitizenId] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [gender, setGender] = useState("");
-  const [placeOfOrigin, setPlaceOfOrigin] = useState("");
-  const [placeOfResidence, setPlaceOfResidence] = useState("");
-  const [dateOfExpiration, setDateOfExpiration] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [isManager, setIsManager] = useState(false);
+const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCCCDVerificationSectionProps) => {
+  const [frontId, setFrontId] = useState<File | null>(initialData?.frontId || null);
+  const [backId, setBackId] = useState<File | null>(initialData?.backId || null);
+  const [citizenId, setCitizenId] = useState(initialData?.citizenId || "");
+  const [fullName, setFullName] = useState(initialData?.fullName || "");
+  const [dateOfBirth, setDateOfBirth] = useState(initialData?.dateOfBirth || "");
+  const [gender, setGender] = useState(initialData?.gender || "");
+  const [placeOfOrigin, setPlaceOfOrigin] = useState(initialData?.placeOfOrigin || "");
+  const [placeOfResidence, setPlaceOfResidence] = useState(initialData?.placeOfResidence || "");
+  const [dateOfExpiration, setDateOfExpiration] = useState(initialData?.dateOfExpiration || "");
+  const [phoneNumber, setPhoneNumber] = useState(initialData?.phoneNumber || "");
+  const [isManager, setIsManager] = useState(initialData?.hasManager || false);
   const [authorizationLetter, setAuthorizationLetter] = useState<File | null>(
-    null,
+    initialData?.authorizationLetter || null,
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -100,7 +116,23 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack }: ArtistCCCDVerificatio
         isManager,
         authorizationLetter,
       });
-      onNext();
+      onNext({
+        frontId,
+        backId,
+        citizenId,
+        fullName,
+        dateOfBirth,
+        gender,
+        placeOfOrigin,
+        placeOfResidence,
+        dateOfExpiration,
+        phoneNumber,
+        isManager,
+        authorizationLetter,
+        managerEmail: "",
+        managerPassword: "",
+        hasManager: isManager
+      });
     }
   };
 

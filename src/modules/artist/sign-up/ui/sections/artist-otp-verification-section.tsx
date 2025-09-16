@@ -8,12 +8,15 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 
 interface ArtistOTPVerificationSectionProps {
-  onNext: () => void;
+  onNext: (data?: any) => void;
   onBack: () => void;
+  initialData?: {
+    otp: string[];
+  };
 }
 
-const ArtistOTPVerificationSection = ({ onNext, onBack }: ArtistOTPVerificationSectionProps) => {
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTPVerificationSectionProps) => {
+  const [otp, setOtp] = useState(initialData?.otp || ['', '', '', '', '', '']);
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
 
@@ -54,7 +57,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack }: ArtistOTPVerificationS
     const otpCode = otp.join('');
     if (otpCode.length === 6) {
       console.log('OTP:', otpCode);
-      onNext();
+      onNext({ otp });
     } else {
       alert('Please enter a complete 6-digit code');
     }
@@ -109,7 +112,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack }: ArtistOTPVerificationS
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="w-12 h-12 text-center bg-gray-800/50 border-gray-700 text-white text-lg font-medium"
+                  className="w-12 h-12 text-center border-gradient-input text-white text-lg font-medium"
                   maxLength={1}
                 />
               ))}

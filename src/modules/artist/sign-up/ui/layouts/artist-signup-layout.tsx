@@ -6,7 +6,7 @@ interface ArtistSignUpLayoutProps {
 
 const ArtistSignUpLayout = ({ children }: ArtistSignUpLayoutProps) => {
   return (
-    <div className="w-full flex">
+    <div className="w-full flex min-h-screen">
       {children}
     </div>
   );

@@ -8,14 +8,18 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 
 interface ArtistIdentitySectionProps {
-  onNext: () => void;
+  onNext: (data?: any) => void;
   onBack: () => void;
+  initialData?: {
+    coverImage: File | null;
+    stageName: string;
+  };
 }
 
-const ArtistIdentitySection = ({ onNext, onBack }: ArtistIdentitySectionProps) => {
-  const [coverImage, setCoverImage] = useState<File | null>(null);
+const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySectionProps) => {
+  const [coverImage, setCoverImage] = useState<File | null>(initialData?.coverImage || null);
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
-  const [stageName, setStageName] = useState('');
+  const [stageName, setStageName] = useState(initialData?.stageName || '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -41,7 +45,10 @@ const ArtistIdentitySection = ({ onNext, onBack }: ArtistIdentitySectionProps) =
     
     if (Object.keys(newErrors).length === 0) {
       console.log('Define identity:', { coverImage, stageName });
-      onNext();
+      onNext({
+        coverImage,
+        stageName
+      });
     }
   };
 
@@ -126,7 +133,7 @@ const ArtistIdentitySection = ({ onNext, onBack }: ArtistIdentitySectionProps) =
                 value={stageName}
                 onChange={(e) => setStageName(e.target.value)}
                 placeholder="Enter stage name"
-                className={`w-full ${errors.stageName ? 'border-red-500' : 'border-gray-700'} bg-gray-800/50 text-white placeholder-gray-400 h-12`}
+                className={`w-full ${errors.stageName ? 'border-gradient-input-error' : 'border-gradient-input'} text-white placeholder-gray-400 h-12`}
               />
               {errors.stageName && (
                 <p className="mt-2 text-sm text-red-400">{errors.stageName}</p>

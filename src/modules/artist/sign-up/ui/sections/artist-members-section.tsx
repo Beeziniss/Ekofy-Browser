@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowLeft, X, Plus } from "lucide-react";
-import { useRouter } from 'next/navigation';
 
 interface Member {
   fullName: string;
@@ -23,20 +22,21 @@ interface Member {
 }
 
 interface ArtistMembersSectionProps {
-  onNext: () => void;
+  onNext: (data?: any) => void;
   onBack: () => void;
+  initialData?: Member[];
 }
 
 const ArtistMembersSection = ({
   onNext,
   onBack,
+  initialData,
 }: ArtistMembersSectionProps) => {
-  const [members, setMembers] = useState<Member[]>([
+  const [members, setMembers] = useState<Member[]>(initialData || [
     // { fullName: '', email: '', phoneNumber: '', gender: '' },
     // { fullName: '', email: '', phoneNumber: '', gender: '' }
   ]);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const router = useRouter();
 
   const addMember = () => {
     setMembers([
@@ -94,10 +94,7 @@ const ArtistMembersSection = ({
   const handleSubmit = () => {
     if (validateForm()) {
       console.log("Band members:", members);
-      setErrors({ artistType: "Registration successful! Redirecting to login page..." });
-      setTimeout(() => {
-      router.push('/artist/login');
-      }, 2000);
+      onNext(members);
     }
   };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
@@ -12,15 +12,31 @@ import { ArrowLeft, Upload, CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface ProfileCompletionSectionProps {
+  onNext: (data?: any) => void;
   onBack: () => void;
+  initialData?: {
+    displayName: string;
+    dateOfBirth: Date | undefined;
+    gender: string;
+    avatar: File | null;
+  };
 }
 
-const ProfileCompletionSection = ({ onBack }: ProfileCompletionSectionProps) => {
-  const [displayName, setDisplayName] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
-  const [gender, setGender] = useState('');
-  const [avatar, setAvatar] = useState<File | null>(null);
+const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileCompletionSectionProps) => {
+  const [displayName, setDisplayName] = useState(initialData?.displayName || '');
+  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(initialData?.dateOfBirth);
+  const [gender, setGender] = useState(initialData?.gender || '');
+  const [avatar, setAvatar] = useState<File | null>(initialData?.avatar || null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [dateError, setDateError] = useState('');
+
+  useEffect(() => {
+    if (avatar) {
+      const url = URL.createObjectURL(avatar);
+      setAvatarPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [avatar]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,8 +58,8 @@ const ProfileCompletionSection = ({ onBack }: ProfileCompletionSectionProps) => 
     // Handle profile completion logic here
     console.log('Profile completed:', { displayName, dateOfBirth, gender, avatar });
     
-    // Here you would typically redirect to dashboard or welcome page
-    alert('Registration completed successfully!');
+    // Pass data to parent component
+    onNext({ displayName, dateOfBirth, gender, avatar });
   };
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -98,10 +114,12 @@ const ProfileCompletionSection = ({ onBack }: ProfileCompletionSectionProps) => 
           <div className="flex-shrink-0">
             <div className="relative">
               <div className="w-64 h-64 border-2 border-dashed border-gray-600 rounded-lg flex flex-col items-center justify-center bg-gray-800/30">
-                {avatar ? (
+                {avatarPreview ? (
                   <div className="w-full h-full relative">
-                    <img
-                      src={URL.createObjectURL(avatar)}
+                    <Image
+                      src={avatarPreview}
+                      width={1000}
+                      height={1000}
                       alt="Avatar preview"
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -144,7 +162,7 @@ const ProfileCompletionSection = ({ onBack }: ProfileCompletionSectionProps) => 
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Enter your display name"
                   required
-                  className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
+                  className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
                 />
               </div>
 
@@ -157,7 +175,7 @@ const ProfileCompletionSection = ({ onBack }: ProfileCompletionSectionProps) => 
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className={`w-full bg-gray-800/50 border-gray-700 text-white hover:bg-gray-800 justify-start text-left font-normal h-12 ${
+                      className={`w-full border-gradient-input text-white hover:bg-gray-800 justify-start text-left font-normal h-12 ${
                         !dateOfBirth && "text-gray-400"
                       } ${dateError && "border-red-500"}`}
                     >
@@ -165,7 +183,7 @@ const ProfileCompletionSection = ({ onBack }: ProfileCompletionSectionProps) => 
                       {dateOfBirth ? format(dateOfBirth, "dd/MM/yyyy") : "DD/MM/YYYY"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
+                  <PopoverContent className="w-auto p-0 border-gradient-input" align="start">
                     <Calendar
                       mode="single"
                       selected={dateOfBirth}
@@ -217,7 +235,7 @@ const ProfileCompletionSection = ({ onBack }: ProfileCompletionSectionProps) => 
                   Gender*
                 </label>
                 <Select value={gender} onValueChange={setGender} required>
-                  <SelectTrigger className="w-full bg-gray-800/50 border-gray-700 text-white h-12">
+                  <SelectTrigger className="w-full border-gradient-input text-white h-12">
                     <SelectValue placeholder="Gender" className="text-gray-400" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-gray-700">

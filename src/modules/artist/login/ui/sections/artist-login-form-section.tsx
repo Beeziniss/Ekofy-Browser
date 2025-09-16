@@ -31,7 +31,7 @@ const ArtistLoginFormSection = () => {
             </div>
             <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Welcome Back</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Welcome Back, Artist</h2>
           <p className="text-gray-300 text-sm">
             Enter your email and password to access your artist account
           </p>
@@ -47,7 +47,7 @@ const ArtistLoginFormSection = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 h-12"
+              className="w-full border-gradient-input text-white placeholder-gray-400 h-12"
             />
           </div>
 
@@ -60,7 +60,7 @@ const ArtistLoginFormSection = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
-                className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 h-12 pr-10"
+                className="w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10"
               />
               <button
                 type="button"
@@ -97,10 +97,11 @@ const ArtistLoginFormSection = () => {
           >
             Log In
           </Button>
-          <div className="text-center text-sm text-gray-400">
-            Don't have an account?{' '}
-          <Link href="/artist/sign-up" className="text-blue-400 hover:text-blue-300 font-medium">
-            Sign up
+          {/* Sign Up Link */}
+        <div className="text-center mt-2">
+          <span className="text-white text-sm">Don't have an account? </span>
+          <Link href="/sign-up" className="text-white hover:text-blue-400 transition-colors underline font-medium">
+            Sign up for Ekofy.
           </Link>
         </div>
         </form>

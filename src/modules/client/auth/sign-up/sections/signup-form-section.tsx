@@ -8,12 +8,16 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 
 interface SignUpFormSectionProps {
-  onNext: () => void;
+  onNext: (data?: any) => void;
+  initialData?: {
+    email: string;
+    password: string;
+  };
 }
 
-const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
+  const [email, setEmail] = useState(initialData?.email || '');
+  const [password, setPassword] = useState(initialData?.password || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +25,7 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
     console.log('Sign up submitted:', { email, password });
     
     // Move to next step (OTP verification)
-    onNext();
+    onNext({ email, password });
   };
 
   const handleGoogleSignUp = () => {
@@ -61,7 +65,7 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
+              className="w-full border-gradient-input text-white focus:border-blue-500 focus:ring-blue-500/50 h-12"
             />
           </div>
 
@@ -77,7 +81,7 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
               required 
-              className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
+              className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
             />
           </div>
 
@@ -105,7 +109,7 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
             <div className="w-full border-t border-gray-600"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-gray-900 text-gray-400">or</span>
+            <span className="px-4 bg-[#121212] text-gray-400">or</span>
           </div>
         </div>
 

@@ -17,7 +17,7 @@ interface PersonalInformationProps {
   onChange: (field: string, value: string) => void;
 }
 
-const PersonalInformationComponent: React.FC<PersonalInformationProps> = ({
+const PersonalInformationComponent = ({
   citizenId,
   fullName,
   dateOfBirth,
@@ -26,9 +26,10 @@ const PersonalInformationComponent: React.FC<PersonalInformationProps> = ({
   placeOfResidence,
   dateOfExpiration,
   phoneNumber,
+  
   errors,
   onChange,
-}) => {
+}: PersonalInformationProps) => {
   return (
     <div>
       <h3 className="mb-6 text-lg font-medium text-white">
@@ -44,7 +45,7 @@ const PersonalInformationComponent: React.FC<PersonalInformationProps> = ({
             value={citizenId}
             onChange={(e) => onChange('citizenId', e.target.value)}
             placeholder="Citizen ID"
-            className={`h-10 w-full ${errors.citizenId ? 'border-red-500' : 'border-gray-700'} bg-gray-800/50 text-white placeholder-gray-400`}
+            className={`h-10 w-full ${errors.citizenId ? 'border-gradient-input-error' : 'border-gradient-input'}  text-white placeholder-gray-400`}
           />
           {errors.citizenId && (
             <p className="mt-2 text-sm text-red-400">{errors.citizenId}</p>
@@ -59,7 +60,7 @@ const PersonalInformationComponent: React.FC<PersonalInformationProps> = ({
             value={fullName}
             onChange={(e) => onChange('fullName', e.target.value)}
             placeholder="Full name"
-            className={`h-10 w-full ${errors.fullName ? 'border-red-500' : 'border-gray-700'} bg-gray-800/50 text-white placeholder-gray-400`}
+            className={`h-10 w-full ${errors.fullName ? 'border-gradient-input-error' : 'border-gradient-input'}  text-white placeholder-gray-400`}
           />
           {errors.fullName && (
             <p className="mt-2 text-sm text-red-400">{errors.fullName}</p>
@@ -75,7 +76,7 @@ const PersonalInformationComponent: React.FC<PersonalInformationProps> = ({
               value={dateOfBirth}
               onChange={(e) => onChange('dateOfBirth', e.target.value)}
               placeholder="DD/MM/YYYY"
-              className={`h-10 w-full ${errors.dateOfBirth ? 'border-red-500' : 'border-gray-700'} bg-gray-800/50 text-white placeholder-gray-400`}
+              className={`h-10 w-full ${errors.dateOfBirth ? 'border-gradient-input-error' : 'border-gradient-input'}  text-white placeholder-gray-400`}
             />
             {errors.dateOfBirth && (
               <p className="mt-2 text-sm text-red-400">{errors.dateOfBirth}</p>
@@ -89,7 +90,7 @@ const PersonalInformationComponent: React.FC<PersonalInformationProps> = ({
               value={gender}
               onValueChange={(value) => onChange('gender', value)}
             >
-              <SelectTrigger className={`h-10 w-full rounded-md border ${errors.gender ? 'border-red-500' : 'border-gray-700'} bg-gray-800/50 px-3 py-2 text-white`}>
+              <SelectTrigger className={`h-10 w-full rounded-md border ${errors.gender ? 'border-gradient-input-error' : 'border-gradient-input'} px-3 py-2 text-white`}>
                 <SelectValue placeholder="Gender" className="text-gray-400"/>
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-700">
@@ -112,7 +113,7 @@ const PersonalInformationComponent: React.FC<PersonalInformationProps> = ({
             value={placeOfOrigin}
             onChange={(e) => onChange('placeOfOrigin', e.target.value)}
             placeholder="Place of origin"
-            className={`h-10 w-full ${errors.placeOfOrigin ? 'border-red-500' : 'border-gray-700'} bg-gray-800/50 text-white placeholder-gray-400`}
+            className={`h-10 w-full ${errors.placeOfOrigin ? 'border-gradient-input-error' : 'border-gradient-input'}  text-white placeholder-gray-400`}
           />
           {errors.placeOfOrigin && (
             <p className="mt-2 text-sm text-red-400">{errors.placeOfOrigin}</p>
@@ -127,7 +128,7 @@ const PersonalInformationComponent: React.FC<PersonalInformationProps> = ({
             value={placeOfResidence}
             onChange={(e) => onChange('placeOfResidence', e.target.value)}
             placeholder="Place of residence"
-            className={`h-10 w-full ${errors.placeOfResidence ? 'border-red-500' : 'border-gray-700'} bg-gray-800/50 text-white placeholder-gray-400`}
+            className={`h-10 w-full ${errors.placeOfResidence ? 'border-gradient-input-error' : 'border-gradient-input'}  text-white placeholder-gray-400`}
           />
           {errors.placeOfResidence && (
             <p className="mt-2 text-sm text-red-400">{errors.placeOfResidence}</p>
@@ -143,7 +144,7 @@ const PersonalInformationComponent: React.FC<PersonalInformationProps> = ({
               value={dateOfExpiration}
               onChange={(e) => onChange('dateOfExpiration', e.target.value)}
               placeholder="DD/MM/YYYY"
-              className={`h-10 w-full ${errors.dateOfExpiration ? 'border-red-500' : 'border-gray-700'} bg-gray-800/50 text-white placeholder-gray-400`}
+              className={`h-10 w-full ${errors.dateOfExpiration ? 'border-gradient-input-error' : 'border-gradient-input'}  text-white placeholder-gray-400`}
             />
             {errors.dateOfExpiration && (
               <p className="mt-2 text-sm text-red-400">{errors.dateOfExpiration}</p>
@@ -157,7 +158,7 @@ const PersonalInformationComponent: React.FC<PersonalInformationProps> = ({
               value={phoneNumber}
               onChange={(e) => onChange('phoneNumber', e.target.value)}
               placeholder="Phone number"
-              className={`h-10 w-full ${errors.phoneNumber ? 'border-red-500' : 'border-gray-700'} bg-gray-800/50 text-white placeholder-gray-400`}
+              className={`h-10 w-full ${errors.phoneNumber ? 'border-gradient-input-error' : 'border-gradient-input'}  text-white placeholder-gray-400`}
             />
             {errors.phoneNumber && (
               <p className="mt-2 text-sm text-red-400">{errors.phoneNumber}</p>

@@ -9,16 +9,22 @@ import { Eye, EyeOff, CircleHelp } from 'lucide-react';
 import Link from 'next/link';
 
 interface ArtistSignUpFormSectionProps {
-  onNext: () => void;
+  onNext: (data?: any) => void;
+  initialData?: {
+    email: string;
+    password: string;
+    confirmPassword: string;
+    agreeTerms: boolean;
+  };
 }
 
-const ArtistSignUpFormSection = ({ onNext }: ArtistSignUpFormSectionProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectionProps) => {
+  const [email, setEmail] = useState(initialData?.email || '');
+  const [password, setPassword] = useState(initialData?.password || '');
+  const [confirmPassword, setConfirmPassword] = useState(initialData?.confirmPassword || '');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(initialData?.agreeTerms || false);
 
   // Password validation state
   const [passwordFocus, setPasswordFocus] = useState(false);
@@ -51,7 +57,12 @@ const ArtistSignUpFormSection = ({ onNext }: ArtistSignUpFormSectionProps) => {
       return;
     }
     console.log('Artist Sign Up:', { email, password });
-    onNext();
+    onNext({
+      email,
+      password,
+      confirmPassword,
+      agreeTerms
+    });
   };
 
   return (
@@ -82,7 +93,7 @@ const ArtistSignUpFormSection = ({ onNext }: ArtistSignUpFormSectionProps) => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 h-12"
+              className="w-full border-gradient-input text-white placeholder-gray-400 h-12"
             />
           </div>
 
@@ -102,7 +113,7 @@ const ArtistSignUpFormSection = ({ onNext }: ArtistSignUpFormSectionProps) => {
                 onBlur={() => setPasswordFocus(false)}
                 placeholder="Create password"
                 required
-                className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 h-12 pr-10"
+                className="w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10"
               />
               <button
                 type="button"
@@ -151,7 +162,7 @@ const ArtistSignUpFormSection = ({ onNext }: ArtistSignUpFormSectionProps) => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm password"
                 required
-                className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 h-12 pr-10"
+                className="w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10"
               />
               <button
                 type="button"
@@ -192,12 +203,13 @@ const ArtistSignUpFormSection = ({ onNext }: ArtistSignUpFormSectionProps) => {
             Create Account
           </Button>
           {/* Login Link */}
-        <p className="text-center text-sm text-gray-400">
-          Already have an account?{' '}
-          <Link href="/artist/login" className="text-blue-400 hover:text-blue-300 font-medium">
-            Sign in
+        {/* Login Link */}
+        <div className="text-center mt-2">
+          <span className="text-white text-sm">Already have an account? </span>
+          <Link href="/login" className="text-white hover:text-blue-400 transition-colors underline font-medium">
+            Log in to Ekofy.
           </Link>
-        </p>
+        </div>
         </form>
 
         {/* Divider */}

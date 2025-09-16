@@ -8,12 +8,15 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 
 interface OTPVerificationSectionProps {
-  onNext: () => void;
+  onNext: (data?: any) => void;
   onBack: () => void;
+  initialData?: {
+    otp: string;
+  };
 }
 
-const OTPVerificationSection = ({ onNext, onBack }: OTPVerificationSectionProps) => {
-  const [otp, setOtp] = useState('');
+const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerificationSectionProps) => {
+  const [otp, setOtp] = useState(initialData?.otp || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +24,7 @@ const OTPVerificationSection = ({ onNext, onBack }: OTPVerificationSectionProps)
     console.log('OTP submitted:', otp);
     
     // Move to next step (Profile completion)
-    onNext();
+    onNext({ otp });
   };
 
   const handleResendCode = () => {
@@ -74,7 +77,7 @@ const OTPVerificationSection = ({ onNext, onBack }: OTPVerificationSectionProps)
               onChange={(e) => setOtp(e.target.value)}
               placeholder="Enter the code"
               required
-              className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
+              className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
             />
           </div>
 

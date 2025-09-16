@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -5,20 +6,22 @@ const ImageSection = () => {
   return (
     <div className="relative hidden lg:flex lg:flex-1">
       {/* Background gradient overlay */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-br from-purple-900/50 via-blue-800/50 to-pink-600/50"></div>
+      <div className="absolute inset-0 z-10 bg-gradient-to-br from-purple-900/50 via-blue-800/50 to-pink-600/50">
 
       {/* Concert background image with link */}
       <Link
         href="/" // Thay đổi đường link tại đây
-        className="block h-full w-full"
-        style={{ position: "relative", zIndex: 20 }}
+        className="block h-full w-full relative"
       >
-        <div
-          className="h-full w-full bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: 'url("/image-login.png")',
-          }}
-        >
+        <Image
+          src="/image-login.png"
+          alt="Artist Sign Up Background"
+          fill
+          className="object-cover"
+          priority
+        />
+      </Link>
+      </div>
           {/* Overlay content */}
           <div className="relative z-20 flex h-full items-center justify-center">
             <div className="px-8 text-center text-white">
@@ -31,8 +34,6 @@ const ImageSection = () => {
             </div>
           </div>
         </div>
-      </Link>
-    </div>
   );
 };
 
