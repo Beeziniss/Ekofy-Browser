@@ -149,3 +149,15 @@
 .text-primary-gradient {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-[#3B54EA] to-[#AB4EE5];
 }
+
+.border-gradient-input {
+  background: linear-gradient(#121212, #121212) padding-box, 
+              linear-gradient(to right, #3B54EA, #AB4EE5) border-box;
+  border: 2px solid transparent;
+}
+
+.border-gradient-input-error {
+  background: linear-gradient(#1e2939, #1e2939) padding-box, 
+              linear-gradient(to right, #ef4444, #ef4444) border-box;
+  border: 2px solid transparent;
+}

@@ -8,12 +8,15 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 
 interface OTPVerificationSectionProps {
-  onNext: () => void;
+  onNext: (data?: any) => void;
   onBack: () => void;
+  initialData?: {
+    otp: string;
+  };
 }
 
-const OTPVerificationSection = ({ onNext, onBack }: OTPVerificationSectionProps) => {
-  const [otp, setOtp] = useState('');
+const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerificationSectionProps) => {
+  const [otp, setOtp] = useState(initialData?.otp || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +24,7 @@ const OTPVerificationSection = ({ onNext, onBack }: OTPVerificationSectionProps)
     console.log('OTP submitted:', otp);
     
     // Move to next step (Profile completion)
-    onNext();
+    onNext({ otp });
   };
 
   const handleResendCode = () => {
@@ -35,7 +38,7 @@ const OTPVerificationSection = ({ onNext, onBack }: OTPVerificationSectionProps)
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 px-6 py-12">
+    <div className="flex items-center justify-center min-h-screen bg-[#121212] px-6 py-12">
       <div className="w-full max-w-sm space-y-8">
         {/* Back Button */}
         <button 
@@ -50,9 +53,9 @@ const OTPVerificationSection = ({ onNext, onBack }: OTPVerificationSectionProps)
         <div className="text-center">
           <div className="flex items-center justify-center mb-8">
             <div className="rounded-full flex items-center justify-center mr-3">
-              <Image src={EkofyLogo} alt="Logo" width={32} height={32} />
+              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
             </div>
-            <h1 className="text-2xl font-bold text-primary-gradient">Ekofy</h1>
+            <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
           </div>
           <h2 className="text-3xl font-bold text-white mb-4">Enter the verification code</h2>
           <p className="text-gray-300 text-sm mb-8">
@@ -74,7 +77,7 @@ const OTPVerificationSection = ({ onNext, onBack }: OTPVerificationSectionProps)
               onChange={(e) => setOtp(e.target.value)}
               placeholder="Enter the code"
               required
-              className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
+              className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
             />
           </div>
 

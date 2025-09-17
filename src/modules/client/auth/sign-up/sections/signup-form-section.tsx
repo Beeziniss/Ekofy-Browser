@@ -5,14 +5,19 @@ import Image from 'next/image';
 import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 
 interface SignUpFormSectionProps {
-  onNext: () => void;
+  onNext: (data?: any) => void;
+  initialData?: {
+    email: string;
+    password: string;
+  };
 }
 
-const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
+  const [email, setEmail] = useState(initialData?.email || '');
+  const [password, setPassword] = useState(initialData?.password || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +25,7 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
     console.log('Sign up submitted:', { email, password });
     
     // Move to next step (OTP verification)
-    onNext();
+    onNext({ email, password });
   };
 
   const handleGoogleSignUp = () => {
@@ -29,15 +34,15 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-8 bg-gray-900 min-h-screen">
+    <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-8 bg-[#121212] min-h-screen">
       <div className="w-full max-w-sm space-y-6">
         {/* Logo and Title */}
         <div className="text-center">
           <div className="flex items-center justify-center mb-6">
             <div className="rounded-full flex items-center justify-center mr-3">
-              <Image src={EkofyLogo} alt="Logo" width={32} height={32} />
+              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
             </div>
-            <h1 className="text-2xl font-bold text-primary-gradient">Ekofy</h1>
+            <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
           </div>
           <h2 className="text-4xl font-bold text-white mb-4">Let's get started</h2>
           <p className="text-gray-300 text-sm mb-8">
@@ -60,7 +65,7 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
+              className="w-full border-gradient-input text-white focus:border-blue-500 focus:ring-blue-500/50 h-12"
             />
           </div>
 
@@ -76,7 +81,7 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
               required 
-              className="w-full bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
+              className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
             />
           </div>
 
@@ -93,9 +98,9 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
         {/* Login Link */}
         <div className="text-center mt-6">
           <span className="text-white text-sm">Already have an account? </span>
-          <a href="/login" className="text-white hover:text-blue-400 transition-colors underline font-medium">
+          <Link href="/login" className="text-white hover:text-blue-400 transition-colors underline font-medium">
             Log in to Ekofy.
-          </a>
+          </Link>
         </div>
 
         {/* Divider */}
@@ -104,7 +109,7 @@ const SignUpFormSection = ({ onNext }: SignUpFormSectionProps) => {
             <div className="w-full border-t border-gray-600"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-gray-900 text-gray-400">or</span>
+            <span className="px-4 bg-[#121212] text-gray-400">or</span>
           </div>
         </div>
 
