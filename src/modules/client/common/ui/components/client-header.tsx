@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import AuthButton from "./auth-button";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,20 +10,22 @@ const ClientHeader = () => {
   const pathname = usePathname();
 
   return (
-    <div className="font-bepro flex items-center justify-between px-6 py-2">
+    <div className="font-bepro bg-main-dark-bg fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-2">
       {/* Logo */}
       <div className="flex items-center gap-x-8">
-        <div className="flex items-center gap-x-2">
-          <Image
-            src={"/ekofy-logo.svg"}
-            alt="Ekofy Logo"
-            width={37}
-            height={37}
-          />
-          <span className="primary_gradient inline-block bg-clip-text text-2xl font-bold text-transparent uppercase">
-            Ekofy
-          </span>
-        </div>
+        <Link href={"/"}>
+          <div className="flex items-center gap-x-2">
+            <Image
+              src={"/ekofy-logo.svg"}
+              alt="Ekofy Logo"
+              width={37}
+              height={37}
+            />
+            <span className="primary_gradient inline-block bg-clip-text text-2xl font-bold text-transparent uppercase">
+              Ekofy
+            </span>
+          </div>
+        </Link>
 
         {/* Navigation Text */}
         <div className="flex items-center gap-x-6">
