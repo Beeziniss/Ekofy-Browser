@@ -121,13 +121,25 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
 }
 
 @theme {
   --font-bepro: "Be Vietnam Pro";
   --font-poppins: var(--font-poppins);
+
+  --color-main-dark-bg: #121212;
+  --color-main-white: #f2f2f2;
+  --color-main-grey: #b3b3b3;
+  --color-main-grey-dark: #d9d9d9;
+  --color-main-grey-dark-bg: #404040;
+  --color-main-blue: #3b54ea;
+  --color-main-purple: #ab4ee5;
+
+  --color-main-slider-bg: #4f4f4f;
+  --color-main-card-bg: #303030;
+  --color-main-track-hover: #2e2e2e;
 }
 
 .primary_gradient {

@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.onlandscape.co.uk",
+        pathname: "/**",
+      },
     ],
   },
 };

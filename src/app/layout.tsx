@@ -4,6 +4,7 @@ import "./globals.css";
 import { Be_Vietnam_Pro, Poppins } from "next/font/google";
 
 import Providers from "@/providers/providers";
+import { Toaster } from "@/components/ui/sonner";
 
 const beVietNamPro = Be_Vietnam_Pro({
   subsets: ["vietnamese"],
@@ -30,11 +31,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark dark:bg-[#121212]">
+    <html lang="en" className="dark">
       <body
-        className={`${beVietNamPro.variable} ${poppins.variable} antialiased`}
+        className={`${beVietNamPro.variable} ${poppins.variable} bg-main-dark-bg antialiased`}
       >
         <Providers>{children}</Providers>
+        <Toaster
+          theme="dark"
+          richColors
+          position="bottom-right"
+          offset={{
+            bottom: 60,
+            right: 12,
+          }}
+          duration={1500}
+        />
       </body>
     </html>
   );
