@@ -7,9 +7,9 @@ const USER_STORAGE_KEY = "user-info";
 /**
  * Set user information to localStorage
  */
-export const setUserInfoToLocalStorage = async (
+export const setUserInfoToLocalStorage = (
   userData: User,
-): Promise<void> => {
+): void => {
   try {
     if (typeof window !== "undefined") {
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
