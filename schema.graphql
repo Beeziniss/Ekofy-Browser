@@ -1,1003 +1,1374 @@
 schema {
-  query: Root
+  query: QueryInitialization
+  mutation: MutationInitialization
 }
 
-"""A single film."""
-type Film implements Node {
-  characterConnection(after: String, before: String, first: Int, last: Int): FilmCharactersConnection
-  """The ISO 8601 date format of the time that this resource was created."""
-  created: String
-  """The name of the director of this film."""
-  director: String
-  """The ISO 8601 date format of the time that this resource was edited."""
-  edited: String
-  """The episode number of this film."""
-  episodeID: Int
-  """The ID of an object"""
-  id: ID!
-  """The opening paragraphs at the beginning of this film."""
-  openingCrawl: String
-  planetConnection(after: String, before: String, first: Int, last: Int): FilmPlanetsConnection
-  """The name(s) of the producer(s) of this film."""
-  producers: [String]
-  """The ISO 8601 date format of film release at original creator country."""
-  releaseDate: String
-  speciesConnection(after: String, before: String, first: Int, last: Int): FilmSpeciesConnection
-  starshipConnection(after: String, before: String, first: Int, last: Int): FilmStarshipsConnection
-  """The title of this film."""
+"""
+The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response.
+"""
+directive @cost(
+  """
+  The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc.
+  """
+  weight: String!
+) on ARGUMENT_DEFINITION | ENUM | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | OBJECT | SCALAR
+
+type AccountLinkResponse {
+  accountId: String!
+  created: DateTime!
+  expired: DateTime!
+  refreshUrl: String!
+  returnUrl: String!
+  type: String!
+  url: String!
+}
+
+type Address {
+  addressLine: String
+  oldDistrict: String
+  oldProvince: String
+  oldWard: String
+  province: String
+  street: String
+  ward: String
+}
+
+input AddressFilterInput {
+  addressLine: StringOperationFilterInput
+  and: [AddressFilterInput!]
+  oldDistrict: StringOperationFilterInput
+  oldProvince: StringOperationFilterInput
+  oldWard: StringOperationFilterInput
+  or: [AddressFilterInput!]
+  province: StringOperationFilterInput
+  street: StringOperationFilterInput
+  ward: StringOperationFilterInput
+}
+
+input AddressInput {
+  addressLine: String
+  oldDistrict: String
+  oldProvince: String
+  oldWard: String
+  province: String
+  street: String
+  ward: String
+}
+
+input AddressSortInput {
+  addressLine: SortEnumType
+  oldDistrict: SortEnumType
+  oldProvince: SortEnumType
+  oldWard: SortEnumType
+  province: SortEnumType
+  street: SortEnumType
+  ward: SortEnumType
+}
+
+"""Defines when a policy shall be executed."""
+enum ApplyPolicy {
+  """After the resolver was executed."""
+  AFTER_RESOLVER
+  """Before the resolver was executed."""
+  BEFORE_RESOLVER
+  """The policy is applied in the validation step before the execution."""
+  VALIDATION
+}
+
+type Artist {
+  artistType: ArtistType!
+  avatarImage: String
+  bannerImage: String
+  biography: String
+  categories: [Category]!
+  categoryIds: [String!]!
+  createdAt: DateTime!
+  email: String!
+  followers: Long!
+  id: String!
+  identityCard: IdentityCard!
+  isVerified: Boolean!
+  legalDocuments: [LegalDocument!]!
+  members: [ArtistMember!]!
+  popularity: Long!
+  restriction: Restriction!
+  stageName: String!
+  updatedAt: DateTime
+  user: User!
+  userId: String!
+  verifiedAt: DateTime
+}
+
+input ArtistFilterInput {
+  and: [ArtistFilterInput!]
+  artistType: ArtistTypeOperationFilterInput
+  avatarImage: StringOperationFilterInput
+  bannerImage: StringOperationFilterInput
+  biography: StringOperationFilterInput
+  categoryIds: ListStringOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+  email: StringOperationFilterInput
+  followers: LongOperationFilterInput
+  id: StringOperationFilterInput
+  identityCard: IdentityCardFilterInput
+  isVerified: BooleanOperationFilterInput
+  legalDocuments: ListFilterInputTypeOfLegalDocumentFilterInput
+  members: ListFilterInputTypeOfArtistMemberFilterInput
+  or: [ArtistFilterInput!]
+  popularity: LongOperationFilterInput
+  restriction: RestrictionFilterInput
+  stageName: StringOperationFilterInput
+  updatedAt: DateTimeOperationFilterInput
+  userId: StringOperationFilterInput
+  verifiedAt: DateTimeOperationFilterInput
+}
+
+type ArtistMember {
+  email: String!
+  fullName: String!
+  gender: UserGender!
+  isLeader: Boolean!
+  phoneNumber: String!
+}
+
+input ArtistMemberFilterInput {
+  and: [ArtistMemberFilterInput!]
+  email: StringOperationFilterInput
+  fullName: StringOperationFilterInput
+  gender: UserGenderOperationFilterInput
+  isLeader: BooleanOperationFilterInput
+  or: [ArtistMemberFilterInput!]
+  phoneNumber: StringOperationFilterInput
+}
+
+enum ArtistRole {
+  COMPOSER
+  FEATURED
+  MAIN
+  REMIXER
+}
+
+input ArtistSortInput {
+  artistType: SortEnumType
+  avatarImage: SortEnumType
+  bannerImage: SortEnumType
+  biography: SortEnumType
+  createdAt: SortEnumType
+  email: SortEnumType
+  followers: SortEnumType
+  id: SortEnumType
+  identityCard: IdentityCardSortInput
+  isVerified: SortEnumType
+  popularity: SortEnumType
+  restriction: RestrictionSortInput
+  stageName: SortEnumType
+  updatedAt: SortEnumType
+  userId: SortEnumType
+  verifiedAt: SortEnumType
+}
+
+enum ArtistType {
+  BAND
+  GROUP
+  INDIVIDUAL
+}
+
+input ArtistTypeOperationFilterInput {
+  eq: ArtistType
+  in: [ArtistType!]
+  neq: ArtistType
+  nin: [ArtistType!]
+}
+
+type AudioFeature {
+  acousticness: Float!
+  chromaMean: [Float!]!
+  danceability: Float!
+  duration: Float!
+  energy: Float!
+  key: String!
+  keyNumber: Int!
+  mfccMean: [Float!]!
+  mode: String!
+  modeNumber: Int!
+  spectralCentroid: Float!
+  tempo: Float!
+  zeroCrossingRate: Float!
+}
+
+input AudioFeatureFilterInput {
+  acousticness: FloatOperationFilterInput
+  and: [AudioFeatureFilterInput!]
+  chromaMean: ListFloatOperationFilterInput
+  danceability: FloatOperationFilterInput
+  duration: FloatOperationFilterInput
+  energy: FloatOperationFilterInput
+  key: StringOperationFilterInput
+  keyNumber: IntOperationFilterInput
+  mfccMean: ListFloatOperationFilterInput
+  mode: StringOperationFilterInput
+  modeNumber: IntOperationFilterInput
+  or: [AudioFeatureFilterInput!]
+  spectralCentroid: FloatOperationFilterInput
+  tempo: FloatOperationFilterInput
+  zeroCrossingRate: FloatOperationFilterInput
+}
+
+input AudioFeatureSortInput {
+  acousticness: SortEnumType
+  danceability: SortEnumType
+  duration: SortEnumType
+  energy: SortEnumType
+  key: SortEnumType
+  keyNumber: SortEnumType
+  mode: SortEnumType
+  modeNumber: SortEnumType
+  spectralCentroid: SortEnumType
+  tempo: SortEnumType
+  zeroCrossingRate: SortEnumType
+}
+
+type AudioFingerprint {
+  compressedFingerprints: [[Byte!]!]!
+  createdAt: DateTime!
+  duration: Float!
+  originalPoints: [[Byte!]!]!
+  sequenceNumbers: [UInt32!]!
+  startsAt: [Float!]!
+  updatedAt: DateTime
+}
+
+input AudioFingerprintFilterInput {
+  and: [AudioFingerprintFilterInput!]
+  compressedFingerprints: ListListByteOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+  duration: FloatOperationFilterInput
+  or: [AudioFingerprintFilterInput!]
+  originalPoints: ListListByteOperationFilterInput
+  sequenceNumbers: ListOfUInt32FilterInput
+  startsAt: ListFloatOperationFilterInput
+  updatedAt: DateTimeOperationFilterInput
+}
+
+input AudioFingerprintSortInput {
+  createdAt: SortEnumType
+  duration: SortEnumType
+  updatedAt: SortEnumType
+}
+
+enum BillingPortalConfigStatus {
+  ACTIVE
+  DEPRECATED
+  INACTIVE
+}
+
+input BooleanOperationFilterInput {
+  eq: Boolean
+  neq: Boolean
+}
+
+"""
+The `Byte` scalar type represents non-fractional whole numeric values. Byte can represent values between 0 and 255.
+"""
+scalar Byte
+
+input ByteOperationFilterInput {
+  eq: Byte
+  gt: Byte
+  gte: Byte
+  in: [Byte]
+  lt: Byte
+  lte: Byte
+  neq: Byte
+  ngt: Byte
+  ngte: Byte
+  nin: [Byte]
+  nlt: Byte
+  nlte: Byte
+}
+
+type Category {
+  aliases: [String!]!
+  createdAt: DateTime!
+  description: String
+  id: String!
+  isVisible: Boolean!
+  name: String!
+  popularity: Int!
+  slug: String!
+  type: CategoryType!
+  updatedAt: DateTime
+}
+
+enum CategoryType {
+  GENRE
+  MOOD
+}
+
+type CheckoutSessionResponse {
+  cancelUrl: String!
+  created: DateTime!
+  expired: DateTime!
+  id: String!
+  mode: String!
+  status: String!
+  successUrl: String!
+  url: String!
+}
+
+type Coupon {
+  code: String!
+  createdAt: DateTime!
+  description: String
+  duration: CouponDurationType!
+  id: String!
+  name: String!
+  percentOff: Decimal!
+  purpose: CouponPurposeType!
+  status: CouponStatus!
+  stripeCouponId: String!
+  updatedAt: DateTime
+}
+
+enum CouponDurationType {
+  FOREVER
+  ONCE
+  REPEATING
+}
+
+input CouponDurationTypeOperationFilterInput {
+  eq: CouponDurationType
+  in: [CouponDurationType!]
+  neq: CouponDurationType
+  nin: [CouponDurationType!]
+}
+
+input CouponFilterInput {
+  and: [CouponFilterInput!]
+  code: StringOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+  description: StringOperationFilterInput
+  duration: CouponDurationTypeOperationFilterInput
+  id: StringOperationFilterInput
+  name: StringOperationFilterInput
+  or: [CouponFilterInput!]
+  percentOff: DecimalOperationFilterInput
+  purpose: CouponPurposeTypeOperationFilterInput
+  status: CouponStatusOperationFilterInput
+  stripeCouponId: StringOperationFilterInput
+  updatedAt: DateTimeOperationFilterInput
+}
+
+enum CouponPurposeType {
+  ANNUAL_PLAN_DISCOUNT
+  AUTO_SERVICE
+  GENERAL
+}
+
+input CouponPurposeTypeOperationFilterInput {
+  eq: CouponPurposeType
+  in: [CouponPurposeType!]
+  neq: CouponPurposeType
+  nin: [CouponPurposeType!]
+}
+
+input CouponSortInput {
+  code: SortEnumType
+  createdAt: SortEnumType
+  description: SortEnumType
+  duration: SortEnumType
+  id: SortEnumType
+  name: SortEnumType
+  percentOff: SortEnumType
+  purpose: SortEnumType
+  status: SortEnumType
+  stripeCouponId: SortEnumType
+  updatedAt: SortEnumType
+}
+
+enum CouponStatus {
+  ACTIVE
+  DEPRECATED
+  EXPIRED
+  INACTIVE
+}
+
+input CouponStatusOperationFilterInput {
+  eq: CouponStatus
+  in: [CouponStatus!]
+  neq: CouponStatus
+  nin: [CouponStatus!]
+}
+
+input CreateAdminRequestInput {
+  email: String!
+  password: String!
+}
+
+input CreateArtistRequestInput {
+  biography: String!
+  identityCard: IdentityCardInput!
+  name: String!
+  userId: String!
+}
+
+input CreateBillingPortalConfigurationRequestInput {
+  allowedCustomerUpdates: [CustomerUpdate!]!
+  allowedSubscriptionUpdates: [StripeSubscriptionUpdate!]!
+  customerUpdateEnabled: Boolean!
+  invoiceHistoryEnabled: Boolean!
+  mode: StripeSubscriptionCancelMode!
+  paymentMethodUpdateEnabled: Boolean!
+  products: [StripeProductRequestInput!]!
+  status: BillingPortalConfigStatus!
+  subscriptionCancelEnabled: Boolean!
+  subscriptionTier: SubscriptionTier!
+  subscriptionVersion: Long!
+  suscriptionUpdateEnabled: Boolean!
+  userRole: UserRole!
+  version: Long!
+}
+
+input CreateCategoryRequestInput {
+  description: String!
+  name: String!
+  type: CategoryType!
+}
+
+input CreateCheckoutSessionRequestInput {
+  cancelUrl: String!
+  isSavePaymentMethod: Boolean!
+  period: PeriodTime!
+  subscriptionCode: String!
+  successUrl: String!
+}
+
+input CreateCouponRequestInput {
+  code: String!
+  description: String
+  duration: CouponDurationType!
+  name: String!
+  percentOff: Decimal!
+  purpose: CouponPurposeType!
+  status: CouponStatus!
+}
+
+input CreateEntitlementRequestInput {
+  code: String!
+  defaultValues: EntitlementValue!
+  description: String!
+  isActive: Boolean!
+  name: String!
+  subscriptionOverrides: [CreateEntitlementSubscriptionOverrideRequestInput!]!
+  valueType: EntitlementValueType!
+}
+
+input CreateEntitlementSubscriptionOverrideRequestInput {
+  subscriptionCode: String!
+}
+
+input CreateModeratorRequestInput {
+  email: String!
+  password: String!
+}
+
+input CreateMomoPaymentRequestInput {
+  amount: Long!
+  orderId: String!
+  orderInfo: String!
+}
+
+input CreatePriceRequestInput {
+  interval: PeriodTime!
+  intervalCount: Long!
+  lookupKey: String!
+}
+
+input CreateRecordingRequestInput {
+  description: String
+  recordingSplits: [CreateRecordingSplitRequestInput!]!
+}
+
+type CreateRecordingSplitRequest {
+  artistRole: ArtistRole!
+  percentage: Decimal!
+  userId: String!
+}
+
+input CreateRecordingSplitRequestInput {
+  artistRole: ArtistRole!
+  percentage: Decimal!
+  userId: String!
+}
+
+input CreateSubScriptionPlanRequestInput {
+  images: [String!]
+  metadata: [KeyValuePairOfStringAndStringInput!]
+  name: String!
+  prices: [CreatePriceRequestInput!]!
+  subscriptionCode: String!
+}
+
+input CreateSubscriptionRequestInput {
+  code: String!
+  description: String
+  name: String!
+  price: Decimal!
+  status: SubscriptionStatus!
+  tier: SubscriptionTier!
+  version: Int!
+}
+
+input CreateTrackRequestInput {
+  categoryIds: [String!]!
+  coverImage: String!
+  description: String
+  featuredArtistIds: [String!]!
+  isExplicit: Boolean!
+  isOriginal: Boolean!
+  isReleased: Boolean!
+  lyrics: String
+  mainArtistIds: [String!]!
+  name: String!
+  previewVideo: String
+  releaseDate: DateTime
+  releaseStatus: ReleaseStatus!
+  tags: [String!]!
+}
+
+input CreateWorkRequestInput {
+  description: String
+  workSplits: [CreateWorkSplitRequestInput!]!
+}
+
+type CreateWorkSplitRequest {
+  artistRole: ArtistRole!
+  percentage: Decimal!
+  userId: String!
+}
+
+input CreateWorkSplitRequestInput {
+  artistRole: ArtistRole!
+  percentage: Decimal!
+  userId: String!
+}
+
+enum CurrencyType {
+  AUD
+  CAD
+  CHF
+  CNY
+  EUR
+  GBP
+  JPY
+  NZD
+  SEK
+  SGD
+  SGP
+  USD
+  VND
+}
+
+enum CustomerUpdate {
+  ADDRESS
+  EMAIL
+  PHONE
+  SHIPPING
+  TAX_ID
+}
+
+"""The `DateTime` scalar represents an ISO-8601 compliant date time type."""
+scalar DateTime
+
+input DateTimeOperationFilterInput {
+  eq: DateTime
+  gt: DateTime
+  gte: DateTime
+  in: [DateTime]
+  lt: DateTime
+  lte: DateTime
+  neq: DateTime
+  ngt: DateTime
+  ngte: DateTime
+  nin: [DateTime]
+  nlt: DateTime
+  nlte: DateTime
+}
+
+"""The `Decimal` scalar type represents a decimal floating-point number."""
+scalar Decimal
+
+input DecimalOperationFilterInput {
+  eq: Decimal
+  gt: Decimal
+  gte: Decimal
+  in: [Decimal]
+  lt: Decimal
+  lte: Decimal
+  neq: Decimal
+  ngt: Decimal
+  ngte: Decimal
+  nin: [Decimal]
+  nlt: Decimal
+  nlte: Decimal
+}
+
+enum DocumentType {
+  CERTIFICATE
+  CONTRACT
+  LICENSE
+  OTHER
+}
+
+input DocumentTypeOperationFilterInput {
+  eq: DocumentType
+  in: [DocumentType!]
+  neq: DocumentType
+  nin: [DocumentType!]
+}
+
+type Entitlement {
+  code: String!
+  createdAt: DateTime!
+  defaultValues: [EntitlementRoleDefault!]!
+  description: String!
+  expiredAt: DateTime
+  id: String!
+  isActive: Boolean!
+  name: String!
+  subscriptionOverrides: [EntitlementSubscriptionOverride!]!
+  updatedAt: DateTime
+  value: EntitlementValue!
+  valueType: EntitlementValueType!
+}
+
+type EntitlementRoleDefault {
+  role: UserRole!
+}
+
+type EntitlementSubscriptionOverride {
+  subscriptionCode: String!
+}
+
+"""
+Polymorphic scalar for String, Int, Long, Double, Decimal, Boolean, DateTime, Object, Array.
+"""
+scalar EntitlementValue
+
+enum EntitlementValueType {
+  ARRAY
+  BOOLEAN
+  DATE_TIME
+  DECIMAL
+  DOUBLE
+  INT
+  LONG
+  OBJECT
+  STRING
+}
+
+input FloatOperationFilterInput {
+  eq: Float
+  gt: Float
+  gte: Float
+  in: [Float]
+  lt: Float
+  lte: Float
+  neq: Float
+  ngt: Float
+  ngte: Float
+  nin: [Float]
+  nlt: Float
+  nlte: Float
+}
+
+type IdentityCard {
+  backImage: String
+  dateOfBirth: DateTime!
+  frontImage: String
+  fullName: String!
+  gender: UserGender!
+  nationality: String!
+  number: String!
+  placeOfOrigin: String!
+  placeOfResidence: Address!
+  validUntil: DateTime
+}
+
+input IdentityCardFilterInput {
+  and: [IdentityCardFilterInput!]
+  backImage: StringOperationFilterInput
+  dateOfBirth: DateTimeOperationFilterInput
+  frontImage: StringOperationFilterInput
+  fullName: StringOperationFilterInput
+  gender: UserGenderOperationFilterInput
+  nationality: StringOperationFilterInput
+  number: StringOperationFilterInput
+  or: [IdentityCardFilterInput!]
+  placeOfOrigin: StringOperationFilterInput
+  placeOfResidence: AddressFilterInput
+  validUntil: DateTimeOperationFilterInput
+}
+
+input IdentityCardInput {
+  backImage: String
+  dateOfBirth: DateTime!
+  frontImage: String
+  fullName: String!
+  gender: UserGender!
+  nationality: String!
+  number: String!
+  placeOfOrigin: String!
+  placeOfResidence: AddressInput!
+  validUntil: DateTime
+}
+
+input IdentityCardSortInput {
+  backImage: SortEnumType
+  dateOfBirth: SortEnumType
+  frontImage: SortEnumType
+  fullName: SortEnumType
+  gender: SortEnumType
+  nationality: SortEnumType
+  number: SortEnumType
+  placeOfOrigin: SortEnumType
+  placeOfResidence: AddressSortInput
+  validUntil: SortEnumType
+}
+
+input IntOperationFilterInput {
+  eq: Int
+  gt: Int
+  gte: Int
+  in: [Int]
+  lt: Int
+  lte: Int
+  neq: Int
+  ngt: Int
+  ngte: Int
+  nin: [Int]
+  nlt: Int
+  nlte: Int
+}
+
+input KeyValuePairOfStringAndStringInput {
+  key: String!
+  value: String!
+}
+
+type LegalDocument {
+  createdAt: DateTime!
+  documentType: DocumentType!
+  documentUrl: String!
+  name: String!
+  note: String!
+  updatedAt: DateTime
+}
+
+input LegalDocumentFilterInput {
+  and: [LegalDocumentFilterInput!]
+  createdAt: DateTimeOperationFilterInput
+  documentType: DocumentTypeOperationFilterInput
+  documentUrl: StringOperationFilterInput
+  name: StringOperationFilterInput
+  note: StringOperationFilterInput
+  or: [LegalDocumentFilterInput!]
+  updatedAt: DateTimeOperationFilterInput
+}
+
+input ListByteOperationFilterInput {
+  all: ByteOperationFilterInput
+  any: Boolean
+  none: ByteOperationFilterInput
+  some: ByteOperationFilterInput
+}
+
+input ListFilterInputTypeOfArtistMemberFilterInput {
+  all: ArtistMemberFilterInput
+  any: Boolean
+  none: ArtistMemberFilterInput
+  some: ArtistMemberFilterInput
+}
+
+input ListFilterInputTypeOfLegalDocumentFilterInput {
+  all: LegalDocumentFilterInput
+  any: Boolean
+  none: LegalDocumentFilterInput
+  some: LegalDocumentFilterInput
+}
+
+input ListFilterInputTypeOfSyncedLineFilterInput {
+  all: SyncedLineFilterInput
+  any: Boolean
+  none: SyncedLineFilterInput
+  some: SyncedLineFilterInput
+}
+
+input ListFloatOperationFilterInput {
+  all: FloatOperationFilterInput
+  any: Boolean
+  none: FloatOperationFilterInput
+  some: FloatOperationFilterInput
+}
+
+input ListListByteOperationFilterInput {
+  all: ListByteOperationFilterInput
+  any: Boolean
+  none: ListByteOperationFilterInput
+  some: ListByteOperationFilterInput
+}
+
+input ListOfUInt32FilterInput {
+  and: [ListOfUInt32FilterInput!]
+  capacity: IntOperationFilterInput
+  count: IntOperationFilterInput
+  or: [ListOfUInt32FilterInput!]
+}
+
+input ListStringOperationFilterInput {
+  all: StringOperationFilterInput
+  any: Boolean
+  none: StringOperationFilterInput
+  some: StringOperationFilterInput
+}
+
+"""
+The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1.
+"""
+scalar Long
+
+input LongOperationFilterInput {
+  eq: Long
+  gt: Long
+  gte: Long
+  in: [Long]
+  lt: Long
+  lte: Long
+  neq: Long
+  ngt: Long
+  ngte: Long
+  nin: [Long]
+  nlt: Long
+  nlte: Long
+}
+
+type Message {
+  conversationId: String!
+  deletedFor: [String!]!
+  id: String!
+  isRead: Boolean!
+  receiverId: String!
+  senderId: String!
+  sentAt: DateTime!
+  text: String!
+}
+
+type MomoPaymentResponse {
+  amount: Long
+  localMessage: String
+  message: String
+  orderId: String
+  partnerCode: String
+  payUrl: String
+  requestId: String
+  responseTime: Long
+  resultCode: Int
+}
+
+type MutationInitialization {
+  approveTrackUploadRequest(recordingId: String!, trackId: String!, workId: String!): Boolean!
+  convertToHls(file: Upload!): String!
+  convertToWavFile(file: Upload!): WavFileResponse!
+  createAdmin(createAdminRequest: CreateAdminRequestInput!): Boolean!
+  createBillingPortalConfiguration(createBillingPortalConfigurationRequest: CreateBillingPortalConfigurationRequestInput!): Boolean!
+  createCategory(categoryRequest: CreateCategoryRequestInput!): Boolean!
+  createCoupon(createCouponRequest: CreateCouponRequestInput!): Boolean!
+  createCustomerPortalSession(returnUrl: String!, version: Long!): String!
+  """Create a test entitlement for demonstration purposes."""
+  createEntilement(featureValueType: EntitlementValueType!, value: EntitlementValue): Boolean!
+  createEntitlement(createEntitlementRequest: CreateEntitlementRequestInput!): Boolean!
+  createExpressConnectedAccount: AccountLinkResponse!
+  createModerator(createModeratorRequest: CreateModeratorRequestInput!): Boolean!
+  createMomoPaymentQR(createMomoPaymentRequest: CreateMomoPaymentRequestInput!): MomoPaymentResponse!
+  createMomoPaymentVisa(createMomoPaymentRequest: CreateMomoPaymentRequestInput!): MomoPaymentResponse!
+  createRequest(request: RequestCreatingRequestInput!): Boolean!
+  createSubscriotionCheckoutSession(createCheckoutSessionRequest: CreateCheckoutSessionRequestInput!): CheckoutSessionResponse!
+  createSubscription(createSubscriptionRequest: CreateSubscriptionRequestInput!): Boolean!
+  createSubscriptionPlan(createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!): Boolean!
+  deactiveEntitlement(code: String!): Boolean!
+  deleteCoupon(couponIds: [String!]!): Boolean!
+  deprecateCoupon(couponIds: [String!]!): Boolean!
+  deprecateSubscription(subscriptionId: String!): Boolean!
+  entitlementUserCount(code: String!): Long!
+  entitlements: [Entitlement!]!
+  hello: String!
+  reactiveEntitlement(code: String!): Boolean!
+  registerArtistManual(createArtistRequest: CreateArtistRequestInput!): Boolean!
+  rejectTrackUploadRequest(recordingId: String!, trackId: String!, workId: String!): Boolean!
+  seedEntitlements: Boolean!
+  updateRequest(request: RequestUpdatingRequestInput!): Boolean!
+  uploadFile(file: Upload!, fileName: String!): String!
+  uploadTrack(createRecordingRequest: CreateRecordingRequestInput!, createTrackRequest: CreateTrackRequestInput!, createWorkRequest: CreateWorkRequestInput!, file: Upload!): Boolean!
+}
+
+enum PeriodTime {
+  DAY
+  MONTH
+  WEEK
+  YEAR
+}
+
+type QueryInitialization {
+  allCoupons(order: [CouponSortInput!], where: CouponFilterInput): [Coupon!]!
+  artists(order: [ArtistSortInput!], where: ArtistFilterInput): [Artist!]!
+  entitlements: [Entitlement!]!
+  hello: String!
+  messagesExecutable: [Message!]!
+  metadataRecordingUploadRequest(recordingId: String!): RecordingTempRequest!
+  metadataTrackUploadRequest(trackId: String!): TrackTempRequest!
+  metadataWorkUploadRequest(workId: String!): WorkTempRequest!
+  originalFileTrackUploadRequest(trackId: String!): String!
+  pendingTrackUploadRequests: [TrackTempRequest!]!
+  recordingsQueryable: [Recording!]!
+  requests: [RequestHub!]!
+  tracks(order: [TrackSortInput!], where: TrackFilterInput): [Track!]!
+  userById(id: String!): User!
+  users(order: [UserSortInput!], where: UserFilterInput): [User!]!
+  worksQueryable: [Work!]!
+}
+
+type Recording {
+  description: String
+  id: String!
+  recordingSplits: [RecordingSplit!]!
+  trackId: String!
+}
+
+type RecordingSplit {
+  artistRole: ArtistRole!
+  percentage: Decimal!
+  userId: String!
+}
+
+type RecordingTempRequest {
+  description: String
+  id: String!
+  recordingSplitRequests: [CreateRecordingSplitRequest!]!
+}
+
+type ReleaseInfo {
+  isReleased: Boolean!
+  releaseDate: DateTime
+  releaseStatus: ReleaseStatus!
+  releasedAt: DateTime
+}
+
+input ReleaseInfoFilterInput {
+  and: [ReleaseInfoFilterInput!]
+  isReleased: BooleanOperationFilterInput
+  or: [ReleaseInfoFilterInput!]
+  releaseDate: DateTimeOperationFilterInput
+  releaseStatus: ReleaseStatusOperationFilterInput
+  releasedAt: DateTimeOperationFilterInput
+}
+
+input ReleaseInfoSortInput {
+  isReleased: SortEnumType
+  releaseDate: SortEnumType
+  releaseStatus: SortEnumType
+  releasedAt: SortEnumType
+}
+
+enum ReleaseStatus {
+  CANCELED
+  DELAYED
+  LEAKED
+  NOT_ANNOUNCED
+  OFFICIAL
+}
+
+input ReleaseStatusOperationFilterInput {
+  eq: ReleaseStatus
+  in: [ReleaseStatus!]
+  neq: ReleaseStatus
+  nin: [ReleaseStatus!]
+}
+
+input RequestCreatingRequestInput {
+  attachments: [String!]
+  description: String!
+  title: String!
+}
+
+type RequestHub {
+  attachments: [String!]
+  createdAt: DateTime!
+  description: String!
+  id: String!
+  isClosed: Boolean!
+  isDeleted: Boolean!
+  title: String!
+}
+
+input RequestUpdatingRequestInput {
+  attachments: [String!]
+  description: String
+  id: String!
+  isClosed: Boolean
+  isDeleted: Boolean
   title: String
-  vehicleConnection(after: String, before: String, first: Int, last: Int): FilmVehiclesConnection
 }
 
-"""A connection to a list of items."""
-type FilmCharactersConnection {
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  characters: [Person]
-  """A list of edges."""
-  edges: [FilmCharactersEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+type Restriction {
+  expired: DateTime
+  reason: String
+  restrictedAt: DateTime
+  type: RestrictionType!
 }
 
-"""An edge in a connection."""
-type FilmCharactersEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Person
+input RestrictionFilterInput {
+  and: [RestrictionFilterInput!]
+  expired: DateTimeOperationFilterInput
+  or: [RestrictionFilterInput!]
+  reason: StringOperationFilterInput
+  restrictedAt: DateTimeOperationFilterInput
+  type: RestrictionTypeOperationFilterInput
 }
 
-"""A connection to a list of items."""
-type FilmPlanetsConnection {
-  """A list of edges."""
-  edges: [FilmPlanetsEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  planets: [Planet]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+input RestrictionSortInput {
+  expired: SortEnumType
+  reason: SortEnumType
+  restrictedAt: SortEnumType
+  type: SortEnumType
 }
 
-"""An edge in a connection."""
-type FilmPlanetsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Planet
+enum RestrictionType {
+  BANNED
+  NONE
+  SUSPENDED
 }
 
-"""A connection to a list of items."""
-type FilmSpeciesConnection {
-  """A list of edges."""
-  edges: [FilmSpeciesEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  species: [Species]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+input RestrictionTypeOperationFilterInput {
+  eq: RestrictionType
+  in: [RestrictionType!]
+  neq: RestrictionType
+  nin: [RestrictionType!]
 }
 
-"""An edge in a connection."""
-type FilmSpeciesEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Species
+enum SortEnumType {
+  ASC
+  DESC
 }
 
-"""A connection to a list of items."""
-type FilmStarshipsConnection {
-  """A list of edges."""
-  edges: [FilmStarshipsEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  starships: [Starship]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  contains: String
+  endsWith: String
+  eq: String
+  in: [String]
+  ncontains: String
+  nendsWith: String
+  neq: String
+  nin: [String]
+  nstartsWith: String
+  or: [StringOperationFilterInput!]
+  startsWith: String
 }
 
-"""An edge in a connection."""
-type FilmStarshipsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Starship
+input StripeProductRequestInput {
+  id: String!
+  stripePriceIds: [String!]!
 }
 
-"""A connection to a list of items."""
-type FilmVehiclesConnection {
-  """A list of edges."""
-  edges: [FilmVehiclesEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  vehicles: [Vehicle]
+enum StripeSubscriptionCancelMode {
+  AT_PERIOD_END
+  IMMEDIATELY
 }
 
-"""An edge in a connection."""
-type FilmVehiclesEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Vehicle
+enum StripeSubscriptionUpdate {
+  PRICE
+  PROMOTION_CODE
+  QUANTITY
 }
 
-"""A connection to a list of items."""
-type FilmsConnection {
-  """A list of edges."""
-  edges: [FilmsEdge]
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  films: [Film]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+enum SubscriptionStatus {
+  ACTIVE
+  DEPRECATED
+  INACTIVE
 }
 
-"""An edge in a connection."""
-type FilmsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Film
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+  PRO
 }
 
-"""An object with an ID"""
-interface Node {
-  """The id of the object."""
-  id: ID!
+type SyncedLine {
+  text: String!
+  time: Float!
 }
 
-"""Information about pagination in a connection."""
-type PageInfo {
-  """When paginating forwards, the cursor to continue."""
-  endCursor: String
-  """When paginating forwards, are there more items?"""
-  hasNextPage: Boolean!
-  """When paginating backwards, are there more items?"""
-  hasPreviousPage: Boolean!
-  """When paginating backwards, the cursor to continue."""
-  startCursor: String
+input SyncedLineFilterInput {
+  and: [SyncedLineFilterInput!]
+  or: [SyncedLineFilterInput!]
+  text: StringOperationFilterInput
+  time: FloatOperationFilterInput
 }
 
-"""A connection to a list of items."""
-type PeopleConnection {
-  """A list of edges."""
-  edges: [PeopleEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  people: [Person]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+type Track {
+  artist: [Artist]!
+  category: [Category]!
+  categoryIds: [String!]!
+  coverImage: String!
+  createdAt: DateTime!
+  createdBy: String!
+  description: String
+  favoriteCount: Long!
+  featuredArtistIds: [String!]!
+  id: String!
+  isExplicit: Boolean!
+  isMonetized: Boolean!
+  lyrics: String
+  mainArtistIds: [String!]!
+  name: String!
+  previewVideo: String
+  releaseInfo: ReleaseInfo!
+  restriction: Restriction!
+  streamCount: Long!
+  syncedLyrics: [SyncedLine!]!
+  tags: [String!]!
+  type: TrackType!
+  updatedAt: DateTime
+  updatedBy: String
 }
 
-"""An edge in a connection."""
-type PeopleEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Person
+input TrackFilterInput {
+  and: [TrackFilterInput!]
+  audioFeature: AudioFeatureFilterInput
+  audioFingerprint: AudioFingerprintFilterInput
+  categoryIds: ListStringOperationFilterInput
+  coverImage: StringOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+  createdBy: StringOperationFilterInput
+  description: StringOperationFilterInput
+  favoriteCount: LongOperationFilterInput
+  featuredArtistIds: ListStringOperationFilterInput
+  id: StringOperationFilterInput
+  isExplicit: BooleanOperationFilterInput
+  isMonetized: BooleanOperationFilterInput
+  lyrics: StringOperationFilterInput
+  mainArtistIds: ListStringOperationFilterInput
+  name: StringOperationFilterInput
+  or: [TrackFilterInput!]
+  previewVideo: StringOperationFilterInput
+  releaseInfo: ReleaseInfoFilterInput
+  restriction: RestrictionFilterInput
+  streamCount: LongOperationFilterInput
+  syncedLyrics: ListFilterInputTypeOfSyncedLineFilterInput
+  tags: ListStringOperationFilterInput
+  type: TrackTypeOperationFilterInput
+  updatedAt: DateTimeOperationFilterInput
+  updatedBy: StringOperationFilterInput
 }
 
-"""An individual person or character within the Star Wars universe."""
-type Person implements Node {
-  """
-  The birth year of the person, using the in-universe standard of BBY or ABY -
-  Before the Battle of Yavin or After the Battle of Yavin. The Battle of Yavin is
-  a battle that occurs at the end of Star Wars episode IV: A New Hope.
-  """
-  birthYear: String
-  """The ISO 8601 date format of the time that this resource was created."""
-  created: String
-  """The ISO 8601 date format of the time that this resource was edited."""
-  edited: String
-  """
-  The eye color of this person. Will be "unknown" if not known or "n/a" if the
-  person does not have an eye.
-  """
-  eyeColor: String
-  filmConnection(after: String, before: String, first: Int, last: Int): PersonFilmsConnection
-  """
-  The gender of this person. Either "Male", "Female" or "unknown",
-  "n/a" if the person does not have a gender.
-  """
-  gender: String
-  """
-  The hair color of this person. Will be "unknown" if not known or "n/a" if the
-  person does not have hair.
-  """
-  hairColor: String
-  """The height of the person in centimeters."""
-  height: Int
-  """A planet that this person was born on or inhabits."""
-  homeworld: Planet
-  """The ID of an object"""
-  id: ID!
-  """The mass of the person in kilograms."""
-  mass: Float
-  """The name of this person."""
+input TrackSortInput {
+  audioFeature: AudioFeatureSortInput
+  audioFingerprint: AudioFingerprintSortInput
+  coverImage: SortEnumType
+  createdAt: SortEnumType
+  createdBy: SortEnumType
+  description: SortEnumType
+  favoriteCount: SortEnumType
+  id: SortEnumType
+  isExplicit: SortEnumType
+  isMonetized: SortEnumType
+  lyrics: SortEnumType
+  name: SortEnumType
+  previewVideo: SortEnumType
+  releaseInfo: ReleaseInfoSortInput
+  restriction: RestrictionSortInput
+  streamCount: SortEnumType
+  type: SortEnumType
+  updatedAt: SortEnumType
+  updatedBy: SortEnumType
+}
+
+type TrackTempRequest {
+  categoryIds: [String!]!
+  coverImage: String!
+  createdBy: String!
+  description: String
+  featuredArtistIds: [String!]!
+  id: String!
+  isExplicit: Boolean!
+  lyrics: String
+  mainArtistIds: [String!]!
+  name: String!
+  previewVideo: String
+  releaseInfo: ReleaseInfo!
+  requestedAt: DateTime!
+  tags: [String!]!
+  type: TrackType!
+}
+
+enum TrackType {
+  COVER
+  LIVE
+  ORIGINAL
+  REMIX
+  SAMPLE
+}
+
+input TrackTypeOperationFilterInput {
+  eq: TrackType
+  in: [TrackType!]
+  neq: TrackType
+  nin: [TrackType!]
+}
+
+scalar UInt32
+
+input UpdateEntitlementRequestInput {
+  code: String!
+  description: String
+  expiredAt: DateTime
   name: String
-  """The skin color of this person."""
-  skinColor: String
-  """The species that this person belongs to, or null if unknown."""
-  species: Species
-  starshipConnection(after: String, before: String, first: Int, last: Int): PersonStarshipsConnection
-  vehicleConnection(after: String, before: String, first: Int, last: Int): PersonVehiclesConnection
+  value: EntitlementValue
+  valueType: EntitlementValueType
 }
 
-"""A connection to a list of items."""
-type PersonFilmsConnection {
-  """A list of edges."""
-  edges: [PersonFilmsEdge]
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  films: [Film]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type User {
+  birthDate: DateTime!
+  createdAt: DateTime!
+  createdBy: String!
+  email: String!
+  fullName: String!
+  gender: UserGender!
+  id: String!
+  isLinkedWithGoogle: Boolean!
+  lastLoginAt: DateTime
+  phoneNumber: String
+  role: UserRole!
+  status: UserStatus!
+  stripeAccountId: String
+  stripeCustomerId: String
+  updatedAt: DateTime
+  updatedBy: String
 }
 
-"""An edge in a connection."""
-type PersonFilmsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Film
+input UserFilterInput {
+  and: [UserFilterInput!]
+  birthDate: DateTimeOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+  createdBy: StringOperationFilterInput
+  email: StringOperationFilterInput
+  fcmToken: StringOperationFilterInput
+  fullName: StringOperationFilterInput
+  gender: UserGenderOperationFilterInput
+  id: StringOperationFilterInput
+  isLinkedWithGoogle: BooleanOperationFilterInput
+  lastLoginAt: DateTimeOperationFilterInput
+  or: [UserFilterInput!]
+  passwordHash: StringOperationFilterInput
+  phoneNumber: StringOperationFilterInput
+  refreshToken: StringOperationFilterInput
+  refreshTokenExpiryTime: DateTimeOperationFilterInput
+  role: UserRoleOperationFilterInput
+  status: UserStatusOperationFilterInput
+  stripeAccountId: StringOperationFilterInput
+  stripeCustomerId: StringOperationFilterInput
+  updatedAt: DateTimeOperationFilterInput
+  updatedBy: StringOperationFilterInput
 }
 
-"""A connection to a list of items."""
-type PersonStarshipsConnection {
-  """A list of edges."""
-  edges: [PersonStarshipsEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  starships: [Starship]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+enum UserGender {
+  FEMALE
+  MALE
+  NOT_SPECIFIED
+  OTHER
 }
 
-"""An edge in a connection."""
-type PersonStarshipsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Starship
+input UserGenderOperationFilterInput {
+  eq: UserGender
+  in: [UserGender!]
+  neq: UserGender
+  nin: [UserGender!]
 }
 
-"""A connection to a list of items."""
-type PersonVehiclesConnection {
-  """A list of edges."""
-  edges: [PersonVehiclesEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  vehicles: [Vehicle]
+enum UserRole {
+  ADMIN
+  ARTIST
+  GUEST
+  LISTENER
+  MODERATOR
 }
 
-"""An edge in a connection."""
-type PersonVehiclesEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Vehicle
+input UserRoleOperationFilterInput {
+  eq: UserRole
+  in: [UserRole!]
+  neq: UserRole
+  nin: [UserRole!]
 }
 
-"""
-A large mass, planet or planetoid in the Star Wars Universe, at the time of
-0 ABY.
-"""
-type Planet implements Node {
-  """The climates of this planet."""
-  climates: [String]
-  """The ISO 8601 date format of the time that this resource was created."""
-  created: String
-  """The diameter of this planet in kilometers."""
-  diameter: Int
-  """The ISO 8601 date format of the time that this resource was edited."""
-  edited: String
-  filmConnection(after: String, before: String, first: Int, last: Int): PlanetFilmsConnection
-  """
-  A number denoting the gravity of this planet, where "1" is normal or 1 standard
-  G. "2" is twice or 2 standard Gs. "0.5" is half or 0.5 standard Gs.
-  """
-  gravity: String
-  """The ID of an object"""
-  id: ID!
-  """The name of this planet."""
-  name: String
-  """
-  The number of standard days it takes for this planet to complete a single orbit
-  of its local star.
-  """
-  orbitalPeriod: Int
-  """The average population of sentient beings inhabiting this planet."""
-  population: Float
-  residentConnection(after: String, before: String, first: Int, last: Int): PlanetResidentsConnection
-  """
-  The number of standard hours it takes for this planet to complete a single
-  rotation on its axis.
-  """
-  rotationPeriod: Int
-  """
-  The percentage of the planet surface that is naturally occurring water or bodies
-  of water.
-  """
-  surfaceWater: Float
-  """The terrains of this planet."""
-  terrains: [String]
+input UserSortInput {
+  birthDate: SortEnumType
+  createdAt: SortEnumType
+  createdBy: SortEnumType
+  email: SortEnumType
+  fcmToken: SortEnumType
+  fullName: SortEnumType
+  gender: SortEnumType
+  id: SortEnumType
+  isLinkedWithGoogle: SortEnumType
+  lastLoginAt: SortEnumType
+  passwordHash: SortEnumType
+  phoneNumber: SortEnumType
+  refreshToken: SortEnumType
+  refreshTokenExpiryTime: SortEnumType
+  role: SortEnumType
+  status: SortEnumType
+  stripeAccountId: SortEnumType
+  stripeCustomerId: SortEnumType
+  updatedAt: SortEnumType
+  updatedBy: SortEnumType
 }
 
-"""A connection to a list of items."""
-type PlanetFilmsConnection {
-  """A list of edges."""
-  edges: [PlanetFilmsEdge]
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  films: [Film]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+enum UserStatus {
+  ACTIVE
+  BANNED
+  INACTIVE
 }
 
-"""An edge in a connection."""
-type PlanetFilmsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Film
+input UserStatusOperationFilterInput {
+  eq: UserStatus
+  in: [UserStatus!]
+  neq: UserStatus
+  nin: [UserStatus!]
 }
 
-"""A connection to a list of items."""
-type PlanetResidentsConnection {
-  """A list of edges."""
-  edges: [PlanetResidentsEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  residents: [Person]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+type WavFileResponse {
+  originalBitrate: Long!
+  outputWavPath: String!
 }
 
-"""An edge in a connection."""
-type PlanetResidentsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Person
+type Work {
+  description: String
+  id: String!
+  trackId: String!
+  workSplits: [WorkSplit!]!
 }
 
-"""A connection to a list of items."""
-type PlanetsConnection {
-  """A list of edges."""
-  edges: [PlanetsEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  planets: [Planet]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
+type WorkSplit {
+  artistRole: ArtistRole!
+  percentage: Decimal!
+  userId: String!
 }
 
-"""An edge in a connection."""
-type PlanetsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Planet
-}
-
-type Root {
-  allFilms(after: String, before: String, first: Int, last: Int): FilmsConnection
-  allPeople(after: String, before: String, first: Int, last: Int): PeopleConnection
-  allPlanets(after: String, before: String, first: Int, last: Int): PlanetsConnection
-  allSpecies(after: String, before: String, first: Int, last: Int): SpeciesConnection
-  allStarships(after: String, before: String, first: Int, last: Int): StarshipsConnection
-  allVehicles(after: String, before: String, first: Int, last: Int): VehiclesConnection
-  film(filmID: ID, id: ID): Film
-  """Fetches an object given its ID"""
-  node(
-    """The ID of an object"""
-    id: ID!
-  ): Node
-  person(id: ID, personID: ID): Person
-  planet(id: ID, planetID: ID): Planet
-  species(id: ID, speciesID: ID): Species
-  starship(id: ID, starshipID: ID): Starship
-  vehicle(id: ID, vehicleID: ID): Vehicle
-}
-
-"""A type of person or character within the Star Wars Universe."""
-type Species implements Node {
-  """The average height of this species in centimeters."""
-  averageHeight: Float
-  """The average lifespan of this species in years, null if unknown."""
-  averageLifespan: Int
-  """The classification of this species, such as "mammal" or "reptile"."""
-  classification: String
-  """The ISO 8601 date format of the time that this resource was created."""
-  created: String
-  """The designation of this species, such as "sentient"."""
-  designation: String
-  """The ISO 8601 date format of the time that this resource was edited."""
-  edited: String
-  """
-  Common eye colors for this species, null if this species does not typically
-  have eyes.
-  """
-  eyeColors: [String]
-  filmConnection(after: String, before: String, first: Int, last: Int): SpeciesFilmsConnection
-  """
-  Common hair colors for this species, null if this species does not typically
-  have hair.
-  """
-  hairColors: [String]
-  """A planet that this species originates from."""
-  homeworld: Planet
-  """The ID of an object"""
-  id: ID!
-  """The language commonly spoken by this species."""
-  language: String
-  """The name of this species."""
-  name: String
-  personConnection(after: String, before: String, first: Int, last: Int): SpeciesPeopleConnection
-  """
-  Common skin colors for this species, null if this species does not typically
-  have skin.
-  """
-  skinColors: [String]
-}
-
-"""A connection to a list of items."""
-type SpeciesConnection {
-  """A list of edges."""
-  edges: [SpeciesEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  species: [Species]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-}
-
-"""An edge in a connection."""
-type SpeciesEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Species
-}
-
-"""A connection to a list of items."""
-type SpeciesFilmsConnection {
-  """A list of edges."""
-  edges: [SpeciesFilmsEdge]
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  films: [Film]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-}
-
-"""An edge in a connection."""
-type SpeciesFilmsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Film
-}
-
-"""A connection to a list of items."""
-type SpeciesPeopleConnection {
-  """A list of edges."""
-  edges: [SpeciesPeopleEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  people: [Person]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-}
-
-"""An edge in a connection."""
-type SpeciesPeopleEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Person
-}
-
-"""A single transport craft that has hyperdrive capability."""
-type Starship implements Node {
-  """
-  The Maximum number of Megalights this starship can travel in a standard hour.
-  A "Megalight" is a standard unit of distance and has never been defined before
-  within the Star Wars universe. This figure is only really useful for measuring
-  the difference in speed of starships. We can assume it is similar to AU, the
-  distance between our Sun (Sol) and Earth.
-  """
-  MGLT: Int
-  """The maximum number of kilograms that this starship can transport."""
-  cargoCapacity: Float
-  """
-  The maximum length of time that this starship can provide consumables for its
-  entire crew without having to resupply.
-  """
-  consumables: String
-  """The cost of this starship new, in galactic credits."""
-  costInCredits: Float
-  """The ISO 8601 date format of the time that this resource was created."""
-  created: String
-  """The number of personnel needed to run or pilot this starship."""
-  crew: String
-  """The ISO 8601 date format of the time that this resource was edited."""
-  edited: String
-  filmConnection(after: String, before: String, first: Int, last: Int): StarshipFilmsConnection
-  """The class of this starships hyperdrive."""
-  hyperdriveRating: Float
-  """The ID of an object"""
-  id: ID!
-  """The length of this starship in meters."""
-  length: Float
-  """The manufacturers of this starship."""
-  manufacturers: [String]
-  """
-  The maximum speed of this starship in atmosphere. null if this starship is
-  incapable of atmosphering flight.
-  """
-  maxAtmospheringSpeed: Int
-  """
-  The model or official name of this starship. Such as "T-65 X-wing" or "DS-1
-  Orbital Battle Station".
-  """
-  model: String
-  """The name of this starship. The common name, such as "Death Star"."""
-  name: String
-  """The number of non-essential people this starship can transport."""
-  passengers: String
-  pilotConnection(after: String, before: String, first: Int, last: Int): StarshipPilotsConnection
-  """
-  The class of this starship, such as "Starfighter" or "Deep Space Mobile
-  Battlestation"
-  """
-  starshipClass: String
-}
-
-"""A connection to a list of items."""
-type StarshipFilmsConnection {
-  """A list of edges."""
-  edges: [StarshipFilmsEdge]
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  films: [Film]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-}
-
-"""An edge in a connection."""
-type StarshipFilmsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Film
-}
-
-"""A connection to a list of items."""
-type StarshipPilotsConnection {
-  """A list of edges."""
-  edges: [StarshipPilotsEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  pilots: [Person]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-}
-
-"""An edge in a connection."""
-type StarshipPilotsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Person
-}
-
-"""A connection to a list of items."""
-type StarshipsConnection {
-  """A list of edges."""
-  edges: [StarshipsEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  starships: [Starship]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-}
-
-"""An edge in a connection."""
-type StarshipsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Starship
-}
-
-"""A single transport craft that does not have hyperdrive capability"""
-type Vehicle implements Node {
-  """The maximum number of kilograms that this vehicle can transport."""
-  cargoCapacity: Float
-  """
-  The maximum length of time that this vehicle can provide consumables for its
-  entire crew without having to resupply.
-  """
-  consumables: String
-  """The cost of this vehicle new, in Galactic Credits."""
-  costInCredits: Float
-  """The ISO 8601 date format of the time that this resource was created."""
-  created: String
-  """The number of personnel needed to run or pilot this vehicle."""
-  crew: String
-  """The ISO 8601 date format of the time that this resource was edited."""
-  edited: String
-  filmConnection(after: String, before: String, first: Int, last: Int): VehicleFilmsConnection
-  """The ID of an object"""
-  id: ID!
-  """The length of this vehicle in meters."""
-  length: Float
-  """The manufacturers of this vehicle."""
-  manufacturers: [String]
-  """The maximum speed of this vehicle in atmosphere."""
-  maxAtmospheringSpeed: Int
-  """
-  The model or official name of this vehicle. Such as "All-Terrain Attack
-  Transport".
-  """
-  model: String
-  """
-  The name of this vehicle. The common name, such as "Sand Crawler" or "Speeder
-  bike".
-  """
-  name: String
-  """The number of non-essential people this vehicle can transport."""
-  passengers: String
-  pilotConnection(after: String, before: String, first: Int, last: Int): VehiclePilotsConnection
-  """The class of this vehicle, such as "Wheeled" or "Repulsorcraft"."""
-  vehicleClass: String
-}
-
-"""A connection to a list of items."""
-type VehicleFilmsConnection {
-  """A list of edges."""
-  edges: [VehicleFilmsEdge]
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  films: [Film]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-}
-
-"""An edge in a connection."""
-type VehicleFilmsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Film
-}
-
-"""A connection to a list of items."""
-type VehiclePilotsConnection {
-  """A list of edges."""
-  edges: [VehiclePilotsEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  pilots: [Person]
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-}
-
-"""An edge in a connection."""
-type VehiclePilotsEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Person
-}
-
-"""A connection to a list of items."""
-type VehiclesConnection {
-  """A list of edges."""
-  edges: [VehiclesEdge]
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-  """
-  A count of the total number of objects in this connection, ignoring pagination.
-  This allows a client to fetch the first five objects by passing "5" as the
-  argument to "first", then fetch the total count so it could display "5 of 83",
-  for example.
-  """
-  totalCount: Int
-  """
-  A list of all of the objects returned in the connection. This is a convenience
-  field provided for quickly exploring the API; rather than querying for
-  "{ edges { node } }" when no edge data is needed, this field can be be used
-  instead. Note that when clients like Relay need to fetch the "cursor" field on
-  the edge to enable efficient pagination, this shortcut cannot be used, and the
-  full "{ edges { node } }" version should be used instead.
-  """
-  vehicles: [Vehicle]
-}
-
-"""An edge in a connection."""
-type VehiclesEdge {
-  """A cursor for use in pagination"""
-  cursor: String!
-  """The item at the end of the edge"""
-  node: Vehicle
+type WorkTempRequest {
+  description: String
+  id: String!
+  workSplits: [CreateWorkSplitRequest!]!
 }

@@ -1,12 +1,8 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { graphql } from "@/gql";
-import { execute } from "@/gql/execute";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
 
-const SingleFilmQuery = graphql(`
+/* const SingleFilmQuery = graphql(`
   query SingleFilm {
     allFilms {
       films {
@@ -16,25 +12,25 @@ const SingleFilmQuery = graphql(`
       }
     }
   }
-`);
+`); */
 
 const TestGraphQL = () => {
-  const { data, isPending } = useSuspenseQuery({
+  /* const { data, isPending } = useSuspenseQuery({
     queryKey: ["film"],
     queryFn: () => execute(SingleFilmQuery),
-  });
+  }); */
 
-  if (isPending) {
+  /* if (isPending) {
     return <div>Loading...</div>;
   }
 
   if (!data) {
     return <div>No data found</div>;
-  }
+  } */
 
   return (
     <div className="mt-5 space-y-2">
-      {data?.allFilms?.films?.map(
+      {/* {data?.allFilms?.films?.map(
         (film) =>
           film && (
             <Card key={film.title}>
@@ -45,7 +41,7 @@ const TestGraphQL = () => {
               </CardContent>
             </Card>
           ),
-      )}
+      )} */}
     </div>
   );
 };

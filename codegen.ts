@@ -1,7 +1,8 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
+import "./envConfig.ts";
 
 const config: CodegenConfig = {
-  schema: "https://graphql.org/graphql/", // TODO: change this back to our api endpoint
+  schema: process.env.NEXT_PUBLIC_URL_ENDPOINT + "/graphql",
   documents: ["src/**/*.tsx"],
   ignoreNoDocuments: true,
   generates: {
