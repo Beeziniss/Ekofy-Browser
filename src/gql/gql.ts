@@ -15,16 +15,16 @@ import * as types from './graphql';
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n  query SingleFilm {\n    allFilms {\n      films {\n        title\n        director\n        releaseDate\n      }\n    }\n  }\n": typeof types.SingleFilmDocument,
+    "\n  query Tracks {\n    tracks {\n      id\n      name\n      description\n      previewVideo\n    }\n  }\n": typeof types.TracksDocument,
 };
 const documents: Documents = {
-    "\n  query SingleFilm {\n    allFilms {\n      films {\n        title\n        director\n        releaseDate\n      }\n    }\n  }\n": types.SingleFilmDocument,
+    "\n  query Tracks {\n    tracks {\n      id\n      name\n      description\n      previewVideo\n    }\n  }\n": types.TracksDocument,
 };
 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query SingleFilm {\n    allFilms {\n      films {\n        title\n        director\n        releaseDate\n      }\n    }\n  }\n"): typeof import('./graphql').SingleFilmDocument;
+export function graphql(source: "\n  query Tracks {\n    tracks {\n      id\n      name\n      description\n      previewVideo\n    }\n  }\n"): typeof import('./graphql').TracksDocument;
 
 
 export function graphql(source: string) {
