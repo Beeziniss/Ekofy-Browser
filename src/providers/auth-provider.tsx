@@ -6,18 +6,29 @@ import {
   getUserInfoFromLocalStorage,
   isUserAuthenticated,
 } from "@/utils/auth-utils";
+import MainLoader from "@/components/main-loader";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const { setUserData, setAuthenticated, setLoading, clearUserData } =
-    useAuthStore();
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const {
+    isLoading,
+    setUserData,
+    setAuthenticated,
+    setLoading,
+    clearUserData,
+  } = useAuthStore();
 
   useEffect(() => {
     const initializeAuth = () => {
       setLoading(true);
+      console.log("Set to true");
+
+      setTimeout(() => {
+        console.log("Timeout completed");
+      }, 2000);
 
       try {
         // Check if user is authenticated based on localStorage
@@ -34,6 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else {
           // User is not authenticated, ensure auth state is cleared
           setAuthenticated(false);
+          console.log("Authenticated false");
         }
       } catch (error) {
         console.error("Error initializing auth state:", error);
@@ -46,6 +58,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     initializeAuth();
   }, [setUserData, setAuthenticated, setLoading, clearUserData]);
+
+  if (isLoading) {
+    return <MainLoader />;
+  }
 
   return <>{children}</>;
 };

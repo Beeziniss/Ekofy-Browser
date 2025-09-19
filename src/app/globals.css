@@ -147,17 +147,52 @@
 }
 
 .text-primary-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#3B54EA] to-[#AB4EE5];
+  @apply bg-gradient-to-r from-[#3B54EA] to-[#AB4EE5] bg-clip-text text-transparent;
 }
 
 .border-gradient-input {
-  background: linear-gradient(#121212, #121212) padding-box, 
-              linear-gradient(to right, #3B54EA, #AB4EE5) border-box;
+  background:
+    linear-gradient(#121212, #121212) padding-box,
+    linear-gradient(to right, #3b54ea, #ab4ee5) border-box;
   border: 2px solid transparent;
 }
 
 .border-gradient-input-error {
-  background: linear-gradient(#1e2939, #1e2939) padding-box, 
-              linear-gradient(to right, #ef4444, #ef4444) border-box;
+  background:
+    linear-gradient(#1e2939, #1e2939) padding-box,
+    linear-gradient(to right, #ef4444, #ef4444) border-box;
   border: 2px solid transparent;
+}
+
+/* HTML:  */
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  display: grid;
+}
+.loader::before,
+.loader::after {
+  content: "";
+  grid-area: 1/1;
+  --c: no-repeat radial-gradient(farthest-side, #3b54ea 92%, #0000);
+  --d: no-repeat radial-gradient(farthest-side, #ab4ee5 92%, #0000);
+  background:
+    var(--c) 50% 0,
+    var(--d) 50% 100%,
+    var(--c) 100% 50%,
+    var(--d) 0 50%;
+  background-size: 12px 12px;
+  animation: l12 1s infinite;
+}
+.loader::before {
+  margin: 4px;
+  filter: hue-rotate(45deg);
+  background-size: 8px 8px;
+  animation-timing-function: linear;
+}
+
+@keyframes l12 {
+  100% {
+    transform: rotate(0.5turn);
+  }
 }

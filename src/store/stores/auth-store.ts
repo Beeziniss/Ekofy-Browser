@@ -19,7 +19,7 @@ interface AuthState {
 const initialState = {
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true,
 };
 
 export const useAuthStore = create<AuthState>()(

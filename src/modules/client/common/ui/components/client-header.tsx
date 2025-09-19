@@ -42,10 +42,10 @@ const ClientHeader = () => {
             <span className="text-sm font-semibold">Library</span>
           </Link>
           <Link
-            href={"/hub"}
-            className={`inline-block py-3 text-[#999999] hover:text-[#f2f2f2] ${pathname === "/hub" ? "border-b-2 border-b-[#f2f2f2] text-[#f2f2f2]" : ""}`}
+            href={"/request-hub"}
+            className={`inline-block py-3 text-[#999999] hover:text-[#f2f2f2] ${pathname === "/request-hub" ? "border-b-2 border-b-[#f2f2f2] text-[#f2f2f2]" : ""}`}
           >
-            <span className="text-sm font-semibold">Hub</span>
+            <span className="text-sm font-semibold">Request Hub</span>
           </Link>
         </div>
 
