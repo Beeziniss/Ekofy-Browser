@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -1596,11 +1595,6 @@ export type WorkTempRequest = {
   workSplits: Array<CreateWorkSplitRequest>;
 };
 
-export type TracksQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type TracksQuery = { __typename?: 'QueryInitialization', tracks: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, previewVideo?: string | null }> };
-
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -1619,14 +1613,3 @@ export class TypedDocumentString<TResult, TVariables>
     return this.value;
   }
 }
-
-export const TracksDocument = new TypedDocumentString(`
-    query Tracks {
-  tracks {
-    id
-    name
-    description
-    previewVideo
-  }
-}
-    `) as unknown as TypedDocumentString<TracksQuery, TracksQueryVariables>;

@@ -136,11 +136,13 @@
   --color-main-grey-dark-bg: #404040;
   --color-main-blue: #3b54ea;
   --color-main-purple: #ab4ee5;
+  --color-main-link: #3ea6ff;
 
   --color-main-slider-bg: #4f4f4f;
   --color-main-card-bg: #303030;
   --color-main-track-hover: #2e2e2e;
 }
+/* Gradient colors */
 
 .primary_gradient {
   @apply bg-gradient-to-r from-[#3B54EA] to-[#AB4EE5];
@@ -164,7 +166,7 @@
   border: 2px solid transparent;
 }
 
-/* HTML:  */
+/* Loader  */
 .loader {
   width: 50px;
   aspect-ratio: 1;
@@ -196,3 +198,11 @@
     transform: rotate(0.5turn);
   }
 }
+
+/* React Query Devtools */
+.go1754112896 {
+  right: 24px !important;
+  bottom: 24px !important;
+}
+
+/* Random Styles */

@@ -106,7 +106,7 @@ const AuthButton = () => {
         </div>
       ) : (
         // Signed out
-        <div className="font-bepro flex items-center gap-x-4">
+        <div className="flex items-center gap-x-4">
           <Link href={"/"} className="hover:underline">
             <span className="text-sm font-medium">Sign In</span>
           </Link>

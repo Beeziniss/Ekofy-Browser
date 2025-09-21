@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
         hostname: "www.onlandscape.co.uk",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+        pathname: "/u/**",
+      },
     ],
   },
 };

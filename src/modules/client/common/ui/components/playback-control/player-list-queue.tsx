@@ -5,7 +5,7 @@ import React from "react";
 
 const PlayerListQueue = () => {
   return (
-    <div className="font-bepro grid gap-y-4 px-6 py-4">
+    <div className="grid gap-y-4 px-6 py-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Queue</h2>
         <PopoverClose asChild>
