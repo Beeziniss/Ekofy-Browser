@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Eye, EyeOff, CircleHelp } from 'lucide-react';
 import Link from 'next/link';
+import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
+import { UserGender } from '@/gql/graphql';
 
 interface ArtistSignUpFormSectionProps {
   onNext: (data?: any) => void;
@@ -19,9 +21,11 @@ interface ArtistSignUpFormSectionProps {
 }
 
 const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectionProps) => {
-  const [email, setEmail] = useState(initialData?.email || '');
-  const [password, setPassword] = useState(initialData?.password || '');
-  const [confirmPassword, setConfirmPassword] = useState(initialData?.confirmPassword || '');
+  const { formData, updateFormData, goToNextStep } = useArtistSignUpStore();
+  
+  const [email, setEmail] = useState(initialData?.email || formData.email || '');
+  const [password, setPassword] = useState(initialData?.password || formData.password || '');
+  const [confirmPassword, setConfirmPassword] = useState(initialData?.confirmPassword || formData.confirmPassword || '');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(initialData?.agreeTerms || false);
@@ -44,19 +48,37 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      alert('Mật khẩu không khớp');
       return;
     }
     if (!isPasswordValid) {
-      alert('Please ensure your password meets all requirements');
+      alert('Vui lòng đảm bảo mật khẩu đáp ứng tất cả yêu cầu');
       return;
     }
     if (!agreeTerms) {
-      alert('Please agree to the terms and conditions');
+      alert('Vui lòng đồng ý với điều khoản và điều kiện');
       return;
     }
-    console.log('Artist Sign Up:', { email, password });
+    // Update store with form data (preserve existing data)
+    const formDataToStore = {
+      email,
+      password,
+      confirmPassword,
+      // Preserve existing values if they exist
+      fullName: formData.fullName || '', 
+      birthDate: formData.birthDate || '', 
+      gender: formData.gender || 'Male' as UserGender, 
+      phoneNumber: formData.phoneNumber || '', 
+    };
+    
+    updateFormData(formDataToStore);
+    
+    // Navigate to next step
+    goToNextStep(formDataToStore);
+    
+    // Also call the original onNext for backward compatibility
     onNext({
       email,
       password,
@@ -202,11 +224,10 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
           >
             Create Account
           </Button>
-          {/* Login Link */}
         {/* Login Link */}
         <div className="text-center mt-2">
           <span className="text-white text-sm">Already have an account? </span>
-          <Link href="/login" className="text-white hover:text-blue-400 transition-colors underline font-medium">
+          <Link href="/artist/login" className="text-white hover:text-blue-400 transition-colors underline font-medium">
             Log in to Ekofy.
           </Link>
         </div>

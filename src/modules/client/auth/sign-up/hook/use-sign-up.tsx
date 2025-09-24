@@ -4,7 +4,7 @@ import { useAuthStore } from "@/store";
 import { setUserInfoToLocalStorage } from "@/utils/auth-utils";
 import { User } from "@/gql/graphql";
 import { toast } from "sonner";
-import { useSignUpStore } from "@/store/stores/signup-store";
+import { useSignUpStore } from "@/store/stores/listener-signup-store";
 import { formatSimpleAPIError } from "@/utils/signup-utils";
 // Simple error formatter that only uses status and detail
 

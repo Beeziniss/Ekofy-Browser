@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import {
   VerificationHeader,
   IDUploadComponent,
   PersonalInformationComponent,
-  ManagerAuthorizationComponent,
 } from "../components";
+import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
+import { useFPTAI } from "../../hooks/use-fpt-ai";
+import { isValidPhoneNumber, formatPhoneNumber } from '@/utils/signup-utils';
+import { toast } from "sonner";
 
 interface ArtistCCCDVerificationSectionProps {
   onNext: (data?: any) => void;
@@ -32,69 +35,136 @@ interface ArtistCCCDVerificationSectionProps {
 }
 
 const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCCCDVerificationSectionProps) => {
+  // Get data from store
+  const { 
+    formData, 
+    goToNextStep, 
+    goToPreviousStep, 
+    updateIdentityCard,
+    updateFormData,
+    isProcessingCCCD 
+  } = useArtistSignUpStore();
+  
+  // FPT AI hook
+  const {
+    isAnalyzing,
+    cccdFrontProcessed,
+    cccdBackProcessed,
+    analyzeFrontSide,
+    analyzeBackSide,
+    parsedData
+  } = useFPTAI();
+
   const [frontId, setFrontId] = useState<File | null>(initialData?.frontId || null);
   const [backId, setBackId] = useState<File | null>(initialData?.backId || null);
-  const [citizenId, setCitizenId] = useState(initialData?.citizenId || "");
-  const [fullName, setFullName] = useState(initialData?.fullName || "");
-  const [dateOfBirth, setDateOfBirth] = useState(initialData?.dateOfBirth || "");
-  const [gender, setGender] = useState(initialData?.gender || "");
-  const [placeOfOrigin, setPlaceOfOrigin] = useState(initialData?.placeOfOrigin || "");
-  const [placeOfResidence, setPlaceOfResidence] = useState(initialData?.placeOfResidence || "");
-  const [dateOfExpiration, setDateOfExpiration] = useState(initialData?.dateOfExpiration || "");
-  const [phoneNumber, setPhoneNumber] = useState(initialData?.phoneNumber || "");
+  const [citizenId, setCitizenId] = useState(
+    initialData?.citizenId || formData.identityCard?.number || ""
+  );
+  const [fullName, setFullName] = useState(
+    initialData?.fullName || formData.identityCard?.fullName || ""
+  );
+  const [dateOfBirth, setDateOfBirth] = useState(
+    initialData?.dateOfBirth || formData.identityCard?.dateOfBirth || ""
+  );
+  const [gender, setGender] = useState(
+    initialData?.gender || formData.identityCard?.gender || ""
+  );
+  const [placeOfOrigin, setPlaceOfOrigin] = useState(
+    initialData?.placeOfOrigin || formData.identityCard?.placeOfOrigin || ""
+  );
+  const [placeOfResidence, setPlaceOfResidence] = useState(
+    initialData?.placeOfResidence || formData.identityCard?.placeOfResidence?.addressLine || ""
+  );
+  const [dateOfExpiration, setDateOfExpiration] = useState(
+    initialData?.dateOfExpiration || formData.identityCard?.validUntil || ""
+  );
+  const [phoneNumber, setPhoneNumber] = useState(
+    initialData?.phoneNumber || formData.phoneNumber || ""
+  );
   const [isManager, setIsManager] = useState(initialData?.hasManager || false);
   const [authorizationLetter, setAuthorizationLetter] = useState<File | null>(
     initialData?.authorizationLetter || null,
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Auto-populate fields when FPT AI data is available
+  useEffect(() => {
+    if (parsedData) {
+      setCitizenId(parsedData.id || "");
+      setFullName(parsedData.name || "");
+      setDateOfBirth(parsedData.dateOfBirth || "");
+      setGender(parsedData.sex || "");
+      setPlaceOfOrigin(parsedData.placeOfOrigin || "");
+      setPlaceOfResidence(parsedData.address || "");
+      setDateOfExpiration(parsedData.validUntil || "");
+      updateFormData({
+        fullName: parsedData.name || "",
+        birthDate: parsedData.dateOfBirth || "",
+        gender: parsedData.sex as any,
+      });
+    }
+  }, [parsedData, updateFormData]);
+
   const handleSubmit = () => {
     const newErrors: Record<string, string> = {};
     
     // Validate required fields
     if (!frontId) {
-      newErrors.frontId = "Please upload the front side of your ID card";
+      newErrors.frontId = "Vui lòng tải lên mặt trước của CCCD";
     }
     
     if (!backId) {
-      newErrors.backId = "Please upload the back side of your ID card";
+      newErrors.backId = "Vui lòng tải lên mặt sau của CCCD";
     }
     
     if (!citizenId.trim()) {
-      newErrors.citizenId = "Please enter your Citizen ID";
+      newErrors.citizenId = "Vui lòng nhập số CCCD";
     }
     
     if (!fullName.trim()) {
-      newErrors.fullName = "Please enter your full name";
+      newErrors.fullName = "Vui lòng nhập họ và tên";
     }
     
     if (!dateOfBirth.trim()) {
-      newErrors.dateOfBirth = "Please enter your date of birth";
+      newErrors.dateOfBirth = "Vui lòng nhập ngày sinh";
     }
     
     if (!gender) {
-      newErrors.gender = "Please select your gender";
+      newErrors.gender = "Vui lòng chọn giới tính";
     }
     
     if (!placeOfOrigin.trim()) {
-      newErrors.placeOfOrigin = "Please enter your place of origin";
+      newErrors.placeOfOrigin = "Vui lòng nhập quê quán";
     }
     
     if (!placeOfResidence.trim()) {
-      newErrors.placeOfResidence = "Please enter your place of residence";
+      newErrors.placeOfResidence = "Vui lòng nhập nơi thường trú";
     }
     
     if (!dateOfExpiration.trim()) {
-      newErrors.dateOfExpiration = "Please enter the date of expiration";
+      newErrors.dateOfExpiration = "Vui lòng nhập ngày hết hạn";
     }
     
     if (!phoneNumber.trim()) {
-      newErrors.phoneNumber = "Please enter your phone number";
+      newErrors.phoneNumber = "Vui lòng nhập số điện thoại";
+    } else if (!isValidPhoneNumber(phoneNumber)) {
+      newErrors.phoneNumber = "Số điện thoại không đúng định dạng. Sử dụng: 0xxxxxxxxx hoặc +84xxxxxxxxx";
+    }
+    
+    // Check if CCCD processing is still in progress
+    if (isProcessingCCCD || isAnalyzing) {
+      toast.error("Đang xử lý CCCD, vui lòng đợi...");
+      return;
+    }
+    
+    // Recommend completing FPT AI processing
+    if (!cccdFrontProcessed || !cccdBackProcessed) {
+      toast.warning("Khuyến nghị: Hãy chờ hệ thống đọc xong thông tin CCCD để tự động điền thông tin");
     }
     
     // If user is manager, authorization letter is required
     if (isManager && !authorizationLetter) {
-      newErrors.authorizationLetter = "Please upload the authorization letter as you indicated you are acting as a manager";
+      newErrors.authorizationLetter = "Vui lòng tải lên giấy ủy quyền vì bạn đang thực hiện với tư cách quản lý";
     }
     
     // Update errors state
@@ -102,20 +172,41 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     
     // If there are no errors, proceed
     if (Object.keys(newErrors).length === 0) {
-      console.log("CCCD verification:", {
-        frontId,
-        backId,
-        citizenId,
-        fullName,
-        dateOfBirth,
-        gender,
-        placeOfOrigin,
-        placeOfResidence,
-        dateOfExpiration,
-        phoneNumber,
-        isManager,
-        authorizationLetter,
-      });
+      // Update identity card data in store with current form values
+      // This ensures any manual edits by user are preserved
+      const identityCardData = {
+        number: citizenId,
+        fullName: fullName,
+        dateOfBirth: dateOfBirth,
+        gender: gender as any,
+        placeOfOrigin: placeOfOrigin,
+        nationality: "Việt Nam",
+        placeOfResidence: {
+          addressLine: placeOfResidence,
+          street: parsedData?.addressEntities?.street || "",
+          ward: parsedData?.addressEntities?.ward || "",
+          province: parsedData?.addressEntities?.province || "",
+        },
+        validUntil: dateOfExpiration,
+        // Preserve existing images if they exist in store
+        frontImage: formData.identityCard?.frontImage || "",
+        backImage: formData.identityCard?.backImage || "",
+      };
+      
+      // Auto-map data from CCCD to main form fields (this ensures required fields are not missing)
+      const additionalData = {
+        phoneNumber: formatPhoneNumber(phoneNumber), // Format phone number
+        birthDate: dateOfBirth, // Map CCCD dateOfBirth to main form birthDate
+        fullName: fullName, // Map CCCD fullName to main form fullName  
+        gender: gender as any, // Map CCCD gender to main form gender
+      };
+      // Update store with identity card data
+      updateIdentityCard(identityCardData);
+      
+      // Navigate to next step using store
+      goToNextStep(additionalData);
+      
+      // Also call the original onNext for component communication
       onNext({
         frontId,
         backId,
@@ -126,7 +217,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
         placeOfOrigin,
         placeOfResidence,
         dateOfExpiration,
-        phoneNumber,
+        phoneNumber: formatPhoneNumber(phoneNumber), // Format phone number
         isManager,
         authorizationLetter,
         managerEmail: "",
@@ -136,15 +227,31 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     }
   };
 
-  const handleFileUpload = (
+  const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
     type: "front" | "back" | "authorization",
   ) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (type === "front") setFrontId(file);
-      else if (type === "back") setBackId(file);
-      else setAuthorizationLetter(file);
+    if (!file) return;
+
+    if (type === "front") {
+      setFrontId(file);
+      // Automatically analyze with FPT AI
+      try {
+        await analyzeFrontSide(file);
+      } catch (error) {
+        console.error("Error analyzing front side:", error);
+      }
+    } else if (type === "back") {
+      setBackId(file);
+      // Automatically analyze with FPT AI
+      try {
+        await analyzeBackSide(file);
+      } catch (error) {
+        console.error("Error analyzing back side:", error);
+      }
+    } else {
+      setAuthorizationLetter(file);
     }
   };
 
@@ -216,15 +323,6 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
           />
         </div>
 
-        {/* Manager Authorization */}
-        <ManagerAuthorizationComponent
-          isManager={isManager}
-          authorizationLetter={authorizationLetter}
-          errors={errors}
-          onManagerChange={setIsManager}
-          onFileUpload={handleFileUpload}
-        />
-
         <div className="mt-6 flex justify-end">
           <Button
             type="button"
@@ -232,7 +330,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
             className="rounded-md primary_gradient px-8 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-60"
             size="lg"
           >
-            Continue
+            Continute
           </Button>
         </div>
       </div>

@@ -6,6 +6,8 @@ import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
+import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
+import { toast } from 'sonner';
 
 interface ArtistOTPVerificationSectionProps {
   onNext: (data?: any) => void;
@@ -19,6 +21,8 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
   const [otp, setOtp] = useState(initialData?.otp || ['', '', '', '', '', '']);
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
+  // Store and hooks
+  const { formData, completeOTPVerification, goToPreviousStep } = useArtistSignUpStore();
 
   useEffect(() => {
     if (timer > 0) {
@@ -52,22 +56,43 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const otpCode = otp.join('');
-    if (otpCode.length === 6) {
-      console.log('OTP:', otpCode);
-      onNext({ otp });
-    } else {
-      alert('Please enter a complete 6-digit code');
+    
+    if (otpCode.length !== 6) {
+      toast.error('Vui lòng nhập đầy đủ mã OTP 6 số');
+      return;
     }
+    
+    try {
+      // Update OTP in store
+      completeOTPVerification({ otp: otpCode });
+      
+      console.log("🎉 OTP Verification completed successfully!");
+      toast.success("Xác thực OTP thành công! Đăng ký hoàn tất.");
+      
+      // Call onNext to trigger final navigation
+      onNext({ otp: otpCode });
+      
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+      }
+    }
+  };
+
+  const handleBack = () => {
+    goToPreviousStep();
+    onBack();
   };
 
   const handleResend = () => {
     setTimer(60);
     setCanResend(false);
     setOtp(['', '', '', '', '', '']);
-    console.log('Resending OTP...');
   };
 
   return (
@@ -75,7 +100,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
       <div className="w-full max-w-md">
         {/* Back Button */}
         <button 
-          onClick={onBack}
+          onClick={handleBack}
           className="flex items-center text-white hover:text-blue-400 transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -90,18 +115,18 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
             </div>
             <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Verify Your Email</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Xác thực OTP</h2>
           <p className="text-gray-300 text-sm mb-2">
-            We've sent a 6-digit verification code to
+            Chúng tôi đã gửi mã xác thực tới emaill
           </p>
-          <p className="text-white font-medium">your.email@example.com</p>
+          <p className="text-white font-medium">{formData.email || 'của bạn'}</p>
         </div>
 
         {/* OTP Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-white mb-4 text-center">
-              Enter verification code
+              Nhập mã xác thực
             </label>
             <div className="flex justify-center space-x-3">
               {otp.map((digit, index) => (
@@ -123,8 +148,9 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
             type="submit"
             className="w-full primary_gradient hover:opacity-90 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
             size="lg"
+            disabled={otp.join('').length !== 6}
           >
-            Verify Email
+            Xác thực OTP
           </Button>
         </form>
 
@@ -132,14 +158,14 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
         <div className="text-center mt-6">
           {!canResend ? (
             <p className="text-gray-400 text-sm">
-              Resend code in {timer}s
+              Gửi lại mã sau {timer}s
             </p>
           ) : (
             <button
               onClick={handleResend}
               className="text-blue-400 hover:text-blue-300 text-sm font-medium"
             >
-              Resend verification code
+              Gửi lại mã xác thực
             </button>
           )}
         </div>

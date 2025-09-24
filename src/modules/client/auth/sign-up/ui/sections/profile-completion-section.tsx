@@ -325,10 +325,9 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                     <SelectValue placeholder="Gender" className="text-gray-400" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-gray-700">
-                    <SelectItem value="male" className="text-white hover:bg-gray-700">Male</SelectItem>
-                    <SelectItem value="female" className="text-white hover:bg-gray-700">Female</SelectItem>
-                    <SelectItem value="other" className="text-white hover:bg-gray-700">Other</SelectItem>
-                    <SelectItem value="prefer-not-to-say" className="text-white hover:bg-gray-700">Prefer not to say</SelectItem>
+                    <SelectItem value="Male" className="text-white hover:bg-gray-700">Male</SelectItem>
+                    <SelectItem value="Female" className="text-white hover:bg-gray-700">Female</SelectItem>
+                    <SelectItem value="Other" className="text-white hover:bg-gray-700">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -341,7 +340,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                   className="w-full primary_gradient hover:opacity-90 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
                   size="lg"
                 >
-                  {isRegistering ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
+                  {isRegistering ? "Creating Account..." : "Create Account"}
                 </Button>
               </div>
             </form>

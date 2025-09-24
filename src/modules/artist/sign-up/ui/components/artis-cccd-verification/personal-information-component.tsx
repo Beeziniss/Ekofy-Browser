@@ -94,9 +94,9 @@ const PersonalInformationComponent = ({
                 <SelectValue placeholder="Gender" className="text-gray-400"/>
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-700">
-                <SelectItem value="male" className="text-white hover:bg-gray-700">Male</SelectItem>
-                <SelectItem value="female" className="text-white hover:bg-gray-700">Female</SelectItem>
-                <SelectItem value="other" className="text-white hover:bg-gray-700">Other</SelectItem>
+                <SelectItem value="Male" className="text-white hover:bg-gray-700">Male</SelectItem>
+                <SelectItem value="Female" className="text-white hover:bg-gray-700">Female</SelectItem>
+                <SelectItem value="Other" className="text-white hover:bg-gray-700">Other</SelectItem>
               </SelectContent>
             </Select>
             {errors.gender && (

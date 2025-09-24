@@ -8,7 +8,7 @@ import {
   OTPVerificationSection, 
   ProfileCompletionSection 
 } from '../sections';
-import { useSignUpStore } from '../../../../../../store/stores/signup-store';
+import { useSignUpStore } from '../../../../../../store/stores/listener-signup-store';
 
 const SignUpView = () => {
   const { currentStep } = useSignUpStore();
