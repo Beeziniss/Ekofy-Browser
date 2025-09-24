@@ -31,6 +31,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
@@ -60,6 +67,7 @@ interface TrackTableProps {
   pageSize?: number;
   totalCount?: number;
   onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
   sorting?: SortingState;
   onSortingChange?: OnChangeFn<SortingState>;
   hasNextPage?: boolean;
@@ -72,6 +80,7 @@ const TrackTable = ({
   pageSize = 10,
   totalCount = 0,
   onPageChange,
+  onPageSizeChange,
   sorting = [],
   onSortingChange,
   hasNextPage = false,
@@ -376,37 +385,55 @@ const TrackTable = ({
         </TableBody>
       </Table>
 
-      {totalPages > 1 && (
-        <div className="flex w-full items-center justify-between px-2 py-4">
-          <div className="text-main-grey shrink-0 text-sm">
-            Showing {Math.min((currentPage - 1) * pageSize + 1, totalCount)} to{" "}
-            {Math.min(currentPage * pageSize, totalCount)} of {totalCount}{" "}
-            entries
+      <div className="flex w-full items-center justify-between px-2 py-4">
+        <div className="text-main-grey shrink-0 text-sm">
+          Showing {Math.min((currentPage - 1) * pageSize + 1, totalCount)} to{" "}
+          {Math.min(currentPage * pageSize, totalCount)} of {totalCount} entries
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="text-main-grey text-sm">Rows per page:</span>
+            <Select
+              value={pageSize.toString()}
+              onValueChange={(value) => onPageSizeChange?.(parseInt(value))}
+            >
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent side="top" align="end">
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => onPageChange?.(Math.max(1, currentPage - 1))}
-                  className={`cursor-pointer ${!hasPreviousPage ? "pointer-events-none opacity-50" : ""}`}
-                />
-              </PaginationItem>
+          {totalPages > 1 && (
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => onPageChange?.(Math.max(1, currentPage - 1))}
+                    className={`cursor-pointer ${!hasPreviousPage ? "pointer-events-none opacity-50" : ""}`}
+                  />
+                </PaginationItem>
 
-              {renderPaginationItems()}
+                {renderPaginationItems()}
 
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() =>
-                    onPageChange?.(Math.min(totalPages, currentPage + 1))
-                  }
-                  className={`cursor-pointer ${!hasNextPage ? "pointer-events-none opacity-50" : ""}`}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      onPageChange?.(Math.min(totalPages, currentPage + 1))
+                    }
+                    className={`cursor-pointer ${!hasNextPage ? "pointer-events-none opacity-50" : ""}`}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

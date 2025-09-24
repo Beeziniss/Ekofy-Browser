@@ -45,8 +45,8 @@ const TrackTableSection = () => {
   const sortOrder = searchParams.get("sortOrder") || "desc";
   const privacyFilter = searchParams.get("privacy") || "all";
   const currentPage = parseInt(searchParams.get("page") || "1");
+  const pageSize = parseInt(searchParams.get("pageSize") || "10");
 
-  const pageSize = 10;
   const skip = (currentPage - 1) * pageSize;
 
   // Build where filter
@@ -116,6 +116,7 @@ const TrackTableSection = () => {
         totalCount={data.tracks?.totalCount || 0}
         hasNextPage={data.tracks?.pageInfo?.hasNextPage || false}
         hasPreviousPage={data.tracks?.pageInfo?.hasPreviousPage || false}
+        pageSize={pageSize}
       />
       {/* )} */}
     </div>

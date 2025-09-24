@@ -11,6 +11,7 @@ interface TrackTableWrapperProps {
   totalCount: number;
   hasNextPage?: boolean;
   hasPreviousPage?: boolean;
+  pageSize?: number;
 }
 
 const TrackTableWrapper = ({
@@ -18,6 +19,7 @@ const TrackTableWrapper = ({
   totalCount,
   hasNextPage = false,
   hasPreviousPage = false,
+  pageSize: propPageSize,
 }: TrackTableWrapperProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -25,7 +27,8 @@ const TrackTableWrapper = ({
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const currentPage = parseInt(searchParams.get("page") || "1");
-  const pageSize = 10;
+  const pageSize =
+    propPageSize || parseInt(searchParams.get("pageSize") || "10");
 
   const updateURLParams = useCallback(
     (params: { [key: string]: string | number }) => {
@@ -92,6 +95,13 @@ const TrackTableWrapper = ({
     [updateURLParams],
   );
 
+  const handlePageSizeChange = useCallback(
+    (newPageSize: number) => {
+      updateURLParams({ pageSize: newPageSize, page: 1 });
+    },
+    [updateURLParams],
+  );
+
   const handleSortingChange = useCallback(
     (updaterOrValue: Updater<SortingState>) => {
       const newSorting =
@@ -129,6 +139,7 @@ const TrackTableWrapper = ({
         pageSize={pageSize}
         totalCount={totalCount}
         onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
         sorting={sorting}
         onSortingChange={handleSortingChange}
         hasNextPage={hasNextPage}
