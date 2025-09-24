@@ -3,7 +3,7 @@ import TrackUploadSection from "../sections/track-upload-section";
 
 const TrackUploadView = () => {
   return (
-    <div className="mx-auto w-full max-w-[1240px]">
+    <div className="w-full">
       <h1 className="font-poppins text-3xl font-bold">
         Upload your audio files
       </h1>

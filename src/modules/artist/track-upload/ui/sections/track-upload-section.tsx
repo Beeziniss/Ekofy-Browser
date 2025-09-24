@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useTrackUploadStore } from "@/store";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
 const TrackUploadSection = () => {
@@ -18,7 +18,7 @@ const TrackUploadSection = () => {
       if (file) {
         // Clear any existing tracks to ensure only 1 MP3 at a time
         clearAllTracks();
-        await startUpload(file);
+        startUpload(file);
         // Navigate to detail page after starting upload
         router.push("/artist/track-upload/detail");
       }

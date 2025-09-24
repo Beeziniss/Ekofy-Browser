@@ -9,7 +9,7 @@ const TrackUploadLayout = ({ children }: TrackUploadLayoutProps) => {
   return (
     <div className="bg-main-dark-bg relative w-full">
       <TrackUploadHeader />
-      <main className="pt-16 pb-[58px]">{children}</main>
+      <main className="mx-auto w-full max-w-[1240px] py-16">{children}</main>
       <TrackUploadFooter />
     </div>
   );

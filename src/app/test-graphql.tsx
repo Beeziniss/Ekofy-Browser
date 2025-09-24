@@ -3,13 +3,9 @@
 import React from "react";
 
 /* const SingleFilmQuery = graphql(`
-  query SingleFilm {
-    allFilms {
-      films {
-        title
-        director
-        releaseDate
-      }
+  query Something {
+    tracks {
+
     }
   }
 `); */

@@ -3,7 +3,7 @@ import React from "react";
 
 const TrackUploadFooter = () => {
   return (
-    <footer className="fixed bottom-0 flex w-full flex-col items-center gap-y-1 border-t border-white/30 py-[14px] font-medium">
+    <footer className="bg-main-dark-bg fixed bottom-0 flex w-full flex-col items-center gap-y-1 border-t border-white/30 py-[14px] pt-[13px] font-medium">
       <p className="text-xs">
         By submitting your tracks to{" "}
         <strong className="primary_gradient bg-clip-text text-transparent">
