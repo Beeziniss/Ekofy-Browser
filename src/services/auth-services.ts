@@ -1,6 +1,10 @@
 import { isAxiosError } from "axios";
 import axiosInstance from "@/config/axios-instance";
-import { IUserCurrent, ListenerLoginResponse } from "@/types/auth";
+import {
+  ArtistLoginResponse,
+  IUserCurrent,
+  ListenerLoginResponse,
+} from "@/types/auth";
 
 export const authApi = {
   listener: {
@@ -11,6 +15,25 @@ export const authApi = {
       try {
         const response = await axiosInstance.post(
           "/api/authentication/login/listener",
+          { email, password },
+        );
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(error.response?.data?.message || error.message);
+        }
+        throw error;
+      }
+    },
+  },
+  artist: {
+    login: async (
+      email: string,
+      password: string,
+    ): Promise<ArtistLoginResponse> => {
+      try {
+        const response = await axiosInstance.post(
+          "/api/authentication/login/artist",
           { email, password },
         );
         return response.data;

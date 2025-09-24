@@ -76,6 +76,7 @@ const LoginFormSection = () => {
                   <FormControl>
                     <Input
                       type="email"
+                      disabled={isLoading}
                       placeholder="Enter your email"
                       className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
                       {...field}
@@ -97,6 +98,7 @@ const LoginFormSection = () => {
                   </FormLabel>
                   <FormControl>
                     <Input
+                      disabled={isLoading}
                       type="password"
                       placeholder="Enter your password"
                       className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
