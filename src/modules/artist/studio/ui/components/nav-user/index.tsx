@@ -25,6 +25,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useMutation } from "@tanstack/react-query";
+import { authApi } from "@/services/auth-services";
+import { useAuthStore } from "@/store";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -36,6 +40,22 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const { clearUserData } = useAuthStore();
+  const router = useRouter();
+
+  // Logout mutation
+  const { mutate: logout } = useMutation({
+    mutationFn: authApi.general.logout,
+    onSuccess: () => {
+      clearUserData();
+      router.push("/artist/login");
+    },
+    onError: (error) => {
+      console.error("Logout failed:", error);
+      // Still clear local data even if server logout fails
+      clearUserData();
+    },
+  });
 
   return (
     <SidebarMenu>
@@ -98,7 +118,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => logout()}>
               <LogOut />
               Log out
             </DropdownMenuItem>

@@ -1,31 +1,64 @@
 import axiosInstance from "@/config/axios-instance";
 import type { TypedDocumentString } from "./graphql";
+import { AxiosError } from "axios";
 
 export async function execute<TResult, TVariables>(
   query: TypedDocumentString<TResult, TVariables>,
   ...[variables]: TVariables extends Record<string, never> ? [] : [TVariables]
 ) {
-  const response = await axiosInstance.post(
-    process.env.NEXT_PUBLIC_URL_ENDPOINT + "/graphql",
-    {
-      query,
-      variables,
-    },
-  );
-
-  if (!response.data) {
-    throw new Error("Network response was not ok");
-  }
-
-  const result = response.data;
-
-  // GraphQL responses have a "data" field that contains the actual query result
-  // and optionally an "errors" field
-  if (result.errors) {
-    throw new Error(
-      `GraphQL Error: ${result.errors.map((e: { message: string }) => e.message).join(", ")}`,
+  try {
+    const response = await axiosInstance.post(
+      "/graphql",
+      {
+        query,
+        variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
     );
-  }
 
-  return result.data as TResult;
+    if (!response.data) {
+      throw new Error("Network response was not ok");
+    }
+
+    const result = response.data;
+
+    // GraphQL responses have a "data" field that contains the actual query result
+    // and optionally an "errors" field
+    if (result.errors) {
+      throw new Error(
+        `GraphQL Error: ${result.errors.map((e: { message: string }) => e.message).join(", ")}`,
+      );
+    }
+
+    return result.data as TResult;
+  } catch (error: unknown) {
+    // Enhanced error handling for better debugging
+    if (error instanceof AxiosError) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        throw new Error(
+          `HTTP Error ${error.response.status}: ${error.response.statusText}. ` +
+            `Response: ${JSON.stringify(error.response.data)}`,
+        );
+      } else if (error.request) {
+        // The request was made but no response was received
+        throw new Error(
+          `Network Error: No response received. Check if the GraphQL endpoint is running at ${process.env.NEXT_PUBLIC_URL_ENDPOINT}`,
+        );
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        throw new Error(`Request Setup Error: ${error.message}`);
+      }
+    } else {
+      // Handle non-Axios errors
+      throw new Error(
+        `Unknown Error: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
 }
