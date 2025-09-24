@@ -4,6 +4,7 @@ import React, { useEffect, ReactNode } from "react";
 import { useAuthStore } from "@/store";
 import {
   getUserInfoFromLocalStorage,
+  getAccessTokenFromLocalStorage,
   isUserAuthenticated,
 } from "@/utils/auth-utils";
 import MainLoader from "@/components/main-loader";
@@ -36,10 +37,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         if (isAuth) {
           const userInfo = getUserInfoFromLocalStorage();
-          if (userInfo) {
-            setUserData(userInfo);
+          const accessToken = getAccessTokenFromLocalStorage();
+          if (userInfo && accessToken) {
+            setUserData(userInfo, accessToken);
           } else {
-            // If no user info found but isAuth is true, clear auth state
+            // If no user info or token found but isAuth is true, clear auth state
             clearUserData();
           }
         } else {

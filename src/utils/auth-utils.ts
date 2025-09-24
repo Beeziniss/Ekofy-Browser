@@ -1,14 +1,15 @@
 // Auth utility functions for localStorage operations and auth state management
 
-import { User } from "@/gql/graphql";
+import { IUserLocalStorage } from "@/types/auth";
 
 const USER_STORAGE_KEY = "user-info";
+const ACCESS_TOKEN_KEY = "access-token";
 
 /**
  * Set user information to localStorage
  */
 export const setUserInfoToLocalStorage = (
-  userData: User,
+  userData: IUserLocalStorage,
 ): void => {
   try {
     if (typeof window !== "undefined") {
@@ -22,7 +23,7 @@ export const setUserInfoToLocalStorage = (
 /**
  * Get user information from localStorage
  */
-export const getUserInfoFromLocalStorage = (): User | null => {
+export const getUserInfoFromLocalStorage = (): IUserLocalStorage | null => {
   try {
     if (typeof window !== "undefined") {
       const userInfo = localStorage.getItem(USER_STORAGE_KEY);
@@ -49,11 +50,52 @@ export const removeUserInfoFromLocalStorage = (): void => {
 };
 
 /**
+ * Set access token to localStorage
+ */
+export const setAccessTokenToLocalStorage = (token: string): void => {
+  try {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(ACCESS_TOKEN_KEY, token);
+    }
+  } catch (error) {
+    console.error("Failed to save access token to localStorage:", error);
+  }
+};
+
+/**
+ * Get access token from localStorage
+ */
+export const getAccessTokenFromLocalStorage = (): string | null => {
+  try {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(ACCESS_TOKEN_KEY);
+    }
+    return null;
+  } catch (error) {
+    console.error("Failed to get access token from localStorage:", error);
+    return null;
+  }
+};
+
+/**
+ * Remove access token from localStorage
+ */
+export const removeAccessTokenFromLocalStorage = (): void => {
+  try {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+    }
+  } catch (error) {
+    console.error("Failed to remove access token from localStorage:", error);
+  }
+};
+
+/**
  * Clear all auth-related data from localStorage
  */
 export const clearAuthData = (): void => {
   removeUserInfoFromLocalStorage();
-  // Add other auth-related localStorage cleanup here if needed
+  removeAccessTokenFromLocalStorage();
 };
 
 /**
@@ -61,7 +103,10 @@ export const clearAuthData = (): void => {
  */
 export const isUserAuthenticated = (): boolean => {
   const userInfo = getUserInfoFromLocalStorage();
-  return userInfo !== null && userInfo.id !== undefined;
+  const accessToken = getAccessTokenFromLocalStorage();
+  return (
+    userInfo !== null && userInfo.userId !== undefined && accessToken !== null
+  );
 };
 
 /**
