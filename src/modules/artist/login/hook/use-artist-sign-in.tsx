@@ -6,16 +6,16 @@ import {
   setAccessTokenToLocalStorage,
   formatAuthError,
 } from "@/utils/auth-utils";
-import { ListenerLoginResponse } from "@/types/auth";
+import { ArtistLoginResponse } from "@/types/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-interface SignInCredentials {
+interface ArtistSignInCredentials {
   email: string;
   password: string;
 }
 
-const useSignIn = () => {
+const useArtistSignIn = () => {
   const router = useRouter();
   const { setUserData, setAuthenticated } = useAuthStore();
 
@@ -28,10 +28,10 @@ const useSignIn = () => {
     isPending,
     isSuccess,
     reset,
-  } = useMutation<ListenerLoginResponse, Error, SignInCredentials>({
-    mutationFn: async ({ email, password }: SignInCredentials) => {
+  } = useMutation<ArtistLoginResponse, Error, ArtistSignInCredentials>({
+    mutationFn: async ({ email, password }: ArtistSignInCredentials) => {
       try {
-        const response = await authApi.listener.login(email, password);
+        const response = await authApi.artist.login(email, password);
         return response;
       } catch (error) {
         throw new Error(formatAuthError(error));
@@ -44,22 +44,23 @@ const useSignIn = () => {
           setAccessTokenToLocalStorage(data.result.accessToken);
           const userInfo = {
             userId: data.result.userId,
-            listenerId: data.result.listenerId,
+            artistId: data.result.artistId,
             role: data.result.role,
           };
           setUserInfoToLocalStorage(userInfo);
           setUserData(userInfo, data.result.accessToken);
           setAuthenticated(true);
 
-          toast.success("Signed in successfully!");
-          router.push("/");
+          toast.success("Artist signed in successfully!");
+          // Redirect to artist studio
+          router.push("/artist/studio");
         }
       } catch (error) {
-        console.error("Failed to process sign-in success:", error);
+        console.error("Failed to process artist sign-in success:", error);
       }
     },
     onError: (error) => {
-      console.error("Sign-in error:", error);
+      console.error("Artist sign-in error:", error);
       toast.error("Invalid credentials. Please try again.");
       setAuthenticated(false);
     },
@@ -77,4 +78,4 @@ const useSignIn = () => {
   };
 };
 
-export default useSignIn;
+export default useArtistSignIn;
