@@ -1,11 +1,33 @@
 import { isAxiosError } from "axios";
 import axiosInstance from "@/config/axios-instance";
+import { IUserCurrent, ListenerLoginResponse } from "@/types/auth";
 
 export const authApi = {
   listener: {
-    getCurrentProfile: async () => {
+    login: async (
+      email: string,
+      password: string,
+    ): Promise<ListenerLoginResponse> => {
       try {
-        const response = await axiosInstance.get("/api/authentication/me");
+        const response = await axiosInstance.post(
+          "/api/authentication/login/listener",
+          { email, password },
+        );
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(error.response?.data?.message || error.message);
+        }
+        throw error;
+      }
+    },
+  },
+  general: {
+    getCurrentProfile: async (): Promise<IUserCurrent> => {
+      try {
+        const response = await axiosInstance.post(
+          "/api/authentication/users/me",
+        );
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
@@ -16,16 +38,15 @@ export const authApi = {
         throw error;
       }
     },
-    login: async (email: string, password: string) => {
+    logout: async () => {
       try {
-        const response = await axiosInstance.post(
-          "/api/authentication/login/listener",
-          { email, password },
-        );
+        const response = await axiosInstance.post("/api/authentication/logout");
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
-          throw new Error(error.response?.data?.message || error.message);
+          throw new Error(
+            error.response?.data?.message || "Failed to get user",
+          );
         }
         throw error;
       }

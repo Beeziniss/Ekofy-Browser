@@ -1,20 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
 import { useAuthStore } from "@/store";
-import { setUserInfoToLocalStorage, formatAuthError } from "@/utils/auth-utils";
-import { User } from "@/gql/graphql";
+import {
+  setUserInfoToLocalStorage,
+  setAccessTokenToLocalStorage,
+  formatAuthError,
+} from "@/utils/auth-utils";
+import { ListenerLoginResponse } from "@/types/auth";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface SignInCredentials {
   email: string;
   password: string;
 }
 
-interface SignInResponse {
-  user: User;
-  message?: string;
-}
-
 const useSignIn = () => {
+  const router = useRouter();
   const { setUserData, setAuthenticated, setLoading } = useAuthStore();
 
   const {
@@ -26,7 +28,7 @@ const useSignIn = () => {
     isPending,
     isSuccess,
     reset,
-  } = useMutation<SignInResponse, Error, SignInCredentials>({
+  } = useMutation<ListenerLoginResponse, Error, SignInCredentials>({
     mutationFn: async ({ email, password }: SignInCredentials) => {
       setLoading(true);
       try {
@@ -40,16 +42,27 @@ const useSignIn = () => {
     },
     onSuccess: async (data) => {
       try {
-        // Store user data in local storage and zustand store
-        await setUserInfoToLocalStorage(data.user);
-        setUserData(data.user);
-        setAuthenticated(true);
+        // Store tokens and user data in local storage and zustand store
+        if (data.result) {
+          setAccessTokenToLocalStorage(data.result.accessToken);
+          const userInfo = {
+            userId: data.result.userId,
+            role: data.result.role,
+          };
+          setUserInfoToLocalStorage(userInfo);
+          setUserData(userInfo, data.result.accessToken);
+          setAuthenticated(true);
+
+          toast.success("Signed in successfully!");
+          router.push("/");
+        }
       } catch (error) {
         console.error("Failed to process sign-in success:", error);
       }
     },
     onError: (error) => {
       console.error("Sign-in error:", error);
+      toast.error("Invalid credentials. Please try again.");
       setAuthenticated(false);
     },
   });
@@ -57,7 +70,7 @@ const useSignIn = () => {
   return {
     signIn,
     signInAsync,
-    user: data?.user,
+    data: data?.result,
     isLoading: isPending,
     isError,
     error,
