@@ -5,7 +5,6 @@ export async function execute<TResult, TVariables>(
   query: TypedDocumentString<TResult, TVariables>,
   ...[variables]: TVariables extends Record<string, never> ? [] : [TVariables]
 ) {
-  // TODO: change this back to our api endpoint
   const response = await axiosInstance.post(
     process.env.NEXT_PUBLIC_URL_ENDPOINT + "/graphql",
     {

@@ -20,10 +20,39 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useAuthStore } from "@/store";
+import { authApi } from "@/services/auth-services";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 const AuthButton = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, user, clearUserData } = useAuthStore();
   const [hasNotification, setHasNotification] = useState(false);
+
+  // Logout mutation
+  const { mutate: logout } = useMutation({
+    mutationFn: authApi.general.logout,
+    onSuccess: () => {
+      clearUserData();
+    },
+    onError: (error) => {
+      console.error("Logout failed:", error);
+      // Still clear local data even if server logout fails
+      clearUserData();
+    },
+  });
+
+  // TODO: Might use later
+  // Get current profile query - only runs when authenticated
+  const { data: currentProfile } = useQuery({
+    queryKey: ["currentProfile"],
+    queryFn: authApi.general.getCurrentProfile,
+    enabled: isAuthenticated && !!user,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <>
@@ -96,9 +125,9 @@ const AuthButton = () => {
                   <Settings className="text-main-white mr-2 size-4" />
                   <span className="text-main-white text-base">Settings</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 size-4 text-red-500" />
-                  <span className="text-main-white text-base">Sign out</span>
+                  <span className="text-main-white text-base">Logout</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -107,10 +136,10 @@ const AuthButton = () => {
       ) : (
         // Signed out
         <div className="flex items-center gap-x-4">
-          <Link href={"/"} className="hover:underline">
+          <Link href={"/login"} className="hover:underline">
             <span className="text-sm font-medium">Sign In</span>
           </Link>
-          <Link href={"/"}>
+          <Link href={"/sign-up"}>
             <Button className="primary_gradient font-semibold text-white hover:brightness-90">
               Create Account
             </Button>

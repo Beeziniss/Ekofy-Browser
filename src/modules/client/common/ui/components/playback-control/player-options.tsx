@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
-import { Heart, ListMusic, PlaySquare, Volume1, VolumeOff } from "lucide-react";
+import { Heart, ListMusic, Volume1, VolumeOff } from "lucide-react";
 import React, { useState } from "react";
 import PlayerListQueue from "./player-list-queue";
 
