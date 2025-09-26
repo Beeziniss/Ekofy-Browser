@@ -3152,6 +3152,13 @@ export type TracksWithFiltersQueryVariables = Exact<{
 
 export type TracksWithFiltersQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isReleased: boolean } }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
+export type TrackListHomeQueryVariables = Exact<{
+  take: Scalars['Int']['input'];
+}>;
+
+
+export type TrackListHomeQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string } | null> }> | null } | null };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -3195,3 +3202,20 @@ export const TracksWithFiltersDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TracksWithFiltersQuery, TracksWithFiltersQueryVariables>;
+export const TrackListHomeDocument = new TypedDocumentString(`
+    query TrackListHome($take: Int!) {
+  tracks(take: $take) {
+    totalCount
+    items {
+      id
+      name
+      coverImage
+      mainArtistIds
+      artist {
+        id
+        stageName
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackListHomeQuery, TrackListHomeQueryVariables>;

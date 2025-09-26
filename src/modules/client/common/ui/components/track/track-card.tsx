@@ -1,5 +1,10 @@
 "use client";
 
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,12 +13,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Ellipsis, Heart, LinkIcon, ListPlus } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
 
-const TrackCard = () => {
+type ArtistInfo = {
+  id: string;
+  stageName: string;
+};
+
+interface TrackCardProps {
+  coverImage?: string;
+  trackName?: string;
+  artists?: (ArtistInfo | null)[];
+}
+
+const TrackCard = ({ coverImage, trackName, artists }: TrackCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -34,7 +46,9 @@ const TrackCard = () => {
       >
         <Image
           src={
-            "https://www.onlandscape.co.uk/wp-content/uploads/2012/01/IMG_6347-square-vertorama.jpg"
+            coverImage
+              ? coverImage
+              : "https://www.onlandscape.co.uk/wp-content/uploads/2012/01/IMG_6347-square-vertorama.jpg"
           }
           alt="Track Name"
           width={280}
@@ -109,14 +123,24 @@ const TrackCard = () => {
       <div className="mt-2 flex flex-col">
         <div className="truncate text-sm font-bold">
           <Link href={"#"} className="hover:text-main-purple">
-            Track Name
+            {trackName}
           </Link>
         </div>
 
         <div className="text-main-grey truncate text-sm">
-          <Link href={"#"} className="hover:text-main-purple hover:underline">
-            Artist Name
-          </Link>
+          {artists &&
+            artists.length > 0 &&
+            artists.map((artist, index) => (
+              <span key={index}>
+                <Link
+                  href="#"
+                  className="hover:text-main-purple hover:underline"
+                >
+                  {artist?.stageName}
+                </Link>
+                {index < artists.length - 1 && ", "}
+              </span>
+            ))}
         </div>
       </div>
     </div>
