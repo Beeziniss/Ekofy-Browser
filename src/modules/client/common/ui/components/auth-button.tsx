@@ -41,6 +41,7 @@ const AuthButton = () => {
     },
   });
 
+  // TODO: Might use later
   // Get current profile query - only runs when authenticated
   const { data: currentProfile } = useQuery({
     queryKey: ["currentProfile"],
@@ -134,7 +135,7 @@ const AuthButton = () => {
         </div>
       ) : (
         // Signed out
-        <div className="font-bepro flex items-center gap-x-4">
+        <div className="flex items-center gap-x-4">
           <Link href={"/login"} className="hover:underline">
             <span className="text-sm font-medium">Sign In</span>
           </Link>

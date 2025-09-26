@@ -12,9 +12,7 @@ function makeQueryClient() {
       },
       dehydrate: {
         // include pending queries in dehydration
-        shouldDehydrateQuery: (query) =>
-          defaultShouldDehydrateQuery(query) ||
-          query.state.status === "pending",
+        shouldDehydrateQuery: (query) => defaultShouldDehydrateQuery(query),
       },
     },
   });

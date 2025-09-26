@@ -14,7 +14,7 @@ const TooltipButton = ({ children, content }: TooltipButtonProps) => {
     <Tooltip>
       <TooltipTrigger asChild>{children}</TooltipTrigger>
       <TooltipContent>
-        <p className="font-bepro font-medium">{content}</p>
+        <p className="font-medium">{content}</p>
       </TooltipContent>
     </Tooltip>
   );

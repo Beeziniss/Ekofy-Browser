@@ -26,7 +26,7 @@ const TrackCard = () => {
   };
 
   return (
-    <div className="font-bepro max-w-70 rounded-sm">
+    <div className="max-w-70 rounded-sm">
       <div
         className="group relative size-70 overflow-hidden rounded-sm hover:cursor-pointer"
         onMouseEnter={() => setIsHovered(true)}
