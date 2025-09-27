@@ -9,6 +9,7 @@ import { getAccessTokenFromLocalStorage } from "@/utils/auth-utils";
 const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const hlsRef = useRef<Hls | null>(null);
+  const lastTrackIdRef = useRef<string | null>(null);
   const {
     currentTrack,
     isPlaying,
@@ -16,13 +17,25 @@ const AudioPlayer = () => {
     isMuted,
     queue,
     currentIndex,
+    seekRequested,
+    currentTime,
     setCurrentTime,
     setDuration,
     skipToNext,
     setLoading,
     setError,
+    resetSeekRequest,
     pause,
   } = useAudioStore();
+
+  // Handle seeking when seekRequested changes
+  useEffect(() => {
+    if (seekRequested && audioRef.current) {
+      const timeInSeconds = currentTime / 1000;
+      audioRef.current.currentTime = timeInSeconds;
+      resetSeekRequest();
+    }
+  }, [seekRequested, currentTime, resetSeekRequest]);
 
   // Load and play track
   const loadTrack = useCallback(
@@ -46,14 +59,14 @@ const AudioPlayer = () => {
         if (Hls.isSupported()) {
           // Use HLS.js for HLS streaming
           const hls = new Hls({
-            /* maxBufferLength: 30, // Buffer tối đa 30 giây
+            maxBufferLength: 30, // Buffer tối đa 30 giây
             maxMaxBufferLength: 60, // Buffer tuyệt đối tối đa 60 giây
             maxBufferSize: 60 * 1000 * 1000, // 60MB buffer
             maxBufferHole: 0.5, // Cho phép hole trong buffer
             highBufferWatchdogPeriod: 3, // Kiểm tra buffer cao mỗi 3s
             nudgeOffset: 0.1, // Offset để tránh stalling
             nudgeMaxRetry: 3, // Số lần retry tối đa
-            maxFragLookUpTolerance: 0.25, // Tolerance khi tìm fragment */
+            maxFragLookUpTolerance: 0.25, // Tolerance khi tìm fragment
 
             // progressive: true,
             enableWorker: true,
@@ -127,10 +140,7 @@ const AudioPlayer = () => {
     if (!audioRef.current) return;
 
     if (isPlaying) {
-      audioRef.current.play().catch((error) => {
-        console.error("Error playing audio:", error);
-        setError("Failed to play audio");
-      });
+      audioRef.current.play();
     } else {
       audioRef.current.pause();
     }
@@ -142,16 +152,17 @@ const AudioPlayer = () => {
     audioRef.current.volume = isMuted ? 0 : volume / 100;
   }, [volume, isMuted]);
 
-  // Load new track when currentTrack changes
+  // Load new track when currentTrack changes (but not when just playing/pausing)
   useEffect(() => {
-    if (currentTrack?.id) {
+    if (currentTrack?.id && currentTrack.id !== lastTrackIdRef.current) {
+      lastTrackIdRef.current = currentTrack.id;
       loadTrack(currentTrack.id);
     }
   }, [currentTrack?.id, loadTrack]);
 
   // Audio event handlers
   const handleTimeUpdate = () => {
-    if (audioRef.current) {
+    if (audioRef.current && !seekRequested) {
       setCurrentTime(audioRef.current.currentTime * 1000); // Convert to milliseconds
     }
   };

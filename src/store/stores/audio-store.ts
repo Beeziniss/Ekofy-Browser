@@ -14,6 +14,7 @@ const initialState = {
   isRepeating: false,
   isLoading: false,
   error: null,
+  seekRequested: false,
 };
 
 export const useAudioStore = create<AudioStore>((set, get) => ({
@@ -50,7 +51,10 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
   // Time control
   setCurrentTime: (time: number) => set({ currentTime: time }),
   setDuration: (duration: number) => set({ duration }),
-  seek: (time: number) => set({ currentTime: time }),
+  seek: (time: number) => {
+    set({ currentTime: time, seekRequested: true });
+  },
+  resetSeekRequest: () => set({ seekRequested: false }),
 
   // Volume control
   setVolume: (volume: number) => set({ volume, isMuted: volume === 0 }),

@@ -26,6 +26,9 @@ export interface AudioState {
   // Loading states
   isLoading: boolean;
   error: string | null;
+
+  // Seek state
+  seekRequested: boolean;
 }
 
 export interface AudioActions {
@@ -39,6 +42,7 @@ export interface AudioActions {
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   seek: (time: number) => void;
+  resetSeekRequest: () => void;
 
   // Volume control
   setVolume: (volume: number) => void;
