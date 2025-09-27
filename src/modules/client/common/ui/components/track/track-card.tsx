@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Ellipsis, Heart, LinkIcon, ListPlus } from "lucide-react";
+import { useAudioStore, Track } from "@/store";
 
 type ArtistInfo = {
   id: string;
@@ -20,18 +21,60 @@ type ArtistInfo = {
 };
 
 interface TrackCardProps {
+  trackId: string;
   coverImage?: string;
   trackName?: string;
   artists?: (ArtistInfo | null)[];
 }
 
-const TrackCard = ({ coverImage, trackName, artists }: TrackCardProps) => {
+const TrackCard = ({
+  trackId,
+  coverImage,
+  trackName,
+  artists,
+}: TrackCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // TODO: Change this to approriate link
+  // Audio store integration
+  const {
+    currentTrack,
+    isPlaying: globalIsPlaying,
+    setCurrentTrack,
+    togglePlayPause,
+    play,
+    pause,
+  } = useAudioStore();
+
+  // Check if this is the currently playing track
+  const isCurrentTrack = currentTrack?.id === trackId;
+
+  // Convert to Track format for the store
+  const trackData: Track = {
+    id: trackId,
+    title: trackName || "Unknown Track",
+    artist:
+      artists
+        ?.map((a) => a?.stageName)
+        .filter(Boolean)
+        .join(", ") || "Unknown Artist",
+    coverImage: coverImage,
+  };
+
+  // Handle play/pause click
+  const handlePlayPauseClick = () => {
+    if (isCurrentTrack) {
+      // If it's the current track, toggle play/pause
+      togglePlayPause();
+    } else {
+      // If it's a different track, set as current track and play
+      setCurrentTrack(trackData);
+      play();
+    }
+  };
+
+  // TODO: Change this to appropriate link
   const onCopy = () => {
     navigator.clipboard.writeText("Hehe");
     toast.info("Link copied to clipboard");
@@ -60,7 +103,7 @@ const TrackCard = ({ coverImage, trackName, artists }: TrackCardProps) => {
           className={`absolute top-0 left-0 size-full bg-[#00000080] ${isHovered || isMenuOpen ? "opacity-100" : "opacity-0"}`}
         />
         <div
-          className={`absolute top-0 left-0 flex size-full items-center justify-center gap-x-7 ${isHovered || isMenuOpen ? "opacity-100" : "opacity-0"}`}
+          className={`absolute top-0 left-0 flex size-full items-center justify-center gap-x-7 transition-opacity duration-200 ${isHovered || isMenuOpen ? "opacity-100" : "opacity-0"}`}
         >
           <Button
             variant="ghost"
@@ -76,10 +119,11 @@ const TrackCard = ({ coverImage, trackName, artists }: TrackCardProps) => {
           <Button
             variant="ghost"
             size="iconLg"
-            className="text-main-white rounded-full duration-0 hover:brightness-90"
-            onClick={() => setIsPlaying(!isPlaying)}
+            className="text-main-white rounded-full transition-transform duration-0 hover:scale-105 hover:brightness-90"
+            onClick={handlePlayPauseClick}
           >
-            {isPlaying ? (
+            {/* Show pause button only when this specific track is playing */}
+            {isCurrentTrack && globalIsPlaying ? (
               <Image
                 src={"/pause-button-medium.svg"}
                 alt="Ekofy Pause Button"
@@ -121,10 +165,29 @@ const TrackCard = ({ coverImage, trackName, artists }: TrackCardProps) => {
       </div>
 
       <div className="mt-2 flex flex-col">
-        <div className="truncate text-sm font-bold">
-          <Link href={"#"} className="hover:text-main-purple">
+        <div className="flex items-center gap-2 truncate text-sm font-bold">
+          <Link
+            href={"#"}
+            className={`hover:text-main-purple ${
+              isCurrentTrack && globalIsPlaying ? "text-main-purple" : ""
+            }`}
+          >
             {trackName}
           </Link>
+          {/* Now Playing Indicator */}
+          {isCurrentTrack && globalIsPlaying && (
+            <div className="flex items-center gap-0.5">
+              <div className="bg-main-purple h-2 w-0.5 animate-pulse rounded-full" />
+              <div
+                className="bg-main-purple h-3 w-0.5 animate-pulse rounded-full"
+                style={{ animationDelay: "0.1s" }}
+              />
+              <div
+                className="bg-main-purple h-2 w-0.5 animate-pulse rounded-full"
+                style={{ animationDelay: "0.2s" }}
+              />
+            </div>
+          )}
         </div>
 
         <div className="text-main-grey truncate text-sm">

@@ -1,6 +1,7 @@
 import React from "react";
 import ClientHeader from "../components/client-header";
 import PlaybackControl from "../components/playback-control/playback-control";
+import AudioPlayer from "../components/audio/audio-player";
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,9 @@ const ClientLayout = ({ children }: ClientLayoutProps) => {
 
       {/* Playback Control */}
       <PlaybackControl />
+
+      {/* Audio Player (Hidden) */}
+      <AudioPlayer />
     </div>
   );
 };

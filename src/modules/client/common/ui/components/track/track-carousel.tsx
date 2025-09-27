@@ -45,6 +45,7 @@ const TrackCarousel = ({ data, isLoading }: TrackCarouselProps) => {
           data.tracks.items.map((track) => (
             <CarouselItem key={track.id} className="basis-auto pl-8">
               <TrackCard
+                trackId={track.id}
                 coverImage={track.coverImage}
                 trackName={track.name}
                 artists={track.artist}
