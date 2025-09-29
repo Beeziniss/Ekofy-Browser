@@ -13,7 +13,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         {children}
-        <ReactQueryDevtools initialIsOpen={false} buttonPosition="top-left" />
+        <ReactQueryDevtools
+          initialIsOpen={false}
+          buttonPosition="bottom-right"
+        />
       </AuthProvider>
     </QueryClientProvider>
   );
