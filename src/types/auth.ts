@@ -31,9 +31,25 @@ export interface ArtistLoginData {
   role: UserRole;
 }
 
+export interface ModeratorLoginData {
+  accessToken: string;
+  refreshToken: string;
+  userId: string;
+  role: UserRole;
+}
+
+export interface AdminLoginData {
+  accessToken: string;
+  refreshToken: string;
+  userId: string;
+  role: UserRole;
+}
+
 export type IUserCurrent = Base<IUserCurrentData>;
 export type ListenerLoginResponse = Base<ListenerLoginData>;
 export type ArtistLoginResponse = Base<ArtistLoginData>;
+export type ModeratorLoginResponse = Base<ModeratorLoginData>;
+export type AdminLoginResponse = Base<AdminLoginData>;
 
 export interface RegisterListenerData {
   email: string;
