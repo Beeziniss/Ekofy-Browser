@@ -1,6 +1,7 @@
 import { Base } from "./base";
 import { UserRole } from "./role";
-
+import { UserGender } from "@/gql/graphql"; // Use GraphQL enum
+import { ArtistType } from "./artist_type";
 export interface IUserLocalStorage {
   userId: string;
   listenerId?: string;
@@ -33,3 +34,57 @@ export interface ArtistLoginData {
 export type IUserCurrent = Base<IUserCurrentData>;
 export type ListenerLoginResponse = Base<ListenerLoginData>;
 export type ArtistLoginResponse = Base<ArtistLoginData>;
+
+export interface RegisterListenerData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  fullName: string;
+  birthDate: string;
+  gender: string;
+  displayName: string;
+}
+    
+export interface RegisterArtistData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  fullName: string;
+  birthDate: string; // ISO date format
+  gender: UserGender;
+  phoneNumber: string;
+  
+  // Artist specific
+  stageName?: string;
+  artistType: ArtistType;
+  
+  // Members (for groups)
+  members: {
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+    gender: UserGender;
+  }[];
+  
+  // Identity card information
+  identityCard: {
+    number: string;
+    fullName: string;
+    dateOfBirth: string;
+    gender: UserGender;
+    placeOfOrigin: string;
+    nationality: string;
+    placeOfResidence: {
+      street?: string;
+      ward?: string;
+      province?: string;
+      addressLine: string;
+    };
+    frontImage: string;
+    backImage: string;
+    validUntil: string;
+  };
+}
+
+export type RegisterListenerDataResponse = Base<RegisterListenerData>;
+export type RegisterArtistResponse = Base<RegisterArtistData>;

@@ -5,25 +5,46 @@ import Image from 'next/image';
 import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
+import { ArtistType } from '@/gql/graphql';
 
 interface ArtistTypeSelectionSectionProps {
-  onNext: (data: { type: 'solo' | 'group' }) => void;
+  onNext: (data: { type: 'INDIVIDUAL' | 'BAND' }) => void;
   onBack: () => void;
-  initialData?: { type: 'solo' | 'group' | null };
+  initialData?: { type: 'INDIVIDUAL' | 'BAND' | null };
 }
 
 const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeSelectionSectionProps) => {
-  const [artistType, setArtistType] = useState<'solo' | 'group' | null>(initialData?.type || null);
+  const { formData, updateFormData, goToNextStep } = useArtistSignUpStore();
+  
+  const [artistType, setArtistType] = useState<'INDIVIDUAL' | 'BAND' | null>(
+    initialData?.type || 
+    (formData.artistType === "INDIVIDUAL" ? "INDIVIDUAL" : 
+     formData.artistType === "BAND" || formData.artistType === "GROUP" ? "BAND" : null)
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = () => {
     if (!artistType) {
-      setErrors({ artistType: "Please choose your artist type" });
+      setErrors({ artistType: "Vui lòng chọn loại nghệ sĩ" });
       return;
     }
     
     setErrors({});
-    console.log('Artist type:', artistType);
+    // Convert UI type to GraphQL enum
+    const graphQLArtistType: ArtistType = artistType === "INDIVIDUAL" ? ArtistType.Individual : ArtistType.Band;
+    
+    // Update store with artist type
+    const typeData = {
+      artistType: graphQLArtistType,
+    };
+    
+    updateFormData(typeData);
+    
+    // Navigate to next step using store
+    goToNextStep(typeData);
+    
+    // Also call the original onNext for backward compatibility
     onNext({ type: artistType });
   };
 
@@ -85,12 +106,12 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
           {/* Solo Artist Option */}
           <div 
             className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
-              artistType === 'solo' 
+              artistType === 'INDIVIDUAL'
                 ? 'border-gradient-input' 
                 : 'border-gray-600 hover:border-gray-500 bg-gray-800/30'
             }`}
             onClick={() => {
-              setArtistType('solo');
+              setArtistType('INDIVIDUAL');
               setErrors({});
             }}
           >
@@ -108,12 +129,12 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
           {/* Band/Group Option */}
           <div 
             className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
-              artistType === 'group' 
+              artistType === 'BAND'
                 ? 'border-gradient-input' 
                 : 'border-gray-600 hover:border-gray-500 bg-gray-800/30'
             }`}
             onClick={() => {
-              setArtistType('group');
+              setArtistType('BAND');
               setErrors({});
             }}
           >
@@ -139,7 +160,7 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
             className="primary_gradient hover:opacity-60 text-white font-medium py-3 px-8 rounded-md transition duration-300 ease-in-out"
             size="lg"
           >
-            Continue
+            Tiếp tục
           </Button>
         </div>
       </div>

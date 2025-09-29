@@ -1,0 +1,1 @@
+export { default as useSignUp } from "./use-sign-up";
