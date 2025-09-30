@@ -50,8 +50,7 @@ const useModeratorSignIn = () => {
             setUserData(userInfo, data.result.accessToken);
             setAuthenticated(true);
             toast.success("Moderator signed in successfully!");
-            // router.push("/moderator/dashboard");
-            console.log("Moderator signed in successfully, redirect to dashboard.", data.result);
+            router.push("/moderator/profile");
             }
         } catch (error) {
           toast.error(`Failed to process moderator sign-in success: ${error}`);

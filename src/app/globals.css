@@ -207,4 +207,10 @@
   bottom: 24px !important;
 }
 
+/* Dialog backdrop blur effect */
+[data-radix-dialog-overlay] {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
 /* Random Styles */

@@ -50,8 +50,7 @@ const useAdminSignIn = () => {
               setUserData(userInfo, data.result.accessToken);
               setAuthenticated(true);
               toast.success("Admin signed in successfully!");
-              // router.push("/admin/dashboard");
-              console.log("Admin signed in successfully, redirect to dashboard.", data.result);
+              router.push("/admin/profile");
               }
           } catch (error) {
             toast.error(`Failed to process admin sign-in success: ${error}`);
