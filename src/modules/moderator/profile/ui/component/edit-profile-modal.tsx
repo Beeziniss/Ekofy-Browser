@@ -12,18 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, Camera, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-
-interface UserProfile {
-  id: string;
-  email: string;
-  gender: string;
-  birthDate: string;
-  role: string;
-  phoneNumber?: string | null;
-  status: string;
-  createdAt: string;
-  updatedAt?: string | null;
-}
+import { UserProfile } from "@/types/profile";
 
 interface EditProfileModalProps {
   isOpen: boolean;

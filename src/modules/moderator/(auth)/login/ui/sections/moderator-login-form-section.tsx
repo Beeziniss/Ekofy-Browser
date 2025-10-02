@@ -60,7 +60,7 @@ const ModeratorLoginFormSection = () => {
             </div>
             <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
           </div>
-          <h2 className="text-4xl font-bold text-white mb-8">Welcome Back</h2>
+          <h2 className="text-4xl font-bold text-white mb-8">Welcome Back, Moderator</h2>
         </div>
 
       {/* Error Display */}
@@ -163,10 +163,11 @@ const ModeratorLoginFormSection = () => {
           {/* Login Button */}
           <Button
             type="submit"
+            disabled={isLoading}
             className="w-full primary_gradient hover:opacity-60 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
             size="lg"
           >
-            Log in
+            {isLoading ? "Logging in..." : "Login"}
           </Button>
         </form>
         </Form>

@@ -30,9 +30,6 @@ const adminLoginSchema = z.object({
 type AdminLoginFormData = z.infer<typeof adminLoginSchema>;
 
 const AdminLoginFormSection = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { signIn, isLoading, error } = useAdminSignIn();
 
@@ -63,7 +60,7 @@ const AdminLoginFormSection = () => {
             </div>
             <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
           </div>
-          <h2 className="text-4xl font-bold text-white mb-8">Welcome Back</h2>
+          <h2 className="text-4xl font-bold text-white mb-8">Welcome Back, Admin</h2>
         </div>
 
          {/* Error Display */}
@@ -166,10 +163,11 @@ const AdminLoginFormSection = () => {
           {/* Login Button */}
           <Button
             type="submit"
+            disabled={isLoading}
             className="w-full primary_gradient hover:opacity-60 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
             size="lg"
           >
-            Log in
+            {isLoading ? "Logging in..." : "Log in"}
           </Button>
         </form>
         </Form>

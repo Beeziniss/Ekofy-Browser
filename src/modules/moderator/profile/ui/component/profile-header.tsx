@@ -3,18 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
-
-interface UserProfile {
-  id: string;
-  email: string;
-  gender: string;
-  birthDate: string;
-  role: string;
-  phoneNumber?: string | null;
-  status: string;
-  createdAt: string;
-  updatedAt?: string | null;
-}
+import { UserProfile } from "@/types/profile";
 
 interface ProfileHeaderProps {
   userProfile: UserProfile;

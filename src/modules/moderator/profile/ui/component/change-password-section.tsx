@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChevronDown, ChevronUp, Eye, EyeOff, Edit } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { toast } from "sonner";
 
 interface ChangePasswordSectionProps {
   onSave: (data: any) => void;
@@ -40,12 +41,12 @@ const ChangePasswordSection = ({ onSave }: ChangePasswordSectionProps) => {
 
   const handleSubmit = () => {
     if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
-      alert("Please fill in all fields");
+      toast.error("Please fill in all fields");
       return;
     }
 
     if (formData.newPassword !== formData.confirmPassword) {
-      alert("New password and confirm password do not match");
+      toast.error("New password and confirm password do not match");
       return;
     }
 

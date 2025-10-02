@@ -2,18 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-interface UserProfile {
-  id: string;
-  email: string;
-  gender: string;
-  birthDate: string;
-  role: string;
-  phoneNumber?: string | null;
-  status: string;
-  createdAt: string;
-  updatedAt?: string | null;
-}
+import { UserProfile } from "@/types/profile";
 
 interface ProfileInfoSectionProps {
   userProfile: UserProfile;
