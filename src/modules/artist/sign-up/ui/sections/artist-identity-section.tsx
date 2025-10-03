@@ -6,6 +6,10 @@ import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
+import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
+import useArtistSignUp from '../../hooks/use-artist-sign-up';
+import { convertArtistStoreDataToAPIFormat } from '@/utils/signup-utils';
+import { toast } from 'sonner';
 
 interface ArtistIdentitySectionProps {
   onNext: (data?: any) => void;
@@ -17,9 +21,12 @@ interface ArtistIdentitySectionProps {
 }
 
 const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySectionProps) => {
+  const { formData, updateFormData, goToNextStep, proceedToRegistration } = useArtistSignUpStore();
+  const { signUp, isLoading } = useArtistSignUp();
+  
   const [coverImage, setCoverImage] = useState<File | null>(initialData?.coverImage || null);
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
-  const [stageName, setStageName] = useState(initialData?.stageName || '');
+  const [stageName, setStageName] = useState(initialData?.stageName || formData.stageName || '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -30,21 +37,72 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
     }
   }, [coverImage]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const newErrors: Record<string, string> = {};
     
     if (!coverImage) {
-      newErrors.coverImage = "Please upload a cover image";
+      newErrors.coverImage = "Vui lòng tải lên ảnh bìa";
     }
     
     if (!stageName.trim()) {
-      newErrors.stageName = "Please enter your stage name";
+      newErrors.stageName = "Vui lòng nhập nghệ danh";
     }
     
     setErrors(newErrors);
     
     if (Object.keys(newErrors).length === 0) {
-      console.log('Define identity:', { coverImage, stageName });
+      // Update store with identity data
+      const identityData = {
+        stageName: stageName.trim(),
+      };
+      
+      updateFormData(identityData);
+      
+      // Check artist type to determine next action
+      if (formData.artistType === "INDIVIDUAL") {
+        try {
+          // Combine current formData with new identity data
+          const combinedData = {
+            ...formData,
+            ...identityData
+          };
+          
+          // Debug: Log the combined data
+          console.log("🔍 Combined Data before API call:", combinedData);
+          console.log("📋 Required fields check:");
+          console.log("- email:", combinedData.email ? "✅" : "❌");
+          console.log("- password:", combinedData.password ? "✅" : "❌");
+          console.log("- confirmPassword:", combinedData.confirmPassword ? "✅" : "❌");
+          console.log("- fullName:", combinedData.fullName ? "✅" : "❌");
+          console.log("- phoneNumber:", combinedData.phoneNumber ? "✅" : "❌");
+          console.log("- stageName:", combinedData.stageName ? "✅" : "❌");
+          console.log("- identityCard:", combinedData.identityCard ? "✅" : "❌");
+          
+          // Convert store data to API format for registration
+          const registrationData = convertArtistStoreDataToAPIFormat(combinedData);
+          
+          // Debug: Log the registration data
+          console.log("🚀 Registration Data:", registrationData);
+          
+          // Call registration API
+          signUp(registrationData);
+          
+          // Move to OTP step after API call
+          proceedToRegistration();
+          
+        } catch (error) {
+          console.error("❌ Registration error:", error);
+          if (error instanceof Error) {
+            toast.error(error.message);
+          } else {
+            toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+          }
+        }
+      } else {
+        goToNextStep(identityData);
+      }
+      
+      // Also call the original onNext for backward compatibility
       onNext({
         coverImage,
         stageName
@@ -151,8 +209,9 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
             onClick={handleSubmit}
             className="primary_gradient hover:opacity-90 text-white font-medium py-3 px-8 rounded-md transition duration-300 ease-in-out"
             size="lg"
+            disabled={isLoading}
           >
-            Continue
+            {isLoading ? 'Đang xử lý...' : (formData.artistType === "INDIVIDUAL" ? 'Tiếp tục' : 'Tiếp tục và Đăng ký')}
           </Button>
         </div>
       </div>

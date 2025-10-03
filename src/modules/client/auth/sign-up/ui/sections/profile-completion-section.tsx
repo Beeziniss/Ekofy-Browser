@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
+import EkofyLogo from '../../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,6 +10,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ArrowLeft, Upload, CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import { useSignUpStore } from '@/store/stores';
+import useSignUp from '../../hook/use-sign-up';
+import { formatDate } from '@/utils/signup-utils';
+import { toast } from 'sonner';
 
 interface ProfileCompletionSectionProps {
   onNext: (data?: any) => void;
@@ -24,11 +28,29 @@ interface ProfileCompletionSectionProps {
 
 const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileCompletionSectionProps) => {
   const [displayName, setDisplayName] = useState(initialData?.displayName || '');
+  const [fullName, setFullName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(initialData?.dateOfBirth);
   const [gender, setGender] = useState(initialData?.gender || '');
   const [avatar, setAvatar] = useState<File | null>(initialData?.avatar || null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [dateError, setDateError] = useState('');
+
+  // Use the signup hook for API calls with auto-navigation to OTP step
+  const { signUp, isLoading: isRegistering, isError, isSuccess, error } = useSignUp(
+    () => {
+      // This callback is called when navigation happens automatically
+      onNext({ displayName, fullName, dateOfBirth, gender, avatar });
+    }
+  );
+  
+  // Use the store for step navigation and form data
+  const { 
+    goToPreviousStep, 
+    goToNextStep, 
+    formData,
+    // currentStep,
+    updateFormData
+  } = useSignUpStore();
 
   useEffect(() => {
     if (avatar) {
@@ -38,9 +60,8 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
     }
   }, [avatar]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     // Validate date of birth
     if (!dateOfBirth) {
       setDateError('Date of birth is required');
@@ -51,15 +72,62 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       setDateError('Date of birth cannot be in the future');
       return;
     }
-    
     // Clear any previous errors
     setDateError('');
     
-    // Handle profile completion logic here
-    console.log('Profile completed:', { displayName, dateOfBirth, gender, avatar });
+    // Update form data with profile information
+    const profileData = { 
+      displayName, 
+      fullName: fullName || displayName, // Use displayName as fallback
+      birthDate: dateOfBirth, 
+      gender 
+    };
     
-    // Pass data to parent component
-    onNext({ displayName, dateOfBirth, gender, avatar });
+    updateFormData(profileData);
+    
+    // Prepare complete registration data
+    const completeData = { ...formData, ...profileData };
+    
+    // Validate required fields
+    if (!completeData.email || !completeData.password || !completeData.confirmPassword) {
+      toast.error("Email và mật khẩu là bắt buộc");
+      return;
+    }
+    
+    if (!completeData.fullName || !completeData.displayName) {
+      toast.error("Họ và tên là bắt buộc");
+      return;
+    }
+    
+    if (!completeData.birthDate || !completeData.gender) {
+      toast.error("Ngày sinh và giới tính là bắt buộc");
+      return;
+    }
+    
+    // Format data for API
+    const registerData = {
+      email: completeData.email,
+      password: completeData.password,
+      confirmPassword: completeData.confirmPassword,
+      fullName: completeData.fullName,
+      birthDate: formatDate(completeData.birthDate),
+      gender: completeData.gender,
+      displayName: completeData.displayName,
+    };
+    
+    try {
+      await signUp(registerData);
+      // Success handling is done in useEffect
+    } catch (error) {
+      // Error handling is done in useEffect
+      // console.error("Registration failed:", error);
+      // Error handling is done by the hook
+      if (error instanceof Error) {
+        toast.error(error.message || "Đăng ký thất bại. Vui lòng thử lại.");
+      } else {
+        toast.error("Đăng ký thất bại. Vui lòng thử lại.");
+      }
+    }
   };
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -72,7 +140,9 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
   };
 
   const handleBack = () => {
-    // Handle back navigation
+    // Use hook to go back
+    goToPreviousStep();
+    // Also call the original onBack for component communication
     onBack();
   };
 
@@ -150,6 +220,22 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
           <div className="flex-1 max-w-sm">
             {/* Profile Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Full Name Field */}
+              <div>
+                <label htmlFor="fullName" className="block text-sm font-medium text-white mb-2">
+                  Full name*
+                </label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Enter your full name"
+                  required
+                  className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
+                />
+              </div>
+
               {/* Display Name Field */}
               <div>
                 <label htmlFor="displayName" className="block text-sm font-medium text-white mb-2">
@@ -239,10 +325,9 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                     <SelectValue placeholder="Gender" className="text-gray-400" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-gray-700">
-                    <SelectItem value="male" className="text-white hover:bg-gray-700">Male</SelectItem>
-                    <SelectItem value="female" className="text-white hover:bg-gray-700">Female</SelectItem>
-                    <SelectItem value="other" className="text-white hover:bg-gray-700">Other</SelectItem>
-                    <SelectItem value="prefer-not-to-say" className="text-white hover:bg-gray-700">Prefer not to say</SelectItem>
+                    <SelectItem value="Male" className="text-white hover:bg-gray-700">Male</SelectItem>
+                    <SelectItem value="Female" className="text-white hover:bg-gray-700">Female</SelectItem>
+                    <SelectItem value="Other" className="text-white hover:bg-gray-700">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -251,10 +336,11 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
               <div className="pt-6">
                 <Button
                   type="submit"
-                  className="w-full primary_gradient hover:opacity-90 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
+                  disabled={isRegistering}
+                  className="w-full primary_gradient hover:opacity-90 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
                   size="lg"
                 >
-                  Continue
+                  {isRegistering ? "Creating Account..." : "Create Account"}
                 </Button>
               </div>
             </form>
