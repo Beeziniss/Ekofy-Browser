@@ -5,7 +5,6 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import React from "react";
 
 const Page = () => {
-  // TODO: prefetch data later
   const queryClient = getQueryClient();
 
   void queryClient.prefetchQuery(trackListOptions);

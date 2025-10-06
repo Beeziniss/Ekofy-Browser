@@ -1,30 +1,16 @@
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import TrackCard from "@/modules/client/common/ui/components/track/track-card";
+import { getQueryClient } from "@/providers/get-query-client";
+import HomeView from "@/modules/client/home/ui/views/home-view";
+import { trackListHomeOptions } from "@/gql/options/client-options";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 export default function Home() {
+  const queryClient = getQueryClient();
+
+  void queryClient.prefetchQuery(trackListHomeOptions);
+
   return (
-    <Carousel
-      opts={{
-        align: "start",
-        watchDrag: false,
-      }}
-      className="w-full px-12"
-    >
-      <CarouselContent className="-ml-8">
-        {[...Array(9)].map((_, index) => (
-          <CarouselItem key={index} className="basis-auto pl-8">
-            <TrackCard />
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious className="left-0 z-20" />
-      <CarouselNext className="right-0 z-20" />
-    </Carousel>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <HomeView />
+    </HydrationBoundary>
   );
 }

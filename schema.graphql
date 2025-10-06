@@ -1,6 +1,7 @@
 schema {
   query: QueryInitialization
   mutation: MutationInitialization
+  subscription: Subscription
 }
 
 """

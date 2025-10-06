@@ -6,13 +6,14 @@ import {
 } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
+import { useAudioStore } from "@/store";
 import { Heart, ListMusic, Volume1, VolumeOff } from "lucide-react";
 import React, { useState } from "react";
 import PlayerListQueue from "./player-list-queue";
 
 const PlayerOptions = () => {
   const [isLiked, setIsLiked] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const { volume, isMuted, setVolume, toggleMute } = useAudioStore();
 
   return (
     <div className="flex items-center gap-x-7">
@@ -66,7 +67,7 @@ const PlayerOptions = () => {
             variant="ghost"
             size="iconXs"
             className="text-main-white hover:text-main-grey"
-            onClick={() => setIsMuted(!isMuted)}
+            onClick={toggleMute}
           >
             {isMuted ? (
               <VolumeOff className="size-[18px]" />
@@ -78,8 +79,10 @@ const PlayerOptions = () => {
 
         <Slider
           className="w-24 py-3"
-          defaultValue={[70]}
-          value={[isMuted ? 0 : 70]}
+          value={[isMuted ? 0 : volume]}
+          onValueChange={(value) => setVolume(value[0])}
+          max={100}
+          step={1}
         />
       </div>
     </div>

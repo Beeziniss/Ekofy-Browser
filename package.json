@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "codegen": "graphql-codegen --config codegen.ts --watch"
+    "codegen": "graphql-codegen --config codegen.ts --watch",
+    "dev:all": "concurrently \"npm run dev\" \"npm run codegen\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -41,12 +42,15 @@
     "@tanstack/react-query": "^5.84.1",
     "@tanstack/react-query-devtools": "^5.84.1",
     "@tanstack/react-table": "^8.21.3",
+    "@types/hls.js": "^1.0.0",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "concurrently": "^9.2.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "hls.js": "^1.6.13",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.537.0",
     "next": "15.4.6",
