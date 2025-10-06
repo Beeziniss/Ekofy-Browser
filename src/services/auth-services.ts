@@ -5,7 +5,9 @@ import {
   IUserCurrent,
   ListenerLoginResponse,
   RegisterListenerDataResponse,
-  RegisterArtistData // Import raw data type instead of wrapped response
+  RegisterArtistData, // Import raw data type instead of wrapped response
+  ModeratorLoginResponse,
+  AdminLoginResponse
 } from "@/types/auth";
 import { formatServiceError } from "@/utils/signup-utils";
 
@@ -17,7 +19,7 @@ export const authApi = {
     ): Promise<ListenerLoginResponse> => {
       try {
         const response = await axiosInstance.post(
-          "/api/authentication/login/artist",
+          "/api/authentication/login/listener",
           { email, password },
         );
         return response.data;
@@ -33,7 +35,6 @@ export const authApi = {
         const response = await axiosInstance.post(
           "/api/authentication/register/listener",
           data,
-          { withCredentials: false } // Tạm thời tắt credentials cho register API
         );
         
         // Handle 204 No Content response
@@ -161,6 +162,44 @@ export const authApi = {
         }
         throw error;
       }
+    },
+  },
+  moderator: {
+    login: async (
+      email: string,
+      password: string,
+    ): Promise<ModeratorLoginResponse> => {
+      try {
+        const response = await axiosInstance.post(
+          "/api/authentication/login/moderator",
+          { email, password },
+        );
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(error.response?.data?.message || error.message);
+        }
+        throw error;
+      }
+    },
+  },
+  admin: {
+    login: async (
+      email: string,
+      password: string,
+    ): Promise<AdminLoginResponse> => {
+      try {
+        const response = await axiosInstance.post(
+          "/api/authentication/login/admin",
+          { email, password },
+        );
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(error.response?.data?.message || error.message);
+        }
+        throw error;
+      } 
     },
   },
 };
