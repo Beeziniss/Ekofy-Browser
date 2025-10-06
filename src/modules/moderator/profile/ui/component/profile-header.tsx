@@ -21,7 +21,7 @@ const ProfileHeader = ({ userProfile, onEditClick }: ProfileHeaderProps) => {
   };
 
   // Extract name from email for display (since we don't have fullName in GraphQL response)
-  const displayName = userProfile.email.split("@")[0].replace(".", " ").replace(/\b\w/g, l => l.toUpperCase());
+  // const displayName = userProfile.email.split("@")[0].replace(".", " ").replace(/\b\w/g, l => l.toUpperCase());
 
   return (
     <div className="flex items-center justify-between mb-6">
@@ -34,7 +34,7 @@ const ProfileHeader = ({ userProfile, onEditClick }: ProfileHeaderProps) => {
         </Avatar>
         
         <div>
-          <h1 className="text-2xl font-bold text-white">{displayName}</h1>
+          <h1 className="text-2xl font-bold text-white">{userProfile.fullName}</h1>
           <p className="text-gray-400">{userProfile.email}</p>
         </div>
       </div>

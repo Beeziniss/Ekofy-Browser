@@ -1507,6 +1507,8 @@ type MutationInitialization {
   rejectTrackUploadRequest(recordingId: String!, trackId: String!, workId: String!): Boolean!
   seedEntitlements(password: String!): Boolean!
   seedRoyaltyPolicyData(password: String!): Boolean!
+  updateArtist(updateArtistRequest: UpdateArtistRequestInput!): Boolean!
+  updateProfile(updateListenerRequest: UpdateListenerRequestInput!): Boolean!
   updateRequest(request: RequestUpdatingRequestInput!): Boolean!
   uploadFile(file: Upload!, fileName: String!): String!
   uploadTrack(createRecordingRequest: CreateRecordingRequestInput!, createTrackRequest: CreateTrackRequestInput!, createWorkRequest: CreateWorkRequestInput!, file: Upload!): Boolean!
@@ -2476,6 +2478,13 @@ type TransactionsCollectionSegment {
 
 scalar UInt32
 
+input UpdateArtistRequestInput {
+  avatarImage: String
+  bannerImage: String
+  biography: String
+  stageName: String
+}
+
 input UpdateEntitlementRequestInput {
   code: String!
   description: String
@@ -2483,6 +2492,14 @@ input UpdateEntitlementRequestInput {
   name: String
   value: EntitlementValue
   valueType: EntitlementValueType
+}
+
+input UpdateListenerRequestInput {
+  avatarImage: String
+  bannerImage: String
+  displayName: String
+  email: String
+  fullName: String
 }
 
 input UpdateStatusArtistPackageRequestInput {

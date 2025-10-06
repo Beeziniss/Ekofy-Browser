@@ -40,10 +40,10 @@ const ProfileInfoSection = ({ userProfile }: ProfileInfoSectionProps) => {
   };
 
   // Get display name from email
-  const displayName = userProfile.email
-    .split("@")[0]
-    .replace(".", " ")
-    .replace(/\b\w/g, (l) => l.toUpperCase());
+  // const displayName = userProfile.email
+  //   .split("@")[0]
+  //   .replace(".", " ")
+  //   .replace(/\b\w/g, (l) => l.toUpperCase());
 
   return (
     <div className="space-y-6">
@@ -54,7 +54,7 @@ const ProfileInfoSection = ({ userProfile }: ProfileInfoSectionProps) => {
           </Label>
           <Input
             id="fullName"
-            value={displayName}
+            value={userProfile.fullName || "Not specified"}
             readOnly
             className="border-gray-700 bg-gray-800 text-white"
           />

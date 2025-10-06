@@ -15,18 +15,18 @@ import * as types from './graphql';
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n  query Users($where: UserFilterInput) {\n    users(where: $where) {\n      items {\n        id\n        email\n        gender\n        birthDate\n        role\n        phoneNumber\n        status\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": typeof types.UsersDocument,
+    "\n  query Users($where: UserFilterInput) {\n    users(where: $where) {\n      items {\n        id\n        email\n        fullName\n        gender\n        birthDate\n        role\n        phoneNumber\n        status\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": typeof types.UsersDocument,
     "\n  query TracksWithFilters(\n    $skip: Int!\n    $take: Int!\n    $where: TrackFilterInput\n    $order: [TrackSortInput!]\n  ) {\n    tracks(skip: $skip, take: $take, where: $where, order: $order) {\n      totalCount\n      items {\n        id\n        name\n        mainArtistIds\n        streamCount\n        favoriteCount\n        coverImage\n        isExplicit\n        releaseInfo {\n          releaseDate\n          isReleased\n        }\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n      }\n    }\n  }\n": typeof types.TracksWithFiltersDocument,
 };
 const documents: Documents = {
-    "\n  query Users($where: UserFilterInput) {\n    users(where: $where) {\n      items {\n        id\n        email\n        gender\n        birthDate\n        role\n        phoneNumber\n        status\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": types.UsersDocument,
+    "\n  query Users($where: UserFilterInput) {\n    users(where: $where) {\n      items {\n        id\n        email\n        fullName\n        gender\n        birthDate\n        role\n        phoneNumber\n        status\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": types.UsersDocument,
     "\n  query TracksWithFilters(\n    $skip: Int!\n    $take: Int!\n    $where: TrackFilterInput\n    $order: [TrackSortInput!]\n  ) {\n    tracks(skip: $skip, take: $take, where: $where, order: $order) {\n      totalCount\n      items {\n        id\n        name\n        mainArtistIds\n        streamCount\n        favoriteCount\n        coverImage\n        isExplicit\n        releaseInfo {\n          releaseDate\n          isReleased\n        }\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n      }\n    }\n  }\n": types.TracksWithFiltersDocument,
 };
 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Users($where: UserFilterInput) {\n    users(where: $where) {\n      items {\n        id\n        email\n        gender\n        birthDate\n        role\n        phoneNumber\n        status\n        createdAt\n        updatedAt\n      }\n    }\n  }\n"): typeof import('./graphql').UsersDocument;
+export function graphql(source: "\n  query Users($where: UserFilterInput) {\n    users(where: $where) {\n      items {\n        id\n        email\n        fullName\n        gender\n        birthDate\n        role\n        phoneNumber\n        status\n        createdAt\n        updatedAt\n      }\n    }\n  }\n"): typeof import('./graphql').UsersDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

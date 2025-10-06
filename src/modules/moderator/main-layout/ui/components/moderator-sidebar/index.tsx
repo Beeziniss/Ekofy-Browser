@@ -41,11 +41,6 @@ const data = {
       url: "/moderator/report-control",
       icon: Flag,
     },
-    {
-      name: "Profile",
-      url: "/moderator/profile",
-      icon: ShieldCheck,
-    },
   ],
 };
 

@@ -104,9 +104,9 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/admin/profile")}>
                 <BadgeCheck />
-                Account
+                My Profile
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />

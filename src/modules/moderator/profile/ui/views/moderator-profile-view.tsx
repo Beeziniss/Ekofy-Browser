@@ -13,6 +13,7 @@ export const GetUserProfileQuery = graphql(`
       items {
         id
         email
+        fullName
         gender
         birthDate
         role
@@ -30,7 +31,7 @@ const ModeratorProfileView = () => {
   const { data: userProfile } = useSuspenseQuery(moderatorProfileOptions(user?.userId || ""));
   
   // Get display name from email
-  const displayName = userProfile?.email?.split("@")[0]?.replace(".", " ")?.replace(/\b\w/g, l => l.toUpperCase()) || "User";
+  // const displayName = userProfile?.email?.split("@")[0]?.replace(".", " ")?.replace(/\b\w/g, l => l.toUpperCase()) || "User";
   
   // Format current date
   const currentDate = new Date().toLocaleDateString("en-GB", {
@@ -45,7 +46,7 @@ const ModeratorProfileView = () => {
       <div className="container mx-auto py-8 px-4">
         <div className="mb-8 pl-4">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome, {displayName}
+            Welcome, {userProfile?.fullName || "User"}
           </h1>
           <p className="text-gray-400">
             {currentDate}

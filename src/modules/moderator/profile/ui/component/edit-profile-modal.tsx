@@ -65,13 +65,13 @@ const EditProfileModal = ({ isOpen, userProfile, onClose, onSave }: EditProfileM
   const handleCancel = () => {
     // Reset to original user data
     if (userProfile) {
-      const displayName = userProfile.email.split("@")[0].replace(".", " ").replace(/\b\w/g, l => l.toUpperCase());
+      // const displayName = userProfile.email.split("@")[0].replace(".", " ").replace(/\b\w/g, l => l.toUpperCase());
       const birthDate = userProfile.birthDate && userProfile.birthDate !== "0001-01-01T00:00:00.000Z" 
         ? new Date(userProfile.birthDate) 
         : new Date("1990-01-01");
       
       setFormData({
-        fullName: displayName,
+        fullName: userProfile.fullName || "",
         gender: userProfile.gender || "NOT_SPECIFIED",
         birthDate: birthDate,
         phoneNumber: userProfile.phoneNumber || "",
@@ -179,7 +179,40 @@ const EditProfileModal = ({ isOpen, userProfile, onClose, onSave }: EditProfileM
                     selected={formData.birthDate}
                     onSelect={(date) => date && handleInputChange("birthDate", date)}
                     initialFocus
-                    className="bg-gray-800 text-white"
+                    // className="bg-gray-800 text-white"
+                    disabled={(date) => date > new Date()}
+                      captionLayout="dropdown"
+                      fromYear={1700}
+                      toYear={new Date().getFullYear()}
+                      className="rounded-md"
+                      classNames={{
+                        months: "text-white",
+                        month: "space-y-4",
+                        caption: "text-white flex justify-center pt-1 relative items-center",
+                        caption_label: "text-sm font-medium text-white hidden",
+                        caption_dropdowns: "flex justify-center gap-2",
+                        vhidden: "hidden",
+                        dropdown: "bg-gray-700 border border-gray-600 text-white rounded px-3 py-1 text-sm min-w-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600",
+                        dropdown_month: "bg-gray-700 border border-gray-600 text-white rounded px-3 py-1 text-sm min-w-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600",
+                        dropdown_year: "bg-gray-700 border border-gray-600 text-white rounded px-3 py-1 text-sm min-w-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600",
+                        nav: "space-x-1 flex items-center",
+                        nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-white hover:bg-gray-700 rounded",
+                        nav_button_previous: "absolute left-1",
+                        nav_button_next: "absolute right-1",
+                        table: "w-full border-collapse space-y-1 mt-4",
+                        head_row: "flex",
+                        head_cell: "text-gray-400 rounded-md w-9 font-normal text-[0.8rem]",
+                        row: "flex w-full mt-1",
+                        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
+                        day: "h-9 w-9 p-0 font-normal text-white hover:bg-gray-700 rounded-md transition-colors cursor-pointer flex items-center justify-center",
+                        day_range_end: "day-range-end",
+                        day_selected: "bg-blue-600 text-white hover:bg-blue-500",
+                        day_today: "bg-gray-700 text-white font-semibold",
+                        day_outside: "text-gray-500 opacity-50",
+                        day_disabled: "text-gray-500 opacity-30 cursor-not-allowed hover:bg-transparent",
+                        day_range_middle: "aria-selected:bg-gray-700 aria-selected:text-white",
+                        day_hidden: "invisible",
+                      }}
                   />
                 </PopoverContent>
               </Popover>

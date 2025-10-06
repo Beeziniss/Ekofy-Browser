@@ -41,11 +41,6 @@ const data = {
       url: "/admin/user-management",
       icon: CircleUser,
     },
-    {
-      name: "Profile",
-      url: "/admin/profile",
-      icon: ShieldCheck,
-    },
   ],
 };
 

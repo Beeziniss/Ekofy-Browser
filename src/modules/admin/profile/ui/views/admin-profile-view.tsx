@@ -13,6 +13,7 @@ export const GetUserProfileQuery = graphql(`
       items {
         id
         email
+        fullName
         gender
         birthDate
         role

@@ -1506,6 +1506,8 @@ export type MutationInitialization = {
   rejectTrackUploadRequest: Scalars['Boolean']['output'];
   seedEntitlements: Scalars['Boolean']['output'];
   seedRoyaltyPolicyData: Scalars['Boolean']['output'];
+  updateArtist: Scalars['Boolean']['output'];
+  updateProfile: Scalars['Boolean']['output'];
   updateRequest: Scalars['Boolean']['output'];
   uploadFile: Scalars['String']['output'];
   uploadTrack: Scalars['Boolean']['output'];
@@ -1686,6 +1688,16 @@ export type MutationInitializationSeedEntitlementsArgs = {
 
 export type MutationInitializationSeedRoyaltyPolicyDataArgs = {
   password: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationUpdateArtistArgs = {
+  updateArtistRequest: UpdateArtistRequestInput;
+};
+
+
+export type MutationInitializationUpdateProfileArgs = {
+  updateListenerRequest: UpdateListenerRequestInput;
 };
 
 
@@ -2908,6 +2920,13 @@ export type TransactionsCollectionSegment = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type UpdateArtistRequestInput = {
+  avatarImage?: InputMaybe<Scalars['String']['input']>;
+  bannerImage?: InputMaybe<Scalars['String']['input']>;
+  biography?: InputMaybe<Scalars['String']['input']>;
+  stageName?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateEntitlementRequestInput = {
   code: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
@@ -2915,6 +2934,14 @@ export type UpdateEntitlementRequestInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   value?: InputMaybe<Scalars['EntitlementValue']['input']>;
   valueType?: InputMaybe<EntitlementValueType>;
+};
+
+export type UpdateListenerRequestInput = {
+  avatarImage?: InputMaybe<Scalars['String']['input']>;
+  bannerImage?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  fullName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateStatusArtistPackageRequestInput = {
@@ -3189,7 +3216,7 @@ export type UsersQueryVariables = Exact<{
 }>;
 
 
-export type UsersQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
+export type UsersQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type TracksWithFiltersQueryVariables = Exact<{
   skip: Scalars['Int']['input'];
@@ -3226,6 +3253,7 @@ export const UsersDocument = new TypedDocumentString(`
     items {
       id
       email
+      fullName
       gender
       birthDate
       role

@@ -1,6 +1,7 @@
 export interface UserProfile {
   id: string;
   email: string;
+  fullName: string;
   gender: string;
   birthDate: string;
   role: string;
