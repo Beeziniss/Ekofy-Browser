@@ -49,6 +49,7 @@ const TrackCarousel = ({ data, isLoading }: TrackCarouselProps) => {
                 coverImage={track.coverImage}
                 trackName={track.name}
                 artists={track.artist}
+                trackQueue={data.tracks?.items || []}
               />
             </CarouselItem>
           ))}

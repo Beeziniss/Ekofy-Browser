@@ -8,6 +8,7 @@ const initialState = {
   duration: 0,
   volume: 70,
   isMuted: false,
+  previousVolume: 70,
   queue: [],
   currentIndex: -1,
   isShuffling: false,
@@ -22,6 +23,16 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
 
   // Track control
   setCurrentTrack: (track: Track) => {
+    set({
+      currentTrack: track,
+      queue: [track],
+      currentIndex: 0,
+      currentTime: 0,
+      error: null,
+    });
+  },
+
+  setCurrentTrackFromQueue: (track: Track) => {
     const state = get();
     let newQueue = state.queue;
     let newIndex = state.currentIndex;
@@ -57,11 +68,17 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
   resetSeekRequest: () => set({ seekRequested: false }),
 
   // Volume control
-  setVolume: (volume: number) => set({ volume, isMuted: volume === 0 }),
+  setVolume: (volume: number) =>
+    set((state) => ({
+      volume,
+      isMuted: volume === 0,
+      previousVolume: volume > 0 ? volume : state.previousVolume,
+    })),
   toggleMute: () =>
     set((state) => ({
       isMuted: !state.isMuted,
-      volume: !state.isMuted ? 0 : state.volume || 70,
+      volume: !state.isMuted ? 0 : state.previousVolume,
+      previousVolume: !state.isMuted ? state.volume : state.previousVolume,
     })),
 
   // Queue management
@@ -108,8 +125,9 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
     if (state.queue.length === 0) return;
 
     // If more than 3 seconds into the track, restart current track
-    if (state.currentTime > 3) {
-      set({ currentTime: 0 });
+    if (state.currentTime > 3000) {
+      // Convert to milliseconds for consistency
+      set({ currentTime: 0, seekRequested: true });
       return;
     }
 

@@ -14,6 +14,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Ellipsis, Heart, LinkIcon, ListPlus } from "lucide-react";
 import { useAudioStore, Track } from "@/store";
+import {
+  GraphQLTrack,
+  convertGraphQLTracksToStore,
+} from "@/utils/track-converter";
 
 type ArtistInfo = {
   id: string;
@@ -25,6 +29,7 @@ interface TrackCardProps {
   coverImage?: string;
   trackName?: string;
   artists?: (ArtistInfo | null)[];
+  trackQueue?: GraphQLTrack[];
 }
 
 const TrackCard = ({
@@ -32,6 +37,7 @@ const TrackCard = ({
   coverImage,
   trackName,
   artists,
+  trackQueue,
 }: TrackCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -44,7 +50,7 @@ const TrackCard = ({
     setCurrentTrack,
     togglePlayPause,
     play,
-    pause,
+    setQueue,
   } = useAudioStore();
 
   // Check if this is the currently playing track
@@ -70,6 +76,9 @@ const TrackCard = ({
     } else {
       // If it's a different track, set as current track and play
       setCurrentTrack(trackData);
+      if (trackQueue) {
+        setQueue(convertGraphQLTracksToStore(trackQueue));
+      }
       play();
     }
   };
@@ -165,10 +174,10 @@ const TrackCard = ({
       </div>
 
       <div className="mt-2 flex flex-col">
-        <div className="flex items-center gap-2 truncate text-sm font-bold">
+        <div className="flex items-center gap-3 text-sm font-bold">
           <Link
             href={"#"}
-            className={`hover:text-main-purple ${
+            className={`hover:text-main-purple line-clamp-1 ${
               isCurrentTrack && globalIsPlaying ? "text-main-purple" : ""
             }`}
           >
@@ -190,7 +199,7 @@ const TrackCard = ({
           )}
         </div>
 
-        <div className="text-main-grey truncate text-sm">
+        <div className="text-main-grey line-clamp-1 text-sm">
           {artists &&
             artists.length > 0 &&
             artists.map((artist, index) => (

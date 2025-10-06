@@ -14,6 +14,7 @@ export interface AudioState {
   duration: number;
   volume: number;
   isMuted: boolean;
+  previousVolume: number;
 
   // Queue management
   queue: Track[];
@@ -34,6 +35,7 @@ export interface AudioState {
 export interface AudioActions {
   // Track control
   setCurrentTrack: (track: Track) => void;
+  setCurrentTrackFromQueue: (track: Track) => void;
   play: () => void;
   pause: () => void;
   togglePlayPause: () => void;

@@ -7,7 +7,7 @@ const TrackNameSection = () => {
 
   if (!currentTrack) {
     return (
-      <div className="flex min-w-60 items-center gap-3">
+      <div className="flex w-80 items-center gap-3">
         <div className="size-8 rounded-sm bg-gray-700" />
         <div className="flex flex-col">
           <span className="truncate text-sm font-semibold text-gray-500">
@@ -20,7 +20,7 @@ const TrackNameSection = () => {
   }
 
   return (
-    <div className="flex min-w-60 items-center gap-3">
+    <div className="flex w-80 items-center gap-3">
       <Image
         src={currentTrack.coverImage || "https://placehold.co/32x32"}
         alt={currentTrack.title}
@@ -30,10 +30,10 @@ const TrackNameSection = () => {
         unoptimized
       />
       <div className="flex flex-col">
-        <span className="truncate text-sm font-semibold">
+        <span className="line-clamp-1 text-sm font-semibold">
           {currentTrack.title}
         </span>
-        <span className="truncate text-xs text-gray-400">
+        <span className="line-clamp-1 text-xs text-gray-400">
           {currentTrack.artist}
         </span>
       </div>

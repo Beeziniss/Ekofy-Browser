@@ -16,6 +16,7 @@ const AudioPlayer = () => {
     volume,
     isMuted,
     queue,
+    // isRepeating,
     currentIndex,
     seekRequested,
     currentTime,
@@ -175,6 +176,15 @@ const AudioPlayer = () => {
 
   const handleEnded = () => {
     // Auto skip to next track when current track ends
+    /* if (isRepeating) {
+      // If repeating, restart the same track
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+        return;
+      }
+    } */
+
     if (queue.length > 0 && currentIndex < queue.length - 1) {
       skipToNext();
     } else {
