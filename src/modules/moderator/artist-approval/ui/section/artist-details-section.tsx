@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArtistInfoCard, BandMembersCard, ArtistActionsCard } from "../component";
 import { moderatorArtistDetailsQueryOptions } from "@/gql/options/moderator-options";
 import { ArtistType } from "@/gql/graphql";
+import { ArrowLeft } from "lucide-react";
 
 interface ArtistDetailsSectionProps {
   userId: string;
@@ -24,6 +25,14 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
       router.push("/moderator/artist-approval");
     } catch (error) {
       console.error("Failed to approve artist:", error);
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      router.push("/moderator/artist-approval");
+    } catch (error) {
+      console.error("Failed to reject artist:", error);
     }
   };
 
@@ -57,6 +66,14 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
 
   return (
     <div className="space-y-6">
+       <button
+          onClick={handleCancel}
+          className="mb-8 flex items-center text-white transition-colors hover:text-blue-400"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </button>
+
       {/* Artist Information Card */}
       <ArtistInfoCard artist={artist as any} />
 
@@ -71,7 +88,8 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
         artistName={artist.stageName}
         userId={userId}
         onApprove={handleApprove}
-        onCancel={handleCancel}
+        onReject={handleReject}
+        // onCancel={handleCancel}
       />
     </div>
   );

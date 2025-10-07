@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ApprovalConfirmModal } from "../component";
-
+import { RejectModal } from "../component";
 interface ArtistActionsCardProps {
   artistName: string;
   userId: string;
   onApprove: () => void;
-  onCancel: () => void;
+  onReject: () => void;
+  // onCancel: () => void;
   isLoading?: boolean;
 }
 
@@ -16,10 +17,12 @@ export function ArtistActionsCard({
   artistName,
   userId,
   onApprove,
-  onCancel,
+  onReject,
+  // onCancel,
   isLoading = false,
 }: ArtistActionsCardProps) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
 
   const handleApprove = () => {
     setShowConfirmModal(true);
@@ -30,16 +33,32 @@ export function ArtistActionsCard({
     setShowConfirmModal(false);
   };
 
+  const handleReject = () => {
+    setShowRejectModal(true);
+  };
+
+  const handleConfirmReject = () => {
+    onReject();
+    setShowRejectModal(false);
+  };
+
   return (
     <>
       <div className="flex justify-end space-x-4 mt-8">
-        <Button
+        {/* <Button
           variant="outline"
           onClick={onCancel}
           disabled={isLoading}
           className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
         >
           Cancel
+        </Button> */}
+        <Button
+          onClick={handleReject}
+          disabled={isLoading}
+          className="bg-red-600 hover:bg-red-700 text-white"
+        >
+          Reject
         </Button>
         <Button
           onClick={handleApprove}
@@ -54,6 +73,13 @@ export function ArtistActionsCard({
         isOpen={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={handleConfirmApprove}
+        isLoading={isLoading}
+        artistName={artistName}
+      />
+      <RejectModal
+        isOpen={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        onConfirm={handleConfirmReject}
         isLoading={isLoading}
         artistName={artistName}
       />
