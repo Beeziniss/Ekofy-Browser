@@ -121,7 +121,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply text-foreground;
+    @apply text-foreground bg-main-dark-bg;
   }
 }
 
