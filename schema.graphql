@@ -1,7 +1,6 @@
 schema {
   query: QueryInitialization
   mutation: MutationInitialization
-  subscription: Subscription
 }
 
 """
@@ -1496,6 +1495,7 @@ type MutationInitialization {
   createSubscription(createSubscriptionRequest: CreateSubscriptionRequestInput!): Boolean!
   createSubscriptionCheckoutSession(createCheckoutSessionRequest: CreateSubscriptionCheckoutSessionRequestInput!): CheckoutSessionResponse!
   createSubscriptionPlan(createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!): Boolean!
+  deActiveUser(targetUserId: String!): Boolean!
   deactiveEntitlement(code: String!): Boolean!
   deleteCoupon(couponIds: [String!]!): Boolean!
   deprecateCoupon(couponIds: [String!]!): Boolean!
@@ -1503,6 +1503,7 @@ type MutationInitialization {
   downgradeRoyaltyPolicyVersion(version: Long): Boolean!
   entitlementUserCount(code: String!): Long!
   hello: String!
+  reActiveUser(targetUserId: String!): Boolean!
   reactiveEntitlement(code: String!): Boolean!
   registerArtistManual(createArtistRequest: CreateArtistRequestInput!): Boolean!
   rejectTrackUploadRequest(recordingId: String!, trackId: String!, workId: String!): Boolean!
@@ -1762,9 +1763,9 @@ type QueryInitialization {
   royaltyReports(order: [RoyaltyReportSortInput!], skip: Int, take: Int, where: RoyaltyReportFilterInput): RoyaltyReportsCollectionSegment
   subscriptionPlans(order: [SubscriptionPlanSortInput!], skip: Int, take: Int, where: SubscriptionPlanFilterInput): SubscriptionPlansCollectionSegment
   subscriptions(order: [SubscriptionSortInput!], skip: Int, take: Int, where: SubscriptionFilterInput): SubscriptionsCollectionSegment
+  trackBySemanticSearch(term: String!): [Track!]!
   tracks(order: [TrackSortInput!], skip: Int, take: Int, where: TrackFilterInput): TracksCollectionSegment
   transactions(order: [PaymentTransactionSortInput!], skip: Int, take: Int, where: PaymentTransactionFilterInput): TransactionsCollectionSegment
-  userById(id: String!, order: [UserSortInput!]): User!
   userSubscriptions(order: [UserSubscriptionSortInput!], skip: Int, take: Int, where: UserSubscriptionFilterInput): UserSubscriptionsCollectionSegment
   users(order: [UserSortInput!], skip: Int, take: Int, where: UserFilterInput): UsersCollectionSegment
   worksQueryable(order: [WorkSortInput!], skip: Int, take: Int, where: WorkFilterInput): WorksQueryableCollectionSegment
@@ -2316,6 +2317,7 @@ input SyncedLineFilterInput {
 }
 
 type Track {
+  alternativeDescription: String!
   artist: [Artist]!
   category: [Category]!
   categoryIds: [String!]!
@@ -2323,6 +2325,7 @@ type Track {
   createdAt: DateTime!
   createdBy: String!
   description: String
+  embeddingVector: [Float!]!
   favoriteCount: Long!
   featuredArtistIds: [String!]!
   id: String!
@@ -2343,6 +2346,7 @@ type Track {
 }
 
 input TrackFilterInput {
+  alternativeDescription: StringOperationFilterInput
   and: [TrackFilterInput!]
   audioFeature: AudioFeatureFilterInput
   audioFingerprint: AudioFingerprintFilterInput
@@ -2351,6 +2355,7 @@ input TrackFilterInput {
   createdAt: DateTimeOperationFilterInput
   createdBy: StringOperationFilterInput
   description: StringOperationFilterInput
+  embeddingVector: ListFloatOperationFilterInput
   favoriteCount: LongOperationFilterInput
   featuredArtistIds: ListStringOperationFilterInput
   id: StringOperationFilterInput
@@ -2372,6 +2377,7 @@ input TrackFilterInput {
 }
 
 input TrackSortInput {
+  alternativeDescription: SortEnumType
   audioFeature: AudioFeatureSortInput
   audioFingerprint: AudioFingerprintSortInput
   coverImage: SortEnumType

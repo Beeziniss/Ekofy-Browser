@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Flag,
   UserCheck,
+  UserRoundCheck,
   Settings,
 } from "lucide-react";
 import React from "react";
@@ -40,6 +41,11 @@ const data = {
       name: "Report Control",
       url: "/moderator/report-control",
       icon: Flag,
+    },
+    {
+      name: "Artist Approval",
+      url: "/moderator/artist-approval",
+      icon: UserRoundCheck,
     },
   ],
 };

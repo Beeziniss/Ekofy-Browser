@@ -1494,6 +1494,7 @@ export type MutationInitialization = {
   createSubscription: Scalars['Boolean']['output'];
   createSubscriptionCheckoutSession: CheckoutSessionResponse;
   createSubscriptionPlan: Scalars['Boolean']['output'];
+  deActiveUser: Scalars['Boolean']['output'];
   deactiveEntitlement: Scalars['Boolean']['output'];
   deleteCoupon: Scalars['Boolean']['output'];
   deprecateCoupon: Scalars['Boolean']['output'];
@@ -1501,6 +1502,7 @@ export type MutationInitialization = {
   downgradeRoyaltyPolicyVersion: Scalars['Boolean']['output'];
   entitlementUserCount: Scalars['Long']['output'];
   hello: Scalars['String']['output'];
+  reActiveUser: Scalars['Boolean']['output'];
   reactiveEntitlement: Scalars['Boolean']['output'];
   registerArtistManual: Scalars['Boolean']['output'];
   rejectTrackUploadRequest: Scalars['Boolean']['output'];
@@ -1634,6 +1636,11 @@ export type MutationInitializationCreateSubscriptionPlanArgs = {
 };
 
 
+export type MutationInitializationDeActiveUserArgs = {
+  targetUserId: Scalars['String']['input'];
+};
+
+
 export type MutationInitializationDeactiveEntitlementArgs = {
   code: Scalars['String']['input'];
 };
@@ -1661,6 +1668,11 @@ export type MutationInitializationDowngradeRoyaltyPolicyVersionArgs = {
 
 export type MutationInitializationEntitlementUserCountArgs = {
   code: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationReActiveUserArgs = {
+  targetUserId: Scalars['String']['input'];
 };
 
 
@@ -1981,9 +1993,9 @@ export type QueryInitialization = {
   royaltyReports?: Maybe<RoyaltyReportsCollectionSegment>;
   subscriptionPlans?: Maybe<SubscriptionPlansCollectionSegment>;
   subscriptions?: Maybe<SubscriptionsCollectionSegment>;
+  trackBySemanticSearch: Array<Track>;
   tracks?: Maybe<TracksCollectionSegment>;
   transactions?: Maybe<TransactionsCollectionSegment>;
-  userById: User;
   userSubscriptions?: Maybe<UserSubscriptionsCollectionSegment>;
   users?: Maybe<UsersCollectionSegment>;
   worksQueryable?: Maybe<WorksQueryableCollectionSegment>;
@@ -2145,6 +2157,11 @@ export type QueryInitializationSubscriptionsArgs = {
 };
 
 
+export type QueryInitializationTrackBySemanticSearchArgs = {
+  term: Scalars['String']['input'];
+};
+
+
 export type QueryInitializationTracksArgs = {
   order?: InputMaybe<Array<TrackSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -2158,12 +2175,6 @@ export type QueryInitializationTransactionsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<PaymentTransactionFilterInput>;
-};
-
-
-export type QueryInitializationUserByIdArgs = {
-  id: Scalars['String']['input'];
-  order?: InputMaybe<Array<UserSortInput>>;
 };
 
 
@@ -2756,6 +2767,7 @@ export type SyncedLineFilterInput = {
 
 export type Track = {
   __typename?: 'Track';
+  alternativeDescription: Scalars['String']['output'];
   artist: Array<Maybe<Artist>>;
   category: Array<Maybe<Category>>;
   categoryIds: Array<Scalars['String']['output']>;
@@ -2763,6 +2775,7 @@ export type Track = {
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
   description?: Maybe<Scalars['String']['output']>;
+  embeddingVector: Array<Scalars['Float']['output']>;
   favoriteCount: Scalars['Long']['output'];
   featuredArtistIds: Array<Scalars['String']['output']>;
   id: Scalars['String']['output'];
@@ -2783,6 +2796,7 @@ export type Track = {
 };
 
 export type TrackFilterInput = {
+  alternativeDescription?: InputMaybe<StringOperationFilterInput>;
   and?: InputMaybe<Array<TrackFilterInput>>;
   audioFeature?: InputMaybe<AudioFeatureFilterInput>;
   audioFingerprint?: InputMaybe<AudioFingerprintFilterInput>;
@@ -2791,6 +2805,7 @@ export type TrackFilterInput = {
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
   createdBy?: InputMaybe<StringOperationFilterInput>;
   description?: InputMaybe<StringOperationFilterInput>;
+  embeddingVector?: InputMaybe<ListFloatOperationFilterInput>;
   favoriteCount?: InputMaybe<LongOperationFilterInput>;
   featuredArtistIds?: InputMaybe<ListStringOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
@@ -2812,6 +2827,7 @@ export type TrackFilterInput = {
 };
 
 export type TrackSortInput = {
+  alternativeDescription?: InputMaybe<SortEnumType>;
   audioFeature?: InputMaybe<AudioFeatureSortInput>;
   audioFingerprint?: InputMaybe<AudioFingerprintSortInput>;
   coverImage?: InputMaybe<SortEnumType>;
@@ -3235,6 +3251,15 @@ export type TrackListHomeQueryVariables = Exact<{
 
 export type TrackListHomeQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string } | null> }> | null } | null };
 
+export type ArtistsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where: ArtistFilterInput;
+}>;
+
+
+export type ArtistsQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, isVerified: boolean, verifiedAt?: any | null, createdAt: any, updatedAt?: any | null, avatarImage?: string | null, bannerImage?: string | null, user: { __typename?: 'User', status: UserStatus, gender: UserGender, phoneNumber?: string | null }, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, frontImage?: string | null, backImage?: string | null, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } } }> | null } | null };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -3313,3 +3338,59 @@ export const TrackListHomeDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TrackListHomeQuery, TrackListHomeQueryVariables>;
+export const ArtistsDocument = new TypedDocumentString(`
+    query Artists($skip: Int, $take: Int, $where: ArtistFilterInput!) {
+  artists(skip: $skip, take: $take, where: $where) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      userId
+      stageName
+      email
+      artistType
+      isVerified
+      verifiedAt
+      createdAt
+      updatedAt
+      user {
+        status
+        gender
+        phoneNumber
+      }
+      members {
+        fullName
+        email
+        phoneNumber
+        isLeader
+        gender
+      }
+      avatarImage
+      bannerImage
+      identityCard {
+        number
+        fullName
+        dateOfBirth
+        gender
+        placeOfOrigin
+        nationality
+        frontImage
+        backImage
+        validUntil
+        placeOfResidence {
+          street
+          ward
+          province
+          oldDistrict
+          oldWard
+          oldProvince
+          addressLine
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ArtistsQuery, ArtistsQueryVariables>;
