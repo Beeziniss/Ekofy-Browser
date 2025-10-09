@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, ImagePlus } from "lucide-react";
+import { Camera } from "lucide-react";
 import * as React from "react";
 
 export interface ProfileHeaderProps {
@@ -20,6 +20,9 @@ export default function ProfileHeader({
   onChangeAvatar,
   onChangeBackground,
 }: ProfileHeaderProps) {
+  // Prevent unused warning for optional prop currently not wired to any UI control
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  onChangeBackground;
   const initials = React.useMemo(() => {
     const parts = name.trim().split(" ");
     const letters = (parts[0]?.[0] || "").concat(parts[parts.length - 1]?.[0] || "");
@@ -31,10 +34,10 @@ export default function ProfileHeader({
     if (file) onChangeAvatar?.(file);
   };
 
-  const handleBackgroundChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) onChangeBackground?.(file);
-  };
+  // const handleBackgroundChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) onChangeBackground?.(file);
+  // };
 
   return (
     <div className="w-full">

@@ -2,10 +2,6 @@
 
 import ProfileHeader from '@/modules/client/profile/ui/components/profile-header';
 import React from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import ProfileTab from '../sections/profile-tab'
-import TeamTab from '../sections/team-tab'
-import AccountTab from '../sections/account-tab'
 import Tab from '../components/tabs/tabs';
 
 const ArtistProfileView = () => {
