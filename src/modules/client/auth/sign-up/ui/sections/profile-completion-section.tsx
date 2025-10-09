@@ -31,15 +31,15 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
   const [fullName, setFullName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(initialData?.dateOfBirth);
   const [gender, setGender] = useState(initialData?.gender || '');
-  const [avatar, setAvatar] = useState<File | null>(initialData?.avatar || null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  // const [avatar, setAvatar] = useState<File | null>(initialData?.avatar || null);
+  // const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [dateError, setDateError] = useState('');
 
   // Use the signup hook for API calls with auto-navigation to OTP step
   const { signUp, isLoading: isRegistering, isError, isSuccess, error } = useSignUp(
     () => {
       // This callback is called when navigation happens automatically
-      onNext({ displayName, fullName, dateOfBirth, gender, avatar });
+      onNext({ displayName, fullName, dateOfBirth, gender });
     }
   );
   
@@ -48,17 +48,24 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
     goToPreviousStep, 
     goToNextStep, 
     formData,
-    // currentStep,
     updateFormData
   } = useSignUpStore();
 
+  // Populate fields from store when component mounts
   useEffect(() => {
-    if (avatar) {
-      const url = URL.createObjectURL(avatar);
-      setAvatarPreview(url);
-      return () => URL.revokeObjectURL(url);
-    }
-  }, [avatar]);
+    if (formData.displayName) setDisplayName(formData.displayName);
+    if (formData.fullName) setFullName(formData.fullName);
+    if (formData.birthDate) setDateOfBirth(formData.birthDate);
+    if (formData.gender) setGender(formData.gender);
+  }, [formData]);
+
+  // useEffect(() => {
+  //   if (avatar) {
+  //     const url = URL.createObjectURL(avatar);
+  //     setAvatarPreview(url);
+  //     return () => URL.revokeObjectURL(url);
+  //   }
+  // }, [avatar]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,17 +97,17 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
     
     // Validate required fields
     if (!completeData.email || !completeData.password || !completeData.confirmPassword) {
-      toast.error("Email và mật khẩu là bắt buộc");
+      toast.error("Email and password are required");
       return;
     }
     
     if (!completeData.fullName || !completeData.displayName) {
-      toast.error("Họ và tên là bắt buộc");
+      toast.error("Full name is required");
       return;
     }
     
     if (!completeData.birthDate || !completeData.gender) {
-      toast.error("Ngày sinh và giới tính là bắt buộc");
+      toast.error("Date of birth and gender are required");
       return;
     }
     
@@ -123,9 +130,9 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       // console.error("Registration failed:", error);
       // Error handling is done by the hook
       if (error instanceof Error) {
-        toast.error(error.message || "Đăng ký thất bại. Vui lòng thử lại.");
+        toast.error(error.message || "Registration failed. Please try again.");
       } else {
-        toast.error("Đăng ký thất bại. Vui lòng thử lại.");
+        toast.error("Registration failed. Please try again.");
       }
     }
   };
@@ -146,12 +153,12 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
     onBack();
   };
 
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setAvatar(file);
-    }
-  };
+  // const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     setAvatar(file);
+  //   }
+  // };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#121212] px-6 py-12">
@@ -181,7 +188,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
 
         <div className="flex gap-16 items-start justify-center">
           {/* Avatar Upload Section */}
-          <div className="flex-shrink-0">
+          {/* <div className="flex-shrink-0">
             <div className="relative">
               <div className="w-64 h-64 border-2 border-dashed border-gray-600 rounded-lg flex flex-col items-center justify-center bg-gray-800/30">
                 {avatarPreview ? (
@@ -214,7 +221,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
               Upload a high-quality image that represents you.<br />
               Recommended size 1500x1500px, JPG or PNG, under 5MB
             </p>
-          </div>
+          </div> */}
 
           {/* Form Section */}
           <div className="flex-1 max-w-sm">

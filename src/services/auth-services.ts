@@ -4,10 +4,10 @@ import {
   ArtistLoginResponse,
   IUserCurrent,
   ListenerLoginResponse,
-  RegisterListenerDataResponse,
   RegisterArtistData, // Import raw data type instead of wrapped response
   ModeratorLoginResponse,
-  AdminLoginResponse
+  AdminLoginResponse,
+  RegisterListenerData
 } from "@/types/auth";
 import { formatServiceError } from "@/utils/signup-utils";
 
@@ -30,7 +30,7 @@ export const authApi = {
         throw error;
       }
     },
-    register: async (data: RegisterListenerDataResponse) => {
+    register: async (data: RegisterListenerData) => {
       try {
         const response = await axiosInstance.post(
           "/api/authentication/register/listener",
@@ -158,6 +158,36 @@ export const authApi = {
         if (isAxiosError(error)) {
           throw new Error(
             error.response?.data?.message || "Failed to get user",
+          );
+        }
+        throw error;
+      }
+    },
+    verifyOPT: async (email: string, providedOtp: string) => {
+      try {
+        const response = await axiosInstance.post(
+          `/api/authentication/verify-otp?email=${encodeURIComponent(email)}&providedOtp=${encodeURIComponent(providedOtp)}`
+        );
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(
+            error.response?.data?.message || "Failed to verify OTP",
+          );
+        }
+        throw error;
+      }
+    },
+    resendOTP: async (email: string) => {
+      try {
+        const response = await axiosInstance.post(
+          `/api/authentication/resend-otp?email=${encodeURIComponent(email)}`
+        );
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(
+            error.response?.data?.message || "Failed to resend OTP",
           );
         }
         throw error;

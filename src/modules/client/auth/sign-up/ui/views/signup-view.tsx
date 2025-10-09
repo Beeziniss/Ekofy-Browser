@@ -11,8 +11,7 @@ import {
 import { useSignUpStore } from '../../../../../../store/stores/listener-signup-store';
 
 const SignUpView = () => {
-  const { currentStep } = useSignUpStore();
-
+  const { currentStep, formData } = useSignUpStore();
 
   const renderCurrentStep = () => {
     switch (currentStep) {
@@ -22,8 +21,8 @@ const SignUpView = () => {
             <SignUpFormSection 
               onNext={() => {}}
               initialData={{
-                email: '',
-                password: ''
+                email: formData.email || '',
+                password: formData.password || ''
               }}
             />
             <SignUpImageSection />
@@ -35,9 +34,9 @@ const SignUpView = () => {
             onNext={() => {}}
             onBack={() => {}}
             initialData={{
-              displayName: '',
-              dateOfBirth: undefined,
-              gender: '',
+              displayName: formData.displayName || '',
+              dateOfBirth: formData.birthDate,
+              gender: formData.gender || '',
               avatar: null
             }}
           />
@@ -48,7 +47,7 @@ const SignUpView = () => {
             onNext={() => {}}
             onBack={() => {}}
             initialData={{
-              otp: ''
+              otp: formData.otp || ''
             }}
           />
         );
@@ -58,8 +57,8 @@ const SignUpView = () => {
             <SignUpFormSection 
               onNext={() => {}}
               initialData={{
-                email: '',
-                password: ''
+                email: formData.email || '',
+                password: formData.password || ''
               }}
             />
             <SignUpImageSection />

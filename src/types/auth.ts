@@ -102,5 +102,5 @@ export interface RegisterArtistData {
   };
 }
 
-export type RegisterListenerDataResponse = Base<RegisterListenerData>;
+// export type RegisterListenerDataResponse = Base<RegisterListenerData>;
 export type RegisterArtistResponse = Base<RegisterArtistData>;
