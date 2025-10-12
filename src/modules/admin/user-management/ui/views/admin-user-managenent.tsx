@@ -105,8 +105,8 @@ export const CreateModeratorMutation = graphql(`
 `);
 
 export const DeActiveUserMutation = graphql(`
-  mutation DeActiveUser($targetUserId: String!) {
-    deActiveUser(targetUserId: $targetUserId)
+  mutation banUser($targetUserId: String!) {
+    banUser(targetUserId: $targetUserId)
   }
 `);
 

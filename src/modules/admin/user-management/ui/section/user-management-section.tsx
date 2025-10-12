@@ -65,9 +65,9 @@ export function UserManagementSection() {
   // Update user status mutation
   const updateUserStatusMutation = useMutation({
     mutationFn: async ({ userId, status }: { userId: string; status: UserStatus }) => {
-      if (status === UserStatus.Inactive) {
+      if (status === UserStatus.Banned) {
         return await execute(DeActiveUserMutation, { targetUserId: userId });
-      } else {
+      } else if (status === UserStatus.Active) {
         return await execute(ReActiveUserMutation, { targetUserId: userId });
       }
     },
@@ -75,9 +75,9 @@ export function UserManagementSection() {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
       toast.success("User status updated successfully!");
     },
-    onError: (error) => {
-      console.error("Failed to update user status:", error);
-      toast.error("Failed to update user status");
+    onError: (errors) => {
+      console.error("Failed to update user status:", errors);
+      toast.error(errors.message || "Failed to update user status");
     },
   });
 

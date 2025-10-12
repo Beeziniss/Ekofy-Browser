@@ -170,7 +170,7 @@ export function UserTable({
               {/* Conditional Status Toggle */}
               {isActive ? (
                 <DropdownMenuItem
-                  onClick={() => onStatusChange(row.original.id, UserStatus.Inactive)}
+                  onClick={() => onStatusChange(row.original.id, UserStatus.Banned)}
                   className="text-red-400 hover:text-red-300 hover:bg-gray-700 cursor-pointer flex items-center gap-2"
                 >
                   <UserX className="h-4 w-4" />

@@ -26,7 +26,7 @@ export function StatusConfirmModal({
   userName,
 }: StatusConfirmModalProps) {
   const isActivating = status === UserStatus.Active;
-  const isDeactivating = status === UserStatus.Inactive;
+  const isDeactivating = status === UserStatus.Banned;
 
   const getTitle = () => {
     if (isActivating) return "Active confirm modal";
