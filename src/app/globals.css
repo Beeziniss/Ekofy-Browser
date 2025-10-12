@@ -121,7 +121,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply text-foreground;
+    @apply text-foreground bg-main-dark-bg;
   }
 }
 
@@ -205,6 +205,12 @@
 .go1754112896 {
   right: 24px !important;
   bottom: 24px !important;
+}
+
+/* Dialog backdrop blur effect */
+[data-radix-dialog-overlay] {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.8) !important;
 }
 
 /* Random Styles */

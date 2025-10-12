@@ -1054,7 +1054,7 @@ type Invoice {
   paidAt: DateTime!
   subscriptionSnapshot: SubscriptionSnapshot
   to: String!
-  transaction: Transaction
+  transaction: PaymentTransaction
   transactionId: String!
   user: User
   userId: String!
@@ -1495,6 +1495,7 @@ type MutationInitialization {
   createSubscription(createSubscriptionRequest: CreateSubscriptionRequestInput!): Boolean!
   createSubscriptionCheckoutSession(createCheckoutSessionRequest: CreateSubscriptionCheckoutSessionRequestInput!): CheckoutSessionResponse!
   createSubscriptionPlan(createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!): Boolean!
+  deActiveUser(targetUserId: String!): Boolean!
   deactiveEntitlement(code: String!): Boolean!
   deleteCoupon(couponIds: [String!]!): Boolean!
   deprecateCoupon(couponIds: [String!]!): Boolean!
@@ -1502,14 +1503,18 @@ type MutationInitialization {
   downgradeRoyaltyPolicyVersion(version: Long): Boolean!
   entitlementUserCount(code: String!): Long!
   hello: String!
+  reActiveUser(targetUserId: String!): Boolean!
   reactiveEntitlement(code: String!): Boolean!
   registerArtistManual(createArtistRequest: CreateArtistRequestInput!): Boolean!
   rejectTrackUploadRequest(recordingId: String!, trackId: String!, workId: String!): Boolean!
   seedEntitlements(password: String!): Boolean!
   seedRoyaltyPolicyData(password: String!): Boolean!
+  updateArtist(updateArtistRequest: UpdateArtistRequestInput!): Boolean!
+  updateProfile(updateListenerRequest: UpdateListenerRequestInput!): Boolean!
   updateRequest(request: RequestUpdatingRequestInput!): Boolean!
   uploadFile(file: Upload!, fileName: String!): String!
   uploadTrack(createRecordingRequest: CreateRecordingRequestInput!, createTrackRequest: CreateTrackRequestInput!, createWorkRequest: CreateWorkRequestInput!, file: Upload!): Boolean!
+  uploadTrackFingerprint(artistId: String!, file: Upload!, trackId: String!, trackName: String!): String!
 }
 
 type OneOffSnapshot {
@@ -1565,6 +1570,50 @@ input PaymentStatusOperationFilterInput {
   in: [PaymentStatus!]
   neq: PaymentStatus
   nin: [PaymentStatus!]
+}
+
+type PaymentTransaction {
+  amount: Decimal!
+  createdAt: DateTime!
+  currency: String!
+  id: String!
+  paymentStatus: PaymentStatus!
+  status: TransactionStatus!
+  stripeCheckoutSessionId: String!
+  stripePaymentId: String
+  stripePaymentMethod: [String!]!
+  updatedAt: DateTime
+  user: User
+  userId: String!
+}
+
+input PaymentTransactionFilterInput {
+  amount: DecimalOperationFilterInput
+  and: [PaymentTransactionFilterInput!]
+  createdAt: DateTimeOperationFilterInput
+  currency: StringOperationFilterInput
+  id: StringOperationFilterInput
+  or: [PaymentTransactionFilterInput!]
+  paymentStatus: PaymentStatusOperationFilterInput
+  status: TransactionStatusOperationFilterInput
+  stripeCheckoutSessionId: StringOperationFilterInput
+  stripePaymentId: StringOperationFilterInput
+  stripePaymentMethod: ListStringOperationFilterInput
+  updatedAt: DateTimeOperationFilterInput
+  userId: StringOperationFilterInput
+}
+
+input PaymentTransactionSortInput {
+  amount: SortEnumType
+  createdAt: SortEnumType
+  currency: SortEnumType
+  id: SortEnumType
+  paymentStatus: SortEnumType
+  status: SortEnumType
+  stripeCheckoutSessionId: SortEnumType
+  stripePaymentId: SortEnumType
+  updatedAt: SortEnumType
+  userId: SortEnumType
 }
 
 """A segment of a collection."""
@@ -1670,6 +1719,24 @@ enum PolicyType {
   TERMS
 }
 
+type QueryAudioFingerprintResponse {
+  artistId: String!
+  artistName: String!
+  mediaType: String!
+  minConfidence: Float!
+  minCoverage: Float!
+  queryCoverage: Float!
+  queryCoverageLength: Float!
+  queryMatchEndsAt: Float!
+  queryMatchStartsAt: Float!
+  trackCoverage: Float!
+  trackCoverageLength: Float!
+  trackId: String!
+  trackMatchEndsAt: Float!
+  trackMatchStartsAt: Float!
+  trackName: String!
+}
+
 type QueryInitialization {
   artistPackages(order: [ArtistPackageSortInput!], where: ArtistPackageFilterInput): [ArtistPackage!]!
   artists(order: [ArtistSortInput!], skip: Int, take: Int, where: ArtistFilterInput): ArtistsCollectionSegment
@@ -1688,15 +1755,17 @@ type QueryInitialization {
   originalFileTrackUploadRequest(trackId: String!): String!
   pendingTrackUploadRequests(skip: Int, take: Int, where: TrackTempRequestFilterInput): PendingTrackUploadRequestsCollectionSegment
   playlists(order: [PlaylistSortInput!], skip: Int, take: Int, where: PlaylistFilterInput): PlaylistsCollectionSegment
+  queryTrack(file: Upload!): QueryAudioFingerprintResponse!
+  queryTracks(file: Upload!): [QueryAudioFingerprintResponse!]!
   recordingsQueryable(order: [RecordingSortInput!], skip: Int, take: Int, where: RecordingFilterInput): RecordingsQueryableCollectionSegment
   requests: [RequestHub!]!
   royaltyPolicies(order: [RoyaltyPolicySortInput!], skip: Int, take: Int, where: RoyaltyPolicyFilterInput): RoyaltyPoliciesCollectionSegment
   royaltyReports(order: [RoyaltyReportSortInput!], skip: Int, take: Int, where: RoyaltyReportFilterInput): RoyaltyReportsCollectionSegment
   subscriptionPlans(order: [SubscriptionPlanSortInput!], skip: Int, take: Int, where: SubscriptionPlanFilterInput): SubscriptionPlansCollectionSegment
   subscriptions(order: [SubscriptionSortInput!], skip: Int, take: Int, where: SubscriptionFilterInput): SubscriptionsCollectionSegment
+  trackBySemanticSearch(term: String!): [Track!]!
   tracks(order: [TrackSortInput!], skip: Int, take: Int, where: TrackFilterInput): TracksCollectionSegment
-  transactions(order: [TransactionSortInput!], skip: Int, take: Int, where: TransactionFilterInput): TransactionsCollectionSegment
-  userById(id: String!, order: [UserSortInput!]): User!
+  transactions(order: [PaymentTransactionSortInput!], skip: Int, take: Int, where: PaymentTransactionFilterInput): TransactionsCollectionSegment
   userSubscriptions(order: [UserSubscriptionSortInput!], skip: Int, take: Int, where: UserSubscriptionFilterInput): UserSubscriptionsCollectionSegment
   users(order: [UserSortInput!], skip: Int, take: Int, where: UserFilterInput): UsersCollectionSegment
   worksQueryable(order: [WorkSortInput!], skip: Int, take: Int, where: WorkFilterInput): WorksQueryableCollectionSegment
@@ -1974,6 +2043,7 @@ type RoyaltyReportsCollectionSegment {
 type RoyaltySplit {
   amount: Decimal!
   artistRole: ArtistRole!
+  isTransferred: Boolean!
   level: AggregationLevel!
   percentage: Decimal!
   userId: String!
@@ -1983,6 +2053,7 @@ input RoyaltySplitFilterInput {
   amount: DecimalOperationFilterInput
   and: [RoyaltySplitFilterInput!]
   artistRole: ArtistRoleOperationFilterInput
+  isTransferred: BooleanOperationFilterInput
   level: AggregationLevelOperationFilterInput
   or: [RoyaltySplitFilterInput!]
   percentage: DecimalOperationFilterInput
@@ -2246,6 +2317,7 @@ input SyncedLineFilterInput {
 }
 
 type Track {
+  alternativeDescription: String!
   artist: [Artist]!
   category: [Category]!
   categoryIds: [String!]!
@@ -2253,6 +2325,7 @@ type Track {
   createdAt: DateTime!
   createdBy: String!
   description: String
+  embeddingVector: [Float!]!
   favoriteCount: Long!
   featuredArtistIds: [String!]!
   id: String!
@@ -2273,6 +2346,7 @@ type Track {
 }
 
 input TrackFilterInput {
+  alternativeDescription: StringOperationFilterInput
   and: [TrackFilterInput!]
   audioFeature: AudioFeatureFilterInput
   audioFingerprint: AudioFingerprintFilterInput
@@ -2281,6 +2355,7 @@ input TrackFilterInput {
   createdAt: DateTimeOperationFilterInput
   createdBy: StringOperationFilterInput
   description: StringOperationFilterInput
+  embeddingVector: ListFloatOperationFilterInput
   favoriteCount: LongOperationFilterInput
   featuredArtistIds: ListStringOperationFilterInput
   id: StringOperationFilterInput
@@ -2302,6 +2377,7 @@ input TrackFilterInput {
 }
 
 input TrackSortInput {
+  alternativeDescription: SortEnumType
   audioFeature: AudioFeatureSortInput
   audioFingerprint: AudioFingerprintSortInput
   coverImage: SortEnumType
@@ -2385,50 +2461,6 @@ type TracksCollectionSegment {
   totalCount: Int!
 }
 
-type Transaction {
-  amount: Decimal!
-  createdAt: DateTime!
-  currency: String!
-  id: String!
-  paymentStatus: PaymentStatus!
-  status: TransactionStatus!
-  stripeCheckoutSessionId: String!
-  stripePaymentId: String
-  stripePaymentMethod: [String!]!
-  updatedAt: DateTime
-  user: User
-  userId: String!
-}
-
-input TransactionFilterInput {
-  amount: DecimalOperationFilterInput
-  and: [TransactionFilterInput!]
-  createdAt: DateTimeOperationFilterInput
-  currency: StringOperationFilterInput
-  id: StringOperationFilterInput
-  or: [TransactionFilterInput!]
-  paymentStatus: PaymentStatusOperationFilterInput
-  status: TransactionStatusOperationFilterInput
-  stripeCheckoutSessionId: StringOperationFilterInput
-  stripePaymentId: StringOperationFilterInput
-  stripePaymentMethod: ListStringOperationFilterInput
-  updatedAt: DateTimeOperationFilterInput
-  userId: StringOperationFilterInput
-}
-
-input TransactionSortInput {
-  amount: SortEnumType
-  createdAt: SortEnumType
-  currency: SortEnumType
-  id: SortEnumType
-  paymentStatus: SortEnumType
-  status: SortEnumType
-  stripeCheckoutSessionId: SortEnumType
-  stripePaymentId: SortEnumType
-  updatedAt: SortEnumType
-  userId: SortEnumType
-}
-
 enum TransactionStatus {
   COMPLETED
   EXPIRED
@@ -2445,13 +2477,20 @@ input TransactionStatusOperationFilterInput {
 """A segment of a collection."""
 type TransactionsCollectionSegment {
   """A flattened list of the items."""
-  items: [Transaction!]
+  items: [PaymentTransaction!]
   """Information to aid in pagination."""
   pageInfo: CollectionSegmentInfo!
   totalCount: Int!
 }
 
 scalar UInt32
+
+input UpdateArtistRequestInput {
+  avatarImage: String
+  bannerImage: String
+  biography: String
+  stageName: String
+}
 
 input UpdateEntitlementRequestInput {
   code: String!
@@ -2460,6 +2499,14 @@ input UpdateEntitlementRequestInput {
   name: String
   value: EntitlementValue
   valueType: EntitlementValueType
+}
+
+input UpdateListenerRequestInput {
+  avatarImage: String
+  bannerImage: String
+  displayName: String
+  email: String
+  fullName: String
 }
 
 input UpdateStatusArtistPackageRequestInput {

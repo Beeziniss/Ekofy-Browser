@@ -1,0 +1,1 @@
+export { default as ModeratorLayout } from './moderator-layout';
