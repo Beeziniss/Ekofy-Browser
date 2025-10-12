@@ -69,7 +69,7 @@ export interface RegisterArtistData {
   birthDate: string; // ISO date format
   gender: UserGender;
   phoneNumber: string;
-  
+  avatarImage?: string; // Add avatar image URL
   // Artist specific
   stageName?: string;
   artistType: ArtistType;

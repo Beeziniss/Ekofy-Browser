@@ -24,6 +24,8 @@ export type Scalars = {
   EntitlementValue: { input: any; output: any; }
   /** The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1. */
   Long: { input: any; output: any; }
+  /** The `TimeSpan` scalar represents an ISO-8601 compliant duration type. */
+  TimeSpan: { input: any; output: any; }
   UInt32: { input: any; output: any; }
   /** The `Upload` scalar type represents a file upload. */
   Upload: { input: any; output: any; }
@@ -242,6 +244,23 @@ export type ArtistPackageStatusOperationFilterInput = {
   in?: InputMaybe<Array<ArtistPackageStatus>>;
   neq?: InputMaybe<ArtistPackageStatus>;
   nin?: InputMaybe<Array<ArtistPackageStatus>>;
+};
+
+/** A segment of a collection. */
+export type ArtistPackagesCollectionSegment = {
+  __typename?: 'ArtistPackagesCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<ArtistPackage>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type ArtistRegistrationApprovalRequestInput = {
+  email: Scalars['String']['input'];
+  fullName: Scalars['String']['input'];
+  rejectionReason?: InputMaybe<Scalars['String']['input']>;
+  userId: Scalars['String']['input'];
 };
 
 export enum ArtistRole {
@@ -1470,7 +1489,9 @@ export enum MoodType {
 export type MutationInitialization = {
   __typename?: 'MutationInitialization';
   approveArtistPackage: Scalars['Boolean']['output'];
+  approveArtistRegistration: Scalars['Boolean']['output'];
   approveTrackUploadRequest: Scalars['Boolean']['output'];
+  banUser: Scalars['Boolean']['output'];
   changeArtistPackageStatus: Scalars['Boolean']['output'];
   convertToHls: Scalars['String']['output'];
   convertToWavFile: WavFileResponse;
@@ -1494,7 +1515,6 @@ export type MutationInitialization = {
   createSubscription: Scalars['Boolean']['output'];
   createSubscriptionCheckoutSession: CheckoutSessionResponse;
   createSubscriptionPlan: Scalars['Boolean']['output'];
-  deActiveUser: Scalars['Boolean']['output'];
   deactiveEntitlement: Scalars['Boolean']['output'];
   deleteCoupon: Scalars['Boolean']['output'];
   deprecateCoupon: Scalars['Boolean']['output'];
@@ -1505,6 +1525,7 @@ export type MutationInitialization = {
   reActiveUser: Scalars['Boolean']['output'];
   reactiveEntitlement: Scalars['Boolean']['output'];
   registerArtistManual: Scalars['Boolean']['output'];
+  rejectArtistRegistration: Scalars['Boolean']['output'];
   rejectTrackUploadRequest: Scalars['Boolean']['output'];
   seedEntitlements: Scalars['Boolean']['output'];
   seedRoyaltyPolicyData: Scalars['Boolean']['output'];
@@ -1522,10 +1543,20 @@ export type MutationInitializationApproveArtistPackageArgs = {
 };
 
 
+export type MutationInitializationApproveArtistRegistrationArgs = {
+  request: ArtistRegistrationApprovalRequestInput;
+};
+
+
 export type MutationInitializationApproveTrackUploadRequestArgs = {
   recordingId: Scalars['String']['input'];
   trackId: Scalars['String']['input'];
   workId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationBanUserArgs = {
+  targetUserId: Scalars['String']['input'];
 };
 
 
@@ -1636,11 +1667,6 @@ export type MutationInitializationCreateSubscriptionPlanArgs = {
 };
 
 
-export type MutationInitializationDeActiveUserArgs = {
-  targetUserId: Scalars['String']['input'];
-};
-
-
 export type MutationInitializationDeactiveEntitlementArgs = {
   code: Scalars['String']['input'];
 };
@@ -1683,6 +1709,11 @@ export type MutationInitializationReactiveEntitlementArgs = {
 
 export type MutationInitializationRegisterArtistManualArgs = {
   createArtistRequest: CreateArtistRequestInput;
+};
+
+
+export type MutationInitializationRejectArtistRegistrationArgs = {
+  request: ArtistRegistrationApprovalRequestInput;
 };
 
 
@@ -1840,6 +1871,27 @@ export type PaymentTransactionSortInput = {
   userId?: InputMaybe<SortEnumType>;
 };
 
+export type PendingArtistRegistrationResponse = {
+  __typename?: 'PendingArtistRegistrationResponse';
+  artistType: ArtistType;
+  backImageUrl?: Maybe<Scalars['String']['output']>;
+  birthDate: Scalars['DateTime']['output'];
+  email: Scalars['String']['output'];
+  frontImageUrl?: Maybe<Scalars['String']['output']>;
+  fullName: Scalars['String']['output'];
+  gender: UserGender;
+  id: Scalars['String']['output'];
+  identityCardDateOfBirth: Scalars['DateTime']['output'];
+  identityCardFullName: Scalars['String']['output'];
+  identityCardNumber: Scalars['String']['output'];
+  phoneNumber: Scalars['String']['output'];
+  placeOfOrigin: Scalars['String']['output'];
+  placeOfResidence: Scalars['String']['output'];
+  requestedAt: Scalars['DateTime']['output'];
+  stageName: Scalars['String']['output'];
+  timeToLive?: Maybe<Scalars['TimeSpan']['output']>;
+};
+
 /** A segment of a collection. */
 export type PendingTrackUploadRequestsCollectionSegment = {
   __typename?: 'PendingTrackUploadRequestsCollectionSegment';
@@ -1968,7 +2020,7 @@ export type QueryAudioFingerprintResponse = {
 
 export type QueryInitialization = {
   __typename?: 'QueryInitialization';
-  artistPackages: Array<ArtistPackage>;
+  artistPackages?: Maybe<ArtistPackagesCollectionSegment>;
   artists?: Maybe<ArtistsCollectionSegment>;
   categories?: Maybe<CategoriesCollectionSegment>;
   coupons?: Maybe<CouponsCollectionSegment>;
@@ -1983,6 +2035,7 @@ export type QueryInitialization = {
   metadataWorkUploadRequest: WorkTempRequest;
   monthlyStreamCounts?: Maybe<MonthlyStreamCountsCollectionSegment>;
   originalFileTrackUploadRequest: Scalars['String']['output'];
+  pendingArtistRegistrations: Array<PendingArtistRegistrationResponse>;
   pendingTrackUploadRequests?: Maybe<PendingTrackUploadRequestsCollectionSegment>;
   playlists?: Maybe<PlaylistsCollectionSegment>;
   queryTrack: QueryAudioFingerprintResponse;
@@ -2004,6 +2057,8 @@ export type QueryInitialization = {
 
 export type QueryInitializationArtistPackagesArgs = {
   order?: InputMaybe<Array<ArtistPackageSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ArtistPackageFilterInput>;
 };
 
@@ -2089,6 +2144,12 @@ export type QueryInitializationMonthlyStreamCountsArgs = {
 
 export type QueryInitializationOriginalFileTrackUploadRequestArgs = {
   trackId: Scalars['String']['input'];
+};
+
+
+export type QueryInitializationPendingArtistRegistrationsArgs = {
+  pageNumber?: Scalars['Int']['input'];
+  pageSize?: Scalars['Int']['input'];
 };
 
 
@@ -2940,6 +3001,9 @@ export type UpdateArtistRequestInput = {
   avatarImage?: InputMaybe<Scalars['String']['input']>;
   bannerImage?: InputMaybe<Scalars['String']['input']>;
   biography?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  fullName?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
   stageName?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2958,6 +3022,7 @@ export type UpdateListenerRequestInput = {
   displayName?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   fullName?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateStatusArtistPackageRequestInput = {

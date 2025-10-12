@@ -87,6 +87,7 @@ export const authApi = {
           Gender: data.gender,
           PhoneNumber: data.phoneNumber,
           StageName: data.stageName,
+          AvatarImage: data.avatarImage,
           ArtistType: data.artistType,
           Members: data.members,
           IdentityCard: {

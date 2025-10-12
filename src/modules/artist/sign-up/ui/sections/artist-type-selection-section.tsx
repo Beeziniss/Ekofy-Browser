@@ -20,7 +20,7 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
   const [artistType, setArtistType] = useState<'INDIVIDUAL' | 'BAND' | null>(
     initialData?.type || 
     (formData.artistType === "INDIVIDUAL" ? "INDIVIDUAL" : 
-     formData.artistType === "BAND" || formData.artistType === "GROUP" ? "BAND" : null)
+     formData.artistType === "BAND" ? "BAND" : null)
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -126,7 +126,7 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
             </div>
           </div>
 
-          {/* Band/Group Option */}
+          {/* Band Option */}
           <div 
             className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
               artistType === 'BAND'
@@ -142,7 +142,7 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
               <div className="flex justify-center mb-6">
                 <UsersGradient />
               </div>
-              <h3 className="text-white text-xl font-semibold mb-3">Band / Group</h3>
+              <h3 className="text-white text-xl font-semibold mb-3">Bandp</h3>
               <p className="text-gray-400 text-sm">
                 Collaborate with your members, release music together, and connect with fans as one.
               </p>

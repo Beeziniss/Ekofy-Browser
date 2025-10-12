@@ -249,6 +249,22 @@ input ArtistPackageStatusOperationFilterInput {
   nin: [ArtistPackageStatus!]
 }
 
+"""A segment of a collection."""
+type ArtistPackagesCollectionSegment {
+  """A flattened list of the items."""
+  items: [ArtistPackage!]
+  """Information to aid in pagination."""
+  pageInfo: CollectionSegmentInfo!
+  totalCount: Int!
+}
+
+input ArtistRegistrationApprovalRequestInput {
+  email: String!
+  fullName: String!
+  rejectionReason: String
+  userId: String!
+}
+
 enum ArtistRole {
   COMPOSER
   FEATURED
@@ -1471,7 +1487,9 @@ enum MoodType {
 
 type MutationInitialization {
   approveArtistPackage(updateStatusRequest: UpdateStatusArtistPackageRequestInput!): Boolean!
+  approveArtistRegistration(request: ArtistRegistrationApprovalRequestInput!): Boolean!
   approveTrackUploadRequest(recordingId: String!, trackId: String!, workId: String!): Boolean!
+  banUser(targetUserId: String!): Boolean!
   changeArtistPackageStatus(updateStatusRequest: UpdateStatusArtistPackageRequestInput!): Boolean!
   convertToHls(file: Upload!): String!
   convertToWavFile(file: Upload!): WavFileResponse!
@@ -1495,7 +1513,6 @@ type MutationInitialization {
   createSubscription(createSubscriptionRequest: CreateSubscriptionRequestInput!): Boolean!
   createSubscriptionCheckoutSession(createCheckoutSessionRequest: CreateSubscriptionCheckoutSessionRequestInput!): CheckoutSessionResponse!
   createSubscriptionPlan(createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!): Boolean!
-  deActiveUser(targetUserId: String!): Boolean!
   deactiveEntitlement(code: String!): Boolean!
   deleteCoupon(couponIds: [String!]!): Boolean!
   deprecateCoupon(couponIds: [String!]!): Boolean!
@@ -1506,6 +1523,7 @@ type MutationInitialization {
   reActiveUser(targetUserId: String!): Boolean!
   reactiveEntitlement(code: String!): Boolean!
   registerArtistManual(createArtistRequest: CreateArtistRequestInput!): Boolean!
+  rejectArtistRegistration(request: ArtistRegistrationApprovalRequestInput!): Boolean!
   rejectTrackUploadRequest(recordingId: String!, trackId: String!, workId: String!): Boolean!
   seedEntitlements(password: String!): Boolean!
   seedRoyaltyPolicyData(password: String!): Boolean!
@@ -1614,6 +1632,26 @@ input PaymentTransactionSortInput {
   stripePaymentId: SortEnumType
   updatedAt: SortEnumType
   userId: SortEnumType
+}
+
+type PendingArtistRegistrationResponse {
+  artistType: ArtistType!
+  backImageUrl: String
+  birthDate: DateTime!
+  email: String!
+  frontImageUrl: String
+  fullName: String!
+  gender: UserGender!
+  id: String!
+  identityCardDateOfBirth: DateTime!
+  identityCardFullName: String!
+  identityCardNumber: String!
+  phoneNumber: String!
+  placeOfOrigin: String!
+  placeOfResidence: String!
+  requestedAt: DateTime!
+  stageName: String!
+  timeToLive: TimeSpan
 }
 
 """A segment of a collection."""
@@ -1738,7 +1776,7 @@ type QueryAudioFingerprintResponse {
 }
 
 type QueryInitialization {
-  artistPackages(order: [ArtistPackageSortInput!], where: ArtistPackageFilterInput): [ArtistPackage!]!
+  artistPackages(order: [ArtistPackageSortInput!], skip: Int, take: Int, where: ArtistPackageFilterInput): ArtistPackagesCollectionSegment
   artists(order: [ArtistSortInput!], skip: Int, take: Int, where: ArtistFilterInput): ArtistsCollectionSegment
   categories(order: [CategorySortInput!], skip: Int, take: Int, where: CategoryFilterInput): CategoriesCollectionSegment
   coupons(order: [CouponSortInput!], skip: Int, take: Int, where: CouponFilterInput): CouponsCollectionSegment
@@ -1753,6 +1791,7 @@ type QueryInitialization {
   metadataWorkUploadRequest(workId: String!): WorkTempRequest!
   monthlyStreamCounts(order: [MonthlyStreamCountSortInput!], skip: Int, take: Int, where: MonthlyStreamCountFilterInput): MonthlyStreamCountsCollectionSegment
   originalFileTrackUploadRequest(trackId: String!): String!
+  pendingArtistRegistrations(pageNumber: Int! = 1, pageSize: Int! = 20): [PendingArtistRegistrationResponse!]!
   pendingTrackUploadRequests(skip: Int, take: Int, where: TrackTempRequestFilterInput): PendingTrackUploadRequestsCollectionSegment
   playlists(order: [PlaylistSortInput!], skip: Int, take: Int, where: PlaylistFilterInput): PlaylistsCollectionSegment
   queryTrack(file: Upload!): QueryAudioFingerprintResponse!
@@ -2316,6 +2355,9 @@ input SyncedLineFilterInput {
   time: FloatOperationFilterInput
 }
 
+"""The `TimeSpan` scalar represents an ISO-8601 compliant duration type."""
+scalar TimeSpan
+
 type Track {
   alternativeDescription: String!
   artist: [Artist]!
@@ -2489,6 +2531,9 @@ input UpdateArtistRequestInput {
   avatarImage: String
   bannerImage: String
   biography: String
+  email: String
+  fullName: String
+  phoneNumber: String
   stageName: String
 }
 
@@ -2507,6 +2552,7 @@ input UpdateListenerRequestInput {
   displayName: String
   email: String
   fullName: String
+  phoneNumber: String
 }
 
 input UpdateStatusArtistPackageRequestInput {

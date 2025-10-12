@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { devtools } from "zustand/middleware";
 import { toast } from "sonner";
 
 // Define types locally to avoid circular dependencies
@@ -13,6 +13,7 @@ export interface SignUpFormData {
   birthDate: Date | undefined;
   gender: string;
   displayName: string;
+  avatarImage?: string; // Add avatar image URL
   otp?: string;
 }
 
@@ -64,77 +65,68 @@ const getPreviousStep = (current: SignUpStep): SignUpStep => {
 
 export const useSignUpStore = create<SignUpState>()(
   devtools(
-    persist(
-      (set, get) => ({
-        ...initialState,
+    (set, get) => ({
+      ...initialState,
 
-        // Set current step
-        setStep: (step: SignUpStep) => {
-          set({ currentStep: step }, false, "signup/setStep");
-        },
+      // Set current step
+      setStep: (step: SignUpStep) => {
+        set({ currentStep: step }, false, "signup/setStep");
+      },
 
-        // Update form data
-        updateFormData: (data: Partial<SignUpFormData>) => {
-          set(
-            (state) => ({
-              formData: { ...state.formData, ...data },
-            }),
-            false,
-            "signup/updateFormData"
-          );
-        },
+      // Update form data
+      updateFormData: (data: Partial<SignUpFormData>) => {
+        set(
+          (state) => ({
+            formData: { ...state.formData, ...data },
+          }),
+          false,
+          "signup/updateFormData"
+        );
+      },
 
-        // Go to next step
-        goToNextStep: (stepData?: Partial<SignUpFormData>) => {
-          const currentStep = get().currentStep;
-          const nextStep = getNextStep(currentStep);
-          set(
-            (state) => ({
-              currentStep: nextStep,
-              formData: stepData ? { ...state.formData, ...stepData } : state.formData,
-            }),
-            false,
-            "signup/goToNextStep"
-          );
-          
-        },
+      // Go to next step
+      goToNextStep: (stepData?: Partial<SignUpFormData>) => {
+        const currentStep = get().currentStep;
+        const nextStep = getNextStep(currentStep);
+        set(
+          (state) => ({
+            currentStep: nextStep,
+            formData: stepData ? { ...state.formData, ...stepData } : state.formData,
+          }),
+          false,
+          "signup/goToNextStep"
+        );
+        
+      },
 
-        // Go to previous step
-        goToPreviousStep: () => {
-          const currentStep = get().currentStep;
-          const prevStep = getPreviousStep(currentStep);
-          
-          set({ currentStep: prevStep }, false, "signup/goToPreviousStep");
-        },
+      // Go to previous step
+      goToPreviousStep: () => {
+        const currentStep = get().currentStep;
+        const prevStep = getPreviousStep(currentStep);
+        
+        set({ currentStep: prevStep }, false, "signup/goToPreviousStep");
+      },
 
-        // Complete OTP verification
-        completeOTPVerification: (otpData: { otp: string }) => {
-          const { updateFormData } = get();
-          
-          // Update form data with OTP
-          updateFormData(otpData);
-          
-          // Show success message
-          toast.success("Xác thực OTP thành công!");
-          
-          // Navigation or completion logic can be handled by the component
-        },
+      // Complete OTP verification
+      completeOTPVerification: (otpData: { otp: string }) => {
+        const { updateFormData } = get();
+        
+        // Update form data with OTP
+        updateFormData(otpData);
+        
+        // Show success message
+        toast.success("Xác thực OTP thành công!");
+        
+        // Navigation or completion logic can be handled by the component
+      },
 
-        // Reset form
-        resetForm: () => {
-          set(initialState, false, "signup/resetForm");
-        },
-      }),
-      {
-        name: "listener-signup-store",
-        partialize: (state) => ({
-          currentStep: state.currentStep,
-          formData: state.formData,
-        }),
-      }
-    ),
+      // Reset form
+      resetForm: () => {
+        set(initialState, false, "signup/resetForm");
+      },
+    }),
     {
-      name: "signup-store",
+      name: "signup-store", // Remove persistence, just for devtools
     }
   )
 );
