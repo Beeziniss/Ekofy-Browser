@@ -3299,6 +3299,36 @@ export type UsersQueryVariables = Exact<{
 
 export type UsersQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
 
+export type UsersListQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type UsersListQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, isLinkedWithGoogle: boolean, stripeCustomerId?: string | null, stripeAccountId?: string | null, lastLoginAt?: any | null, createdAt: any, updatedAt?: any | null }> | null } | null, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, categoryIds: Array<string>, biography?: string | null, followers: any, popularity: any, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, createdAt: any, updatedAt?: any | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } } }> | null } | null, listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, followerCount: any, followingCount: any, lastFollowers: Array<string>, lastFollowing: Array<string>, createdAt: any, updatedAt?: any | null, restriction: { __typename?: 'Restriction', type: RestrictionType, reason?: string | null, restrictedAt?: any | null, expired?: any | null } }> | null } | null };
+
+export type CreateModeratorMutationVariables = Exact<{
+  createModeratorRequest: CreateModeratorRequestInput;
+}>;
+
+
+export type CreateModeratorMutation = { __typename?: 'MutationInitialization', createModerator: boolean };
+
+export type BanUserMutationVariables = Exact<{
+  targetUserId: Scalars['String']['input'];
+}>;
+
+
+export type BanUserMutation = { __typename?: 'MutationInitialization', banUser: boolean };
+
+export type ReActiveUserMutationVariables = Exact<{
+  targetUserId: Scalars['String']['input'];
+}>;
+
+
+export type ReActiveUserMutation = { __typename?: 'MutationInitialization', reActiveUser: boolean };
+
 export type TracksWithFiltersQueryVariables = Exact<{
   skip: Scalars['Int']['input'];
   take: Scalars['Int']['input'];
@@ -3362,6 +3392,116 @@ export const UsersDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<UsersQuery, UsersQueryVariables>;
+export const UsersListDocument = new TypedDocumentString(`
+    query UsersList($skip: Int, $take: Int, $where: UserFilterInput) {
+  users(skip: $skip, take: $take, where: $where) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      email
+      fullName
+      gender
+      birthDate
+      role
+      phoneNumber
+      status
+      isLinkedWithGoogle
+      stripeCustomerId
+      stripeAccountId
+      lastLoginAt
+      createdAt
+      updatedAt
+    }
+  }
+  artists {
+    items {
+      id
+      userId
+      stageName
+      email
+      artistType
+      categoryIds
+      biography
+      followers
+      popularity
+      avatarImage
+      bannerImage
+      isVerified
+      verifiedAt
+      createdAt
+      updatedAt
+      members {
+        fullName
+        email
+        phoneNumber
+        isLeader
+        gender
+      }
+      identityCard {
+        number
+        fullName
+        dateOfBirth
+        gender
+        placeOfOrigin
+        nationality
+        validUntil
+        placeOfResidence {
+          street
+          ward
+          province
+          oldDistrict
+          oldWard
+          oldProvince
+          addressLine
+        }
+      }
+    }
+  }
+  listeners {
+    items {
+      id
+      userId
+      displayName
+      email
+      avatarImage
+      bannerImage
+      isVerified
+      verifiedAt
+      followerCount
+      followingCount
+      lastFollowers
+      lastFollowing
+      createdAt
+      updatedAt
+      restriction {
+        type
+        reason
+        restrictedAt
+        expired
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<UsersListQuery, UsersListQueryVariables>;
+export const CreateModeratorDocument = new TypedDocumentString(`
+    mutation CreateModerator($createModeratorRequest: CreateModeratorRequestInput!) {
+  createModerator(createModeratorRequest: $createModeratorRequest)
+}
+    `) as unknown as TypedDocumentString<CreateModeratorMutation, CreateModeratorMutationVariables>;
+export const BanUserDocument = new TypedDocumentString(`
+    mutation banUser($targetUserId: String!) {
+  banUser(targetUserId: $targetUserId)
+}
+    `) as unknown as TypedDocumentString<BanUserMutation, BanUserMutationVariables>;
+export const ReActiveUserDocument = new TypedDocumentString(`
+    mutation ReActiveUser($targetUserId: String!) {
+  reActiveUser(targetUserId: $targetUserId)
+}
+    `) as unknown as TypedDocumentString<ReActiveUserMutation, ReActiveUserMutationVariables>;
 export const TracksWithFiltersDocument = new TypedDocumentString(`
     query TracksWithFilters($skip: Int!, $take: Int!, $where: TrackFilterInput, $order: [TrackSortInput!]) {
   tracks(skip: $skip, take: $take, where: $where, order: $order) {
