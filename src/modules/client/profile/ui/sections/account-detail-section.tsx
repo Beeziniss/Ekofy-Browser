@@ -1,31 +1,14 @@
 
 import React from "react";
 import DetailItem from "../components/detail-item";
-
-const detailField = [
-  {
-    title: "Likes",
-    value: 1234
-    
-  },
-  {
-    title: "Comments",
-    value: 567
-    
-  },
-  {
-    title: "Downloads",
-    value: 890
-   
-  },
-  {
-    title: "Streams",
-    value: 2345
-   
-  },
-];
+import { useClientProfile } from "../../hook/use-client-profile";
 
 const AccountDetailSection = () => {
+  const { account } = useClientProfile();
+  const detailField = [
+    { title: "Created date", value: account.createdAt || "-" },
+    { title: "Membership status", value: account.membershipStatus || "-" },
+  ];
   return (
     <div className="w-full ">
       <div className="flex items-end gap-x-3 justify-between">

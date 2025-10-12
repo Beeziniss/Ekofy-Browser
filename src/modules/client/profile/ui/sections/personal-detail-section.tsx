@@ -3,31 +3,16 @@ import React from "react";
 import DetailItem from "../components/detail-item";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
-
-const detailField = [
-  {
-    title: "Likes",
-    value: 1234
-    
-  },
-  {
-    title: "Comments",
-    value: 567
-    
-  },
-  {
-    title: "Downloads",
-    value: 890
-   
-  },
-  {
-    title: "Streams",
-    value: 2345
-   
-  },
-];
+import { useClientProfile } from "../../hook/use-client-profile";
 
 const PersonalDetailSection = () => {
+  const { personal } = useClientProfile();
+  const detailField = [
+    { title: "Display name", value: personal.displayName || "-" },
+    { title: "Email", value: personal.email || "-" },
+    { title: "Date of Birth", value: personal.birthDate || "-" },
+    { title: "Gender", value: personal.gender || "-" },
+  ];
   return (
     <div className="w-full ">
       <div className="flex items-end gap-x-3 justify-between">

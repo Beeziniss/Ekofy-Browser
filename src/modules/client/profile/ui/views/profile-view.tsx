@@ -3,16 +3,21 @@
 import ProfileHeader from "../components/profile-header";
 import DetailView from "./detail-view";
 import HelpCard from "../components/help-item";
-
+import { useClientProfile } from "../../hook/use-client-profile";
+import * as React from "react";
 
 export default function ProfileView() {
-  
-  const mockName = "Nguyen Van A";
-  const mockAvatar = ""; 
-  const mockBackground = "/image-login.png";
+  const { personal, ...rest } = useClientProfile();
+  const header = {
+    name: personal.displayName || personal.email || "User",
+    avatarUrl: rest.data?.avatarImage || "",
+    backgroundUrl: rest.data?.bannerImage || "/image-login.png",
+  };
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
 
   const handleAvatar = (file: File) => {
-    
     console.log("Avatar chọn:", file.name);
   };
 
@@ -23,13 +28,13 @@ export default function ProfileView() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
       <ProfileHeader
-        name={mockName}
-        avatarUrl={mockAvatar}
-        backgroundUrl={mockBackground}
+        name={header.name}
+        avatarUrl={header.avatarUrl}
+        backgroundUrl={header.backgroundUrl}
         onChangeAvatar={handleAvatar}
         onChangeBackground={handleBackground}
       />
-      
+
       <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:pt-4">
           <div className="md:col-span-9">
