@@ -30,8 +30,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
-import { UserStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface ArtistApprovalTableProps {
   data: any[]; // Using any[] to work with GraphQL response
@@ -66,9 +66,19 @@ export function ArtistApprovalTable({
       header: "User",
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-medium">
-            {row.original.stageName.charAt(0).toUpperCase()}
-          </div>
+          {row.original.avatarImage ? (
+            <Image
+              src={row.original.avatarImage}
+              alt={row.original.stageName}
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-full"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-medium">
+              {row.original.stageName.charAt(0).toUpperCase()}
+            </div>
+          )}
           <span className="font-medium text-white">{row.original.stageName}</span>
         </div>
       ),
@@ -82,7 +92,7 @@ export function ArtistApprovalTable({
     },
     {
       accessorKey: "artistType",
-      header: "Role",
+      header: "Type",
       cell: ({ row }) => (
         <span className="text-gray-300 capitalize">
           {row.original.artistType.toLowerCase()}
@@ -90,46 +100,37 @@ export function ArtistApprovalTable({
       ),
     },
     {
-      accessorKey: "user.gender",
+      accessorKey: "gender",
       header: "Gender",
       cell: ({ row }) => (
         <span className="text-gray-300 capitalize">
-          {row.original.user?.gender?.toLowerCase() || "N/A"}
+          {row.original.gender?.toLowerCase() || "N/A"}
         </span>
       ),
     },
     {
-      accessorKey: "createdAt",
-      header: "Date",
+      accessorKey: "birthDate",
+      header: "Birth Date",
       cell: ({ row }) => (
         <span className="text-gray-300">
-          {new Date(row.original.createdAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
+          {row.original.birthDate 
+            ? new Date(row.original.birthDate).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
+            : "N/A"}
         </span>
       ),
     },
     {
-      accessorKey: "user.status",
-      header: "User Status",
-      cell: ({ row }) => {
-        const status = row.original.user?.status;
-        return (
-          <Badge
-            variant={status === UserStatus.Active ? "default" : "secondary"}
-            className={`
-              ${status === UserStatus.Active 
-                ? "bg-green-100 text-green-800 border-green-200" 
-                : "bg-yellow-100 text-yellow-800 border-yellow-200"
-              }
-            `}
-          >
-            {status}
-          </Badge>
-        );
-      },
+      accessorKey: "phoneNumber",
+      header: "Phone",
+      cell: ({ row }) => (
+        <span className="text-gray-300">
+          {row.original.phoneNumber || "N/A"}
+        </span>
+      ),
     },
     {
       id: "actions",
@@ -143,7 +144,7 @@ export function ArtistApprovalTable({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
             <DropdownMenuItem
-              onClick={() => router.push(`/moderator/artist-approval/${row.original.userId}`)}
+              onClick={() => router.push(`/moderator/artist-approval/${row.original.id}`)}
               className="text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer"
             >
               View Details
