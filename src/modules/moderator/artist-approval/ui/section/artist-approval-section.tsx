@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArtistApprovalTable } from "../component";
 import { moderatorArtistsQueryOptions } from "@/gql/options/moderator-options";
 
@@ -51,9 +51,10 @@ export function ArtistApprovalSection() {
     );
   }
 
-  const artists = artistsData?.artists?.items || [];
-  const totalCount = artistsData?.artists?.totalCount || 0;
-  const pageInfo = artistsData?.artists?.pageInfo;
+  const artists = artistsData?.pendingArtistRegistrations || [];
+  const totalCount = artists.length; // Since we're getting all results, count them
+  // For pagination, we'll need to implement it differently or handle it server-side
+  const pageInfo = { hasNextPage: false, hasPreviousPage: false };
 
   return (
     <div className="space-y-6">

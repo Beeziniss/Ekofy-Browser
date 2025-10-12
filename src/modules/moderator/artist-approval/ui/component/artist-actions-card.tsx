@@ -8,7 +8,7 @@ interface ArtistActionsCardProps {
   artistName: string;
   userId: string;
   onApprove: () => void;
-  onReject: () => void;
+  onReject: (rejectionReason: string) => void;
   // onCancel: () => void;
   isLoading?: boolean;
 }
@@ -37,8 +37,8 @@ export function ArtistActionsCard({
     setShowRejectModal(true);
   };
 
-  const handleConfirmReject = () => {
-    onReject();
+  const handleConfirmReject = (rejectionReason: string) => {
+    onReject(rejectionReason);
     setShowRejectModal(false);
   };
 

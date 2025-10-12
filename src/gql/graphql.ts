@@ -1874,6 +1874,7 @@ export type PaymentTransactionSortInput = {
 export type PendingArtistRegistrationResponse = {
   __typename?: 'PendingArtistRegistrationResponse';
   artistType: ArtistType;
+  avatarImage?: Maybe<Scalars['String']['output']>;
   backImageUrl?: Maybe<Scalars['String']['output']>;
   birthDate: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
@@ -1884,12 +1885,37 @@ export type PendingArtistRegistrationResponse = {
   identityCardDateOfBirth: Scalars['DateTime']['output'];
   identityCardFullName: Scalars['String']['output'];
   identityCardNumber: Scalars['String']['output'];
+  members: Array<ArtistMember>;
   phoneNumber: Scalars['String']['output'];
   placeOfOrigin: Scalars['String']['output'];
   placeOfResidence: Scalars['String']['output'];
   requestedAt: Scalars['DateTime']['output'];
   stageName: Scalars['String']['output'];
   timeToLive?: Maybe<Scalars['TimeSpan']['output']>;
+};
+
+export type PendingArtistRegistrationResponseFilterInput = {
+  and?: InputMaybe<Array<PendingArtistRegistrationResponseFilterInput>>;
+  artistType?: InputMaybe<ArtistTypeOperationFilterInput>;
+  avatarImage?: InputMaybe<StringOperationFilterInput>;
+  backImageUrl?: InputMaybe<StringOperationFilterInput>;
+  birthDate?: InputMaybe<DateTimeOperationFilterInput>;
+  email?: InputMaybe<StringOperationFilterInput>;
+  frontImageUrl?: InputMaybe<StringOperationFilterInput>;
+  fullName?: InputMaybe<StringOperationFilterInput>;
+  gender?: InputMaybe<UserGenderOperationFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  identityCardDateOfBirth?: InputMaybe<DateTimeOperationFilterInput>;
+  identityCardFullName?: InputMaybe<StringOperationFilterInput>;
+  identityCardNumber?: InputMaybe<StringOperationFilterInput>;
+  members?: InputMaybe<ListFilterInputTypeOfArtistMemberFilterInput>;
+  or?: InputMaybe<Array<PendingArtistRegistrationResponseFilterInput>>;
+  phoneNumber?: InputMaybe<StringOperationFilterInput>;
+  placeOfOrigin?: InputMaybe<StringOperationFilterInput>;
+  placeOfResidence?: InputMaybe<StringOperationFilterInput>;
+  requestedAt?: InputMaybe<DateTimeOperationFilterInput>;
+  stageName?: InputMaybe<StringOperationFilterInput>;
+  timeToLive?: InputMaybe<TimeSpanOperationFilterInput>;
 };
 
 /** A segment of a collection. */
@@ -2150,6 +2176,7 @@ export type QueryInitializationOriginalFileTrackUploadRequestArgs = {
 export type QueryInitializationPendingArtistRegistrationsArgs = {
   pageNumber?: Scalars['Int']['input'];
   pageSize?: Scalars['Int']['input'];
+  where?: InputMaybe<PendingArtistRegistrationResponseFilterInput>;
 };
 
 
@@ -2826,6 +2853,21 @@ export type SyncedLineFilterInput = {
   time?: InputMaybe<FloatOperationFilterInput>;
 };
 
+export type TimeSpanOperationFilterInput = {
+  eq?: InputMaybe<Scalars['TimeSpan']['input']>;
+  gt?: InputMaybe<Scalars['TimeSpan']['input']>;
+  gte?: InputMaybe<Scalars['TimeSpan']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['TimeSpan']['input']>>>;
+  lt?: InputMaybe<Scalars['TimeSpan']['input']>;
+  lte?: InputMaybe<Scalars['TimeSpan']['input']>;
+  neq?: InputMaybe<Scalars['TimeSpan']['input']>;
+  ngt?: InputMaybe<Scalars['TimeSpan']['input']>;
+  ngte?: InputMaybe<Scalars['TimeSpan']['input']>;
+  nin?: InputMaybe<Array<InputMaybe<Scalars['TimeSpan']['input']>>>;
+  nlt?: InputMaybe<Scalars['TimeSpan']['input']>;
+  nlte?: InputMaybe<Scalars['TimeSpan']['input']>;
+};
+
 export type Track = {
   __typename?: 'Track';
   alternativeDescription: Scalars['String']['output'];
@@ -3346,14 +3388,34 @@ export type TrackListHomeQueryVariables = Exact<{
 
 export type TrackListHomeQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string } | null> }> | null } | null };
 
-export type ArtistsQueryVariables = Exact<{
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where: ArtistFilterInput;
+export type PendingArtistRegistrationsViewQueryVariables = Exact<{
+  pageNumber: Scalars['Int']['input'];
+  pageSize: Scalars['Int']['input'];
 }>;
 
 
-export type ArtistsQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, isVerified: boolean, verifiedAt?: any | null, createdAt: any, updatedAt?: any | null, avatarImage?: string | null, bannerImage?: string | null, user: { __typename?: 'User', status: UserStatus, gender: UserGender, phoneNumber?: string | null }, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, frontImage?: string | null, backImage?: string | null, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } } }> | null } | null };
+export type PendingArtistRegistrationsViewQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrations: Array<{ __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string }> };
+
+export type PendingArtistRegistrationsDetailQueryVariables = Exact<{
+  id?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type PendingArtistRegistrationsDetailQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrations: Array<{ __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string, requestedAt: any, timeToLive?: any | null, identityCardNumber: string, identityCardDateOfBirth: any, identityCardFullName: string, placeOfOrigin: string, placeOfResidence: string, frontImageUrl?: string | null, backImageUrl?: string | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }> }> };
+
+export type ApproveArtistRegistrationMutationVariables = Exact<{
+  request: ArtistRegistrationApprovalRequestInput;
+}>;
+
+
+export type ApproveArtistRegistrationMutation = { __typename?: 'MutationInitialization', approveArtistRegistration: boolean };
+
+export type RejectArtistRegistrationMutationVariables = Exact<{
+  request: ArtistRegistrationApprovalRequestInput;
+}>;
+
+
+export type RejectArtistRegistrationMutation = { __typename?: 'MutationInitialization', rejectArtistRegistration: boolean };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -3543,59 +3605,59 @@ export const TrackListHomeDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TrackListHomeQuery, TrackListHomeQueryVariables>;
-export const ArtistsDocument = new TypedDocumentString(`
-    query Artists($skip: Int, $take: Int, $where: ArtistFilterInput!) {
-  artists(skip: $skip, take: $take, where: $where) {
-    totalCount
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-    }
-    items {
-      id
-      userId
-      stageName
-      email
-      artistType
-      isVerified
-      verifiedAt
-      createdAt
-      updatedAt
-      user {
-        status
-        gender
-        phoneNumber
-      }
-      members {
-        fullName
-        email
-        phoneNumber
-        isLeader
-        gender
-      }
-      avatarImage
-      bannerImage
-      identityCard {
-        number
-        fullName
-        dateOfBirth
-        gender
-        placeOfOrigin
-        nationality
-        frontImage
-        backImage
-        validUntil
-        placeOfResidence {
-          street
-          ward
-          province
-          oldDistrict
-          oldWard
-          oldProvince
-          addressLine
-        }
-      }
-    }
+export const PendingArtistRegistrationsViewDocument = new TypedDocumentString(`
+    query PendingArtistRegistrationsView($pageNumber: Int!, $pageSize: Int!) {
+  pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize) {
+    email
+    fullName
+    stageName
+    artistType
+    gender
+    birthDate
+    phoneNumber
+    avatarImage
+    id
   }
 }
-    `) as unknown as TypedDocumentString<ArtistsQuery, ArtistsQueryVariables>;
+    `) as unknown as TypedDocumentString<PendingArtistRegistrationsViewQuery, PendingArtistRegistrationsViewQueryVariables>;
+export const PendingArtistRegistrationsDetailDocument = new TypedDocumentString(`
+    query PendingArtistRegistrationsDetail($id: String) {
+  pendingArtistRegistrations(where: {id: {eq: $id}}) {
+    email
+    fullName
+    stageName
+    artistType
+    gender
+    birthDate
+    phoneNumber
+    avatarImage
+    id
+    members {
+      fullName
+      email
+      phoneNumber
+      isLeader
+      gender
+    }
+    requestedAt
+    timeToLive
+    identityCardNumber
+    identityCardDateOfBirth
+    identityCardFullName
+    placeOfOrigin
+    placeOfResidence
+    frontImageUrl
+    backImageUrl
+  }
+}
+    `) as unknown as TypedDocumentString<PendingArtistRegistrationsDetailQuery, PendingArtistRegistrationsDetailQueryVariables>;
+export const ApproveArtistRegistrationDocument = new TypedDocumentString(`
+    mutation ApproveArtistRegistration($request: ArtistRegistrationApprovalRequestInput!) {
+  approveArtistRegistration(request: $request)
+}
+    `) as unknown as TypedDocumentString<ApproveArtistRegistrationMutation, ApproveArtistRegistrationMutationVariables>;
+export const RejectArtistRegistrationDocument = new TypedDocumentString(`
+    mutation RejectArtistRegistration($request: ArtistRegistrationApprovalRequestInput!) {
+  rejectArtistRegistration(request: $request)
+}
+    `) as unknown as TypedDocumentString<RejectArtistRegistrationMutation, RejectArtistRegistrationMutationVariables>;
