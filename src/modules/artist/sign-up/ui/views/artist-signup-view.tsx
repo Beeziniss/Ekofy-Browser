@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
 import { 
   ArtistSignUpFormSection,
-  ArtistOTPVerificationSection,
+  // ArtistOTPVerificationSection, // Commented out as OTP is no longer used
   ArtistCCCDVerificationSection,
   ArtistIdentitySection,
   ArtistTypeSelectionSection,
@@ -77,13 +77,14 @@ const ArtistSignUpView = () => {
           />
         );
       
-      case 'otp':
-        return (
-          <ArtistOTPVerificationSection 
-            onNext={handleRegistrationSuccess} // Final step navigation
-            onBack={handleBack}
-          />
-        );
+      // OTP step is no longer used
+      // case 'otp':
+      //   return (
+      //     <ArtistOTPVerificationSection 
+      //       onNext={handleRegistrationSuccess} // Final step navigation
+      //       onBack={handleBack}
+      //     />
+      //   );
       
       default:
         return (
