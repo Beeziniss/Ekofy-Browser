@@ -3235,6 +3235,13 @@ export type TrackListHomeQueryVariables = Exact<{
 
 export type TrackListHomeQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string } | null> }> | null } | null };
 
+export type TrackDetailQueryVariables = Exact<{
+  trackId: Scalars['String']['input'];
+}>;
+
+
+export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, mainArtistIds: Array<string>, artist: Array<{ __typename?: 'Artist', stageName: string, followers: any } | null> }> | null } | null };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -3313,3 +3320,21 @@ export const TrackListHomeDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TrackListHomeQuery, TrackListHomeQueryVariables>;
+export const TrackDetailDocument = new TypedDocumentString(`
+    query TrackDetail($trackId: String!) {
+  tracks(where: {id: {eq: $trackId}}) {
+    items {
+      id
+      name
+      coverImage
+      favoriteCount
+      streamCount
+      mainArtistIds
+      artist {
+        stageName
+        followers
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackDetailQuery, TrackDetailQueryVariables>;

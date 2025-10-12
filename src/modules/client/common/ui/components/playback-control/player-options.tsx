@@ -13,7 +13,8 @@ import PlayerListQueue from "./player-list-queue";
 
 const PlayerOptions = () => {
   const [isLiked, setIsLiked] = useState(false);
-  const { volume, isMuted, setVolume, toggleMute } = useAudioStore();
+  const { volume, isMuted, setVolume, toggleMute, currentTrack } =
+    useAudioStore();
 
   return (
     <div className="flex items-center gap-x-7">
@@ -23,6 +24,7 @@ const PlayerOptions = () => {
           size="iconXs"
           onClick={() => setIsLiked(!isLiked)}
           className="text-main-white hover:text-main-grey"
+          disabled={!currentTrack}
         >
           <Heart
             className={`size-[18px] ${isLiked ? "fill-main-purple text-main-purple" : ""}`}
@@ -47,6 +49,7 @@ const PlayerOptions = () => {
               variant="ghost"
               size="iconXs"
               className="text-main-white hover:text-main-grey"
+              disabled={!currentTrack}
             >
               <ListMusic className="size-[18px]" />
             </Button>
@@ -68,6 +71,7 @@ const PlayerOptions = () => {
             size="iconXs"
             className="text-main-white hover:text-main-grey"
             onClick={toggleMute}
+            disabled={!currentTrack}
           >
             {isMuted ? (
               <VolumeOff className="size-[18px]" />
@@ -83,6 +87,7 @@ const PlayerOptions = () => {
           onValueChange={(value) => setVolume(value[0])}
           max={100}
           step={1}
+          disabled={!currentTrack}
         />
       </div>
     </div>

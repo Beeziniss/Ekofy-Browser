@@ -1,9 +1,8 @@
 "use client";
 
-import { execute } from "@/gql/execute";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { TrackListHomeQuery } from "../views/home-view";
 import { Suspense } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { trackListHomeOptions } from "@/gql/options/client-options";
 import TrackCarousel from "@/modules/client/common/ui/components/track/track-carousel";
 
 const TrackTrendingSection = () => {
@@ -19,10 +18,7 @@ const TrackTrendingSkeleton = () => {
 };
 
 const TrackTrendingSectionSuspense = () => {
-  const { data, isPending } = useSuspenseQuery({
-    queryKey: ["tracks-home"],
-    queryFn: () => execute(TrackListHomeQuery, { take: 10 }),
-  });
+  const { data, isPending } = useSuspenseQuery(trackListHomeOptions);
 
   return <TrackCarousel data={data} isLoading={isPending} />;
 };

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 const PlayerControl = () => {
   const {
+    currentTrack,
     isPlaying,
     currentTime,
     duration,
@@ -38,6 +39,7 @@ const PlayerControl = () => {
           className={`text-main-white hover:text-main-grey ${
             isShuffling ? "text-main-purple" : ""
           }`}
+          disabled={!currentTrack}
           onClick={toggleShuffle}
         >
           <Shuffle className="size-[18px]" />
@@ -50,6 +52,7 @@ const PlayerControl = () => {
           size="iconSm"
           className="text-main-white hover:text-main-grey group duration-0"
           onClick={skipToPrevious}
+          disabled={!currentTrack}
         >
           <SkipBack className="fill-main-white group-hover:fill-main-grey size-6 duration-0" />
         </Button>
@@ -64,6 +67,7 @@ const PlayerControl = () => {
             togglePlayPause();
             toast.success(isPlaying ? "Paused" : "Playing");
           }}
+          disabled={!currentTrack}
         >
           {isPlaying ? (
             <Image
@@ -89,6 +93,7 @@ const PlayerControl = () => {
           size="iconSm"
           className="text-main-white hover:text-main-grey group duration-0"
           onClick={skipToNext}
+          disabled={!currentTrack}
         >
           <SkipForward className="fill-main-white group-hover:fill-main-grey size-6 duration-0" />
         </Button>
@@ -102,12 +107,15 @@ const PlayerControl = () => {
             isRepeating ? "text-main-purple" : ""
           }`}
           onClick={toggleRepeat}
+          disabled={!currentTrack}
         >
           <Repeat className="size-[18px]" />
         </Button>
       </TooltipButton>
 
-      <span className="text-main-white text-xs font-semibold">
+      <span
+        className={`text-xs font-semibold ${!currentTrack ? "pointer-events-none opacity-50" : "text-main-white"}`}
+      >
         {formatMilliseconds(currentTime)}
       </span>
 
@@ -117,9 +125,12 @@ const PlayerControl = () => {
         onValueChange={handleSeek}
         max={100}
         step={0.1}
+        disabled={!currentTrack}
       />
 
-      <span className="text-main-white text-xs font-semibold">
+      <span
+        className={`text-xs font-semibold ${!currentTrack ? "pointer-events-none opacity-50" : "text-main-white"}`}
+      >
         {formatMilliseconds(duration)}
       </span>
     </div>

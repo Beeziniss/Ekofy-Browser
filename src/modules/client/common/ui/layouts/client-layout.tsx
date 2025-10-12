@@ -14,7 +14,7 @@ const ClientLayout = ({ children }: ClientLayoutProps) => {
       <ClientHeader />
 
       {/* Main Content */}
-      <main className="px-3 py-8">{children}</main>
+      <main>{children}</main>
 
       {/* Playback Control */}
       <PlaybackControl />
