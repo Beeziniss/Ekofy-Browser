@@ -23,10 +23,11 @@ import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { authApi } from "@/services/auth-services";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { UserRole } from "@/types/role";
 
 const AuthButton = () => {
   const { isAuthenticated, user, clearUserData } = useAuthStore();
-  const [hasNotification, setHasNotification] = useState(false);
+  const [hasNotification] = useState(false);
 
   // Logout mutation
   const { mutate: logout } = useMutation({
@@ -43,7 +44,7 @@ const AuthButton = () => {
 
   // TODO: Might use later
   // Get current profile query - only runs when authenticated
-  const { data: currentProfile } = useQuery({
+  useQuery({
     queryKey: ["currentProfile"],
     queryFn: authApi.general.getCurrentProfile,
     enabled: isAuthenticated && !!user,
@@ -53,6 +54,26 @@ const AuthButton = () => {
   const handleLogout = () => {
     logout();
   };
+
+  const profileLinks: { label: string; href: string }[] = [];
+  if (isAuthenticated && user) {
+    switch (user.role) {
+      case UserRole.LISTENER:
+        profileLinks.push({ label: "Profile", href: "/profile" });
+        break;
+      case UserRole.ARTIST:
+        profileLinks.push({ label: "Artist Profile", href: "/artist/profile" });
+        break;
+      case UserRole.MODERATOR:
+        profileLinks.push({ label: "Moderator Profile", href: "/moderator/profile" });
+        break;
+      case UserRole.ADMIN:
+        profileLinks.push({ label: "Admin Profile", href: "/admin/profile" });
+        break;
+      default:
+        profileLinks.push({ label: "Profile", href: "/profile" });
+    }
+  }
 
   return (
     <>
@@ -88,10 +109,14 @@ const AuthButton = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="start">
               <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <User className="text-main-white mr-2 size-4" />
-                  <span className="text-main-white text-base">Profile</span>
-                </DropdownMenuItem>
+                {profileLinks.map((link) => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link href={link.href} className="flex items-center">
+                      <User className="text-main-white mr-2 size-4" />
+                      <span className="text-main-white text-base">{link.label}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
                 <DropdownMenuItem>
                   <AudioLines className="text-main-white mr-2 size-4" />
                   <span className="text-main-white text-base">Track</span>
