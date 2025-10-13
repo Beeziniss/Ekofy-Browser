@@ -10,8 +10,9 @@ import {
 } from "../components";
 import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import { useFPTAI } from "../../hooks/use-fpt-ai";
-import { isValidPhoneNumber, formatPhoneNumber } from '@/utils/signup-utils';
+import { isValidPhoneNumber, formatPhoneNumber } from "@/utils/signup-utils";
 import { toast } from "sonner";
+import { uploadImageToCloudinary, validateImageFile } from "@/utils/cloudinary-utils";
 
 interface ArtistCCCDVerificationSectionProps {
   onNext: (data?: any) => void;
@@ -57,6 +58,8 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
 
   const [frontId, setFrontId] = useState<File | null>(initialData?.frontId || null);
   const [backId, setBackId] = useState<File | null>(initialData?.backId || null);
+  const [frontIdPreview, setFrontIdPreview] = useState<string | null>(null);
+  const [backIdPreview, setBackIdPreview] = useState<string | null>(null);
   const [citizenId, setCitizenId] = useState(
     initialData?.citizenId || formData.identityCard?.number || ""
   );
@@ -86,6 +89,28 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     initialData?.authorizationLetter || null,
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Setup preview images for existing CCCD images when component mounts
+  useEffect(() => {
+    // Check if we have stored CCCD images from previous step navigation
+    if (formData.identityCard?.frontImage && !frontId) {
+      setFrontIdPreview(formData.identityCard.frontImage);
+    } else if (frontId) {
+      const url = URL.createObjectURL(frontId);
+      setFrontIdPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [frontId, formData.identityCard?.frontImage]);
+
+  useEffect(() => {
+    if (formData.identityCard?.backImage && !backId) {
+      setBackIdPreview(formData.identityCard.backImage);
+    } else if (backId) {
+      const url = URL.createObjectURL(backId);
+      setBackIdPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [backId, formData.identityCard?.backImage]);
 
   // Auto-populate fields when FPT AI data is available
   useEffect(() => {
@@ -234,21 +259,54 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validate the file
+    if (!validateImageFile(file, 10)) {
+      return;
+    }
+
     if (type === "front") {
       setFrontId(file);
       // Automatically analyze with FPT AI
       try {
         await analyzeFrontSide(file);
+        
+        // Upload to Cloudinary and store the URL
+        const uploadResult = await uploadImageToCloudinary(file, {
+          folder: 'artist-cccd',
+          tags: ['cccd', 'front', 'artist']
+        });
+        
+        // Update the form data to persist the image URL
+        updateIdentityCard({
+          frontImage: uploadResult.secure_url
+        });
+        
+        toast.success('Tải ảnh mặt trước CCCD thành công!');
       } catch (error) {
-        console.error("Error analyzing front side:", error);
+        console.error("Error processing front side:", error);
+        toast.error("Lỗi khi xử lý ảnh mặt trước CCCD");
       }
     } else if (type === "back") {
       setBackId(file);
       // Automatically analyze with FPT AI
       try {
         await analyzeBackSide(file);
+        
+        // Upload to Cloudinary and store the URL
+        const uploadResult = await uploadImageToCloudinary(file, {
+          folder: 'artist-cccd',
+          tags: ['cccd', 'back', 'artist']
+        });
+        
+        // Update the form data to persist the image URL
+        updateIdentityCard({
+          backImage: uploadResult.secure_url
+        });
+        
+        toast.success('Tải ảnh mặt sau CCCD thành công!');
       } catch (error) {
-        console.error("Error analyzing back side:", error);
+        console.error("Error processing back side:", error);
+        toast.error("Lỗi khi xử lý ảnh mặt sau CCCD");
       }
     } else {
       setAuthorizationLetter(file);
@@ -304,6 +362,8 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
           <IDUploadComponent
             frontId={frontId}
             backId={backId}
+            frontPreview={frontIdPreview}
+            backPreview={backIdPreview}
             errors={errors}
             onFileUpload={handleFileUpload}
           />

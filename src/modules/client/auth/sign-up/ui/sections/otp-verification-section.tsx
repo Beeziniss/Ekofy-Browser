@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 import { useSignUpStore } from '@/store/stores/index';
-
+import useSignUp from '../../hook/use-sign-up';
 interface OTPVerificationSectionProps {
   onNext: (data?: any) => void;
   onBack: () => void;
@@ -18,22 +18,58 @@ interface OTPVerificationSectionProps {
 
 const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerificationSectionProps) => {
   const [otp, setOtp] = useState(initialData?.otp || '');
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [countdown, setCountdown] = useState(60); // Start with 60 seconds
+  const [canResend, setCanResend] = useState(false); // Start disabled
   
-  const { completeOTPVerification, goToPreviousStep } = useSignUpStore();
+  const { completeOTPVerification, goToPreviousStep, formData } = useSignUpStore();
+  const { 
+    verifyOTP, 
+    isVerifyingOTP, 
+    verifyOTPError,
+    resendOTP, 
+    isResendingOTP, 
+    resendOTPError 
+  } = useSignUp();
+
+  // Countdown timer effect - starts immediately when component mounts
+  React.useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    
+    if (countdown > 0) {
+      interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            setCanResend(true); // Enable resend button after countdown
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [countdown]);
+
+  // Debug log to show what data is available
+  React.useEffect(() => {
+    console.log('OTP Section - Available form data:', formData);
+    console.log('OTP Section - Email available:', formData.email);
+  }, [formData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!otp || otp.length < 4) {
-      console.log('Please enter a valid OTP');
+    if (!otp || otp.length < 4 ) {
+      console.log('Please enter a valid 6-digit OTP');
       return;
     }
     
-    setIsVerifying(true);
-    
     try {
-      console.log('OTP submitted:', otp);
+      
+      // Verify OTP using the hook
+      await verifyOTP(otp);
       
       // Complete OTP verification - this is the final step
       await completeOTPVerification({ otp });
@@ -42,15 +78,28 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
       onNext({ otp });
     } catch (error) {
       console.error('OTP verification failed:', error);
-    } finally {
-      setIsVerifying(false);
     }
   };
 
-  const handleResendCode = () => {
-    // Handle resend code logic
-    console.log('Resend code clicked');
-    // TODO: Implement resend OTP functionality
+  const handleOTPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value; 
+    setOtp(value);
+  };
+
+  const handleResendCode = async () => {
+    if (!canResend || isResendingOTP) {
+      return;
+    }
+    
+    try {
+      await resendOTP();
+      
+      // Reset countdown for next resend (60 seconds)
+      setCanResend(false);
+      setCountdown(60);
+    } catch (error) {
+      console.error('Resend OTP failed:', error);
+    }
   };
 
   const handleBack = () => {
@@ -98,7 +147,7 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
               type="text"
               maxLength={6}
               value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              onChange={handleOTPChange}
               placeholder="Nhập mã xác thực"
               required
               className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
@@ -111,20 +160,29 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
             <button
               type="button"
               onClick={handleResendCode}
-              className="text-white hover:text-blue-400 transition-colors underline text-sm"
+              disabled={isResendingOTP || !canResend}
+              className={`text-sm transition-colors underline ${
+                isResendingOTP || !canResend 
+                  ? 'text-gray-500 cursor-not-allowed' 
+                  : 'text-white hover:text-blue-400'
+              }`}
             >
-              Gửi lại mã xác thực.
+              {isResendingOTP 
+                ? "Đang gửi..." 
+                : !canResend 
+                ? `Gửi lại sau ${countdown}s` 
+                : "Gửi lại mã xác thực"}
             </button>
           </div>
 
           {/* Verify Button */}
           <Button
             type="submit"
-            disabled={isVerifying || !otp || otp.length < 4}
+            disabled={isVerifyingOTP || !otp || otp.length !== 6}
             className="w-full primary_gradient hover:opacity-90 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
             size="lg"
           >
-            {isVerifying ? "Đang xác thực..." : "Hoàn thành đăng ký"}
+            {isVerifyingOTP ? "Đang xác thực..." : "Xác thực OTP"}
           </Button>
         </form>
       </div>

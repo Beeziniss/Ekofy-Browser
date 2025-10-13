@@ -19,6 +19,7 @@ import { convertArtistStoreDataToAPIFormat } from '@/utils/signup-utils';
 import { isValidPhoneNumber, formatPhoneNumber } from '@/utils/signup-utils';
 import { toast } from 'sonner';
 import { UserGender } from '@/gql/graphql';
+import { useRouter } from 'next/navigation';
 
 interface Member {
   fullName: string;
@@ -38,8 +39,15 @@ const ArtistMembersSection = ({
   onBack,
   initialData,
 }: ArtistMembersSectionProps) => {
-  const { formData, updateFormData, proceedToRegistration } = useArtistSignUpStore();
-  const { signUp, isLoading } = useArtistSignUp();
+  const router = useRouter();
+  const { formData, updateFormData } = useArtistSignUpStore();
+  
+  // Handle navigation to login after successful registration
+  const handleNavigateToLogin = () => {
+    router.push('/artist/login');
+  };
+  
+  const { signUp, isLoading } = useArtistSignUp(handleNavigateToLogin);
   const [members, setMembers] = useState<Member[]>(initialData || formData.members || []);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -116,10 +124,14 @@ const ArtistMembersSection = ({
           ...formData,
           members: membersData
         });
+        
+        // Debug: Log để kiểm tra avatarImage có được include không
+        console.log("🔍 FormData before registration:", formData);
+        console.log("🚀 Registration Data for BAND:", registrationData);
+        
         // Call registration API
         signUp(registrationData);
-        // Move to OTP step after API call
-        proceedToRegistration();
+        // Registration will redirect to login on success via hook
         
       } catch (error) {
         if (error instanceof Error) {

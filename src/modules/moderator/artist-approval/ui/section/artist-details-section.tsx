@@ -2,8 +2,16 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import { ArtistInfoCard, BandMembersCard, ArtistActionsCard } from "../component";
-import { moderatorArtistDetailsQueryOptions } from "@/gql/options/moderator-options";
+import { 
+  moderatorArtistDetailsQueryOptions, 
+} from "@/gql/options/moderator-options";
+import {  
+  useApproveArtistRegistration, 
+  useRejectArtistRegistration 
+} from "@/gql/client-mutation-options/moderator-mutation";
 import { ArtistType } from "@/gql/graphql";
 import { ArrowLeft } from "lucide-react";
 
@@ -13,6 +21,7 @@ interface ArtistDetailsSectionProps {
 
 export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
   const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const {
     data: artist,
@@ -20,19 +29,49 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
     error,
   } = useQuery(moderatorArtistDetailsQueryOptions(userId));
 
+  const approveArtistMutation = useApproveArtistRegistration();
+  const rejectArtistMutation = useRejectArtistRegistration();
+
   const handleApprove = async () => {
+    if (!artist || isProcessing) return;
+    
+    setIsProcessing(true);
     try {
+      await approveArtistMutation.mutateAsync({
+        userId: artist.id,
+        email: artist.email,
+        fullName: artist.fullName,
+      });
+      
+      toast.success("Artist registration approved successfully!");
       router.push("/moderator/artist-approval");
     } catch (error) {
       console.error("Failed to approve artist:", error);
+      toast.error("Failed to approve artist registration. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const handleReject = async () => {
+  const handleReject = async (rejectionReason: string) => {
+    if (!artist || isProcessing) return;
+    
+    setIsProcessing(true);
     try {
+      await rejectArtistMutation.mutateAsync({
+        userId: artist.id,
+        email: artist.email,
+        fullName: artist.fullName,
+        rejectionReason,
+      });
+      
+      toast.success("Artist registration rejected successfully!");
       router.push("/moderator/artist-approval");
     } catch (error) {
       console.error("Failed to reject artist:", error);
+      toast.error("Failed to reject artist registration. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -89,6 +128,7 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
         userId={userId}
         onApprove={handleApprove}
         onReject={handleReject}
+        isLoading={isProcessing}
         // onCancel={handleCancel}
       />
     </div>

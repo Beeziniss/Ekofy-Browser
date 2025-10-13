@@ -9,12 +9,12 @@ interface ClientLayoutProps {
 
 const ClientLayout = ({ children }: ClientLayoutProps) => {
   return (
-    <div className="h-full w-full pt-[66px] pb-12">
+    <div className="h-full w-full pt-[66px] pb-20">
       {/* Header */}
       <ClientHeader />
 
       {/* Main Content */}
-      <main className="px-3 py-8">{children}</main>
+      <main>{children}</main>
 
       {/* Playback Control */}
       <PlaybackControl />

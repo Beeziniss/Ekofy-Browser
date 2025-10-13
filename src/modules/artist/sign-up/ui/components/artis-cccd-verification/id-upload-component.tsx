@@ -7,6 +7,8 @@ import Image from "next/image";
 interface IDUploadComponentProps {
   frontId: File | null;
   backId: File | null;
+  frontPreview?: string | null; // Add preview URL prop
+  backPreview?: string | null; // Add preview URL prop
   errors: Record<string, string>;
   onFileUpload: (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -17,11 +19,13 @@ interface IDUploadComponentProps {
 const IDUploadComponent = ({
   frontId,
   backId,
+  frontPreview: frontPreviewProp,
+  backPreview: backPreviewProp,
   errors,
   onFileUpload,
 }: IDUploadComponentProps) => {
-  const [frontPreview, setFrontPreview] = useState<string | null>(null);
-  const [backPreview, setBackPreview] = useState<string | null>(null);
+  const [frontPreview, setFrontPreview] = useState<string | null>(frontPreviewProp || null);
+  const [backPreview, setBackPreview] = useState<string | null>(backPreviewProp || null);
 
   // Create preview URLs when files change
   useEffect(() => {
@@ -29,20 +33,24 @@ const IDUploadComponent = ({
       const url = URL.createObjectURL(frontId);
       setFrontPreview(url);
       return () => URL.revokeObjectURL(url);
+    } else if (frontPreviewProp) {
+      setFrontPreview(frontPreviewProp);
     } else {
       setFrontPreview(null);
     }
-  }, [frontId]);
+  }, [frontId, frontPreviewProp]);
 
   useEffect(() => {
     if (backId) {
       const url = URL.createObjectURL(backId);
       setBackPreview(url);
       return () => URL.revokeObjectURL(url);
+    } else if (backPreviewProp) {
+      setBackPreview(backPreviewProp);
     } else {
       setBackPreview(null);
     }
-  }, [backId]);
+  }, [backId, backPreviewProp]);
   return (
     <div>
       <h3 className="mb-6 text-lg font-medium text-white">

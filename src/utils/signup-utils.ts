@@ -209,7 +209,7 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
     birthDate: formData.birthDate!,
     gender: formData.gender!,
     phoneNumber: finalPhoneNumber || "", // Allow empty for now to see specific API error
-    
+    avatarImage: formData.avatarImage, // Optional avatar URL - sử dụng camelCase
     // Artist specific - stageName is required by API
     stageName: finalStageName,
     artistType: formData.artistType!,
@@ -244,6 +244,7 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
     hasFullName: !!result.fullName,
     hasStageName: !!result.stageName,
     hasPhoneNumber: !!result.phoneNumber,
+    hasAvatarImage: !!result.avatarImage, // Thêm log cho avatarImage
     hasIdentityCard: !!result.identityCard,
     hasIdentityCardFields: {
       number: !!result.identityCard.number,

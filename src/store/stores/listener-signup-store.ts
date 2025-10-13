@@ -13,6 +13,7 @@ export interface SignUpFormData {
   birthDate: Date | undefined;
   gender: string;
   displayName: string;
+  avatarImage?: string; // Add avatar image URL
   otp?: string;
 }
 
@@ -125,7 +126,7 @@ export const useSignUpStore = create<SignUpState>()(
       },
     }),
     {
-      name: "signup-store",
+      name: "signup-store", // Remove persistence, just for devtools
     }
   )
 );
