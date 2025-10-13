@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { listenerProfileOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
 import { useAuthStore } from "@/store";
 import { format } from "date-fns";
@@ -8,8 +8,8 @@ import { format } from "date-fns";
 export function useClientProfile() {
   const { user } = useAuthStore();
   const userId = user?.userId || "";
-  const listenerQuery = useQuery(listenerProfileOptions(userId));
-  const subscriptionQuery = useQuery(userActiveSubscriptionOptions(userId));
+  const listenerQuery = useSuspenseQuery(listenerProfileOptions(userId));
+  const subscriptionQuery = useSuspenseQuery(userActiveSubscriptionOptions(userId));
 
   const listener = listenerQuery.data;
 

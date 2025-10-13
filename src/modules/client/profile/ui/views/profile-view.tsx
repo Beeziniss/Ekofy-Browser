@@ -13,9 +13,7 @@ export default function ProfileView() {
     avatarUrl: rest.data?.avatarImage || "",
     backgroundUrl: rest.data?.bannerImage || "/image-login.png",
   };
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
+  // With Suspense + server prefetch via HydrationBoundary, we don't need a mounted guard
 
   const handleAvatar = (file: File) => {
     console.log("Avatar chọn:", file.name);
