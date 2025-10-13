@@ -20,8 +20,9 @@ export const TrackDetailViewQuery = graphql(`
         streamCount
         mainArtistIds
         artist {
+          id
           stageName
-          followers
+          followerCount
         }
       }
     }

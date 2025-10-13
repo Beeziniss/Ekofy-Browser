@@ -134,7 +134,7 @@ type Artist {
   categoryIds: [String!]!
   createdAt: DateTime!
   email: String!
-  followers: Long!
+  followerCount: Long!
   id: String!
   identityCard: IdentityCard!
   isVerified: Boolean!
@@ -158,7 +158,7 @@ input ArtistFilterInput {
   categoryIds: ListStringOperationFilterInput
   createdAt: DateTimeOperationFilterInput
   email: StringOperationFilterInput
-  followers: LongOperationFilterInput
+  followerCount: LongOperationFilterInput
   id: StringOperationFilterInput
   identityCard: IdentityCardFilterInput
   isVerified: BooleanOperationFilterInput
@@ -249,6 +249,22 @@ input ArtistPackageStatusOperationFilterInput {
   nin: [ArtistPackageStatus!]
 }
 
+"""A segment of a collection."""
+type ArtistPackagesCollectionSegment {
+  """A flattened list of the items."""
+  items: [ArtistPackage!]
+  """Information to aid in pagination."""
+  pageInfo: CollectionSegmentInfo!
+  totalCount: Int!
+}
+
+input ArtistRegistrationApprovalRequestInput {
+  email: String!
+  fullName: String!
+  rejectionReason: String
+  userId: String!
+}
+
 enum ArtistRole {
   COMPOSER
   FEATURED
@@ -270,7 +286,7 @@ input ArtistSortInput {
   biography: SortEnumType
   createdAt: SortEnumType
   email: SortEnumType
-  followers: SortEnumType
+  followerCount: SortEnumType
   id: SortEnumType
   identityCard: IdentityCardSortInput
   isVerified: SortEnumType
@@ -498,6 +514,51 @@ type CollectionSegmentInfo {
   Indicates whether more items exist prior the set defined by the clients arguments.
   """
   hasPreviousPage: Boolean!
+}
+
+input CommentRepliesRequestInput {
+  commentId: String!
+  page: Int!
+  pageSize: Int!
+  sortOrder: CommentSortOrder!
+}
+
+type CommentRepliesResponse {
+  hasNextPage: Boolean!
+  page: Int!
+  pageSize: Int!
+  parentCommentId: String!
+  replies: [TrackCommentResponse!]!
+  totalReplies: Int!
+}
+
+enum CommentSortOrder {
+  CHRONOLOGICAL
+  POPULARITY_BASED
+  REVERSE_CHRONOLOGICAL
+  THREAD_ACTIVITY
+}
+
+type CommentThread {
+  hasMoreReplies: Boolean!
+  lastActivity: DateTime!
+  replies: [TrackCommentResponse!]!
+  rootComment: TrackCommentResponse!
+  totalReplies: Int!
+}
+
+"""A segment of a collection."""
+type CommentThreadCollectionSegment {
+  """A flattened list of the items."""
+  items: [TrackCommentResponse!]
+  """Information to aid in pagination."""
+  pageInfo: CollectionSegmentInfo!
+  totalCount: Int!
+}
+
+input CommentThreadRequestInput {
+  commentId: String!
+  includeDeleted: Boolean!
 }
 
 type Coupon {
@@ -742,6 +803,12 @@ input CreateSubscriptionRequestInput {
   version: Int!
 }
 
+input CreateTrackCommentRequestInput {
+  content: String!
+  parentCommentId: String
+  trackId: String!
+}
+
 input CreateTrackRequestInput {
   categoryIds: [String!]!
   coverImage: String!
@@ -841,6 +908,10 @@ input DecimalOperationFilterInput {
   nin: [Decimal]
   nlt: Decimal
   nlte: Decimal
+}
+
+input DeleteTrackCommentRequestInput {
+  commentId: String!
 }
 
 enum DocumentType {
@@ -966,6 +1037,10 @@ input FloatOperationFilterInput {
   nin: [Float]
   nlt: Float
   nlte: Float
+}
+
+input FollowUserRequestInput {
+  targetUserId: String!
 }
 
 type IdentityCard {
@@ -1471,8 +1546,12 @@ enum MoodType {
 
 type MutationInitialization {
   approveArtistPackage(updateStatusRequest: UpdateStatusArtistPackageRequestInput!): Boolean!
+  approveArtistRegistration(request: ArtistRegistrationApprovalRequestInput!): Boolean!
   approveTrackUploadRequest(recordingId: String!, trackId: String!, workId: String!): Boolean!
+  banUser(targetUserId: String!): Boolean!
   changeArtistPackageStatus(updateStatusRequest: UpdateStatusArtistPackageRequestInput!): Boolean!
+  commentReplies(request: CommentRepliesRequestInput!): CommentRepliesResponse!
+  commentThread(request: CommentThreadRequestInput!): [TrackCommentResponse!]!
   convertToHls(file: Upload!): String!
   convertToWavFile(file: Upload!): WavFileResponse!
   createAdmin(createAdminRequest: CreateAdminRequestInput!): Boolean!
@@ -1495,21 +1574,28 @@ type MutationInitialization {
   createSubscription(createSubscriptionRequest: CreateSubscriptionRequestInput!): Boolean!
   createSubscriptionCheckoutSession(createCheckoutSessionRequest: CreateSubscriptionCheckoutSessionRequestInput!): CheckoutSessionResponse!
   createSubscriptionPlan(createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!): Boolean!
+  createTrackComment(request: CreateTrackCommentRequestInput!): Boolean!
   deactiveEntitlement(code: String!): Boolean!
   deleteCoupon(couponIds: [String!]!): Boolean!
+  deleteTrackComment(request: DeleteTrackCommentRequestInput!): Boolean!
   deprecateCoupon(couponIds: [String!]!): Boolean!
   deprecateSubscription(subscriptionId: String!): Boolean!
   downgradeRoyaltyPolicyVersion(version: Long): Boolean!
   entitlementUserCount(code: String!): Long!
+  followUser(request: FollowUserRequestInput!): Boolean!
   hello: String!
+  reActiveUser(targetUserId: String!): Boolean!
   reactiveEntitlement(code: String!): Boolean!
   registerArtistManual(createArtistRequest: CreateArtistRequestInput!): Boolean!
+  rejectArtistRegistration(request: ArtistRegistrationApprovalRequestInput!): Boolean!
   rejectTrackUploadRequest(recordingId: String!, trackId: String!, workId: String!): Boolean!
   seedEntitlements(password: String!): Boolean!
   seedRoyaltyPolicyData(password: String!): Boolean!
-  updateArtist(updateArtistRequest: UpdateArtistRequestInput!): Boolean!
-  updateProfile(updateListenerRequest: UpdateListenerRequestInput!): Boolean!
+  threadedComments(request: ThreadedCommentsRequestInput!): ThreadedCommentsResponse!
+  unfollowUser(request: UnfollowUserRequestInput!): Boolean!
+  updateProfile(updateArtistRequest: UpdateArtistRequestInput!, updateListenerRequest: UpdateListenerRequestInput!): Boolean!
   updateRequest(request: RequestUpdatingRequestInput!): Boolean!
+  updateTrackComment(request: UpdateTrackCommentRequestInput!): Boolean!
   uploadFile(file: Upload!, fileName: String!): String!
   uploadTrack(createRecordingRequest: CreateRecordingRequestInput!, createTrackRequest: CreateTrackRequestInput!, createWorkRequest: CreateWorkRequestInput!, file: Upload!): Boolean!
   uploadTrackFingerprint(artistId: String!, file: Upload!, trackId: String!, trackName: String!): String!
@@ -1612,6 +1698,52 @@ input PaymentTransactionSortInput {
   stripePaymentId: SortEnumType
   updatedAt: SortEnumType
   userId: SortEnumType
+}
+
+type PendingArtistRegistrationResponse {
+  artistType: ArtistType!
+  avatarImage: String
+  backImageUrl: String
+  birthDate: DateTime!
+  email: String!
+  frontImageUrl: String
+  fullName: String!
+  gender: UserGender!
+  id: String!
+  identityCardDateOfBirth: DateTime!
+  identityCardFullName: String!
+  identityCardNumber: String!
+  members: [ArtistMember!]!
+  phoneNumber: String!
+  placeOfOrigin: String!
+  placeOfResidence: String!
+  requestedAt: DateTime!
+  stageName: String!
+  timeToLive: TimeSpan
+}
+
+input PendingArtistRegistrationResponseFilterInput {
+  and: [PendingArtistRegistrationResponseFilterInput!]
+  artistType: ArtistTypeOperationFilterInput
+  avatarImage: StringOperationFilterInput
+  backImageUrl: StringOperationFilterInput
+  birthDate: DateTimeOperationFilterInput
+  email: StringOperationFilterInput
+  frontImageUrl: StringOperationFilterInput
+  fullName: StringOperationFilterInput
+  gender: UserGenderOperationFilterInput
+  id: StringOperationFilterInput
+  identityCardDateOfBirth: DateTimeOperationFilterInput
+  identityCardFullName: StringOperationFilterInput
+  identityCardNumber: StringOperationFilterInput
+  members: ListFilterInputTypeOfArtistMemberFilterInput
+  or: [PendingArtistRegistrationResponseFilterInput!]
+  phoneNumber: StringOperationFilterInput
+  placeOfOrigin: StringOperationFilterInput
+  placeOfResidence: StringOperationFilterInput
+  requestedAt: DateTimeOperationFilterInput
+  stageName: StringOperationFilterInput
+  timeToLive: TimeSpanOperationFilterInput
 }
 
 """A segment of a collection."""
@@ -1736,13 +1868,17 @@ type QueryAudioFingerprintResponse {
 }
 
 type QueryInitialization {
-  artistPackages(order: [ArtistPackageSortInput!], where: ArtistPackageFilterInput): [ArtistPackage!]!
+  artistPackages(order: [ArtistPackageSortInput!], skip: Int, take: Int, where: ArtistPackageFilterInput): ArtistPackagesCollectionSegment
   artists(order: [ArtistSortInput!], skip: Int, take: Int, where: ArtistFilterInput): ArtistsCollectionSegment
   categories(order: [CategorySortInput!], skip: Int, take: Int, where: CategoryFilterInput): CategoriesCollectionSegment
+  commentDepth(commentId: String!): Int!
+  commentReplies(request: CommentRepliesRequestInput!): CommentRepliesResponse!
+  commentThread(request: CommentThreadRequestInput!, skip: Int, take: Int): CommentThreadCollectionSegment
   coupons(order: [CouponSortInput!], skip: Int, take: Int, where: CouponFilterInput): CouponsCollectionSegment
   entitlements(order: [EntitlementSortInput!], skip: Int, take: Int, where: EntitlementFilterInput): [Entitlement!]!
   hello: String!
   invoices(order: [InvoiceSortInput!], skip: Int, take: Int, where: InvoiceFilterInput): InvoicesCollectionSegment
+  isCommentInThread(commentId: String!, threadRootId: String!): Boolean!
   legalPolicies(order: [LegalPolicySortInput!], skip: Int, take: Int, where: LegalPolicyFilterInput): LegalPoliciesCollectionSegment
   listeners(order: [ListenerSortInput!], skip: Int, take: Int, where: ListenerFilterInput): ListenersCollectionSegment
   messagesExecutable: [Message!]!
@@ -1751,6 +1887,7 @@ type QueryInitialization {
   metadataWorkUploadRequest(workId: String!): WorkTempRequest!
   monthlyStreamCounts(order: [MonthlyStreamCountSortInput!], skip: Int, take: Int, where: MonthlyStreamCountFilterInput): MonthlyStreamCountsCollectionSegment
   originalFileTrackUploadRequest(trackId: String!): String!
+  pendingArtistRegistrations(pageNumber: Int! = 1, pageSize: Int! = 20, where: PendingArtistRegistrationResponseFilterInput): [PendingArtistRegistrationResponse!]!
   pendingTrackUploadRequests(skip: Int, take: Int, where: TrackTempRequestFilterInput): PendingTrackUploadRequestsCollectionSegment
   playlists(order: [PlaylistSortInput!], skip: Int, take: Int, where: PlaylistFilterInput): PlaylistsCollectionSegment
   queryTrack(file: Upload!): QueryAudioFingerprintResponse!
@@ -1761,9 +1898,11 @@ type QueryInitialization {
   royaltyReports(order: [RoyaltyReportSortInput!], skip: Int, take: Int, where: RoyaltyReportFilterInput): RoyaltyReportsCollectionSegment
   subscriptionPlans(order: [SubscriptionPlanSortInput!], skip: Int, take: Int, where: SubscriptionPlanFilterInput): SubscriptionPlansCollectionSegment
   subscriptions(order: [SubscriptionSortInput!], skip: Int, take: Int, where: SubscriptionFilterInput): SubscriptionsCollectionSegment
+  threadedComments(request: ThreadedCommentsRequestInput!): ThreadedCommentsResponse!
+  trackBySemanticSearch(term: String!): [Track!]!
+  trackComments(order: [TrackCommentSortInput!], skip: Int, take: Int, where: TrackCommentFilterInput): TrackCommentsCollectionSegment
   tracks(order: [TrackSortInput!], skip: Int, take: Int, where: TrackFilterInput): TracksCollectionSegment
   transactions(order: [PaymentTransactionSortInput!], skip: Int, take: Int, where: PaymentTransactionFilterInput): TransactionsCollectionSegment
-  userById(id: String!, order: [UserSortInput!]): User!
   userSubscriptions(order: [UserSubscriptionSortInput!], skip: Int, take: Int, where: UserSubscriptionFilterInput): UserSubscriptionsCollectionSegment
   users(order: [UserSortInput!], skip: Int, take: Int, where: UserFilterInput): UsersCollectionSegment
   worksQueryable(order: [WorkSortInput!], skip: Int, take: Int, where: WorkFilterInput): WorksQueryableCollectionSegment
@@ -2314,7 +2453,41 @@ input SyncedLineFilterInput {
   time: FloatOperationFilterInput
 }
 
+input ThreadedCommentsRequestInput {
+  page: Int!
+  pageSize: Int!
+  sortOrder: CommentSortOrder!
+  trackId: String!
+}
+
+type ThreadedCommentsResponse {
+  hasNextPage: Boolean!
+  page: Int!
+  pageSize: Int!
+  threads: [CommentThread!]!
+  totalThreads: Int!
+}
+
+"""The `TimeSpan` scalar represents an ISO-8601 compliant duration type."""
+scalar TimeSpan
+
+input TimeSpanOperationFilterInput {
+  eq: TimeSpan
+  gt: TimeSpan
+  gte: TimeSpan
+  in: [TimeSpan]
+  lt: TimeSpan
+  lte: TimeSpan
+  neq: TimeSpan
+  ngt: TimeSpan
+  ngte: TimeSpan
+  nin: [TimeSpan]
+  nlt: TimeSpan
+  nlte: TimeSpan
+}
+
 type Track {
+  alternativeDescription: String!
   artist: [Artist]!
   category: [Category]!
   categoryIds: [String!]!
@@ -2322,6 +2495,7 @@ type Track {
   createdAt: DateTime!
   createdBy: String!
   description: String
+  embeddingVector: [Float!]!
   favoriteCount: Long!
   featuredArtistIds: [String!]!
   id: String!
@@ -2341,7 +2515,105 @@ type Track {
   updatedBy: String
 }
 
+type TrackComment {
+  commenterId: String!
+  content: String!
+  createdAt: DateTime!
+  createdBy: String!
+  depth: Int!
+  id: String!
+  isDeleted: Boolean!
+  isEdited: Boolean!
+  isRootComment: Boolean!
+  parentCommentId: String
+  replyCount: Long!
+  rootCommentId: String
+  sortOrder: Int!
+  threadId: String!
+  threadPath: [String!]!
+  threadUpdatedAt: DateTime!
+  totalRepliesCount: Long!
+  trackId: String!
+  updatedAt: DateTime
+  updatedBy: String
+}
+
+input TrackCommentFilterInput {
+  and: [TrackCommentFilterInput!]
+  commenterId: StringOperationFilterInput
+  content: StringOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+  createdBy: StringOperationFilterInput
+  depth: IntOperationFilterInput
+  id: StringOperationFilterInput
+  isDeleted: BooleanOperationFilterInput
+  isEdited: BooleanOperationFilterInput
+  isRootComment: BooleanOperationFilterInput
+  or: [TrackCommentFilterInput!]
+  parentCommentId: StringOperationFilterInput
+  replyCount: LongOperationFilterInput
+  rootCommentId: StringOperationFilterInput
+  sortOrder: IntOperationFilterInput
+  threadPath: ListStringOperationFilterInput
+  threadUpdatedAt: DateTimeOperationFilterInput
+  totalRepliesCount: LongOperationFilterInput
+  trackId: StringOperationFilterInput
+  updatedAt: DateTimeOperationFilterInput
+  updatedBy: StringOperationFilterInput
+}
+
+type TrackCommentResponse {
+  commenterId: String!
+  content: String!
+  createdAt: DateTime!
+  depth: Int!
+  id: String!
+  isDeleted: Boolean!
+  isEdited: Boolean!
+  isRootComment: Boolean!
+  parentCommentId: String
+  replyCount: Long!
+  rootCommentId: String
+  threadId: String!
+  threadPath: [String!]!
+  threadUpdatedAt: DateTime!
+  totalRepliesCount: Long!
+  trackId: String!
+  updatedAt: DateTime
+}
+
+input TrackCommentSortInput {
+  commenterId: SortEnumType
+  content: SortEnumType
+  createdAt: SortEnumType
+  createdBy: SortEnumType
+  depth: SortEnumType
+  id: SortEnumType
+  isDeleted: SortEnumType
+  isEdited: SortEnumType
+  isRootComment: SortEnumType
+  parentCommentId: SortEnumType
+  replyCount: SortEnumType
+  rootCommentId: SortEnumType
+  sortOrder: SortEnumType
+  threadUpdatedAt: SortEnumType
+  totalRepliesCount: SortEnumType
+  trackId: SortEnumType
+  updatedAt: SortEnumType
+  updatedBy: SortEnumType
+}
+
+"""A segment of a collection."""
+type TrackCommentsCollectionSegment {
+  """A flattened list of the items."""
+  items: [TrackComment!]
+  """Information to aid in pagination."""
+  pageInfo: CollectionSegmentInfo!
+  totalCount: Int!
+}
+
 input TrackFilterInput {
+  alternativeDescription: StringOperationFilterInput
   and: [TrackFilterInput!]
   audioFeature: AudioFeatureFilterInput
   audioFingerprint: AudioFingerprintFilterInput
@@ -2350,6 +2622,7 @@ input TrackFilterInput {
   createdAt: DateTimeOperationFilterInput
   createdBy: StringOperationFilterInput
   description: StringOperationFilterInput
+  embeddingVector: ListFloatOperationFilterInput
   favoriteCount: LongOperationFilterInput
   featuredArtistIds: ListStringOperationFilterInput
   id: StringOperationFilterInput
@@ -2371,6 +2644,7 @@ input TrackFilterInput {
 }
 
 input TrackSortInput {
+  alternativeDescription: SortEnumType
   audioFeature: AudioFeatureSortInput
   audioFingerprint: AudioFingerprintSortInput
   coverImage: SortEnumType
@@ -2478,10 +2752,17 @@ type TransactionsCollectionSegment {
 
 scalar UInt32
 
+input UnfollowUserRequestInput {
+  targetUserId: String!
+}
+
 input UpdateArtistRequestInput {
   avatarImage: String
   bannerImage: String
   biography: String
+  email: String
+  fullName: String
+  phoneNumber: String
   stageName: String
 }
 
@@ -2500,11 +2781,17 @@ input UpdateListenerRequestInput {
   displayName: String
   email: String
   fullName: String
+  phoneNumber: String
 }
 
 input UpdateStatusArtistPackageRequestInput {
   id: String!
   status: ArtistPackageStatus!
+}
+
+input UpdateTrackCommentRequestInput {
+  commentId: String!
+  content: String!
 }
 
 """The `Upload` scalar type represents a file upload."""

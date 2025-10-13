@@ -18,13 +18,13 @@ type Documents = {
     "\n  query Users($where: UserFilterInput) {\n    users(where: $where) {\n      items {\n        id\n        email\n        fullName\n        gender\n        birthDate\n        role\n        phoneNumber\n        status\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": typeof types.UsersDocument,
     "\n  query TracksWithFilters(\n    $skip: Int!\n    $take: Int!\n    $where: TrackFilterInput\n    $order: [TrackSortInput!]\n  ) {\n    tracks(skip: $skip, take: $take, where: $where, order: $order) {\n      totalCount\n      items {\n        id\n        name\n        mainArtistIds\n        streamCount\n        favoriteCount\n        coverImage\n        isExplicit\n        releaseInfo {\n          releaseDate\n          isReleased\n        }\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n      }\n    }\n  }\n": typeof types.TracksWithFiltersDocument,
     "\n  query TrackListHome($take: Int!) {\n    tracks(take: $take) {\n      totalCount\n      items {\n        id\n        name\n        coverImage\n        mainArtistIds\n        artist {\n          id\n          stageName\n        }\n      }\n    }\n  }\n": typeof types.TrackListHomeDocument,
-    "\n  query TrackDetail($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        favoriteCount\n        streamCount\n        mainArtistIds\n        artist {\n          stageName\n          followers\n        }\n      }\n    }\n  }\n": typeof types.TrackDetailDocument,
+    "\n  query TrackDetail($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        favoriteCount\n        streamCount\n        mainArtistIds\n        artist {\n          id\n          stageName\n          followerCount\n        }\n      }\n    }\n  }\n": typeof types.TrackDetailDocument,
 };
 const documents: Documents = {
     "\n  query Users($where: UserFilterInput) {\n    users(where: $where) {\n      items {\n        id\n        email\n        fullName\n        gender\n        birthDate\n        role\n        phoneNumber\n        status\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": types.UsersDocument,
     "\n  query TracksWithFilters(\n    $skip: Int!\n    $take: Int!\n    $where: TrackFilterInput\n    $order: [TrackSortInput!]\n  ) {\n    tracks(skip: $skip, take: $take, where: $where, order: $order) {\n      totalCount\n      items {\n        id\n        name\n        mainArtistIds\n        streamCount\n        favoriteCount\n        coverImage\n        isExplicit\n        releaseInfo {\n          releaseDate\n          isReleased\n        }\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n      }\n    }\n  }\n": types.TracksWithFiltersDocument,
     "\n  query TrackListHome($take: Int!) {\n    tracks(take: $take) {\n      totalCount\n      items {\n        id\n        name\n        coverImage\n        mainArtistIds\n        artist {\n          id\n          stageName\n        }\n      }\n    }\n  }\n": types.TrackListHomeDocument,
-    "\n  query TrackDetail($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        favoriteCount\n        streamCount\n        mainArtistIds\n        artist {\n          stageName\n          followers\n        }\n      }\n    }\n  }\n": types.TrackDetailDocument,
+    "\n  query TrackDetail($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        favoriteCount\n        streamCount\n        mainArtistIds\n        artist {\n          id\n          stageName\n          followerCount\n        }\n      }\n    }\n  }\n": types.TrackDetailDocument,
 };
 
 /**
@@ -42,7 +42,7 @@ export function graphql(source: "\n  query TrackListHome($take: Int!) {\n    tra
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query TrackDetail($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        favoriteCount\n        streamCount\n        mainArtistIds\n        artist {\n          stageName\n          followers\n        }\n      }\n    }\n  }\n"): typeof import('./graphql').TrackDetailDocument;
+export function graphql(source: "\n  query TrackDetail($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        favoriteCount\n        streamCount\n        mainArtistIds\n        artist {\n          id\n          stageName\n          followerCount\n        }\n      }\n    }\n  }\n"): typeof import('./graphql').TrackDetailDocument;
 
 
 export function graphql(source: string) {
