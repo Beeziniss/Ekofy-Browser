@@ -1,7 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
 import { execute } from "../execute";
 import { TrackListHomeQuery } from "@/modules/client/home/ui/views/home-view";
-import { GetListenerProfileQuery, GetUserActiveSubscriptionQuery } from "@/modules/client/profile/ui/views/queries";
+import {
+  GetListenerProfileQuery,
+  GetUserActiveSubscriptionQuery,
+} from "@/modules/client/profile/ui/views/queries";
 import { TrackDetailViewQuery } from "@/modules/client/track/ui/views/track-detail-view";
 
 export const trackListHomeOptions = queryOptions({
@@ -39,6 +42,8 @@ export const userActiveSubscriptionOptions = (userId: string) =>
       return result.userSubscriptions?.items?.[0] || null;
     },
     enabled: !!userId,
+  });
+
 export const trackDetailOptions = (trackId: string) =>
   queryOptions({
     queryKey: ["track-detail", trackId],
