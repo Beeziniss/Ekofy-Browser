@@ -7,13 +7,13 @@ const TrackNameSection = () => {
 
   if (!currentTrack) {
     return (
-      <div className="flex w-80 items-center gap-3">
-        <div className="size-8 rounded-sm bg-gray-700" />
+      <div className="pointer-events-none flex w-80 items-center gap-3 opacity-50">
+        <div className="primary_gradient size-8 rounded-sm" />
         <div className="flex flex-col">
           <span className="truncate text-sm font-semibold text-gray-500">
-            No track selected
+            Track Name
           </span>
-          <span className="truncate text-xs text-gray-400">—</span>
+          <span className="truncate text-xs text-gray-400">Artist Name</span>
         </div>
       </div>
     );
