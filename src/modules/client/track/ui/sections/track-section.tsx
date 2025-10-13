@@ -116,7 +116,7 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
           className="text-main-white mt-auto duration-0 hover:brightness-90"
           onClick={handlePlayPauseClick}
         >
-          {currentTrack && globalIsPlaying ? (
+          {currentTrack && currentTrack.id === trackId && globalIsPlaying ? (
             <Image
               src={"/pause-button-large.svg"}
               alt="Ekofy Pause Button"
