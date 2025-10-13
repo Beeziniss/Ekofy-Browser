@@ -42,5 +42,3 @@ next-env.d.ts
 
 # generated files
 schema.graphql
-./src/gql/gql.ts
-./src/gql/graphql.ts
