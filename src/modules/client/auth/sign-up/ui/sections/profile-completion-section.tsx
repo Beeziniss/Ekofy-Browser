@@ -14,6 +14,7 @@ import { useSignUpStore } from '@/store/stores';
 import useSignUp from '../../hook/use-sign-up';
 import { formatDate } from '@/utils/signup-utils';
 import { toast } from 'sonner';
+import { uploadImageToCloudinary, validateImageFile } from '@/utils/cloudinary-utils';
 
 interface ProfileCompletionSectionProps {
   onNext: (data?: any) => void;
@@ -22,7 +23,7 @@ interface ProfileCompletionSectionProps {
     displayName: string;
     dateOfBirth: Date | undefined;
     gender: string;
-    avatar: File | null;
+    avatar?: File | null;
   };
 }
 
@@ -33,6 +34,8 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
   const [gender, setGender] = useState(initialData?.gender || '');
   const [avatar, setAvatar] = useState<File | null>(initialData?.avatar || null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [dateError, setDateError] = useState('');
 
   // Use the signup hook for API calls with auto-navigation to OTP step
@@ -48,17 +51,34 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
     goToPreviousStep, 
     goToNextStep, 
     formData,
-    // currentStep,
     updateFormData
   } = useSignUpStore();
+
+  // Populate fields from store when component mounts
+  useEffect(() => {
+    if (formData.displayName) setDisplayName(formData.displayName);
+    if (formData.fullName) setFullName(formData.fullName);
+    if (formData.birthDate) setDateOfBirth(formData.birthDate);
+    if (formData.gender) setGender(formData.gender);
+    // Set avatar URL if exists in store
+    if (formData.avatarImage) {
+      setAvatarUrl(formData.avatarImage);
+      setAvatarPreview(formData.avatarImage);
+    }
+  }, [formData]);
 
   useEffect(() => {
     if (avatar) {
       const url = URL.createObjectURL(avatar);
       setAvatarPreview(url);
       return () => URL.revokeObjectURL(url);
+    } else if (avatarUrl && !avatar) {
+      // Show stored URL if no new file is selected
+      setAvatarPreview(avatarUrl);
+    } else {
+      setAvatarPreview(null);
     }
-  }, [avatar]);
+  }, [avatar, avatarUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +100,8 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       displayName, 
       fullName: fullName || displayName, // Use displayName as fallback
       birthDate: dateOfBirth, 
-      gender 
+      gender,
+      avatarImage: avatarUrl || undefined // Add avatar URL to store
     };
     
     updateFormData(profileData);
@@ -90,17 +111,17 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
     
     // Validate required fields
     if (!completeData.email || !completeData.password || !completeData.confirmPassword) {
-      toast.error("Email và mật khẩu là bắt buộc");
+      toast.error("Email and password are required");
       return;
     }
     
     if (!completeData.fullName || !completeData.displayName) {
-      toast.error("Họ và tên là bắt buộc");
+      toast.error("Full name is required");
       return;
     }
     
     if (!completeData.birthDate || !completeData.gender) {
-      toast.error("Ngày sinh và giới tính là bắt buộc");
+      toast.error("Date of birth and gender are required");
       return;
     }
     
@@ -113,6 +134,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       birthDate: formatDate(completeData.birthDate),
       gender: completeData.gender,
       displayName: completeData.displayName,
+      avatarImage: avatarUrl, // Add avatar image URL
     };
     
     try {
@@ -123,9 +145,9 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       // console.error("Registration failed:", error);
       // Error handling is done by the hook
       if (error instanceof Error) {
-        toast.error(error.message || "Đăng ký thất bại. Vui lòng thử lại.");
+        toast.error(error.message || "Registration failed. Please try again.");
       } else {
-        toast.error("Đăng ký thất bại. Vui lòng thử lại.");
+        toast.error("Registration failed. Please try again.");
       }
     }
   };
@@ -146,10 +168,37 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
     onBack();
   };
 
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setAvatar(file);
+    if (!file) return;
+
+    // Validate the file
+    if (!validateImageFile(file, 5)) {
+      return;
+    }
+
+    setAvatar(file);
+    setAvatarUploading(true);
+
+    try {
+      // Upload to Cloudinary
+      const uploadResult = await uploadImageToCloudinary(file, {
+        folder: 'listener-avatars',
+        tags: ['listener', 'avatar']
+      });
+
+      setAvatarUrl(uploadResult.secure_url);
+      toast.success('Tải ảnh lên thành công!');
+      
+      // Store avatar URL in form data immediately
+      updateFormData({ avatarImage: uploadResult.secure_url });
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast.error('Lỗi khi tải ảnh lên. Vui lòng thử lại.');
+      setAvatar(null);
+      setAvatarUrl(null);
+    } finally {
+      setAvatarUploading(false);
     }
   };
 
@@ -193,6 +242,24 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                       alt="Avatar preview"
                       className="w-full h-full object-cover rounded-lg"
                     />
+                    {avatarUploading && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                        <div className="text-white text-sm">Đang tải lên...</div>
+                      </div>
+                    )}
+                    {/* Clear button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAvatar(null);
+                        setAvatarUrl(null);
+                        setAvatarPreview(null);
+                        updateFormData({ avatarImage: undefined });
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                    >
+                      ×
+                    </button>
                   </div>
                 ) : (
                   <>
@@ -207,7 +274,8 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                 type="file"
                 accept="image/*"
                 onChange={handleAvatarUpload}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                disabled={avatarUploading}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
               />
             </div>
             <p className="text-gray-400 text-xs mt-3 max-w-64 text-center">
@@ -336,11 +404,11 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
               <div className="pt-6">
                 <Button
                   type="submit"
-                  disabled={isRegistering}
+                  disabled={isRegistering || avatarUploading}
                   className="w-full primary_gradient hover:opacity-90 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
                   size="lg"
                 >
-                  {isRegistering ? "Creating Account..." : "Create Account"}
+                  {avatarUploading ? "Đang tải ảnh..." : isRegistering ? "Creating Account..." : "Create Account"}
                 </Button>
               </div>
             </form>

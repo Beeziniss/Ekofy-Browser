@@ -10,39 +10,78 @@ import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
 import useArtistSignUp from '../../hooks/use-artist-sign-up';
 import { convertArtistStoreDataToAPIFormat } from '@/utils/signup-utils';
 import { toast } from 'sonner';
+import { uploadImageToCloudinary, validateImageFile } from '@/utils/cloudinary-utils';
+import { useRouter } from 'next/navigation';
 
 interface ArtistIdentitySectionProps {
   onNext: (data?: any) => void;
   onBack: () => void;
   initialData?: {
-    coverImage: File | null;
+    // coverImage: File | null;
     stageName: string;
+    avatarImage?: File | null;
   };
 }
 
 const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySectionProps) => {
-  const { formData, updateFormData, goToNextStep, proceedToRegistration } = useArtistSignUpStore();
-  const { signUp, isLoading } = useArtistSignUp();
+  const router = useRouter();
+  const { formData, updateFormData, goToNextStep } = useArtistSignUpStore();
   
-  const [coverImage, setCoverImage] = useState<File | null>(initialData?.coverImage || null);
+  // Handle navigation to login after successful registration
+  const handleNavigateToLogin = () => {
+    router.push('/artist/login');
+  };
+  
+  const { signUp, isLoading } = useArtistSignUp(handleNavigateToLogin);
+  
+  // const [coverImage, setCoverImage] = useState<File | null>(initialData?.coverImage || null);
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
+  const [avatarImage, setAvatarImage] = useState<File | null>(initialData?.avatarImage || null);
+  const [avatarImagePreview, setAvatarImagePreview] = useState<string | null>(null);
   const [stageName, setStageName] = useState(initialData?.stageName || formData.stageName || '');
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
+  const [avatarImageUrl, setAvatarImageUrl] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Populate data from store when component mounts
   useEffect(() => {
-    if (coverImage) {
-      const url = URL.createObjectURL(coverImage);
-      setCoverImagePreview(url);
-      return () => URL.revokeObjectURL(url);
+    if (formData.stageName) setStageName(formData.stageName);
+    if (formData.avatarImage) {
+      setAvatarImageUrl(formData.avatarImage);
+      setAvatarImagePreview(formData.avatarImage);
+      console.log("🖼️ Loaded avatar from store:", formData.avatarImage);
     }
-  }, [coverImage]);
+  }, [formData]);
+
+  // useEffect(() => {
+  //   if (coverImage) {
+  //     const url = URL.createObjectURL(coverImage);
+  //     setCoverImagePreview(url);
+  //     return () => URL.revokeObjectURL(url);
+  //   }
+  // }, [coverImage]);
+
+  useEffect(() => {
+    if (avatarImage) {
+      const url = URL.createObjectURL(avatarImage);
+      setAvatarImagePreview(url);
+      return () => URL.revokeObjectURL(url);
+    } else if (avatarImageUrl && !avatarImage) {
+      // Show stored URL if no new file is selected
+      setAvatarImagePreview(avatarImageUrl);
+    } else {
+      setAvatarImagePreview(null);
+    }
+  }, [avatarImage, avatarImageUrl]);
 
   const handleSubmit = async () => {
     const newErrors: Record<string, string> = {};
     
-    if (!coverImage) {
-      newErrors.coverImage = "Vui lòng tải lên ảnh bìa";
-    }
+    // if (!coverImage) {
+    //   newErrors.coverImage = "Vui lòng tải lên ảnh bìa";
+    // }
     
     if (!stageName.trim()) {
       newErrors.stageName = "Vui lòng nhập nghệ danh";
@@ -54,6 +93,7 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
       // Update store with identity data
       const identityData = {
         stageName: stageName.trim(),
+        avatarImage: avatarImageUrl || undefined, // Add avatar image URL to store
       };
       
       updateFormData(identityData);
@@ -76,10 +116,14 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
           console.log("- fullName:", combinedData.fullName ? "✅" : "❌");
           console.log("- phoneNumber:", combinedData.phoneNumber ? "✅" : "❌");
           console.log("- stageName:", combinedData.stageName ? "✅" : "❌");
+          console.log("- avatarImage:", combinedData.avatarImage ? "✅" : "❌");
           console.log("- identityCard:", combinedData.identityCard ? "✅" : "❌");
           
           // Convert store data to API format for registration
-          const registrationData = convertArtistStoreDataToAPIFormat(combinedData);
+          const registrationData = convertArtistStoreDataToAPIFormat({
+            ...combinedData,
+            avatarImage: avatarImageUrl || undefined // Add avatar image URL
+          });
           
           // Debug: Log the registration data
           console.log("🚀 Registration Data:", registrationData);
@@ -87,8 +131,7 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
           // Call registration API
           signUp(registrationData);
           
-          // Move to OTP step after API call
-          proceedToRegistration();
+          // Registration will redirect to login on success via hook
           
         } catch (error) {
           console.error("❌ Registration error:", error);
@@ -104,16 +147,76 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
       
       // Also call the original onNext for backward compatibility
       onNext({
-        coverImage,
-        stageName
+        // coverImage,
+        stageName,
+        avatarImage
       });
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setCoverImage(file);
+    if (!file) return;
+
+    // Validate the file
+    if (!validateImageFile(file, 5)) {
+      return;
+    }
+
+    // setCoverImage(file);
+    setCoverUploading(true);
+
+    try {
+      // Upload to Cloudinary
+      const uploadResult = await uploadImageToCloudinary(file, {
+        folder: 'artist-covers',
+        tags: ['artist', 'cover']
+      });
+
+      setCoverImageUrl(uploadResult.secure_url);
+      toast.success('Tải ảnh bìa lên thành công!');
+    } catch (error) {
+      console.error('Error uploading cover image:', error);
+      toast.error('Lỗi khi tải ảnh bìa lên. Vui lòng thử lại.');
+      // setCoverImage(null);
+      setCoverImageUrl(null);
+    } finally {
+      setCoverUploading(false);
+    }
+  };
+
+  const handleAvatarImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate the file
+    if (!validateImageFile(file, 5)) {
+      return;
+    }
+
+    setAvatarImage(file);
+    setAvatarUploading(true);
+
+    try {
+      // Upload to Cloudinary
+      const uploadResult = await uploadImageToCloudinary(file, {
+        folder: 'artist-avatars',
+        tags: ['artist', 'avatar']
+      });
+
+      setAvatarImageUrl(uploadResult.secure_url);
+      toast.success('Tải ảnh đại diện lên thành công!');
+      
+      // Store avatar URL in form data immediately
+      updateFormData({ avatarImage: uploadResult.secure_url });
+      console.log("✅ Avatar uploaded and stored:", uploadResult.secure_url);
+    } catch (error) {
+      console.error('Error uploading avatar image:', error);
+      toast.error('Lỗi khi tải ảnh đại diện lên. Vui lòng thử lại.');
+      setAvatarImage(null);
+      setAvatarImageUrl(null);
+    } finally {
+      setAvatarUploading(false);
     }
   };
 
@@ -143,20 +246,87 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left Side - Cover Image Upload */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          {/* Left Side - Avatar Image Upload */}
           <div>
+            <label className="block text-sm font-medium text-white mb-4">Add avatar image</label>
+            <div className="relative w-full">
+              <div className={`w-full h-64 border-2 border-dashed ${errors.avatarImage ? 'border-red-500' : 'border-gray-600'} rounded-lg flex flex-col items-center justify-center bg-gray-800/30 cursor-pointer hover:border-gray-500 transition-colors`}>
+                {avatarImagePreview ? (
+                  <div className="w-full h-full relative">
+                    <Image
+                      src={avatarImagePreview}
+                      width={1000}
+                      height={1000}
+                      alt="Avatar Preview"
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    {avatarUploading && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                        <div className="text-white text-sm">Đang tải lên...</div>
+                      </div>
+                    )}
+                    {/* Clear button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAvatarImage(null);
+                        setAvatarImageUrl(null);
+                        setAvatarImagePreview(null);
+                        updateFormData({ avatarImage: undefined });
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-3">
+                      <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <p className="text-white text-sm font-medium mb-2">Add avatar image</p>
+                  </>
+                )}
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarImageUpload}
+                disabled={avatarUploading}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+              />
+            </div>
+            {errors.avatarImage && (
+              <p className="mt-2 text-sm text-red-400">{errors.avatarImage}</p>
+            )}
+            <p className="text-gray-400 text-xs mt-3">
+              Upload your profile picture. Recommended size 500×500px, JPG or PNG, under 5MB
+            </p>
+          </div>
+
+          {/* Middle - Cover Image Upload */}
+          {/* <div>
             <label className="block text-sm font-medium text-white mb-4">Add cover image</label>
             <div className="relative w-full">
-              <div className={`w-full h-80 border-2 border-dashed ${errors.coverImage ? 'border-red-500' : 'border-gray-600'} rounded-lg flex flex-col items-center justify-center bg-gray-800/30 cursor-pointer hover:border-gray-500 transition-colors`}>
+              <div className={`w-full h-64 border-2 border-dashed ${errors.coverImage ? 'border-red-500' : 'border-gray-600'} rounded-lg flex flex-col items-center justify-center bg-gray-800/30 cursor-pointer hover:border-gray-500 transition-colors`}>
                 {coverImagePreview ? (
-                  <Image
-                    src={coverImagePreview}
-                    width={1000}
-                    height={1000}
-                    alt="Cover Preview"
-                    className="w-full h-full object-cover rounded-lg"
-                  />
+                  <div className="w-full h-full relative">
+                    <Image
+                      src={coverImagePreview}
+                      width={1000}
+                      height={1000}
+                      alt="Cover Preview"
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    {coverUploading && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                        <div className="text-white text-sm">Đang tải lên...</div>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <>
                     <div className="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
@@ -171,20 +341,21 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
               <input
                 type="file"
                 accept="image/*"
-                onChange={handleFileUpload}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                onChange={handleCoverImageUpload}
+                disabled={coverUploading}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
               />
             </div>
             {errors.coverImage && (
               <p className="mt-2 text-sm text-red-400">{errors.coverImage}</p>
             )}
             <p className="text-gray-400 text-xs mt-3">
-              Upload a high-quality image that represents your band/artist. Recommended size 1500×600px, JPG or PNG, under 5MB
+              Upload a high-quality cover image. Recommended size 1500×600px, JPG or PNG, under 5MB
             </p>
-          </div>
+          </div> */}
 
           {/* Right Side - Stage Name */}
-          <div className="flex flex-col justify-center h-80">
+          <div className="flex flex-col justify-center h-64">
             <div>
               <label className="block text-sm font-medium text-white mb-2">Stage Name*</label>
               <Input
@@ -209,9 +380,9 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
             onClick={handleSubmit}
             className="primary_gradient hover:opacity-90 text-white font-medium py-3 px-8 rounded-md transition duration-300 ease-in-out"
             size="lg"
-            disabled={isLoading}
+            disabled={isLoading || coverUploading || avatarUploading}
           >
-            {isLoading ? 'Đang xử lý...' : (formData.artistType === "INDIVIDUAL" ? 'Tiếp tục' : 'Tiếp tục và Đăng ký')}
+            {coverUploading || avatarUploading ? 'Đang tải ảnh...' : isLoading ? 'Đang xử lý...' : (formData.artistType === "INDIVIDUAL" ? 'Tiếp tục' : 'Tiếp tục và Đăng ký')}
           </Button>
         </div>
       </div>

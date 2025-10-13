@@ -3,8 +3,8 @@ import { devtools } from "zustand/middleware";
 import { toast } from "sonner";
 import { UserGender } from "@/gql/graphql";
 import { ArtistType } from "@/types/artist_type";
-// Define artist signup steps
-export type ArtistSignUpStep = "form" | "type" | "members" | "identity" | "cccd" | "otp";
+// Define artist signup steps - removed OTP step
+export type ArtistSignUpStep = "form" | "type" | "members" | "identity" | "cccd" /* | "otp" */;
 
 export interface ArtistMemberData {
   fullName: string;
@@ -45,6 +45,7 @@ export interface ArtistSignUpFormData {
   stageName?: string;
   artistType?: ArtistType;
   isLegalRepresentative?: boolean;
+  avatarImage?: string; // Add avatar image URL
   
   // Members (for groups)
   members?: ArtistMemberData[];
@@ -101,7 +102,7 @@ const initialState = {
   cccdBackProcessed: false,
 };
 
-// Step navigation logic - Updated flow
+// Step navigation logic - Updated flow without OTP
 const getNextStep = (current: ArtistSignUpStep, formData?: Partial<ArtistSignUpFormData>): ArtistSignUpStep => {
   switch (current) {
     case "form":
@@ -113,14 +114,14 @@ const getNextStep = (current: ArtistSignUpStep, formData?: Partial<ArtistSignUpF
     case "identity":
       // Dynamic navigation based on artist type
       if (formData?.artistType === "INDIVIDUAL") {
-        return "otp"; // Individual -> OTP (call API register before this)
+        return "identity"; // Individual -> Stay on identity (registration happens here)
       } else {
         return "members"; // Band/Group -> Members
       }
     case "members":
-      return "otp"; // Members -> OTP (call API register before this)
-    case "otp":
-      return "otp"; // Stay on otp if it's the last step
+      return "members"; // Members -> Stay on members (registration happens here)
+    // case "otp":
+    //   return "otp"; // Stay on otp if it's the last step
     default:
       return "form";
   }
@@ -136,13 +137,13 @@ const getPreviousStep = (current: ArtistSignUpStep, formData?: Partial<ArtistSig
       return "type";
     case "members":
       return "identity";
-    case "otp":
-      // Dynamic back navigation based on artist type
-      if (formData?.artistType === "INDIVIDUAL") {
-        return "identity"; // Individual: OTP -> Identity
-      } else {
-        return "members"; // Band/Group: OTP -> Members
-      }
+    // case "otp":
+    //   // Dynamic back navigation based on artist type
+    //   if (formData?.artistType === "INDIVIDUAL") {
+    //     return "identity"; // Individual: OTP -> Identity
+    //   } else {
+    //     return "members"; // Band/Group: OTP -> Members
+    //   }
     case "form":
       return "form"; // Stay on form if it's the first step
     default:
@@ -231,23 +232,27 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
         );
       },
 
-      // Proceed to registration - triggers API call and moves to OTP
+      // Proceed to registration - No longer moves to OTP step
       proceedToRegistration: () => {
-        // Move to OTP step - the component will handle API call
-        set({ currentStep: "otp" }, false, "artistSignup/proceedToRegistration");
+        // Registration will be handled by the component and redirect to login
+        console.log("Registration completed - redirecting to login");
       },
 
-      // Complete OTP verification
-      completeOTPVerification: (otpData: { otp: string }) => {
-        const { updateFormData } = get();
-        
-        // Update form data with OTP
-        updateFormData(otpData);
-        
-        // Show success message
-        toast.success("Xác thực OTP thành công!");
-        
-        // Navigation or completion logic can be handled by the component
+      // Complete OTP verification - Comment out as no longer needed
+      // completeOTPVerification: (otpData: { otp: string }) => {
+      //   const { updateFormData } = get();
+      //   
+      //   // Update form data with OTP
+      //   updateFormData(otpData);
+      //   
+      //   // Show success message
+      //   toast.success("Xác thực OTP thành công!");
+      //   
+      //   // Navigation or completion logic can be handled by the component
+      // },
+      completeOTPVerification: () => {
+        // No longer used - keeping for compatibility
+        console.log("OTP verification is no longer used");
       },
 
       // Reset form

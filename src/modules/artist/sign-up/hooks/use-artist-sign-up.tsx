@@ -43,7 +43,8 @@ interface ArtistSignUpResponse {
 
 const useArtistSignUp = (onNavigate?: () => void) => {
   const { setUserData, setAuthenticated, setLoading } = useAuthStore();
-  const { currentStep } = useArtistSignUpStore();
+  // Removed currentStep as OTP is no longer used
+  // const { currentStep } = useArtistSignUpStore();
 
   const {
     mutate: signUp,
@@ -72,7 +73,7 @@ const useArtistSignUp = (onNavigate?: () => void) => {
     onSuccess: async (data: ArtistSignUpResponse) => {
       try {
         // Show success message immediately
-        const message = data?.message || "Đăng ký nghệ sĩ thành công! Chúng tôi đã gửi mã xác thực đến email của bạn.";
+        const message = data?.message || "Đăng ký nghệ sĩ thành công! Chúng tôi sẽ liên hệ với bạn trong vòng 48 giờ.";
         toast.success(message);
         
         // If user data is returned, store it (some APIs return user data immediately)
@@ -89,16 +90,13 @@ const useArtistSignUp = (onNavigate?: () => void) => {
           setUserData(userData);
           setAuthenticated(true);
         }        
-        // For OTP step, this is the final registration - navigate to success page or dashboard
-        if (currentStep === "otp") {
-          setTimeout(() => {
-            if (onNavigate) {
-              onNavigate();
-            }
-          }, 1000);
-        } else {
-          // For other steps, this shouldn't happen but we handle it gracefully
-          console.warn("⚠️ Registration succeeded but not in OTP step. Current step:", currentStep);}
+        
+        // Always redirect to login after successful registration (no OTP needed)
+        setTimeout(() => {
+          if (onNavigate) {
+            onNavigate();
+          }
+        }, 2000); // Give user time to read the success message
         
       } catch (error) {
         console.error("Failed to process artist sign-up success:", error);

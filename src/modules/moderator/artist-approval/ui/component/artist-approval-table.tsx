@@ -1,0 +1,267 @@
+"use client";
+
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  getPaginationRowModel,
+  SortingState,
+  getSortedRowModel,
+  ColumnFiltersState,
+  getFilteredRowModel,
+} from "@tanstack/react-table";
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+
+interface ArtistApprovalTableProps {
+  data: any[]; // Using any[] to work with GraphQL response
+  totalCount: number;
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onSearch: (searchTerm: string) => void;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  searchTerm: string; // Add searchTerm prop to control input value
+}
+
+export function ArtistApprovalTable({
+  data,
+  totalCount,
+  currentPage,
+  pageSize,
+  onPageChange,
+  onSearch,
+  hasNextPage,
+  hasPreviousPage,
+  searchTerm, // Receive searchTerm from parent
+}: ArtistApprovalTableProps) {
+  const router = useRouter();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: "stageName",
+      header: "User",
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-3">
+          {row.original.avatarImage ? (
+            <Image
+              src={row.original.avatarImage}
+              alt={row.original.stageName}
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-full"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-medium">
+              {row.original.stageName.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <span className="font-medium text-white">{row.original.stageName}</span>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+      cell: ({ row }) => (
+        <span className="text-gray-300">{row.original.email}</span>
+      ),
+    },
+    {
+      accessorKey: "artistType",
+      header: "Type",
+      cell: ({ row }) => (
+        <span className="text-gray-300 capitalize">
+          {row.original.artistType.toLowerCase()}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "gender",
+      header: "Gender",
+      cell: ({ row }) => (
+        <span className="text-gray-300 capitalize">
+          {row.original.gender?.toLowerCase() || "N/A"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "birthDate",
+      header: "Birth Date",
+      cell: ({ row }) => (
+        <span className="text-gray-300">
+          {row.original.birthDate 
+            ? new Date(row.original.birthDate).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
+            : "N/A"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "phoneNumber",
+      header: "Phone",
+      cell: ({ row }) => (
+        <span className="text-gray-300">
+          {row.original.phoneNumber || "N/A"}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Action",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+            <DropdownMenuItem
+              onClick={() => router.push(`/moderator/artist-approval/${row.original.id}`)}
+              className="text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer"
+            >
+              View Details
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+    },
+    manualPagination: true,
+    pageCount: Math.ceil(totalCount / pageSize),
+  });
+
+  const handleSearch = (value: string) => {
+    onSearch(value);
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Search Input */}
+      <div className="flex items-center space-x-2">
+        <Input
+          placeholder="Search name..."
+          value={searchTerm}
+          onChange={(event) => handleSearch(event.target.value)}
+          className="max-w-sm bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+        />
+      </div>
+
+      {/* Table */}
+      <div>
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="border-gray-700 hover:bg-gray-800">
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className="text-gray-300">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  className="border-gray-700 hover:bg-gray-800"
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center text-gray-400">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="text-sm text-gray-400">
+          Showing {(currentPage - 1) * pageSize + 1} to{" "}
+          {Math.min(currentPage * pageSize, totalCount)} of {totalCount} entries
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={!hasPreviousPage}
+            className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={!hasNextPage}
+            className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
