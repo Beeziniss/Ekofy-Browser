@@ -8,7 +8,7 @@ import { PendingArtistRegistrationsQuery } from "@/modules/moderator/artist-appr
 import { execute } from "../execute";
 import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserRole, UserFilterInput } from "@/gql/graphql";
-import { ModeratorGetListUser } from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
+import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
 import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/moderator/user-management/ui/views/moderator-user-detail-view";
 
 export const moderatorProfileOptions = (userId: string) => queryOptions({
@@ -49,7 +49,29 @@ export const moderatorArtistDetailsQueryOptions = (userId: string) => queryOptio
   },
 });
 
-// User management query options for moderator
+// User analytics query options for moderator (for stats cards - independent of search)
+export const moderatorUserAnalyticsOptions = () => queryOptions({
+  queryKey: ["moderator-user-analytics"],
+  queryFn: async () => {
+    // Get all users for analytics without pagination or search filters
+    const where: UserFilterInput = {
+      role: {
+        in: [UserRole.Listener, UserRole.Artist]
+      }
+    };
+    
+    const result = await execute(ModeratorGetAnalytics, { 
+      skip: 0,
+      take: 50, // Large number to get all users for stats
+      where
+    });
+    
+    return result;
+  },
+  staleTime: 5 * 60 * 1000, // Cache for 5 minutes since stats don't change frequently
+});
+
+// User management query options for moderator (for table - affected by search)
 export const moderatorUsersQueryOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") => queryOptions({
   queryKey: ["moderator-users", page, pageSize, searchTerm],
   queryFn: async () => {
@@ -76,6 +98,7 @@ export const moderatorUsersQueryOptions = (page: number = 1, pageSize: number = 
     
     return result;
   },
+  placeholderData: (previousData) => previousData, // Keep previous data while fetching new data
 });
 
 // Artist detail query options for moderator

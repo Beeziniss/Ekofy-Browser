@@ -11,7 +11,7 @@ import {
 import { moderatorUsersQueryOptions } from "@/gql/options/moderator-options";
 import { useDeActiveUser, useReActiveUser } from "@/gql/client-mutation-options/moderator-mutation";
 import { UserStatus } from "@/gql/graphql";
-import { ModeratorUserTableData, ModeratorUserStatsData } from "@/types";
+import { ModeratorUserTableData } from "@/types";
 import { toast } from "sonner";
 
 export function ModeratorUserManagementSection() {
@@ -26,6 +26,7 @@ export function ModeratorUserManagementSection() {
   const {
     data: usersData,
     isLoading,
+    isFetching,
     error,
   } = useQuery(moderatorUsersQueryOptions(currentPage, pageSize, searchQuery));
 
@@ -64,18 +65,31 @@ export function ModeratorUserManagementSection() {
     }
   };
 
-  if (isLoading) {
+  // Only show full page loading on initial load, not on search/filter changes
+  if (isLoading && !usersData) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading users...</div>
+      <div className="space-y-6">
+        {/* Stats Cards load independently */}
+        <ModeratorUserStatsCards />
+        
+        {/* Show skeleton for table */}
+        <div className="flex items-center justify-center h-64 bg-gray-800/50 border border-gray-700 rounded-lg">
+          <div className="text-gray-400">Loading users...</div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-400">Error loading users: {error.message}</div>
+      <div className="space-y-6">
+        {/* Stats Cards still load independently */}
+        <ModeratorUserStatsCards />
+        
+        {/* Show error for table only */}
+        <div className="flex items-center justify-center h-64 bg-gray-800/50 border border-gray-700 rounded-lg">
+          <div className="text-red-400">Error loading users: {error.message}</div>
+        </div>
       </div>
     );
   }
@@ -84,34 +98,24 @@ export function ModeratorUserManagementSection() {
   const totalCount = usersData?.users?.totalCount || 0;
   const pageInfo = usersData?.users?.pageInfo;
 
-  // Calculate stats from current data
-  const statsData: ModeratorUserStatsData = {
-    totalUsers: totalCount,
-    activeUsers: users.filter((user: ModeratorUserTableData) => user.status === UserStatus.Active).length,
-    inactiveUsers: users.filter((user: ModeratorUserTableData) => user.status === UserStatus.Inactive).length,
-    newUsers: users.filter((user: ModeratorUserTableData) => {
-      const createdAt = new Date(user.createdAt);
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      return createdAt > thirtyDaysAgo;
-    }).length,
-  };
-
   return (
     <div className="space-y-6">
-      {/* Stats Cards - These should NOT reload when search changes */}
-      <ModeratorUserStatsCards data={statsData} />
+      {/* Stats Cards - Independent query, not affected by search */}
+      <ModeratorUserStatsCards />
 
-      {/* User Table - Only this should reload on search */}
-      <ModeratorUserTableWrapper
-        data={users}
-        totalCount={totalCount}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        hasNextPage={pageInfo?.hasNextPage || false}
-        hasPreviousPage={pageInfo?.hasPreviousPage || false}
-        onStatusChange={handleStatusChange}
-      />
+      {/* User Table - Only this reloads on search */}
+      <div className="relative">
+        
+        <ModeratorUserTableWrapper
+          data={users}
+          totalCount={totalCount}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          hasNextPage={pageInfo?.hasNextPage || false}
+          hasPreviousPage={pageInfo?.hasPreviousPage || false}
+          onStatusChange={handleStatusChange}
+        />
+      </div>
 
       {/* Status Confirmation Modal */}
       {selectedUser && (
