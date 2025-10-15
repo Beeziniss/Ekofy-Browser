@@ -46,6 +46,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import Link from "next/link";
 
 export interface Track {
   id: string;
@@ -134,9 +135,12 @@ const TrackTable = ({
               )}
             </div>
             <div className="min-w-0">
-              <div className="truncate font-medium text-white">
+              <Link
+                href={`/artist/studio/tracks/insights/${track.id}`}
+                className="text-main-white hover:text-main-purple truncate font-medium hover:underline"
+              >
                 {track.name}
-              </div>
+              </Link>
               <div className="text-main-grey truncate text-sm">
                 Track Author name
               </div>

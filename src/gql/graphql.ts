@@ -3825,6 +3825,13 @@ export type TracksWithFiltersQueryVariables = Exact<{
 
 export type TracksWithFiltersQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isReleased: boolean } }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
+export type TrackInsightViewQueryVariables = Exact<{
+  trackId: Scalars['String']['input'];
+}>;
+
+
+export type TrackInsightViewQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, streamCount: any, favoriteCount: any, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null } }> | null } | null };
+
 export type TrackListHomeQueryVariables = Exact<{
   take: Scalars['Int']['input'];
 }>;
@@ -4098,6 +4105,22 @@ export const TracksWithFiltersDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TracksWithFiltersQuery, TracksWithFiltersQueryVariables>;
+export const TrackInsightViewDocument = new TypedDocumentString(`
+    query TrackInsightView($trackId: String!) {
+  tracks(where: {id: {eq: $trackId}}) {
+    items {
+      id
+      name
+      coverImage
+      releaseInfo {
+        releaseDate
+      }
+      streamCount
+      favoriteCount
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackInsightViewQuery, TrackInsightViewQueryVariables>;
 export const TrackListHomeDocument = new TypedDocumentString(`
     query TrackListHome($take: Int!) {
   tracks(take: $take) {

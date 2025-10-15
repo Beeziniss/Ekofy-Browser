@@ -21,6 +21,7 @@ type Documents = {
     "\n  mutation banUser($targetUserId: String!) {\n    banUser(targetUserId: $targetUserId)\n  }\n": typeof types.BanUserDocument,
     "\n  mutation ReActiveUser($targetUserId: String!) {\n    reActiveUser(targetUserId: $targetUserId)\n  }\n": typeof types.ReActiveUserDocument,
     "\n  query TracksWithFilters(\n    $skip: Int!\n    $take: Int!\n    $where: TrackFilterInput\n    $order: [TrackSortInput!]\n  ) {\n    tracks(skip: $skip, take: $take, where: $where, order: $order) {\n      totalCount\n      items {\n        id\n        name\n        mainArtistIds\n        streamCount\n        favoriteCount\n        coverImage\n        isExplicit\n        releaseInfo {\n          releaseDate\n          isReleased\n        }\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n      }\n    }\n  }\n": typeof types.TracksWithFiltersDocument,
+    "\n  query TrackInsightView($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        releaseInfo {\n          releaseDate\n        }\n        streamCount\n        favoriteCount\n      }\n    }\n  }\n": typeof types.TrackInsightViewDocument,
     "\n  query TrackListHome($take: Int!) {\n    tracks(take: $take) {\n      totalCount\n      items {\n        id\n        name\n        coverImage\n        mainArtistIds\n        artist {\n          id\n          stageName\n        }\n      }\n    }\n  }\n": typeof types.TrackListHomeDocument,
     "\n  mutation createPlaylist($createPlaylistRequest: CreatePlaylistRequestInput!) {\n    createPlaylist(createPlaylistRequest: $createPlaylistRequest)\n  }\n": typeof types.CreatePlaylistDocument,
     "\n  mutation deletePlaylist($playlistId: String!) {\n    deletePlaylist(playlistId: $playlistId)\n  }\n": typeof types.DeletePlaylistDocument,
@@ -44,6 +45,7 @@ const documents: Documents = {
     "\n  mutation banUser($targetUserId: String!) {\n    banUser(targetUserId: $targetUserId)\n  }\n": types.BanUserDocument,
     "\n  mutation ReActiveUser($targetUserId: String!) {\n    reActiveUser(targetUserId: $targetUserId)\n  }\n": types.ReActiveUserDocument,
     "\n  query TracksWithFilters(\n    $skip: Int!\n    $take: Int!\n    $where: TrackFilterInput\n    $order: [TrackSortInput!]\n  ) {\n    tracks(skip: $skip, take: $take, where: $where, order: $order) {\n      totalCount\n      items {\n        id\n        name\n        mainArtistIds\n        streamCount\n        favoriteCount\n        coverImage\n        isExplicit\n        releaseInfo {\n          releaseDate\n          isReleased\n        }\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n      }\n    }\n  }\n": types.TracksWithFiltersDocument,
+    "\n  query TrackInsightView($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        releaseInfo {\n          releaseDate\n        }\n        streamCount\n        favoriteCount\n      }\n    }\n  }\n": types.TrackInsightViewDocument,
     "\n  query TrackListHome($take: Int!) {\n    tracks(take: $take) {\n      totalCount\n      items {\n        id\n        name\n        coverImage\n        mainArtistIds\n        artist {\n          id\n          stageName\n        }\n      }\n    }\n  }\n": types.TrackListHomeDocument,
     "\n  mutation createPlaylist($createPlaylistRequest: CreatePlaylistRequestInput!) {\n    createPlaylist(createPlaylistRequest: $createPlaylistRequest)\n  }\n": types.CreatePlaylistDocument,
     "\n  mutation deletePlaylist($playlistId: String!) {\n    deletePlaylist(playlistId: $playlistId)\n  }\n": types.DeletePlaylistDocument,
@@ -85,6 +87,10 @@ export function graphql(source: "\n  mutation ReActiveUser($targetUserId: String
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query TracksWithFilters(\n    $skip: Int!\n    $take: Int!\n    $where: TrackFilterInput\n    $order: [TrackSortInput!]\n  ) {\n    tracks(skip: $skip, take: $take, where: $where, order: $order) {\n      totalCount\n      items {\n        id\n        name\n        mainArtistIds\n        streamCount\n        favoriteCount\n        coverImage\n        isExplicit\n        releaseInfo {\n          releaseDate\n          isReleased\n        }\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n      }\n    }\n  }\n"): typeof import('./graphql').TracksWithFiltersDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query TrackInsightView($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        releaseInfo {\n          releaseDate\n        }\n        streamCount\n        favoriteCount\n      }\n    }\n  }\n"): typeof import('./graphql').TrackInsightViewDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
