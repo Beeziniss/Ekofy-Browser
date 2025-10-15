@@ -7,7 +7,12 @@ import {
 } from "@/modules/client/profile/ui/views/queries";
 import { TrackDetailViewQuery } from "@/modules/client/track/ui/views/track-detail-view";
 import { PlaylistsQuery } from "@/modules/client/library/ui/views/library-view";
-import { PlaylistDetailQuery } from "@/modules/client/playlist/ui/views/playlist-detail-view";
+import {
+  CheckTrackInPlaylistQuery,
+  PlaylistBriefQuery,
+  PlaylistDetailQuery,
+  PlaylistDetailTrackListQuery,
+} from "@/modules/client/playlist/ui/views/playlist-detail-view";
 
 export const trackListHomeOptions = queryOptions({
   queryKey: ["tracks-home"],
@@ -69,4 +74,22 @@ export const playlistDetailOptions = (playlistId: string) =>
   queryOptions({
     queryKey: ["playlist-detail", playlistId],
     queryFn: async () => await execute(PlaylistDetailQuery, { playlistId }),
+  });
+
+export const playlistDetailTrackListOptions = (playlistId: string) =>
+  queryOptions({
+    queryKey: ["playlist-detail-tracklist", playlistId],
+    queryFn: async () =>
+      await execute(PlaylistDetailTrackListQuery, { playlistId }),
+  });
+
+export const playlistBriefOptions = queryOptions({
+  queryKey: ["playlist-brief"],
+  queryFn: async () => await execute(PlaylistBriefQuery),
+});
+
+export const checkTrackInPlaylistOptions = (trackId: string) =>
+  queryOptions({
+    queryKey: ["check-track-in-playlist", trackId],
+    queryFn: async () => await execute(CheckTrackInPlaylistQuery, { trackId }),
   });

@@ -132,7 +132,7 @@ const PlaylistInfoSectionSuspense = ({
               <EllipsisIcon className="text-main-white size-6" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="start">
+          <DropdownMenuContent className="w-56" align="start" side="right">
             <DropdownMenuItem onClick={onCopy}>
               <LinkIcon className="text-main-white mr-2 size-4" />
               <span className="text-main-white text-sm">Copy link</span>

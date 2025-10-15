@@ -3851,12 +3851,45 @@ export type PlaylistsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type PlaylistsQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, isPublic: boolean }> | null } | null };
 
+export type AddToPlaylistMutationVariables = Exact<{
+  addToPlaylistRequest: AddToPlaylistRequestInput;
+}>;
+
+
+export type AddToPlaylistMutation = { __typename?: 'MutationInitialization', addToPlaylist: boolean };
+
+export type RemoveFromPlaylistMutationVariables = Exact<{
+  addToPlaylistRequest: AddToPlaylistRequestInput;
+}>;
+
+
+export type RemoveFromPlaylistMutation = { __typename?: 'MutationInitialization', removeFromPlaylist: boolean };
+
+export type PlaylistBriefQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PlaylistBriefQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, isPublic: boolean }> | null } | null };
+
+export type CheckTrackInPlaylistQueryVariables = Exact<{
+  trackId: Scalars['String']['input'];
+}>;
+
+
+export type CheckTrackInPlaylistQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string }> | null } | null };
+
 export type PlaylistDetailQueryVariables = Exact<{
   playlistId: Scalars['String']['input'];
 }>;
 
 
 export type PlaylistDetailQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, description?: string | null, isPublic: boolean, userId: string, createdAt: any, updatedAt?: any | null, user?: { __typename?: 'User', id: string, fullName: string } | null, tracks: Array<{ __typename?: 'Track', id: string } | null> }> | null } | null };
+
+export type PlaylistDetailTrackListQueryVariables = Exact<{
+  playlistId: Scalars['String']['input'];
+}>;
+
+
+export type PlaylistDetailTrackListQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, tracks: Array<{ __typename?: 'Track', id: string, name: string } | null>, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string }> }> | null } | null };
 
 export type TrackDetailQueryVariables = Exact<{
   trackId: Scalars['String']['input'];
@@ -4105,6 +4138,37 @@ export const PlaylistsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PlaylistsQuery, PlaylistsQueryVariables>;
+export const AddToPlaylistDocument = new TypedDocumentString(`
+    mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {
+  addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)
+}
+    `) as unknown as TypedDocumentString<AddToPlaylistMutation, AddToPlaylistMutationVariables>;
+export const RemoveFromPlaylistDocument = new TypedDocumentString(`
+    mutation RemoveFromPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {
+  removeFromPlaylist(addToPlaylistRequest: $addToPlaylistRequest)
+}
+    `) as unknown as TypedDocumentString<RemoveFromPlaylistMutation, RemoveFromPlaylistMutationVariables>;
+export const PlaylistBriefDocument = new TypedDocumentString(`
+    query PlaylistBrief {
+  playlists {
+    items {
+      id
+      name
+      coverImage
+      isPublic
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PlaylistBriefQuery, PlaylistBriefQueryVariables>;
+export const CheckTrackInPlaylistDocument = new TypedDocumentString(`
+    query CheckTrackInPlaylist($trackId: String!) {
+  playlists(where: {tracksInfo: {some: {trackId: {eq: $trackId}}}}) {
+    items {
+      id
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CheckTrackInPlaylistQuery, CheckTrackInPlaylistQueryVariables>;
 export const PlaylistDetailDocument = new TypedDocumentString(`
     query PlaylistDetail($playlistId: String!) {
   playlists(where: {id: {eq: $playlistId}}) {
@@ -4128,6 +4192,22 @@ export const PlaylistDetailDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PlaylistDetailQuery, PlaylistDetailQueryVariables>;
+export const PlaylistDetailTrackListDocument = new TypedDocumentString(`
+    query PlaylistDetailTrackList($playlistId: String!) {
+  playlists(where: {id: {eq: $playlistId}}) {
+    items {
+      id
+      tracks {
+        id
+        name
+      }
+      tracksInfo {
+        trackId
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PlaylistDetailTrackListQuery, PlaylistDetailTrackListQueryVariables>;
 export const TrackDetailDocument = new TypedDocumentString(`
     query TrackDetail($trackId: String!) {
   tracks(where: {id: {eq: $trackId}}) {
