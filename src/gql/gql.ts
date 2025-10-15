@@ -25,7 +25,12 @@ type Documents = {
     "\n  mutation createPlaylist($createPlaylistRequest: CreatePlaylistRequestInput!) {\n    createPlaylist(createPlaylistRequest: $createPlaylistRequest)\n  }\n": typeof types.CreatePlaylistDocument,
     "\n  mutation deletePlaylist($playlistId: String!) {\n    deletePlaylist(playlistId: $playlistId)\n  }\n": typeof types.DeletePlaylistDocument,
     "\n  query Playlists {\n    playlists {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n      totalCount\n    }\n  }\n": typeof types.PlaylistsDocument,
+    "\n  mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {\n    addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n": typeof types.AddToPlaylistDocument,
+    "\n  mutation RemoveFromPlaylist(\n    $addToPlaylistRequest: AddToPlaylistRequestInput!\n  ) {\n    removeFromPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n": typeof types.RemoveFromPlaylistDocument,
+    "\n  query PlaylistBrief {\n    playlists {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n    }\n  }\n": typeof types.PlaylistBriefDocument,
+    "\n  query CheckTrackInPlaylist($trackId: String!) {\n    playlists(where: { tracksInfo: { some: { trackId: { eq: $trackId } } } }) {\n      items {\n        id\n      }\n    }\n  }\n": typeof types.CheckTrackInPlaylistDocument,
     "\n  query PlaylistDetail($playlistId: String!) {\n    playlists(where: { id: { eq: $playlistId } }) {\n      items {\n        id\n        name\n        coverImage\n        description\n        isPublic\n        user {\n          id\n          fullName\n        }\n        userId\n        tracks {\n          id\n        }\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": typeof types.PlaylistDetailDocument,
+    "\n  query PlaylistDetailTrackList($playlistId: String!) {\n    playlists(where: { id: { eq: $playlistId } }) {\n      items {\n        id\n        tracks {\n          id\n          name\n        }\n        tracksInfo {\n          trackId\n        }\n      }\n    }\n  }\n": typeof types.PlaylistDetailTrackListDocument,
     "\n  query TrackDetail($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        favoriteCount\n        streamCount\n        mainArtistIds\n        artist {\n          id\n          stageName\n          followerCount\n        }\n      }\n    }\n  }\n": typeof types.TrackDetailDocument,
     "\n  query PendingArtistRegistrationsView($pageNumber: Int!, $pageSize: Int!) {\n    pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize) {\n      email\n      fullName\n      stageName\n      artistType\n      gender\n      birthDate\n      phoneNumber\n      avatarImage\n      id\n    }\n  }\n": typeof types.PendingArtistRegistrationsViewDocument,
     "\n  query PendingArtistRegistrationsDetail($id: String) {\n    pendingArtistRegistrations(where: { id: { eq: $id } }) {\n      email\n      fullName\n      stageName\n      artistType\n      gender\n      birthDate\n      phoneNumber\n      avatarImage\n      id\n      members {\n        fullName\n        email\n        phoneNumber\n        isLeader\n        gender\n      }\n      requestedAt\n      timeToLive\n      identityCardNumber\n      identityCardDateOfBirth\n      identityCardFullName\n      placeOfOrigin\n      placeOfResidence\n      frontImageUrl\n      backImageUrl\n    }\n  }\n": typeof types.PendingArtistRegistrationsDetailDocument,
@@ -43,7 +48,12 @@ const documents: Documents = {
     "\n  mutation createPlaylist($createPlaylistRequest: CreatePlaylistRequestInput!) {\n    createPlaylist(createPlaylistRequest: $createPlaylistRequest)\n  }\n": types.CreatePlaylistDocument,
     "\n  mutation deletePlaylist($playlistId: String!) {\n    deletePlaylist(playlistId: $playlistId)\n  }\n": types.DeletePlaylistDocument,
     "\n  query Playlists {\n    playlists {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n      totalCount\n    }\n  }\n": types.PlaylistsDocument,
+    "\n  mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {\n    addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n": types.AddToPlaylistDocument,
+    "\n  mutation RemoveFromPlaylist(\n    $addToPlaylistRequest: AddToPlaylistRequestInput!\n  ) {\n    removeFromPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n": types.RemoveFromPlaylistDocument,
+    "\n  query PlaylistBrief {\n    playlists {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n    }\n  }\n": types.PlaylistBriefDocument,
+    "\n  query CheckTrackInPlaylist($trackId: String!) {\n    playlists(where: { tracksInfo: { some: { trackId: { eq: $trackId } } } }) {\n      items {\n        id\n      }\n    }\n  }\n": types.CheckTrackInPlaylistDocument,
     "\n  query PlaylistDetail($playlistId: String!) {\n    playlists(where: { id: { eq: $playlistId } }) {\n      items {\n        id\n        name\n        coverImage\n        description\n        isPublic\n        user {\n          id\n          fullName\n        }\n        userId\n        tracks {\n          id\n        }\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": types.PlaylistDetailDocument,
+    "\n  query PlaylistDetailTrackList($playlistId: String!) {\n    playlists(where: { id: { eq: $playlistId } }) {\n      items {\n        id\n        tracks {\n          id\n          name\n        }\n        tracksInfo {\n          trackId\n        }\n      }\n    }\n  }\n": types.PlaylistDetailTrackListDocument,
     "\n  query TrackDetail($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        favoriteCount\n        streamCount\n        mainArtistIds\n        artist {\n          id\n          stageName\n          followerCount\n        }\n      }\n    }\n  }\n": types.TrackDetailDocument,
     "\n  query PendingArtistRegistrationsView($pageNumber: Int!, $pageSize: Int!) {\n    pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize) {\n      email\n      fullName\n      stageName\n      artistType\n      gender\n      birthDate\n      phoneNumber\n      avatarImage\n      id\n    }\n  }\n": types.PendingArtistRegistrationsViewDocument,
     "\n  query PendingArtistRegistrationsDetail($id: String) {\n    pendingArtistRegistrations(where: { id: { eq: $id } }) {\n      email\n      fullName\n      stageName\n      artistType\n      gender\n      birthDate\n      phoneNumber\n      avatarImage\n      id\n      members {\n        fullName\n        email\n        phoneNumber\n        isLeader\n        gender\n      }\n      requestedAt\n      timeToLive\n      identityCardNumber\n      identityCardDateOfBirth\n      identityCardFullName\n      placeOfOrigin\n      placeOfResidence\n      frontImageUrl\n      backImageUrl\n    }\n  }\n": types.PendingArtistRegistrationsDetailDocument,
@@ -94,7 +104,27 @@ export function graphql(source: "\n  query Playlists {\n    playlists {\n      i
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {\n    addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n"): typeof import('./graphql').AddToPlaylistDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RemoveFromPlaylist(\n    $addToPlaylistRequest: AddToPlaylistRequestInput!\n  ) {\n    removeFromPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n"): typeof import('./graphql').RemoveFromPlaylistDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query PlaylistBrief {\n    playlists {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n    }\n  }\n"): typeof import('./graphql').PlaylistBriefDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query CheckTrackInPlaylist($trackId: String!) {\n    playlists(where: { tracksInfo: { some: { trackId: { eq: $trackId } } } }) {\n      items {\n        id\n      }\n    }\n  }\n"): typeof import('./graphql').CheckTrackInPlaylistDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query PlaylistDetail($playlistId: String!) {\n    playlists(where: { id: { eq: $playlistId } }) {\n      items {\n        id\n        name\n        coverImage\n        description\n        isPublic\n        user {\n          id\n          fullName\n        }\n        userId\n        tracks {\n          id\n        }\n        createdAt\n        updatedAt\n      }\n    }\n  }\n"): typeof import('./graphql').PlaylistDetailDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query PlaylistDetailTrackList($playlistId: String!) {\n    playlists(where: { id: { eq: $playlistId } }) {\n      items {\n        id\n        tracks {\n          id\n          name\n        }\n        tracksInfo {\n          trackId\n        }\n      }\n    }\n  }\n"): typeof import('./graphql').PlaylistDetailTrackListDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

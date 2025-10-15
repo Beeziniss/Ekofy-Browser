@@ -16,7 +16,9 @@ import {
   ListPlusIcon,
   UserIcon,
 } from "lucide-react";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
+import PlaylistAddModal from "@/modules/client/playlist/ui/components/playlist-add-modal";
+import { toast } from "sonner";
 
 interface TrackOwnerSectionProps {
   data: TrackDetailQuery;
@@ -35,6 +37,18 @@ const TrackOwnerSectionSkeleton = () => {
 };
 
 const TrackOwnerSectionSuspense = ({ data }: TrackOwnerSectionProps) => {
+  const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
+
+  const trackId = data.tracks?.items?.[0]?.id;
+
+  const handleCopyLink = () => {
+    if (trackId) {
+      const url = `${window.location.origin}/track/${trackId}`;
+      navigator.clipboard.writeText(url);
+      toast.success("Track link copied to clipboard!");
+    }
+  };
+
   return (
     <div className="flex w-full items-center justify-between">
       <div className="flex items-center gap-x-3">
@@ -76,14 +90,15 @@ const TrackOwnerSectionSuspense = ({ data }: TrackOwnerSectionProps) => {
           <DropdownMenuContent
             align="end"
             side="bottom"
-            className="bg-main-card-bg border-white/30"
+            className="w-56"
+            // className="bg-main-card-bg border-white/30"
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleCopyLink}>
                 <CopyIcon className="text-main-white mr-2 size-4" />
                 <span className="text-main-white text-base">Copy link</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setAddToPlaylistModalOpen(true)}>
                 <ListPlusIcon className="text-main-white mr-2 size-4" />
                 <span className="text-main-white text-base">
                   Add to playlist
@@ -93,6 +108,14 @@ const TrackOwnerSectionSuspense = ({ data }: TrackOwnerSectionProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {trackId && (
+        <PlaylistAddModal
+          open={addToPlaylistModalOpen}
+          onOpenChange={setAddToPlaylistModalOpen}
+          trackId={trackId}
+        />
+      )}
     </div>
   );
 };
