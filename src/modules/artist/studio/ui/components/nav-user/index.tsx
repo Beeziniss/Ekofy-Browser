@@ -29,6 +29,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
 import { useAuthStore } from "@/store";
 import { useRouter } from "next/navigation";
+import { useArtistProfile } from "@/modules/artist/profile/hooks/use-artist-profile";
 
 export function NavUser({
   user,
@@ -42,6 +43,11 @@ export function NavUser({
   const { isMobile } = useSidebar();
   const { clearUserData } = useAuthStore();
   const router = useRouter();
+  const { header, data } = useArtistProfile();
+
+  const displayName = header?.name || user.name;
+  const displayEmail = data?.email || user.email;
+  const avatarSrc = data?.avatarImage || user.avatar;
 
   // Logout mutation
   const { mutate: logout } = useMutation({
@@ -67,12 +73,12 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={avatarSrc} alt={displayName} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-medium">{displayName}</span>
+                <span className="truncate text-xs">{displayEmail}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -86,12 +92,12 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage src={avatarSrc} alt={displayName} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">{displayName}</span>
+                  <span className="truncate text-xs">{displayEmail}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -104,7 +110,7 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/artist/studio/profile')}>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>

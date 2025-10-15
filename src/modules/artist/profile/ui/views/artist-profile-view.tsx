@@ -3,11 +3,35 @@
 import ProfileHeader from '@/modules/client/profile/ui/components/profile-header';
 import React from 'react'
 import Tab from '../components/tabs/tabs';
+import { useArtistProfile } from '../../../profile/hooks/use-artist-profile';
+import MainLoader from '@/components/main-loader';
+import { useAuthStore } from '@/store';
+import { useRouter } from 'next/navigation';
 
 const ArtistProfileView = () => {
-    const mockName = "Nguyen Van A";
-  const mockAvatar = ""; 
-  const mockBackground = "/image-login.png";
+  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
+  const { header, isLoading, isFetching, error } = useArtistProfile();
+
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace('/');
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) return null;
+
+  if (isLoading || isFetching) {
+    return <MainLoader />;
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto w-full max-w-6xl px-4 md:px-6 py-10">
+        <p className="text-sm text-red-500">Failed to load artist profile.</p>
+      </div>
+    );
+  }
 
   const handleAvatar = (file: File) => {
     
@@ -20,24 +44,13 @@ const ArtistProfileView = () => {
   return (
      <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
           <ProfileHeader
-            name={mockName}
-            avatarUrl={mockAvatar}
-            backgroundUrl={mockBackground}
+            name={header.name}
+            avatarUrl={header.avatarUrl}
+            backgroundUrl={header.backgroundUrl}
             onChangeAvatar={handleAvatar}
             onChangeBackground={handleBackground}
           />
           <Tab />
-          
-          {/* <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:pt-4">
-              <div className="md:col-span-9">
-                <DetailView />
-              </div>
-              <div className="md:col-span-3">
-                <HelpCard className="md:sticky md:top-10 " />
-              </div>
-            </div>
-          </div> */}
         </div>
   )
 }

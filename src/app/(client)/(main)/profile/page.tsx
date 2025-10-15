@@ -1,25 +1,10 @@
 import ProfileView from "../../../../modules/client/profile/ui/views/profile-view";
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
-import { getQueryClient } from "@/providers/get-query-client";
-import { listenerProfileOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
-import { cookies } from "next/headers";
+import { Suspense } from "react";
 
-export default async function Page() {
-  const queryClient = getQueryClient();
-
-  // Derive userId from persisted auth cookie/localStorage equivalent on server.
-  // If you have JWT in cookies, decode it here; placeholder attempts to read userId cookie.
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value || "";
-
-  if (userId) {
-    await queryClient.prefetchQuery(listenerProfileOptions(userId));
-    await queryClient.prefetchQuery(userActiveSubscriptionOptions(userId));
-  }
-
+export default function Page() {
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    <Suspense fallback={<div className="p-4">Loading profile…</div>}>
       <ProfileView />
-    </HydrationBoundary>
+    </Suspense>
   );
 }
