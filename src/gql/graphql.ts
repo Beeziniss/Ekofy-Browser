@@ -3839,7 +3839,7 @@ export type SearchArtistsQueryVariables = Exact<{
 }>;
 
 
-export type SearchArtistsQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null, followerCount: any, user: { __typename?: 'User', fullName: string, role: UserRole } }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type SearchArtistsQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null, followerCount: any, user: { __typename?: 'User', fullName: string, role: UserRole } }> | null } | null };
 
 export type SearchListenersQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -3848,7 +3848,7 @@ export type SearchListenersQueryVariables = Exact<{
 }>;
 
 
-export type SearchListenersQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, displayNameUnsigned: string, email: string, avatarImage?: string | null, followerCount: any, followingCount: any, user?: { __typename?: 'User', fullName: string, role: UserRole } | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type SearchListenersQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, displayNameUnsigned: string, email: string, avatarImage?: string | null, followerCount: any, followingCount: any, user?: { __typename?: 'User', fullName: string, role: UserRole } | null }> | null } | null };
 
 export type SearchTracksQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -3857,7 +3857,7 @@ export type SearchTracksQueryVariables = Exact<{
 }>;
 
 
-export type SearchTracksQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, coverImage: string, restriction: { __typename?: 'Restriction', type: RestrictionType }, artist: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType } | null> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type SearchTracksQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, coverImage: string, restriction: { __typename?: 'Restriction', type: RestrictionType }, artist: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType } | null> }> | null } | null };
 
 export type SearchPlaylistsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -3866,7 +3866,7 @@ export type SearchPlaylistsQueryVariables = Exact<{
 }>;
 
 
-export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user?: { __typename?: 'User', id: string, fullName: string } | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user?: { __typename?: 'User', id: string, fullName: string } | null }> | null } | null };
 
 export type TrackDetailQueryVariables = Exact<{
   trackId: Scalars['String']['input'];
@@ -4137,10 +4137,6 @@ export const SearchArtistsDocument = new TypedDocumentString(`
         role
       }
     }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-    }
   }
 }
     `) as unknown as TypedDocumentString<SearchArtistsQuery, SearchArtistsQueryVariables>;
@@ -4165,10 +4161,6 @@ export const SearchListenersDocument = new TypedDocumentString(`
         fullName
         role
       }
-    }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
     }
   }
 }
@@ -4196,10 +4188,6 @@ export const SearchTracksDocument = new TypedDocumentString(`
         artistType
       }
     }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-    }
   }
 }
     `) as unknown as TypedDocumentString<SearchTracksQuery, SearchTracksQueryVariables>;
@@ -4208,7 +4196,7 @@ export const SearchPlaylistsDocument = new TypedDocumentString(`
   playlists(
     skip: $skip
     take: $take
-    where: {nameUnsigned: {contains: $contains}}
+    where: {nameUnsigned: {contains: $contains}, isPublic: {eq: true}}
   ) {
     totalCount
     items {
@@ -4226,10 +4214,6 @@ export const SearchPlaylistsDocument = new TypedDocumentString(`
         id
         fullName
       }
-    }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
     }
   }
 }

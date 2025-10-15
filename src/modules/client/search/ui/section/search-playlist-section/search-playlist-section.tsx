@@ -1,27 +1,43 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GenericActionMenu } from '../../component/generic-action-menu';
+import { Button } from '@/components/ui/button';
 
 interface SearchPlaylistSectionProps {
   playlists: any[];
-  isLoading?: boolean;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  fetchNextPage?: () => void;
 }
 
 export const SearchPlaylistSection: React.FC<SearchPlaylistSectionProps> = ({
   playlists,
-  isLoading
+  hasNextPage,
+  isFetchingNextPage,
+  fetchNextPage
 }) => {
-  if (isLoading) {
+  // Auto-load more when scrolling near bottom
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || isFetchingNextPage) {
+        return;
+      }
+      
+      if (hasNextPage && fetchNextPage) {
+        fetchNextPage();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Filter only public playlists
+  const publicPlaylists = playlists.filter(playlist => playlist.isPublic === true);
+
+  if (publicPlaylists.length === 0) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {[...Array(10)].map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="w-full aspect-square bg-gray-700 rounded-lg mb-4"></div>
-            <div className="space-y-2">
-              <div className="h-4 bg-gray-700 rounded w-3/4"></div>
-              <div className="h-3 bg-gray-700 rounded w-1/2"></div>
-            </div>
-          </div>
-        ))}
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">No public playlists found</p>
       </div>
     );
   }
@@ -29,7 +45,7 @@ export const SearchPlaylistSection: React.FC<SearchPlaylistSectionProps> = ({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {playlists.map((playlist) => (
+        {publicPlaylists.map((playlist) => (
           <div 
             key={playlist.id} 
             className="bg-gray-900 rounded-lg p-4 hover:bg-gray-800 transition-colors cursor-pointer group"
@@ -74,9 +90,23 @@ export const SearchPlaylistSection: React.FC<SearchPlaylistSectionProps> = ({
         ))}
       </div>
 
-      {playlists.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-400">No playlists found</p>
+      {/* Loading more indicator */}
+      {isFetchingNextPage && (
+        <div className="text-center py-4">
+          <p className="text-gray-400">Loading more playlists...</p>
+        </div>
+      )}
+
+      {/* Load more button */}
+      {hasNextPage && !isFetchingNextPage && (
+        <div className="text-center py-4">
+          <Button 
+            variant="outline" 
+            onClick={fetchNextPage}
+            className="text-white border-gray-600 hover:bg-gray-700"
+          >
+            Load More Playlists
+          </Button>
         </div>
       )}
     </div>

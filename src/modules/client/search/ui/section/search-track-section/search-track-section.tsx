@@ -1,32 +1,41 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Clock } from 'lucide-react';
 import { TrackActionMenu } from '../../component/track-action-menu';
+import { Button } from '@/components/ui/button';
 
 interface SearchTrackSectionProps {
   tracks: any[];
-  isLoading?: boolean;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  fetchNextPage?: () => void;
 }
 
 export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
   tracks,
-  isLoading
+  hasNextPage,
+  isFetchingNextPage,
+  fetchNextPage
 }) => {
-  if (isLoading) {
+  // Auto-load more when scrolling near bottom
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || isFetchingNextPage) {
+        return;
+      }
+      
+      if (hasNextPage && fetchNextPage) {
+        fetchNextPage();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (tracks.length === 0) {
     return (
-      <div className="space-y-4">
-        <div className="animate-pulse">
-          {[...Array(10)].map((_, i) => (
-            <div key={i} className="flex items-center space-x-4 p-2">
-              <div className="w-4 h-4 bg-gray-700 rounded"></div>
-              <div className="h-12 w-12 bg-gray-700 rounded"></div>
-              <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-700 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-700 rounded w-1/2"></div>
-              </div>
-              <div className="h-4 w-12 bg-gray-700 rounded"></div>
-            </div>
-          ))}
-        </div>
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">No tracks found</p>
       </div>
     );
   }
@@ -85,9 +94,23 @@ export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
         ))}
       </div>
 
-      {tracks.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-400">No songs found</p>
+      {/* Loading more indicator */}
+      {isFetchingNextPage && (
+        <div className="text-center py-4">
+          <p className="text-gray-400">Loading more tracks...</p>
+        </div>
+      )}
+
+      {/* Load more button (backup for auto-scroll) */}
+      {hasNextPage && !isFetchingNextPage && (
+        <div className="text-center py-4">
+          <Button 
+            variant="outline" 
+            onClick={fetchNextPage}
+            className="text-white border-gray-600 hover:bg-gray-700"
+          >
+            Load More Tracks
+          </Button>
         </div>
       )}
     </div>

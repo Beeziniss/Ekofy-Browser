@@ -37,7 +37,6 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
       </div>
     );
   }
-  console.log("Tracks:", tracks);
   return (
     <div className="space-y-8">
       {/* Top Result */}

@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { SearchType } from '@/types/search';
 import { SearchLayout } from '../layout/search-layout';
 import { SearchAllSection } from '../section/search-all-section/search-all-section';
@@ -10,10 +10,9 @@ import { SearchArtistSection } from '../section/search-user-section/search-artis
 import { SearchPlaylistSection } from '../section/search-playlist-section/search-playlist-section';
 import { SearchEmptySection } from '../component/search-empty-section';
 import { 
-  searchTracksOptions, 
-  searchArtistsOptions, 
-  searchPlaylistsOptions, 
-  searchListenersOptions 
+  searchTracksInfiniteOptions, 
+  searchArtistsInfiniteOptions, 
+  searchPlaylistsInfiniteOptions 
 } from '@/gql/options/search-options';
 import { graphql } from '@/gql';
 
@@ -42,10 +41,6 @@ export const SEARCH_ARTISTS = graphql(`
                     role
                 }
             }
-                pageInfo {
-            hasNextPage
-            hasPreviousPage
-        }
         }
     }
 `);
@@ -68,10 +63,6 @@ export const SEARCH_LISTENERS = graphql(`
                     role
                 }
             }
-                pageInfo {
-            hasNextPage
-            hasPreviousPage
-        }
         }
     }
 `);
@@ -97,19 +88,15 @@ export const SEARCH_TRACKS = graphql(`
                     userId
                     stageName
                     artistType
-                }  
+                }
             }
-                pageInfo {
-            hasNextPage
-            hasPreviousPage
-        }
         }
     }
 `);
 
 export const SEARCH_PLAYLISTS = graphql(`
     query SearchPlaylists($skip: Int, $take: Int, $contains: String) {
-        playlists(skip: $skip, take: $take, where: { nameUnsigned: { contains: $contains } }) {
+        playlists(skip: $skip, take: $take, where: { nameUnsigned: { contains: $contains }, isPublic: { eq: true } }) {
             totalCount
             items {
                 id
@@ -127,98 +114,112 @@ export const SEARCH_PLAYLISTS = graphql(`
                     fullName
                 }
             }
-                pageInfo {
-            hasNextPage
-            hasPreviousPage
-        }
         }
     }
 `);
 
 export const SearchView: React.FC<SearchViewProps> = ({ query, type, onTypeChange }) => {
-  // Search for tracks
-  const { data: tracksData, isLoading: tracksLoading } = useQuery(
-    searchTracksOptions(query, 0, type === 'songs' ? 50 : 10, type)
-  );
+  // Always call hooks at top level - use enabled to control execution
+  const tracksQuery = useInfiniteQuery({
+    ...searchTracksInfiniteOptions(query, 10),
+    enabled: !!query && (type === 'all' || type === 'songs'),
+  });
 
-  // Search for artists
-  const { data: artistsData, isLoading: artistsLoading } = useQuery(
-    searchArtistsOptions(query, 0, type === 'artists' ? 50 : 10, type)
-  );
+  const artistsQuery = useInfiniteQuery({
+    ...searchArtistsInfiniteOptions(query, 10),
+    enabled: !!query && (type === 'all' || type === 'artists'),
+  });
 
-  // Search for playlists
-  const { data: playlistsData, isLoading: playlistsLoading } = useQuery(
-    searchPlaylistsOptions(query, 0, type === 'playlists' ? 50 : 10, type)
-  );
+  const playlistsQuery = useInfiniteQuery({
+    ...searchPlaylistsInfiniteOptions(query, 10),
+    enabled: !!query && (type === 'all' || type === 'playlists'),
+  });
 
-  const tracks = tracksData?.tracks?.items || [];
-  const artists = artistsData?.artists?.items || [];
-  const playlists = playlistsData?.playlists?.items || [];
+  if (!query) {
+    return (
+      <SearchLayout
+        query={query}
+        currentType={type}
+        onTypeChange={onTypeChange}
+      >
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Enter a search term to find tracks, artists, and playlists</p>
+        </div>
+      </SearchLayout>
+    );
+  }
+
+  // Show loading state
+  if (tracksQuery.isLoading || artistsQuery.isLoading || playlistsQuery.isLoading) {
+    return (
+      <SearchLayout
+        query={query}
+        currentType={type}
+        onTypeChange={onTypeChange}
+      >
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Searching...</p>
+        </div>
+      </SearchLayout>
+    );
+  }
+
+  // Extract data from queries
+  const tracks = tracksQuery.data?.pages.flatMap((page: any) => page.tracks?.items || []) || [];
+  const artists = artistsQuery.data?.pages.flatMap((page: any) => page.artists?.items || []) || [];
+  const playlists = playlistsQuery.data?.pages.flatMap((page: any) => page.playlists?.items || []) || [];
 
   const renderContent = () => {
-    if (!query) {
-      return (
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-white mb-4">Search for music</h2>
-          <p className="text-gray-400">Find your favorite songs, artists, and playlists</p>
-        </div>
-      );
-    }
-
     switch (type) {
       case 'songs':
         return (
-          <SearchTrackSection 
-            tracks={tracks} 
-            isLoading={tracksLoading} 
+          <SearchTrackSection
+            tracks={tracks}
+            hasNextPage={tracksQuery.hasNextPage}
+            isFetchingNextPage={tracksQuery.isFetchingNextPage}
+            fetchNextPage={tracksQuery.fetchNextPage}
           />
         );
-      
       case 'artists':
         return (
-          <SearchArtistSection 
-            artists={artists} 
-            isLoading={artistsLoading} 
+          <SearchArtistSection
+            artists={artists}
+            hasNextPage={artistsQuery.hasNextPage}
+            isFetchingNextPage={artistsQuery.isFetchingNextPage}
+            fetchNextPage={artistsQuery.fetchNextPage}
           />
         );
-      
       case 'playlists':
         return (
-          <SearchPlaylistSection 
-            playlists={playlists} 
-            isLoading={playlistsLoading} 
+          <SearchPlaylistSection
+            playlists={playlists}
+            hasNextPage={playlistsQuery.hasNextPage}
+            isFetchingNextPage={playlistsQuery.isFetchingNextPage}
+            fetchNextPage={playlistsQuery.fetchNextPage}
           />
         );
-      
-      case 'albums':
-      case 'profiles':
-      case 'genres':
-        return (
-          <SearchEmptySection 
-            type={type} 
-            query={query} 
-          />
-        );
-      
       case 'all':
-      default:
+        if (tracks.length === 0 && artists.length === 0 && playlists.length === 0) {
+          return <SearchEmptySection query={query} type={type} />;
+        }
         return (
           <SearchAllSection
+            tracks={tracks.slice(0, 10)}
+            artists={artists.slice(0, 10)}
+            playlists={playlists.slice(0, 10)}
             query={query}
-            tracks={tracks}
-            artists={artists}
-            playlists={playlists}
-            isLoading={tracksLoading || artistsLoading || playlistsLoading}
           />
         );
+      default:
+        return <SearchEmptySection query={query} type={type} />;
     }
   };
 
   return (
     <SearchLayout
+      query={query}
       currentType={type}
       onTypeChange={onTypeChange}
-      query={query}
     >
       {renderContent()}
     </SearchLayout>

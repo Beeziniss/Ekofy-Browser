@@ -1,27 +1,40 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GenericActionMenu } from '../../component/generic-action-menu';
+import { Button } from '@/components/ui/button';
 
 interface SearchArtistSectionProps {
   artists: any[];
-  isLoading?: boolean;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  fetchNextPage?: () => void;
 }
 
 export const SearchArtistSection: React.FC<SearchArtistSectionProps> = ({
   artists,
-  isLoading
+  hasNextPage,
+  isFetchingNextPage,
+  fetchNextPage
 }) => {
-  if (isLoading) {
+  // Auto-load more when scrolling near bottom
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || isFetchingNextPage) {
+        return;
+      }
+      
+      if (hasNextPage && fetchNextPage) {
+        fetchNextPage();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (artists.length === 0) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-        {[...Array(12)].map((_, i) => (
-          <div key={i} className="animate-pulse p-4 flex flex-col items-center">
-            <div className="w-36 aspect-square bg-gray-700 rounded-full mb-4"></div>
-            <div className="space-y-2">
-              <div className="h-4 bg-gray-700 rounded w-36 mx-auto"></div>
-              <div className="h-3 bg-gray-700 rounded w-20 mx-auto"></div>
-            </div>
-          </div>
-        ))}
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">No artists found</p>
       </div>
     );
   }
@@ -77,9 +90,23 @@ export const SearchArtistSection: React.FC<SearchArtistSectionProps> = ({
         ))}
       </div>
 
-      {artists.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-400">No artists found</p>
+      {/* Loading more indicator */}
+      {isFetchingNextPage && (
+        <div className="text-center py-4">
+          <p className="text-gray-400">Loading more artists...</p>
+        </div>
+      )}
+
+      {/* Load more button */}
+      {hasNextPage && !isFetchingNextPage && (
+        <div className="text-center py-4">
+          <Button 
+            variant="outline" 
+            onClick={fetchNextPage}
+            className="text-white border-gray-600 hover:bg-gray-700"
+          >
+            Load More Artists
+          </Button>
         </div>
       )}
     </div>
