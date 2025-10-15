@@ -14,7 +14,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createPlaylistMutationOptions } from "@/gql/options/client-mutation-options";
+import {
+  createPlaylistMutationOptions,
+  updatePlaylistMutationOptions,
+} from "@/gql/options/client-mutation-options";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -105,21 +108,22 @@ const PlaylistManagementModal = ({
     },
   });
 
-  // TODO: Add update playlist mutation when available
-  // const { mutate: updatePlaylist, isPending: isUpdating } = useMutation({
-  //   ...updatePlaylistMutationOptions,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["playlists"] });
-  //     queryClient.invalidateQueries({ queryKey: ["playlist-detail", initialData?.id] });
-  //     onOpenChange(false);
-  //     onSuccess?.();
-  //     toast.success("Playlist updated successfully!");
-  //   },
-  //   onError: (error) => {
-  //     console.error("Failed to update playlist:", error);
-  //     toast.error("Failed to update playlist. Please try again.");
-  //   },
-  // });
+  const { mutate: updatePlaylist, isPending: isUpdating } = useMutation({
+    ...updatePlaylistMutationOptions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["playlists"] });
+      queryClient.invalidateQueries({
+        queryKey: ["playlist-detail", initialData?.id],
+      });
+      onOpenChange(false);
+      onSuccess?.();
+      toast.success("Playlist updated successfully!");
+    },
+    onError: (error) => {
+      console.error("Failed to update playlist:", error);
+      toast.error("Failed to update playlist. Please try again.");
+    },
+  });
 
   const form = useForm<PlaylistFormValues>({
     resolver: zodResolver(formSchema),
@@ -131,7 +135,7 @@ const PlaylistManagementModal = ({
     },
   });
 
-  const isPending = isCreating; // || isUpdating when update is available
+  const isPending = isCreating || isUpdating;
 
   const onSubmit = (values: PlaylistFormValues) => {
     if (mode === "create") {
@@ -142,15 +146,13 @@ const PlaylistManagementModal = ({
         description: values.description || "",
       });
     } else {
-      // TODO: Implement update when mutation is available
-      // updatePlaylist({
-      //   id: initialData?.id,
-      //   name: values.name,
-      //   isPublic: values.isPublic,
-      //   coverImage: values.coverImage,
-      //   description: values.description || "",
-      // });
-      toast.info("Update functionality will be available soon!");
+      updatePlaylist({
+        playlistId: initialData!.id!,
+        name: values.name,
+        isPublic: values.isPublic,
+        coverImage: values.coverImage,
+        description: values.description || "",
+      });
     }
   };
 

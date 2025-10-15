@@ -8,6 +8,12 @@ export const AddToPlaylistMutation = graphql(`
   }
 `);
 
+export const UpdatePlaylistMutation = graphql(`
+  mutation UpdatePlaylist($updatePlaylistRequest: UpdatePlaylistRequestInput!) {
+    updatePlaylist(updatePlaylistRequest: $updatePlaylistRequest)
+  }
+`);
+
 export const RemoveFromPlaylistMutation = graphql(`
   mutation RemoveFromPlaylist(
     $addToPlaylistRequest: AddToPlaylistRequestInput!
