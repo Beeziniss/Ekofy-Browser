@@ -37,7 +37,7 @@ const ClientHeader = () => {
           </Link>
           <Link
             href={"/library"}
-            className={`inline-block py-3 text-[#999999] hover:text-[#f2f2f2] ${pathname === "/library" ? "border-b-2 border-b-[#f2f2f2] text-[#f2f2f2]" : ""}`}
+            className={`inline-block py-3 text-[#999999] hover:text-[#f2f2f2] ${pathname.startsWith("/library") ? "border-b-2 border-b-[#f2f2f2] text-[#f2f2f2]" : ""}`}
           >
             <span className="text-sm font-semibold">Library</span>
           </Link>

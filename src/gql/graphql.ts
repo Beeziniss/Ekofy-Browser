@@ -42,6 +42,12 @@ export type AccountLinkResponse = {
   url: Scalars['String']['output'];
 };
 
+export type AddToPlaylistRequestInput = {
+  playlistId?: InputMaybe<Scalars['String']['input']>;
+  playlistName?: InputMaybe<Scalars['String']['input']>;
+  trackId: Scalars['String']['input'];
+};
+
 export type Address = {
   __typename?: 'Address';
   addressLine?: Maybe<Scalars['String']['output']>;
@@ -138,6 +144,7 @@ export type Artist = {
   popularity: Scalars['Long']['output'];
   restriction: Restriction;
   stageName: Scalars['String']['output'];
+  stageNameUnsigned: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   user: User;
   userId: Scalars['String']['output'];
@@ -163,6 +170,7 @@ export type ArtistFilterInput = {
   popularity?: InputMaybe<LongOperationFilterInput>;
   restriction?: InputMaybe<RestrictionFilterInput>;
   stageName?: InputMaybe<StringOperationFilterInput>;
+  stageNameUnsigned?: InputMaybe<StringOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
   userId?: InputMaybe<StringOperationFilterInput>;
   verifiedAt?: InputMaybe<DateTimeOperationFilterInput>;
@@ -291,6 +299,7 @@ export type ArtistSortInput = {
   popularity?: InputMaybe<SortEnumType>;
   restriction?: InputMaybe<RestrictionSortInput>;
   stageName?: InputMaybe<SortEnumType>;
+  stageNameUnsigned?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
   userId?: InputMaybe<SortEnumType>;
   verifiedAt?: InputMaybe<SortEnumType>;
@@ -747,6 +756,13 @@ export type CreatePaymentCheckoutSessionRequestInput = {
   successUrl: Scalars['String']['input'];
 };
 
+export type CreatePlaylistRequestInput = {
+  coverImage?: InputMaybe<Scalars['String']['input']>;
+  description: Scalars['String']['input'];
+  isPublic: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+};
+
 export type CreatePriceRequestInput = {
   interval: PeriodTime;
   intervalCount: Scalars['Long']['input'];
@@ -1037,6 +1053,46 @@ export type FloatOperationFilterInput = {
 
 export type FollowUserRequestInput = {
   targetUserId: Scalars['String']['input'];
+};
+
+export type Follows = {
+  __typename?: 'Follows';
+  createdAt: Scalars['DateTime']['output'];
+  followedId: Scalars['String']['output'];
+  followedType: UserRole;
+  followerId: Scalars['String']['output'];
+  followerType: UserRole;
+  id: Scalars['String']['output'];
+};
+
+/** A segment of a collection. */
+export type FollowsCollectionSegment = {
+  __typename?: 'FollowsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Follows>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type FollowsFilterInput = {
+  and?: InputMaybe<Array<FollowsFilterInput>>;
+  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  followedId?: InputMaybe<StringOperationFilterInput>;
+  followedType?: InputMaybe<UserRoleOperationFilterInput>;
+  followerId?: InputMaybe<StringOperationFilterInput>;
+  followerType?: InputMaybe<UserRoleOperationFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<FollowsFilterInput>>;
+};
+
+export type FollowsSortInput = {
+  createdAt?: InputMaybe<SortEnumType>;
+  followedId?: InputMaybe<SortEnumType>;
+  followedType?: InputMaybe<SortEnumType>;
+  followerId?: InputMaybe<SortEnumType>;
+  followerType?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
 };
 
 export type IdentityCard = {
@@ -1373,6 +1429,7 @@ export type Listener = {
   bannerImage?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   displayName: Scalars['String']['output'];
+  displayNameUnsigned: Scalars['String']['output'];
   email: Scalars['String']['output'];
   followerCount: Scalars['Long']['output'];
   followingCount: Scalars['Long']['output'];
@@ -1394,6 +1451,7 @@ export type ListenerFilterInput = {
   bannerImage?: InputMaybe<StringOperationFilterInput>;
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
   displayName?: InputMaybe<StringOperationFilterInput>;
+  displayNameUnsigned?: InputMaybe<StringOperationFilterInput>;
   email?: InputMaybe<StringOperationFilterInput>;
   followerCount?: InputMaybe<LongOperationFilterInput>;
   followingCount?: InputMaybe<LongOperationFilterInput>;
@@ -1413,6 +1471,7 @@ export type ListenerSortInput = {
   bannerImage?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
   displayName?: InputMaybe<SortEnumType>;
+  displayNameUnsigned?: InputMaybe<SortEnumType>;
   email?: InputMaybe<SortEnumType>;
   followerCount?: InputMaybe<SortEnumType>;
   followingCount?: InputMaybe<SortEnumType>;
@@ -1550,6 +1609,8 @@ export enum MoodType {
 
 export type MutationInitialization = {
   __typename?: 'MutationInitialization';
+  addToFavorite: Scalars['Boolean']['output'];
+  addToPlaylist: Scalars['Boolean']['output'];
   approveArtistPackage: Scalars['Boolean']['output'];
   approveArtistRegistration: Scalars['Boolean']['output'];
   approveTrackUploadRequest: Scalars['Boolean']['output'];
@@ -1574,6 +1635,7 @@ export type MutationInitialization = {
   createMomoPaymentQR: MomoPaymentResponse;
   createMomoPaymentVisa: MomoPaymentResponse;
   createPaymentCheckoutSession: CheckoutSessionResponse;
+  createPlaylist: Scalars['Boolean']['output'];
   createRequest: Scalars['Boolean']['output'];
   createRoyaltyPolicy: Scalars['Boolean']['output'];
   createSubscription: Scalars['Boolean']['output'];
@@ -1582,6 +1644,7 @@ export type MutationInitialization = {
   createTrackComment: Scalars['Boolean']['output'];
   deactiveEntitlement: Scalars['Boolean']['output'];
   deleteCoupon: Scalars['Boolean']['output'];
+  deletePlaylist: Scalars['Boolean']['output'];
   deleteTrackComment: Scalars['Boolean']['output'];
   deprecateCoupon: Scalars['Boolean']['output'];
   deprecateSubscription: Scalars['Boolean']['output'];
@@ -1594,6 +1657,7 @@ export type MutationInitialization = {
   registerArtistManual: Scalars['Boolean']['output'];
   rejectArtistRegistration: Scalars['Boolean']['output'];
   rejectTrackUploadRequest: Scalars['Boolean']['output'];
+  removeFromPlaylist: Scalars['Boolean']['output'];
   seedEntitlements: Scalars['Boolean']['output'];
   seedRoyaltyPolicyData: Scalars['Boolean']['output'];
   threadedComments: ThreadedCommentsResponse;
@@ -1604,6 +1668,16 @@ export type MutationInitialization = {
   uploadFile: Scalars['String']['output'];
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
+};
+
+
+export type MutationInitializationAddToFavoriteArgs = {
+  addToPlaylistRequest: AddToPlaylistRequestInput;
+};
+
+
+export type MutationInitializationAddToPlaylistArgs = {
+  addToPlaylistRequest: AddToPlaylistRequestInput;
 };
 
 
@@ -1721,6 +1795,11 @@ export type MutationInitializationCreatePaymentCheckoutSessionArgs = {
 };
 
 
+export type MutationInitializationCreatePlaylistArgs = {
+  createPlaylistRequest: CreatePlaylistRequestInput;
+};
+
+
 export type MutationInitializationCreateRequestArgs = {
   request: RequestCreatingRequestInput;
 };
@@ -1758,6 +1837,11 @@ export type MutationInitializationDeactiveEntitlementArgs = {
 
 export type MutationInitializationDeleteCouponArgs = {
   couponIds: Array<Scalars['String']['input']>;
+};
+
+
+export type MutationInitializationDeletePlaylistArgs = {
+  playlistId: Scalars['String']['input'];
 };
 
 
@@ -1815,6 +1899,11 @@ export type MutationInitializationRejectTrackUploadRequestArgs = {
   recordingId: Scalars['String']['input'];
   trackId: Scalars['String']['input'];
   workId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationRemoveFromPlaylistArgs = {
+  addToPlaylistRequest: AddToPlaylistRequestInput;
 };
 
 
@@ -1996,7 +2085,9 @@ export type PendingArtistRegistrationResponse = {
   placeOfResidence: Scalars['String']['output'];
   requestedAt: Scalars['DateTime']['output'];
   stageName: Scalars['String']['output'];
+  stageNameUnsigned: Scalars['String']['output'];
   timeToLive?: Maybe<Scalars['TimeSpan']['output']>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type PendingArtistRegistrationResponseFilterInput = {
@@ -2020,17 +2111,9 @@ export type PendingArtistRegistrationResponseFilterInput = {
   placeOfResidence?: InputMaybe<StringOperationFilterInput>;
   requestedAt?: InputMaybe<DateTimeOperationFilterInput>;
   stageName?: InputMaybe<StringOperationFilterInput>;
+  stageNameUnsigned?: InputMaybe<StringOperationFilterInput>;
   timeToLive?: InputMaybe<TimeSpanOperationFilterInput>;
-};
-
-/** A segment of a collection. */
-export type PendingTrackUploadRequestsCollectionSegment = {
-  __typename?: 'PendingTrackUploadRequestsCollectionSegment';
-  /** A flattened list of the items. */
-  items?: Maybe<Array<TrackTempRequest>>;
-  /** Information to aid in pagination. */
-  pageInfo: CollectionSegmentInfo;
-  totalCount: Scalars['Int']['output'];
+  totalCount?: InputMaybe<IntOperationFilterInput>;
 };
 
 export enum PeriodTime {
@@ -2055,6 +2138,7 @@ export type Playlist = {
   id: Scalars['String']['output'];
   isPublic: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  nameUnsigned: Scalars['String']['output'];
   tracks: Array<Maybe<Track>>;
   tracksInfo: Array<PlaylistTracksInfo>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2070,6 +2154,7 @@ export type PlaylistFilterInput = {
   id?: InputMaybe<StringOperationFilterInput>;
   isPublic?: InputMaybe<BooleanOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
+  nameUnsigned?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<PlaylistFilterInput>>;
   tracksInfo?: InputMaybe<ListFilterInputTypeOfPlaylistTracksInfoFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
@@ -2083,6 +2168,7 @@ export type PlaylistSortInput = {
   id?: InputMaybe<SortEnumType>;
   isPublic?: InputMaybe<SortEnumType>;
   name?: InputMaybe<SortEnumType>;
+  nameUnsigned?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
   userId?: InputMaybe<SortEnumType>;
 };
@@ -2159,6 +2245,7 @@ export type QueryInitialization = {
   commentThread?: Maybe<CommentThreadCollectionSegment>;
   coupons?: Maybe<CouponsCollectionSegment>;
   entitlements: Array<Entitlement>;
+  follows?: Maybe<FollowsCollectionSegment>;
   hello: Scalars['String']['output'];
   invoices?: Maybe<InvoicesCollectionSegment>;
   isCommentInThread: Scalars['Boolean']['output'];
@@ -2171,7 +2258,7 @@ export type QueryInitialization = {
   monthlyStreamCounts?: Maybe<MonthlyStreamCountsCollectionSegment>;
   originalFileTrackUploadRequest: Scalars['String']['output'];
   pendingArtistRegistrations: Array<PendingArtistRegistrationResponse>;
-  pendingTrackUploadRequests?: Maybe<PendingTrackUploadRequestsCollectionSegment>;
+  pendingTrackUploadRequests: Array<TrackTempRequest>;
   playlists?: Maybe<PlaylistsCollectionSegment>;
   queryTrack: QueryAudioFingerprintResponse;
   queryTracks: Array<QueryAudioFingerprintResponse>;
@@ -2179,6 +2266,10 @@ export type QueryInitialization = {
   requests: Array<RequestHub>;
   royaltyPolicies?: Maybe<RoyaltyPoliciesCollectionSegment>;
   royaltyReports?: Maybe<RoyaltyReportsCollectionSegment>;
+  searchArtists?: Maybe<SearchArtistsCollectionSegment>;
+  searchListeners?: Maybe<SearchListenersCollectionSegment>;
+  searchPlaylists?: Maybe<SearchPlaylistsCollectionSegment>;
+  searchTracks?: Maybe<SearchTracksCollectionSegment>;
   subscriptionPlans?: Maybe<SubscriptionPlansCollectionSegment>;
   subscriptions?: Maybe<SubscriptionsCollectionSegment>;
   threadedComments: ThreadedCommentsResponse;
@@ -2249,6 +2340,14 @@ export type QueryInitializationEntitlementsArgs = {
 };
 
 
+export type QueryInitializationFollowsArgs = {
+  order?: InputMaybe<Array<FollowsSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<FollowsFilterInput>;
+};
+
+
 export type QueryInitializationInvoicesArgs = {
   order?: InputMaybe<Array<InvoiceSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -2315,8 +2414,8 @@ export type QueryInitializationPendingArtistRegistrationsArgs = {
 
 
 export type QueryInitializationPendingTrackUploadRequestsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
+  pageNumber?: Scalars['Int']['input'];
+  pageSize?: Scalars['Int']['input'];
   where?: InputMaybe<TrackTempRequestFilterInput>;
 };
 
@@ -2360,6 +2459,42 @@ export type QueryInitializationRoyaltyReportsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<RoyaltyReportFilterInput>;
+};
+
+
+export type QueryInitializationSearchArtistsArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  stageName: Scalars['String']['input'];
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type QueryInitializationSearchListenersArgs = {
+  displayName: Scalars['String']['input'];
+  order?: InputMaybe<Array<ListenerSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ListenerFilterInput>;
+};
+
+
+export type QueryInitializationSearchPlaylistsArgs = {
+  name: Scalars['String']['input'];
+  order?: InputMaybe<Array<PlaylistSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PlaylistFilterInput>;
+};
+
+
+export type QueryInitializationSearchTracksArgs = {
+  name: Scalars['String']['input'];
+  order?: InputMaybe<Array<TrackSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TrackFilterInput>;
 };
 
 
@@ -2737,6 +2872,46 @@ export type RoyaltySplitFilterInput = {
   userId?: InputMaybe<StringOperationFilterInput>;
 };
 
+/** A segment of a collection. */
+export type SearchArtistsCollectionSegment = {
+  __typename?: 'SearchArtistsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Artist>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
+export type SearchListenersCollectionSegment = {
+  __typename?: 'SearchListenersCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Listener>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
+export type SearchPlaylistsCollectionSegment = {
+  __typename?: 'SearchPlaylistsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Playlist>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
+export type SearchTracksCollectionSegment = {
+  __typename?: 'SearchTracksCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Track>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
 export enum SortEnumType {
   Asc = 'ASC',
   Desc = 'DESC'
@@ -3050,6 +3225,7 @@ export type Track = {
   lyrics?: Maybe<Scalars['String']['output']>;
   mainArtistIds: Array<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  nameUnsigned: Scalars['String']['output'];
   previewVideo?: Maybe<Scalars['String']['output']>;
   releaseInfo: ReleaseInfo;
   restriction: Restriction;
@@ -3066,7 +3242,6 @@ export type TrackComment = {
   commenterId: Scalars['String']['output'];
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
-  createdBy: Scalars['String']['output'];
   depth: Scalars['Int']['output'];
   id: Scalars['String']['output'];
   isDeleted: Scalars['Boolean']['output'];
@@ -3082,7 +3257,6 @@ export type TrackComment = {
   totalRepliesCount: Scalars['Long']['output'];
   trackId: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
 export type TrackCommentFilterInput = {
@@ -3090,7 +3264,6 @@ export type TrackCommentFilterInput = {
   commenterId?: InputMaybe<StringOperationFilterInput>;
   content?: InputMaybe<StringOperationFilterInput>;
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
-  createdBy?: InputMaybe<StringOperationFilterInput>;
   depth?: InputMaybe<IntOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   isDeleted?: InputMaybe<BooleanOperationFilterInput>;
@@ -3106,7 +3279,6 @@ export type TrackCommentFilterInput = {
   totalRepliesCount?: InputMaybe<LongOperationFilterInput>;
   trackId?: InputMaybe<StringOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
-  updatedBy?: InputMaybe<StringOperationFilterInput>;
 };
 
 export type TrackCommentResponse = {
@@ -3134,7 +3306,6 @@ export type TrackCommentSortInput = {
   commenterId?: InputMaybe<SortEnumType>;
   content?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
-  createdBy?: InputMaybe<SortEnumType>;
   depth?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   isDeleted?: InputMaybe<SortEnumType>;
@@ -3148,7 +3319,6 @@ export type TrackCommentSortInput = {
   totalRepliesCount?: InputMaybe<SortEnumType>;
   trackId?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
-  updatedBy?: InputMaybe<SortEnumType>;
 };
 
 /** A segment of a collection. */
@@ -3180,6 +3350,7 @@ export type TrackFilterInput = {
   lyrics?: InputMaybe<StringOperationFilterInput>;
   mainArtistIds?: InputMaybe<ListStringOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
+  nameUnsigned?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<TrackFilterInput>>;
   previewVideo?: InputMaybe<StringOperationFilterInput>;
   releaseInfo?: InputMaybe<ReleaseInfoFilterInput>;
@@ -3206,6 +3377,7 @@ export type TrackSortInput = {
   isMonetized?: InputMaybe<SortEnumType>;
   lyrics?: InputMaybe<SortEnumType>;
   name?: InputMaybe<SortEnumType>;
+  nameUnsigned?: InputMaybe<SortEnumType>;
   previewVideo?: InputMaybe<SortEnumType>;
   releaseInfo?: InputMaybe<ReleaseInfoSortInput>;
   restriction?: InputMaybe<RestrictionSortInput>;
@@ -3660,6 +3832,32 @@ export type TrackListHomeQueryVariables = Exact<{
 
 export type TrackListHomeQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string } | null> }> | null } | null };
 
+export type CreatePlaylistMutationVariables = Exact<{
+  createPlaylistRequest: CreatePlaylistRequestInput;
+}>;
+
+
+export type CreatePlaylistMutation = { __typename?: 'MutationInitialization', createPlaylist: boolean };
+
+export type DeletePlaylistMutationVariables = Exact<{
+  playlistId: Scalars['String']['input'];
+}>;
+
+
+export type DeletePlaylistMutation = { __typename?: 'MutationInitialization', deletePlaylist: boolean };
+
+export type PlaylistsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PlaylistsQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, isPublic: boolean }> | null } | null };
+
+export type PlaylistDetailQueryVariables = Exact<{
+  playlistId: Scalars['String']['input'];
+}>;
+
+
+export type PlaylistDetailQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, description?: string | null, isPublic: boolean, userId: string, createdAt: any, updatedAt?: any | null, user?: { __typename?: 'User', id: string, fullName: string } | null, tracks: Array<{ __typename?: 'Track', id: string } | null> }> | null } | null };
+
 export type TrackDetailQueryVariables = Exact<{
   trackId: Scalars['String']['input'];
 }>;
@@ -3884,6 +4082,52 @@ export const TrackListHomeDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TrackListHomeQuery, TrackListHomeQueryVariables>;
+export const CreatePlaylistDocument = new TypedDocumentString(`
+    mutation createPlaylist($createPlaylistRequest: CreatePlaylistRequestInput!) {
+  createPlaylist(createPlaylistRequest: $createPlaylistRequest)
+}
+    `) as unknown as TypedDocumentString<CreatePlaylistMutation, CreatePlaylistMutationVariables>;
+export const DeletePlaylistDocument = new TypedDocumentString(`
+    mutation deletePlaylist($playlistId: String!) {
+  deletePlaylist(playlistId: $playlistId)
+}
+    `) as unknown as TypedDocumentString<DeletePlaylistMutation, DeletePlaylistMutationVariables>;
+export const PlaylistsDocument = new TypedDocumentString(`
+    query Playlists {
+  playlists {
+    items {
+      id
+      name
+      coverImage
+      isPublic
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<PlaylistsQuery, PlaylistsQueryVariables>;
+export const PlaylistDetailDocument = new TypedDocumentString(`
+    query PlaylistDetail($playlistId: String!) {
+  playlists(where: {id: {eq: $playlistId}}) {
+    items {
+      id
+      name
+      coverImage
+      description
+      isPublic
+      user {
+        id
+        fullName
+      }
+      userId
+      tracks {
+        id
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PlaylistDetailQuery, PlaylistDetailQueryVariables>;
 export const TrackDetailDocument = new TypedDocumentString(`
     query TrackDetail($trackId: String!) {
   tracks(where: {id: {eq: $trackId}}) {

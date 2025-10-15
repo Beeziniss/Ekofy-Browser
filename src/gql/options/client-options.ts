@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { execute } from "../execute";
 import { TrackListHomeQuery } from "@/modules/client/home/ui/views/home-view";
 import {
@@ -6,6 +6,8 @@ import {
   GetUserActiveSubscriptionQuery,
 } from "@/modules/client/profile/ui/views/queries";
 import { TrackDetailViewQuery } from "@/modules/client/track/ui/views/track-detail-view";
+import { PlaylistsQuery } from "@/modules/client/library/ui/views/library-view";
+import { PlaylistDetailQuery } from "@/modules/client/playlist/ui/views/playlist-detail-view";
 
 export const trackListHomeOptions = queryOptions({
   queryKey: ["tracks-home"],
@@ -48,4 +50,23 @@ export const trackDetailOptions = (trackId: string) =>
   queryOptions({
     queryKey: ["track-detail", trackId],
     queryFn: async () => await execute(TrackDetailViewQuery, { trackId }),
+  });
+
+export const playlistOptions = infiniteQueryOptions({
+  queryKey: ["playlists"],
+  queryFn: async () => await execute(PlaylistsQuery),
+  initialPageParam: 1,
+  getNextPageParam: (lastPage, allPages) => {
+    const totalCount = lastPage.playlists?.totalCount || 0;
+    const loadedCount = allPages
+      .map((page) => page.playlists?.items?.length || 0)
+      .reduce((a, b) => a + b, 0);
+    return loadedCount < totalCount ? allPages.length + 1 : undefined;
+  },
+});
+
+export const playlistDetailOptions = (playlistId: string) =>
+  queryOptions({
+    queryKey: ["playlist-detail", playlistId],
+    queryFn: async () => await execute(PlaylistDetailQuery, { playlistId }),
   });
