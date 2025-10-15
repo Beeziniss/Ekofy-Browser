@@ -1,18 +1,21 @@
 import React from "react";
 import DetailItem from "@/modules/client/profile/ui/components/detail-item";
-
-const personalFields = [
-  { title: "Citizen ID", value: "012345678901" },
-  { title: "Full name", value: "Nguyen Van A" },
-  { title: "Phone number", value: "+84 901 234 567" },
-  { title: "Date of Birth", value: "1999-10-10" },
-  { title: "Gender", value: "Male" },
-  { title: "Place of origin", value: "Da Nang, Vietnam" },
-  { title: "Place of residence", value: "Ho Chi Minh City, Vietnam" },
-  { title: "Date of expiration", value: "2030-10-10" },
-];
+import { useArtistProfile } from "../../hooks/use-artist-profile";
+import { format } from "date-fns";
 
 export default function ArtistPersonalDetailSection() {
+  const { identityCard } = useArtistProfile();
+
+  const personalFields = [
+    { title: "Citizen ID", value: identityCard?.number || "-" },
+    { title: "Full name", value: identityCard?.fullName || "-" },
+    { title: "Date of Birth", value: identityCard?.dateOfBirth ? (() => { try { return format(new Date(identityCard!.dateOfBirth!), "yyyy-MM-dd"); } catch { return "-"; } })() : "-" },
+    { title: "Gender", value: identityCard?.gender || "-" },
+    { title: "Place of origin", value: identityCard?.placeOfOrigin || "-" },
+    { title: "Place of residence", value: identityCard?.placeOfResidence?.addressLine || "-" },
+    { title: "Date of expiration", value: identityCard?.validUntil ? (() => { try { return format(new Date(identityCard!.validUntil!), "yyyy-MM-dd"); } catch { return "-"; } })() : "-" },
+  ];
+
   return (
     <div className="w-full ">
       <div className="flex items-end justify-between gap-x-3">

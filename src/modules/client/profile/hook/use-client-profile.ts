@@ -1,15 +1,28 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { listenerProfileOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
 import { useAuthStore } from "@/store";
 import { format } from "date-fns";
 
 export function useClientProfile() {
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const userId = user?.userId || "";
-  const listenerQuery = useQuery(listenerProfileOptions(userId));
-  const subscriptionQuery = useQuery(userActiveSubscriptionOptions(userId));
+  const enabled = !!userId && !!isAuthenticated;
+
+  const listenerQuery = useSuspenseQuery(listenerProfileOptions(userId, enabled));
+
+  const subscriptionQuery = useQuery({
+    ...userActiveSubscriptionOptions(userId),
+    retry: 0,
+    enabled,
+  }) as {
+    data: {
+      isActive?: boolean;
+      subscription?: { tier?: string };
+    } | null;
+    isError?: boolean;
+  };
 
   const listener = listenerQuery.data;
 
@@ -40,7 +53,7 @@ export function useClientProfile() {
       : undefined,
     // Prefer subscription tier if active; fall back to verification heuristic
     membershipStatus:
-      (subscriptionQuery.data?.isActive && subscriptionQuery.data.subscription?.tier) ||
+      (subscriptionQuery?.data?.isActive && subscriptionQuery.data.subscription?.tier) ||
       (listener?.isVerified ? "PREMIUM" : "FREE"),
   } as const;
 

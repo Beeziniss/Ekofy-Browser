@@ -1,10 +1,14 @@
 import TeamMemberCard, { TeamMember } from "../components/team/member-card";
+import { useArtistProfile } from "../../hooks/use-artist-profile";
 
 export default function TeamTab() {
-  const members: TeamMember[] = [
-    { id: 1, name: "Alice Nguyen", email: "alice@example.com", avatarUrl: "" },
-    { id: 2, name: "Bob Tran", email: "bob@example.com", avatarUrl: "" },
-  ];
+  const { members: rawMembers } = useArtistProfile();
+  const members: TeamMember[] = (rawMembers || []).map((m, idx) => ({
+    id: idx,
+    name: m.fullName,
+    email: m.email,
+    avatarUrl: "",
+  }));
 
   return (
     <div className="py-4 space-y-4">

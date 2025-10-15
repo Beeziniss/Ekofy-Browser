@@ -19,10 +19,11 @@ export const trackListHomeOptions = queryOptions({
   queryFn: async () => await execute(TrackListHomeQuery, { take: 10 }),
 });
 
-export const listenerProfileOptions = (userId: string) =>
+export const listenerProfileOptions = (userId: string, enabled: boolean = true) =>
   queryOptions({
     queryKey: ["listener-profile", userId],
     queryFn: async () => {
+      if (!userId) return null;
       const result = await execute(GetListenerProfileQuery, {
         where: { userId: { eq: userId } },
         take: 1,
@@ -30,13 +31,15 @@ export const listenerProfileOptions = (userId: string) =>
       });
       return result.listeners?.items?.[0] || null;
     },
-    enabled: !!userId,
+    retry: 0,
+    enabled: !!userId && enabled,
   });
 
 export const userActiveSubscriptionOptions = (userId: string) =>
   queryOptions({
     queryKey: ["user-active-subscription", userId],
     queryFn: async () => {
+      if (!userId) return null;
       const result = await execute(GetUserActiveSubscriptionQuery, {
         where: {
           userId: { eq: userId },
@@ -48,6 +51,7 @@ export const userActiveSubscriptionOptions = (userId: string) =>
       });
       return result.userSubscriptions?.items?.[0] || null;
     },
+    retry: 0,
     enabled: !!userId,
   });
 
@@ -55,6 +59,7 @@ export const trackDetailOptions = (trackId: string) =>
   queryOptions({
     queryKey: ["track-detail", trackId],
     queryFn: async () => await execute(TrackDetailViewQuery, { trackId }),
+    enabled: !!trackId,
   });
 
 export const playlistOptions = infiniteQueryOptions({
