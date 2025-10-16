@@ -43,6 +43,8 @@ interface ArtistApprovalTableProps {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
   searchTerm: string; // Add searchTerm prop to control input value
+  isLoading?: boolean; // Add loading state
+  error?: Error | null; // Add error state
 }
 
 export function ArtistApprovalTable({
@@ -55,6 +57,8 @@ export function ArtistApprovalTable({
   hasNextPage,
   hasPreviousPage,
   searchTerm, // Receive searchTerm from parent
+  isLoading = false,
+  error = null,
 }: ArtistApprovalTableProps) {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -181,7 +185,17 @@ export function ArtistApprovalTable({
       </div>
 
       {/* Table */}
-      <div>
+      <div className="relative">
+        {/* Loading overlay */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-gray-900/50 flex items-center justify-center z-10 rounded-md">
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              <span className="text-white">Loading...</span>
+            </div>
+          </div>
+        )}
+        
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -200,7 +214,13 @@ export function ArtistApprovalTable({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {error ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <div className="text-red-400">Error loading artists: {error.message}</div>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -236,7 +256,7 @@ export function ArtistApprovalTable({
             variant="outline"
             size="sm"
             onClick={() => onPageChange(currentPage - 1)}
-            disabled={!hasPreviousPage}
+            disabled={!hasPreviousPage || isLoading}
             className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -246,7 +266,7 @@ export function ArtistApprovalTable({
             variant="outline"
             size="sm"
             onClick={() => onPageChange(currentPage + 1)}
-            disabled={!hasNextPage}
+            disabled={!hasNextPage || isLoading}
             className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
           >
             Next

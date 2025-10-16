@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { DotIcon } from "lucide-react";
 import Image from "next/image";
 
 interface ArtistInfoCardProps {
@@ -12,27 +13,35 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
   return (
     <div className="space-y-4">
       {/* Header with Avatar and Info */}
-      <div className="mx-auto w-full rounded-lg bg-[#121212] pt-6 pb-6">
-        <div className="primary_gradient h-60 w-full rounded-lg"></div>
-
-        <div className="relative">
-          <div className="primary_gradient absolute -top-24 left-6 h-36 w-36 rounded-full border-2 border-black overflow-hidden">
-            {artist.avatarImage ? (
-              <Image
-          src={artist.avatarImage}
-          alt="Artist Avatar"
-          width={128}
-          height={128}
-          className="h-full w-full object-cover"
-              />
-            ) : null}
+      <div className="mx-auto w-full rounded-lg bg-[#121212] pt-6 pb-16">
+        <div className="primary_gradient h-60 w-full rounded-lg relative">
+          {/* Avatar positioned inside/overlapping the gradient rectangle */}
+          <div className="absolute bottom-0 left-6 transform translate-y-1/2">
+            <div className="primary_gradient h-36 w-36 rounded-full border-4 border-black overflow-hidden flex-shrink-0">
+              {artist.avatarImage ? (
+                <Image
+                  src={artist.avatarImage}
+                  alt="Artist Avatar"
+                  width={144}
+                  height={144}
+                  className="h-full w-full object-cover"
+                />
+              ) : null}
+            </div>
           </div>
         </div>
 
-        <div className="mt-16 flex items-center gap-3 px-6 text-lg font-semibold text-white text-[20px]">
-          <span>{artist.stageName}</span>
-          <span className="text-white/60">•</span>
-          <span>Artist</span>
+        {/* Artist name and type positioned below, aligned with avatar */}
+        <div className="mt-5 flex items-center gap-4 px-6">
+          {/* Spacing to align with avatar */}
+          <div className="w-36"></div>
+          
+          {/* Artist info next to avatar */}
+          <div className="flex items-center gap-3 text-lg font-semibold text-white">
+            <span className="text-[20px]">{artist.stageName}</span>
+            <DotIcon className="size-8"/>
+            <span className="text-[20px]">Artist</span>
+          </div>
         </div>
       </div>
 
