@@ -8,6 +8,7 @@ export default function TeamTab() {
     name: m.fullName,
     email: m.email,
     avatarUrl: "",
+    isLeader: m.isLeader,
   }));
 
   return (
