@@ -7,6 +7,7 @@ export interface TeamMember {
   name: string;
   email: string;
   avatarUrl?: string;
+  isLeader?: boolean;
 }
 
 interface TeamMemberCardProps {
@@ -26,7 +27,14 @@ export default function TeamMemberCard({ member, className }: TeamMemberCardProp
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <p className="truncate text-base font-semibold leading-7 md:text-lg">{member.name}</p>
+          <p className="truncate text-base font-semibold leading-7 md:text-lg flex items-center gap-2">
+            {member.name}
+            {member.isLeader ? (
+              <span className="rounded-full bg-purple-600/20 text-purple-300 text-[10px] px-2 py-0.5 uppercase tracking-wide">
+                Leader
+              </span>
+            ) : null}
+          </p>
           <p className="truncate text-sm text-muted-foreground md:text-base">{member.email}</p>
         </div>
       </CardContent>
