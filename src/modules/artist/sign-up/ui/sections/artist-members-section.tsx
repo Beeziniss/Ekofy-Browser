@@ -16,7 +16,7 @@ import { ArrowLeft, X, Plus } from "lucide-react";
 import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
 import useArtistSignUp from '../../hooks/use-artist-sign-up';
 import { convertArtistStoreDataToAPIFormat } from '@/utils/signup-utils';
-import { isValidPhoneNumber, formatPhoneNumber } from '@/utils/signup-utils';
+// import { isValidPhoneNumber } from '@/utils/signup-utils';
 import { toast } from 'sonner';
 import { UserGender } from '@/gql/graphql';
 import { useRouter } from 'next/navigation';
@@ -40,7 +40,7 @@ const ArtistMembersSection = ({
   initialData,
 }: ArtistMembersSectionProps) => {
   const router = useRouter();
-  const { formData, updateFormData } = useArtistSignUpStore();
+  const { formData, sessionData, updateFormData } = useArtistSignUpStore();
   
   // Handle navigation to login after successful registration
   const handleNavigateToLogin = () => {
@@ -94,8 +94,8 @@ const ArtistMembersSection = ({
       }
       if (!member.phoneNumber.trim()) {
         newErrors[`member-${index}-phoneNumber`] = "Phone number is required";
-      } else if (!isValidPhoneNumber(member.phoneNumber)) {
-        newErrors[`member-${index}-phoneNumber`] = "Invalid phone number format. Use format: 0xxxxxxxxx or +84xxxxxxxxx";
+      } else if (member.phoneNumber.length !== 10) {
+        newErrors[`member-${index}-phoneNumber`] = "Invalid phone number format. It must contain exactly 10 digits.";
       }
       if (!member.gender) {
         newErrors[`member-${index}-gender`] = "Gender is required";
@@ -112,7 +112,7 @@ const ArtistMembersSection = ({
       const membersData = members.map(member => ({
         fullName: member.fullName,
         email: member.email,
-        phoneNumber: formatPhoneNumber(member.phoneNumber), // Format phone number
+        phoneNumber: member.phoneNumber, // Format phone number
         gender: member.gender as UserGender,
       }));
       
@@ -122,12 +122,9 @@ const ArtistMembersSection = ({
         // Convert store data to API format for registration
         const registrationData = convertArtistStoreDataToAPIFormat({
           ...formData,
+          ...sessionData, // Include password from session data
           members: membersData
         });
-        
-        // Debug: Log để kiểm tra avatarImage có được include không
-        console.log("🔍 FormData before registration:", formData);
-        console.log("🚀 Registration Data for BAND:", registrationData);
         
         // Call registration API
         signUp(registrationData);
@@ -137,7 +134,7 @@ const ArtistMembersSection = ({
         if (error instanceof Error) {
           toast.error(error.message);
         } else {
-          toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+          toast.error("An error occurred. Please try again.");
         }
       }
       
@@ -245,7 +242,7 @@ const ArtistMembersSection = ({
                     onChange={(e) =>
                       updateMember(index, "phoneNumber", e.target.value)
                     }
-                    placeholder="Enter Phone Number (0912345678 or +84912345678)"
+                    placeholder="Enter Phone Number (0912345678)"
                     className={`w-full ${errors[`member-${index}-phoneNumber`] ? "border-gradient-input-error" : "border-gradient-input"} h-12 rounded-lg text-white placeholder-gray-400`}
                   />
                   {errors[`member-${index}-phoneNumber`] && (
@@ -326,7 +323,7 @@ const ArtistMembersSection = ({
             size="lg"
             disabled={isLoading}
           >
-            {isLoading ? 'Đang đăng ký...' : 'Tiếp tục và Đăng ký'}
+            {isLoading ? 'Registering...' : 'Register'}
           </Button>
         </div>
       </div>

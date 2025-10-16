@@ -13,26 +13,26 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
     <div className="space-y-4">
       {/* Header with Avatar and Info */}
       <div className="mx-auto w-full rounded-lg bg-[#121212] pt-6 pb-6">
-        <div className="primary_gradient h-32 w-full rounded-lg"></div>
+        <div className="primary_gradient h-60 w-full rounded-lg"></div>
 
         <div className="relative">
-          <div className="primary_gradient absolute -top-12 left-6 h-24 w-24 rounded-full border-2 border-black overflow-hidden">
+          <div className="primary_gradient absolute -top-24 left-6 h-36 w-36 rounded-full border-2 border-black overflow-hidden">
             {artist.avatarImage ? (
               <Image
           src={artist.avatarImage}
           alt="Artist Avatar"
-          width={96}
-          height={96}
+          width={128}
+          height={128}
           className="h-full w-full object-cover"
               />
             ) : null}
           </div>
         </div>
 
-        <div className="mt-16 flex items-center gap-3 px-6 text-lg font-semibold text-white">
+        <div className="mt-16 flex items-center gap-3 px-6 text-lg font-semibold text-white text-[20px]">
           <span>{artist.stageName}</span>
           <span className="text-white/60">•</span>
-          <span>{artist.email}</span>
+          <span>Artist</span>
         </div>
       </div>
 
@@ -221,7 +221,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 Phone Number
               </label>
               <Input
-                value={artist.user?.phoneNumber || "Phone Number"}
+                value={artist.phoneNumber || "Phone Number"}
                 readOnly
                 className="border-gradient-input bg-gray-700 text-white"
               />
@@ -236,7 +236,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 className="border-gradient-input bg-gray-700 text-white"
               />
             </div>
-            <div>
+            {/* <div>
               <label className="mb-1 block text-sm text-gray-300">
                 Is Verified
               </label>
@@ -245,7 +245,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 readOnly
                 className="border-gradient-input bg-gray-700 text-white"
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

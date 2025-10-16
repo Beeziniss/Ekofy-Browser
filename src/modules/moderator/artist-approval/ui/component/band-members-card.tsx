@@ -21,7 +21,7 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="bg-[#121212] border border-gradient-input rounded-lg p-4">
-          <h4 className="text-white font-semibold mb-4">Artist Member</h4>
+          <h4 className="text-white font-semibold mb-4">Artist Members</h4>
           
           {members.map((member, index) => (
             <div key={index} className="mb-6 last:mb-0">

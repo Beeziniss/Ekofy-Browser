@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { Eye, EyeOff, CircleHelp } from 'lucide-react';
 import Link from 'next/link';
 import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
 import { UserGender } from '@/gql/graphql';
+import { toast } from 'sonner';
 
 interface ArtistSignUpFormSectionProps {
   onNext: (data?: any) => void;
@@ -21,17 +22,45 @@ interface ArtistSignUpFormSectionProps {
 }
 
 const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectionProps) => {
-  const { formData, updateFormData, goToNextStep } = useArtistSignUpStore();
+  const { formData, sessionData, updateFormData, updateSessionData, goToNextStep } = useArtistSignUpStore();
   
+  // Initialize state from global store or initial data
   const [email, setEmail] = useState(initialData?.email || formData.email || '');
-  const [password, setPassword] = useState(initialData?.password || formData.password || '');
-  const [confirmPassword, setConfirmPassword] = useState(initialData?.confirmPassword || formData.confirmPassword || '');
+  const [password, setPassword] = useState(initialData?.password || sessionData.password || '');
+  const [confirmPassword, setConfirmPassword] = useState(initialData?.confirmPassword || sessionData.confirmPassword || '');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(initialData?.agreeTerms || false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Password validation state
   const [passwordFocus, setPasswordFocus] = useState(false);
+
+  // Load data from global state when component mounts or store updates
+  useEffect(() => {
+    if (formData.email && !initialData?.email) setEmail(formData.email);
+    // Do not restore password fields for security reasons - they reset on back navigation
+    // if (sessionData.password && !initialData?.password) setPassword(sessionData.password);
+    // if (sessionData.confirmPassword && !initialData?.confirmPassword) setConfirmPassword(sessionData.confirmPassword);
+  }, [formData, sessionData, initialData]);
+
+  // Save form data to global state on input change (debounced)
+  // Note: Only save email to persistent data, password is only saved in session for current flow
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      updateFormData({ email });
+      // Save password to session data only for current navigation (not restored on back)
+      updateSessionData({ password, confirmPassword });
+    }, 300); // Debounce to avoid too many updates
+
+    return () => clearTimeout(timeoutId);
+  }, [email, password, confirmPassword, updateFormData, updateSessionData]);
+
+  // Email validation
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const validatePassword = (password: string) => {
     return {
@@ -46,26 +75,54 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
   const passwordValidation = validatePassword(password);
   const isPasswordValid = Object.values(passwordValidation).every(Boolean);
 
+  // Comprehensive form validation
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    // Email validation
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!validateEmail(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (!isPasswordValid) {
+      newErrors.password = "Password must meet all requirements";
+    }
+
+    // Confirm password validation
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    // Terms agreement validation
+    if (!agreeTerms) {
+      newErrors.agreeTerms = "You must agree to the terms and conditions";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password !== confirmPassword) {
-      alert('Mật khẩu không khớp');
+    if (!validateForm()) {
+      toast.error("Please fix the validation errors");
       return;
     }
-    if (!isPasswordValid) {
-      alert('Vui lòng đảm bảo mật khẩu đáp ứng tất cả yêu cầu');
-      return;
-    }
-    if (!agreeTerms) {
-      alert('Vui lòng đồng ý với điều khoản và điều kiện');
-      return;
-    }
+
     // Update store with form data (preserve existing data)
+    // Note: Include password only for the current submission, not for persistence
     const formDataToStore = {
       email,
-      password,
-      confirmPassword,
+      password, // Only included for immediate API call
+      confirmPassword, // Only included for immediate API call
       // Preserve existing values if they exist
       fullName: formData.fullName || '', 
       birthDate: formData.birthDate || '', 
@@ -73,9 +130,17 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
       phoneNumber: formData.phoneNumber || '', 
     };
     
-    updateFormData(formDataToStore);
+    // Update store without persisting password fields
+    updateFormData({
+      email,
+      // Do not include password in persistent store data
+      fullName: formData.fullName || '', 
+      birthDate: formData.birthDate || '', 
+      gender: formData.gender || 'Male' as UserGender, 
+      phoneNumber: formData.phoneNumber || '', 
+    });
     
-    // Navigate to next step
+    // Navigate to next step with complete data (including password for API)
     goToNextStep(formDataToStore);
     
     // Also call the original onNext for backward compatibility
@@ -108,15 +173,20 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
         {/* Sign Up Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-white mb-2">Email</label>
+            <label className="block text-sm font-medium text-white mb-2">Email*</label>
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="w-full border-gradient-input text-white placeholder-gray-400 h-12"
+              className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 ${
+                errors.email ? 'border-red-500' : ''
+              }`}
             />
+            {errors.email && (
+              <p className="text-red-400 text-xs mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div className="relative">
@@ -135,7 +205,9 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
                 onBlur={() => setPasswordFocus(false)}
                 placeholder="Create password"
                 required
-                className="w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10"
+                className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10 ${
+                  errors.password ? 'border-red-500' : ''
+                }`}
               />
               <button
                 type="button"
@@ -145,6 +217,9 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-red-400 text-xs mt-1">{errors.password}</p>
+            )}
 
             {/* Password validation tooltip */}
             {(passwordFocus || (password && !isPasswordValid)) && (
@@ -176,7 +251,7 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-2">Confirm Password</label>
+            <label className="block text-sm font-medium text-white mb-2">Confirm Password*</label>
             <div className="relative">
               <Input
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -184,7 +259,9 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm password"
                 required
-                className="w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10"
+                className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10 ${
+                  errors.confirmPassword ? 'border-red-500' : ''
+                }`}
               />
               <button
                 type="button"
@@ -194,6 +271,9 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
                 {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+            {errors.confirmPassword && (
+              <p className="text-red-400 text-xs mt-1">{errors.confirmPassword}</p>
+            )}
           </div>
 
           {/* Terms and Conditions */}
@@ -202,19 +282,26 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
               type="checkbox"
               checked={agreeTerms}
               onChange={(e) => setAgreeTerms(e.target.checked)}
-              className="rounded border-gray-700 bg-gray-800 text-blue-600 focus:ring-blue-500 focus:ring-offset-0 mt-1"
+              className={`rounded border-gray-700 bg-gray-800 text-blue-600 focus:ring-blue-500 focus:ring-offset-0 mt-1 ${
+                errors.agreeTerms ? 'border-red-500' : ''
+              }`}
               required
             />
-            <label className="text-sm text-gray-300">
-              I agree to the{' '}
-              <Link href="#" className="text-blue-400 hover:text-blue-300">
-                Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link href="#" className="text-blue-400 hover:text-blue-300">
-                Privacy Policy
-              </Link>
-            </label>
+            <div>
+              <label className="text-sm text-gray-300">
+                I agree to the{' '}
+                <Link href="#" className="text-blue-400 hover:text-blue-300">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="#" className="text-blue-400 hover:text-blue-300">
+                  Privacy Policy
+                </Link>
+              </label>
+              {errors.agreeTerms && (
+                <p className="text-red-400 text-xs mt-1">{errors.agreeTerms}</p>
+              )}
+            </div>
           </div>
 
           <Button
@@ -222,7 +309,7 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
             className="w-full primary_gradient hover:opacity-60 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
             size="lg"
           >
-            Create Account
+            Continue
           </Button>
         {/* Login Link */}
         <div className="text-center mt-2">

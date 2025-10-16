@@ -52,9 +52,12 @@ export function ArtistApprovalSection() {
   }
 
   const artists = artistsData?.pendingArtistRegistrations || [];
-  const totalCount = artists.length; // Since we're getting all results, count them
-  // For pagination, we'll need to implement it differently or handle it server-side
-  const pageInfo = { hasNextPage: false, hasPreviousPage: false };
+  const totalCount = artists[0]?.totalCount || 0; // Get totalCount from first item
+  
+  // Calculate pagination info
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const hasNextPage = currentPage < totalPages;
+  const hasPreviousPage = currentPage > 1;
 
   return (
     <div className="space-y-6">
@@ -65,8 +68,8 @@ export function ArtistApprovalSection() {
         pageSize={pageSize}
         onPageChange={handlePageChange}
         onSearch={handleSearch}
-        hasNextPage={pageInfo?.hasNextPage || false}
-        hasPreviousPage={pageInfo?.hasPreviousPage || false}
+        hasNextPage={hasNextPage}
+        hasPreviousPage={hasPreviousPage}
         searchTerm={searchTerm}
       />
     </div>

@@ -87,12 +87,6 @@ export const AdminGetListUser = graphql(`
         lastFollowing
         createdAt
         updatedAt
-        restriction {
-          type
-          reason
-          restrictedAt
-          expired
-        }
       }
     }
   }

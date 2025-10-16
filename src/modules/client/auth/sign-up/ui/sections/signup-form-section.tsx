@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import EkofyLogo from "../../../../../../../public/ekofy-logo.svg";
 import { Button } from "@/components/ui/button";
@@ -14,19 +14,34 @@ interface SignUpFormSectionProps {
   onNext: (data?: any) => void;
   initialData?: {
     email: string;
-    password: string;
+    // password: string;
   };
 }
 
 const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
-  const [email, setEmail] = useState(initialData?.email || "");
-  const [password, setPassword] = useState(initialData?.password || "");
+  const { goToNextStep, updateFormData, formData } = useSignUpStore();
+  
+  // Initialize state from global store or initial data
+  const [email, setEmail] = useState(initialData?.email || formData.email || "");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { goToNextStep, updateFormData } = useSignUpStore();
+  // Load data from global state when component mounts or store updates
+  useEffect(() => {
+    if (formData.email && !initialData?.email) setEmail(formData.email);
+  }, [formData, initialData]);
+
+  // Save form data to global state on input change
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      updateFormData({ email, password, confirmPassword });
+    }, 300); // Debounce to avoid too many updates
+
+    return () => clearTimeout(timeoutId);
+  }, [email, password, confirmPassword, updateFormData]);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};

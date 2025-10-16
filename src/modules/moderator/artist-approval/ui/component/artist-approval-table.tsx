@@ -63,24 +63,16 @@ export function ArtistApprovalTable({
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: "stageName",
-      header: "User",
+      header: "Stage Name",
       cell: ({ row }) => (
-        <div className="flex items-center space-x-3">
-          {row.original.avatarImage ? (
-            <Image
-              src={row.original.avatarImage}
-              alt={row.original.stageName}
-              width={40}
-              height={40}
-              className="w-10 h-10 rounded-full"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-medium">
-              {row.original.stageName.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <span className="font-medium text-white">{row.original.stageName}</span>
-        </div>
+          <span className="font-medium text-gray-300">{row.original.stageName}</span>
+      ),
+    },
+    {
+      accessorKey: "fullName",
+      header: "Full Name",
+      cell: ({ row }) => (
+        <span className="text-gray-300">{row.original.fullName}</span>
       ),
     },
     {

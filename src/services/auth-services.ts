@@ -41,7 +41,7 @@ export const authApi = {
         if (response.status === 204) {
           return {
             success: true,
-            message: "Đăng ký thành công! Chúng tôi đã gửi mã xác thực đến email của bạn.",
+            message: "Registration successful! We have sent a verification code to your email.",
             user: null
           };
         }
@@ -74,9 +74,7 @@ export const authApi = {
       }
     },
     register: async (data: RegisterArtistData) => {
-      try {
-        console.log("📡 API Call - Raw data being sent:", data);
-        
+      try {        
         // Try mapping to PascalCase field names if API expects them
         const apiData = {
           Email: data.email,
@@ -107,20 +105,17 @@ export const authApi = {
             BackImage: data.identityCard.backImage,
             ValidUntil: data.identityCard.validUntil,
           },
-        };
-        
-        console.log("📡 API Call - PascalCase data being sent:", apiData);
-        
+        };        
         const response = await axiosInstance.post(
           "/api/authentication/register/artist",
-          apiData, // Send PascalCase version
+          apiData,
         );
         
         // Handle 204 No Content response
         if (response.status === 204) {
           return {
             success: true,
-            message: "Đăng ký nghệ sĩ thành công! Chúng tôi đã gửi mã OTP đến số điện thoại của bạn để xác thực.",
+            message: "Artist registration successful! We have sent an OTP to your phone number for verification.",
             user: null
           };
         }

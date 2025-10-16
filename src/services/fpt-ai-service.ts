@@ -110,7 +110,7 @@ export const fptAIService = {
       return response.data;
     } catch (error) {
       console.error("FPT AI Error:", error);
-      throw new Error("Không thể đọc thông tin CCCD. Vui lòng thử lại.");
+      throw new Error("Unable to read ID card information. Please try again.");
     }
   },
 
@@ -138,11 +138,11 @@ export const fptAIService = {
       return "Other";
     };
 
-    // Format date from DD/MM/YYYY to ISO string
+    // Format date to keep DD/MM/YYYY format (no conversion to ISO)
     const formatDate = (dateStr: string): string => {
       if (!dateStr) return "";
-      const [day, month, year] = dateStr.split("/");
-      return new Date(`${year}-${month}-${day}`).toISOString();
+      // Keep original DD/MM/YYYY format instead of converting to ISO
+      return dateStr;
     };
 
     return {

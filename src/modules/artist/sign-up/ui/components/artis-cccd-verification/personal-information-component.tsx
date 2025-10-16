@@ -1,8 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { convertISOToDisplayDate } from "@/utils/signup-utils";
 
 interface PersonalInformationProps {
   citizenId: string;
@@ -30,6 +37,39 @@ const PersonalInformationComponent = ({
   errors,
   onChange,
 }: PersonalInformationProps) => {
+  // Helper function to safely parse date whether it's ISO or DD/MM/YYYY
+  const parseDate = (dateStr: string): Date | undefined => {
+    if (!dateStr) return undefined;
+    
+    // If it's ISO format (contains 'T')
+    if (dateStr.includes('T')) {
+      return new Date(dateStr);
+    }
+    
+    // If it's DD/MM/YYYY format
+    if (dateStr.includes('/')) {
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      }
+    }
+    
+    return undefined;
+  };
+
+  // Helper function to get display date (DD/MM/YYYY)
+  const getDisplayDate = (dateStr: string): string => {
+    if (!dateStr) return '';
+    
+    // If it's ISO format, convert to DD/MM/YYYY
+    if (dateStr.includes('T')) {
+      return convertISOToDisplayDate(dateStr);
+    }
+    
+    // If it's already DD/MM/YYYY, return as is
+    return dateStr;
+  };
+
   return (
     <div>
       <h3 className="mb-6 text-lg font-medium text-white">
@@ -72,12 +112,39 @@ const PersonalInformationComponent = ({
             <label className="mb-2 block text-sm font-medium text-white">
               Date of Birth*
             </label>
-            <Input
-              value={dateOfBirth}
-              onChange={(e) => onChange('dateOfBirth', e.target.value)}
-              placeholder="DD/MM/YYYY"
-              className={`h-10 w-full ${errors.dateOfBirth ? 'border-gradient-input-error' : 'border-gradient-input'}  text-white placeholder-gray-400`}
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "h-10 w-full justify-start text-left font-normal",
+                    !dateOfBirth && "text-muted-foreground",
+                    errors.dateOfBirth ? 'border-gradient-input-error' : 'border-gradient-input',
+                    "text-white placeholder-gray-400"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateOfBirth ? getDisplayDate(dateOfBirth) : <span>DD/MM/YYYY</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
+                <Calendar
+                  mode="single"
+                  selected={parseDate(dateOfBirth)}
+                  onSelect={(date) => {
+                    if (date) {
+                      const formattedDate = format(date, 'dd/MM/yyyy');
+                      onChange('dateOfBirth', formattedDate);
+                    }
+                  }}
+                  disabled={(date) =>
+                    date > new Date() || date < new Date("1900-01-01")
+                  }
+                  initialFocus
+                  className="bg-gray-800 text-white"
+                />
+              </PopoverContent>
+            </Popover>
             {errors.dateOfBirth && (
               <p className="mt-2 text-sm text-red-400">{errors.dateOfBirth}</p>
             )}
@@ -140,12 +207,39 @@ const PersonalInformationComponent = ({
             <label className="mb-2 block text-sm font-medium text-white">
               Date of Expiration*
             </label>
-            <Input
-              value={dateOfExpiration}
-              onChange={(e) => onChange('dateOfExpiration', e.target.value)}
-              placeholder="DD/MM/YYYY"
-              className={`h-10 w-full ${errors.dateOfExpiration ? 'border-gradient-input-error' : 'border-gradient-input'}  text-white placeholder-gray-400`}
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "h-10 w-full justify-start text-left font-normal",
+                    !dateOfExpiration && "text-muted-foreground",
+                    errors.dateOfExpiration ? 'border-gradient-input-error' : 'border-gradient-input',
+                    "text-white placeholder-gray-400"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateOfExpiration ? getDisplayDate(dateOfExpiration) : <span>DD/MM/YYYY</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
+                <Calendar
+                  mode="single"
+                  selected={parseDate(dateOfExpiration)}
+                  onSelect={(date) => {
+                    if (date) {
+                      const formattedDate = format(date, 'dd/MM/yyyy');
+                      onChange('dateOfExpiration', formattedDate);
+                    }
+                  }}
+                  disabled={(date) =>
+                    date < new Date()
+                  }
+                  initialFocus
+                  className="bg-gray-800 text-white"
+                />
+              </PopoverContent>
+            </Popover>
             {errors.dateOfExpiration && (
               <p className="mt-2 text-sm text-red-400">{errors.dateOfExpiration}</p>
             )}
