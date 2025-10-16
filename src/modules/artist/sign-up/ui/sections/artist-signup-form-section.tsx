@@ -82,6 +82,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
     // Email validation
     if (!email) {
       newErrors.email = "Email is required";
+    } else if (email.length > 254) {
+      newErrors.email = "Email must be less than 254 characters";
     } else if (!validateEmail(email)) {
       newErrors.email = "Please enter a valid email address";
     }
@@ -89,8 +91,10 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
     // Password validation
     if (!password) {
       newErrors.password = "Password is required";
+    } else if (password.length > 128) {
+      newErrors.password = "Password must be less than 128 characters";
     } else if (!isPasswordValid) {
-      newErrors.password = "Password must meet all requirements";
+      newErrors.password = "Password does not meet security requirements";
     }
 
     // Confirm password validation
@@ -107,6 +111,70 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Real-time validation
+  const validateField = (field: string, value: string | boolean) => {
+    const newErrors = { ...errors };
+    
+    if (field === 'email') {
+      const emailValue = value as string;
+      if (!emailValue) {
+        newErrors.email = "Email is required";
+      } else if (emailValue.length > 128) {
+        newErrors.email = "Email must be less than 128 characters";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+        newErrors.email = "Please enter a valid email address";
+      } else {
+        delete newErrors.email;
+      }
+    }
+    
+    if (field === 'password') {
+      const passwordValue = value as string;
+      if (!passwordValue) {
+        newErrors.password = "Password is required";
+      } else if (passwordValue.length > 128) {
+        newErrors.password = "Password must be less than 128 characters";
+      } else {
+        const validation = validatePassword(passwordValue);
+        const isValid = Object.values(validation).every(Boolean);
+        if (!isValid) {
+          newErrors.password = "Password does not meet security requirements";
+        } else {
+          delete newErrors.password;
+        }
+      }
+      
+      // Re-validate confirm password if password changes
+      if (confirmPassword && passwordValue !== confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match";
+      } else if (confirmPassword && passwordValue === confirmPassword) {
+        delete newErrors.confirmPassword;
+      }
+    }
+    
+    if (field === 'confirmPassword') {
+      const confirmValue = value as string;
+      if (!confirmValue) {
+        newErrors.confirmPassword = "Please confirm your password";
+      } else if (password !== confirmValue) {
+        newErrors.confirmPassword = "Passwords do not match";
+      } else {
+        delete newErrors.confirmPassword;
+      }
+    }
+    
+    if (field === 'agreeTerms') {
+      const agreeValue = value as boolean;
+      if (!agreeValue) {
+        newErrors.agreeTerms = "You must agree to the terms and conditions";
+      } else {
+        delete newErrors.agreeTerms;
+      }
+    }
+    
+    setErrors(newErrors);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -177,9 +245,11 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
             <Input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                validateField("email", e.target.value);
+              }}
               placeholder="Enter your email"
-              required
               className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 ${
                 errors.email ? 'border-red-500' : ''
               }`}
@@ -200,11 +270,13 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
               <Input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  validateField("password", e.target.value);
+                }}
                 onFocus={() => setPasswordFocus(true)}
                 onBlur={() => setPasswordFocus(false)}
                 placeholder="Create password"
-                required
                 className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10 ${
                   errors.password ? 'border-red-500' : ''
                 }`}
@@ -256,9 +328,11 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
               <Input
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  validateField("confirmPassword", e.target.value);
+                }}
                 placeholder="Confirm password"
-                required
                 className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10 ${
                   errors.confirmPassword ? 'border-red-500' : ''
                 }`}

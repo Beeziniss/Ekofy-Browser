@@ -127,6 +127,24 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       setDateError('Date of birth cannot be in the future');
       return;
     }
+    
+    // Check if user is at least 13 years old
+    const today = new Date();
+    const age = today.getFullYear() - dateOfBirth.getFullYear();
+    const monthDiff = today.getMonth() - dateOfBirth.getMonth();
+    const dayDiff = today.getDate() - dateOfBirth.getDate();
+    
+    // Calculate exact age
+    let exactAge = age;
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      exactAge--;
+    }
+    
+    if (exactAge < 13) {
+      setDateError('You must be at least 13 years old to register');
+      return;
+    }
+    
     // Clear any previous errors
     setDateError('');
     
@@ -201,7 +219,29 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       setDateError('Date of birth cannot be in the future');
       return;
     }
-    setDateError('');
+    
+    // Check age validation on date selection
+    if (date) {
+      const today = new Date();
+      const age = today.getFullYear() - date.getFullYear();
+      const monthDiff = today.getMonth() - date.getMonth();
+      const dayDiff = today.getDate() - date.getDate();
+      
+      // Calculate exact age
+      let exactAge = age;
+      if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+        exactAge--;
+      }
+      
+      if (exactAge < 13) {
+        setDateError('You must be at least 13 years old to register');
+      } else {
+        setDateError('');
+      }
+    } else {
+      setDateError('');
+    }
+    
     setDateOfBirth(date);
   };
 

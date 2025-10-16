@@ -222,6 +222,26 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     
     if (!dateOfBirth.trim()) {
       newErrors.dateOfBirth = "Please enter your date of birth";
+    } else {
+      // Check if user is at least 18 years old
+      const birthDateISO = convertDateToISO(dateOfBirth);
+      if (birthDateISO) {
+        const today = new Date();
+        const birthDateObj = new Date(birthDateISO);
+        const age = today.getFullYear() - birthDateObj.getFullYear();
+        const monthDiff = today.getMonth() - birthDateObj.getMonth();
+        const dayDiff = today.getDate() - birthDateObj.getDate();
+        
+        // Calculate exact age
+        let exactAge = age;
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+          exactAge--;
+        }
+        
+        if (exactAge < 18) {
+          newErrors.dateOfBirth = "You must be at least 18 years old to register as an artist";
+        }
+      }
     }
     
     if (!gender) {

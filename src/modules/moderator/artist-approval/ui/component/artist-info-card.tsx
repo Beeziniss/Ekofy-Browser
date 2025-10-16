@@ -46,7 +46,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
       </div>
 
       {/* Identity Card Information */}
-        <div className="border-gradient-input rounded-xl border-2 bg-black/40 p-6">
+        <div className="border-gray-400 border-solid transparent rounded-xl border-2 bg-black/40 p-6">
           <h3 className="mb-4 text-lg font-semibold text-white">
             Identity card information
           </h3>
@@ -59,7 +59,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <label className="mb-2 block text-sm text-gray-300">
                   Front Image
                 </label>
-                <div className="border-gradient-input flex h-40 w-full items-center justify-center overflow-hidden rounded-lg bg-blue-600">
+                <div className="border-gray-400 border-2 border-solid transparent flex h-40 w-full items-center justify-center overflow-hidden rounded-lg bg-blue-600">
                   {artist.frontImageUrl ? (
                     <Image
                       src={artist.frontImageUrl}
@@ -79,7 +79,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <label className="mb-2 block text-sm text-gray-300">
                   Back Image
                 </label>
-                <div className="border-gradient-input flex h-40 w-full items-center justify-center overflow-hidden rounded-lg bg-blue-600">
+                <div className="border-gray-400 border-2 border-solid transparent flex h-40 w-full items-center justify-center overflow-hidden rounded-lg bg-blue-600">
                   {artist.backImageUrl ? (
                     <Image
                       src={artist.backImageUrl}
@@ -104,7 +104,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <Input
                   value={artist.identityCardNumber || "Number of Citizen"}
                   readOnly
-                  className="border-gradient-input h-9 bg-transparent text-white"
+                  className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                   placeholder="Number of Citizen"
                 />
               </div>
@@ -116,7 +116,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <Input
                   value={artist.identityCardFullName || "Full Name"}
                   readOnly
-                  className="border-gradient-input h-9 bg-transparent text-white"
+                  className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                   placeholder="Full Name"
                 />
               </div>
@@ -135,7 +135,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                         : "dd/mm/yyyy"
                     }
                     readOnly
-                    className="border-gradient-input h-9 bg-transparent text-white"
+                    className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                     placeholder="dd/mm/yyyy"
                   />
                 </div>
@@ -146,7 +146,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                   <Input
                     value={artist.gender || "Gender"}
                     readOnly
-                    className="border-gradient-input h-9 bg-transparent text-white"
+                    className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                     placeholder="Gender"
                   />
                 </div>
@@ -159,7 +159,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <Input
                   value={artist.placeOfOrigin || "Place of origin"}
                   readOnly
-                  className="border-gradient-input h-9 bg-transparent text-white"
+                  className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                   placeholder="Place of origin"
                 />
               </div>
@@ -174,7 +174,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                     "Place of residence"
                   }
                   readOnly
-                  className="border-gradient-input h-9 bg-transparent text-white"
+                  className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                   placeholder="Place of residence"
                 />
               </div>
@@ -215,14 +215,14 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
 
       {/* Contact Information */}
       <div className="space-y-4">
-        <div className="border-gradient-input rounded-lg border bg-[#121212] p-4">
+        <div className="border-gray-400 border-2 border-solid transparent rounded-lg bg-[#121212] p-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="mb-1 block text-sm text-gray-300">Email</label>
               <Input
                 value={artist.email || "Email Artist"}
                 readOnly
-                className="border-gradient-input bg-gray-700 text-white"
+                className="border-gray-400 border-2 border-solid transparent bg-gray-700 text-white"
               />
             </div>
             <div>
@@ -232,7 +232,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               <Input
                 value={artist.phoneNumber || "Phone Number"}
                 readOnly
-                className="border-gradient-input bg-gray-700 text-white"
+                className="border-gray-400 border-2 border-solid transparent bg-gray-700 text-white"
               />
             </div>
             <div>
@@ -242,7 +242,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               <Input
                 value={artist.artistType}
                 readOnly
-                className="border-gradient-input bg-gray-700 text-white"
+                className="border-gray-400 border-2 border-solid transparent bg-gray-700 text-white"
               />
             </div>
             {/* <div>

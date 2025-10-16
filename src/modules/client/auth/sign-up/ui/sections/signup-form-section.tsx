@@ -47,13 +47,17 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
     const newErrors: { [key: string]: string } = {};
 
     if (!email) {
-      newErrors.email = "Email là bắt buộc";
+      newErrors.email = "Email is required";
+    } else if (email.length > 254) {
+      newErrors.email = "Email must be less than 254 characters";
     } else if (!validateEmail(email)) {
-      newErrors.email = "Email không hợp lệ";
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (!password) {
-      newErrors.password = "Mật khẩu là bắt buộc";
+      newErrors.password = "Password is required";
+    } else if (password.length > 128) {
+      newErrors.password = "Password must be less than 128 characters";
     } else {
       const passwordErrors = validatePassword(password);
       if (passwordErrors.length > 0) {
@@ -62,13 +66,64 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = "Xác nhận mật khẩu là bắt buộc";
+      newErrors.confirmPassword = "Confirm password is required";
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Real-time validation
+  const validateField = (field: string, value: string) => {
+    const newErrors = { ...errors };
+    
+    if (field === 'email') {
+      if (!value) {
+        newErrors.email = "Email is required";
+      } else if (value.length > 254) {
+        newErrors.email = "Email must be less than 254 characters";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        newErrors.email = "Please enter a valid email address";
+      } else {
+        delete newErrors.email;
+      }
+    }
+    
+    if (field === 'password') {
+      if (!value) {
+        newErrors.password = "Password is required";
+      } else if (value.length > 128) {
+        newErrors.password = "Password must be less than 128 characters";
+      } else {
+        const passwordErrors = validatePassword(value);
+        if (passwordErrors.length > 0) {
+          newErrors.password = passwordErrors[0];
+        } else {
+          delete newErrors.password;
+        }
+      }
+      
+      // Re-validate confirm password if password changes
+      if (confirmPassword && value !== confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match";
+      } else if (confirmPassword && value === confirmPassword) {
+        delete newErrors.confirmPassword;
+      }
+    }
+    
+    if (field === 'confirmPassword') {
+      if (!value) {
+        newErrors.confirmPassword = "Confirm password is required";
+      } else if (password !== value) {
+        newErrors.confirmPassword = "Passwords do not match";
+      } else {
+        delete newErrors.confirmPassword;
+      }
+    }
+    
+    setErrors(newErrors);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -127,10 +182,14 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                validateField("email", e.target.value);
+              }}
               placeholder="Enter your email"
-              required
-              className="border-gradient-input h-12 w-full text-white focus:border-blue-500 focus:ring-blue-500/50"
+              className={`border-gradient-input h-12 w-full text-white focus:border-blue-500 focus:ring-blue-500/50 ${
+                errors.email ? "border-red-500" : ""
+              }`}
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-500">{errors.email}</p>
@@ -138,7 +197,7 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
           </div>
 
           {/* Password Field */}
-          <div className="relative">
+          <div>
             <label
               htmlFor="password"
               className="mb-2 block text-sm font-medium text-white"
@@ -150,15 +209,19 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  validateField("password", e.target.value);
+                }}
                 placeholder="Password"
-                required
-                className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
+                className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 ${
+                  errors.password ? "border-red-500" : ""
+                }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white"
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -166,14 +229,14 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
                   <Eye className="h-4 w-4" />
                 )}
               </button>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-              )}
             </div>
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+            )}
           </div>
 
           {/* Confirm Password Field */}
-          <div className="relative">
+          <div>
             <label
               htmlFor="confirmPassword"
               className="mb-2 block text-sm font-medium text-white"
@@ -185,15 +248,19 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  validateField("confirmPassword", e.target.value);
+                }}
                 placeholder="Confirm Password"
-                required
-                className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
+                className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 ${
+                  errors.confirmPassword ? "border-red-500" : ""
+                }`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white"
               >
                 {showConfirmPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -201,12 +268,12 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
                   <Eye className="h-4 w-4" />
                 )}
               </button>
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.confirmPassword}
-                </p>
-              )}
             </div>
+            {errors.confirmPassword && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.confirmPassword}
+              </p>
+            )}
           </div>
 
           {/* Continue Button */}
