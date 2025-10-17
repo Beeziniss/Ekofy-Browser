@@ -1,6 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { TrackActionMenu } from '../../component/track-action-menu';
+import { PlayPauseButton } from '../../component/play-pause-button';
+import { usePlayPause } from '@/hooks/use-play-pause';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/ui/table";
 
 interface SearchAllSectionProps {
   query: string;
@@ -17,6 +25,7 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
   playlists,
   isLoading
 }) => {
+  const { togglePlayPause, isPlaying } = usePlayPause();
   if (isLoading) {
     return (
       <div className="space-y-8">
@@ -93,23 +102,57 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
               Show all
             </Link>
           </div>
-          <div className="space-y-2">
-            {tracks.slice(0, 4).map((track, index) => (
-              <div key={track.id} className="flex items-center space-x-4 p-2 rounded hover:bg-gray-800 transition-colors group">
-                <span className="text-gray-400 text-sm w-4">{index + 1}</span>
-                <img
-                  src={track.coverImage || "/default-track.png"}
-                  alt={track.name}
-                  className="w-10 h-10 rounded object-cover"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-medium truncate">{track.name}</p>
-                  <p className="text-gray-400 text-sm truncate">{track.artist[0].stageName}</p>
-                </div>
-                <span className="text-gray-400 text-sm">3:45</span>
-                <TrackActionMenu track={track} />
-              </div>
-            ))}
+          <div className="relative w-full">
+            <div className="relative w-full">
+              <table className="w-full caption-bottom text-sm">
+                <TableBody>
+                  {tracks.slice(0, 4).map((track, index) => (
+                    <TableRow 
+                      key={track.id} 
+                      className="group hover:bg-gray-800/50 border-b border-gray-800/50 relative"
+                    >
+                  <TableCell className="w-12 text-center">
+                    <div className="flex items-center justify-center w-8 h-8">
+                      <span className="group-hover:hidden text-gray-400 text-sm">
+                        {index + 1}
+                      </span>
+                      <div className="hidden group-hover:block">
+                        <PlayPauseButton
+                          isPlaying={isPlaying(track.id)}
+                          onClick={() => togglePlayPause(track.id, 'track', track.name)}
+                          size="small"
+                        />
+                      </div>
+                    </div>
+                  </TableCell>
+                  
+                  <TableCell>
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src={track.coverImage || "/default-track.png"}
+                        alt={track.name}
+                        className="w-10 h-10 rounded object-cover flex-shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-white font-medium truncate">{track.name}</p>
+                        <p className="text-gray-400 text-sm truncate">{track.artist[0].stageName}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  
+                  <TableCell className="text-right relative">
+                    <div className="flex items-center justify-end space-x-2">
+                      <span className="text-gray-400 text-sm">3:45</span>
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
+                        <TrackActionMenu track={track} />
+                      </div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+              </table>
+            </div>
           </div>
         </div>
       ) : (
@@ -133,20 +176,30 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
           </div>
           <div className="flex space-x-4">
             {artists.slice(0, 5).map((artist) => (
-              <div key={artist.id} className="flex flex-col items-center space-y-2 p-3 rounded hover:bg-gray-800 transition-colors">
-               {artists[0]?.avatarImage ? (
-                  <img
-                    src={artists[0]?.avatarImage}
-                    alt={artists[0]?.stageName}
-                    className="w-52 h-52 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-52 h-52 rounded-full bg-gray-700 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">
-                      {artists[0]?.stageName?.charAt(0).toUpperCase()}
-                    </span>
+              <div key={artist.id} className="flex flex-col items-center space-y-2 p-3 rounded hover:bg-gray-800 transition-colors group relative">
+                <div className="relative">
+                  {artist?.avatarImage ? (
+                    <img
+                      src={artist?.avatarImage}
+                      alt={artist?.stageName}
+                      className="w-52 h-52 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-52 h-52 rounded-full bg-gray-700 flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">
+                        {artist?.stageName?.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                  {/* Play/Pause button overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-50 rounded-full">
+                    <PlayPauseButton
+                      isPlaying={isPlaying(artist.id)}
+                      onClick={() => togglePlayPause(artist.id, 'artist', artist.stageName)}
+                      size="large"
+                    />
                   </div>
-                )}
+                </div>
                 <div className="text-center">
                   <p className="text-white font-medium text-2xl">{artist.stageName}</p>
                   <p className="text-gray-400 text-xs">Artist</p>
@@ -176,12 +229,22 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {playlists.slice(0, 5).map((playlist) => (
-              <div key={playlist.id} className="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition-colors">
-                <img
-                  src={playlist.coverImage || "/default-playlist.png"}
-                  alt={playlist.name}
-                  className="w-full aspect-square rounded-lg object-cover mb-3"
-                />
+              <div key={playlist.id} className="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition-colors group">
+                <div className="relative mb-3">
+                  <img
+                    src={playlist.coverImage || "/default-playlist.png"}
+                    alt={playlist.name}
+                    className="w-full aspect-square rounded-lg object-cover"
+                  />
+                  {/* Play/Pause button overlay */}
+                  <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <PlayPauseButton
+                      isPlaying={isPlaying(playlist.id)}
+                      onClick={() => togglePlayPause(playlist.id, 'playlist', playlist.name)}
+                      size="medium"
+                    />
+                  </div>
+                </div>
                 <h3 className="text-white font-medium text-sm truncate">{playlist.name}</h3>
                 <p className="text-gray-400 text-xs truncate">By {playlist.user?.fullName}</p>
               </div>

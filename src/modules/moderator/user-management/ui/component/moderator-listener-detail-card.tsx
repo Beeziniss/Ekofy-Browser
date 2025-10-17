@@ -85,21 +85,14 @@ export function ModeratorListenerDetailCard({ listener, user }: ModeratorListene
           <div className="flex items-center gap-4">
             <label className="text-base text-gray-300 w-48 flex-shrink-0">Email:</label>
             <p className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
-              {user?.email || "email"}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Username:</label>
-            <p className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
-              {user?.email?.split('@')[0] || "username"}
+              {listener?.email || "email"}
             </p>
           </div>
 
           <div className="flex items-center gap-4">
             <label className="text-base text-gray-300 w-48 flex-shrink-0">Join Date:</label>
             <p className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
-              {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : "DD/MM/YYYY"}
+              {listener?.createdAt ? new Date(listener.createdAt).toLocaleDateString('en-GB') : "DD/MM/YYYY"}
             </p>
           </div>
 

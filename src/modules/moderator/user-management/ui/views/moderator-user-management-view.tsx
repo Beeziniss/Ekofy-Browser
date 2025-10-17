@@ -85,12 +85,6 @@ export const ModeratorGetListUser = graphql(`
                 lastFollowing
                 createdAt
                 updatedAt
-                restriction {
-                    type
-                    reason
-                    restrictedAt
-                    expired
-                }
             }
         }
     }
@@ -181,12 +175,6 @@ export const ModeratorGetAnalytics = graphql(`
                 lastFollowing
                 createdAt
                 updatedAt
-                restriction {
-                    type
-                    reason
-                    restrictedAt
-                    expired
-                }
             }
         }
     }

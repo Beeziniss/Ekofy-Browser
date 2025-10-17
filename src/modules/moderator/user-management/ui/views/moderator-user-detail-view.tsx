@@ -56,7 +56,7 @@ export const MODERATOR_ARTIST_DETAIL_QUERY = graphql(`
                     role
                     phoneNumber
                 }
-            }
+        }
         }
     }
 `);
@@ -76,14 +76,11 @@ export const MODERATOR_LISTENER_DETAIL_QUERY = graphql(`
                 followerCount
                 followingCount
                 createdAt
-                restriction {
-                    type
-                    reason
-                    restrictedAt
-                    expired
-                }
                 user {
                     fullName
+                    birthDate
+                    gender
+                    phoneNumber
                 }
             }
         }

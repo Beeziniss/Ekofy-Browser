@@ -17,7 +17,7 @@ export function ModeratorArtistDetailCard({ artist, user }: ModeratorArtistDetai
           <div className="flex items-center gap-4">
             <label className="text-base text-gray-300 w-48 flex-shrink-0">Email:</label>
             <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
-              {user?.email || "email"}
+              {artist?.email || "email"}
             </span>
           </div>
           <div className="flex items-center gap-4">

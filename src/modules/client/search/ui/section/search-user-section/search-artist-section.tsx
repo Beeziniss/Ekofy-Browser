@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { GenericActionMenu } from '../../component/generic-action-menu';
+import { PlayPauseButton } from '../../component/play-pause-button';
 import { Button } from '@/components/ui/button';
+import { usePlayPause } from '@/hooks/use-play-pause';
 
 interface SearchArtistSectionProps {
   artists: any[];
@@ -15,6 +17,7 @@ export const SearchArtistSection: React.FC<SearchArtistSectionProps> = ({
   isFetchingNextPage,
   fetchNextPage
 }) => {
+  const { togglePlayPause, isPlaying } = usePlayPause();
   // Auto-load more when scrolling near bottom
   useEffect(() => {
     const handleScroll = () => {
@@ -67,22 +70,21 @@ export const SearchArtistSection: React.FC<SearchArtistSectionProps> = ({
                   {artist.stageName.charAt(0).toUpperCase()}
                 </div>
               )}
-              {/* Play button overlay */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black bg-opacity-50 rounded-full">
-                <button className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center hover:scale-105 transition-transform">
-                  <svg className="w-5 h-5 text-black ml-1" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </button>
+              {/* Play/Pause button overlay */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-50 rounded-full">
+                <PlayPauseButton
+                  isPlaying={isPlaying(artist.id)}
+                  onClick={() => togglePlayPause(artist.id, 'artist', artist.stageName)}
+                  size="large"
+                />
               </div>
             </div>
-            
-            <div className="text-">
-              <h3 className="text-white font-semibold truncate w-full text-2xl">
+            <div className="flex flex-col items-start">
+              <h3 className="text-white font-semibold truncate w-full text-xl">
                 {artist.stageName}
               </h3>
-              <p className="text-gray-400 text-xl">Artist</p>
-                <p className="text-gray-500 text-xl mt-1">
+              <p className="text-gray-400 text-[16px]">Artist</p>
+              <p className="text-gray-500 text-[16px] mt-1">
                   {artist.followerCount.toLocaleString()} followers
                 </p>
             </div>

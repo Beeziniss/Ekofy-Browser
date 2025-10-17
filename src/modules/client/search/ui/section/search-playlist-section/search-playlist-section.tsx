@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { GenericActionMenu } from '../../component/generic-action-menu';
+import { PlayPauseButton } from '../../component/play-pause-button';
 import { Button } from '@/components/ui/button';
+import { usePlayPause } from '@/hooks/use-play-pause';
 
 interface SearchPlaylistSectionProps {
   playlists: any[];
@@ -15,6 +17,7 @@ export const SearchPlaylistSection: React.FC<SearchPlaylistSectionProps> = ({
   isFetchingNextPage,
   fetchNextPage
 }) => {
+  const { togglePlayPause, isPlaying } = usePlayPause();
   // Auto-load more when scrolling near bottom
   useEffect(() => {
     const handleScroll = () => {
@@ -56,13 +59,13 @@ export const SearchPlaylistSection: React.FC<SearchPlaylistSectionProps> = ({
                 alt={playlist.name}
                 className="w-full aspect-square rounded-lg object-cover"
               />
-              {/* Play button overlay */}
+              {/* Play/Pause button overlay */}
               <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg">
-                  <svg className="w-5 h-5 text-black ml-1" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </button>
+                <PlayPauseButton
+                  isPlaying={isPlaying(playlist.id)}
+                  onClick={() => togglePlayPause(playlist.id, 'playlist', playlist.name)}
+                  size="medium"
+                />
               </div>
               {/* Action menu */}
               <div className="absolute top-2 right-2">

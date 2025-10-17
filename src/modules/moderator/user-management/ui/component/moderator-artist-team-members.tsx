@@ -16,7 +16,7 @@ export function ModeratorArtistTeamMembers({ members }: ModeratorArtistTeamMembe
           {members.map((member, index) => (
             <div
               key={index}
-              className="bg-[#1A1A1A] border border-[#1F1F1F] rounded-xl p-6"
+              className="bg-[#1A1A1A] border rounded-xl p-6"
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -27,9 +27,14 @@ export function ModeratorArtistTeamMembers({ members }: ModeratorArtistTeamMembe
                 <h4 className="text-white font-semibold mb-2">
                   {member.fullName || "Unknown Member"}
                 </h4>
-                <p className="text-gray-400 text-sm">
-                  {member.role || "Member"}
+                <p className="text-gray-400 mb-2">
+                  {member.email || "No email provided"}
                 </p>
+                {member.isLeader && (
+                  <span className="text-red-600 font-bold text-sm">
+                    Leader
+                  </span>
+                )}
               </div>
             </div>
           ))}

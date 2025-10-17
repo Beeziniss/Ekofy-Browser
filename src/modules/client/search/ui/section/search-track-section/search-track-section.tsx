@@ -1,7 +1,17 @@
 import React, { useEffect } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, Play } from 'lucide-react';
 import { TrackActionMenu } from '../../component/track-action-menu';
+import { PlayPauseButton } from '../../component/play-pause-button';
 import { Button } from '@/components/ui/button';
+import { usePlayPause } from '@/hooks/use-play-pause';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface SearchTrackSectionProps {
   tracks: any[];
@@ -16,6 +26,7 @@ export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
   isFetchingNextPage,
   fetchNextPage
 }) => {
+  const { togglePlayPause, isPlaying } = usePlayPause();
   // Auto-load more when scrolling near bottom
   useEffect(() => {
     const handleScroll = () => {
@@ -42,56 +53,79 @@ export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Table Header */}
-      <div className="grid grid-cols-12 gap-4 px-4 py-2 border-b border-gray-700 text-gray-400 text-sm">
-        <div className="col-span-1 text-center">#</div>
-        <div className="col-span-1"></div>
-        <div className="col-span-6">Title</div>
-        <div className="col-span-3">Album</div>
-        <div className="col-span-1 text-center">
-          <Clock className="w-4 h-4 mx-auto" />
+      <div className="relative w-full">
+        {/* Custom table wrapper to allow dropdown overflow */}
+        <div className="relative w-full">
+          <table className="w-full caption-bottom text-sm">
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-b border-gray-700">
+                <TableHead className="w-12 text-center text-gray-400">#</TableHead>
+                <TableHead className="text-gray-400">Title</TableHead>
+                <TableHead className="text-gray-400">Album</TableHead>
+                <TableHead className="w-20 text-center text-gray-400">
+                  <Clock className="w-4 h-4 mx-auto" />
+                </TableHead>
+                <TableHead className="w-12"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {tracks.map((track, index) => (
+                <TableRow 
+                  key={track.id} 
+                  className="group hover:bg-gray-800/50 border-b border-gray-800/50 relative"
+                >
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center w-8 h-8">
+                      <span className="group-hover:hidden text-gray-400 text-sm">
+                        {index + 1}
+                      </span>
+                      <div className="hidden group-hover:block">
+                        <PlayPauseButton
+                          isPlaying={isPlaying(track.id)}
+                          onClick={() => togglePlayPause(track.id, 'track', track.name)}
+                          size="small"
+                        />
+                      </div>
+                    </div>
+                  </TableCell>
+                  
+                  <TableCell>
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src={track.coverImage || "/default-track.png"}
+                        alt={track.name}
+                        className="w-10 h-10 rounded object-cover flex-shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-white font-medium truncate">{track.name}</p>
+                        <p className="text-gray-400 text-sm truncate">{track.artist[0]?.stageName}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  
+                  <TableCell>
+                    <p className="text-gray-400 text-sm truncate">
+                      {track.name} {/* Album name could be added to GraphQL query */}
+                    </p>
+                  </TableCell>
+                  
+                  <TableCell className="text-center">
+                    <span className="text-gray-400 text-sm">3:45</span>
+                  </TableCell>
+                  
+                  <TableCell className="relative">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
+                      <TrackActionMenu 
+                        track={track} 
+                        isVisible={false}
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </table>
         </div>
-      </div>
-
-      {/* Tracks List */}
-      <div className="space-y-1">
-        {tracks.map((track, index) => (
-          <div 
-            key={track.id} 
-            className="grid grid-cols-12 gap-4 px-4 py-2 rounded hover:bg-gray-800 transition-colors group"
-          >
-            <div className="col-span-1 text-center text-gray-400 text-sm flex items-center justify-center">
-              {index + 1}
-            </div>
-            
-            <div className="col-span-1 flex items-center">
-              <img
-                src={track.coverImage || "/default-track.png"}
-                alt={track.name}
-                className="w-10 h-10 rounded object-cover"
-              />
-            </div>
-            
-            <div className="col-span-6 flex flex-col justify-center min-w-0">
-              <p className="text-white font-medium truncate">{track.name}</p>
-              <p className="text-gray-400 text-sm truncate">{track.artist[0].stageName}</p>
-            </div>
-            
-            <div className="col-span-3 flex items-center min-w-0">
-              <p className="text-gray-400 text-sm truncate">
-                {track.name} {/* Album name could be added to GraphQL query */}
-              </p>
-            </div>
-            
-            <div className="col-span-1 flex items-center justify-between">
-              <span className="text-gray-400 text-sm">3:45</span>
-              <TrackActionMenu 
-                track={track} 
-                isVisible={false} // Will be controlled by group-hover
-              />
-            </div>
-          </div>
-        ))}
       </div>
 
       {/* Loading more indicator */}
