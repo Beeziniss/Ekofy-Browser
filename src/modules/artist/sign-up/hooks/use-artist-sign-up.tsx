@@ -43,6 +43,7 @@ interface ArtistSignUpResponse {
 
 const useArtistSignUp = (onNavigate?: () => void) => {
   const { setUserData, setAuthenticated, setLoading } = useAuthStore();
+  const { resetForm, clearSessionData } = useArtistSignUpStore();
   // Removed currentStep as OTP is no longer used
   // const { currentStep } = useArtistSignUpStore();
 
@@ -91,6 +92,10 @@ const useArtistSignUp = (onNavigate?: () => void) => {
         
         // Always redirect to login after successful registration (no OTP needed)
         setTimeout(() => {
+          // Clear state before navigation
+          resetForm();
+          clearSessionData();
+          
           if (onNavigate) {
             onNavigate();
           }
@@ -105,6 +110,8 @@ const useArtistSignUp = (onNavigate?: () => void) => {
       const errorMessage = formatArtistSignUpError(error);
       toast.error(errorMessage);
       setAuthenticated(false);
+      // Clear sensitive session data on error for security
+      clearSessionData();
     },
   });
 

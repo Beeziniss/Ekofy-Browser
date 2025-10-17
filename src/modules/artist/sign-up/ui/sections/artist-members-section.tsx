@@ -40,10 +40,13 @@ const ArtistMembersSection = ({
   initialData,
 }: ArtistMembersSectionProps) => {
   const router = useRouter();
-  const { formData, sessionData, updateFormData } = useArtistSignUpStore();
+  const { formData, sessionData, updateFormData, resetForm, clearSessionData } = useArtistSignUpStore();
   
   // Handle navigation to login after successful registration
   const handleNavigateToLogin = () => {
+    // Clear all global state data after successful registration
+    resetForm();
+    clearSessionData();
     router.push('/artist/login');
   };
   

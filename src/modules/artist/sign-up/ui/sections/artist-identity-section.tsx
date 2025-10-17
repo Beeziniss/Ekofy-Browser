@@ -25,10 +25,13 @@ interface ArtistIdentitySectionProps {
 
 const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySectionProps) => {
   const router = useRouter();
-  const { formData, sessionData, updateFormData, goToNextStep } = useArtistSignUpStore();
+  const { formData, sessionData, updateFormData, goToNextStep, resetForm, clearSessionData } = useArtistSignUpStore();
   
   // Handle navigation to login after successful registration
   const handleNavigateToLogin = () => {
+    // Clear all global state data after successful registration
+    resetForm();
+    clearSessionData();
     router.push('/artist/login');
   };
   
