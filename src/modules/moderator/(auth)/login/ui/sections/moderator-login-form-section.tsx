@@ -22,8 +22,8 @@ import {
 import useModeratorSignIn from '../../hook/use-moderator-sign-in';
 
 const moderatorLoginSchema = z.object({
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email("Please enter a valid email address").max(50, "Email must be less than 50 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(50, "Password must be less than 50 characters"),
   rememberMe: z.boolean(),
 });
 
@@ -89,6 +89,7 @@ const ModeratorLoginFormSection = () => {
                   {...field}
                   disabled={isLoading}
                   placeholder="Enter your email"
+                  maxLength={50}
                   className="border-gradient-input h-12 w-full text-white placeholder-gray-400"
                 />
                 </FormControl>
@@ -111,6 +112,7 @@ const ModeratorLoginFormSection = () => {
                       type={showPassword ? "text" : "password"}
                       disabled={isLoading}
                       placeholder="Enter your password"
+                      maxLength={50}
                       className="border-gradient-input h-12 w-full text-white placeholder-gray-400 pr-10"
                       {...field}
                     />

@@ -115,7 +115,7 @@ export const authApi = {
         if (response.status === 204) {
           return {
             success: true,
-            message: "Artist registration successful! We have sent an OTP to your phone number for verification.",
+            message: "Artist registration successful! We have received the information and will respond to you within 48 hours..",
             user: null
           };
         }

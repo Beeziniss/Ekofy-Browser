@@ -25,8 +25,8 @@ const ArtistLoginFormSection = () => {
     if (field === 'email') {
       if (!value) {
         errors.email = "Email is required";
-      } else if (value.length > 254) {
-        errors.email = "Email must be less than 254 characters";
+      } else if (value.length > 50) {
+        errors.email = "Email must be less than 50 characters";
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
         errors.email = "Please enter a valid email address";
       } else {
@@ -39,8 +39,8 @@ const ArtistLoginFormSection = () => {
         errors.password = "Password is required";
       } else if (value.length < 6) {
         errors.password = "Password must be at least 6 characters";
-      } else if (value.length > 128) {
-        errors.password = "Password must be less than 128 characters";
+      } else if (value.length > 50) {
+        errors.password = "Password must be less than 50 characters";
       } else {
         delete errors.password;
       }
@@ -108,9 +108,18 @@ const ArtistLoginFormSection = () => {
               disabled={isLoading}
               placeholder="Enter your email"
               value={email}
+              maxLength={50}
               onChange={(e) => {
-                setEmail(e.target.value);
-                validateField("email", e.target.value);
+                const value = e.target.value;
+                if (value.length <= 50) {
+                  setEmail(value);
+                  validateField("email", value);
+                } else {
+                  // Show notification that limit is reached
+                  const errors = { ...customErrors };
+                  errors.email = "Email must be less than 50 characters";
+                  setCustomErrors(errors);
+                }
               }}
               className={`border-gradient-input h-12 w-full text-white placeholder-gray-400 ${
                 customErrors.email ? "border-red-500" : ""
@@ -132,9 +141,18 @@ const ArtistLoginFormSection = () => {
                 disabled={isLoading}
                 placeholder="Enter your password"
                 value={password}
+                maxLength={50}
                 onChange={(e) => {
-                  setPassword(e.target.value);
-                  validateField("password", e.target.value);
+                  const value = e.target.value;
+                  if (value.length <= 50) {
+                    setPassword(value);
+                    validateField("password", value);
+                  } else {
+                    // Show notification that limit is reached
+                    const errors = { ...customErrors };
+                    errors.password = "Password must be less than 50 characters";
+                    setCustomErrors(errors);
+                  }
                 }}
                 className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 ${
                   customErrors.password ? "border-red-500" : ""

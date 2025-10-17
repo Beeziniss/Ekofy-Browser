@@ -110,19 +110,6 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
             ...sessionData, // Include password from session data
             ...identityData
           };
-          
-          // Debug: Log the combined data
-          console.log("🔍 Combined Data before API call:", combinedData);
-          console.log("📋 Required fields check:");
-          console.log("- email:", combinedData.email ? "✅" : "❌");
-          console.log("- password:", combinedData.password ? "✅" : "❌");
-          console.log("- confirmPassword:", combinedData.confirmPassword ? "✅" : "❌");
-          console.log("- fullName:", combinedData.fullName ? "✅" : "❌");
-          console.log("- phoneNumber:", combinedData.phoneNumber ? "✅" : "❌");
-          console.log("- stageName:", combinedData.stageName ? "✅" : "❌");
-          console.log("- avatarImage:", combinedData.avatarImage ? "✅" : "❌");
-          console.log("- identityCard:", combinedData.identityCard ? "✅" : "❌");
-          
           // Convert store data to API format for registration
           const registrationData = convertArtistStoreDataToAPIFormat({
             ...combinedData,
@@ -209,11 +196,10 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
       });
 
       setAvatarImageUrl(uploadResult.secure_url);
-      toast.success('Tải ảnh đại diện lên thành công!');
+      toast.success('Profile picture uploaded successfully!');
       
       // Store avatar URL in form data immediately
       updateFormData({ avatarImage: uploadResult.secure_url });
-      console.log("✅ Avatar uploaded and stored:", uploadResult.secure_url);
     } catch (error) {
       console.error('Error uploading avatar image:', error);
       toast.error('Error uploading profile image. Please try again.');

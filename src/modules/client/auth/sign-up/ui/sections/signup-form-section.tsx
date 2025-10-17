@@ -82,8 +82,8 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
     if (field === 'email') {
       if (!value) {
         newErrors.email = "Email is required";
-      } else if (value.length > 254) {
-        newErrors.email = "Email must be less than 254 characters";
+      } else if (value.length > 50) {
+        newErrors.email = "Email must be less than 50 characters";
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
         newErrors.email = "Please enter a valid email address";
       } else {
@@ -94,8 +94,8 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
     if (field === 'password') {
       if (!value) {
         newErrors.password = "Password is required";
-      } else if (value.length > 128) {
-        newErrors.password = "Password must be less than 128 characters";
+      } else if (value.length > 50) {
+        newErrors.password = "Password must be less than 50 characters";
       } else {
         const passwordErrors = validatePassword(value);
         if (passwordErrors.length > 0) {
@@ -182,9 +182,18 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
               id="email"
               type="email"
               value={email}
+              maxLength={50}
               onChange={(e) => {
-                setEmail(e.target.value);
-                validateField("email", e.target.value);
+                const value = e.target.value;
+                if (value.length <= 50) {
+                  setEmail(value);
+                  validateField("email", value);
+                } else {
+                  // Show notification that limit is reached
+                  const newErrors = { ...errors };
+                  newErrors.email = "Email must be less than 50 characters";
+                  setErrors(newErrors);
+                }
               }}
               placeholder="Enter your email"
               className={`border-gradient-input h-12 w-full text-white focus:border-blue-500 focus:ring-blue-500/50 ${
@@ -209,9 +218,18 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 value={password}
+                maxLength={50}
                 onChange={(e) => {
-                  setPassword(e.target.value);
-                  validateField("password", e.target.value);
+                  const value = e.target.value;
+                  if (value.length <= 50) {
+                    setPassword(value);
+                    validateField("password", value);
+                  } else {
+                    // Show notification that limit is reached
+                    const newErrors = { ...errors };
+                    newErrors.password = "Password must be less than 50 characters";
+                    setErrors(newErrors);
+                  }
                 }}
                 placeholder="Password"
                 className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 ${
@@ -221,12 +239,12 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
+                  <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <Eye className="h-4 w-4 text-gray-400 hover:text-white" />
                 )}
               </button>
             </div>
@@ -248,9 +266,18 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
+                maxLength={50}
                 onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  validateField("confirmPassword", e.target.value);
+                  const value = e.target.value;
+                  if (value.length <= 50) {
+                    setConfirmPassword(value);
+                    validateField("confirmPassword", value);
+                  } else {
+                    // Show notification that limit is reached
+                    const newErrors = { ...errors };
+                    newErrors.confirmPassword = "Password must be less than 50 characters";
+                    setErrors(newErrors);
+                  }
                 }}
                 placeholder="Confirm Password"
                 className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 ${
@@ -260,12 +287,12 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
               >
                 {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
+                  <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <Eye className="h-4 w-4 text-gray-400 hover:text-white" />
                 )}
               </button>
             </div>

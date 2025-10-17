@@ -67,8 +67,8 @@ const LoginFormSection = () => {
     if (field === 'email') {
       if (!value) {
         errors.email = "Email is required";
-      } else if (value.length > 254) {
-        errors.email = "Email must be less than 254 characters";
+      } else if (value.length > 50) {
+        errors.email = "Email must be less than 50 characters";
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
         errors.email = "Please enter a valid email address";
       }
@@ -79,8 +79,8 @@ const LoginFormSection = () => {
         errors.password = "Password is required";
       } else if (value.length < 6) {
         errors.password = "Password must be at least 6 characters";
-      } else if (value.length > 128) {
-        errors.password = "Password must be less than 128 characters";
+      } else if (value.length > 50) {
+        errors.password = "Password must be less than 50 characters";
       }
     }
     
@@ -113,13 +113,17 @@ const LoginFormSection = () => {
               type="email"
               disabled={isLoading}
               placeholder="Enter your email"
+              maxLength={50}
               className={`border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 ${
                 customErrors.email ? "border-red-500" : ""
               }`}
               {...form.register("email")}
               onChange={(e) => {
-                form.setValue("email", e.target.value);
-                validateField("email", e.target.value);
+                const value = e.target.value;
+                if (value.length <= 50) {
+                  form.setValue("email", value);
+                  validateField("email", value);
+                }
               }}
             />
             {customErrors.email && (
@@ -137,24 +141,28 @@ const LoginFormSection = () => {
                 disabled={isLoading}
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
+                maxLength={50}
                 className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 ${
                   customErrors.password ? "border-red-500" : ""
                 }`}
                 {...form.register("password")}
                 onChange={(e) => {
-                  form.setValue("password", e.target.value);
-                  validateField("password", e.target.value);
+                  const value = e.target.value;
+                  if (value.length <= 50) {
+                    form.setValue("password", value);
+                    validateField("password", value);
+                  }
                 }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
+                  <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <Eye className="h-4 w-4 text-gray-400 hover:text-white" />
                 )}
               </button>
             </div>

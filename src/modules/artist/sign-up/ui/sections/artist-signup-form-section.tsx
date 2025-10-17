@@ -26,8 +26,9 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
   
   // Initialize state from global store or initial data
   const [email, setEmail] = useState(initialData?.email || formData.email || '');
-  const [password, setPassword] = useState(initialData?.password || sessionData.password || '');
-  const [confirmPassword, setConfirmPassword] = useState(initialData?.confirmPassword || sessionData.confirmPassword || '');
+  // Always reset password fields when component mounts for security
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(initialData?.agreeTerms || false);
@@ -40,9 +41,10 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
   useEffect(() => {
     if (formData.email && !initialData?.email) setEmail(formData.email);
     // Do not restore password fields for security reasons - they reset on back navigation
-    // if (sessionData.password && !initialData?.password) setPassword(sessionData.password);
-    // if (sessionData.confirmPassword && !initialData?.confirmPassword) setConfirmPassword(sessionData.confirmPassword);
-  }, [formData, sessionData, initialData]);
+    // Always ensure password fields start empty for security
+    setPassword('');
+    setConfirmPassword('');
+  }, [formData.email, initialData?.email]);
 
   // Save form data to global state on input change (debounced)
   // Note: Only save email to persistent data, password is only saved in session for current flow
@@ -82,8 +84,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
     // Email validation
     if (!email) {
       newErrors.email = "Email is required";
-    } else if (email.length > 254) {
-      newErrors.email = "Email must be less than 254 characters";
+    } else if (email.length > 50) {
+      newErrors.email = "Email must be less than 50 characters";
     } else if (!validateEmail(email)) {
       newErrors.email = "Please enter a valid email address";
     }
@@ -91,8 +93,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
     // Password validation
     if (!password) {
       newErrors.password = "Password is required";
-    } else if (password.length > 128) {
-      newErrors.password = "Password must be less than 128 characters";
+    } else if (password.length > 50) {
+      newErrors.password = "Password must be less than 50 characters";
     } else if (!isPasswordValid) {
       newErrors.password = "Password does not meet security requirements";
     }
@@ -121,8 +123,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
       const emailValue = value as string;
       if (!emailValue) {
         newErrors.email = "Email is required";
-      } else if (emailValue.length > 128) {
-        newErrors.email = "Email must be less than 128 characters";
+      } else if (emailValue.length > 50) {
+        newErrors.email = "Email must be less than 50 characters";
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
         newErrors.email = "Please enter a valid email address";
       } else {
@@ -134,8 +136,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
       const passwordValue = value as string;
       if (!passwordValue) {
         newErrors.password = "Password is required";
-      } else if (passwordValue.length > 128) {
-        newErrors.password = "Password must be less than 128 characters";
+      } else if (passwordValue.length > 50) {
+        newErrors.password = "Password must be less than 50 characters";
       } else {
         const validation = validatePassword(passwordValue);
         const isValid = Object.values(validation).every(Boolean);
@@ -245,9 +247,18 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
             <Input
               type="email"
               value={email}
+              maxLength={50}
               onChange={(e) => {
-                setEmail(e.target.value);
-                validateField("email", e.target.value);
+                const value = e.target.value;
+                if (value.length <= 50) {
+                  setEmail(value);
+                  validateField("email", value);
+                } else {
+                  // Show notification that limit is reached
+                  const newErrors = { ...errors };
+                  newErrors.email = "Email must be less than 50 characters";
+                  setErrors(newErrors);
+                }
               }}
               placeholder="Enter your email"
               className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 ${
@@ -270,9 +281,18 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
               <Input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
+                maxLength={50}
                 onChange={(e) => {
-                  setPassword(e.target.value);
-                  validateField("password", e.target.value);
+                  const value = e.target.value;
+                  if (value.length <= 50) {
+                    setPassword(value);
+                    validateField("password", value);
+                  } else {
+                    // Show notification that limit is reached
+                    const newErrors = { ...errors };
+                    newErrors.password = "Password must be less than 50 characters";
+                    setErrors(newErrors);
+                  }
                 }}
                 onFocus={() => setPasswordFocus(true)}
                 onBlur={() => setPasswordFocus(false)}
@@ -328,9 +348,18 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
               <Input
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
+                maxLength={50}
                 onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  validateField("confirmPassword", e.target.value);
+                  const value = e.target.value;
+                  if (value.length <= 50) {
+                    setConfirmPassword(value);
+                    validateField("confirmPassword", value);
+                  } else {
+                    // Show notification that limit is reached
+                    const newErrors = { ...errors };
+                    newErrors.confirmPassword = "Password must be less than 50 characters";
+                    setErrors(newErrors);
+                  }
                 }}
                 placeholder="Confirm password"
                 className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10 ${

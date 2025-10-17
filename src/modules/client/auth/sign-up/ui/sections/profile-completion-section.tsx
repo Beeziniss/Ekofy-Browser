@@ -381,7 +381,13 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                   id="fullName"
                   type="text"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  maxLength={50}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= 50) {
+                      setFullName(value);
+                    }
+                  }}
                   placeholder="Enter your full name"
                   required
                   className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
@@ -397,7 +403,13 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                   id="displayName"
                   type="text"
                   value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
+                  maxLength={50}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= 50) {
+                      setDisplayName(value);
+                    }
+                  }}
                   placeholder="Enter your display name"
                   required
                   className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"

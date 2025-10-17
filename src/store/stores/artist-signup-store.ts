@@ -218,7 +218,16 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
           const currentStep = state.currentStep;
           const prevStep = getPreviousStep(currentStep, state.formData);
           
-          set({ currentStep: prevStep }, false, "artistSignup/goToPreviousStep");
+          // Clear password session data when navigating back for security
+          const clearedSessionData = {
+            password: undefined,
+            confirmPassword: undefined
+          };
+          
+          set({ 
+            currentStep: prevStep,
+            sessionData: clearedSessionData
+          }, false, "artistSignup/goToPreviousStep");
         },
 
       // CCCD processing
