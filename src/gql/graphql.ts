@@ -2253,6 +2253,11 @@ export type MutationInitializationUpdatePlaylistArgs = {
 };
 
 
+export type MutationInitializationUpdatePlaylistArgs = {
+  updatePlaylistRequest: UpdatePlaylistRequestInput;
+};
+
+
 export type MutationInitializationUpdateProfileArgs = {
   updateArtistRequest: UpdateArtistRequestInput;
   updateListenerRequest: UpdateListenerRequestInput;
@@ -4449,6 +4454,13 @@ export type AddToPlaylistMutationVariables = Exact<{
 
 export type AddToPlaylistMutation = { __typename?: 'MutationInitialization', addToPlaylist: boolean };
 
+export type UpdatePlaylistMutationVariables = Exact<{
+  updatePlaylistRequest: UpdatePlaylistRequestInput;
+}>;
+
+
+export type UpdatePlaylistMutation = { __typename?: 'MutationInitialization', updatePlaylist: boolean };
+
 export type RemoveFromPlaylistMutationVariables = Exact<{
   addToPlaylistRequest: AddToPlaylistRequestInput;
 }>;
@@ -4738,6 +4750,11 @@ export const AddToPlaylistDocument = new TypedDocumentString(`
   addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)
 }
     `) as unknown as TypedDocumentString<AddToPlaylistMutation, AddToPlaylistMutationVariables>;
+export const UpdatePlaylistDocument = new TypedDocumentString(`
+    mutation UpdatePlaylist($updatePlaylistRequest: UpdatePlaylistRequestInput!) {
+  updatePlaylist(updatePlaylistRequest: $updatePlaylistRequest)
+}
+    `) as unknown as TypedDocumentString<UpdatePlaylistMutation, UpdatePlaylistMutationVariables>;
 export const RemoveFromPlaylistDocument = new TypedDocumentString(`
     mutation RemoveFromPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {
   removeFromPlaylist(addToPlaylistRequest: $addToPlaylistRequest)

@@ -3,14 +3,14 @@ import DetailItem from "@/modules/client/profile/ui/components/detail-item";
 import { useArtistProfile } from "../../hooks/use-artist-profile";
 
 export default function ArtistAccountDetailSection() {
-  const { data, createdAt, isVerified } = useArtistProfile();
+  const { data, createdAt, userStatus, artistType, membershipStatus } = useArtistProfile();
 
   const accountFields = [
     { title: "Stage name", value: data?.stageName || "-" },
     { title: "Created date", value: createdAt || "-" },
-    // Membership status not yet defined for artists; use placeholder or derived logic if available later
-    { title: "Membership status", value: isVerified ? "ACTIVE" : "FREE" },
-    { title: "Account verification", value: isVerified ? "Verified" : "Not verified" },
+    { title: "Artist type", value: artistType || "-" },
+    { title: "Membership status", value: membershipStatus || "-" },
+    { title: "Account status", value: userStatus || "-" },
   ];
 
   return (

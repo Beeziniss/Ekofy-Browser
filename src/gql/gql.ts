@@ -26,6 +26,7 @@ type Documents = {
     "\n  mutation deletePlaylist($playlistId: String!) {\n    deletePlaylist(playlistId: $playlistId)\n  }\n": typeof types.DeletePlaylistDocument,
     "\n  query Playlists($name: String, $take: Int, $skip: Int) {\n    playlists(\n      where: {\n        or: { name: { contains: $name }, nameUnsigned: { contains: $name } }\n      }\n      order: { createdAt: DESC }\n      take: $take\n      skip: $skip\n    ) {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n      totalCount\n      pageInfo {\n        hasNextPage\n      }\n    }\n  }\n": typeof types.PlaylistsDocument,
     "\n  mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {\n    addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n": typeof types.AddToPlaylistDocument,
+    "\n  mutation UpdatePlaylist($updatePlaylistRequest: UpdatePlaylistRequestInput!) {\n    updatePlaylist(updatePlaylistRequest: $updatePlaylistRequest)\n  }\n": typeof types.UpdatePlaylistDocument,
     "\n  mutation RemoveFromPlaylist(\n    $addToPlaylistRequest: AddToPlaylistRequestInput!\n  ) {\n    removeFromPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n": typeof types.RemoveFromPlaylistDocument,
     "\n  query PlaylistBrief {\n    playlists {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n    }\n  }\n": typeof types.PlaylistBriefDocument,
     "\n  query CheckTrackInPlaylist($trackId: String!) {\n    playlists(where: { tracksInfo: { some: { trackId: { eq: $trackId } } } }) {\n      items {\n        id\n      }\n    }\n  }\n": typeof types.CheckTrackInPlaylistDocument,
@@ -49,6 +50,7 @@ const documents: Documents = {
     "\n  mutation deletePlaylist($playlistId: String!) {\n    deletePlaylist(playlistId: $playlistId)\n  }\n": types.DeletePlaylistDocument,
     "\n  query Playlists($name: String, $take: Int, $skip: Int) {\n    playlists(\n      where: {\n        or: { name: { contains: $name }, nameUnsigned: { contains: $name } }\n      }\n      order: { createdAt: DESC }\n      take: $take\n      skip: $skip\n    ) {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n      totalCount\n      pageInfo {\n        hasNextPage\n      }\n    }\n  }\n": types.PlaylistsDocument,
     "\n  mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {\n    addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n": types.AddToPlaylistDocument,
+    "\n  mutation UpdatePlaylist($updatePlaylistRequest: UpdatePlaylistRequestInput!) {\n    updatePlaylist(updatePlaylistRequest: $updatePlaylistRequest)\n  }\n": types.UpdatePlaylistDocument,
     "\n  mutation RemoveFromPlaylist(\n    $addToPlaylistRequest: AddToPlaylistRequestInput!\n  ) {\n    removeFromPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n": types.RemoveFromPlaylistDocument,
     "\n  query PlaylistBrief {\n    playlists {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n    }\n  }\n": types.PlaylistBriefDocument,
     "\n  query CheckTrackInPlaylist($trackId: String!) {\n    playlists(where: { tracksInfo: { some: { trackId: { eq: $trackId } } } }) {\n      items {\n        id\n      }\n    }\n  }\n": types.CheckTrackInPlaylistDocument,
@@ -105,6 +107,10 @@ export function graphql(source: "\n  query Playlists($name: String, $take: Int, 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {\n    addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n"): typeof import('./graphql').AddToPlaylistDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdatePlaylist($updatePlaylistRequest: UpdatePlaylistRequestInput!) {\n    updatePlaylist(updatePlaylistRequest: $updatePlaylistRequest)\n  }\n"): typeof import('./graphql').UpdatePlaylistDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

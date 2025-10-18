@@ -5,9 +5,10 @@ import { artistProfileOptions } from "@/gql/options/artist-options";
 import { useAuthStore } from "@/store";
 import { format } from "date-fns";
 import { ArtistType } from "@/types/artist_type";
+import { userActiveSubscriptionOptions } from "@/gql/options/client-options";
 
 export function useArtistProfile() {
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const userId = user?.userId || "";
   const query = useQuery(artistProfileOptions(userId));
 
@@ -28,6 +29,23 @@ export function useArtistProfile() {
 
   const isSolo = query.data?.artistType === ArtistType.Individual;
 
+  // Membership status from active subscription, fallback to verification heuristic
+  const subscriptionQuery = useQuery({
+    ...userActiveSubscriptionOptions(userId),
+    retry: 0,
+    enabled: !!userId && !!isAuthenticated,
+  }) as {
+    data: {
+      isActive?: boolean;
+      subscription?: { tier?: string };
+    } | null;
+    isError?: boolean;
+  };
+
+  const membershipStatus =
+    (subscriptionQuery?.data?.isActive && subscriptionQuery.data.subscription?.tier) ||
+    (query.data?.isVerified ? "PREMIUM" : "FREE");
+
   return {
     ...query,
     header: {
@@ -42,5 +60,7 @@ export function useArtistProfile() {
     artistType: query.data?.artistType,
     identityCard: query.data?.identityCard,
     isSolo,
+    userStatus: query.data?.user?.status,
+    membershipStatus,
   };
 }
