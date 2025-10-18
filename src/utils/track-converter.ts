@@ -1,11 +1,20 @@
 import { Track as StoreTrack } from "@/store/types/audio";
 
-// GraphQL Track type
+// GraphQL Track type (from TrackListHomeQuery)
 export type GraphQLTrack = {
+  __typename?: "Track";
   id: string;
   name: string;
-  coverImage?: string;
-  artist: Array<{ id: string; stageName: string } | null>;
+  coverImage: string;
+  mainArtistIds: Array<string>;
+  mainArtistsAsync?: {
+    __typename?: "MainArtistsAsyncCollectionSegment";
+    items?: Array<{
+      __typename?: "Artist";
+      id: string;
+      stageName: string;
+    }> | null;
+  } | null;
 };
 
 /**
@@ -16,9 +25,9 @@ export const convertGraphQLTrackToStore = (
 ): StoreTrack => {
   return {
     id: gqlTrack.id,
-    title: gqlTrack.name,
+    name: gqlTrack.name,
     artist:
-      gqlTrack.artist
+      gqlTrack.mainArtistsAsync?.items
         ?.map((a) => a?.stageName)
         .filter(Boolean)
         .join(", ") || "Unknown Artist",

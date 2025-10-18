@@ -1,10 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  playlistDetailOptions,
-  playlistDetailTrackListOptions,
-} from "@/gql/options/client-options";
+import { playlistDetailOptions } from "@/gql/options/client-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -27,7 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAudioStore, Track } from "@/store";
+import { usePlaylistPlayback } from "../../hooks/use-playlist-playback";
 
 interface PlaylistInfoSectionProps {
   playlistId: string;
@@ -92,76 +89,21 @@ const PlaylistInfoSectionSuspense = ({
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const { data } = useSuspenseQuery(playlistDetailOptions(playlistId));
-  const { data: trackListData } = useSuspenseQuery(
-    playlistDetailTrackListOptions(playlistId),
-  );
+
+  // Use custom hook for playlist playback functionality
+  const {
+    isPlaylistCurrentlyPlaying,
+    isPlaying,
+    playlistTracks,
+    handlePlayPause,
+  } = usePlaylistPlayback(playlistId);
 
   const playlistData = data?.playlists?.items?.[0];
-  const playlistTracks = trackListData?.playlists?.items?.[0]?.tracks?.items;
-
-  const {
-    currentTrack,
-    isPlaying: globalIsPlaying,
-    setCurrentTrack,
-    togglePlayPause,
-    play,
-    setQueue,
-  } = useAudioStore();
-
-  // Check if any track from this playlist is currently playing
-  const isPlaylistCurrentlyPlaying =
-    playlistTracks?.some((track) => track?.id === currentTrack?.id) ?? false;
-
-  // Convert playlist tracks to Track format for the store
-  const convertToTrackFormat = (
-    playlistTracks: Array<{
-      id: string;
-      name?: string | null;
-      coverImage?: string | null;
-      mainArtistsAsync?: {
-        items?: Array<{
-          stageName?: string | null;
-        } | null> | null;
-      } | null;
-    } | null>,
-  ): Track[] => {
-    return playlistTracks
-      .filter((track) => track != null)
-      .map((track) => ({
-        id: track.id,
-        name: track.name || "Unknown Track",
-        artist:
-          track.mainArtistsAsync?.items
-            ?.map((a) => a?.stageName)
-            .filter(Boolean)
-            .join(", ") || "Unknown Artist",
-        coverImage: track.coverImage || "",
-      }));
-  };
 
   // Handle play/pause click for playlist
-  const handlePlayPauseClick = (e: React.MouseEvent) => {
+  const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-
-    if (!playlistTracks || playlistTracks.length === 0) {
-      toast.error("This playlist is empty");
-      return;
-    }
-
-    // If a track from this playlist is currently playing, toggle play/pause
-    if (isPlaylistCurrentlyPlaying) {
-      togglePlayPause();
-    } else {
-      // Play the first track from the playlist and set the entire playlist as queue
-      const tracksForQueue = convertToTrackFormat(playlistTracks);
-      const firstTrack = tracksForQueue[0];
-
-      if (firstTrack) {
-        setCurrentTrack(firstTrack);
-        setQueue(tracksForQueue);
-        play();
-      }
-    }
+    await handlePlayPause();
   };
 
   const handleEditClick = () => {
@@ -233,28 +175,30 @@ const PlaylistInfoSectionSuspense = ({
       </div>
 
       <div className="flex items-center gap-x-4">
-        <Button
-          variant="ghost"
-          size="iconLg"
-          onClick={handlePlayPauseClick}
-          className="text-main-white mt-auto duration-0 hover:brightness-90"
-        >
-          {isPlaylistCurrentlyPlaying && globalIsPlaying ? (
-            <Image
-              src={"/pause-button-medium.svg"}
-              alt="Ekofy Pause Button"
-              width={48}
-              height={48}
-            />
-          ) : (
-            <Image
-              src={"/play-button-medium.svg"}
-              alt="Ekofy Play Button"
-              width={48}
-              height={48}
-            />
-          )}
-        </Button>
+        {playlistTracks && playlistTracks.length > 0 && (
+          <Button
+            variant="ghost"
+            size="iconLg"
+            onClick={handlePlayPauseClick}
+            className="text-main-white mt-auto duration-0 hover:brightness-90"
+          >
+            {isPlaylistCurrentlyPlaying && isPlaying ? (
+              <Image
+                src={"/pause-button-medium.svg"}
+                alt="Ekofy Pause Button"
+                width={48}
+                height={48}
+              />
+            ) : (
+              <Image
+                src={"/play-button-medium.svg"}
+                alt="Ekofy Play Button"
+                width={48}
+                height={48}
+              />
+            )}
+          </Button>
+        )}
 
         <Button
           size={"iconLg"}
