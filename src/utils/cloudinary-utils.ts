@@ -55,7 +55,6 @@ export const uploadImageToCloudinary = async (
   }
 ): Promise<CloudinaryUploadResponse> => {
   try {
-    console.log("🌥️ Starting Cloudinary upload for:", file.name);
     
     // Validate file
     if (!file) {
@@ -96,13 +95,6 @@ export const uploadImageToCloudinary = async (
     }
 
     const uploadResult: CloudinaryUploadResponse = await response.json();
-    
-    console.log("✅ Cloudinary upload successful:", {
-      public_id: uploadResult.public_id,
-      secure_url: uploadResult.secure_url,
-      format: uploadResult.format,
-      bytes: uploadResult.bytes
-    });
 
     return uploadResult;
 

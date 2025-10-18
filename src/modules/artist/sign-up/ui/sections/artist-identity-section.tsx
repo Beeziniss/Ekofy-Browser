@@ -106,6 +106,14 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
       
       // Check artist type to determine next action
       if (formData.artistType === "INDIVIDUAL") {
+        // Check if password exists in session data before attempting registration
+        if (!sessionData.password || !sessionData.confirmPassword) {
+          toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
+          // Navigate back to form step to re-enter password
+          // router.push('/artist/sign-up');
+          return;
+        }
+
         try {
           // Combine current formData with new identity data and session data (including password)
           const combinedData = {
@@ -119,9 +127,6 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
             avatarImage: avatarImageUrl || undefined // Add avatar image URL
           });
           
-          // Debug: Log the registration data
-          console.log("🚀 Registration Data:", registrationData);
-          
           // Call registration API
           signUp(registrationData);
           
@@ -130,6 +135,12 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
         } catch (error) {
           console.error("❌ Registration error:", error);
           if (error instanceof Error) {
+            // Check if error is related to missing password and redirect accordingly
+            if (error.message.includes("password")) {
+              toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
+              // router.push('/artist/sign-up');
+              return;
+            }
             toast.error(error.message);
           } else {
             toast.error("An error occurred. Please try again.");

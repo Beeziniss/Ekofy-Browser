@@ -25,12 +25,12 @@ const loginSchema = z.object({
   email: z
     .string()
     .min(1, "Email is required")
-    .max(128, "Email must be less than 128 characters")
+    .max(50, "Email must be less than 50 characters")
     .email("Please enter a valid email address"),
   password: z
     .string()
     .min(6, "Password must be at least 6 characters")
-    .max(128, "Password must be less than 128 characters"),
+    .max(50, "Password must be less than 50 characters"),
   rememberMe: z.boolean(),
 });
 
@@ -39,7 +39,6 @@ type LoginFormData = z.infer<typeof loginSchema>;
 const LoginFormSection = () => {
   const { signIn, isLoading } = useSignIn();
   const [showPassword, setShowPassword] = useState(false);
-  const [customErrors, setCustomErrors] = useState<{ [key: string]: string }>({});
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -51,41 +50,10 @@ const LoginFormSection = () => {
   });
 
   const onSubmit = (data: LoginFormData) => {
-    // Clear custom errors
-    setCustomErrors({});
-    
     signIn({
       email: data.email,
       password: data.password,
     });
-  };
-
-  // Custom validation function
-  const validateField = (field: string, value: string) => {
-    const errors: { [key: string]: string } = {};
-    
-    if (field === 'email') {
-      if (!value) {
-        errors.email = "Email is required";
-      } else if (value.length > 50) {
-        errors.email = "Email must be less than 50 characters";
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-        errors.email = "Please enter a valid email address";
-      }
-    }
-    
-    if (field === 'password') {
-      if (!value) {
-        errors.password = "Password is required";
-      } else if (value.length < 6) {
-        errors.password = "Password must be at least 6 characters";
-      } else if (value.length > 50) {
-        errors.password = "Password must be less than 50 characters";
-      }
-    }
-    
-    setCustomErrors(prev => ({ ...prev, ...errors }));
-    return Object.keys(errors).length === 0;
   };
 
   return (
@@ -103,104 +71,106 @@ const LoginFormSection = () => {
         </div>
 
         {/* Login Form */}
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          {/* Email Field */}
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Email <span className="text-red-500">*</span>
-            </label>
-            <Input
-              type="email"
-              disabled={isLoading}
-              placeholder="Enter your email"
-              maxLength={50}
-              className={`border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 ${
-                customErrors.email ? "border-red-500" : ""
-              }`}
-              {...form.register("email")}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value.length <= 50) {
-                  form.setValue("email", value);
-                  validateField("email", value);
-                }
-              }}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/* Email Field */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-white">
+                    Email <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      disabled={isLoading}
+                      placeholder="Enter your email"
+                      maxLength={50}
+                      className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-400" />
+                </FormItem>
+              )}
             />
-            {customErrors.email && (
-              <p className="mt-1 text-sm text-red-400">{customErrors.email}</p>
-            )}
-          </div>
 
-          {/* Password Field */}
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Password <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <Input
-                disabled={isLoading}
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                maxLength={50}
-                className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 ${
-                  customErrors.password ? "border-red-500" : ""
-                }`}
-                {...form.register("password")}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value.length <= 50) {
-                    form.setValue("password", value);
-                    validateField("password", value);
-                  }
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
-                ) : (
-                  <Eye className="h-4 w-4 text-gray-400 hover:text-white" />
+            {/* Password Field */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-white">
+                    Password <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        disabled={isLoading}
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        maxLength={50}
+                        className="border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-gray-400 hover:text-white" />
+                        )}
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-red-400" />
+                </FormItem>
+              )}
+            />
+
+            {/* Remember Me and Forgot Password */}
+            <div className="flex items-center justify-between">
+              <FormField
+                control={form.control}
+                name="rememberMe"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+                    />
+                    <label className="cursor-pointer text-sm text-white">
+                      Remember me
+                    </label>
+                  </div>
                 )}
-              </button>
-            </div>
-            {customErrors.password && (
-              <p className="mt-1 text-sm text-red-400">{customErrors.password}</p>
-            )}
-          </div>
-
-          {/* Remember Me and Forgot Password */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                checked={form.watch("rememberMe")}
-                onCheckedChange={(checked) => form.setValue("rememberMe", !!checked)}
-                className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
               />
-              <label className="cursor-pointer text-sm text-white">
-                Remember me
-              </label>
+              <Link
+                href="#"
+                className="text-sm text-white underline transition-colors hover:text-blue-400"
+              >
+                Forgot your password?
+              </Link>
             </div>
-            <Link
-              href="#"
-              className="text-sm text-white underline transition-colors hover:text-blue-400"
-            >
-              Forgot your password?
-            </Link>
-          </div>
 
-          {/* Login Button */}
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="primary_gradient w-full rounded-md px-4 py-3 text-base font-semibold text-white transition duration-300 ease-in-out hover:opacity-90 disabled:opacity-50"
-            size="lg"
-          >
-            {isLoading ? "Signing in..." : "Log in"}
-          </Button>
-        </form>
+            {/* Login Button */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="primary_gradient w-full rounded-md px-4 py-3 text-base font-semibold text-white transition duration-300 ease-in-out hover:opacity-90 disabled:opacity-50"
+              size="lg"
+            >
+              {isLoading ? "Signing in..." : "Log in"}
+            </Button>
+          </form>
+        </Form>
 
         {/* Sign Up Link */}
         <div className="mt-6 text-center">

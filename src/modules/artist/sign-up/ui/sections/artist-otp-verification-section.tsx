@@ -69,7 +69,6 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
       // Update OTP in store
       completeOTPVerification({ otp: otpCode });
       
-      console.log("🎉 OTP Verification completed successfully!");
       toast.success("OTP verification successful! Registration completed.");
       
       // Call onNext to trigger final navigation

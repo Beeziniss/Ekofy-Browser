@@ -218,15 +218,18 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
           const currentStep = state.currentStep;
           const prevStep = getPreviousStep(currentStep, state.formData);
           
-          // Clear password session data when navigating back for security
-          const clearedSessionData = {
-            password: undefined,
-            confirmPassword: undefined
-          };
+          // Only clear password session data when navigating back to form step for security
+          let sessionData = state.sessionData;
+          if (prevStep === "form") {
+            sessionData = {
+              password: undefined,
+              confirmPassword: undefined
+            };
+          }
           
           set({ 
             currentStep: prevStep,
-            sessionData: clearedSessionData
+            sessionData: sessionData
           }, false, "artistSignup/goToPreviousStep");
         },
 
@@ -263,25 +266,6 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
           "artistSignup/updateIdentityCard"
         );
       },
-
-      // Proceed to registration - No longer moves to OTP step
-      // proceedToRegistration: () => {
-      //   // Registration will be handled by the component and redirect to login
-      //   console.log("Registration completed - redirecting to login");
-      // },
-
-      // Complete OTP verification - Comment out as no longer needed
-      // completeOTPVerification: (otpData: { otp: string }) => {
-      //   const { updateFormData } = get();
-      //   
-      //   // Update form data with OTP
-      //   updateFormData(otpData);
-      //   
-      //   // Show success message
-      //   toast.success("Xác thực OTP thành công!");
-      //   
-      //   // Navigation or completion logic can be handled by the component
-      // },
       completeOTPVerification: () => {
         // No longer used - keeping for compatibility
         console.log("OTP verification is no longer used");

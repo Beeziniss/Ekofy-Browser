@@ -121,6 +121,15 @@ const ArtistMembersSection = ({
       
       // Update store with members data
       updateFormData({ members: membersData });
+      
+      // Check if password exists in session data before attempting registration
+      if (!sessionData.password || !sessionData.confirmPassword) {
+        toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
+        // Navigate back to form step to re-enter password
+        // router.push('/artist/sign-up');
+        return;
+      }
+
       try {
         // Convert store data to API format for registration
         const registrationData = convertArtistStoreDataToAPIFormat({
@@ -135,6 +144,12 @@ const ArtistMembersSection = ({
         
       } catch (error) {
         if (error instanceof Error) {
+          // Check if error is related to missing password and redirect accordingly
+          if (error.message.includes("password")) {
+            toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
+            router.push('/artist/sign-up');
+            return;
+          }
           toast.error(error.message);
         } else {
           toast.error("An error occurred. Please try again.");
