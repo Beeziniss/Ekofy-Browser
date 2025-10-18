@@ -48,8 +48,17 @@ const TrackCarousel = ({ data, isLoading }: TrackCarouselProps) => {
                 trackId={track.id}
                 coverImage={track.coverImage}
                 trackName={track.name}
-                artists={track.artist}
-                trackQueue={data.tracks?.items || []}
+                artists={
+                  track.mainArtistsAsync?.items?.map((artist) => ({
+                    id: artist.id,
+                    stageName: artist.stageName,
+                  })) || []
+                }
+                trackQueue={
+                  data.tracks?.items?.filter(
+                    (item): item is NonNullable<typeof item> => item !== null,
+                  ) || []
+                }
               />
             </CarouselItem>
           ))}

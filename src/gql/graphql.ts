@@ -2253,11 +2253,6 @@ export type MutationInitializationUpdatePlaylistArgs = {
 };
 
 
-export type MutationInitializationUpdatePlaylistArgs = {
-  updatePlaylistRequest: UpdatePlaylistRequestInput;
-};
-
-
 export type MutationInitializationUpdateProfileArgs = {
   updateArtistRequest: UpdateArtistRequestInput;
   updateListenerRequest: UpdateListenerRequestInput;

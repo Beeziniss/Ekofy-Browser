@@ -81,10 +81,11 @@ const PlaylistTrackTable = ({
   const {
     currentTrack,
     isPlaying: globalIsPlaying,
-    setCurrentTrack,
+    currentPlaylistId,
     togglePlayPause,
     play,
-    setQueue,
+    setPlaylist,
+    skipToTrack,
   } = useAudioStore();
 
   const formatAddedTime = (addedTime: string) => {
@@ -112,30 +113,57 @@ const PlaylistTrackTable = ({
         header: "TRACK",
         cell: ({ row }) => {
           const track = row.original;
-          // Check if this is the currently playing track
+          // Check if this is the currently playing track AND this playlist is active
           const isCurrentTrack = currentTrack?.id === track.id;
+          const isPlaylistActive = currentPlaylistId === playlistId;
+          const isCurrentlyPlaying =
+            isCurrentTrack && isPlaylistActive && globalIsPlaying;
 
-          // Convert to Track format for the store
-          const trackData: Track = {
-            id: track.id,
-            name: track.name || "Unknown Track",
-            artist: track.artist,
-            coverImage: track.coverImage,
+          // Convert playlist tracks to Track format for the store
+          const convertToTrackFormat = (
+            playlistTracks: PlaylistTrack[],
+          ): Track[] => {
+            return playlistTracks.map((track) => ({
+              id: track.id,
+              name: track.name || "Unknown Track",
+              artist: track.artist,
+              coverImage: track.coverImage,
+            }));
           };
 
           // Handle play/pause click
           const handlePlayPauseClick = (e: React.MouseEvent) => {
             e.preventDefault();
-            if (isCurrentTrack) {
-              // If it's the current track, toggle play/pause
+
+            if (isCurrentTrack && isPlaylistActive) {
+              // If it's the current track from this playlist, toggle play/pause
               togglePlayPause();
             } else {
-              // If it's a different track, set as current track and play
-              setCurrentTrack(trackData);
-              if (tracks) {
-                setQueue(tracks);
+              // Convert all tracks and set up playlist context
+              const tracksForQueue = convertToTrackFormat(tracks);
+
+              // Find the index of the clicked track
+              const trackIndex = tracksForQueue.findIndex(
+                (t) => t.id === track.id,
+              );
+
+              if (trackIndex !== -1) {
+                if (isPlaylistActive) {
+                  // If this playlist is already active, just skip to the track
+                  skipToTrack(trackIndex);
+                  play();
+                } else {
+                  // Set the entire playlist with the correct playlist ID and track
+                  setPlaylist(tracksForQueue, playlistId);
+
+                  // If it's not the first track, skip to the clicked track
+                  if (trackIndex !== 0) {
+                    setTimeout(() => skipToTrack(trackIndex), 0);
+                  }
+
+                  play();
+                }
               }
-              play();
             }
           };
           return (
@@ -153,10 +181,10 @@ const PlaylistTrackTable = ({
                   <div className="primary_gradient size-12 rounded-md" />
                 )}
                 <div
-                  className={`absolute inset-0 flex items-center justify-center rounded-md bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 ${isCurrentTrack && globalIsPlaying ? "opacity-100" : ""}`}
+                  className={`absolute inset-0 flex items-center justify-center rounded-md bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 ${isCurrentlyPlaying ? "opacity-100" : ""}`}
                   onClick={handlePlayPauseClick}
                 >
-                  {isCurrentTrack && globalIsPlaying ? (
+                  {isCurrentlyPlaying ? (
                     <PauseIcon className="h-5 w-5 fill-white text-white" />
                   ) : (
                     <PlayIcon className="h-5 w-5 fill-white text-white" />
@@ -166,7 +194,7 @@ const PlaylistTrackTable = ({
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`truncate font-medium ${isCurrentTrack && globalIsPlaying ? "text-main-purple" : "text-white"}`}
+                    className={`truncate font-medium ${isCurrentlyPlaying ? "text-main-purple" : "text-white"}`}
                   >
                     {track.name}
                   </span>
@@ -231,6 +259,36 @@ const PlaylistTrackTable = ({
             }
           };
 
+          const handlePlayNow = () => {
+            const tracksForQueue = tracks.map((t) => ({
+              id: t.id,
+              name: t.name || "Unknown Track",
+              artist: t.artist,
+              coverImage: t.coverImage,
+            }));
+
+            const trackIndex = tracksForQueue.findIndex(
+              (t) => t.id === track.id,
+            );
+
+            if (trackIndex !== -1) {
+              if (currentPlaylistId === playlistId) {
+                // If this playlist is already active, just skip to the track
+                skipToTrack(trackIndex);
+              } else {
+                // Set the entire playlist with the correct playlist ID and track
+                setPlaylist(tracksForQueue, playlistId);
+
+                // If it's not the first track, skip to the clicked track
+                if (trackIndex !== 0) {
+                  setTimeout(() => skipToTrack(trackIndex), 0);
+                }
+              }
+
+              play();
+            }
+          };
+
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -242,7 +300,10 @@ const PlaylistTrackTable = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={handlePlayNow}
+                >
                   <PlayIcon className="mr-2 h-4 w-4" />
                   Play Now
                 </DropdownMenuItem>
@@ -274,11 +335,14 @@ const PlaylistTrackTable = ({
     [
       currentTrack,
       globalIsPlaying,
-      play,
-      setCurrentTrack,
-      setQueue,
-      togglePlayPause,
+      currentPlaylistId,
+      playlistId,
       tracks,
+      // Functions from Zustand are stable references
+      play,
+      setPlaylist,
+      skipToTrack,
+      togglePlayPause,
     ],
   );
 

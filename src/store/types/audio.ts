@@ -20,6 +20,9 @@ export interface AudioState {
   queue: Track[];
   currentIndex: number;
 
+  // Current playlist context
+  currentPlaylistId: string | null;
+
   // Playback controls
   isShuffling: boolean;
   isRepeating: boolean;
@@ -57,6 +60,10 @@ export interface AudioActions {
   skipToNext: () => void;
   skipToPrevious: () => void;
   skipToTrack: (index: number) => void;
+
+  // Playlist management
+  setPlaylist: (tracks: Track[], playlistId: string) => void;
+  setCurrentPlaylistId: (playlistId: string | null) => void;
 
   // Playback modes
   toggleShuffle: () => void;

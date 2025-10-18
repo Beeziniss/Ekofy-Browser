@@ -11,6 +11,7 @@ const initialState = {
   previousVolume: 70,
   queue: [],
   currentIndex: -1,
+  currentPlaylistId: null,
   isShuffling: false,
   isRepeating: false,
   isLoading: false,
@@ -28,6 +29,7 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
       queue: [track],
       currentIndex: 0,
       currentTime: 0,
+      currentPlaylistId: null, // Clear playlist when setting individual track
       error: null,
     });
   },
@@ -82,7 +84,8 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
     })),
 
   // Queue management
-  setQueue: (tracks: Track[]) => set({ queue: tracks, currentIndex: 0 }),
+  setQueue: (tracks: Track[]) =>
+    set({ queue: tracks, currentIndex: 0, currentPlaylistId: null }),
   addToQueue: (track: Track) =>
     set((state) => ({ queue: [...state.queue, track] })),
   removeFromQueue: (index: number) =>
@@ -160,6 +163,25 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
         currentTime: 0,
       });
     }
+  },
+
+  // Playlist management
+  setPlaylist: (tracks: Track[], playlistId: string) => {
+    const firstTrack = tracks[0];
+    if (firstTrack) {
+      set({
+        currentTrack: firstTrack,
+        queue: tracks,
+        currentIndex: 0,
+        currentPlaylistId: playlistId,
+        currentTime: 0,
+        error: null,
+      });
+    }
+  },
+
+  setCurrentPlaylistId: (playlistId: string | null) => {
+    set({ currentPlaylistId: playlistId });
   },
 
   // Playback modes
