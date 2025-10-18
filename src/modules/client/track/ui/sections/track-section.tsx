@@ -52,9 +52,9 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
   // Convert to Track format for the store
   const trackData: Track = {
     id: trackId,
-    title: data?.tracks?.items?.[0]?.name || "Unknown Track",
+    name: data?.tracks?.items?.[0]?.name || "Unknown Track",
     artist:
-      data?.tracks?.items?.[0]?.artist
+      data?.tracks?.items?.[0]?.mainArtistsAsync?.items
         ?.map((a) => a?.stageName)
         .filter(Boolean)
         .join(", ") || "Unknown Artist",
@@ -90,7 +90,7 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
             {data.tracks?.items?.[0]?.name}
           </h1>
           <p className="text-lg font-semibold">
-            {data.tracks?.items?.[0].artist[0]?.stageName}
+            {data.tracks?.items?.[0].mainArtistsAsync?.items?.[0]?.stageName}
           </p>
 
           <div className="bg-main-dark-bg-1 flex w-fit items-center gap-x-3 rounded-sm border-white/30 px-2 py-1">
@@ -116,7 +116,7 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
           className="text-main-white mt-auto duration-0 hover:brightness-90"
           onClick={handlePlayPauseClick}
         >
-          {currentTrack && currentTrack.id === trackId && globalIsPlaying ? (
+          {isCurrentTrack && globalIsPlaying ? (
             <Image
               src={"/pause-button-large.svg"}
               alt="Ekofy Pause Button"

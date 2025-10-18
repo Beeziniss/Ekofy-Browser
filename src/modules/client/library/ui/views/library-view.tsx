@@ -14,8 +14,15 @@ export const DeletePlaylistMutation = graphql(`
 `);
 
 export const PlaylistsQuery = graphql(`
-  query Playlists {
-    playlists {
+  query Playlists($name: String, $take: Int, $skip: Int) {
+    playlists(
+      where: {
+        or: { name: { contains: $name }, nameUnsigned: { contains: $name } }
+      }
+      order: { createdAt: DESC }
+      take: $take
+      skip: $skip
+    ) {
       items {
         id
         name
@@ -23,6 +30,9 @@ export const PlaylistsQuery = graphql(`
         isPublic
       }
       totalCount
+      pageInfo {
+        hasNextPage
+      }
     }
   }
 `);
