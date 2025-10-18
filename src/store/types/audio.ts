@@ -1,6 +1,6 @@
 export interface Track {
   id: string;
-  title: string;
+  name: string;
   artist: string;
   coverImage?: string;
   duration?: number;

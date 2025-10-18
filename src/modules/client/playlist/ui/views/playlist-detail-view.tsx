@@ -54,7 +54,13 @@ export const PlaylistDetailQuery = graphql(`
         }
         userId
         tracks {
-          id
+          items {
+            id
+          }
+          totalCount
+        }
+        tracksInfo {
+          trackId
         }
         createdAt
         updatedAt
@@ -69,11 +75,22 @@ export const PlaylistDetailTrackListQuery = graphql(`
       items {
         id
         tracks {
-          id
-          name
+          items {
+            id
+            name
+            coverImage
+            isExplicit
+            mainArtistIds
+            mainArtistsAsync {
+              items {
+                stageName
+              }
+            }
+          }
         }
         tracksInfo {
           trackId
+          addedTime
         }
       }
     }

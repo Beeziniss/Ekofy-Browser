@@ -59,7 +59,7 @@ const TrackCard = ({
   // Convert to Track format for the store
   const trackData: Track = {
     id: trackId,
-    title: trackName || "Unknown Track",
+    name: trackName || "Unknown Track",
     artist:
       artists
         ?.map((a) => a?.stageName)
@@ -88,7 +88,7 @@ const TrackCard = ({
     e.stopPropagation();
 
     navigator.clipboard.writeText(window.location.href + `track/${trackId}`);
-    toast.info("Link copied to clipboard");
+    toast.info("Copied!");
   };
 
   return (
