@@ -51,6 +51,7 @@ const TrackCard = ({
     togglePlayPause,
     play,
     setQueue,
+    skipToTrack,
   } = useAudioStore();
 
   // Check if this is the currently playing track
@@ -59,7 +60,7 @@ const TrackCard = ({
   // Convert to Track format for the store
   const trackData: Track = {
     id: trackId,
-    title: trackName || "Unknown Track",
+    name: trackName || "Unknown Track",
     artist:
       artists
         ?.map((a) => a?.stageName)
@@ -76,9 +77,19 @@ const TrackCard = ({
       togglePlayPause();
     } else {
       // If it's a different track, set as current track and play
-      setCurrentTrack(trackData);
-      if (trackQueue) {
-        setQueue(convertGraphQLTracksToStore(trackQueue));
+      if (trackQueue && trackQueue.length > 0) {
+        // Convert the entire queue and set it
+        const queueTracks = convertGraphQLTracksToStore(trackQueue);
+        setQueue(queueTracks);
+
+        // Find the current track in the queue and skip to it
+        const trackIndex = queueTracks.findIndex((t) => t.id === trackId);
+        if (trackIndex !== -1) {
+          setTimeout(() => skipToTrack(trackIndex), 0);
+        }
+      } else {
+        // If no queue, just play the single track
+        setCurrentTrack(trackData);
       }
       play();
     }
@@ -88,7 +99,7 @@ const TrackCard = ({
     e.stopPropagation();
 
     navigator.clipboard.writeText(window.location.href + `track/${trackId}`);
-    toast.info("Link copied to clipboard");
+    toast.info("Copied!");
   };
 
   return (

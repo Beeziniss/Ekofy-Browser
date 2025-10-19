@@ -7,6 +7,7 @@ import {
 import {
   AddToPlaylistMutation,
   RemoveFromPlaylistMutation,
+  UpdatePlaylistMutation,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
 
 export const createPlaylistMutationOptions = mutationOptions({
@@ -20,6 +21,17 @@ export const createPlaylistMutationOptions = mutationOptions({
     await execute(CreatePlaylistMutation, {
       createPlaylistRequest: newPlaylist,
     }),
+});
+
+export const updatePlaylistMutationOptions = mutationOptions({
+  mutationKey: ["update-playlist"],
+  mutationFn: async (updatePlaylistRequest: {
+    playlistId: string;
+    name?: string;
+    isPublic?: boolean;
+    coverImage?: string;
+    description?: string;
+  }) => await execute(UpdatePlaylistMutation, { updatePlaylistRequest }),
 });
 
 export const deletePlaylistMutationOptions = mutationOptions({

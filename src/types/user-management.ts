@@ -78,7 +78,7 @@ export interface UserManagementListener {
   followerCount: number;
   followingCount: number;
   lastFollowers: string[];
-  lastFollowing: string[];
+  lastFollowings: string[];
   createdAt: string;
   updatedAt: string;
   restriction?: ListenerRestriction;
