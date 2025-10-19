@@ -6,6 +6,8 @@ import type {
   UserSubscriptionFilterInput,
   SubscriptionTier,
   SubscriptionStatus,
+  UpdateListenerRequestInput,
+  UpdateArtistRequestInput,
 } from "@/gql/graphql";
 
 // Raw typed query string to avoid relying on codegen's graphql() union at dev-time.
@@ -87,4 +89,20 @@ export const GetUserActiveSubscriptionQuery = `
     } | null;
   },
   { where?: UserSubscriptionFilterInput; take?: number; skip?: number }
+>;
+
+// Mutation: Update profile (listener-only usage here). Schema requires both args.
+export const UpdateProfileMutation = `
+  mutation UpdateProfile($updateListenerRequest: UpdateListenerRequestInput!, $updateArtistRequest: UpdateArtistRequestInput!) {
+    updateProfile(
+      updateListenerRequest: $updateListenerRequest,
+      updateArtistRequest: $updateArtistRequest
+    )
+  }
+` as unknown as TypedDocumentString<
+  { updateProfile: boolean },
+  {
+    updateListenerRequest: UpdateListenerRequestInput;
+    updateArtistRequest: UpdateArtistRequestInput;
+  }
 >;

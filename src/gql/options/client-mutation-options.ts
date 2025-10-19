@@ -8,6 +8,7 @@ import {
   AddToPlaylistMutation,
   RemoveFromPlaylistMutation,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
+import { UpdateProfileMutation } from "@/modules/client/profile/ui/views/queries";
 
 export const createPlaylistMutationOptions = mutationOptions({
   mutationKey: ["create-playlist"],
@@ -49,5 +50,22 @@ export const removeFromPlaylistMutationOptions = mutationOptions({
   }) =>
     await execute(RemoveFromPlaylistMutation, {
       addToPlaylistRequest,
+    }),
+});
+
+export const updateListenerProfileMutationOptions = mutationOptions({
+  mutationKey: ["update-listener-profile"],
+  mutationFn: async (updateListenerRequest: {
+    displayName?: string;
+    email?: string;
+    avatarImage?: string;
+    bannerImage?: string;
+    fullName?: string;
+    phoneNumber?: string;
+  }) =>
+    await execute(UpdateProfileMutation, {
+      updateListenerRequest,
+      // API requires both args; pass empty object for artist as a no-op.
+      updateArtistRequest: {},
     }),
 });
