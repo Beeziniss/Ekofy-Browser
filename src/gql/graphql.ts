@@ -4402,6 +4402,20 @@ export type UsersQueryVariables = Exact<{
 
 export type UsersQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
 
+export type AdminArtistsDetailQueryVariables = Exact<{
+  where?: InputMaybe<ArtistFilterInput>;
+}>;
+
+
+export type AdminArtistsDetailQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, biography?: string | null, categoryIds: Array<string>, followerCount: any, popularity: any, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, createdAt: any, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, frontImage?: string | null, backImage?: string | null, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } }, user: Array<{ __typename?: 'User', email: string, id: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, status: UserStatus }> }> | null } | null };
+
+export type AdminListenerDetailQueryVariables = Exact<{
+  where?: InputMaybe<ListenerFilterInput>;
+}>;
+
+
+export type AdminListenerDetailQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, followerCount: any, followingCount: any, createdAt: any, updatedAt?: any | null, user: Array<{ __typename?: 'User', gender: UserGender, birthDate: any, role: UserRole, fullName: string, status: UserStatus }> }> | null } | null };
+
 export type UsersListQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -4410,6 +4424,15 @@ export type UsersListQueryVariables = Exact<{
 
 
 export type UsersListQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, isLinkedWithGoogle: boolean, stripeCustomerId?: string | null, stripeAccountId?: string | null, lastLoginAt?: any | null, createdAt: any, updatedAt?: any | null }> | null } | null, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, categoryIds: Array<string>, biography?: string | null, followerCount: any, popularity: any, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, createdAt: any, updatedAt?: any | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } } }> | null } | null, listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, followerCount: any, followingCount: any, lastFollowers: Array<string>, lastFollowings: Array<string>, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type UsersStatisticQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type UsersStatisticQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, isLinkedWithGoogle: boolean, stripeCustomerId?: string | null, stripeAccountId?: string | null, lastLoginAt?: any | null, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type CreateModeratorMutationVariables = Exact<{
   createModeratorRequest: CreateModeratorRequestInput;
@@ -4660,6 +4683,92 @@ export const UsersDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<UsersQuery, UsersQueryVariables>;
+export const AdminArtistsDetailDocument = new TypedDocumentString(`
+    query AdminArtistsDetail($where: ArtistFilterInput) {
+  artists(where: $where) {
+    items {
+      id
+      userId
+      stageName
+      stageNameUnsigned
+      email
+      artistType
+      members {
+        fullName
+        email
+        phoneNumber
+        isLeader
+        gender
+      }
+      biography
+      categoryIds
+      followerCount
+      popularity
+      avatarImage
+      bannerImage
+      isVerified
+      verifiedAt
+      identityCard {
+        number
+        fullName
+        dateOfBirth
+        gender
+        placeOfOrigin
+        nationality
+        frontImage
+        backImage
+        validUntil
+        placeOfResidence {
+          street
+          ward
+          province
+          oldDistrict
+          oldWard
+          oldProvince
+          addressLine
+        }
+      }
+      createdAt
+      user {
+        email
+        id
+        fullName
+        gender
+        birthDate
+        role
+        status
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminArtistsDetailQuery, AdminArtistsDetailQueryVariables>;
+export const AdminListenerDetailDocument = new TypedDocumentString(`
+    query AdminListenerDetail($where: ListenerFilterInput) {
+  listeners(where: $where) {
+    items {
+      id
+      userId
+      displayName
+      email
+      avatarImage
+      bannerImage
+      isVerified
+      verifiedAt
+      followerCount
+      followingCount
+      createdAt
+      updatedAt
+      user {
+        gender
+        birthDate
+        role
+        fullName
+        status
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminListenerDetailQuery, AdminListenerDetailQueryVariables>;
 export const UsersListDocument = new TypedDocumentString(`
     query UsersList($skip: Int, $take: Int, $where: UserFilterInput) {
   users(skip: $skip, take: $take, where: $where) {
@@ -4749,6 +4858,33 @@ export const UsersListDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<UsersListQuery, UsersListQueryVariables>;
+export const UsersStatisticDocument = new TypedDocumentString(`
+    query UsersStatistic($skip: Int, $take: Int, $where: UserFilterInput) {
+  users(skip: $skip, take: $take, where: $where) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      email
+      fullName
+      gender
+      birthDate
+      role
+      phoneNumber
+      status
+      isLinkedWithGoogle
+      stripeCustomerId
+      stripeAccountId
+      lastLoginAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<UsersStatisticQuery, UsersStatisticQueryVariables>;
 export const CreateModeratorDocument = new TypedDocumentString(`
     mutation CreateModerator($createModeratorRequest: CreateModeratorRequestInput!) {
   createModerator(createModeratorRequest: $createModeratorRequest)
