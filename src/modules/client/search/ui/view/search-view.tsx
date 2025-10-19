@@ -83,12 +83,14 @@ export const SEARCH_TRACKS = graphql(`
                 restriction {
                     type
                 }
-                artist {
+                mainArtistsAsync {
+                items {
                     id
                     userId
                     stageName
                     artistType
                 }
+}
             }
         }
     }

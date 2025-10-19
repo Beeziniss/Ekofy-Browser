@@ -82,7 +82,7 @@ export const ModeratorGetListUser = graphql(`
                 followerCount
                 followingCount
                 lastFollowers
-                lastFollowing
+                lastFollowings
                 createdAt
                 updatedAt
             }
@@ -91,7 +91,7 @@ export const ModeratorGetListUser = graphql(`
 `);
 
 export const ModeratorGetAnalytics = graphql(`
-    query ModeratorUsersList($skip: Int, $take: Int, $where: UserFilterInput) {
+    query ModeratorUsersListAnalytics($skip: Int, $take: Int, $where: UserFilterInput) {
         users(skip: $skip, take: $take, where: $where) {
             totalCount
             pageInfo {
@@ -172,7 +172,7 @@ export const ModeratorGetAnalytics = graphql(`
                 followerCount
                 followingCount
                 lastFollowers
-                lastFollowing
+                lastFollowings
                 createdAt
                 updatedAt
             }

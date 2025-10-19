@@ -220,6 +220,7 @@ export type Artist = {
   id: Scalars['String']['output'];
   identityCard: IdentityCard;
   isVerified: Scalars['Boolean']['output'];
+  isVisible: Scalars['Boolean']['output'];
   legalDocuments: Array<LegalDocument>;
   members: Array<ArtistMember>;
   popularity: Scalars['Long']['output'];
@@ -258,6 +259,7 @@ export type ArtistFilterInput = {
   id?: InputMaybe<StringOperationFilterInput>;
   identityCard?: InputMaybe<IdentityCardFilterInput>;
   isVerified?: InputMaybe<BooleanOperationFilterInput>;
+  isVisible?: InputMaybe<BooleanOperationFilterInput>;
   legalDocuments?: InputMaybe<ListFilterInputTypeOfLegalDocumentFilterInput>;
   members?: InputMaybe<ListFilterInputTypeOfArtistMemberFilterInput>;
   or?: InputMaybe<Array<ArtistFilterInput>>;
@@ -296,6 +298,7 @@ export type ArtistPackage = {
   description?: Maybe<Scalars['String']['output']>;
   estimateDeliveryDays: Scalars['Int']['output'];
   id: Scalars['String']['output'];
+  isVisible: Scalars['Boolean']['output'];
   packageName: Scalars['String']['output'];
   serviceDetails: Array<Metadata>;
   status: ArtistPackageStatus;
@@ -311,6 +314,7 @@ export type ArtistPackageFilterInput = {
   description?: InputMaybe<StringOperationFilterInput>;
   estimateDeliveryDays?: InputMaybe<IntOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
+  isVisible?: InputMaybe<BooleanOperationFilterInput>;
   or?: InputMaybe<Array<ArtistPackageFilterInput>>;
   packageName?: InputMaybe<StringOperationFilterInput>;
   serviceDetails?: InputMaybe<ListFilterInputTypeOfMetadataFilterInput>;
@@ -326,6 +330,7 @@ export type ArtistPackageSortInput = {
   description?: InputMaybe<SortEnumType>;
   estimateDeliveryDays?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
+  isVisible?: InputMaybe<SortEnumType>;
   packageName?: InputMaybe<SortEnumType>;
   status?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
@@ -389,6 +394,7 @@ export type ArtistSortInput = {
   id?: InputMaybe<SortEnumType>;
   identityCard?: InputMaybe<IdentityCardSortInput>;
   isVerified?: InputMaybe<SortEnumType>;
+  isVisible?: InputMaybe<SortEnumType>;
   popularity?: InputMaybe<SortEnumType>;
   stageName?: InputMaybe<SortEnumType>;
   stageNameUnsigned?: InputMaybe<SortEnumType>;
@@ -623,6 +629,7 @@ export type Comment = {
   id: Scalars['String']['output'];
   isDeleted: Scalars['Boolean']['output'];
   isEdited: Scalars['Boolean']['output'];
+  isVisible: Scalars['Boolean']['output'];
   parentCommentId?: Maybe<Scalars['String']['output']>;
   replyCount: Scalars['Long']['output'];
   rootCommentId?: Maybe<Scalars['String']['output']>;
@@ -658,6 +665,7 @@ export type CommentFilterInput = {
   id?: InputMaybe<StringOperationFilterInput>;
   isDeleted?: InputMaybe<BooleanOperationFilterInput>;
   isEdited?: InputMaybe<BooleanOperationFilterInput>;
+  isVisible?: InputMaybe<BooleanOperationFilterInput>;
   or?: InputMaybe<Array<CommentFilterInput>>;
   parentCommentId?: InputMaybe<StringOperationFilterInput>;
   replyCount?: InputMaybe<LongOperationFilterInput>;
@@ -716,6 +724,7 @@ export type CommentSortInput = {
   id?: InputMaybe<SortEnumType>;
   isDeleted?: InputMaybe<SortEnumType>;
   isEdited?: InputMaybe<SortEnumType>;
+  isVisible?: InputMaybe<SortEnumType>;
   parentCommentId?: InputMaybe<SortEnumType>;
   replyCount?: InputMaybe<SortEnumType>;
   rootCommentId?: InputMaybe<SortEnumType>;
@@ -1001,15 +1010,6 @@ export type CreateReportRequestInput = {
   evidences?: InputMaybe<Array<Scalars['String']['input']>>;
   relatedContentId?: InputMaybe<Scalars['String']['input']>;
   relatedContentType?: InputMaybe<ReportRelatedContentType>;
-  reportType: ReportType;
-  reportedUserId: Scalars['String']['input'];
-};
-
-export type CreateReportRequestInput = {
-  description: Scalars['String']['input'];
-  evidences?: InputMaybe<Array<Scalars['String']['input']>>;
-  relatedContentId?: InputMaybe<Scalars['String']['input']>;
-  relatedContentType?: InputMaybe<Scalars['String']['input']>;
   reportType: ReportType;
   reportedUserId: Scalars['String']['input'];
 };
@@ -1651,13 +1651,6 @@ export type ListFilterInputTypeOfRestrictionFilterInput = {
   some?: InputMaybe<RestrictionFilterInput>;
 };
 
-export type ListFilterInputTypeOfRestrictionFilterInput = {
-  all?: InputMaybe<RestrictionFilterInput>;
-  any?: InputMaybe<Scalars['Boolean']['input']>;
-  none?: InputMaybe<RestrictionFilterInput>;
-  some?: InputMaybe<RestrictionFilterInput>;
-};
-
 export type ListFilterInputTypeOfRoyaltySplitFilterInput = {
   all?: InputMaybe<RoyaltySplitFilterInput>;
   any?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1728,6 +1721,7 @@ export type Listener = {
   followingsUser?: Maybe<FollowingsUserCollectionSegment>;
   id: Scalars['String']['output'];
   isVerified: Scalars['Boolean']['output'];
+  isVisible: Scalars['Boolean']['output'];
   lastFollowers: Array<Scalars['String']['output']>;
   lastFollowings: Array<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1770,6 +1764,7 @@ export type ListenerFilterInput = {
   followingCount?: InputMaybe<LongOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   isVerified?: InputMaybe<BooleanOperationFilterInput>;
+  isVisible?: InputMaybe<BooleanOperationFilterInput>;
   lastFollowers?: InputMaybe<ListStringOperationFilterInput>;
   lastFollowings?: InputMaybe<ListStringOperationFilterInput>;
   or?: InputMaybe<Array<ListenerFilterInput>>;
@@ -1789,6 +1784,7 @@ export type ListenerSortInput = {
   followingCount?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   isVerified?: InputMaybe<SortEnumType>;
+  isVisible?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
   userId?: InputMaybe<SortEnumType>;
   verifiedAt?: InputMaybe<SortEnumType>;
@@ -1973,12 +1969,14 @@ export type MutationInitialization = {
   deleteCoupon: Scalars['Boolean']['output'];
   deletePlaylist: Scalars['Boolean']['output'];
   deleteTrackComment: Scalars['Boolean']['output'];
+  deleteUserManual: Scalars['Boolean']['output'];
   deprecateCoupon: Scalars['Boolean']['output'];
   deprecateSubscription: Scalars['Boolean']['output'];
   downgradeRoyaltyPolicyVersion: Scalars['Boolean']['output'];
   entitlementUserCount: Scalars['Long']['output'];
   followUser: Scalars['Boolean']['output'];
-  hello: Scalars['String']['output'];
+  initialize: Scalars['String']['output'];
+  processReport: Scalars['Boolean']['output'];
   reActiveUser: Scalars['Boolean']['output'];
   reactiveEntitlement: Scalars['Boolean']['output'];
   registerArtistManual: Scalars['Boolean']['output'];
@@ -1988,6 +1986,8 @@ export type MutationInitialization = {
   seedEntitlements: Scalars['Boolean']['output'];
   seedRoyaltyPolicyData: Scalars['Boolean']['output'];
   unfollowUser: Scalars['Boolean']['output'];
+  updateFavoriteCount: Scalars['Boolean']['output'];
+  updatePlaylist: Scalars['Boolean']['output'];
   updateProfile: Scalars['Boolean']['output'];
   updateRequest: Scalars['Boolean']['output'];
   updateTrackComment: Scalars['Boolean']['output'];
@@ -2177,6 +2177,11 @@ export type MutationInitializationDeleteTrackCommentArgs = {
 };
 
 
+export type MutationInitializationDeleteUserManualArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationInitializationDeprecateCouponArgs = {
   couponIds: Array<Scalars['String']['input']>;
 };
@@ -2199,11 +2204,6 @@ export type MutationInitializationEntitlementUserCountArgs = {
 
 export type MutationInitializationFollowUserArgs = {
   request: FollowUserRequestInput;
-};
-
-
-export type MutationInitializationProcessReportArgs = {
-  request: ProcessReportRequestInput;
 };
 
 
@@ -2241,7 +2241,7 @@ export type MutationInitializationRejectTrackUploadRequestArgs = {
 
 
 export type MutationInitializationRemoveFromPlaylistArgs = {
-  addToPlaylistRequest: AddToPlaylistRequestInput;
+  removeFromPlaylistRequest: RemoveFromPlaylistRequestInput;
 };
 
 
@@ -2263,16 +2263,6 @@ export type MutationInitializationUnfollowUserArgs = {
 export type MutationInitializationUpdateFavoriteCountArgs = {
   isAdding: Scalars['Boolean']['input'];
   trackId: Scalars['String']['input'];
-};
-
-
-export type MutationInitializationUpdatePlaylistArgs = {
-  updatePlaylistRequest: UpdatePlaylistRequestInput;
-};
-
-
-export type MutationInitializationUpdatePlaylistArgs = {
-  updatePlaylistRequest: UpdatePlaylistRequestInput;
 };
 
 
@@ -2330,20 +2320,6 @@ export type NullableOfReportRelatedContentTypeOperationFilterInput = {
   in?: InputMaybe<Array<InputMaybe<ReportRelatedContentType>>>;
   neq?: InputMaybe<ReportRelatedContentType>;
   nin?: InputMaybe<Array<InputMaybe<ReportRelatedContentType>>>;
-};
-
-export type NullableOfRestrictionActionOperationFilterInput = {
-  eq?: InputMaybe<RestrictionAction>;
-  in?: InputMaybe<Array<InputMaybe<RestrictionAction>>>;
-  neq?: InputMaybe<RestrictionAction>;
-  nin?: InputMaybe<Array<InputMaybe<RestrictionAction>>>;
-};
-
-export type NullableOfReportActionOperationFilterInput = {
-  eq?: InputMaybe<ReportAction>;
-  in?: InputMaybe<Array<InputMaybe<ReportAction>>>;
-  neq?: InputMaybe<ReportAction>;
-  nin?: InputMaybe<Array<InputMaybe<ReportAction>>>;
 };
 
 export type NullableOfRestrictionActionOperationFilterInput = {
@@ -2533,6 +2509,7 @@ export type Playlist = {
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   isPublic: Scalars['Boolean']['output'];
+  isVisible: Scalars['Boolean']['output'];
   listener: Array<Listener>;
   name: Scalars['String']['output'];
   nameUnsigned: Scalars['String']['output'];
@@ -2576,6 +2553,7 @@ export type PlaylistFilterInput = {
   description?: InputMaybe<StringOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   isPublic?: InputMaybe<BooleanOperationFilterInput>;
+  isVisible?: InputMaybe<BooleanOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   nameUnsigned?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<PlaylistFilterInput>>;
@@ -2590,6 +2568,7 @@ export type PlaylistSortInput = {
   description?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   isPublic?: InputMaybe<SortEnumType>;
+  isVisible?: InputMaybe<SortEnumType>;
   name?: InputMaybe<SortEnumType>;
   nameUnsigned?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
@@ -2695,7 +2674,7 @@ export type QueryInitialization = {
   playlists?: Maybe<PlaylistsCollectionSegment>;
   queryTrack: QueryAudioFingerprintResponse;
   queryTracks: Array<QueryAudioFingerprintResponse>;
-  recordingsQueryable?: Maybe<RecordingsQueryableCollectionSegment>;
+  recordings?: Maybe<RecordingsCollectionSegment>;
   reports?: Maybe<ReportsCollectionSegment>;
   requests: Array<RequestHub>;
   royaltyPolicies?: Maybe<RoyaltyPoliciesCollectionSegment>;
@@ -2713,7 +2692,7 @@ export type QueryInitialization = {
   transactions?: Maybe<TransactionsCollectionSegment>;
   userSubscriptions?: Maybe<UserSubscriptionsCollectionSegment>;
   users?: Maybe<UsersCollectionSegment>;
-  worksQueryable?: Maybe<WorksQueryableCollectionSegment>;
+  works?: Maybe<WorksCollectionSegment>;
 };
 
 
@@ -2880,7 +2859,7 @@ export type QueryInitializationQueryTracksArgs = {
 };
 
 
-export type QueryInitializationRecordingsQueryableArgs = {
+export type QueryInitializationRecordingsArgs = {
   order?: InputMaybe<Array<RecordingSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -3014,7 +2993,7 @@ export type QueryInitializationUsersArgs = {
 };
 
 
-export type QueryInitializationWorksQueryableArgs = {
+export type QueryInitializationWorksArgs = {
   order?: InputMaybe<Array<WorkSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -3105,8 +3084,8 @@ export type RecordingTempRequest = {
 };
 
 /** A segment of a collection. */
-export type RecordingsQueryableCollectionSegment = {
-  __typename?: 'RecordingsQueryableCollectionSegment';
+export type RecordingsCollectionSegment = {
+  __typename?: 'RecordingsCollectionSegment';
   /** A flattened list of the items. */
   items?: Maybe<Array<Recording>>;
   /** Information to aid in pagination. */
@@ -3151,6 +3130,11 @@ export type ReleaseStatusOperationFilterInput = {
   in?: InputMaybe<Array<ReleaseStatus>>;
   neq?: InputMaybe<ReleaseStatus>;
   nin?: InputMaybe<Array<ReleaseStatus>>;
+};
+
+export type RemoveFromPlaylistRequestInput = {
+  playlistId?: InputMaybe<Scalars['String']['input']>;
+  trackId: Scalars['String']['input'];
 };
 
 export type Report = {
@@ -3228,140 +3212,6 @@ export enum ReportRelatedContentType {
   RequestHub = 'REQUEST_HUB',
   Track = 'TRACK'
 }
-
-export type ReportSortInput = {
-  actionTaken?: InputMaybe<SortEnumType>;
-  assignedModeratorId?: InputMaybe<SortEnumType>;
-  createdAt?: InputMaybe<SortEnumType>;
-  description?: InputMaybe<SortEnumType>;
-  id?: InputMaybe<SortEnumType>;
-  isDeleted?: InputMaybe<SortEnumType>;
-  note?: InputMaybe<SortEnumType>;
-  priority?: InputMaybe<SortEnumType>;
-  relatedContentId?: InputMaybe<SortEnumType>;
-  relatedContentType?: InputMaybe<SortEnumType>;
-  reportType?: InputMaybe<SortEnumType>;
-  reportedUserId?: InputMaybe<SortEnumType>;
-  reporterId?: InputMaybe<SortEnumType>;
-  resolvedAt?: InputMaybe<SortEnumType>;
-  status?: InputMaybe<SortEnumType>;
-  totalReportsCount?: InputMaybe<SortEnumType>;
-  updatedAt?: InputMaybe<SortEnumType>;
-};
-
-export enum ReportStatus {
-  Approved = 'APPROVED',
-  Dismissed = 'DISMISSED',
-  Escalated = 'ESCALATED',
-  Pending = 'PENDING',
-  Rejected = 'REJECTED',
-  UnderReview = 'UNDER_REVIEW'
-}
-
-export type ReportStatusOperationFilterInput = {
-  eq?: InputMaybe<ReportStatus>;
-  in?: InputMaybe<Array<ReportStatus>>;
-  neq?: InputMaybe<ReportStatus>;
-  nin?: InputMaybe<Array<ReportStatus>>;
-};
-
-export enum ReportType {
-  CopyrightViolation = 'COPYRIGHT_VIOLATION',
-  FakeAccount = 'FAKE_ACCOUNT',
-  Harassment = 'HARASSMENT',
-  HateSpeech = 'HATE_SPEECH',
-  Impersonation = 'IMPERSONATION',
-  InappropriateContent = 'INAPPROPRIATE_CONTENT',
-  Other = 'OTHER',
-  ScamOrFraud = 'SCAM_OR_FRAUD',
-  SelfHarmOrDangerousContent = 'SELF_HARM_OR_DANGEROUS_CONTENT',
-  Spam = 'SPAM'
-}
-
-export type ReportTypeOperationFilterInput = {
-  eq?: InputMaybe<ReportType>;
-  in?: InputMaybe<Array<ReportType>>;
-  neq?: InputMaybe<ReportType>;
-  nin?: InputMaybe<Array<ReportType>>;
-};
-
-/** A segment of a collection. */
-export type ReportsCollectionSegment = {
-  __typename?: 'ReportsCollectionSegment';
-  /** A flattened list of the items. */
-  items?: Maybe<Array<Report>>;
-  /** Information to aid in pagination. */
-  pageInfo: CollectionSegmentInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
-export type Report = {
-  __typename?: 'Report';
-  actionTaken?: Maybe<ReportAction>;
-  assignedModeratorId?: Maybe<Scalars['String']['output']>;
-  createdAt: Scalars['DateTime']['output'];
-  description: Scalars['String']['output'];
-  evidences: Array<Scalars['String']['output']>;
-  id: Scalars['String']['output'];
-  isDeleted: Scalars['Boolean']['output'];
-  note?: Maybe<Scalars['String']['output']>;
-  priority: ReportPriority;
-  relatedContentId?: Maybe<Scalars['String']['output']>;
-  relatedContentType?: Maybe<Scalars['String']['output']>;
-  reportType: ReportType;
-  reportedUserId: Scalars['String']['output'];
-  reporterId: Scalars['String']['output'];
-  resolvedAt?: Maybe<Scalars['DateTime']['output']>;
-  status: ReportStatus;
-  totalReportsCount: Scalars['Int']['output'];
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-};
-
-export enum ReportAction {
-  ContentRemoval = 'CONTENT_REMOVAL',
-  EntitlementRestriction = 'ENTITLEMENT_RESTRICTION',
-  NoAction = 'NO_ACTION',
-  PermanentBan = 'PERMANENT_BAN',
-  Suspended = 'SUSPENDED',
-  Warning = 'WARNING'
-}
-
-export type ReportFilterInput = {
-  actionTaken?: InputMaybe<NullableOfReportActionOperationFilterInput>;
-  and?: InputMaybe<Array<ReportFilterInput>>;
-  assignedModeratorId?: InputMaybe<StringOperationFilterInput>;
-  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
-  description?: InputMaybe<StringOperationFilterInput>;
-  evidences?: InputMaybe<ListStringOperationFilterInput>;
-  id?: InputMaybe<StringOperationFilterInput>;
-  isDeleted?: InputMaybe<BooleanOperationFilterInput>;
-  note?: InputMaybe<StringOperationFilterInput>;
-  or?: InputMaybe<Array<ReportFilterInput>>;
-  priority?: InputMaybe<ReportPriorityOperationFilterInput>;
-  relatedContentId?: InputMaybe<StringOperationFilterInput>;
-  relatedContentType?: InputMaybe<StringOperationFilterInput>;
-  reportType?: InputMaybe<ReportTypeOperationFilterInput>;
-  reportedUserId?: InputMaybe<StringOperationFilterInput>;
-  reporterId?: InputMaybe<StringOperationFilterInput>;
-  resolvedAt?: InputMaybe<DateTimeOperationFilterInput>;
-  status?: InputMaybe<ReportStatusOperationFilterInput>;
-  totalReportsCount?: InputMaybe<IntOperationFilterInput>;
-  updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
-};
-
-export enum ReportPriority {
-  Critical = 'CRITICAL',
-  High = 'HIGH',
-  Low = 'LOW',
-  Medium = 'MEDIUM'
-}
-
-export type ReportPriorityOperationFilterInput = {
-  eq?: InputMaybe<ReportPriority>;
-  in?: InputMaybe<Array<ReportPriority>>;
-  neq?: InputMaybe<ReportPriority>;
-  nin?: InputMaybe<Array<ReportPriority>>;
-};
 
 export type ReportSortInput = {
   actionTaken?: InputMaybe<SortEnumType>;
@@ -4212,8 +4062,10 @@ export type UpdateArtistRequestInput = {
   avatarImage?: InputMaybe<Scalars['String']['input']>;
   bannerImage?: InputMaybe<Scalars['String']['input']>;
   biography?: InputMaybe<Scalars['String']['input']>;
+  birthDate?: InputMaybe<Scalars['DateTime']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   fullName?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<UserGender>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
   stageName?: InputMaybe<Scalars['String']['input']>;
 };
@@ -4230,9 +4082,11 @@ export type UpdateEntitlementRequestInput = {
 export type UpdateListenerRequestInput = {
   avatarImage?: InputMaybe<Scalars['String']['input']>;
   bannerImage?: InputMaybe<Scalars['String']['input']>;
+  birthDate?: InputMaybe<Scalars['DateTime']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   fullName?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<UserGender>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -4290,8 +4144,7 @@ export type UserFilterInput = {
   or?: InputMaybe<Array<UserFilterInput>>;
   passwordHash?: InputMaybe<StringOperationFilterInput>;
   phoneNumber?: InputMaybe<StringOperationFilterInput>;
-  refreshToken?: InputMaybe<StringOperationFilterInput>;
-  refreshTokenExpiryTime?: InputMaybe<DateTimeOperationFilterInput>;
+  restrictions?: InputMaybe<ListFilterInputTypeOfRestrictionFilterInput>;
   role?: InputMaybe<UserRoleOperationFilterInput>;
   status?: InputMaybe<UserStatusOperationFilterInput>;
   stripeAccountId?: InputMaybe<StringOperationFilterInput>;
@@ -4533,8 +4386,8 @@ export type WorkTempRequest = {
 };
 
 /** A segment of a collection. */
-export type WorksQueryableCollectionSegment = {
-  __typename?: 'WorksQueryableCollectionSegment';
+export type WorksCollectionSegment = {
+  __typename?: 'WorksCollectionSegment';
   /** A flattened list of the items. */
   items?: Maybe<Array<Work>>;
   /** Information to aid in pagination. */
@@ -4634,7 +4487,7 @@ export type UpdatePlaylistMutationVariables = Exact<{
 export type UpdatePlaylistMutation = { __typename?: 'MutationInitialization', updatePlaylist: boolean };
 
 export type RemoveFromPlaylistMutationVariables = Exact<{
-  addToPlaylistRequest: AddToPlaylistRequestInput;
+  removeFromPlaylistRequest: RemoveFromPlaylistRequestInput;
 }>;
 
 
@@ -4673,7 +4526,7 @@ export type SearchArtistsQueryVariables = Exact<{
 }>;
 
 
-export type SearchArtistsQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null, followerCount: any, user: { __typename?: 'User', fullName: string, role: UserRole } }> | null } | null };
+export type SearchArtistsQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null, followerCount: any, user: Array<{ __typename?: 'User', fullName: string, role: UserRole }> }> | null } | null };
 
 export type SearchListenersQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -4682,7 +4535,7 @@ export type SearchListenersQueryVariables = Exact<{
 }>;
 
 
-export type SearchListenersQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, displayNameUnsigned: string, email: string, avatarImage?: string | null, followerCount: any, followingCount: any, user?: { __typename?: 'User', fullName: string, role: UserRole } | null }> | null } | null };
+export type SearchListenersQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, displayNameUnsigned: string, email: string, avatarImage?: string | null, followerCount: any, followingCount: any, user: Array<{ __typename?: 'User', fullName: string, role: UserRole }> }> | null } | null };
 
 export type SearchTracksQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -4691,7 +4544,7 @@ export type SearchTracksQueryVariables = Exact<{
 }>;
 
 
-export type SearchTracksQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, coverImage: string, restriction: { __typename?: 'Restriction', type: RestrictionType }, artist: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType } | null> }> | null } | null };
+export type SearchTracksQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, coverImage: string, restriction: { __typename?: 'Restriction', type: RestrictionType }, mainArtistsAsync?: { __typename?: 'MainArtistsAsyncCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType }> | null } | null }> | null } | null };
 
 export type SearchPlaylistsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -4700,7 +4553,7 @@ export type SearchPlaylistsQueryVariables = Exact<{
 }>;
 
 
-export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user?: { __typename?: 'User', id: string, fullName: string } | null }> | null } | null };
+export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
 
 export type TrackDetailQueryVariables = Exact<{
   trackId: Scalars['String']['input'];
@@ -4743,14 +4596,14 @@ export type ModeratorArtistDetailQueryVariables = Exact<{
 }>;
 
 
-export type ModeratorArtistDetailQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, categoryIds: Array<string>, biography?: string | null, followerCount: any, popularity: any, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, createdAt: any, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } }, user: { __typename?: 'User', fullName: string, role: UserRole, phoneNumber?: string | null } }> | null } | null };
+export type ModeratorArtistDetailQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, categoryIds: Array<string>, biography?: string | null, followerCount: any, popularity: any, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, createdAt: any, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } }, user: Array<{ __typename?: 'User', fullName: string, role: UserRole, phoneNumber?: string | null }> }> | null } | null };
 
 export type ModeratorListenerDetailQueryVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type ModeratorListenerDetailQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, followerCount: any, followingCount: any, createdAt: any, user?: { __typename?: 'User', fullName: string, birthDate: any, gender: UserGender, phoneNumber?: string | null } | null }> | null } | null };
+export type ModeratorListenerDetailQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, followerCount: any, followingCount: any, createdAt: any, user: Array<{ __typename?: 'User', fullName: string, birthDate: any, gender: UserGender, phoneNumber?: string | null }> }> | null } | null };
 
 export type ModeratorUsersListQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -4759,7 +4612,16 @@ export type ModeratorUsersListQueryVariables = Exact<{
 }>;
 
 
-export type ModeratorUsersListQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, isLinkedWithGoogle: boolean, stripeCustomerId?: string | null, stripeAccountId?: string | null, lastLoginAt?: any | null, createdAt: any, updatedAt?: any | null }> | null } | null, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, categoryIds: Array<string>, biography?: string | null, followerCount: any, popularity: any, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, createdAt: any, updatedAt?: any | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } } }> | null } | null, listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, followerCount: any, followingCount: any, lastFollowers: Array<string>, lastFollowing: Array<string>, createdAt: any, updatedAt?: any | null }> | null } | null };
+export type ModeratorUsersListQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, isLinkedWithGoogle: boolean, stripeCustomerId?: string | null, stripeAccountId?: string | null, lastLoginAt?: any | null, createdAt: any, updatedAt?: any | null }> | null } | null, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, categoryIds: Array<string>, biography?: string | null, followerCount: any, popularity: any, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, createdAt: any, updatedAt?: any | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } } }> | null } | null, listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, followerCount: any, followingCount: any, lastFollowers: Array<string>, lastFollowings: Array<string>, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type ModeratorUsersListAnalyticsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type ModeratorUsersListAnalyticsQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, isLinkedWithGoogle: boolean, stripeCustomerId?: string | null, stripeAccountId?: string | null, lastLoginAt?: any | null, createdAt: any, updatedAt?: any | null }> | null } | null, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, categoryIds: Array<string>, biography?: string | null, followerCount: any, popularity: any, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, createdAt: any, updatedAt?: any | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } } }> | null } | null, listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, followerCount: any, followingCount: any, lastFollowers: Array<string>, lastFollowings: Array<string>, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -4987,8 +4849,8 @@ export const UpdatePlaylistDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<UpdatePlaylistMutation, UpdatePlaylistMutationVariables>;
 export const RemoveFromPlaylistDocument = new TypedDocumentString(`
-    mutation RemoveFromPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {
-  removeFromPlaylist(addToPlaylistRequest: $addToPlaylistRequest)
+    mutation RemoveFromPlaylist($removeFromPlaylistRequest: RemoveFromPlaylistRequestInput!) {
+  removeFromPlaylist(removeFromPlaylistRequest: $removeFromPlaylistRequest)
 }
     `) as unknown as TypedDocumentString<RemoveFromPlaylistMutation, RemoveFromPlaylistMutationVariables>;
 export const PlaylistBriefDocument = new TypedDocumentString(`
@@ -5134,11 +4996,13 @@ export const SearchTracksDocument = new TypedDocumentString(`
       restriction {
         type
       }
-      artist {
-        id
-        userId
-        stageName
-        artistType
+      mainArtistsAsync {
+        items {
+          id
+          userId
+          stageName
+          artistType
+        }
       }
     }
   }
@@ -5407,10 +5271,99 @@ export const ModeratorUsersListDocument = new TypedDocumentString(`
       followerCount
       followingCount
       lastFollowers
-      lastFollowing
+      lastFollowings
       createdAt
       updatedAt
     }
   }
 }
     `) as unknown as TypedDocumentString<ModeratorUsersListQuery, ModeratorUsersListQueryVariables>;
+export const ModeratorUsersListAnalyticsDocument = new TypedDocumentString(`
+    query ModeratorUsersListAnalytics($skip: Int, $take: Int, $where: UserFilterInput) {
+  users(skip: $skip, take: $take, where: $where) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      email
+      fullName
+      gender
+      birthDate
+      role
+      phoneNumber
+      status
+      isLinkedWithGoogle
+      stripeCustomerId
+      stripeAccountId
+      lastLoginAt
+      createdAt
+      updatedAt
+    }
+  }
+  artists {
+    items {
+      id
+      userId
+      stageName
+      email
+      artistType
+      categoryIds
+      biography
+      followerCount
+      popularity
+      avatarImage
+      bannerImage
+      isVerified
+      verifiedAt
+      createdAt
+      updatedAt
+      members {
+        fullName
+        email
+        phoneNumber
+        isLeader
+        gender
+      }
+      identityCard {
+        number
+        fullName
+        dateOfBirth
+        gender
+        placeOfOrigin
+        nationality
+        validUntil
+        placeOfResidence {
+          street
+          ward
+          province
+          oldDistrict
+          oldWard
+          oldProvince
+          addressLine
+        }
+      }
+    }
+  }
+  listeners {
+    items {
+      id
+      userId
+      displayName
+      email
+      avatarImage
+      bannerImage
+      isVerified
+      verifiedAt
+      followerCount
+      followingCount
+      lastFollowers
+      lastFollowings
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ModeratorUsersListAnalyticsQuery, ModeratorUsersListAnalyticsQueryVariables>;
