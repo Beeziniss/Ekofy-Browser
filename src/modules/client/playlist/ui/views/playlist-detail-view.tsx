@@ -16,9 +16,9 @@ export const UpdatePlaylistMutation = graphql(`
 
 export const RemoveFromPlaylistMutation = graphql(`
   mutation RemoveFromPlaylist(
-    $addToPlaylistRequest: AddToPlaylistRequestInput!
+    $removeFromPlaylistRequest: RemoveFromPlaylistRequestInput!
   ) {
-    removeFromPlaylist(addToPlaylistRequest: $addToPlaylistRequest)
+    removeFromPlaylist(removeFromPlaylistRequest: $removeFromPlaylistRequest)
   }
 `);
 

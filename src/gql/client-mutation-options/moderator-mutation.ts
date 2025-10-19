@@ -2,6 +2,10 @@ import {
   ApproveArtistRegistrationMutation, 
   RejectArtistRegistrationMutation 
 } from "@/modules/moderator/artist-approval/ui/views/artist-details-view";
+import { 
+  DeActiveUserMutation, 
+  ReActiveUserMutation 
+} from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { execute } from "../execute";
 
@@ -33,6 +37,38 @@ export const useRejectArtistRegistration = () => {
       // Invalidate and refetch artist lists
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       queryClient.invalidateQueries({ queryKey: ["artist-details"] });
+    },
+  });
+};
+
+export const useDeActiveUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const result = await execute(DeActiveUserMutation, { targetUserId: userId });
+      return result;
+    },
+    onSuccess: () => {
+      // Invalidate and refetch user lists
+      queryClient.invalidateQueries({ queryKey: ["moderator-users"] });
+      queryClient.invalidateQueries({ queryKey: ["moderator-user-detail"] });
+    },
+  });
+};
+
+export const useReActiveUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const result = await execute(ReActiveUserMutation, { targetUserId: userId });
+      return result;
+    },
+    onSuccess: () => {
+      // Invalidate and refetch user lists
+      queryClient.invalidateQueries({ queryKey: ["moderator-users"] });
+      queryClient.invalidateQueries({ queryKey: ["moderator-user-detail"] });
     },
   });
 };
