@@ -19,7 +19,10 @@ export const trackListHomeOptions = queryOptions({
   queryFn: async () => await execute(TrackListHomeQuery, { take: 10 }),
 });
 
-export const listenerProfileOptions = (userId: string, enabled: boolean = true) =>
+export const listenerProfileOptions = (
+  userId: string,
+  enabled: boolean = true,
+) =>
   queryOptions({
     queryKey: ["listener-profile", userId],
     queryFn: async () => {
@@ -62,18 +65,20 @@ export const trackDetailOptions = (trackId: string) =>
     enabled: !!trackId,
   });
 
-export const playlistOptions = infiniteQueryOptions({
-  queryKey: ["playlists"],
-  queryFn: async () => await execute(PlaylistsQuery),
-  initialPageParam: 1,
-  getNextPageParam: (lastPage, allPages) => {
-    const totalCount = lastPage.playlists?.totalCount || 0;
-    const loadedCount = allPages
-      .map((page) => page.playlists?.items?.length || 0)
-      .reduce((a, b) => a + b, 0);
-    return loadedCount < totalCount ? allPages.length + 1 : undefined;
-  },
-});
+export const playlistOptions = (name?: string, take: number = 12) =>
+  infiniteQueryOptions({
+    queryKey: ["playlists", name],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+      return await execute(PlaylistsQuery, { name, take, skip });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.playlists?.pageInfo.hasNextPage
+        ? allPages.length + 1
+        : undefined;
+    },
+  });
 
 export const playlistDetailOptions = (playlistId: string) =>
   queryOptions({

@@ -45,7 +45,7 @@ const TrackOwnerSectionSuspense = ({ data }: TrackOwnerSectionProps) => {
     if (trackId) {
       const url = `${window.location.origin}/track/${trackId}`;
       navigator.clipboard.writeText(url);
-      toast.success("Track link copied to clipboard!");
+      toast.success("Copied!");
     }
   };
 
@@ -60,12 +60,14 @@ const TrackOwnerSectionSuspense = ({ data }: TrackOwnerSectionProps) => {
         <div className="flex items-center gap-x-6">
           <div className="flex flex-col gap-y-1">
             <span className="text-main-white text-sm font-bold">
-              {data.tracks?.items?.[0]?.artist[0]?.stageName ||
-                "Unknown Artist"}
+              {data.tracks?.items?.[0]?.mainArtistsAsync?.items?.[0]
+                ?.stageName || "Unknown Artist"}
             </span>
             <span className="text-main-grey-dark-1 flex items-center gap-x-1 text-sm">
               <UserIcon className="inline-block size-5" />{" "}
-              {data.tracks?.items?.[0]?.artist[0]?.followerCount || 0} followers
+              {data.tracks?.items?.[0]?.mainArtistsAsync?.items?.[0]
+                ?.followerCount || 0}{" "}
+              followers
             </span>
           </div>
           <Button className="bg-main-white px-10 py-2 text-sm font-bold">

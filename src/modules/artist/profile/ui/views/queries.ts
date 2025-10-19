@@ -1,4 +1,4 @@
-import type { ArtistFilterInput, TypedDocumentString, UserGender } from "@/gql/graphql";
+import type { ArtistFilterInput, TypedDocumentString, UserGender, UserStatus } from "@/gql/graphql";
 
 export const GetArtistProfileQuery = `
   query GetArtistProfile($where: ArtistFilterInput, $take: Int, $skip: Int) {
@@ -15,6 +15,7 @@ export const GetArtistProfileQuery = `
         members { fullName email gender isLeader phoneNumber }
         isVerified
         createdAt
+        user { status }
         identityCard {
           number
           fullName
@@ -43,6 +44,7 @@ export const GetArtistProfileQuery = `
             members: Array<{ fullName: string; email: string; gender: UserGender; isLeader: boolean; phoneNumber: string }>;
             isVerified: boolean;
             createdAt: string;
+            user?: { status: UserStatus } | null;
             identityCard?: {
               number?: string | null;
               fullName?: string | null;

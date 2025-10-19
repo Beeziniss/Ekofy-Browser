@@ -6,7 +6,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 const LibraryPage = () => {
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchInfiniteQuery(playlistOptions);
+  void queryClient.prefetchInfiniteQuery(playlistOptions("", 12));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

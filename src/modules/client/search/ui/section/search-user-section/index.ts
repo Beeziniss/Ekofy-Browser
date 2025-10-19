@@ -1,0 +1,1 @@
+export { SearchArtistSection } from './search-artist-section';

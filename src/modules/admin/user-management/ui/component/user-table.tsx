@@ -45,6 +45,8 @@ interface UserTableProps {
   searchTerm: string;
   onStatusChange: (userId: string, status: UserStatus) => void;
   onCreateModerator: () => void;
+  isLoading: boolean;
+  error: Error | null;
 }
 
 export function UserTable({
@@ -59,6 +61,8 @@ export function UserTable({
   searchTerm,
   onStatusChange,
   onCreateModerator,
+  isLoading,
+  error,
 }: UserTableProps) {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -70,9 +74,6 @@ export function UserTable({
       header: "User",
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-medium">
-            {row.original.fullName?.charAt(0).toUpperCase() || 'U'}
-          </div>
           <span className="font-medium text-white">{row.original.fullName || 'User name'}</span>
         </div>
       ),
@@ -256,7 +257,19 @@ export function UserTable({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center text-gray-400">
+                  Loading users...
+                </TableCell>
+              </TableRow>
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center text-red-400">
+                  Error loading users: {error.message}
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -284,25 +297,124 @@ export function UserTable({
       {/* Pagination */}
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="text-sm text-gray-400">
-          Showing {(currentPage - 1) * pageSize + 1} to{" "}
-          {Math.min(currentPage * pageSize, totalCount)} of {totalCount} entries
+          Showing {isLoading ? 0 : (currentPage - 1) * pageSize + 1} to{" "}
+          {isLoading ? 0 : Math.min(currentPage * pageSize, totalCount)} of {isLoading ? 0 : totalCount} entries
         </div>
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onPageChange(currentPage - 1)}
-            disabled={!hasPreviousPage}
+            disabled={!hasPreviousPage || isLoading}
             className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
           >
             <ChevronLeft className="h-4 w-4" />
             Previous
           </Button>
+          
+          {/* Page Numbers */}
+          {!isLoading && totalCount > 0 && (
+            <div className="flex items-center space-x-1">
+              {(() => {
+                const totalPages = Math.ceil(totalCount / pageSize);
+                const pages = [];
+                
+                // Calculate which pages to show
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
+                
+                // Adjust if we're near the beginning or end
+                if (currentPage <= 3) {
+                  endPage = Math.min(5, totalPages);
+                }
+                if (currentPage >= totalPages - 2) {
+                  startPage = Math.max(1, totalPages - 4);
+                }
+                
+                // Add first page and ellipsis if needed
+                if (startPage > 1) {
+                  pages.push(
+                    <Button
+                      key={1}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onPageChange(1)}
+                      className="w-8 h-8 p-0 bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white"
+                      style={currentPage === 1 ? {
+                        backgroundColor: '#2563eb',
+                        borderColor: '#2563eb',
+                        color: 'white'
+                      } : {}}
+                    >
+                      1
+                    </Button>
+                  );
+                  if (startPage > 2) {
+                    pages.push(
+                      <span key="ellipsis1" className="text-gray-400 px-2">
+                        ...
+                      </span>
+                    );
+                  }
+                }
+                
+                // Add the current range of pages
+                for (let i = startPage; i <= endPage; i++) {
+                  pages.push(
+                    <Button
+                      key={i}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onPageChange(i)}
+                      className="w-8 h-8 p-0 bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white"
+                      style={currentPage === i ? {
+                        backgroundColor: '#2563eb',
+                        borderColor: '#2563eb',
+                        color: 'white'
+                      } : {}}
+                    >
+                      {i}
+                    </Button>
+                  );
+                }
+                
+                // Add ellipsis and last page if needed
+                if (endPage < totalPages) {
+                  if (endPage < totalPages - 1) {
+                    pages.push(
+                      <span key="ellipsis2" className="text-gray-400 px-2">
+                        ...
+                      </span>
+                    );
+                  }
+                  pages.push(
+                    <Button
+                      key={totalPages}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onPageChange(totalPages)}
+                      className="w-8 h-8 p-0 bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white"
+                      style={currentPage === totalPages ? {
+                        backgroundColor: '#2563eb',
+                        borderColor: '#2563eb',
+                        color: 'white'
+                      } : {}}
+                    >
+                      {totalPages}
+                    </Button>
+                  );
+                }
+                
+                return pages;
+              })()}
+            </div>
+          )}
+          
           <Button
             variant="outline"
             size="sm"
             onClick={() => onPageChange(currentPage + 1)}
-            disabled={!hasNextPage}
+            disabled={!hasNextPage || isLoading}
             className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
           >
             Next
