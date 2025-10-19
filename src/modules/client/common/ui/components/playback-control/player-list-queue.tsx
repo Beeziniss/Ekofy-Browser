@@ -28,7 +28,7 @@ const PlayerListQueue = () => {
           <div className="flex items-center gap-x-3">
             <Image
               src={currentTrack.coverImage || "https://placehold.co/32x32"}
-              alt={currentTrack.title}
+              alt={currentTrack.name}
               width={32}
               height={32}
               className="rounded-[4px] object-cover"
@@ -36,7 +36,7 @@ const PlayerListQueue = () => {
             />
             <div className="flex flex-col items-start">
               <span className="line-clamp-1 text-sm font-semibold">
-                {currentTrack.title}
+                {currentTrack.name}
               </span>
               <span className="text-main-grey text-xs font-medium">
                 {currentTrack.artist}
@@ -61,7 +61,7 @@ const PlayerListQueue = () => {
                 >
                   <Image
                     src={track.coverImage || "https://placehold.co/32x32"}
-                    alt={track.title}
+                    alt={track.name}
                     width={32}
                     height={32}
                     className="rounded-[4px] object-cover"
@@ -69,7 +69,7 @@ const PlayerListQueue = () => {
                   />
                   <div className="flex flex-col items-start">
                     <span className="line-clamp-1 text-sm font-semibold">
-                      {track.title}
+                      {track.name}
                     </span>
                     <span className="text-main-grey line-clamp-1 text-xs font-medium">
                       {track.artist}

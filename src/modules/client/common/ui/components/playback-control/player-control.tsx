@@ -114,7 +114,7 @@ const PlayerControl = () => {
       </TooltipButton>
 
       <span
-        className={`text-xs font-semibold ${!currentTrack ? "pointer-events-none opacity-50" : "text-main-white"}`}
+        className={`flex w-11 min-w-11 justify-center text-xs font-semibold ${!currentTrack ? "pointer-events-none opacity-50" : "text-main-white"}`}
       >
         {formatMilliseconds(currentTime)}
       </span>
@@ -129,7 +129,7 @@ const PlayerControl = () => {
       />
 
       <span
-        className={`text-xs font-semibold ${!currentTrack ? "pointer-events-none opacity-50" : "text-main-white"}`}
+        className={`flex w-11 min-w-11 justify-center text-xs font-semibold ${!currentTrack ? "pointer-events-none opacity-50" : "text-main-white"}`}
       >
         {formatMilliseconds(duration)}
       </span>

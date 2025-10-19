@@ -23,7 +23,7 @@ const TrackNameSection = () => {
     <div className="flex w-80 items-center gap-3">
       <Image
         src={currentTrack.coverImage || "https://placehold.co/32x32"}
-        alt={currentTrack.title}
+        alt={currentTrack.name || "Cover"}
         width={32}
         height={32}
         className="rounded-sm object-cover"
@@ -31,7 +31,7 @@ const TrackNameSection = () => {
       />
       <div className="flex flex-col">
         <span className="line-clamp-1 text-sm font-semibold">
-          {currentTrack.title}
+          {currentTrack.name}
         </span>
         <span className="line-clamp-1 text-xs text-gray-400">
           {currentTrack.artist}

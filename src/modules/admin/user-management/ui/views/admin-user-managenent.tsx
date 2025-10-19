@@ -84,7 +84,7 @@ export const AdminGetListUser = graphql(`
         followerCount
         followingCount
         lastFollowers
-        lastFollowing
+        lastFollowings
         createdAt
         updatedAt
       }
