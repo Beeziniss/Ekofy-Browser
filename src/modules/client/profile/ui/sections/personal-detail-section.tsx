@@ -9,6 +9,13 @@ import { useClientProfile } from "../../hook/use-client-profile";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { format, differenceInYears } from "date-fns";
+import { cn } from "@/lib/utils";
+import type { UserGender } from "@/gql/graphql";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,9 +33,23 @@ const PersonalDetailSection = () => {
     displayName: z.string().min(1, "Display name is required").max(100),
     // Email is immutable here; keep for display only
     email: z.string().optional(),
-    gender: z.enum(["MALE", "FEMALE", "OTHER", "NOT_SPECIFIED"]).optional(),
-    birthDate: z.string().optional(),
-  });
+    gender: z.enum(["NOT_SPECIFIED", "MALE", "FEMALE", "OTHER"]),
+    birthDate: z.date(),
+  })
+    // Must not be in the future
+    .refine((data) => !data.birthDate || data.birthDate <= new Date(), {
+      message: "Birthdate cannot be in the future",
+      path: ["birthDate"],
+    })
+    // Must be at least 13 years old (same rule as sign up)
+    .refine(
+      (data) =>
+        !data.birthDate || differenceInYears(new Date(), data.birthDate) >= 13,
+      {
+        message: "You must be at least 13 years old",
+        path: ["birthDate"],
+      }
+    );
 
   type FormValues = z.infer<typeof formSchema>;
 
@@ -37,7 +58,7 @@ const PersonalDetailSection = () => {
     defaultValues: {
       displayName: personal.displayName || "",
       email: personal.email || "",
-      birthDate: personal.birthDate || "",
+      birthDate: personal.birthDate ? new Date(personal.birthDate) : undefined,
       gender: (personal.gender ?? "NOT_SPECIFIED") as FormValues["gender"],
     },
   });
@@ -47,7 +68,7 @@ const PersonalDetailSection = () => {
     form.reset({
       displayName: personal.displayName || "",
       email: personal.email || "",
-      birthDate: personal.birthDate || "",
+      birthDate: personal.birthDate ? new Date(personal.birthDate) : undefined,
       gender: (personal.gender ?? "NOT_SPECIFIED") as FormValues["gender"],
     });
   }, [form, personal.displayName, personal.email, personal.birthDate, personal.gender]);
@@ -74,10 +95,19 @@ const PersonalDetailSection = () => {
 
   const handleConfirm = () => {
     const values = form.getValues();
+    // Ensure DateTime is sent as full ISO string at UTC midnight to avoid timezone shifting
+    const birthDateIso = values.birthDate
+      ? new Date(Date.UTC(
+          values.birthDate.getFullYear(),
+          values.birthDate.getMonth(),
+          values.birthDate.getDate()
+        )).toISOString()
+      : undefined;
     updateProfile({
       displayName: values.displayName,
-      // Email cannot be changed in this flow
-      // Gender and birthDate aren’t part of UpdateListenerRequestInput; backend handles those on User.
+      // Newly supported fields on backend
+      gender: values.gender as unknown as UserGender,
+      birthDate: birthDateIso,
     });
   };
   return (
@@ -157,6 +187,71 @@ const PersonalDetailSection = () => {
                     </FormItem>
                   )}
                 />
+
+                {/* Gender */}
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="NOT_SPECIFIED">Not Specified</SelectItem>
+                          <SelectItem value="MALE">Male</SelectItem>
+                          <SelectItem value="FEMALE">Female</SelectItem>
+                          <SelectItem value="OTHER">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Birthdate */}
+                <FormField
+                  control={form.control}
+                  name="birthDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Date of Birth</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value ? format(field.value, "dd/MM/yyyy") : <span>DD/MM/YYYY</span>}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => date > new Date()}
+                            captionLayout="dropdown"
+                            fromYear={1700}
+                            toYear={new Date().getFullYear()}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </form>
             </Form>
           ) : (
@@ -164,10 +259,14 @@ const PersonalDetailSection = () => {
           )}
         </div>
 
-        {/* Read-only rows */}
-        <DetailItem title="Email" value={personal.email || "-"} />
-        <DetailItem title="Date of Birth" value={personal.birthDate || "-"} />
-        <DetailItem title="Gender" value={personal.gender || "-"} />
+        {/* Read-only rows when not editing; when editing, fields above */}
+        {!isEditing && (
+          <>
+            <DetailItem title="Email" value={personal.email || "-"} />
+            <DetailItem title="Date of Birth" value={personal.birthDate || "-"} />
+            <DetailItem title="Gender" value={personal.gender || "-"} />
+          </>
+        )}
       </div>
     </div>
   );

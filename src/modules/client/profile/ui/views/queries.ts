@@ -93,16 +93,19 @@ export const GetUserActiveSubscriptionQuery = `
 
 // Mutation: Update profile (listener-only usage here). Schema requires both args.
 export const UpdateProfileMutation = `
-  mutation UpdateProfile($updateListenerRequest: UpdateListenerRequestInput!, $updateArtistRequest: UpdateArtistRequestInput!) {
+  mutation UpdateProfile(
+    $updateArtistRequest: UpdateArtistRequestInput!,
+    $updateListenerRequest: UpdateListenerRequestInput!
+  ) {
     updateProfile(
-      updateListenerRequest: $updateListenerRequest,
-      updateArtistRequest: $updateArtistRequest
+      updateArtistRequest: $updateArtistRequest,
+      updateListenerRequest: $updateListenerRequest
     )
   }
 ` as unknown as TypedDocumentString<
   { updateProfile: boolean },
   {
-    updateListenerRequest: UpdateListenerRequestInput;
     updateArtistRequest: UpdateArtistRequestInput;
+    updateListenerRequest: UpdateListenerRequestInput;
   }
 >;

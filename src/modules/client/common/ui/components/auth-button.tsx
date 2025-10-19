@@ -62,7 +62,7 @@ const AuthButton = () => {
         profileLinks.push({ label: "Profile", href: "/profile" });
         break;
       case UserRole.ARTIST:
-        profileLinks.push({ label: "Artist Profile", href: "/artist/profile" });
+        profileLinks.push({ label: "Artist Profile", href: "/artist/studio/profile" });
         break;
       case UserRole.MODERATOR:
         profileLinks.push({ label: "Moderator Profile", href: "/moderator/profile" });

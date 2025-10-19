@@ -1,5 +1,4 @@
 import { graphql } from "@/gql";
-import TrackTrendingSection from "../sections/track-trending-section";
 
 export const TrackListHomeQuery = graphql(`
   query TrackListHome($take: Int!) {

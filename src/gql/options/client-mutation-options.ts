@@ -10,6 +10,7 @@ import {
   UpdatePlaylistMutation,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
 import { UpdateProfileMutation } from "@/modules/client/profile/ui/views/queries";
+import type { UpdateArtistRequestInput, UserGender } from "@/gql/graphql";
 
 export const createPlaylistMutationOptions = mutationOptions({
   mutationKey: ["create-playlist"],
@@ -61,7 +62,7 @@ export const removeFromPlaylistMutationOptions = mutationOptions({
     trackId: string;
   }) =>
     await execute(RemoveFromPlaylistMutation, {
-      addToPlaylistRequest,
+      removeFromPlaylistRequest: addToPlaylistRequest,
     }),
 });
 
@@ -74,10 +75,13 @@ export const updateListenerProfileMutationOptions = mutationOptions({
     bannerImage?: string;
     fullName?: string;
     phoneNumber?: string;
+    // Newly supported fields
+    birthDate?: string; // ISO 8601 string e.g. 1990-01-01T00:00:00.000Z
+    gender?: UserGender;
   }) =>
     await execute(UpdateProfileMutation, {
+      // API requires both args; pass explicit empty object for artist as a no-op.
+      updateArtistRequest: {} as UpdateArtistRequestInput,
       updateListenerRequest,
-      // API requires both args; pass empty object for artist as a no-op.
-      updateArtistRequest: {},
     }),
 });
