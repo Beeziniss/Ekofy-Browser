@@ -8,50 +8,71 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import useArtistSignIn from "../../hook/use-artist-sign-in";
-
-const artistLoginSchema = z.object({
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  rememberMe: z.boolean(),
-});
-
-type ArtistLoginFormData = z.infer<typeof artistLoginSchema>;
 
 const ArtistLoginFormSection = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [customErrors, setCustomErrors] = useState<{ [key: string]: string }>({});
   const { signIn, isLoading, error } = useArtistSignIn();
 
-  const form = useForm<ArtistLoginFormData>({
-    resolver: zodResolver(artistLoginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
-    },
-  });
+  // Custom validation function
+  const validateField = (field: string, value: string) => {
+    const errors = { ...customErrors };
+    
+    if (field === 'email') {
+      if (!value) {
+        errors.email = "Email is required";
+      } else if (value.length > 50) {
+        errors.email = "Email must be less than 50 characters";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        errors.email = "Please enter a valid email address";
+      } else {
+        delete errors.email;
+      }
+    }
+    
+    if (field === 'password') {
+      if (!value) {
+        errors.password = "Password is required";
+      } else if (value.length < 6) {
+        errors.password = "Password must be at least 6 characters";
+      } else if (value.length > 50) {
+        errors.password = "Password must be less than 50 characters";
+      } else {
+        delete errors.password;
+      }
+    }
+    
+    setCustomErrors(errors);
+    return !errors[field];
+  };
 
-  const onSubmit = (data: ArtistLoginFormData) => {
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Clear custom errors
+    setCustomErrors({});
+    
+    // Validate all fields
+    const emailValid = validateField("email", email);
+    const passwordValid = validateField("password", password);
+    
+    if (!emailValid || !passwordValid) {
+      return;
+    }
+    
     signIn({
-      email: data.email,
-      password: data.password,
+      email,
+      password,
     });
   };
 
   return (
     <div className="flex min-h-screen flex-1 items-center justify-center bg-[#121212] px-6 py-12 lg:px-8">
-      <div className="w-full max-w-md space-x-6">
+      <div className="w-full max-w-md space-y-6">
         {/* Logo and Title */}
         <div className="mb-8 text-center">
           <div className="mb-6 flex items-center justify-center">
@@ -76,143 +97,147 @@ const ArtistLoginFormSection = () => {
         )}
 
         {/* Login Form */}
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email Field */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="block text-sm font-medium text-white">
-                    Email <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      disabled={isLoading}
-                      placeholder="Enter your email"
-                      className="border-gradient-input h-12 w-full text-white placeholder-gray-400"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-400" />
-                </FormItem>
-              )}
-            />
-
-            {/* Password Field */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="block text-sm font-medium text-white">
-                    Password <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        disabled={isLoading}
-                        placeholder="Enter your password"
-                        className="border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400"
-                        {...field}
-                      />
-                      <Button
-                        type="button"
-                        variant={"ghost"}
-                        onClick={() => setShowPassword(!showPassword)}
-                        disabled={isLoading}
-                        className="text-main-grey absolute top-1/2 right-2 -translate-y-1/2"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-400" />
-                </FormItem>
-              )}
-            />
-
-            {/* Remember Me and Forgot Password */}
-            <div className="flex items-center justify-between">
-              <FormField
-                control={form.control}
-                name="rememberMe"
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-3">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
-                      />
-                    </FormControl>
-                    <FormLabel className="cursor-pointer text-sm text-white">
-                      Remember me
-                    </FormLabel>
-                  </FormItem>
-                )}
-              />
-              <Link
-                href="#"
-                className="text-sm text-white underline transition-colors hover:text-blue-400"
-              >
-                Forgot your password?
-              </Link>
-            </div>
-
-            <Button
-              type="submit"
+        <form onSubmit={onSubmit} className="space-y-6">
+          {/* Email Field */}
+          <div>
+            <label className="block text-sm font-medium text-white">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="email"
               disabled={isLoading}
-              className="primary_gradient w-full rounded-md px-4 py-3 text-base font-semibold text-white transition duration-300 ease-in-out hover:opacity-90 disabled:opacity-50"
-              size="lg"
-            >
-              {isLoading ? "Signing in..." : "Log In"}
-            </Button>
+              placeholder="Enter your email"
+              value={email}
+              maxLength={50}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value.length <= 50) {
+                  setEmail(value);
+                  validateField("email", value);
+                } else {
+                  // Show notification that limit is reached
+                  const errors = { ...customErrors };
+                  errors.email = "Email must be less than 50 characters";
+                  setCustomErrors(errors);
+                }
+              }}
+              className={`border-gradient-input h-12 w-full text-white placeholder-gray-400 ${
+                customErrors.email ? "border-red-500" : ""
+              }`}
+            />
+            {customErrors.email && (
+              <p className="mt-1 text-sm text-red-400">{customErrors.email}</p>
+            )}
+          </div>
 
-            {/* Sign Up Link */}
-            <div className="mt-2 text-center">
-              <span className="text-sm text-white">
-                Don&apos;t have an account?{" "}
-              </span>
-              <Link
-                href="/artist/sign-up"
-                className="font-medium text-white underline transition-colors hover:text-blue-400"
+          {/* Password Field */}
+          <div>
+            <label className="block text-sm font-medium text-white">
+              Password <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                disabled={isLoading}
+                placeholder="Enter your password"
+                value={password}
+                maxLength={50}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 50) {
+                    setPassword(value);
+                    validateField("password", value);
+                  } else {
+                    // Show notification that limit is reached
+                    const errors = { ...customErrors };
+                    errors.password = "Password must be less than 50 characters";
+                    setCustomErrors(errors);
+                  }
+                }}
+                className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 ${
+                  customErrors.password ? "border-red-500" : ""
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
+                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white"
               >
-                Sign up for Ekofy.
-              </Link>
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
             </div>
-          </form>
-        </Form>
+            {customErrors.password && (
+              <p className="mt-1 text-sm text-red-400">{customErrors.password}</p>
+            )}
+          </div>
+
+          {/* Remember Me and Forgot Password */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(!!checked)}
+                className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+              />
+              <label className="cursor-pointer text-sm text-white">
+                Remember me
+              </label>
+            </div>
+            <Link
+              href="#"
+              className="text-sm text-white underline transition-colors hover:text-blue-400"
+            >
+              Forgot your password?
+            </Link>
+          </div>
+
+          {/* Login Button */}
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="primary_gradient w-full rounded-md px-4 py-3 text-base font-semibold text-white transition duration-300 ease-in-out hover:opacity-90 disabled:opacity-50"
+            size="lg"
+          >
+            {isLoading ? "Signing in..." : "Log in"}
+          </Button>
+        </form>
+
+        {/* Sign Up Link */}
+        <div className="mt-6 text-center">
+          <span className="text-sm text-white">
+            Don&apos;t have an artist account?{" "}
+          </span>
+          <Link
+            href="/artist/sign-up"
+            className="font-medium text-white underline transition-colors hover:text-blue-400"
+          >
+            Sign up for Ekofy.
+          </Link>
+        </div>
 
         {/* Divider */}
-        <div className="mt-6 mb-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-[#121212] px-2 text-gray-400">
-                Or continue with
-              </span>
-            </div>
+        <div className="relative my-8">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-600"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-[#121212] px-4 text-gray-400">or</span>
           </div>
         </div>
 
-        {/* Google Login */}
+        {/* Google Login Button */}
         <Button
           type="button"
           variant="outline"
-          className="mb-6 w-full border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700/50"
+          className="w-full rounded-md border-gray-600 bg-transparent px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:bg-gray-800"
           size="lg"
         >
-          <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
+          <svg className="mr-3 h-5 w-5" viewBox="0 0 24 24">
             <path
               fill="currentColor"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

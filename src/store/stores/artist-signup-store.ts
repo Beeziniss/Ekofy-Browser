@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 import { toast } from "sonner";
 import { UserGender } from "@/gql/graphql";
 import { ArtistType } from "@/types/artist_type";
@@ -62,6 +62,12 @@ interface ArtistSignUpState {
   currentStep: ArtistSignUpStep;
   formData: Partial<ArtistSignUpFormData>;
   
+  // Temporary session data (not persisted)
+  sessionData: {
+    password?: string;
+    confirmPassword?: string;
+  };
+  
   // CCCD processing states
   isProcessingCCCD: boolean;
   cccdFrontProcessed: boolean;
@@ -70,6 +76,7 @@ interface ArtistSignUpState {
   // Actions
   setStep: (step: ArtistSignUpStep) => void;
   updateFormData: (data: Partial<ArtistSignUpFormData>) => void;
+  updateSessionData: (data: { password?: string; confirmPassword?: string }) => void;
   goToNextStep: (stepData?: Partial<ArtistSignUpFormData>) => void;
   goToPreviousStep: () => void;
   
@@ -79,11 +86,12 @@ interface ArtistSignUpState {
   setCCCDBackProcessed: (processed: boolean) => void;
   updateIdentityCard: (identityData: Partial<IdentityCardData>) => void;
   
-  // Registration flow
-  proceedToRegistration: () => void; // New action for triggering API registration
+  // // Registration flow
+  // proceedToRegistration: () => void; // New action for triggering API registration
   
   // Complete flow
   completeOTPVerification: (otpData: { otp: string }) => void;
+  clearSessionData: () => void;
   resetForm: () => void;
 }
 
@@ -96,6 +104,10 @@ const initialState = {
     identityCard: {
       placeOfResidence: {}
     }
+  },
+  sessionData: {
+    password: undefined,
+    confirmPassword: undefined
   },
   isProcessingCCCD: false,
   cccdFrontProcessed: false,
@@ -153,49 +165,73 @@ const getPreviousStep = (current: ArtistSignUpStep, formData?: Partial<ArtistSig
 
 export const useArtistSignUpStore = create<ArtistSignUpState>()(
   devtools(
-    (set, get) => ({
-      ...initialState,
+    persist(
+      (set, get) => ({
+        ...initialState,
 
-      // Set current step
-      setStep: (step: ArtistSignUpStep) => {
-        set({ currentStep: step }, false, "artistSignup/setStep");
-      },
+        // Set current step
+        setStep: (step: ArtistSignUpStep) => {
+          set({ currentStep: step }, false, "artistSignup/setStep");
+        },
 
-      // Update form data
-      updateFormData: (data: Partial<ArtistSignUpFormData>) => {
-        set(
-          (state) => ({
-            formData: { ...state.formData, ...data },
-          }),
-          false,
-          "artistSignup/updateFormData"
-        );
-      },
+        // Update form data
+        updateFormData: (data: Partial<ArtistSignUpFormData>) => {
+          set(
+            (state) => ({
+              formData: { ...state.formData, ...data },
+            }),
+            false,
+            "artistSignup/updateFormData"
+          );
+        },
 
-      // Go to next step
-      goToNextStep: (stepData?: Partial<ArtistSignUpFormData>) => {
-        const state = get();
-        const currentStep = state.currentStep;
-        const updatedFormData = stepData ? { ...state.formData, ...stepData } : state.formData;
-        const nextStep = getNextStep(currentStep, updatedFormData);
-        set(
-          {
-            currentStep: nextStep,
-            formData: updatedFormData,
-          },
-          false,
-          "artistSignup/goToNextStep"
-        );
-      },
+        // Update session data (not persisted)
+        updateSessionData: (data: { password?: string; confirmPassword?: string }) => {
+          set(
+            (state) => ({
+              sessionData: { ...state.sessionData, ...data },
+            }),
+            false,
+            "artistSignup/updateSessionData"
+          );
+        },
 
-      // Go to previous step
-      goToPreviousStep: () => {
-        const state = get();
-        const currentStep = state.currentStep;
-        const prevStep = getPreviousStep(currentStep, state.formData);
-        
-        set({ currentStep: prevStep }, false, "artistSignup/goToPreviousStep");
-      },
+        // Go to next step
+        goToNextStep: (stepData?: Partial<ArtistSignUpFormData>) => {
+          const state = get();
+          const currentStep = state.currentStep;
+          const updatedFormData = stepData ? { ...state.formData, ...stepData } : state.formData;
+          const nextStep = getNextStep(currentStep, updatedFormData);
+          set(
+            {
+              currentStep: nextStep,
+              formData: updatedFormData,
+            },
+            false,
+            "artistSignup/goToNextStep"
+          );
+        },
+
+        // Go to previous step
+        goToPreviousStep: () => {
+          const state = get();
+          const currentStep = state.currentStep;
+          const prevStep = getPreviousStep(currentStep, state.formData);
+          
+          // Only clear password session data when navigating back to form step for security
+          let sessionData = state.sessionData;
+          if (prevStep === "form") {
+            sessionData = {
+              password: undefined,
+              confirmPassword: undefined
+            };
+          }
+          
+          set({ 
+            currentStep: prevStep,
+            sessionData: sessionData
+          }, false, "artistSignup/goToPreviousStep");
+        },
 
       // CCCD processing
       setProcessingCCCD: (processing: boolean) => {
@@ -211,7 +247,6 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
       },
 
       updateIdentityCard: (identityData: Partial<IdentityCardData>) => {
-        console.log("🆔 ArtistSignUp - Updating identity card:", identityData);
         set(
           (state) => ({
             ...state,
@@ -231,28 +266,23 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
           "artistSignup/updateIdentityCard"
         );
       },
-
-      // Proceed to registration - No longer moves to OTP step
-      proceedToRegistration: () => {
-        // Registration will be handled by the component and redirect to login
-        console.log("Registration completed - redirecting to login");
-      },
-
-      // Complete OTP verification - Comment out as no longer needed
-      // completeOTPVerification: (otpData: { otp: string }) => {
-      //   const { updateFormData } = get();
-      //   
-      //   // Update form data with OTP
-      //   updateFormData(otpData);
-      //   
-      //   // Show success message
-      //   toast.success("Xác thực OTP thành công!");
-      //   
-      //   // Navigation or completion logic can be handled by the component
-      // },
       completeOTPVerification: () => {
         // No longer used - keeping for compatibility
         console.log("OTP verification is no longer used");
+      },
+
+      // Clear session data (for security)
+      clearSessionData: () => {
+        set(
+          (state) => ({
+            sessionData: {
+              password: undefined,
+              confirmPassword: undefined
+            }
+          }),
+          false,
+          "artistSignup/clearSessionData"
+        );
       },
 
       // Reset form
@@ -262,14 +292,16 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
             ...initialState,
             setStep: get().setStep,
             updateFormData: get().updateFormData,
+            updateSessionData: get().updateSessionData,
             goToNextStep: get().goToNextStep,
             goToPreviousStep: get().goToPreviousStep,
             setProcessingCCCD: get().setProcessingCCCD,
             setCCCDFrontProcessed: get().setCCCDFrontProcessed,
             setCCCDBackProcessed: get().setCCCDBackProcessed,
             updateIdentityCard: get().updateIdentityCard,
-            proceedToRegistration: get().proceedToRegistration,
+            // proceedToRegistration: get().proceedToRegistration,
             completeOTPVerification: get().completeOTPVerification,
+            clearSessionData: get().clearSessionData,
             resetForm: get().resetForm,
           },
           false,
@@ -278,7 +310,19 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
       },
     }),
     {
-      name: "artist-signup-store",
+      name: "artist-signup-store", // localStorage key for global state persistence
+      partialize: (state) => ({ 
+        currentStep: state.currentStep,
+        formData: state.formData,
+        isProcessingCCCD: state.isProcessingCCCD,
+        cccdFrontProcessed: state.cccdFrontProcessed,
+        cccdBackProcessed: state.cccdBackProcessed,
+        // sessionData is intentionally excluded from persistence for security
+      }), // Only persist essential data
+    }
+    ),
+    {
+      name: "artist-signup-devtools", // devtools name
     }
   )
 );

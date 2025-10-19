@@ -4,22 +4,29 @@ import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArtistApprovalTable } from "../component";
 import { moderatorArtistsQueryOptions } from "@/gql/options/moderator-options";
+import { is } from "date-fns/locale";
 
 export function ArtistApprovalSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const pageSize = 10;
 
   // Debounce search term
   useEffect(() => {
+    if (searchTerm !== debouncedSearchTerm) {
+      setIsSearching(true);
+    }
+    
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
       setCurrentPage(1); // Reset to first page when search term changes
+      setIsSearching(false);
     }, 500); // Wait 500ms after user stops typing
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, debouncedSearchTerm]);
 
   const {
     data: artistsData,
@@ -36,25 +43,22 @@ export function ArtistApprovalSection() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading artists...</div>
-      </div>
-    );
+    return <div className="flex items-center justify-center h-64">Loading Data...</div>;
   }
-
   if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-400">Error loading artists: {error.message}</div>
-      </div>
-    );
+    return <div className="text-red-500">Error loading data: {error.message}</div>;
   }
-
+  
   const artists = artistsData?.pendingArtistRegistrations || [];
-  const totalCount = artists.length; // Since we're getting all results, count them
-  // For pagination, we'll need to implement it differently or handle it server-side
-  const pageInfo = { hasNextPage: false, hasPreviousPage: false };
+  const totalCount = artists[0]?.totalCount || 0; // Get totalCount from first item
+  
+  // Calculate pagination info
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const hasNextPage = currentPage < totalPages;
+  const hasPreviousPage = currentPage > 1;
+
+  // Show loading state for table or searching state
+  const isTableLoading = isLoading || isSearching;
 
   return (
     <div className="space-y-6">
@@ -65,9 +69,11 @@ export function ArtistApprovalSection() {
         pageSize={pageSize}
         onPageChange={handlePageChange}
         onSearch={handleSearch}
-        hasNextPage={pageInfo?.hasNextPage || false}
-        hasPreviousPage={pageInfo?.hasPreviousPage || false}
+        hasNextPage={hasNextPage}
+        hasPreviousPage={hasPreviousPage}
         searchTerm={searchTerm}
+        isLoading={isTableLoading}
+        error={error}
       />
     </div>
   );

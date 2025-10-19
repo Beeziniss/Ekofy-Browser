@@ -59,9 +59,11 @@ import { ArtistApprovalSection } from "../section";
 //       }
 //     }
 //   }
+// */
+
 export const PendingArtistRegistrationsQuery = graphql(`
-  query PendingArtistRegistrationsView($pageNumber: Int!, $pageSize: Int!) {
-    pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize) {
+  query PendingArtistRegistrationsView($pageNumber: Int!, $pageSize: Int!, $where: PendingArtistRegistrationResponseFilterInput) {
+    pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize, where: $where) {
       email
       fullName
       stageName
@@ -71,6 +73,7 @@ export const PendingArtistRegistrationsQuery = graphql(`
       phoneNumber
       avatarImage
       id
+      totalCount
     }
   }
 `);

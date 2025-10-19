@@ -22,17 +22,17 @@ const formatArtistSignUpError = (error: any): string => {
     
     // Fallback based on status
     if (response?.status === 409) {
-      return "Dữ liệu đã tồn tại trong hệ thống.";
+      return "An account with this email already exists.";
     }
-    
-    return error.message || "Đã xảy ra lỗi. Vui lòng thử lại.";
+
+    return error.message || "An error occurred. Please try again.";
   }
   
   if (error instanceof Error) {
     return error.message;
   }
-  
-  return "Đã xảy ra lỗi. Vui lòng thử lại.";
+
+  return "An error occurred. Please try again.";
 };
 
 interface ArtistSignUpResponse {
@@ -43,6 +43,7 @@ interface ArtistSignUpResponse {
 
 const useArtistSignUp = (onNavigate?: () => void) => {
   const { setUserData, setAuthenticated, setLoading } = useAuthStore();
+  const { resetForm, clearSessionData } = useArtistSignUpStore();
   // Removed currentStep as OTP is no longer used
   // const { currentStep } = useArtistSignUpStore();
 
@@ -59,10 +60,8 @@ const useArtistSignUp = (onNavigate?: () => void) => {
     mutationFn: async (registerData: RegisterArtistData) => {
       setLoading(true);
       try {
-        // Send raw RegisterArtistData directly to API - no wrapping needed
-        console.log("🚀 Sending registration data:", registerData);
         
-        const response = await authApi.artist.register(registerData as any); // Cast to avoid type mismatch
+        const response = await authApi.artist.register(registerData); // Cast to avoid type mismatch
         return response;
       } catch (error) {
         throw new Error(formatArtistSignUpError(error));
@@ -73,7 +72,7 @@ const useArtistSignUp = (onNavigate?: () => void) => {
     onSuccess: async (data: ArtistSignUpResponse) => {
       try {
         // Show success message immediately
-        const message = data?.message || "Đăng ký nghệ sĩ thành công! Chúng tôi sẽ liên hệ với bạn trong vòng 48 giờ.";
+        const message = data?.message || "Artist registration successful! We will contact you within 48 hours.";
         toast.success(message);
         
         // If user data is returned, store it (some APIs return user data immediately)
@@ -93,6 +92,10 @@ const useArtistSignUp = (onNavigate?: () => void) => {
         
         // Always redirect to login after successful registration (no OTP needed)
         setTimeout(() => {
+          // Clear state before navigation
+          resetForm();
+          clearSessionData();
+          
           if (onNavigate) {
             onNavigate();
           }
@@ -107,6 +110,8 @@ const useArtistSignUp = (onNavigate?: () => void) => {
       const errorMessage = formatArtistSignUpError(error);
       toast.error(errorMessage);
       setAuthenticated(false);
+      // Clear sensitive session data on error for security
+      clearSessionData();
     },
   });
 

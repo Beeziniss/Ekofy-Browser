@@ -28,10 +28,19 @@ export const moderatorProfileOptions = (userId: string) => queryOptions({
 export const moderatorArtistsQueryOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") => queryOptions({
   queryKey: ["artists", page, pageSize, searchTerm],
   queryFn: async () => {
-    const result = await execute(PendingArtistRegistrationsQuery, { 
+    // Build variables object with where filter
+    const variables: any = {
       pageNumber: page,
-      pageSize
-    });
+      pageSize,
+      where: {} // Always pass where object, even if empty
+    };
+    
+    // Add stageNameUnsigned filter to where object if searchTerm is not empty
+    if (searchTerm && searchTerm.trim() !== "") {
+      variables.where.stageNameUnsigned = { contains: searchTerm.trim() };
+    }
+    
+    const result = await execute(PendingArtistRegistrationsQuery, variables);
     
     return result;
   },

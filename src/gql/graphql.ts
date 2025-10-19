@@ -4588,10 +4588,11 @@ export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { 
 export type PendingArtistRegistrationsViewQueryVariables = Exact<{
   pageNumber: Scalars['Int']['input'];
   pageSize: Scalars['Int']['input'];
+  where?: InputMaybe<PendingArtistRegistrationResponseFilterInput>;
 }>;
 
 
-export type PendingArtistRegistrationsViewQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrations: Array<{ __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string }> };
+export type PendingArtistRegistrationsViewQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrations: Array<{ __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string, totalCount: number }> };
 
 export type PendingArtistRegistrationsDetailQueryVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
@@ -5192,8 +5193,12 @@ export const TrackDetailDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<TrackDetailQuery, TrackDetailQueryVariables>;
 export const PendingArtistRegistrationsViewDocument = new TypedDocumentString(`
-    query PendingArtistRegistrationsView($pageNumber: Int!, $pageSize: Int!) {
-  pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize) {
+    query PendingArtistRegistrationsView($pageNumber: Int!, $pageSize: Int!, $where: PendingArtistRegistrationResponseFilterInput) {
+  pendingArtistRegistrations(
+    pageNumber: $pageNumber
+    pageSize: $pageSize
+    where: $where
+  ) {
     email
     fullName
     stageName
@@ -5203,6 +5208,7 @@ export const PendingArtistRegistrationsViewDocument = new TypedDocumentString(`
     phoneNumber
     avatarImage
     id
+    totalCount
   }
 }
     `) as unknown as TypedDocumentString<PendingArtistRegistrationsViewQuery, PendingArtistRegistrationsViewQueryVariables>;

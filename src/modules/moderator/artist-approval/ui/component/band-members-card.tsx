@@ -15,13 +15,13 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
   }
 
   return (
-    <Card className="bg-[#121212] border-gradient-input text-white">
+    <Card className="bg-[#121212] border-gray-400 border-2 border-solid transparent text-white">
       <CardHeader>
         <CardTitle className="text-white text-lg font-semibold">Optional Artist type</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="bg-[#121212] border border-gradient-input rounded-lg p-4">
-          <h4 className="text-white font-semibold mb-4">Artist Member</h4>
+        <div className="bg-[#121212] border border-gray-400 border-2 border-solid transparent rounded-lg p-4">
+          <h4 className="text-white font-semibold mb-4">Artist Members</h4>
           
           {members.map((member, index) => (
             <div key={index} className="mb-6 last:mb-0">
@@ -40,7 +40,7 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
                   <Input 
                     value={member.fullName} 
                     readOnly 
-                    className="bg-[#121212] border-gradient-input text-white"
+                    className="bg-[#121212] border-gray-400 border-2 border-solid transparent text-white"
                   />
                 </div>
                 <div>
@@ -48,7 +48,7 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
                   <Input 
                     value={member.email} 
                     readOnly 
-                    className="bg-[#121212] border-gradient-input text-white"
+                    className="bg-[#121212] border-gray-400 border-2 border-solid transparent text-white"
                   />
                 </div>
                 <div>
@@ -56,7 +56,7 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
                   <Input 
                     value={member.phoneNumber} 
                     readOnly 
-                    className="bg-[#121212] border-gradient-input text-white"
+                    className="bg-[#121212] border-gray-400 border-2 border-solid transparent text-white"
                   />
                 </div>
                 <div>
@@ -64,7 +64,7 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
                   <Input 
                     value={member.gender} 
                     readOnly 
-                    className="bg-[#121212] border-gradient-input text-white"
+                    className="bg-[#121212] border-gray-400 border-2 border-solid transparent text-white"
                   />
                 </div>
               </div>

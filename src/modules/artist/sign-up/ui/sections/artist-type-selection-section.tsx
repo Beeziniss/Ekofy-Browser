@@ -26,7 +26,7 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
 
   const handleSubmit = () => {
     if (!artistType) {
-      setErrors({ artistType: "Vui lòng chọn loại nghệ sĩ" });
+      setErrors({ artistType: "Please select an artist type" });
       return;
     }
     
@@ -107,8 +107,8 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
           <div 
             className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
               artistType === 'INDIVIDUAL'
-                ? 'border-gradient-input' 
-                : 'border-gray-600 hover:border-gray-500 bg-gray-800/30'
+                ? 'border-gray-600 hover:border-gray-500 bg-gray-800/30' 
+                : 'border-gradient-input'
             }`}
             onClick={() => {
               setArtistType('INDIVIDUAL');
@@ -130,8 +130,8 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
           <div 
             className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
               artistType === 'BAND'
-                ? 'border-gradient-input' 
-                : 'border-gray-600 hover:border-gray-500 bg-gray-800/30'
+                ? 'border-gray-600 hover:border-gray-500 bg-gray-800/30' 
+                : 'border-gradient-input'
             }`}
             onClick={() => {
               setArtistType('BAND');
@@ -142,7 +142,7 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
               <div className="flex justify-center mb-6">
                 <UsersGradient />
               </div>
-              <h3 className="text-white text-xl font-semibold mb-3">Bandp</h3>
+              <h3 className="text-white text-xl font-semibold mb-3">Band</h3>
               <p className="text-gray-400 text-sm">
                 Collaborate with your members, release music together, and connect with fans as one.
               </p>
@@ -160,7 +160,7 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
             className="primary_gradient hover:opacity-60 text-white font-medium py-3 px-8 rounded-md transition duration-300 ease-in-out"
             size="lg"
           >
-            Tiếp tục
+            Continue
           </Button>
         </div>
       </div>

@@ -29,7 +29,7 @@ export function ApprovalConfirmModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-gray-900 border-gray-700 text-white">
         <DialogHeader>
-          <DialogTitle className="text-white">Change confirm modal</DialogTitle>
+          <DialogTitle className="text-white">Approval Artist Registration</DialogTitle>
           <DialogDescription className="text-gray-300">
             Do you really want to approve this artist?
           </DialogDescription>

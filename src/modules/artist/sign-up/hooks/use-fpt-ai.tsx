@@ -29,16 +29,14 @@ export const useFPTAI = () => {
 
   const analyzeFrontSide = async (imageFile: File): Promise<void> => {
     if (!imageFile) {
-      toast.error("Vui lòng chọn file hình ảnh");
+      toast.error("Please select an image file");
       return;
     }
 
     setIsAnalyzing(true);
     setProcessingCCCD(true);
 
-    try {
-      console.log("🔍 Starting CCCD front side analysis and upload...");
-      
+    try {      
       // Start both FPT AI analysis and Cloudinary upload in parallel
       const [fptResponse, cloudinaryResult] = await Promise.all([
         fptAIService.analyzeCCCD(imageFile),
@@ -46,11 +44,11 @@ export const useFPTAI = () => {
       ]);
       
       if (fptResponse.errorCode !== 0) {
-        throw new Error(fptResponse.errorMessage || "Không thể đọc thông tin CCCD");
+        throw new Error(fptResponse.errorMessage || "Unable to read ID card information");
       }
 
       if (!cloudinaryResult?.secure_url) {
-        throw new Error("Không thể upload ảnh lên Cloudinary");
+        throw new Error("Unable to upload image to Cloudinary");
       }
 
       setFrontResponse(fptResponse);
@@ -60,7 +58,7 @@ export const useFPTAI = () => {
       const frontImageUrl = cloudinaryResult.secure_url;
       
       
-      toast.success("Đọc và upload CCCD mặt trước thành công!");
+      toast.success("Successfully read and uploaded front side of ID card!");
       
       // If we have both sides, parse the data
       if (cccdBackProcessed && backResponse) {
@@ -74,7 +72,7 @@ export const useFPTAI = () => {
       
     } catch (error) {
       console.error("Error analyzing front side:", error);
-      toast.error(error instanceof Error ? error.message : "Có lỗi xảy ra khi xử lý CCCD");
+      toast.error(error instanceof Error ? error.message : "An error occurred while processing ID card");
       setCCCDFrontProcessed(false);
     } finally {
       setIsAnalyzing(false);
@@ -84,7 +82,7 @@ export const useFPTAI = () => {
 
   const analyzeBackSide = async (imageFile: File): Promise<void> => {
     if (!imageFile) {
-      toast.error("Vui lòng chọn file hình ảnh");
+      toast.error("Please select an image file");
       return;
     }
 
@@ -92,7 +90,6 @@ export const useFPTAI = () => {
     setProcessingCCCD(true);
 
     try {
-      console.log("🔍 Starting CCCD back side analysis and upload...");
       
       // Start both FPT AI analysis and Cloudinary upload in parallel
       const [fptResponse, cloudinaryResult] = await Promise.all([
@@ -101,11 +98,11 @@ export const useFPTAI = () => {
       ]);
       
       if (fptResponse.errorCode !== 0) {
-        throw new Error(fptResponse.errorMessage || "Không thể đọc thông tin CCCD");
+        throw new Error(fptResponse.errorMessage || "Unable to read ID card information");
       }
 
       if (!cloudinaryResult?.secure_url) {
-        throw new Error("Không thể upload ảnh lên Cloudinary");
+        throw new Error("Unable to upload image to Cloudinary");
       }
 
       setBackResponse(fptResponse);
@@ -114,7 +111,7 @@ export const useFPTAI = () => {
       // Use Cloudinary URL
       const backImageUrl = cloudinaryResult.secure_url;
       
-      toast.success("Đọc và upload CCCD mặt sau thành công!");
+      toast.success("Successfully read and uploaded back side of ID card!");
       
       // If we have both sides, parse the data
       if (cccdFrontProcessed && frontResponse) {
@@ -126,7 +123,7 @@ export const useFPTAI = () => {
       }
       
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Có lỗi xảy ra khi xử lý CCCD");
+      toast.error(error instanceof Error ? error.message : "An error occurred while processing ID card");
       setCCCDBackProcessed(false);
     } finally {
       setIsAnalyzing(false);
@@ -144,7 +141,7 @@ export const useFPTAI = () => {
       const parsed = fptAIService.parseCCCDResponse(frontResp, backResp);
       
       if (!parsed) {
-        throw new Error("Không thể xử lý dữ liệu CCCD");
+        throw new Error("Unable to process ID card data");
       }
 
       setParsedData(parsed);
@@ -183,9 +180,9 @@ export const useFPTAI = () => {
         gender: parsed.sex as any, // Auto-map CCCD gender to main form gender
       });
       
-      toast.success("Xử lý thông tin CCCD hoàn tất!");
+      toast.success("ID card information processing completed!");
     } catch (error) {
-      toast.error("Có lỗi xảy ra khi xử lý dữ liệu CCCD");
+      toast.error("An error occurred while processing ID card data");
     }
   };
 
