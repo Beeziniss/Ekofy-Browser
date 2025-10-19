@@ -20,7 +20,7 @@ interface SignUpResponse {
 
 const useSignUp = (onNavigate?: () => void) => {
   const { setUserData, setAuthenticated, setLoading } = useAuthStore();
-  const { goToNextStep, formData, resetForm } = useSignUpStore();
+  const { goToNextStep, formData, resetForm, updateFormData } = useSignUpStore();
   const router = useRouter();
 
   const {
@@ -46,26 +46,33 @@ const useSignUp = (onNavigate?: () => void) => {
     },
     onSuccess: async (data) => {
       try {
-        // Show success message immediately
-        const message = data?.message || "Đăng ký thành công! Chúng tôi đã gửi mã xác thực đến email của bạn.";
-        toast.success(message);
-        
-        // If user data is returned, store it (some APIs return user data immediately)
-        // if (data?.user) {
-        //   await setUserInfoToLocalStorage(data.user);
-        //   setUserData(data.user);
-        //   setAuthenticated(true);
-        // }
-        
-        // Auto-navigate to next step after success
-        setTimeout(() => {
-          goToNextStep();
-          // Call the optional callback
-          if (onNavigate) {
-            onNavigate();
-          }
-        }, 500);
-        
+        if (data.success) {
+          // Show success message immediately
+          const message = data?.message || "Registration successful! We have sent a verification code to your email.";
+          toast.success(message);
+          
+          // Keep only email for OTP verification, clear everything else
+          updateFormData({ 
+            email: formData.email,
+            password: undefined,
+            confirmPassword: undefined,
+            fullName: formData.fullName,
+            birthDate: formData.birthDate,
+            gender: formData.gender,
+            displayName: formData.displayName,
+            avatarImage: formData.avatarImage,
+            otp: undefined
+          });
+          
+          // Auto-navigate to next step after success
+          setTimeout(() => {
+            goToNextStep();
+            // Call the optional callback
+            if (onNavigate) {
+              onNavigate();
+            }
+          }, 500);
+        }
       } catch (error) {
         console.error("Failed to process sign-up success:", error);
       }
@@ -81,12 +88,12 @@ const useSignUp = (onNavigate?: () => void) => {
   const verifyOTPMutation = useMutation({
     mutationFn: async (otp: string) => {
       if (!formData.email) {
-        throw new Error("Email không tồn tại. Vui lòng thử lại từ đầu.");
+        throw new Error("Email does not exist. Please try again from the beginning.");
       }
       return await authApi.general.verifyOPT(formData.email, otp);
     },
     onSuccess: (data) => {
-      const message = data?.message || "Xác thực OTP thành công! Đang chuyển hướng đến trang đăng nhập...";
+      const message = data?.message || "OTP verification successful! Redirecting to login page...";
       toast.success(message);
       setAuthenticated(true);
       
@@ -108,12 +115,12 @@ const useSignUp = (onNavigate?: () => void) => {
   const resendOTPMutation = useMutation({
     mutationFn: async () => {
       if (!formData.email) {
-        throw new Error("Email không tồn tại. Vui lòng thử lại từ đầu.");
+        throw new Error("Email does not exist. Please try again from the beginning.");
       }
       return await authApi.general.resendOTP(formData.email);
     },
     onSuccess: (data) => {
-      const message = data?.message || "Mã OTP đã được gửi lại thành công!";
+      const message = data?.message || "OTP has been resent successfully!";
       toast.success(message);
     },
     onError: (error) => {

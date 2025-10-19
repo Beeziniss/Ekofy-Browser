@@ -23,6 +23,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePlaylistPlayback } from "../../hooks/use-playlist-playback";
 
 interface PlaylistInfoSectionProps {
   playlistId: string;
@@ -37,17 +39,72 @@ const PlaylistInfoSection = ({ playlistId }: PlaylistInfoSectionProps) => {
 };
 
 const PlaylistInfoSkeleton = () => {
-  return <div>Loading...</div>;
+  return (
+    <div className="pointer-events-none w-full space-y-6">
+      <div className="flex items-center gap-x-8">
+        <Skeleton className="size-70 rounded-md" />
+
+        <div className="flex flex-col gap-y-6">
+          <Skeleton className="h-15 w-80 rounded-full" />
+
+          <div className="flex flex-col gap-y-1">
+            <div className="flex items-center gap-x-3">
+              <Skeleton className="size-8 rounded-full" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+            <Skeleton className="mt-2 h-6 w-20 rounded-full" />
+            <Skeleton className="h-6 w-40 rounded-full" />
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-x-4">
+        <Button
+          variant="ghost"
+          size="iconLg"
+          className="text-main-white mt-auto duration-0 hover:brightness-90"
+        >
+          <Image
+            src={"/play-button-medium.svg"}
+            alt="Ekofy Play Button"
+            width={48}
+            height={48}
+          />
+        </Button>
+
+        <div className="flex size-12 items-center justify-center">
+          <PenLineIcon className="text-main-white size-6" />
+        </div>
+
+        <div className="flex size-12 items-center justify-center">
+          <EllipsisIcon className="text-main-white size-6" />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const PlaylistInfoSectionSuspense = ({
   playlistId,
 }: PlaylistInfoSectionProps) => {
-  const { data } = useSuspenseQuery(playlistDetailOptions(playlistId));
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { data } = useSuspenseQuery(playlistDetailOptions(playlistId));
+
+  // Use custom hook for playlist playback functionality
+  const {
+    isPlaylistCurrentlyPlaying,
+    isPlaying,
+    playlistTracks,
+    handlePlayPause,
+  } = usePlaylistPlayback(playlistId);
 
   const playlistData = data?.playlists?.items?.[0];
+
+  // Handle play/pause click for playlist
+  const handlePlayPauseClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await handlePlayPause();
+  };
 
   const handleEditClick = () => {
     setEditModalOpen(true);
@@ -100,16 +157,17 @@ const PlaylistInfoSectionSuspense = ({
                 <UserIcon className="size-4 text-black" />
               </div>
               <span className="text-main-white text-base font-medium">
-                {playlistData?.user?.fullName || "Anonymous"}
+                {playlistData?.user[0]?.fullName || "Anonymous"}
               </span>
             </div>
             <div className="text-main-grey mt-2 text-base">
-              {playlistData?.tracks?.length || 0} tracks
+              {playlistData?.tracks?.totalCount || 0} tracks
             </div>
             <div className="text-main-grey text-base">
               {playlistData?.isPublic ? "Public" : "Private"} | Updated:{" "}
               {formatDistanceToNow(
                 playlistData?.updatedAt || playlistData?.createdAt,
+                { addSuffix: true },
               )}
             </div>
           </div>
@@ -117,6 +175,31 @@ const PlaylistInfoSectionSuspense = ({
       </div>
 
       <div className="flex items-center gap-x-4">
+        {playlistTracks && playlistTracks.length > 0 && (
+          <Button
+            variant="ghost"
+            size="iconLg"
+            onClick={handlePlayPauseClick}
+            className="text-main-white mt-auto duration-0 hover:brightness-90"
+          >
+            {isPlaylistCurrentlyPlaying && isPlaying ? (
+              <Image
+                src={"/pause-button-medium.svg"}
+                alt="Ekofy Pause Button"
+                width={48}
+                height={48}
+              />
+            ) : (
+              <Image
+                src={"/play-button-medium.svg"}
+                alt="Ekofy Play Button"
+                width={48}
+                height={48}
+              />
+            )}
+          </Button>
+        )}
+
         <Button
           size={"iconLg"}
           variant={"ghost"}

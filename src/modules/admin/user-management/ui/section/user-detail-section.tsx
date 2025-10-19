@@ -9,7 +9,11 @@ import {
   ArtistTeamMembers,
   ListenerDetailCard,
 } from "../component";
-import { adminUserDetailOptions } from "@/gql/options/admin-options";
+import { 
+  adminUserDetailOptions, 
+  adminArtistDetailOptions, 
+  adminListenerDetailOptions 
+} from "@/gql/options/admin-options";
 import { UserRole, ArtistType } from "@/gql/graphql";
 
 interface UserDetailSectionProps {
@@ -21,7 +25,22 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
   const role = searchParams.get("role") as UserRole;
   const [activeTab, setActiveTab] = useState<"overview" | "team">("overview");
 
-  const { data, isLoading, error } = useQuery(adminUserDetailOptions(userId));
+  // Fetch user basic info
+  const { data: user, isLoading: userLoading, error: userError } = useQuery(adminUserDetailOptions(userId));
+  
+  // Conditionally fetch role-specific data
+  const { data: artist, isLoading: artistLoading, error: artistError } = useQuery({
+    ...adminArtistDetailOptions(userId),
+    enabled: role === UserRole.Artist,
+  });
+  
+  const { data: listener, isLoading: listenerLoading, error: listenerError } = useQuery({
+    ...adminListenerDetailOptions(userId),
+    enabled: role === UserRole.Listener,
+  });
+
+  const isLoading = userLoading || (role === UserRole.Artist ? artistLoading : listenerLoading);
+  const error = userError || (role === UserRole.Artist ? artistError : listenerError);
 
   if (isLoading) {
     return (
@@ -40,10 +59,6 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
       </div>
     );
   }
-
-  const user = data?.user;
-  const artist = data?.artists?.[0];
-  const listener = data?.listeners?.[0];
 
   if (!user) {
     return (

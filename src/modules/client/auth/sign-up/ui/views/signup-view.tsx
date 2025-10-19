@@ -22,7 +22,7 @@ const SignUpView = () => {
               onNext={() => {}}
               initialData={{
                 email: formData.email || '',
-                password: formData.password || ''
+                // password: formData.password || ''
               }}
             />
             <SignUpImageSection />
@@ -58,7 +58,7 @@ const SignUpView = () => {
               onNext={() => {}}
               initialData={{
                 email: formData.email || '',
-                password: formData.password || ''
+                // password: formData.password || ''
               }}
             />
             <SignUpImageSection />

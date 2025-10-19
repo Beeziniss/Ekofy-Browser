@@ -47,6 +47,11 @@ const data = {
       url: "/moderator/artist-approval",
       icon: UserRoundCheck,
     },
+    {
+      name: "User Management",
+      url: "/moderator/user-management",
+      icon: LayoutDashboardIcon,
+    }
   ],
 };
 

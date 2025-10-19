@@ -84,15 +84,37 @@ export const AdminGetListUser = graphql(`
         followerCount
         followingCount
         lastFollowers
-        lastFollowing
+        lastFollowings
         createdAt
         updatedAt
-        restriction {
-          type
-          reason
-          restrictedAt
-          expired
-        }
+      }
+    }
+  }
+`);
+
+export const AdminGetStatistics = graphql(`
+  query UsersStatistic($skip: Int, $take: Int, $where: UserFilterInput) {
+    users(skip: $skip, take: $take, where: $where) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+      items {
+        id
+        email
+        fullName
+        gender
+        birthDate
+        role
+        phoneNumber
+        status
+        isLinkedWithGoogle
+        stripeCustomerId
+        stripeAccountId
+        lastLoginAt
+        createdAt
+        updatedAt
       }
     }
   }

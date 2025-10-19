@@ -61,7 +61,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
     const otpCode = otp.join('');
     
     if (otpCode.length !== 6) {
-      toast.error('Vui lòng nhập đầy đủ mã OTP 6 số');
+      toast.error('Please enter a complete 6-digit OTP code');
       return;
     }
     
@@ -69,8 +69,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
       // Update OTP in store
       completeOTPVerification({ otp: otpCode });
       
-      console.log("🎉 OTP Verification completed successfully!");
-      toast.success("Xác thực OTP thành công! Đăng ký hoàn tất.");
+      toast.success("OTP verification successful! Registration completed.");
       
       // Call onNext to trigger final navigation
       onNext({ otp: otpCode });
@@ -79,7 +78,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+        toast.error("An error occurred. Please try again.");
       }
     }
   };
