@@ -10,19 +10,12 @@ import Link from 'next/link';
 import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
 import { UserGender } from '@/gql/graphql';
 import { toast } from 'sonner';
+import { ArtistSignUpFormData, ArtistSignUpSectionProps } from '@/types/artist_type';
 
-interface ArtistSignUpFormSectionProps {
-  onNext: (data?: any) => void;
-  initialData?: {
-    email: string;
-    password: string;
-    confirmPassword: string;
-    agreeTerms: boolean;
-  };
-}
+type ArtistSignUpFormSectionProps = ArtistSignUpSectionProps<ArtistSignUpFormData>;
 
 const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectionProps) => {
-  const { formData, sessionData, updateFormData, updateSessionData, goToNextStep } = useArtistSignUpStore();
+  const { formData, updateFormData, updateSessionData, goToNextStep } = useArtistSignUpStore();
   
   // Initialize state from global store or initial data
   const [email, setEmail] = useState(initialData?.email || formData.email || '');

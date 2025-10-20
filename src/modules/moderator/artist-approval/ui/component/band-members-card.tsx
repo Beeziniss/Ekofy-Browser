@@ -1,9 +1,8 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArtistMember, UserGender } from "@/gql/graphql";
+import { ArtistMember } from "@/gql/graphql";
 
 interface BandMembersCardProps {
   members: ArtistMember[];
@@ -20,7 +19,7 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
         <CardTitle className="text-white text-lg font-semibold">Optional Artist type</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="bg-[#121212] border border-gray-400 border-2 border-solid transparent rounded-lg p-4">
+        <div className="bg-[#121212] border-gray-400 border-2 border-solid transparent rounded-lg p-4">
           <h4 className="text-white font-semibold mb-4">Artist Members</h4>
           
           {members.map((member, index) => (

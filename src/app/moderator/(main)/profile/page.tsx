@@ -8,11 +8,14 @@ import { useAuthStore } from "@/store";
 
 const ProfilePage = () => {
   const queryClient = getQueryClient();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
 
-  const userId = user?.userId || ""; // Get user ID from auth context
+  const userId = user?.userId; // Get user ID from auth context
 
-  void queryClient.prefetchQuery(moderatorProfileOptions(userId));
+  // Only prefetch query if user is authenticated and has userId
+  if (isAuthenticated && userId) {
+    void queryClient.prefetchQuery(moderatorProfileOptions(userId));
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

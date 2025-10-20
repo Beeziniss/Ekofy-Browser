@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, ArrowLeft } from "lucide-react";
-import { format } from "date-fns";
+import { ArrowLeft } from "lucide-react";
 import {
   VerificationHeader,
   IDUploadComponent,
@@ -15,36 +12,21 @@ import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import { useFPTAI } from "../../hooks/use-fpt-ai";
 // import { isValidPhoneNumber, formatPhoneNumber } from "@/utils/signup-utils";
 import { toast } from "sonner";
-import { uploadImageToCloudinary, validateImageFile } from "@/utils/cloudinary-utils";
+import { validateImageFile } from "@/utils/cloudinary-utils";
 import { convertDateToISO, convertISOToDisplayDate } from "@/utils/signup-utils";
+import { UserGender } from "@/gql/graphql";
+import { ArtistCCCDData, ArtistSignUpSectionProps } from '@/types/artist_type';
 
-interface ArtistCCCDVerificationSectionProps {
-  onNext: (data?: any) => void;
+type ArtistCCCDVerificationSectionProps = ArtistSignUpSectionProps<ArtistCCCDData> & {
   onBack: () => void;
-  initialData?: {
-    frontId: File | null;
-    backId: File | null;
-    authorizationLetter: File | null;
-    citizenId: string;
-    fullName: string;
-    gender: string;
-    placeOfOrigin: string;
-    placeOfResidence: string;
-    dateOfExpiration: string;
-    phoneNumber: string;
-    dateOfBirth: string;
-    managerEmail: string;
-    managerPassword: string;
-    hasManager: boolean;
-  };
-}
+};
 
 const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCCCDVerificationSectionProps) => {
   // Get data from store
   const {
     formData, 
     goToNextStep, 
-    goToPreviousStep, 
+    // goToPreviousStep, 
     updateIdentityCard,
     updateFormData,
     isProcessingCCCD,
@@ -91,7 +73,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
   const [phoneNumber, setPhoneNumber] = useState(
     initialData?.phoneNumber || formData.phoneNumber || ""
   );
-  const [isManager, setIsManager] = useState(initialData?.hasManager || false);
+  const [isManager] = useState(initialData?.hasManager || false);
   const [authorizationLetter, setAuthorizationLetter] = useState<File | null>(
     initialData?.authorizationLetter || null,
   );
@@ -104,34 +86,34 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
   };
 
   // Date formatting function - keeps DD/MM/YYYY format
-  const formatDate = (date: Date | string) => {
-    if (date instanceof Date) {
-      return format(date, "dd/MM/yyyy");
-    }
-    // If it's already a string, check if it's DD/MM/YYYY format or ISO format
-    if (typeof date === 'string') {
-      // If it's ISO format, convert back to DD/MM/YYYY
-      if (date.includes('T') && date.includes('Z')) {
-        const dateObj = new Date(date);
-        return format(dateObj, "dd/MM/yyyy");
-      }
-      // If it's already DD/MM/YYYY format, keep it
-      if (date.includes('/')) {
-        return date;
-      }
-    }
-    return date;
-  };
+  // const formatDate = (date: Date | string) => {
+  //   if (date instanceof Date) {
+  //     return format(date, "dd/MM/yyyy");
+  //   }
+  //   // If it's already a string, check if it's DD/MM/YYYY format or ISO format
+  //   if (typeof date === 'string') {
+  //     // If it's ISO format, convert back to DD/MM/YYYY
+  //     if (date.includes('T') && date.includes('Z')) {
+  //       const dateObj = new Date(date);
+  //       return format(dateObj, "dd/MM/yyyy");
+  //     }
+  //     // If it's already DD/MM/YYYY format, keep it
+  //     if (date.includes('/')) {
+  //       return date;
+  //     }
+  //   }
+  //   return date;
+  // };
 
   // Parse date from DD/MM/YYYY format
-  const parseDate = (dateString: string): Date | undefined => {
-    if (!dateString) return undefined;
-    const [day, month, year] = dateString.split('/');
-    if (day && month && year) {
-      return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    }
-    return undefined;
-  };
+  // const parseDate = (dateString: string): Date | undefined => {
+  //   if (!dateString) return undefined;
+  //   const [day, month, year] = dateString.split('/');
+  //   if (day && month && year) {
+  //     return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  //   }
+  //   return undefined;
+  // };
 
   // Save form data to global state on input change (debounced)
   useEffect(() => {
@@ -141,7 +123,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
         number: citizenId,
         fullName,
         dateOfBirth: dateOfBirth ? convertDateToISO(dateOfBirth) : "", // Convert DD/MM/YYYY to ISO for global state
-        gender: gender as any,
+        gender: gender as UserGender,
         placeOfOrigin,
         placeOfResidence: { addressLine: placeOfResidence },
         validUntil: dateOfExpiration ? convertDateToISO(dateOfExpiration) : "", // Convert DD/MM/YYYY to ISO for global state
@@ -193,7 +175,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
       updateFormData({
         fullName: parsedData.name || "",
         birthDate: parsedData.dateOfBirth ? convertDateToISO(parsedData.dateOfBirth) : "", // Convert DD/MM/YYYY to ISO for global state
-        gender: parsedData.sex as any,
+        gender: parsedData.sex as UserGender,
       });
     }
   }, [parsedData, updateFormData]);
@@ -293,7 +275,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
         number: citizenId,
         fullName: fullName,
         dateOfBirth: dateOfBirth,
-        gender: gender as any,
+        gender: gender as UserGender,
         placeOfOrigin: placeOfOrigin,
         nationality: "Việt Nam",
         placeOfResidence: {
@@ -312,8 +294,8 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
       const additionalData = {
         phoneNumber: phoneNumber, // Format phone number
         birthDate: dateOfBirth, // Map CCCD dateOfBirth to main form birthDate
-        fullName: fullName, // Map CCCD fullName to main form fullName  
-        gender: gender as any, // Map CCCD gender to main form gender
+        fullName: fullName, // Map CCCD fullName to main form fullName
+        gender: gender as UserGender, // Map CCCD gender to main form gender
       };
       // Update store with identity card data
       updateIdentityCard(identityCardData);

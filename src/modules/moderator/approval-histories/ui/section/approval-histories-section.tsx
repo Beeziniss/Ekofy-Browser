@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ApprovalHistoriesTable } from "../component/approval-histories-table";
 import { moderatorApprovalHistoriesOptions } from "@/gql/options/moderator-options";
+import { ApprovalHistoriesResponse } from "@/types/approval-histories";
 
 export function ApprovalHistoriesSection() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,8 +49,10 @@ export function ApprovalHistoriesSection() {
     return <div className="text-red-500">Error loading data: {error.message}</div>;
   }
   
-  const approvalHistories = approvalHistoriesData?.approvalHistories?.items || [];
-  const totalCount = approvalHistoriesData?.approvalHistories?.totalCount || 0;
+  // Handle mock data structure from moderator-options
+  const responseData = approvalHistoriesData as ApprovalHistoriesResponse;
+  const approvalHistories = responseData?.approvalHistories?.items || [];
+  const totalCount = responseData?.approvalHistories?.totalCount || 0;
   
   // Calculate pagination info
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -62,7 +65,7 @@ export function ApprovalHistoriesSection() {
   return (
     <div className="space-y-6">
       <ApprovalHistoriesTable
-        data={approvalHistories as any[]}
+        data={approvalHistories}
         totalCount={totalCount}
         currentPage={currentPage}
         pageSize={pageSize}

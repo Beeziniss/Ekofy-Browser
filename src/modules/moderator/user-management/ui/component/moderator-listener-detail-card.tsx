@@ -1,10 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ModeratorListener, ModeratorListenerDetailResponse, ModeratorUser } from "@/types";
-import { useDeActiveUser, useReActiveUser } from "@/gql/client-mutation-options/moderator-mutation";
-import { ModeratorStatusConfirmModal } from "./moderator-status-confirm-modal";
+import { ModeratorListenerDetailResponse, ModeratorUser } from "@/types";
 
 interface ModeratorListenerDetailCardProps {
   listener: ModeratorListenerDetailResponse;
@@ -12,26 +8,6 @@ interface ModeratorListenerDetailCardProps {
 }
 
 export function ModeratorListenerDetailCard({ listener, user }: ModeratorListenerDetailCardProps) {
-  const [modalAction, setModalAction] = useState<"ban" | "reactivate" | null>(null);
-  
-  const banUserMutation = useDeActiveUser();
-  const reactivateUserMutation = useReActiveUser();
-
-  const confirmStatusChange = async () => {
-    if (!modalAction) return;
-
-    try {
-      if (modalAction === "ban") {
-        await banUserMutation.mutateAsync(user.id);
-      } else {
-        await reactivateUserMutation.mutateAsync(user.id);
-      }
-      setModalAction(null);
-    } catch (error) {
-      console.error("Error changing user status:", error);
-    }
-  };
-
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">

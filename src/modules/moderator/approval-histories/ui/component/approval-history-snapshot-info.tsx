@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { User, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { ApprovalHistorySnapshot } from "@/types";
+import Image from "next/image";
 
 interface ApprovalHistorySnapshotInfoProps {
   snapshot: ApprovalHistorySnapshot;
@@ -146,10 +147,12 @@ export const ApprovalHistorySnapshotInfo = ({ snapshot }: ApprovalHistorySnapsho
             <div>
               <label className="font-medium">Front Image:</label>
               <div className="mt-2 border rounded-lg p-2">
-                <img
+                <Image
                   src={snapshot.IdentityCard.FrontImage}
                   alt="ID Front"
-                  className="w-full h-48 object-cover rounded"
+                  width={400}
+                  height={300}
+                  className="w-full h-80 object-cover rounded"
                 />
                 <Button variant="outline" size="sm" className="mt-2" asChild>
                   <a href={snapshot.IdentityCard.FrontImage} target="_blank" rel="noopener noreferrer">
@@ -162,10 +165,12 @@ export const ApprovalHistorySnapshotInfo = ({ snapshot }: ApprovalHistorySnapsho
             <div>
               <label className="font-medium">Back Image:</label>
               <div className="mt-2 border rounded-lg p-2">
-                <img
+                <Image
                   src={snapshot.IdentityCard.BackImage}
                   alt="ID Back"
-                  className="w-full h-48 object-cover rounded"
+                  width={400}
+                  height={300}
+                  className="w-full h-80 object-cover rounded"
                 />
                 <Button variant="outline" size="sm" className="mt-2" asChild>
                   <a href={snapshot.IdentityCard.BackImage} target="_blank" rel="noopener noreferrer">

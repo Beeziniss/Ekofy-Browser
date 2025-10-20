@@ -12,16 +12,11 @@ import { convertArtistStoreDataToAPIFormat } from '@/utils/signup-utils';
 import { toast } from 'sonner';
 import { uploadImageToCloudinary, validateImageFile } from '@/utils/cloudinary-utils';
 import { useRouter } from 'next/navigation';
+import { ArtistIdentityData, ArtistSignUpSectionProps } from '@/types/artist_type';
 
-interface ArtistIdentitySectionProps {
-  onNext: (data?: any) => void;
+type ArtistIdentitySectionProps = ArtistSignUpSectionProps<ArtistIdentityData> & {
   onBack: () => void;
-  initialData?: {
-    // coverImage: File | null;
-    stageName: string;
-    avatarImage?: File | null;
-  };
-}
+};
 
 const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySectionProps) => {
   const router = useRouter();
@@ -38,13 +33,13 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
   const { signUp, isLoading } = useArtistSignUp(handleNavigateToLogin);
   
   // Initialize state from global store or initial data
-  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
+  // const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
   const [avatarImage, setAvatarImage] = useState<File | null>(initialData?.avatarImage || null);
   const [avatarImagePreview, setAvatarImagePreview] = useState<string | null>(null);
   const [stageName, setStageName] = useState(initialData?.stageName || formData.stageName || '');
-  const [coverUploading, setCoverUploading] = useState(false);
+  // const [coverUploading, setCoverUploading] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(formData.avatarImage || null);
+  // const [coverImageUrl, setCoverImageUrl] = useState<string | null>(formData.avatarImage || null);
   const [avatarImageUrl, setAvatarImageUrl] = useState<string | null>(formData.avatarImage || null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -159,36 +154,36 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
     }
   };
 
-  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    // Validate the file
-    if (!validateImageFile(file, 5)) {
-      return;
-    }
+  //   // Validate the file
+  //   if (!validateImageFile(file, 5)) {
+  //     return;
+  //   }
 
-    // setCoverImage(file);
-    setCoverUploading(true);
+  //   // setCoverImage(file);
+  //   setCoverUploading(true);
 
-    try {
-      // Upload to Cloudinary
-      const uploadResult = await uploadImageToCloudinary(file, {
-        folder: 'artist-covers',
-        tags: ['artist', 'cover']
-      });
+  //   try {
+  //     // Upload to Cloudinary
+  //     const uploadResult = await uploadImageToCloudinary(file, {
+  //       folder: 'artist-covers',
+  //       tags: ['artist', 'cover']
+  //     });
 
-      setCoverImageUrl(uploadResult.secure_url);
-      toast.success('Tải ảnh bìa lên thành công!');
-    } catch (error) {
-      console.error('Error uploading cover image:', error);
-      toast.error('Error uploading cover image. Please try again.');
-      // setCoverImage(null);
-      setCoverImageUrl(null);
-    } finally {
-      setCoverUploading(false);
-    }
-  };
+  //     setCoverImageUrl(uploadResult.secure_url);
+  //     toast.success('Tải ảnh bìa lên thành công!');
+  //   } catch (error) {
+  //     console.error('Error uploading cover image:', error);
+  //     toast.error('Error uploading cover image. Please try again.');
+  //     // setCoverImage(null);
+  //     setCoverImageUrl(null);
+  //   } finally {
+  //     setCoverUploading(false);
+  //   }
+  // };
 
   const handleAvatarImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -372,7 +367,7 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
                 <p className="mt-2 text-sm text-red-400">{errors.stageName}</p>
               )}
               <p className="text-gray-400 text-xs mt-2">
-                Your stage name will appear on your profile and tracks. Make sure it's unique and easy to recognize.
+                Your stage name will appear on your profile and tracks. Make sure it is unique and easy to recognize.
               </p>
             </div>
           </div>
@@ -384,9 +379,9 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
             onClick={handleSubmit}
             className="primary_gradient hover:opacity-90 text-white font-medium py-3 px-8 rounded-md transition duration-300 ease-in-out"
             size="lg"
-            disabled={isLoading || coverUploading || avatarUploading}
+            disabled={isLoading || avatarUploading}
           >
-            {coverUploading || avatarUploading ? 'Uploading images...' : isLoading ? 'Processing...' : (formData.artistType === "INDIVIDUAL" ? 'Register' : 'Continue')}
+            { avatarUploading ? 'Uploading images...' : isLoading ? 'Processing...' : (formData.artistType === "INDIVIDUAL" ? 'Register' : 'Continue')}
           </Button>
         </div>
       </div>

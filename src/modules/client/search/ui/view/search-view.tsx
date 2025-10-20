@@ -2,7 +2,12 @@
 
 import React from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { SearchType } from '@/types/search';
+import { 
+  SearchTracksResponse, 
+  SearchArtistsResponse, 
+  SearchPlaylistsResponse, 
+  SearchType 
+} from '@/types/search';
 import { SearchLayout } from '../layout/search-layout';
 import { SearchAllSection } from '../section/search-all-section/search-all-section';
 import { SearchTrackSection } from '../section/search-track-section/search-track-section';
@@ -167,9 +172,9 @@ export const SearchView: React.FC<SearchViewProps> = ({ query, type, onTypeChang
   }
 
   // Extract data from queries
-  const tracks = tracksQuery.data?.pages.flatMap((page: any) => page.tracks?.items || []) || [];
-  const artists = artistsQuery.data?.pages.flatMap((page: any) => page.artists?.items || []) || [];
-  const playlists = playlistsQuery.data?.pages.flatMap((page: any) => page.playlists?.items || []) || [];
+  const tracks = tracksQuery.data?.pages.flatMap((page) => (page as SearchTracksResponse).tracks?.items || []) || [];
+  const artists = artistsQuery.data?.pages.flatMap((page) => (page as SearchArtistsResponse).artists?.items || []) || [];
+  const playlists = playlistsQuery.data?.pages.flatMap((page) => (page as SearchPlaylistsResponse).playlists?.items || []) || [];
 
   const renderContent = () => {
     switch (type) {

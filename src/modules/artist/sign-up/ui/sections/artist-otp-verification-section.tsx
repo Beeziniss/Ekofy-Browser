@@ -8,17 +8,16 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
 import { toast } from 'sonner';
+import { ArtistOTPData, ArtistSignUpSectionProps } from '@/types/artist_type';
 
-interface ArtistOTPVerificationSectionProps {
-  onNext: (data?: any) => void;
+type ArtistOTPVerificationSectionProps = ArtistSignUpSectionProps<ArtistOTPData> & {
   onBack: () => void;
-  initialData?: {
-    otp: string[];
-  };
-}
+};
 
 const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTPVerificationSectionProps) => {
-  const [otp, setOtp] = useState(initialData?.otp || ['', '', '', '', '', '']);
+  const [otp, setOtp] = useState<string[]>(
+    Array.isArray(initialData?.otp) ? initialData.otp : ['', '', '', '', '', '']
+  );
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   // Store and hooks
@@ -172,7 +171,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
         {/* Help Text */}
         <div className="text-center mt-4">
           <p className="text-gray-400 text-xs">
-            Didn't receive the code? Check your spam folder or{' '}
+            Did not receive the code? Check your spam folder or{' '}
             <button className="text-blue-400 hover:text-blue-300">
               change email address
             </button>

@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { toast } from "sonner";
 
 // Define types locally to avoid circular dependencies
 export type SignUpStep = "form" | "profile" | "otp";
@@ -188,7 +187,7 @@ export const useSignUpStore = create<SignUpState>()(
               return null;
             }
           },
-          setItem: (name: string, value: any) => {
+          setItem: (name: string, value: unknown) => {
             try {
               const stringified = JSON.stringify(value);
               localStorage.setItem(name, stringified);

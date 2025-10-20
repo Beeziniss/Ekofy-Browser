@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { infiniteQueryOptions } from '@tanstack/react-query';
 import { execute } from '../execute';
 import { SEARCH_ARTISTS, SEARCH_LISTENERS, SEARCH_PLAYLISTS, SEARCH_TRACKS } from '@/modules/client/search/ui/view/search-view';
+// TODO: Replace with proper GraphQL-generated types
 
 // Infinite Query Options
 export const searchTracksInfiniteOptions = (query: string, take: number = 10) =>

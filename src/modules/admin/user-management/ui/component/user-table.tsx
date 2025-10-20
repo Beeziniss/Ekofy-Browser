@@ -30,11 +30,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, CreditCard, UserCheck, UserX, Search } from "lucide-react";
-import { UserRole, UserStatus } from "@/gql/graphql";
+import { UserStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
-
+import { UserManagementUser } from "@/types";
 interface UserTableProps {
-  data: any[];
+  data: UserManagementUser[];
   totalCount: number;
   currentPage: number;
   pageSize: number;
@@ -68,7 +68,7 @@ export function UserTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<UserManagementUser>[] = [
     {
       accessorKey: "fullName",
       header: "User",

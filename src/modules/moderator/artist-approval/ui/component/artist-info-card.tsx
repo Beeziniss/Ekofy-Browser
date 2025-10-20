@@ -1,12 +1,25 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { DotIcon } from "lucide-react";
 import Image from "next/image";
+import { UserManagementArtist } from "@/types/user-management";
+
+// Extended artist interface for approval process with additional ID card properties
+interface ArtistApprovalData extends UserManagementArtist {
+  frontImageUrl?: string;
+  backImageUrl?: string;
+  identityCardNumber?: string;
+  identityCardFullName?: string;
+  identityCardDateOfBirth?: string;
+  gender?: string;
+  placeOfOrigin?: string;
+  placeOfResidence?: string;
+  phoneNumber?: string;
+}
 
 interface ArtistInfoCardProps {
-  artist: any; // Using any for now to work with GraphQL response
+  artist: ArtistApprovalData;
 }
 
 export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {

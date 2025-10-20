@@ -1,9 +1,9 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-
+import { ArtistMember } from "@/types/user-management";
 interface ArtistTeamMembersProps {
-  members: any[];
+  members: ArtistMember[];
 }
 
 export function ArtistTeamMembers({ members }: ArtistTeamMembersProps) {

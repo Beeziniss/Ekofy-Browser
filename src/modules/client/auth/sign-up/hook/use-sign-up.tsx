@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
 import { RegisterListenerData } from "@/types/auth";
 import { useAuthStore } from "@/store";
-import { setUserInfoToLocalStorage } from "@/utils/auth-utils";
-import { User } from "@/gql/graphql";
+// import { setUserInfoToLocalStorage } from "@/utils/auth-utils";
+// import { User } from "@/gql/graphql";
 import { toast } from "sonner";
 import { useSignUpStore } from "@/store/stores/listener-signup-store";
 import { formatSimpleAPIError } from "@/utils/signup-utils";
@@ -19,7 +19,7 @@ interface SignUpResponse {
 }
 
 const useSignUp = (onNavigate?: () => void) => {
-  const { setUserData, setAuthenticated, setLoading } = useAuthStore();
+  const { setAuthenticated, setLoading } = useAuthStore();
   const { goToNextStep, formData, resetForm, updateFormData } = useSignUpStore();
   const router = useRouter();
 

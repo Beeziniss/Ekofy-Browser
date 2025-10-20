@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 import { UserGender } from "@/gql/graphql";
 import { ArtistType } from "@/types/artist_type";
 // Define artist signup steps - removed OTP step
@@ -139,7 +139,7 @@ const getNextStep = (current: ArtistSignUpStep, formData?: Partial<ArtistSignUpF
   }
 };
 
-const getPreviousStep = (current: ArtistSignUpStep, formData?: Partial<ArtistSignUpFormData>): ArtistSignUpStep => {
+const getPreviousStep = (current: ArtistSignUpStep): ArtistSignUpStep => {
   switch (current) {
     case "cccd":
       return "form";
@@ -216,7 +216,7 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
         goToPreviousStep: () => {
           const state = get();
           const currentStep = state.currentStep;
-          const prevStep = getPreviousStep(currentStep, state.formData);
+          const prevStep = getPreviousStep(currentStep);
           
           // Only clear password session data when navigating back to form step for security
           let sessionData = state.sessionData;
@@ -274,7 +274,7 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
       // Clear session data (for security)
       clearSessionData: () => {
         set(
-          (state) => ({
+          () => ({
             sessionData: {
               password: undefined,
               confirmPassword: undefined

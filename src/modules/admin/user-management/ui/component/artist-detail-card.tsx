@@ -1,11 +1,10 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
-
+import { UserManagementUser, UserManagementArtist  } from "@/types";
 interface ArtistDetailCardProps {
-  artist: any;
-  user: any;
+  artist: UserManagementArtist;
+  user: UserManagementUser;
 }
 
 export function ArtistDetailCard({ artist, user }: ArtistDetailCardProps) {

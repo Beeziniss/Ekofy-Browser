@@ -15,6 +15,7 @@ import {
   adminListenerDetailOptions 
 } from "@/gql/options/admin-options";
 import { UserRole, ArtistType } from "@/gql/graphql";
+import { UserManagementArtist, UserManagementUser, UserManagementListener } from "@/types/user-management";
 
 interface UserDetailSectionProps {
   userId: string;
@@ -73,6 +74,59 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
     const showTeamTab =
       artist.artistType === ArtistType.Band ||
       artist.artistType === ArtistType.Group;
+
+    // Transform artist data to match UserManagementArtist interface
+    const transformedArtist: UserManagementArtist = {
+      id: artist.id,
+      userId: artist.userId,
+      stageName: artist.stageName,
+      email: artist.email,
+      artistType: artist.artistType,
+      categoryIds: artist.categoryIds || [],
+      biography: artist.biography || undefined,
+      followers: artist.followerCount || 0, // Map followerCount to followers
+      popularity: artist.popularity || 0,
+      avatarImage: artist.avatarImage || undefined,
+      bannerImage: artist.bannerImage || undefined,
+      isVerified: artist.isVerified,
+      verifiedAt: artist.verifiedAt,
+      createdAt: artist.createdAt,
+      updatedAt: artist.createdAt, // Use createdAt as updatedAt fallback
+      members: artist.members,
+      identityCard: artist.identityCard ? {
+        number: artist.identityCard.number,
+        fullName: artist.identityCard.fullName,
+        dateOfBirth: artist.identityCard.dateOfBirth,
+        gender: artist.identityCard.gender,
+        placeOfOrigin: artist.identityCard.placeOfOrigin,
+        nationality: artist.identityCard.nationality,
+        validUntil: artist.identityCard.validUntil || "",
+        placeOfResidence: {
+          street: artist.identityCard.placeOfResidence?.street || "",
+          ward: artist.identityCard.placeOfResidence?.ward || "",
+          province: artist.identityCard.placeOfResidence?.province || "",
+          oldDistrict: artist.identityCard.placeOfResidence?.oldDistrict || "",
+          oldWard: artist.identityCard.placeOfResidence?.oldWard || "",
+          oldProvince: artist.identityCard.placeOfResidence?.oldProvince || "",
+          addressLine: artist.identityCard.placeOfResidence?.addressLine || "",
+        },
+      } : undefined,
+    };
+
+    // Transform user data to match UserManagementUser interface
+    const transformedUser: UserManagementUser = {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      gender: user.gender,
+      birthDate: user.birthDate,
+      role: user.role,
+      phoneNumber: user.phoneNumber || "",
+      status: user.status,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt || user.createdAt,
+      isLinkedWithGoogle: false, // Default value for missing property
+    };
 
     return (
       <div className="space-y-6">
@@ -161,9 +215,9 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
 
         {/* Tab Content */}
         {activeTab === "overview" ? (
-          <ArtistDetailCard artist={artist} user={user} />
+          <ArtistDetailCard artist={transformedArtist} user={transformedUser} />
         ) : (
-          <ArtistTeamMembers members={artist.members || []} />
+          <ArtistTeamMembers members={transformedArtist.members || []} />
         )}
       </div>
     );
@@ -171,6 +225,38 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
 
   // Render Listener Detail
   if (role === UserRole.Listener && listener) {
+    // Transform listener data to match UserManagementListener interface
+    const transformedListener: UserManagementListener = {
+      id: listener.id,
+      userId: listener.userId,
+      displayName: listener.displayName,
+      email: listener.email,
+      avatarImage: listener.avatarImage || undefined,
+      bannerImage: listener.bannerImage || undefined,
+      isVerified: listener.isVerified,
+      verifiedAt: listener.verifiedAt,
+      followerCount: listener.followerCount,
+      followingCount: listener.followingCount,
+      lastFollowers: [], // Default empty array for missing property
+      lastFollowings: [], // Default empty array for missing property
+      createdAt: listener.createdAt,
+      updatedAt: listener.updatedAt || listener.createdAt,
+    };
+
+    // Transform user data to match UserManagementUser interface
+    const transformedUser: UserManagementUser = {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      gender: user.gender,
+      birthDate: user.birthDate,
+      role: user.role,
+      phoneNumber: user.phoneNumber || "",
+      status: user.status,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt || user.createdAt,
+      isLinkedWithGoogle: false, // Default value for missing property
+    };
     return (
       <div className="space-y-6">
         {/* Banner Background */}
@@ -237,7 +323,7 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
         </div>
 
         {/* Content */}
-        <ListenerDetailCard listener={listener} user={user} />
+        <ListenerDetailCard listener={transformedListener} user={transformedUser} />
       </div>
     );
   } // Fallback for other roles or missing data

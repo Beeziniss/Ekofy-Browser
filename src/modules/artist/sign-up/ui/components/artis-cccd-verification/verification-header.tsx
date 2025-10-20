@@ -20,7 +20,7 @@ const VerificationHeader: React.FC = () => {
         Enter your personal information to complete the registration
         process.
         <br />
-        If you're a member of a band/group, enter the representative
+        If you are a member of a band/group, enter the representative
         information.
       </p>
     </div>

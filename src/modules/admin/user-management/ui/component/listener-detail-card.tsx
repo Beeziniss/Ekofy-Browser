@@ -1,10 +1,8 @@
 "use client";
-
-import Image from "next/image";
-
+import { UserManagementListener, UserManagementUser } from "@/types";
 interface ListenerDetailCardProps {
-  listener: any;
-  user: any;
+  listener: UserManagementListener;
+  user: UserManagementUser;
 }
 
 export function ListenerDetailCard({ listener, user }: ListenerDetailCardProps) {
