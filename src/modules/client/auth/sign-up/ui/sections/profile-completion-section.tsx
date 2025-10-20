@@ -15,22 +15,12 @@ import useSignUp from '../../hook/use-sign-up';
 import { formatDate } from '@/utils/signup-utils';
 import { toast } from 'sonner';
 import { uploadImageToCloudinary, validateImageFile } from '@/utils/cloudinary-utils';
+import { ClientProfileCompletionSectionProps } from '@/types/listener-auth';
 
-interface ProfileCompletionSectionProps {
-  onNext: (data?: any) => void;
-  onBack: () => void;
-  initialData?: {
-    displayName: string;
-    dateOfBirth: Date | undefined;
-    gender: string;
-    avatar?: File | null;
-  };
-}
-
-const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileCompletionSectionProps) => {
+const ProfileCompletionSection = ({ onNext, onBack, initialData }: ClientProfileCompletionSectionProps) => {
   const { 
     goToPreviousStep, 
-    goToNextStep, 
+    // goToNextStep, 
     formData,
     updateFormData
   } = useSignUpStore();
@@ -48,11 +38,15 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
 
   // Initialize state from global store or initial data
   const [displayName, setDisplayName] = useState(initialData?.displayName || formData.displayName || '');
-  const [fullName, setFullName] = useState(formData.fullName || '');
+  const [fullName, setFullName] = useState(initialData?.fullName || formData.fullName || '');
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(
     initialData?.dateOfBirth || normalizeDateFromStore(formData.birthDate)
   );
-  const [gender, setGender] = useState(initialData?.gender || formData.gender || '');
+  const [gender, setGender] = useState<'Male' | 'Female' | 'Other'>(
+    (initialData?.gender as 'Male' | 'Female' | 'Other') || 
+    (formData.gender as 'Male' | 'Female' | 'Other') || 
+    'Male'
+  );
   const [avatar, setAvatar] = useState<File | null>(initialData?.avatar || null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -60,10 +54,12 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
   const [dateError, setDateError] = useState('');
 
   // Use the signup hook for API calls with auto-navigation to OTP step
-  const { signUp, isLoading: isRegistering, isError, isSuccess, error } = useSignUp(
+  const { signUp, isLoading: isRegistering} = useSignUp(
     () => {
       // This callback is called when navigation happens automatically
-      onNext({ displayName, fullName, dateOfBirth, gender, avatar });
+      if (dateOfBirth) {
+        onNext({ displayName, fullName, dateOfBirth, gender, avatar });
+      }
     }
   );
 
@@ -78,7 +74,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
         setDateOfBirth(dateValue);
       }
     }
-    if (formData.gender) setGender(formData.gender);
+    if (formData.gender) setGender(formData.gender as 'Male' | 'Female' | 'Other');
     // Set avatar URL if exists in store
     if (formData.avatarImage) {
       setAvatarUrl(formData.avatarImage);
@@ -272,7 +268,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       });
 
       setAvatarUrl(uploadResult.secure_url);
-      toast.success('Tải ảnh lên thành công!');
+      toast.success('Image uploaded successfully!');
       
       // Store avatar URL in form data immediately
       updateFormData({ avatarImage: uploadResult.secure_url });
@@ -328,7 +324,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                     />
                     {avatarUploading && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-                        <div className="text-white text-sm">Đang tải lên...</div>
+                        <div className="text-white text-sm">Uploading...</div>
                       </div>
                     )}
                     {/* Clear button */}
@@ -484,7 +480,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                 <label htmlFor="gender" className="block text-sm font-medium text-white mb-2">
                   Gender*
                 </label>
-                <Select value={gender} onValueChange={setGender} required>
+                <Select value={gender} onValueChange={(value) => setGender(value as 'Male' | 'Female' | 'Other')} required>
                   <SelectTrigger className="w-full border-gradient-input text-white h-12">
                     <SelectValue placeholder="Gender" className="text-gray-400" />
                   </SelectTrigger>

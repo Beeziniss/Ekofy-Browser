@@ -124,12 +124,18 @@ export const fptAIService = {
     frontResponse?: FPTAIResponse,
     backResponse?: FPTAIResponse
   ): ParsedCCCDData | null => {
+    console.log("🔍 Parsing FPT AI responses:", { frontResponse, backResponse }); // Debug log
+    
     if (!frontResponse?.data?.[0]) {
+      console.log("❌ No front response data found");
       return null;
     }
 
     const frontData = frontResponse.data[0];
     const backData = backResponse?.data?.[0];
+    
+    console.log("📄 Front data:", frontData);
+    console.log("📄 Back data:", backData);
 
     // Convert sex format
     const convertSex = (sex: string): string => {
@@ -145,7 +151,7 @@ export const fptAIService = {
       return dateStr;
     };
 
-    return {
+    const result = {
       id: frontData.id || "",
       name: frontData.name || "",
       dateOfBirth: formatDate(frontData.dob || ""),
@@ -164,6 +170,9 @@ export const fptAIService = {
       issueLocation: backData?.issue_loc || "",
       features: backData?.features || "",
     };
+    
+    console.log("✅ Parsed result:", result);
+    return result;
   },
 
   /**

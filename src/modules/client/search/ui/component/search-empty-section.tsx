@@ -25,7 +25,7 @@ export const SearchEmptySection: React.FC<SearchEmptySectionProps> = ({ type, qu
         {getEmptyMessage()}
       </h2>
       <p className="text-gray-400">
-        We couldn't find any {type} matching "{query}"
+        We couldn`t find any {type} matching `{query}`
       </p>
       <p className="text-gray-500 text-sm mt-2">
         Try searching with different keywords or check your spelling

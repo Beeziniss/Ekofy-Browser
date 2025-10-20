@@ -2,9 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { MoreHorizontal, Plus, Heart, Share, Flag } from 'lucide-react';
+import { SearchArtistItem, SearchPlaylistItem } from '@/types/search';
 
 interface GenericActionMenuProps {
-  item: any;
+  item: SearchArtistItem | SearchPlaylistItem;
   type: 'artist' | 'playlist' | 'album';
   className?: string;
 }

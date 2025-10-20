@@ -13,7 +13,7 @@ import {
   Flag,
   UserCheck,
   UserRoundCheck,
-  Settings,
+  // Settings,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";

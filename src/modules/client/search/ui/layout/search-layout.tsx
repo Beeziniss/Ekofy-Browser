@@ -13,7 +13,7 @@ export const SearchLayout: React.FC<SearchLayoutProps> = ({
   children,
   currentType,
   onTypeChange,
-  query
+  // query
 }) => {
   return (
     <div className="flex flex-col space-y-6 p-12">

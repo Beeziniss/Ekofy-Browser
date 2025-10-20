@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
 import { 
   ArtistSignUpFormSection,
@@ -16,16 +16,16 @@ import {
 import ArtistAuthLayout from '../layouts/artist-signup-layout';
 
 const ArtistSignUpView = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const { currentStep, goToPreviousStep } = useArtistSignUpStore();
 
   // Navigation after successful registration completion
-  const handleRegistrationSuccess = () => {    
-    // Navigate to artist dashboard or success page
-    setTimeout(() => {
-      router.push('/artist/login'); // or wherever you want to redirect after successful registration
-    }, 1500);
-  };
+  // const handleRegistrationSuccess = () => {    
+  //   // Navigate to artist dashboard or success page
+  //   setTimeout(() => {
+  //     router.push('/artist/login'); // or wherever you want to redirect after successful registration
+  //   }, 1500);
+  // };
 
   // Handle back navigation
   const handleBack = () => {

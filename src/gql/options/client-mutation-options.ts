@@ -54,12 +54,12 @@ export const addToPlaylistMutationOptions = mutationOptions({
 
 export const removeFromPlaylistMutationOptions = mutationOptions({
   mutationKey: ["remove-from-playlist"],
-  mutationFn: async (addToPlaylistRequest: {
+  mutationFn: async (removeFromPlaylistRequest: {
     playlistId?: string;
     playlistName?: string;
     trackId: string;
   }) =>
     await execute(RemoveFromPlaylistMutation, {
-      addToPlaylistRequest,
+      removeFromPlaylistRequest,
     }),
 });

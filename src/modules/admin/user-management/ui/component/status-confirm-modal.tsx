@@ -23,7 +23,7 @@ export function StatusConfirmModal({
   onClose,
   onConfirm,
   status,
-  userName,
+  // userName,
 }: StatusConfirmModalProps) {
   const isActivating = status === UserStatus.Active;
   const isDeactivating = status === UserStatus.Banned;

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
-import { RegisterArtistData, RegisterArtistResponse } from "@/types/auth";
+import { RegisterArtistData } from "@/types/auth";
 import { useAuthStore } from "@/store";
 import { setUserInfoToLocalStorage } from "@/utils/auth-utils";
 import { toast } from "sonner";
@@ -10,7 +10,7 @@ import { User } from "@/gql/graphql";
 import { mapGraphQLUserRoleToLocal } from "@/utils/signup-utils";
 
 // Simple error formatter for artist signup
-const formatArtistSignUpError = (error: any): string => {
+const formatArtistSignUpError = (error: unknown): string => {
   if (isAxiosError(error)) {
     const response = error.response;
     const data = response?.data;

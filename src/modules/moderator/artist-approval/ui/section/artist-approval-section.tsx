@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ArtistApprovalTable } from "../component";
 import { moderatorArtistsQueryOptions } from "@/gql/options/moderator-options";
-import { is } from "date-fns/locale";
 
 export function ArtistApprovalSection() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,8 +48,31 @@ export function ArtistApprovalSection() {
     return <div className="text-red-500">Error loading data: {error.message}</div>;
   }
   
-  const artists = artistsData?.pendingArtistRegistrations || [];
-  const totalCount = artists[0]?.totalCount || 0; // Get totalCount from first item
+  const artistsRaw = artistsData?.pendingArtistRegistrations || [];
+  const totalCount = artistsRaw[0]?.totalCount || 0; // Get totalCount from first item
+  
+  // Transform data to match expected interface
+  const artists = artistsRaw.map((artist) => ({
+    id: artist.id || '',
+    userId: artist.id || '', // Use id as userId if userId not available
+    stageName: artist.stageName || '',
+    email: artist.email || '',
+    artistType: artist.artistType,
+    categoryIds: [],
+    biography: undefined,
+    popularity: 0,
+    avatarImage: artist.avatarImage || undefined,
+    bannerImage: undefined,
+    isVerified: false,
+    verifiedAt: undefined,
+    createdAt: new Date().toISOString(), // Use current date as fallback
+    updatedAt: '',
+    fullName: artist.fullName,
+    gender: artist.gender?.toString(),
+    birthDate: artist.birthDate,
+    phoneNumber: artist.phoneNumber,
+    followers: 0,
+  }));
   
   // Calculate pagination info
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -63,7 +85,7 @@ export function ArtistApprovalSection() {
   return (
     <div className="space-y-6">
       <ArtistApprovalTable
-        data={artists as any[]}
+        data={artists}
         totalCount={totalCount}
         currentPage={currentPage}
         pageSize={pageSize}

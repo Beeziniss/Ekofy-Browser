@@ -4,17 +4,19 @@ import { TrackActionMenu } from '../../component/track-action-menu';
 import { PlayPauseButton } from '../../component/play-pause-button';
 import { usePlayPause } from '@/hooks/use-play-pause';
 import {
-  Table,
+  // Table,
   TableBody,
   TableCell,
   TableRow,
 } from "@/components/ui/table";
+import Image from 'next/image';
+import { SearchTrackItem, SearchArtistItem, SearchPlaylistItem } from '@/types/search';
 
 interface SearchAllSectionProps {
   query: string;
-  tracks: any[];
-  artists: any[];
-  playlists: any[];
+  tracks: SearchTrackItem[];
+  artists: SearchArtistItem[];
+  playlists: SearchPlaylistItem[];
   isLoading?: boolean;
 }
 
@@ -128,14 +130,16 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
                   
                   <TableCell>
                     <div className="flex items-center space-x-3">
-                      <img
+                      <Image
                         src={track.coverImage || "/default-track.png"}
                         alt={track.name}
+                        width={40}
+                        height={40}
                         className="w-10 h-10 rounded object-cover flex-shrink-0"
                       />
                       <div className="min-w-0">
                         <p className="text-white font-medium truncate">{track.name}</p>
-                        <p className="text-gray-400 text-sm truncate">{track.mainArtistsAsync[0]?.stageName}</p>
+                        <p className="text-gray-400 text-sm truncate">{track.mainArtistsAsync.items[0]?.stageName}</p>
                       </div>
                     </div>
                   </TableCell>
@@ -179,7 +183,7 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
               <div key={artist.id} className="flex flex-col items-center space-y-2 p-3 rounded hover:bg-gray-800 transition-colors group relative">
                 <div className="relative">
                   {artist?.avatarImage ? (
-                    <img
+                    <Image
                       src={artist?.avatarImage}
                       alt={artist?.stageName}
                       className="w-52 h-52 rounded-full object-cover"
@@ -231,7 +235,7 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
             {playlists.slice(0, 5).map((playlist) => (
               <div key={playlist.id} className="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition-colors group">
                 <div className="relative mb-3">
-                  <img
+                  <Image
                     src={playlist.coverImage || "/default-playlist.png"}
                     alt={playlist.name}
                     className="w-full aspect-square rounded-lg object-cover"

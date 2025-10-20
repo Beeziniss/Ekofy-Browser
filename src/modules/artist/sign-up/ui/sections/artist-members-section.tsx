@@ -20,19 +20,11 @@ import { convertArtistStoreDataToAPIFormat } from '@/utils/signup-utils';
 import { toast } from 'sonner';
 import { UserGender } from '@/gql/graphql';
 import { useRouter } from 'next/navigation';
+import { ArtistMembersData, ArtistSignUpSectionProps, ArtistMemberData } from '@/types/artist_type';
 
-interface Member {
-  fullName: string;
-  email: string;
-  phoneNumber: string;
-  gender: string;
-}
-
-interface ArtistMembersSectionProps {
-  onNext: (data?: any) => void;
+type ArtistMembersSectionProps = ArtistSignUpSectionProps<ArtistMembersData> & {
   onBack: () => void;
-  initialData?: Member[];
-}
+};
 
 const ArtistMembersSection = ({
   onNext,
@@ -51,13 +43,19 @@ const ArtistMembersSection = ({
   };
   
   const { signUp, isLoading } = useArtistSignUp(handleNavigateToLogin);
-  const [members, setMembers] = useState<Member[]>(initialData || formData.members || []);
+  const initialMembers = Array.isArray(initialData) ? initialData : initialData?.members || formData.members || [];
+  const [members, setMembers] = useState<ArtistMemberData[]>(
+    initialMembers.map(member => ({
+      ...member,
+      isLeader: false // Add default isLeader property
+    }))
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const addMember = () => {
     setMembers([
       ...members,
-      { fullName: "", email: "", phoneNumber: "", gender: "" },
+      { fullName: "", email: "", phoneNumber: "", gender: "MALE", isLeader: false },
     ]);
   };
 
@@ -67,7 +65,7 @@ const ArtistMembersSection = ({
     }
   };
 
-  const updateMember = (index: number, field: keyof Member, value: string) => {
+  const updateMember = (index: number, field: keyof ArtistMemberData, value: string | boolean) => {
     const updatedMembers = members.map((member, i) =>
       i === index ? { ...member, [field]: value } : member,
     );
@@ -157,7 +155,7 @@ const ArtistMembersSection = ({
       }
       
       // Also call the original onNext for backward compatibility
-      onNext(members);
+      onNext({ members });
     }
   };
 

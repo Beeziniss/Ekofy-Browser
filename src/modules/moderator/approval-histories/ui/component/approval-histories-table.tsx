@@ -6,7 +6,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -53,7 +52,7 @@ export function ApprovalHistoriesTable({
   hasPreviousPage,
   searchTerm,
   isLoading = false,
-  error = null,
+  // error = null,
 }: ApprovalHistoriesTableProps) {
   const router = useRouter();
 

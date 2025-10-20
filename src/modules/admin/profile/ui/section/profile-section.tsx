@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store";
-import { moderatorProfileOptions } from "@/gql/options/moderator-options";
+import { adminProfileOptions } from "@/gql/options/admin-options";
 import ProfileHeader from "../component/profile-header";
 import ProfileInfoSection from "../component/profile-info-section";
 import ChangePasswordSection from "../component/change-password-section";
@@ -11,10 +11,14 @@ import EditProfileModal from "../component/edit-profile-modal";
 
 const ProfileSection = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   
   // Fetch user profile data
-  const { data: userProfile } = useSuspenseQuery(moderatorProfileOptions(user?.userId || ""));
+  const { data: userProfile } = useQuery({
+    ...adminProfileOptions(user?.userId || ""),
+    enabled: isAuthenticated && !!user?.userId
+  });
+
 
   const handleEditClick = () => {
     setIsEditModalOpen(true);
@@ -24,15 +28,15 @@ const ProfileSection = () => {
     setIsEditModalOpen(false);
   };
 
-  const handleSaveProfile = (data: any) => {
-    console.log("Saving profile:", data);
-    // TODO: Implement profile save logic
-  };
+  // const handleSaveProfile = (data: any) => {
+  //   console.log("Saving profile:", data);
+  //   // TODO: Implement profile save logic
+  // };
 
-  const handleSavePassword = (data: any) => {
-    console.log("Saving password:", data);
-    // TODO: Implement password change logic
-  };
+  // const handleSavePassword = (data: any) => {
+  //   console.log("Saving password:", data);
+  //   // TODO: Implement password change logic
+  // };
 
   if (!userProfile) {
     return <div className="text-white">No user data found</div>;
@@ -51,7 +55,7 @@ const ProfileSection = () => {
         </div>
         
         <div className="border-t border-gray-700 pt-6">
-          <ChangePasswordSection onSave={handleSavePassword} />
+          <ChangePasswordSection />
         </div>
       </div>
 
@@ -59,7 +63,7 @@ const ProfileSection = () => {
         isOpen={isEditModalOpen}
         userProfile={userProfile}
         onClose={handleCloseModal}
-        onSave={handleSaveProfile}
+        // onSave={handleSaveProfile}
       />
     </div>
   );

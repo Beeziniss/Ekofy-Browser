@@ -15,7 +15,7 @@ interface ArtistActionsCardProps {
 
 export function ArtistActionsCard({
   artistName,
-  userId,
+  // userId,
   onApprove,
   onReject,
   // onCancel,
