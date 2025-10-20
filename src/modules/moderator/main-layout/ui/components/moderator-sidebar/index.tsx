@@ -51,6 +51,11 @@ const data = {
       name: "User Management",
       url: "/moderator/user-management",
       icon: LayoutDashboardIcon,
+    },
+    {
+      name: "Approval Histories",
+      url: "/moderator/approval-histories",
+      icon: ShieldCheck,
     }
   ],
 };

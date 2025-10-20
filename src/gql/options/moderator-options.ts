@@ -7,10 +7,10 @@ import {
 import { PendingArtistRegistrationsQuery } from "@/modules/moderator/artist-approval/ui/views/artist-approval-view";
 import { execute } from "../execute";
 import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserRole, UserFilterInput } from "@/gql/graphql";
+import { UserRole, UserFilterInput, ApprovalHistoryFilterInput, ApprovalType } from "@/gql/graphql";
 import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
 import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/moderator/user-management/ui/views/moderator-user-detail-view";
-
+import {ApprovalHistoriesListQuery, ModeratorApprovalHistoryDetailQuery} from "@/modules/moderator/approval-histories/ui/views/approval-histories-view";
 export const moderatorProfileOptions = (userId: string) => queryOptions({
   queryKey: ["moderator-profile", userId],
   queryFn: async () => {
@@ -152,5 +152,48 @@ export const moderatorUserDetailOptions = (userId: string) => queryOptions({
       artists: result.artists?.items || [],
       listeners: result.listeners?.items || [],
     };
+  },
+});
+
+// Approval histories query options for moderator
+export const moderatorApprovalHistoriesOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") => queryOptions({
+  queryKey: ["moderator-approval-histories", page, pageSize, searchTerm],
+  queryFn: async () => {
+    const skip = (page - 1) * pageSize;
+    
+    // Build where filter
+    const where: ApprovalHistoryFilterInput = {
+      approvalType: { in: [ApprovalType.ArtistRegistration] }
+    };
+    
+    // Add search filter if provided - search in notes or targetId
+    if (searchTerm.trim()) {
+      where.snapshot = {
+        contains: searchTerm
+      };
+    }
+    
+     const result = await execute(ApprovalHistoriesListQuery, { 
+      skip,
+      take: pageSize,
+      where
+    });
+    
+    return result;
+  },
+  placeholderData: (previousData) => previousData,
+});
+
+// Approval history detail query options for moderator
+export const moderatorApprovalHistoryDetailOptions = (historyId: string) => queryOptions({
+  queryKey: ["moderator-approval-history-detail", historyId],
+  queryFn: async () => {
+    const result = await execute(ModeratorApprovalHistoryDetailQuery, { 
+      where: { 
+        id: { eq: historyId } 
+      } 
+    });
+    
+    return result.approvalHistories?.items?.[0] || null;
   },
 });
