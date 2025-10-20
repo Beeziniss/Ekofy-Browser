@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Geist, Geist_Mono } from "next/font/google";
+import { Be_Vietnam_Pro, Poppins } from "next/font/google";
 
 import Providers from "@/providers/providers";
+import { Toaster } from "@/components/ui/sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const beVietNamPro = Be_Vietnam_Pro({
+  subsets: ["vietnamese"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-be-vietnam-pro",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const poppins = Poppins({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-poppins",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,11 +31,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${beVietNamPro.variable} ${poppins.variable} bg-main-dark-bg font-bepro antialiased`}
       >
         <Providers>{children}</Providers>
+        <Toaster
+          theme="dark"
+          richColors
+          position="bottom-right"
+          offset={{
+            bottom: 60,
+            right: 12,
+          }}
+          duration={1500}
+        />
       </body>
     </html>
   );

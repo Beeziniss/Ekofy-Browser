@@ -41,6 +41,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --color-gradient-primary: var(--gradient-primary);
 }
 
 :root {
@@ -79,7 +81,7 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: oklch(14.479% 0.00002 271.152);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -110,6 +112,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --gradient-primary: linear-gradient(to right, #3b54ea, #ab4ee5);
 }
 
 @layer base {
@@ -117,6 +121,96 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground bg-main-dark-bg;
   }
 }
+
+@theme {
+  --font-bepro: "Be Vietnam Pro";
+  --font-poppins: var(--font-poppins);
+
+  --color-main-dark-bg: #121212;
+  --color-main-dark-bg-1: #1a1a1a;
+  --color-main-white: #f2f2f2;
+  --color-main-grey: #b3b3b3;
+  --color-main-grey-dark: #d9d9d9;
+  --color-main-grey-dark-1: #999999;
+  --color-main-grey-dark-bg: #404040;
+  --color-main-blue: #3b54ea;
+  --color-main-purple: #ab4ee5;
+  --color-main-link: #3ea6ff;
+
+  --color-main-slider-bg: #4f4f4f;
+  --color-main-card-bg: #303030;
+  --color-main-track-hover: #2e2e2e;
+}
+/* Gradient colors */
+
+.primary_gradient {
+  @apply bg-gradient-to-r from-[#3B54EA] to-[#AB4EE5];
+}
+
+.text-primary-gradient {
+  @apply bg-gradient-to-r from-[#3B54EA] to-[#AB4EE5] bg-clip-text text-transparent;
+}
+
+.border-gradient-input {
+  background:
+    linear-gradient(#121212, #121212) padding-box,
+    linear-gradient(to right, #3b54ea, #ab4ee5) border-box;
+  border: 2px solid transparent;
+}
+
+.border-gradient-input-error {
+  background:
+    linear-gradient(#1e2939, #1e2939) padding-box,
+    linear-gradient(to right, #ef4444, #ef4444) border-box;
+  border: 2px solid transparent;
+}
+
+/* Loader  */
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  display: grid;
+}
+.loader::before,
+.loader::after {
+  content: "";
+  grid-area: 1/1;
+  --c: no-repeat radial-gradient(farthest-side, #3b54ea 92%, #0000);
+  --d: no-repeat radial-gradient(farthest-side, #ab4ee5 92%, #0000);
+  background:
+    var(--c) 50% 0,
+    var(--d) 50% 100%,
+    var(--c) 100% 50%,
+    var(--d) 0 50%;
+  background-size: 12px 12px;
+  animation: l12 1s infinite;
+}
+.loader::before {
+  margin: 4px;
+  filter: hue-rotate(45deg);
+  background-size: 8px 8px;
+  animation-timing-function: linear;
+}
+
+@keyframes l12 {
+  100% {
+    transform: rotate(0.5turn);
+  }
+}
+
+/* React Query Devtools */
+.go1754112896 {
+  right: 24px !important;
+  bottom: 24px !important;
+}
+
+/* Dialog backdrop blur effect */
+[data-radix-dialog-overlay] {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Random Styles */

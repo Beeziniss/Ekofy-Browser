@@ -1,0 +1,102 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { ArtistApprovalTable } from "../component";
+import { moderatorArtistsQueryOptions } from "@/gql/options/moderator-options";
+
+export function ArtistApprovalSection() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const pageSize = 10;
+
+  // Debounce search term
+  useEffect(() => {
+    if (searchTerm !== debouncedSearchTerm) {
+      setIsSearching(true);
+    }
+    
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1); // Reset to first page when search term changes
+      setIsSearching(false);
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, debouncedSearchTerm]);
+
+  const {
+    data: artistsData,
+    isLoading,
+    error,
+  } = useQuery(moderatorArtistsQueryOptions(currentPage, pageSize, debouncedSearchTerm));
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+  };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-64">Loading Data...</div>;
+  }
+  if (error) {
+    return <div className="text-red-500">Error loading data: {error.message}</div>;
+  }
+  
+  const artistsRaw = artistsData?.pendingArtistRegistrations || [];
+  const totalCount = artistsRaw[0]?.totalCount || 0; // Get totalCount from first item
+  
+  // Transform data to match expected interface
+  const artists = artistsRaw.map((artist) => ({
+    id: artist.id || '',
+    userId: artist.id || '', // Use id as userId if userId not available
+    stageName: artist.stageName || '',
+    email: artist.email || '',
+    artistType: artist.artistType,
+    categoryIds: [],
+    biography: undefined,
+    popularity: 0,
+    avatarImage: artist.avatarImage || undefined,
+    bannerImage: undefined,
+    isVerified: false,
+    verifiedAt: undefined,
+    createdAt: new Date().toISOString(), // Use current date as fallback
+    updatedAt: '',
+    fullName: artist.fullName,
+    gender: artist.gender?.toString(),
+    birthDate: artist.birthDate,
+    phoneNumber: artist.phoneNumber,
+    followers: 0,
+  }));
+  
+  // Calculate pagination info
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const hasNextPage = currentPage < totalPages;
+  const hasPreviousPage = currentPage > 1;
+
+  // Show loading state for table or searching state
+  const isTableLoading = isLoading || isSearching;
+
+  return (
+    <div className="space-y-6">
+      <ArtistApprovalTable
+        data={artists}
+        totalCount={totalCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onPageChange={handlePageChange}
+        onSearch={handleSearch}
+        hasNextPage={hasNextPage}
+        hasPreviousPage={hasPreviousPage}
+        searchTerm={searchTerm}
+        isLoading={isTableLoading}
+        error={error}
+      />
+    </div>
+  );
+}
