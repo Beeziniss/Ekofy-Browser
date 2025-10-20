@@ -26,6 +26,28 @@ const initialState = {
   isLoading: true,
 };
 
+// Helper function to sync auth state with cookies for middleware access
+const syncAuthWithCookies = (state: Partial<AuthState>) => {
+  if (typeof window !== "undefined") {
+    try {
+      const authData = {
+        state: {
+          user: state.user,
+          isAuthenticated: state.isAuthenticated,
+        },
+      };
+
+      console.log(authData);
+
+      // Set cookie with auth data for middleware access
+      const cookieValue = JSON.stringify(authData);
+      document.cookie = `auth-storage=${encodeURIComponent(cookieValue)}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=lax`;
+    } catch (error) {
+      console.error("Failed to sync auth state with cookies:", error);
+    }
+  }
+};
+
 export const useAuthStore = create<AuthState>()(
   devtools(
     persist(
@@ -34,40 +56,42 @@ export const useAuthStore = create<AuthState>()(
 
         // Set user data and mark as authenticated
         setUserData: (user: IUserLocalStorage, accessToken?: string) => {
-          set(
-            {
-              user,
-              accessToken: accessToken || null,
-              isAuthenticated: true,
-              isLoading: false,
-            },
-            false,
-            "auth/setUserData",
-          );
+          const newState = {
+            user,
+            accessToken: accessToken || null,
+            isAuthenticated: true,
+            isLoading: false,
+          };
+
+          set(newState, false, "auth/setUserData");
+          syncAuthWithCookies(newState);
         },
 
         // Clear user data and mark as unauthenticated
         clearUserData: () => {
           clearAuthData(); // Clear localStorage
-          set(
-            {
-              user: null,
-              accessToken: null,
-              isAuthenticated: false,
-              isLoading: false,
-            },
-            false,
-            "auth/clearUserData",
-          );
+
+          const newState = {
+            user: null,
+            accessToken: null,
+            isAuthenticated: false,
+            isLoading: false,
+          };
+
+          set(newState, false, "auth/clearUserData");
+
+          // Clear auth cookie
+          if (typeof window !== "undefined") {
+            document.cookie =
+              "auth-storage=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+          }
         },
 
         // Set authentication status
         setAuthenticated: (authenticated: boolean) => {
-          set(
-            { isAuthenticated: authenticated },
-            false,
-            "auth/setAuthenticated",
-          );
+          const newState = { isAuthenticated: authenticated };
+          set(newState, false, "auth/setAuthenticated");
+          syncAuthWithCookies(newState);
         },
 
         // Set loading status
@@ -83,6 +107,12 @@ export const useAuthStore = create<AuthState>()(
         // Reset entire auth state
         reset: () => {
           set(initialState, false, "auth/reset");
+
+          // Clear auth cookie
+          if (typeof window !== "undefined") {
+            document.cookie =
+              "auth-storage=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+          }
         },
       }),
       {
@@ -93,6 +123,12 @@ export const useAuthStore = create<AuthState>()(
           accessToken: state.accessToken,
           isAuthenticated: state.isAuthenticated,
         }),
+        // Sync with cookies when state is rehydrated
+        onRehydrateStorage: () => (state) => {
+          if (state) {
+            syncAuthWithCookies(state);
+          }
+        },
       },
     ),
     {
