@@ -30,18 +30,21 @@ const initialState = {
 const syncAuthWithCookies = (state: Partial<AuthState>) => {
   if (typeof window !== "undefined") {
     try {
-      const authData = {
-        state: {
-          user: state.user,
-          isAuthenticated: state.isAuthenticated,
-        },
-      };
+      // Only sync if we have complete user data or we're explicitly clearing
+      if ((state.user && state.isAuthenticated) || state.isAuthenticated === false) {
+        const authData = {
+          state: {
+            user: state.user,
+            isAuthenticated: state.isAuthenticated,
+          },
+        };
 
-      console.log(authData);
+        console.log("Syncing auth data to cookies:", authData);
 
-      // Set cookie with auth data for middleware access
-      const cookieValue = JSON.stringify(authData);
-      document.cookie = `auth-storage=${encodeURIComponent(cookieValue)}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=lax`;
+        // Set cookie with auth data for middleware access
+        const cookieValue = JSON.stringify(authData);
+        document.cookie = `auth-storage=${encodeURIComponent(cookieValue)}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=lax`;
+      }
     } catch (error) {
       console.error("Failed to sync auth state with cookies:", error);
     }
@@ -89,9 +92,11 @@ export const useAuthStore = create<AuthState>()(
 
         // Set authentication status
         setAuthenticated: (authenticated: boolean) => {
-          const newState = { isAuthenticated: authenticated };
-          set(newState, false, "auth/setAuthenticated");
-          syncAuthWithCookies(newState);
+          set((state) => {
+            const newState = { ...state, isAuthenticated: authenticated };
+            syncAuthWithCookies(newState);
+            return { isAuthenticated: authenticated };
+          }, false, "auth/setAuthenticated");
         },
 
         // Set loading status

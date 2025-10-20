@@ -14,7 +14,8 @@ export function middleware(request: NextRequest) {
 
   if (authStorage) {
     try {
-      const authData = JSON.parse(authStorage);
+      const decodedValue = decodeURIComponent(authStorage);
+      const authData = JSON.parse(decodedValue);
       user = authData.state?.user;
       isAuthenticated = authData.state?.isAuthenticated || false;
     } catch (error) {
