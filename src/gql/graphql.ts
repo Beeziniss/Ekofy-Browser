@@ -22,6 +22,7 @@ export type Scalars = {
   Decimal: { input: any; output: any; }
   /** Polymorphic scalar for String, Int, Long, Double, Decimal, Boolean, DateTime, Object, Array. */
   EntitlementValue: { input: any; output: any; }
+  JSON: { input: any; output: any; }
   /** The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1. */
   Long: { input: any; output: any; }
   /** The `TimeSpan` scalar represents an ISO-8601 compliant duration type. */
@@ -138,12 +139,13 @@ export type ApprovalHistoriesCollectionSegment = {
 export type ApprovalHistory = {
   __typename?: 'ApprovalHistory';
   action: HistoryActionType;
+  actionAt: Scalars['DateTime']['output'];
+  actionByUserId: Scalars['String']['output'];
   approvalType: ApprovalType;
-  approvedAt: Scalars['DateTime']['output'];
   approvedBy: Array<User>;
-  approvedByUserId: Scalars['String']['output'];
   id: Scalars['String']['output'];
   notes?: Maybe<Scalars['String']['output']>;
+  snapshot: Scalars['JSON']['output'];
   targetId: Scalars['String']['output'];
   targetOwnerId?: Maybe<Scalars['String']['output']>;
   track: Array<Track>;
@@ -170,24 +172,26 @@ export type ApprovalHistoryUserArgs = {
 
 export type ApprovalHistoryFilterInput = {
   action?: InputMaybe<HistoryActionTypeOperationFilterInput>;
+  actionAt?: InputMaybe<DateTimeOperationFilterInput>;
+  actionByUserId?: InputMaybe<StringOperationFilterInput>;
   and?: InputMaybe<Array<ApprovalHistoryFilterInput>>;
   approvalType?: InputMaybe<ApprovalTypeOperationFilterInput>;
-  approvedAt?: InputMaybe<DateTimeOperationFilterInput>;
-  approvedByUserId?: InputMaybe<StringOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   notes?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<ApprovalHistoryFilterInput>>;
+  snapshot?: InputMaybe<StringOperationFilterInput>;
   targetId?: InputMaybe<StringOperationFilterInput>;
   targetOwnerId?: InputMaybe<StringOperationFilterInput>;
 };
 
 export type ApprovalHistorySortInput = {
   action?: InputMaybe<SortEnumType>;
+  actionAt?: InputMaybe<SortEnumType>;
+  actionByUserId?: InputMaybe<SortEnumType>;
   approvalType?: InputMaybe<SortEnumType>;
-  approvedAt?: InputMaybe<SortEnumType>;
-  approvedByUserId?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   notes?: InputMaybe<SortEnumType>;
+  snapshot?: InputMaybe<SortEnumType>;
   targetId?: InputMaybe<SortEnumType>;
   targetOwnerId?: InputMaybe<SortEnumType>;
 };
@@ -1986,9 +1990,10 @@ export type MutationInitialization = {
   seedEntitlements: Scalars['Boolean']['output'];
   seedRoyaltyPolicyData: Scalars['Boolean']['output'];
   unfollowUser: Scalars['Boolean']['output'];
+  updateArtistProfile: Scalars['Boolean']['output'];
   updateFavoriteCount: Scalars['Boolean']['output'];
+  updateListenerProfile: Scalars['Boolean']['output'];
   updatePlaylist: Scalars['Boolean']['output'];
-  updateProfile: Scalars['Boolean']['output'];
   updateRequest: Scalars['Boolean']['output'];
   updateTrackComment: Scalars['Boolean']['output'];
   uploadFile: Scalars['String']['output'];
@@ -2260,20 +2265,24 @@ export type MutationInitializationUnfollowUserArgs = {
 };
 
 
+export type MutationInitializationUpdateArtistProfileArgs = {
+  updateArtistRequest: UpdateArtistRequestInput;
+};
+
+
 export type MutationInitializationUpdateFavoriteCountArgs = {
   isAdding: Scalars['Boolean']['input'];
   trackId: Scalars['String']['input'];
 };
 
 
-export type MutationInitializationUpdatePlaylistArgs = {
-  updatePlaylistRequest: UpdatePlaylistRequestInput;
+export type MutationInitializationUpdateListenerProfileArgs = {
+  updateListenerRequest: UpdateListenerRequestInput;
 };
 
 
-export type MutationInitializationUpdateProfileArgs = {
-  updateArtistRequest: UpdateArtistRequestInput;
-  updateListenerRequest: UpdateListenerRequestInput;
+export type MutationInitializationUpdatePlaylistArgs = {
+  updatePlaylistRequest: UpdatePlaylistRequestInput;
 };
 
 
@@ -3852,7 +3861,7 @@ export type Track = {
   categoryIds: Array<Scalars['String']['output']>;
   coverImage: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
-  createdBy: Scalars['String']['output'];
+  createdBy?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   embeddingVector: Array<Scalars['Float']['output']>;
   favoriteCount: Scalars['Long']['output'];
@@ -4112,7 +4121,7 @@ export type User = {
   __typename?: 'User';
   birthDate: Scalars['DateTime']['output'];
   createdAt: Scalars['DateTime']['output'];
-  createdBy: Scalars['String']['output'];
+  createdBy?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   fullName: Scalars['String']['output'];
   gender: UserGender;

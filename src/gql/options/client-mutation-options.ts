@@ -9,8 +9,8 @@ import {
   RemoveFromPlaylistMutation,
   UpdatePlaylistMutation,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
-import { UpdateProfileMutation } from "@/modules/client/profile/ui/views/queries";
-import type { UpdateArtistRequestInput, UserGender } from "@/gql/graphql";
+import { UpdateListenerProfileMutation } from "@/modules/client/profile/ui/views/queries";
+import type { UserGender } from "@/gql/graphql";
 
 export const createPlaylistMutationOptions = mutationOptions({
   mutationKey: ["create-playlist"],
@@ -79,9 +79,7 @@ export const updateListenerProfileMutationOptions = mutationOptions({
     birthDate?: string; // ISO 8601 string e.g. 1990-01-01T00:00:00.000Z
     gender?: UserGender;
   }) =>
-    await execute(UpdateProfileMutation, {
-      // API requires both args; pass explicit empty object for artist as a no-op.
-      updateArtistRequest: {} as UpdateArtistRequestInput,
+    await execute(UpdateListenerProfileMutation, {
       updateListenerRequest,
     }),
 });

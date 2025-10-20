@@ -15,16 +15,19 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
-import type { UserGender } from "@/gql/graphql";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateListenerProfileMutationOptions } from "@/gql/options/client-mutation-options";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store";
+import type { UserGender } from "@/gql/graphql";
 
 const PersonalDetailSection = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
+  const userId = user?.userId;
   const { personal } = useClientProfile();
   const [isEditing, setIsEditing] = React.useState(false);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
@@ -33,7 +36,8 @@ const PersonalDetailSection = () => {
     displayName: z.string().min(1, "Display name is required").max(100),
     // Email is immutable here; keep for display only
     email: z.string().optional(),
-    gender: z.enum(["NOT_SPECIFIED", "MALE", "FEMALE", "OTHER"]),
+    // Only allow explicit gender options; omit NOT_SPECIFIED from choices
+    gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
     birthDate: z.date(),
   })
     // Must not be in the future
@@ -53,13 +57,18 @@ const PersonalDetailSection = () => {
 
   type FormValues = z.infer<typeof formSchema>;
 
+  const isExplicitGender = (g?: UserGender | string | undefined): g is "MALE" | "FEMALE" | "OTHER" =>
+    g === "MALE" || g === "FEMALE" || g === "OTHER";
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       displayName: personal.displayName || "",
       email: personal.email || "",
       birthDate: personal.birthDate ? new Date(personal.birthDate) : undefined,
-      gender: (personal.gender ?? "NOT_SPECIFIED") as FormValues["gender"],
+      gender: isExplicitGender(personal.gender)
+        ? (personal.gender as FormValues["gender"]) 
+        : undefined,
     },
   });
 
@@ -69,18 +78,42 @@ const PersonalDetailSection = () => {
       displayName: personal.displayName || "",
       email: personal.email || "",
       birthDate: personal.birthDate ? new Date(personal.birthDate) : undefined,
-      gender: (personal.gender ?? "NOT_SPECIFIED") as FormValues["gender"],
+      gender: isExplicitGender(personal.gender)
+        ? (personal.gender as FormValues["gender"]) 
+        : undefined,
     });
   }, [form, personal.displayName, personal.email, personal.birthDate, personal.gender]);
 
   const { mutate: updateProfile, isPending } = useMutation({
     ...updateListenerProfileMutationOptions,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast.success("Profile updated");
       setConfirmOpen(false);
       setIsEditing(false);
+      // Optimistically update the listener profile cache for immediate UI reflection
+      if (userId) {
+        type ListenerCache = {
+          displayName?: string;
+          user?: Array<{ birthDate?: string; gender?: UserGender }> | null;
+          [k: string]: unknown;
+        } | null;
+        queryClient.setQueryData<ListenerCache>(["listener-profile", userId], (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            displayName: variables.displayName ?? old.displayName,
+            user: Array.isArray(old.user) && old.user.length > 0
+              ? [{
+                  ...old.user[0],
+                  birthDate: (variables.birthDate as string | undefined) ?? old.user[0]?.birthDate,
+                  gender: (variables.gender as UserGender | undefined) ?? old.user[0]?.gender,
+                }]
+              : old.user,
+          } as ListenerCache;
+        });
+      }
       // Refresh listener profile query
-      queryClient.invalidateQueries({ queryKey: ["listener-profile"] });
+      queryClient.invalidateQueries({ queryKey: ["listener-profile", userId] });
     },
     onError: (err) => {
       console.error(err);
@@ -110,6 +143,29 @@ const PersonalDetailSection = () => {
       birthDate: birthDateIso,
     });
   };
+  // Read-only display helpers: humanize gender and format birthdate in DD-MM-YYYY.
+  const readOnlyGenderLabel = (() => {
+    switch (personal.gender as unknown as string) {
+      case "MALE":
+        return "Male";
+      case "FEMALE":
+        return "Female";
+      case "OTHER":
+        return "Other";
+      default:
+        return "-";
+    }
+  })();
+
+  const readOnlyBirthDateLabel: string = (() => {
+    if (!personal.birthDate) return "-";
+    try {
+      return format(new Date(personal.birthDate), "dd-MM-yyyy");
+    } catch {
+      return "-";
+    }
+  })();
+
   return (
     <div className="w-full ">
       <div className="flex items-end gap-x-3 justify-between">
@@ -202,7 +258,6 @@ const PersonalDetailSection = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="NOT_SPECIFIED">Not Specified</SelectItem>
                           <SelectItem value="MALE">Male</SelectItem>
                           <SelectItem value="FEMALE">Female</SelectItem>
                           <SelectItem value="OTHER">Other</SelectItem>
@@ -231,7 +286,7 @@ const PersonalDetailSection = () => {
                               )}
                             >
                               <CalendarIcon className="mr-2 h-4 w-4" />
-                              {field.value ? format(field.value, "dd/MM/yyyy") : <span>DD/MM/YYYY</span>}
+                              {field.value ? format(field.value, "dd-MM-yyyy") : <span>DD-MM-YYYY</span>}
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
@@ -263,8 +318,8 @@ const PersonalDetailSection = () => {
         {!isEditing && (
           <>
             <DetailItem title="Email" value={personal.email || "-"} />
-            <DetailItem title="Date of Birth" value={personal.birthDate || "-"} />
-            <DetailItem title="Gender" value={personal.gender || "-"} />
+            <DetailItem title="Date of Birth" value={readOnlyBirthDateLabel} />
+            <DetailItem title="Gender" value={readOnlyGenderLabel} />
           </>
         )}
       </div>
