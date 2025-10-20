@@ -6,10 +6,10 @@ import { PendingArtistRegistrationsQuery } from "@/modules/moderator/artist-appr
 import { ModeratorApprovalHistoryDetailQuery, ApprovalHistoriesListQuery } from "@/modules/moderator/approval-histories/ui/views/approval-histories-view";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
-import { UserRole, UserFilterInput, ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType } from "@/gql/graphql";
+import { UserRole, UserFilterInput, ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType, ApprovalHistoryFilterInput, ApprovalType } from "@/gql/graphql";
 import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
 import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/moderator/user-management/ui/views/moderator-user-detail-view";
-
+import {ApprovalHistoriesListQuery, ModeratorApprovalHistoryDetailQuery} from "@/modules/moderator/approval-histories/ui/views/approval-histories-view";
 export const moderatorProfileOptions = (userId: string) => queryOptions({
   queryKey: ["moderator-profile", userId],
   queryFn: async () => {
@@ -193,5 +193,48 @@ export const moderatorApprovalHistoryDetailOptions = (historyId: string) => quer
     
     // Return first item from items array or null if not found
     return result?.approvalHistories?.items?.[0] || null;
+  },
+});
+
+// Approval histories query options for moderator
+export const moderatorApprovalHistoriesOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") => queryOptions({
+  queryKey: ["moderator-approval-histories", page, pageSize, searchTerm],
+  queryFn: async () => {
+    const skip = (page - 1) * pageSize;
+    
+    // Build where filter
+    const where: ApprovalHistoryFilterInput = {
+      approvalType: { in: [ApprovalType.ArtistRegistration] }
+    };
+    
+    // Add search filter if provided - search in notes or targetId
+    if (searchTerm.trim()) {
+      where.snapshot = {
+        contains: searchTerm
+      };
+    }
+    
+     const result = await execute(ApprovalHistoriesListQuery, { 
+      skip,
+      take: pageSize,
+      where
+    });
+    
+    return result;
+  },
+  placeholderData: (previousData) => previousData,
+});
+
+// Approval history detail query options for moderator
+export const moderatorApprovalHistoryDetailOptions = (historyId: string) => queryOptions({
+  queryKey: ["moderator-approval-history-detail", historyId],
+  queryFn: async () => {
+    const result = await execute(ModeratorApprovalHistoryDetailQuery, { 
+      where: { 
+        id: { eq: historyId } 
+      } 
+    });
+    
+    return result.approvalHistories?.items?.[0] || null;
   },
 });
