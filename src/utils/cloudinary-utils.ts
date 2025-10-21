@@ -4,12 +4,13 @@
  */
 
 import { toast } from "sonner";
+import axios from "axios";
 
 // Cloudinary configuration interface
 interface CloudinaryConfig {
   cloudName: string;
   uploadPreset: string;
-  apiKey?: string;
+  apiKey: string;
 }
 
 // Upload response interface
@@ -35,9 +36,9 @@ interface CloudinaryError {
 
 // Default Cloudinary configuration
 const CLOUDINARY_CONFIG: CloudinaryConfig = {
-  cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "your-cloud-name",
-  uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "your-upload-preset",
-  apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!,
+  uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
+  apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!,
 };
 
 /**
@@ -52,17 +53,16 @@ export const uploadImageToCloudinary = async (
     folder?: string;
     tags?: string[];
     resourceType?: "image" | "video" | "raw" | "auto";
-  }
+  },
 ): Promise<CloudinaryUploadResponse> => {
   try {
-    
     // Validate file
     if (!file) {
       throw new Error("No file provided for upload");
     }
 
     // Check if file is image
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       throw new Error("File must be an image");
     }
 
@@ -70,37 +70,33 @@ export const uploadImageToCloudinary = async (
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", CLOUDINARY_CONFIG.uploadPreset);
-    
+
     // Add optional parameters (only allowed ones for unsigned upload)
     if (options?.folder) {
       formData.append("folder", options.folder);
     }
-    
+
     if (options?.tags && options.tags.length > 0) {
       formData.append("tags", options.tags.join(","));
     }
 
-    // Upload to Cloudinary
-    const response = await fetch(
+    // Upload to Cloudinary using axios
+    const response = await axios.post<CloudinaryUploadResponse>(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/${options?.resourceType || "image"}/upload`,
+      formData,
       {
-        method: "POST",
-        body: formData,
-      }
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
     );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || `Upload failed with status ${response.status}`);
-    }
-
-    const uploadResult: CloudinaryUploadResponse = await response.json();
+    const uploadResult: CloudinaryUploadResponse = response.data;
 
     return uploadResult;
-
   } catch (error) {
     console.error("❌ Cloudinary upload failed:", error);
-    
+
     if (error instanceof Error) {
       throw new Error(`Cloudinary upload failed: ${error.message}`);
     } else {
@@ -119,7 +115,7 @@ export const uploadImageToCloudinary = async (
 export const uploadCCCDImage = async (
   file: File,
   side: "front" | "back",
-  artistId?: string
+  artistId?: string,
 ): Promise<CloudinaryUploadResponse> => {
   const folder = artistId ? `artist-cccd/${artistId}` : "artist-cccd/temp";
   const tags = ["cccd", side, "artist-verification"];
@@ -127,7 +123,7 @@ export const uploadCCCDImage = async (
   return uploadImageToCloudinary(file, {
     folder,
     tags,
-    resourceType: "image"
+    resourceType: "image",
   });
 };
 
@@ -141,7 +137,7 @@ export const uploadCCCDImage = async (
 export const uploadArtistImage = async (
   file: File,
   artistId: string,
-  type: "avatar" | "banner"
+  type: "avatar" | "banner",
 ): Promise<CloudinaryUploadResponse> => {
   const folder = `artist-profiles/${artistId}`;
   const tags = ["artist", "profile", type];
@@ -149,7 +145,29 @@ export const uploadArtistImage = async (
   return uploadImageToCloudinary(file, {
     folder,
     tags,
-    resourceType: "image"
+    resourceType: "image",
+  });
+};
+
+/**
+ * Upload playlist cover image
+ * @param file - Cover image file
+ * @param playlistId - Playlist ID (optional for new playlists)
+ * @returns Promise<CloudinaryUploadResponse>
+ */
+export const uploadPlaylistCoverImage = async (
+  file: File,
+  playlistId?: string,
+): Promise<CloudinaryUploadResponse> => {
+  const folder = playlistId
+    ? `playlist-covers/${playlistId}`
+    : "playlist-covers/temp";
+  const tags = ["playlist", "cover", "music"];
+
+  return uploadImageToCloudinary(file, {
+    folder,
+    tags,
+    resourceType: "image",
   });
 };
 
@@ -161,36 +179,15 @@ export const uploadArtistImage = async (
  */
 export const getCloudinaryUrl = (
   publicId: string,
-  transformations?: string
+  transformations?: string,
 ): string => {
   const baseUrl = `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/image/upload`;
-  
+
   if (transformations) {
     return `${baseUrl}/${transformations}/${publicId}`;
   }
-  
-  return `${baseUrl}/${publicId}`;
-};
 
-/**
- * Delete image from Cloudinary
- * @param publicId - Public ID of image to delete
- * @returns Promise<boolean>
- */
-export const deleteCloudinaryImage = async (publicId: string): Promise<boolean> => {
-  try {
-    // Note: Deletion requires server-side implementation for security
-    // This is a placeholder for client-side reference
-    console.log("🗑️ Image deletion requested for:", publicId);
-    
-    // In a real implementation, you would call your backend API
-    // that handles the deletion using Cloudinary's admin API
-    
-    return true;
-  } catch (error) {
-    console.error("❌ Failed to delete image:", error);
-    return false;
-  }
+  return `${baseUrl}/${publicId}`;
 };
 
 /**
@@ -199,9 +196,12 @@ export const deleteCloudinaryImage = async (publicId: string): Promise<boolean> 
  * @param maxSize - Maximum file size in MB (default: 10MB)
  * @returns boolean
  */
-export const validateImageFile = (file: File, maxSize: number = 10): boolean => {
+export const validateImageFile = (
+  file: File,
+  maxSize: number = 10,
+): boolean => {
   // Check file type
-  if (!file.type.startsWith('image/')) {
+  if (!file.type.startsWith("image/")) {
     toast.error("File phải là hình ảnh");
     return false;
   }
@@ -214,7 +214,12 @@ export const validateImageFile = (file: File, maxSize: number = 10): boolean => 
   }
 
   // Check supported formats
-  const supportedFormats = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+  const supportedFormats = [
+    "image/jpeg",
+    "image/png",
+    "image/jpg",
+    "image/webp",
+  ];
   if (!supportedFormats.includes(file.type)) {
     toast.error("Chỉ hỗ trợ định dạng: JPG, PNG, WEBP");
     return false;
@@ -227,8 +232,4 @@ export const validateImageFile = (file: File, maxSize: number = 10): boolean => 
 export { CLOUDINARY_CONFIG };
 
 // Export types
-export type { 
-  CloudinaryUploadResponse, 
-  CloudinaryConfig,
-  CloudinaryError 
-};
+export type { CloudinaryUploadResponse, CloudinaryConfig, CloudinaryError };
