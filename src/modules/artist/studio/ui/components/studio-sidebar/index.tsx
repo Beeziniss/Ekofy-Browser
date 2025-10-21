@@ -15,6 +15,7 @@ import {
   // GalleryVerticalEnd,
   LayoutDashboardIcon,
   // Music4Icon,
+  LayoutPanelLeftIcon,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
@@ -48,6 +49,11 @@ const data = {
       url: "/artist/studio/albums",
       icon: AlbumIcon,
     },
+    {
+      name: "Service Packages",
+      url: "/artist/studio/service-package",
+      icon: LayoutPanelLeftIcon,
+    }
   ],
 };
 

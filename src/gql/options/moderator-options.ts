@@ -4,6 +4,7 @@ import {
 } from "@/modules/moderator/artist-approval/ui/views/artist-details-view";
 import { PendingArtistRegistrationsQuery } from "@/modules/moderator/artist-approval/ui/views/artist-approval-view";
 import { ModeratorApprovalHistoryDetailQuery, ApprovalHistoriesListQuery } from "@/modules/moderator/approval-histories/ui/views/approval-histories-view";
+import { PendingArtistPackagesQuery } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
 import { UserRole, UserFilterInput, ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType, ApprovalHistoryFilterInput, ApprovalType } from "@/gql/graphql";
@@ -197,4 +198,16 @@ export const moderatorApprovalHistoryDetailOptions = (historyId: string) => quer
     // Return first item from items array or null if not found
     return result?.approvalHistories?.items?.[0] || null;
   },
+});
+
+// Moderator pending packages query options for approval
+export const moderatorPendingPackagesOptions = () => queryOptions({
+  queryKey: ["moderator-pending-packages"],
+  queryFn: () => execute(PendingArtistPackagesQuery, {
+    pageNumber: 1,
+    pageSize: 100, // Get more items for moderator view
+    where: {}, // No filter to get all pending packages
+    artistWhere: {} // Get all artists
+  }),
+  staleTime: 1 * 60 * 1000, // 1 minute
 });
