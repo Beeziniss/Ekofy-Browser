@@ -176,6 +176,7 @@ const AudioPlayer = () => {
 
   const handleEnded = () => {
     // Auto skip to next track when current track ends
+    // TODO: Checkfor repeating logic here
     /* if (isRepeating) {
       // If repeating, restart the same track
       if (audioRef.current) {
