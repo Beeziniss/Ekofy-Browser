@@ -7,8 +7,10 @@ import { useTrackUploadStore } from "@/store";
 import {
   CircleQuestionMarkIcon,
   Copy,
+  CreativeCommonsIcon,
   EarthIcon,
   FileAudioIcon,
+  FileChartColumnIcon,
   ImageIcon,
   LockIcon,
 } from "lucide-react";
@@ -35,7 +37,10 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { categoriesOptions } from "@/gql/options/artist-options";
+import {
+  categoriesOptions,
+  userLicenseOptions,
+} from "@/gql/options/artist-options";
 import { trackUploadMutationOptions } from "@/gql/options/artist-mutation-options";
 import {
   ArtistRole,
@@ -57,6 +62,30 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  CalendarIcon,
+  Plus,
+  Trash2,
+  Check,
+  ChevronsUpDown,
+} from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "Title is required." }),
@@ -67,19 +96,159 @@ const FormSchema = z.object({
     .min(1, { message: "Please select at least one category." }),
   tags: z.array(z.string()).optional(),
   isReleased: z.boolean(),
+  releaseDate: z.date().optional(),
   coverImage: z.instanceof(File).optional(),
+  isExplicit: z.boolean(),
+  isOriginal: z.boolean(),
+  legalDocuments: z.array(
+    z.object({
+      documentType: z.string(),
+      documentUrl: z.string(),
+      name: z.string(),
+      note: z.string().optional(),
+    }),
+  ),
+  workSplits: z
+    .array(
+      z.object({
+        userId: z.string(),
+        artistRole: z.string(),
+        percentage: z.number().min(0).max(100),
+      }),
+    )
+    .optional()
+    .refine(
+      (splits) => {
+        if (!splits || splits.length === 0) return true;
+        const total = splits.reduce((sum, split) => sum + split.percentage, 0);
+        return total === 100;
+      },
+      {
+        message: "Work splits must total exactly 100%",
+      },
+    ),
+  recordingSplits: z
+    .array(
+      z.object({
+        userId: z.string(),
+        artistRole: z.string(),
+        percentage: z.number().min(0).max(100),
+      }),
+    )
+    .optional()
+    .refine(
+      (splits) => {
+        if (!splits || splits.length === 0) return true;
+        const total = splits.reduce((sum, split) => sum + split.percentage, 0);
+        return total === 100;
+      },
+      {
+        message: "Recording splits must total exactly 100%",
+      },
+    ),
 });
 
-const tagsList = [
-  { value: "chill", label: "Chill" },
-  { value: "party", label: "Party" },
-  { value: "romantic", label: "Romantic" },
-  { value: "energetic", label: "Energetic" },
-  { value: "relaxing", label: "Relaxing" },
-  { value: "upbeat", label: "Upbeat" },
-  { value: "emotional", label: "Emotional" },
-  { value: "instrumental", label: "Instrumental" },
-];
+type FormData = z.infer<typeof FormSchema>;
+
+interface User {
+  id: string;
+  fullName: string;
+}
+
+interface UserComboboxProps {
+  users: User[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}
+
+const UserCombobox = ({
+  users,
+  value,
+  onChange,
+  placeholder = "Select user...",
+}: UserComboboxProps) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="h-8 w-full justify-between"
+        >
+          {value
+            ? users?.find((user) => user.id === value)?.fullName ||
+              "Unknown User"
+            : placeholder}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0">
+        <Command>
+          <CommandInput placeholder="Search users..." className="h-9" />
+          <CommandList>
+            <CommandEmpty>No user found.</CommandEmpty>
+            <CommandGroup>
+              {users?.map((user) => (
+                <CommandItem
+                  key={user.id}
+                  value={user.id}
+                  onSelect={(currentValue) => {
+                    onChange(currentValue === value ? "" : currentValue);
+                    setOpen(false);
+                  }}
+                >
+                  {user.fullName}
+                  <Check
+                    className={cn(
+                      "ml-auto h-4 w-4",
+                      value === user.id ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+// Helper function to redistribute percentages evenly
+const redistributePercentages = (
+  splits: Array<{ userId: string; artistRole: ArtistRole; percentage: number }>,
+  removedIndex?: number,
+) => {
+  const remainingSplits =
+    removedIndex !== undefined
+      ? splits.filter((_, i) => i !== removedIndex)
+      : splits;
+
+  if (remainingSplits.length === 0) return [];
+
+  const equalPercentage = Math.floor(100 / remainingSplits.length);
+  const remainder = 100 - equalPercentage * remainingSplits.length;
+
+  return remainingSplits.map((split, index) => ({
+    ...split,
+    percentage: index === 0 ? equalPercentage + remainder : equalPercentage,
+  }));
+};
+
+// Helper function to get user display name
+const getUserDisplayName = (
+  userId: string,
+  users: User[],
+  currentUserId?: string,
+) => {
+  if (userId === currentUserId) return "You";
+  const user = users?.find((u) => u.id === userId);
+  return user?.fullName || "Unknown User";
+};
 
 const TrackUploadMetadataSection = () => {
   const router = useRouter();
@@ -92,6 +261,39 @@ const TrackUploadMetadataSection = () => {
     null,
   );
   const [trackUrl, setTrackUrl] = useState<string>("");
+  const [workSplits, setWorkSplits] = useState([
+    {
+      userId: user?.userId || "",
+      artistRole: ArtistRole.Main,
+      percentage: 100,
+    },
+  ]);
+  const [recordingSplits, setRecordingSplits] = useState([
+    {
+      userId: user?.userId || "",
+      artistRole: ArtistRole.Main,
+      percentage: 100,
+    },
+  ]);
+  const [legalDocuments, setLegalDocuments] = useState<
+    {
+      documentType: DocumentType;
+      documentUrl: string;
+      name: string;
+      note: string;
+    }[]
+  >([
+    {
+      documentType: DocumentType.License,
+      documentUrl: "",
+      name: "",
+      note: "",
+    },
+  ]);
+
+  // Get minimum date (3 days from today)
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + 3);
 
   // Copy track URL to clipboard
   const handleCopyUrl = async () => {
@@ -110,10 +312,13 @@ const TrackUploadMetadataSection = () => {
   // Fetch categories from the backend
   const { data: categoriesData } = useQuery(categoriesOptions);
 
+  // Fetch users for splits selection
+  const { data: usersData } = useQuery(userLicenseOptions);
+
   // Upload track mutation
   const uploadTrackMutation = useMutation(trackUploadMutationOptions);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
@@ -122,7 +327,13 @@ const TrackUploadMetadataSection = () => {
       categoryIds: [],
       tags: [],
       isReleased: false,
+      releaseDate: undefined,
       coverImage: undefined,
+      isExplicit: false,
+      isOriginal: true,
+      legalDocuments: [],
+      workSplits: [],
+      recordingSplits: [],
     },
   });
 
@@ -153,7 +364,7 @@ const TrackUploadMetadataSection = () => {
     multiple: false,
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: FormData) {
     if (!displayTrack || !user?.userId) {
       toast.error("No track found or user not authenticated");
       return;
@@ -173,7 +384,7 @@ const TrackUploadMetadataSection = () => {
         coverImageUrl = uploadResult.secure_url;
       }
 
-      // Prepare the mutation data based on your example
+      // Prepare the mutation data
       const mutationData = {
         file: displayTrack.file,
         createTrackRequest: {
@@ -182,41 +393,37 @@ const TrackUploadMetadataSection = () => {
           categoryIds: data.categoryIds,
           coverImage: coverImageUrl,
           isReleased: data.isReleased,
+          releaseDate: data.releaseDate ? data.releaseDate.toISOString() : null,
           releaseStatus: ReleaseStatus.NotAnnounced,
-          isOriginal: true,
+          isOriginal: data.isOriginal,
           mainArtistIds: [], // Empty for now as per your example
           featuredArtistIds: [], // Empty for now as per your example
           tags: data.tags || [],
-          isExplicit: false,
-          legalDocuments: [
-            {
-              documentType: DocumentType.License,
-              documentUrl:
-                "https://drive.google.com/file/d/1byNXcSn88agBVnEVIp6anLcDjPbvuUIb/view?usp=sharing", // Hardcoded as per your example
-              name: "test license",
-              note: "empty",
-            },
-          ],
+          isExplicit: data.isExplicit,
+          legalDocuments: legalDocuments
+            .filter((doc) => doc.documentUrl && doc.name)
+            .map((doc) => ({
+              documentType: doc.documentType as DocumentType,
+              documentUrl: doc.documentUrl,
+              name: doc.name,
+              note: doc.note || "",
+            })),
         } as CreateTrackRequestInput,
         createWorkRequest: {
           description: null,
-          workSplits: [
-            {
-              userId: user.userId,
-              artistRole: ArtistRole.Main,
-              percentage: 100,
-            },
-          ],
+          workSplits: workSplits.map((split) => ({
+            userId: split.userId,
+            artistRole: split.artistRole as ArtistRole,
+            percentage: split.percentage,
+          })),
         } as CreateWorkRequestInput,
         createRecordingRequest: {
           description: null,
-          recordingSplits: [
-            {
-              userId: user.userId,
-              artistRole: ArtistRole.Main,
-              percentage: 100,
-            },
-          ],
+          recordingSplits: recordingSplits.map((split) => ({
+            userId: split.userId,
+            artistRole: split.artistRole as ArtistRole,
+            percentage: split.percentage,
+          })),
         } as CreateRecordingRequestInput,
       };
 
@@ -257,9 +464,38 @@ const TrackUploadMetadataSection = () => {
         categoryIds: [],
         tags: [],
         isReleased: false,
+        releaseDate: undefined,
         coverImage: undefined,
+        isExplicit: false,
+        isOriginal: true,
+        legalDocuments: [],
+        workSplits: [],
+        recordingSplits: [],
       });
       setCoverImagePreview(null);
+      // Reset splits to default
+      setWorkSplits([
+        {
+          userId: user?.userId || "",
+          artistRole: ArtistRole.Main,
+          percentage: 100,
+        },
+      ]);
+      setRecordingSplits([
+        {
+          userId: user?.userId || "",
+          artistRole: ArtistRole.Main,
+          percentage: 100,
+        },
+      ]);
+      setLegalDocuments([
+        {
+          documentType: DocumentType.License,
+          documentUrl: "",
+          name: "",
+          note: "",
+        },
+      ]);
       // Set a placeholder URL based on track name
       if (typeof window !== "undefined") {
         setTrackUrl(
@@ -267,7 +503,16 @@ const TrackUploadMetadataSection = () => {
         );
       }
     }
-  }, [displayTrack, form]);
+  }, [displayTrack, form, user]);
+
+  // Sync form with state variables for validation
+  useEffect(() => {
+    form.setValue("workSplits", workSplits);
+  }, [workSplits, form]);
+
+  useEffect(() => {
+    form.setValue("recordingSplits", recordingSplits);
+  }, [recordingSplits, form]);
 
   if (!displayTrack) {
     return (
@@ -547,6 +792,47 @@ const TrackUploadMetadataSection = () => {
                   )}
                 />
               </div>
+
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="releaseDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        Release Date
+                      </FormLabel>
+                      <FormControl>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left font-normal"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value ? (
+                                field.value.toLocaleDateString()
+                              ) : (
+                                <span>Pick a release date</span>
+                              )}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) => date < minDate}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <Button
@@ -561,11 +847,561 @@ const TrackUploadMetadataSection = () => {
           </div>
 
           <div className="mt-32">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Is it accessible?</AccordionTrigger>
-                <AccordionContent>
-                  Yes. It adheres to the WAI-ARIA design pattern.
+            <Accordion type="multiple">
+              <AccordionItem value="advanced-settings">
+                <AccordionTrigger>
+                  <div className="flex items-center">
+                    <FileChartColumnIcon className="text-main-white mr-3 size-6" />{" "}
+                    Advanced Settings
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pl-9">
+                  <div className="flex w-full flex-col space-y-6">
+                    {/* Explicit Content */}
+                    <FormField
+                      control={form.control}
+                      name="isExplicit"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div>
+                            <p className="text-main-white text-xs font-bold">
+                              Contain Explicit Content
+                            </p>
+                            <p className="text-main-grey-dark-1 text-xs font-normal">
+                              Please check this if your track contains explicit
+                              content. The badge will be displayed next to your
+                              track title.
+                            </p>
+
+                            <div className="mt-2 flex items-center gap-x-4">
+                              <FormControl>
+                                <Checkbox
+                                  id="explicit-content-checkbox"
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <Label
+                                htmlFor="explicit-content-checkbox"
+                                className="text-sm font-bold"
+                              >
+                                Explicit Content
+                              </Label>
+                              <div className="bg-main-white flex size-4 items-center justify-center rounded-xs text-xs font-bold text-black">
+                                E
+                              </div>
+                            </div>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Legal Documents */}
+                    <div>
+                      <p className="text-main-white mb-2 text-xs font-bold">
+                        Legal Documents
+                      </p>
+                      <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
+                        Upload legal documents such as licenses, contracts, or
+                        other relevant files.
+                      </p>
+
+                      <div className="space-y-4">
+                        {legalDocuments.map((doc, index) => (
+                          <div
+                            key={index}
+                            className="space-y-3 rounded-md border border-white/20 p-4"
+                          >
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-sm font-medium text-white">
+                                Document {index + 1}
+                              </h4>
+                              {legalDocuments.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const newDocs = legalDocuments.filter(
+                                      (_, i) => i !== index,
+                                    );
+                                    setLegalDocuments(newDocs);
+                                  }}
+                                >
+                                  <Trash2 className="size-4" />
+                                </Button>
+                              )}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1">
+                                <Label className="text-xs">Document Type</Label>
+                                <Select
+                                  value={doc.documentType}
+                                  onValueChange={(value) => {
+                                    const newDocs = [...legalDocuments];
+                                    newDocs[index].documentType =
+                                      value as DocumentType;
+                                    setLegalDocuments(newDocs);
+                                  }}
+                                >
+                                  <SelectTrigger size="sm">
+                                    <SelectValue
+                                      className="h-8"
+                                      placeholder="Select type"
+                                    />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value={DocumentType.License}>
+                                      License
+                                    </SelectItem>
+                                    <SelectItem value={DocumentType.Contract}>
+                                      Contract
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-1">
+                                <Label className="text-xs">Document Name</Label>
+                                <Input
+                                  placeholder="Enter document name"
+                                  value={doc.name}
+                                  onChange={(e) => {
+                                    const newDocs = [...legalDocuments];
+                                    newDocs[index].name = e.target.value;
+                                    setLegalDocuments(newDocs);
+                                  }}
+                                  className="h-8"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="space-y-1">
+                              <Label className="text-xs">Document URL</Label>
+                              <Input
+                                placeholder="Enter document URL"
+                                value={doc.documentUrl}
+                                onChange={(e) => {
+                                  const newDocs = [...legalDocuments];
+                                  newDocs[index].documentUrl = e.target.value;
+                                  setLegalDocuments(newDocs);
+                                }}
+                                className="h-8"
+                              />
+                            </div>
+
+                            <div className="space-y-1">
+                              <Label className="text-xs">Note (Optional)</Label>
+                              <Input
+                                placeholder="Add a note about this document"
+                                value={doc.note}
+                                onChange={(e) => {
+                                  const newDocs = [...legalDocuments];
+                                  newDocs[index].note = e.target.value;
+                                  setLegalDocuments(newDocs);
+                                }}
+                                className="h-8"
+                              />
+                            </div>
+                          </div>
+                        ))}
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setLegalDocuments([
+                              ...legalDocuments,
+                              {
+                                documentType: DocumentType.License,
+                                documentUrl: "",
+                                name: "",
+                                note: "",
+                              },
+                            ]);
+                          }}
+                          className="w-full"
+                        >
+                          <Plus className="mr-2 size-4" />
+                          Add Document
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="copyright">
+                <AccordionTrigger>
+                  <div className="flex items-center">
+                    <CreativeCommonsIcon className="text-main-white mr-3 size-6" />{" "}
+                    Copyright
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pl-9">
+                  <div className="flex w-full flex-col space-y-6">
+                    {/* Original Content */}
+                    <FormField
+                      control={form.control}
+                      name="isOriginal"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div>
+                            <p className="text-main-white text-xs font-bold">
+                              Original Content
+                            </p>
+                            <p className="text-main-grey-dark-1 text-xs font-normal">
+                              Please check this if this track is your original
+                              content. This helps us protect your rights as the
+                              content creator.
+                            </p>
+
+                            <div className="mt-2 flex items-center gap-x-4">
+                              <FormControl>
+                                <Checkbox
+                                  id="original-content-checkbox"
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <Label
+                                htmlFor="original-content-checkbox"
+                                className="text-sm font-bold"
+                              >
+                                Original Content
+                              </Label>
+                            </div>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Work Splits */}
+                    <div>
+                      <p className="text-main-white mb-2 text-xs font-bold">
+                        Work Splits (Songwriting)
+                      </p>
+                      <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
+                        Define how songwriting credits are split. Total must
+                        equal 100%.
+                      </p>
+
+                      <div className="space-y-3">
+                        {workSplits.map((split, index) => (
+                          <div
+                            key={index}
+                            className="rounded-md border border-white/20 p-3"
+                          >
+                            <div className="mb-2 flex items-center justify-between">
+                              <span className="text-sm font-medium text-white">
+                                {getUserDisplayName(
+                                  split.userId,
+                                  usersData?.users?.items || [],
+                                  user?.userId,
+                                )}{" "}
+                                - {split.percentage}%
+                              </span>
+                              {workSplits.length === 1 ? (
+                                <span className="text-xs text-gray-400">
+                                  (Default - Read Only)
+                                </span>
+                              ) : (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const newSplits = redistributePercentages(
+                                      workSplits,
+                                      index,
+                                    );
+                                    setWorkSplits(newSplits);
+                                  }}
+                                >
+                                  <Trash2 className="size-4" />
+                                </Button>
+                              )}
+                            </div>
+                            {workSplits.length > 1 && (
+                              <div className="grid grid-cols-3 gap-2">
+                                <UserCombobox
+                                  users={usersData?.users?.items || []}
+                                  value={split.userId}
+                                  onChange={(value) => {
+                                    const newSplits = [...workSplits];
+                                    newSplits[index].userId = value;
+                                    setWorkSplits(newSplits);
+                                  }}
+                                  placeholder="Select user"
+                                />
+                                <Select
+                                  value={split.artistRole}
+                                  onValueChange={(value) => {
+                                    const newSplits = [...workSplits];
+                                    newSplits[index].artistRole =
+                                      value as ArtistRole;
+                                    setWorkSplits(newSplits);
+                                  }}
+                                >
+                                  <SelectTrigger size="sm">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value={ArtistRole.Main}>
+                                      Main
+                                    </SelectItem>
+                                    <SelectItem value={ArtistRole.Featured}>
+                                      Featured
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={split.percentage}
+                                  onChange={(e) => {
+                                    const newSplits = [...workSplits];
+                                    newSplits[index].percentage =
+                                      parseInt(e.target.value) || 0;
+                                    setWorkSplits(newSplits);
+                                  }}
+                                  className="h-8"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+
+                        <div className="text-right text-xs">
+                          <span
+                            className={`${
+                              workSplits.reduce(
+                                (sum, split) => sum + split.percentage,
+                                0,
+                              ) === 100
+                                ? "text-green-400"
+                                : "text-red-400"
+                            }`}
+                          >
+                            Total:{" "}
+                            {workSplits.reduce(
+                              (sum, split) => sum + split.percentage,
+                              0,
+                            )}
+                            %
+                            {workSplits.reduce(
+                              (sum, split) => sum + split.percentage,
+                              0,
+                            ) !== 100 && " (Must be 100%)"}
+                          </span>
+                        </div>
+
+                        {/* Form validation for work splits */}
+                        <FormField
+                          control={form.control}
+                          name="workSplits"
+                          render={() => (
+                            <FormItem>
+                              <FormControl>
+                                <input type="hidden" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newSplits = [
+                              ...workSplits,
+                              {
+                                userId: "",
+                                artistRole: ArtistRole.Featured,
+                                percentage: 0,
+                              },
+                            ];
+                            // Auto-distribute percentages equally
+                            const redistributed =
+                              redistributePercentages(newSplits);
+                            setWorkSplits(redistributed);
+                          }}
+                          className="w-full"
+                        >
+                          <Plus className="mr-2 size-4" />
+                          Add Work Split
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Recording Splits */}
+                    <div>
+                      <p className="text-main-white mb-2 text-xs font-bold">
+                        Recording Splits (Performance)
+                      </p>
+                      <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
+                        Define how recording performance credits are split.
+                        Total must equal 100%.
+                      </p>
+
+                      <div className="space-y-3">
+                        {recordingSplits.map((split, index) => (
+                          <div
+                            key={index}
+                            className="rounded-md border border-white/20 p-3"
+                          >
+                            <div className="mb-2 flex items-center justify-between">
+                              <span className="text-sm font-medium text-white">
+                                {getUserDisplayName(
+                                  split.userId,
+                                  usersData?.users?.items || [],
+                                  user?.userId,
+                                )}{" "}
+                                - {split.percentage}%
+                              </span>
+                              {recordingSplits.length === 1 ? (
+                                <span className="text-xs text-gray-400">
+                                  (Default - Read Only)
+                                </span>
+                              ) : (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const newSplits = redistributePercentages(
+                                      recordingSplits,
+                                      index,
+                                    );
+                                    setRecordingSplits(newSplits);
+                                  }}
+                                >
+                                  <Trash2 className="size-4" />
+                                </Button>
+                              )}
+                            </div>
+                            {recordingSplits.length > 1 && (
+                              <div className="grid grid-cols-3 gap-2">
+                                <UserCombobox
+                                  users={usersData?.users?.items || []}
+                                  value={split.userId}
+                                  onChange={(value) => {
+                                    const newSplits = [...recordingSplits];
+                                    newSplits[index].userId = value;
+                                    setRecordingSplits(newSplits);
+                                  }}
+                                  placeholder="Select user"
+                                />
+                                <Select
+                                  value={split.artistRole}
+                                  onValueChange={(value) => {
+                                    const newSplits = [...recordingSplits];
+                                    newSplits[index].artistRole =
+                                      value as ArtistRole;
+                                    setRecordingSplits(newSplits);
+                                  }}
+                                >
+                                  <SelectTrigger size="sm">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value={ArtistRole.Main}>
+                                      Main
+                                    </SelectItem>
+                                    <SelectItem value={ArtistRole.Featured}>
+                                      Featured
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={split.percentage}
+                                  onChange={(e) => {
+                                    const newSplits = [...recordingSplits];
+                                    newSplits[index].percentage =
+                                      parseInt(e.target.value) || 0;
+                                    setRecordingSplits(newSplits);
+                                  }}
+                                  className="h-8"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+
+                        <div className="text-right text-xs">
+                          <span
+                            className={`${
+                              recordingSplits.reduce(
+                                (sum, split) => sum + split.percentage,
+                                0,
+                              ) === 100
+                                ? "text-green-400"
+                                : "text-red-400"
+                            }`}
+                          >
+                            Total:{" "}
+                            {recordingSplits.reduce(
+                              (sum, split) => sum + split.percentage,
+                              0,
+                            )}
+                            %
+                            {recordingSplits.reduce(
+                              (sum, split) => sum + split.percentage,
+                              0,
+                            ) !== 100 && " (Must be 100%)"}
+                          </span>
+                        </div>
+
+                        {/* Form validation for recording splits */}
+                        <FormField
+                          control={form.control}
+                          name="recordingSplits"
+                          render={() => (
+                            <FormItem>
+                              <FormControl>
+                                <input type="hidden" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newSplits = [
+                              ...recordingSplits,
+                              {
+                                userId: "",
+                                artistRole: ArtistRole.Featured,
+                                percentage: 0,
+                              },
+                            ];
+                            // Auto-distribute percentages equally
+                            const redistributed =
+                              redistributePercentages(newSplits);
+                            setRecordingSplits(redistributed);
+                          }}
+                          className="w-full"
+                        >
+                          <Plus className="mr-2 size-4" />
+                          Add Recording Split
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

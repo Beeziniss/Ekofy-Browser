@@ -2,7 +2,10 @@ import { TrackListWithFiltersQuery } from "@/modules/artist/studio/ui/sections/t
 import { GetArtistProfileQuery } from "@/modules/artist/profile/ui/views/queries";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
-import { CategoriesQuery } from "@/modules/artist/track-upload/ui/views/track-upload-view";
+import {
+  CategoriesQuery,
+  UserLicenseQuery,
+} from "@/modules/artist/track-upload/ui/views/track-upload-view";
 
 export const trackListOptions = queryOptions({
   queryKey: ["tracks"],
@@ -12,6 +15,11 @@ export const trackListOptions = queryOptions({
 export const categoriesOptions = queryOptions({
   queryKey: ["categories"],
   queryFn: async () => await execute(CategoriesQuery),
+});
+
+export const userLicenseOptions = queryOptions({
+  queryKey: ["user-license"],
+  queryFn: async () => await execute(UserLicenseQuery),
 });
 
 export const artistProfileOptions = (userId: string) =>

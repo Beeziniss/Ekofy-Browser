@@ -19,7 +19,7 @@ export const TrackDetailViewQuery = graphql(`
         favoriteCount
         streamCount
         mainArtistIds
-        mainArtistsAsync {
+        mainArtists {
           items {
             stageName
             followerCount

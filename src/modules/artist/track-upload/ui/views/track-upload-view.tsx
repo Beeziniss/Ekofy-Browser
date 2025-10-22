@@ -28,6 +28,17 @@ export const CategoriesQuery = graphql(`
   }
 `);
 
+export const UserLicenseQuery = graphql(`
+  query UserLicense {
+    users {
+      items {
+        id
+        fullName
+      }
+    }
+  }
+`);
+
 const TrackUploadView = () => {
   return (
     <div className="w-full">

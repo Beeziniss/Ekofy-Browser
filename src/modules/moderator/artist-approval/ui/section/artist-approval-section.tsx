@@ -17,7 +17,7 @@ export function ArtistApprovalSection() {
     if (searchTerm !== debouncedSearchTerm) {
       setIsSearching(true);
     }
-    
+
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
       setCurrentPage(1); // Reset to first page when search term changes
@@ -31,7 +31,9 @@ export function ArtistApprovalSection() {
     data: artistsData,
     isLoading,
     error,
-  } = useQuery(moderatorArtistsQueryOptions(currentPage, pageSize, debouncedSearchTerm));
+  } = useQuery(
+    moderatorArtistsQueryOptions(currentPage, pageSize, debouncedSearchTerm),
+  );
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -42,21 +44,27 @@ export function ArtistApprovalSection() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-64">Loading Data...</div>;
+    return (
+      <div className="flex h-64 items-center justify-center">
+        Loading Data...
+      </div>
+    );
   }
   if (error) {
-    return <div className="text-red-500">Error loading data: {error.message}</div>;
+    return (
+      <div className="text-red-500">Error loading data: {error.message}</div>
+    );
   }
-  
-  const artistsRaw = artistsData?.pendingArtistRegistrations || [];
-  const totalCount = artistsRaw[0]?.totalCount || 0; // Get totalCount from first item
-  
+
+  const artistsRaw = artistsData?.pendingArtistRegistrations.items || [];
+  const totalCount = artistsData?.pendingArtistRegistrations.totalCount || 0;
+
   // Transform data to match expected interface
   const artists = artistsRaw.map((artist) => ({
-    id: artist.id || '',
-    userId: artist.id || '', // Use id as userId if userId not available
-    stageName: artist.stageName || '',
-    email: artist.email || '',
+    id: artist.id || "",
+    userId: artist.id || "", // Use id as userId if userId not available
+    stageName: artist.stageName || "",
+    email: artist.email || "",
     artistType: artist.artistType,
     categoryIds: [],
     biography: undefined,
@@ -66,14 +74,14 @@ export function ArtistApprovalSection() {
     isVerified: false,
     verifiedAt: undefined,
     createdAt: new Date().toISOString(), // Use current date as fallback
-    updatedAt: '',
+    updatedAt: "",
     fullName: artist.fullName,
     gender: artist.gender?.toString(),
     birthDate: artist.birthDate,
     phoneNumber: artist.phoneNumber,
     followers: 0,
   }));
-  
+
   // Calculate pagination info
   const totalPages = Math.ceil(totalCount / pageSize);
   const hasNextPage = currentPage < totalPages;
