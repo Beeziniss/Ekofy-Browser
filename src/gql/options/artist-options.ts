@@ -7,6 +7,7 @@ import {
 } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
+import { ArtistPackageFilterInput } from "@/gql/graphql";
 
 export const trackListOptions = queryOptions({
   queryKey: ["tracks"],
@@ -28,15 +29,24 @@ export const artistProfileOptions = (userId: string) =>
     retry: 0,
   });
 
-// Service Package Options with prefetch
-export const artistPackagesOptions = (artistId: string) =>
+// Service Package Options with prefetch and search
+export const artistPackagesOptions = (artistId: string, searchTerm: string = '') =>
   queryOptions({
-    queryKey: ["artist-packages", artistId],
-    queryFn: () => execute(ServicePackageServiceViewQuery, {
-      skip: 0,
-      take: 50,
-      where: { artistId: { eq: artistId } }
-    }),
+    queryKey: ["artist-packages", artistId, searchTerm],
+    queryFn: () => {
+      const where: ArtistPackageFilterInput = { artistId: { eq: artistId } };
+      
+      // Add packageName filter if search term is provided
+      if (searchTerm.trim()) {
+        where.packageName = { contains: searchTerm };
+      }
+      
+      return execute(ServicePackageServiceViewQuery, {
+        skip: 0,
+        take: 50,
+        where
+      });
+    },
     enabled: !!artistId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -51,15 +61,24 @@ export const packageDetailOptions = (packageId: string) =>
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-export const pendingPackagesOptions = (artistId: string) =>
+export const pendingPackagesOptions = (artistId: string, searchTerm: string = '') =>
   queryOptions({
-    queryKey: ["pending-packages", artistId],
-    queryFn: () => execute(PendingArtistPackagesQuery, {
-      pageNumber: 1,
-      pageSize: 50,
-      where: { artistId: { eq: artistId } },
-      artistWhere: {} // Get all artists for stage name lookup
-    }),
+    queryKey: ["pending-packages", artistId, searchTerm],
+    queryFn: () => {
+      const where: Record<string, unknown> = { artistId: { eq: artistId } };
+      
+      // Add packageName filter if search term is provided
+      if (searchTerm.trim()) {
+        where.packageName = { contains: searchTerm };
+      }
+      
+      return execute(PendingArtistPackagesQuery, {
+        pageNumber: 1,
+        pageSize: 50,
+        where,
+        artistWhere: {} // Get all artists for stage name lookup
+      });
+    },
     enabled: !!artistId,
     staleTime: 2 * 60 * 1000, // 2 minutes (shorter for pending)
   });

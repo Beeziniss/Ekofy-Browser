@@ -200,14 +200,23 @@ export const moderatorApprovalHistoryDetailOptions = (historyId: string) => quer
   },
 });
 
-// Moderator pending packages query options for approval
-export const moderatorPendingPackagesOptions = () => queryOptions({
-  queryKey: ["moderator-pending-packages"],
-  queryFn: () => execute(PendingArtistPackagesQuery, {
-    pageNumber: 1,
-    pageSize: 100, // Get more items for moderator view
-    where: {}, // No filter to get all pending packages
-    artistWhere: {} // Get all artists
-  }),
+// Moderator pending packages query options for approval with search
+export const moderatorPendingPackagesOptions = (searchTerm: string = '') => queryOptions({
+  queryKey: ["moderator-pending-packages", searchTerm],
+  queryFn: () => {
+    const where: Record<string, unknown> = {};
+    
+    // Add packageName filter if search term is provided
+    if (searchTerm.trim()) {
+      where.packageName = { contains: searchTerm };
+    }
+    
+    return execute(PendingArtistPackagesQuery, {
+      pageNumber: 1,
+      pageSize: 100, // Get more items for moderator view
+      where, // Apply search filter if provided
+      artistWhere: {} // Get all artists
+    });
+  },
   staleTime: 1 * 60 * 1000, // 1 minute
 });

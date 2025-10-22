@@ -167,6 +167,15 @@ export const  updateArtistPackageMutation = `
   { updateRequest: UpdateArtistPackageRequestInput }
 >;
 
+export const deleteArtistPackageMutation = `
+  mutation DeleteArtistPackage($artistPackageId: String!) {
+    deleteArtistPackage(artistPackageId: $artistPackageId)
+  }
+` as unknown as TypedDocumentString<
+  { deleteArtistPackage?: boolean | null },
+  { artistPackageId: string }
+>;
+
 const ServicePackageServiceView = () => {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -246,7 +255,6 @@ const ServicePackageServiceView = () => {
           <ServicePackageListSection
             onCreatePackage={handleCreatePackage}
             onEditPackage={handleEditPackage}
-            onDeletePackage={handleDeletePackage}
             onViewDetail={handleViewDetail}
           />
         );

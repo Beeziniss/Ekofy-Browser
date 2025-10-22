@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Edit, ChevronDown, ChevronUp, Eye } from 'lucide-react';
+import { Edit, ChevronDown, ChevronUp, Eye, Trash2 } from 'lucide-react';
 import { ArtistPackageStatus, ArtistPackage, Metadata } from '@/gql/graphql';
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 
@@ -20,6 +20,7 @@ interface ServicePackageListProps {
 const ServicePackageList= ({
   packages,
   onEdit,
+  onDelete,
   onViewDetail,
   onStatusChange,
 }: ServicePackageListProps) => {
@@ -115,6 +116,15 @@ const ServicePackageList= ({
                   title="Edit Package"
                 >
                   <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onDelete(pkg.id)}
+                  className="border-red-600 text-red-400 hover:text-white hover:border-red-500 w-16 h-10"
+                  title="Delete Package"
+                >
+                  <Trash2 className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="outline"
