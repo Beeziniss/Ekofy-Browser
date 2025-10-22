@@ -88,7 +88,7 @@ export const SEARCH_TRACKS = graphql(`
                 restriction {
                     type
                 }
-                mainArtistsAsync {
+                mainArtists {
                 items {
                     id
                     userId
