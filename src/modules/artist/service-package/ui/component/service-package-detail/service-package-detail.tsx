@@ -65,6 +65,9 @@ const ServicePackageDetail: React.FC<ServicePackageDetailProps> = ({
               <CardDescription className="text-gray-400">
                 Delivery time: {pkg.estimateDeliveryDays} days
               </CardDescription>
+              <CardDescription className="text-gray-400">
+                Create At: {new Date(pkg.createdAt).toLocaleDateString()}
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -84,11 +87,11 @@ const ServicePackageDetail: React.FC<ServicePackageDetailProps> = ({
               <h3 className="text-lg font-semibold text-white mb-3">Service Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {pkg.serviceDetails.map((detail: Metadata, index: number) => (
-                  <Card key={index} className="bg-gray-700 border-gray-600">
+                  <Card key={index} className="border-gray-600">
                     <CardContent className="p-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-300 font-medium">{detail.key}</span>
-                        <span className="text-gray-400">{detail.value}</span>
+                      <div className="flex items-center space-x-4">
+                        <span className="text-white font-medium">{detail.key}: </span>
+                        <span className="text-white">{detail.value}</span>
                       </div>
                     </CardContent>
                   </Card>
@@ -96,27 +99,6 @@ const ServicePackageDetail: React.FC<ServicePackageDetailProps> = ({
               </div>
             </div>
           )}
-
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-3">Package Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="bg-gray-700 border-gray-600">
-                <CardContent className="p-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Created:</span>
-                      <span className="text-gray-400">{new Date(pkg.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Updated:</span>
-                      <span className="text-gray-400">{new Date(pkg.updatedAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
         </CardContent>
       </Card>
     </div>

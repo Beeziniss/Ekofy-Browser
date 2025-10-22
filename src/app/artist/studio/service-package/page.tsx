@@ -17,7 +17,7 @@ export default function ServicePackagePage() {
       // Prefetch pending packages
       queryClient.prefetchQuery(pendingPackagesOptions(user.artistId)); 
     }
-  }, [queryClient]);
+  }, [queryClient, user?.artistId]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
