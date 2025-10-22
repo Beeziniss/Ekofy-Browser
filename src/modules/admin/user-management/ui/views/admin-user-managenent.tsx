@@ -136,7 +136,7 @@ export const DeActiveUserMutation = graphql(`
 
 export const ReActiveUserMutation = graphql(`
   mutation ReActiveUser($targetUserId: String!) {
-    reActiveUser(targetUserId: $targetUserId)
+    unbanUser(targetUserId: $targetUserId)
   }
 `);
 

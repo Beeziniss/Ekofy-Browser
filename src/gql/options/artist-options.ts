@@ -2,10 +2,16 @@ import { TrackListWithFiltersQuery } from "@/modules/artist/studio/ui/sections/t
 import { GetArtistProfileQuery } from "@/modules/artist/profile/ui/views/queries";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
+import { CategoriesQuery } from "@/modules/artist/track-upload/ui/views/track-upload-view";
 
 export const trackListOptions = queryOptions({
   queryKey: ["tracks"],
   queryFn: () => execute(TrackListWithFiltersQuery, { skip: 0, take: 10 }),
+});
+
+export const categoriesOptions = queryOptions({
+  queryKey: ["categories"],
+  queryFn: async () => await execute(CategoriesQuery),
 });
 
 export const artistProfileOptions = (userId: string) =>
