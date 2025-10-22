@@ -1,4 +1,11 @@
-export type SearchType = 'all' | 'songs' | 'artists' | 'playlists' | 'albums' | 'profiles' | 'genres';
+export type SearchType =
+  | "all"
+  | "songs"
+  | "artists"
+  | "playlists"
+  | "albums"
+  | "profiles"
+  | "genres";
 
 export interface SearchParams {
   query: string;
@@ -14,11 +21,11 @@ export interface SearchTabItem {
 }
 
 export const SEARCH_TABS: SearchTabItem[] = [
-  { id: 'all', label: 'All' },
-  { id: 'songs', label: 'Songs' },
-  { id: 'artists', label: 'Artists' },
-  { id: 'playlists', label: 'Playlists' },
-  { id: 'albums', label: 'Albums' },
+  { id: "all", label: "All" },
+  { id: "songs", label: "Songs" },
+  { id: "artists", label: "Artists" },
+  { id: "playlists", label: "Playlists" },
+  { id: "albums", label: "Albums" },
 ];
 
 // Search Query Variables
@@ -31,24 +38,24 @@ export interface SearchQueryVariables {
 // Search Response Types
 export interface SearchTrackItem {
   id: string;
-name: string;
-description: string;
-nameUnsigned: string;
-type: string;
-categoryIds: string[];
-mainArtistIds: string[];
-coverImage: string;
-restriction: {
+  name: string;
+  description: string;
+  nameUnsigned: string;
   type: string;
-};
-mainArtistsAsync: {
-  items: {
-    id: string;
-    userId: string;
-    stageName: string;
-    artistType: string;
-  }[];
-};
+  categoryIds: string[];
+  mainArtistIds: string[];
+  coverImage: string;
+  restriction: {
+    type: string;
+  };
+  mainArtists: {
+    items: {
+      id: string;
+      userId: string;
+      stageName: string;
+      artistType: string;
+    }[];
+  };
   // Add other track properties as needed
 }
 
@@ -131,4 +138,7 @@ export interface SearchListenersResponse {
 }
 
 // Union types for components
-export type SearchableItem = SearchArtistItem | SearchPlaylistItem | SearchTrackItem;
+export type SearchableItem =
+  | SearchArtistItem
+  | SearchPlaylistItem
+  | SearchTrackItem;
