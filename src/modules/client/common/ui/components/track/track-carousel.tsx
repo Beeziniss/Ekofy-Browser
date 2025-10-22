@@ -49,7 +49,7 @@ const TrackCarousel = ({ data, isLoading }: TrackCarouselProps) => {
                 coverImage={track.coverImage}
                 trackName={track.name}
                 artists={
-                  track.mainArtistsAsync?.items?.map((artist) => ({
+                  track.mainArtists?.items?.map((artist) => ({
                     id: artist.id,
                     stageName: artist.stageName,
                   })) || []

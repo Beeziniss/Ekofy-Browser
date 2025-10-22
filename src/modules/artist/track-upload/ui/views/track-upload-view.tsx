@@ -1,5 +1,43 @@
-import React from "react";
+import { graphql } from "@/gql";
 import TrackUploadSection from "../sections/track-upload-section";
+
+export const UploadTrackMutation = graphql(`
+  mutation UploadTrack(
+    $file: Upload!
+    $createTrackRequest: CreateTrackRequestInput!
+    $createWorkRequest: CreateWorkRequestInput!
+    $createRecordingRequest: CreateRecordingRequestInput!
+  ) {
+    uploadTrack(
+      file: $file
+      createTrackRequest: $createTrackRequest
+      createWorkRequest: $createWorkRequest
+      createRecordingRequest: $createRecordingRequest
+    )
+  }
+`);
+
+export const CategoriesQuery = graphql(`
+  query Categories {
+    categories {
+      items {
+        id
+        name
+      }
+    }
+  }
+`);
+
+export const UserLicenseQuery = graphql(`
+  query UserLicense {
+    users {
+      items {
+        id
+        fullName
+      }
+    }
+  }
+`);
 
 const TrackUploadView = () => {
   return (

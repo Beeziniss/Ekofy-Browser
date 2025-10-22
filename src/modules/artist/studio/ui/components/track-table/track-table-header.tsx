@@ -116,7 +116,7 @@ const TrackTableHeader = ({
           {totalTracks} track{totalTracks !== 1 ? "s" : ""}
           {serverTotalCount && totalTracks !== serverTotalCount && (
             <span className="text-main-grey ml-1">
-              (of {serverTotalCount} total)
+              of {serverTotalCount} total
             </span>
           )}
         </span>
