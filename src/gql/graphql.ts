@@ -4766,6 +4766,7 @@ export type DeletePlaylistMutationVariables = Exact<{
 export type DeletePlaylistMutation = { __typename?: 'MutationInitialization', deletePlaylist: boolean };
 
 export type PlaylistsQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -5280,9 +5281,9 @@ export const DeletePlaylistDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<DeletePlaylistMutation, DeletePlaylistMutationVariables>;
 export const PlaylistsDocument = new TypedDocumentString(`
-    query Playlists($name: String, $take: Int, $skip: Int) {
+    query Playlists($userId: String!, $name: String, $take: Int, $skip: Int) {
   playlists(
-    where: {or: {name: {contains: $name}, nameUnsigned: {contains: $name}}}
+    where: {or: {name: {contains: $name}, nameUnsigned: {contains: $name}}, userId: {eq: $userId}}
     order: {createdAt: DESC}
     take: $take
     skip: $skip
