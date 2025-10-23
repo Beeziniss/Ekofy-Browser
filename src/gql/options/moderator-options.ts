@@ -13,6 +13,7 @@ import {
   ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType, 
   ApprovalHistoryFilterInput, 
   ApprovalType,
+  PaginatedDataOfPendingArtistPackageResponseFilterInput,
 } from "@/gql/graphql";
 import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
 import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/moderator/user-management/ui/views/moderator-user-detail-view";
@@ -221,20 +222,26 @@ export const moderatorApprovalHistoryDetailOptions = (historyId: string) => quer
   },
 });
 
-// Moderator pending packages query options for approval with search
-export const moderatorPendingPackagesOptions = (searchTerm: string = '') => queryOptions({
-  queryKey: ["moderator-pending-packages", searchTerm],
+// Moderator pending packages query options for approval with search and pagination
+export const moderatorPendingPackagesOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = '') => queryOptions({
+  queryKey: ["moderator-pending-packages", page, pageSize, searchTerm],
   queryFn: () => {
-    const where: Record<string, unknown> = {};
+    let where: PaginatedDataOfPendingArtistPackageResponseFilterInput | undefined = undefined;
     
     // Add packageName filter if search term is provided
     if (searchTerm.trim()) {
-      where.packageName = { contains: searchTerm };
+      where = {
+        items: {
+          some: {
+            packageName: { contains: searchTerm }
+          }
+        }
+      };
     }
     
     return execute(PendingArtistPackagesQuery, {
-      pageNumber: 1,
-      pageSize: 100, // Get more items for moderator view
+      pageNumber: page,
+      pageSize: pageSize,
       where, // Apply search filter if provided
       artistWhere: {} // Get all artists
     });

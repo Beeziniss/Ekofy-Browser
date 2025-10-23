@@ -14,7 +14,7 @@ import type {
   UpdateStatusArtistPackageRequestInput,
   UpdateArtistPackageRequestInput,
   ArtistPackageFilterInput, 
-  PendingArtistPackageResponseFilterInput,
+  PaginatedDataOfPendingArtistPackageResponseFilterInput,
   PendingArtistPackageResponse,
   ArtistPackagesCollectionSegment,
   ArtistFilterInput
@@ -85,21 +85,24 @@ export const ServicePackageDetailQuery = `
 
 // Query for pending packages
 export const PendingArtistPackagesQuery = `
-  query PendingArtistPackages($pageNumber: Int!, $pageSize: Int!, $where: PendingArtistPackageResponseFilterInput, $artistWhere: ArtistFilterInput) {
+  query PendingArtistPackages($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPendingArtistPackageResponseFilterInput, $artistWhere: ArtistFilterInput) {
     pendingArtistPackages(pageNumber: $pageNumber, pageSize: $pageSize, where: $where) {
-      id
-      artistId
-      packageName
-      amount
-      currency
-      estimateDeliveryDays
-      description
-      status
-      requestedAt
-      timeToLive
-      serviceDetails {
-        key
-        value
+      totalCount
+      items {
+        id
+        artistId
+        packageName
+        amount
+        currency
+        estimateDeliveryDays
+        description
+        status
+        requestedAt
+        timeToLive
+        serviceDetails {
+          key
+          value
+        }
       }
     }
     artists(where: $artistWhere) {
@@ -112,10 +115,13 @@ export const PendingArtistPackagesQuery = `
   }
 ` as unknown as TypedDocumentString<
   { 
-    pendingArtistPackages?: Array<PendingArtistPackageResponse> | null,
+    pendingArtistPackages?: {
+      totalCount: number;
+      items: Array<PendingArtistPackageResponse>;
+    } | null,
     artists?: { items: Array<{ stageName: string; userId: string; id: string }> } | null
   },
-  { pageNumber: number; pageSize: number; where?: PendingArtistPackageResponseFilterInput; artistWhere?: ArtistFilterInput }
+  { pageNumber: number; pageSize: number; where?: PaginatedDataOfPendingArtistPackageResponseFilterInput; artistWhere?: ArtistFilterInput }
 >;
 
 // Mutation for creating artist package

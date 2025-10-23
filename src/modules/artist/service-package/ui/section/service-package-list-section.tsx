@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { CustomPagination } from '@/components/ui/custom-pagination';
 import { Search, X } from 'lucide-react';
 import ServicePackageList from '../component/service-package-list/service-package-list';
 import PendingPackageList from '../component/service-package-list/pending-package-list';
@@ -31,6 +32,9 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [packageToDelete, setPackageToDelete] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pendingCurrentPage, setPendingCurrentPage] = useState<number>(1);
+  const pageSize = 10;
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
 
@@ -42,15 +46,15 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
     }
   }, [user]);
 
-  // Query for artist packages using options with search
+  // Query for artist packages using options with search and pagination
   const { data: packagesData, isLoading: packagesLoading, error: packagesError } = useQuery({
-    ...artistPackagesOptions(artistId, searchTerm),
+    ...artistPackagesOptions(artistId, currentPage, pageSize, searchTerm),
     enabled: !!artistId,
   });
 
-  // Query for pending packages using options with search
+  // Query for pending packages using options with search and pagination
   const { data: pendingData, isLoading: pendingLoading } = useQuery({
-    ...pendingPackagesOptions(artistId, searchTerm),
+    ...pendingPackagesOptions(artistId, pendingCurrentPage, pageSize, searchTerm),
     enabled: !!artistId && currentView === 'pending',
   });
 
@@ -113,15 +117,29 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
+    setPendingCurrentPage(1);
   };
 
   const handleClearSearch = () => {
     setSearchTerm('');
+    setCurrentPage(1);
+    setPendingCurrentPage(1);
   };
 
   const handleViewChange = (view: 'packages' | 'pending') => {
     setCurrentView(view);
     setSearchTerm(''); // Clear search when switching views
+    setCurrentPage(1);
+    setPendingCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    if (currentView === 'packages') {
+      setCurrentPage(page);
+    } else {
+      setPendingCurrentPage(page);
+    }
   };
 
   const handleCancelPendingPackage = (packageId: string) => {
@@ -131,8 +149,14 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
   };
 
   const packages = useMemo(() => packagesData?.artistPackages?.items || [], [packagesData]);
-  const pendingPackages = useMemo(() => pendingData?.pendingArtistPackages || [], [pendingData]);
+  const pendingPackages = useMemo(() => pendingData?.pendingArtistPackages?.items || [], [pendingData]);
   const artists = useMemo(() => pendingData?.artists?.items || [], [pendingData]);
+  
+  // Pagination calculations
+  const totalPackagesCount = packagesData?.artistPackages?.totalCount || 0;
+  const totalPendingCount = pendingData?.pendingArtistPackages?.totalCount || 0;
+  const totalPackagesPages = Math.ceil(totalPackagesCount / pageSize);
+  const totalPendingPages = Math.ceil(totalPendingCount / pageSize);
 
   return (
     <div className="max-w-7xl mx-auto p-6">
@@ -219,13 +243,26 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
                 </Button>
               </div>
             ) : (
-              <ServicePackageList
-                packages={packages}
-                onEdit={onEditPackage}
-                onDelete={handleDeletePackage}
-                onViewDetail={onViewDetail}
-                onStatusChange={handleStatusChange}
-              />
+              <>
+                <ServicePackageList
+                  packages={packages}
+                  onEdit={onEditPackage}
+                  onDelete={handleDeletePackage}
+                  onViewDetail={onViewDetail}
+                  onStatusChange={handleStatusChange}
+                />
+                
+                {/* Pagination for Packages */}
+                <CustomPagination
+                  currentPage={currentPage}
+                  totalPages={totalPackagesPages}
+                  totalCount={totalPackagesCount}
+                  pageSize={pageSize}
+                  onPageChange={handlePageChange}
+                  isLoading={packagesLoading}
+                  className="mt-6"
+                />
+              </>
             )
           ) : (
             pendingLoading ? (
@@ -233,11 +270,24 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
                 <p className="text-gray-400">Loading pending packages...</p>
               </div>
             ) : (
-              <PendingPackageList
-                packages={pendingPackages}
-                artists={artists}
-                onCancel={handleCancelPendingPackage}
-              />
+              <>
+                <PendingPackageList
+                  packages={pendingPackages}
+                  artists={artists}
+                  onCancel={handleCancelPendingPackage}
+                />
+                
+                {/* Pagination for Pending Packages */}
+                <CustomPagination
+                  currentPage={pendingCurrentPage}
+                  totalPages={totalPendingPages}
+                  totalCount={totalPendingCount}
+                  pageSize={pageSize}
+                  onPageChange={handlePageChange}
+                  isLoading={pendingLoading}
+                  className="mt-6"
+                />
+              </>
             )
           )}
         </CardContent>

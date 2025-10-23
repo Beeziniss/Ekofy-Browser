@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -13,15 +13,24 @@ import { Plus, X } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 const serviceDetailSchema = z.object({
-  key: z.string().min(1, 'Key is required'),
+  key: z.string()
+    .regex(/^\d+$/, "Key must be numeric"),
   value: z.string().min(1, 'Value is required'),
 });
 
 const createPackageSchema = z.object({
-  packageName: z.string().min(1, 'Package name is required'),
-  amount: z.number().min(0, 'Amount must be positive'),
-  estimateDeliveryDays: z.number().min(1, 'Delivery days must be at least 1'),
-  description: z.string().min(1, 'Description is required'),
+  packageName: z.string()
+    .min(1, 'Package name is required')
+    .max(100, 'Package name must be at most 100 characters'),
+  amount: z.number()
+    .min(0, 'Amount must be positive')
+    .max(1000000000, 'Amount is too large'),
+  estimateDeliveryDays: z.number()
+    .min(1, 'Delivery days must be at least 1')
+    .max(365, 'Delivery days is too large'),
+  description: z.string()
+    .min(1, 'Description is required')
+    .max(1000, 'Description must be at most 1000 characters'),
   serviceDetails: z.array(serviceDetailSchema).min(1, 'At least one service detail is required'),
 });
 
@@ -33,11 +42,13 @@ interface CreatePackageServiceProps {
   isLoading?: boolean;
 }
 
-const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
+const CreatePackageService = ({
   onSubmit,
   onCancel,
   isLoading = false,
-}) => {
+}: CreatePackageServiceProps) => {
+  const [keyCounter, setKeyCounter] = useState(1); // State to track the key counter
+
   const form = useForm<CreatePackageFormData>({
     resolver: zodResolver(createPackageSchema),
     defaultValues: {
@@ -45,7 +56,7 @@ const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
       amount: 0,
       estimateDeliveryDays: 1,
       description: '',
-      serviceDetails: [{ key: '', value: '' }],
+      serviceDetails: [{ key: '1', value: '' }], // Initialize with a default key
     },
   });
 
@@ -53,6 +64,28 @@ const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
     control: form.control,
     name: 'serviceDetails',
   });
+
+  useEffect(() => {
+    const list = form.getValues("serviceDetails");
+    setKeyCounter(list.length + 1);
+  }, [form]);
+
+  const handleRemoveServiceDetail = (index: number) => {
+    remove(index);
+    // Reindex sau khi xóa
+    const updated = form.getValues("serviceDetails").map((item, i) => ({
+      ...item,
+      key: (i + 1).toString(),
+    }));
+    form.setValue("serviceDetails", updated, { shouldValidate: true });
+
+    setKeyCounter(updated.length + 1);
+  };
+
+  const handleAddServiceDetail = () => {
+    append({ key: keyCounter.toString(), value: '' }); // Use the current keyCounter as the key
+    setKeyCounter((prev) => prev + 1); // Increment the keyCounter
+  };
 
   const handleSubmit = (data: CreatePackageFormData) => {
     onSubmit(data);
@@ -82,7 +115,7 @@ const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
                 name="packageName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Package name *</FormLabel>
+                    <FormLabel>Package name <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -101,7 +134,7 @@ const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
                   name="amount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price *</FormLabel>
+                      <FormLabel>Price <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -121,7 +154,7 @@ const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
                   name="estimateDeliveryDays"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Delivery time</FormLabel>
+                      <FormLabel>Delivery time <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -142,7 +175,7 @@ const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
                 name="serviceDetails"
                 render={() => (
                   <FormItem>
-                    <FormLabel>Services detail *</FormLabel>
+                    <FormLabel>Services detail <span className="text-red-500">*</span></FormLabel>
                     <div className="space-y-4">
                       {fields.map((field, index) => (
                         <div key={field.id} className="flex items-end space-x-2">
@@ -156,6 +189,7 @@ const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
                                     {...field}
                                     placeholder="Service key"
                                     className="bg-gray-700 border-gray-600 text-white"
+                                    disabled // Disable editing of the key
                                   />
                                 </FormControl>
                               )}
@@ -181,7 +215,7 @@ const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
                               type="button"
                               variant="outline"
                               size="sm"
-                              onClick={() => remove(index)}
+                              onClick={() => handleRemoveServiceDetail(index)}
                               className="border-red-600 text-red-400 hover:text-red-300"
                             >
                               <X className="h-4 w-4" />
@@ -193,7 +227,7 @@ const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => append({ key: '', value: '' })}
+                        onClick={handleAddServiceDetail}
                         className="border-gray-600 text-gray-300 hover:text-white"
                       >
                         <Plus className="h-4 w-4 mr-2" />
@@ -210,7 +244,7 @@ const CreatePackageService: React.FC<CreatePackageServiceProps> = ({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>Description<span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}

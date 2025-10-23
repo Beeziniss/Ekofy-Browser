@@ -7,7 +7,7 @@ import {
 } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
-import { ArtistPackageFilterInput } from "@/gql/graphql";
+import { ArtistPackageFilterInput, PaginatedDataOfPendingArtistPackageResponseFilterInput } from "@/gql/graphql";
 
 export const trackListOptions = queryOptions({
   queryKey: ["tracks"],
@@ -30,9 +30,9 @@ export const artistProfileOptions = (userId: string) =>
   });
 
 // Service Package Options with prefetch and search
-export const artistPackagesOptions = (artistId: string, searchTerm: string = '') =>
+export const artistPackagesOptions = (artistId: string, page: number = 1, pageSize: number = 10, searchTerm: string = '') =>
   queryOptions({
-    queryKey: ["artist-packages", artistId, searchTerm],
+    queryKey: ["artist-packages", artistId, page, pageSize, searchTerm],
     queryFn: () => {
       const where: ArtistPackageFilterInput = { artistId: { eq: artistId } };
       
@@ -41,9 +41,11 @@ export const artistPackagesOptions = (artistId: string, searchTerm: string = '')
         where.packageName = { contains: searchTerm };
       }
       
+      const skip = (page - 1) * pageSize;
+      
       return execute(ServicePackageServiceViewQuery, {
-        skip: 0,
-        take: 50,
+        skip,
+        take: pageSize,
         where
       });
     },
@@ -61,20 +63,22 @@ export const packageDetailOptions = (packageId: string) =>
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-export const pendingPackagesOptions = (artistId: string, searchTerm: string = '') =>
+export const pendingPackagesOptions = (artistId: string, page: number = 1, pageSize: number = 10, searchTerm: string = '') =>
   queryOptions({
-    queryKey: ["pending-packages", artistId, searchTerm],
+    queryKey: ["pending-packages", artistId, page, pageSize, searchTerm],
     queryFn: () => {
-      const where: Record<string, unknown> = { artistId: { eq: artistId } };
+      const where: PaginatedDataOfPendingArtistPackageResponseFilterInput = { items: { all: { artistId: { eq: artistId } } } };
       
       // Add packageName filter if search term is provided
       if (searchTerm.trim()) {
-        where.packageName = { contains: searchTerm };
+        if (where.items?.all) {
+          where.items.all.packageName = { contains: searchTerm };
+        }
       }
       
       return execute(PendingArtistPackagesQuery, {
-        pageNumber: 1,
-        pageSize: 50,
+        pageNumber: page,
+        pageSize: pageSize,
         where,
         artistWhere: {} // Get all artists for stage name lookup
       });

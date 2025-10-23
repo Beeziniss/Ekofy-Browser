@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { CustomPagination } from '@/components/ui/custom-pagination';
 import { RefreshCw, Search, X } from 'lucide-react';
 import ApprovalPackageList from '../component/approval-package-list';
 import ApprovalConfirmDialog from '../component/approval-confirm-dialog';
@@ -23,11 +24,13 @@ const ApprovalServicePackageSection= () => {
     packageName: string;
   } | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 10;
   const queryClient = useQueryClient();
 
-  // Query for pending packages for all artists (moderator view) with search
+  // Query for pending packages for all artists (moderator view) with search and pagination
   const { data: pendingData, isLoading: pendingLoading, error: pendingError } = useQuery({
-    ...moderatorPendingPackagesOptions(searchTerm),
+    ...moderatorPendingPackagesOptions(currentPage, pageSize, searchTerm),
     refetchInterval: 30 * 1000, // Auto refresh every 30 seconds
   });
 
@@ -92,19 +95,27 @@ const ApprovalServicePackageSection= () => {
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
   const handleClearSearch = () => {
     setSearchTerm('');
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['moderator-pending-packages', searchTerm] });
+    queryClient.invalidateQueries({ queryKey: ['moderator-pending-packages', currentPage, pageSize, searchTerm] });
     toast.info('Refreshing pending packages...');
   };
 
-  const pendingPackages = useMemo(() => pendingData?.pendingArtistPackages || [], [pendingData]);
+  const pendingPackages = useMemo(() => pendingData?.pendingArtistPackages?.items || [], [pendingData]);
   const artists = useMemo(() => pendingData?.artists?.items || [], [pendingData]);
+  const totalCount = pendingData?.pendingArtistPackages?.totalCount || 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
   const isLoading = approveMutation.isPending || rejectMutation.isPending;
 
   return (
@@ -182,13 +193,26 @@ const ApprovalServicePackageSection= () => {
               <p className="text-gray-400">Loading pending packages...</p>
             </div>
           ) : (
-            <ApprovalPackageList
-              packages={pendingPackages}
-              artists={artists}
-              onApprove={handleApprove}
-              onReject={handleReject}
-              isLoading={isLoading}
-            />
+            <>
+              <ApprovalPackageList
+                packages={pendingPackages}
+                artists={artists}
+                onApprove={handleApprove}
+                onReject={handleReject}
+                isLoading={isLoading}
+              />
+              
+              {/* Pagination */}
+              <CustomPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalCount={totalCount}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+                isLoading={pendingLoading}
+                className="mt-6"
+              />
+            </>
           )}
         </CardContent>
       </Card>
