@@ -15,6 +15,11 @@ import {
 } from "@/gql/graphql";
 import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
 import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/moderator/user-management/ui/views/moderator-user-detail-view";
+import { 
+  PENDING_TRACK_UPLOAD_REQUESTS_QUERY,
+  PENDING_TRACK_UPLOAD_REQUEST_DETAIL_QUERY,
+  ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY
+} from "@/modules/moderator/track-approval/ui/queries/track-approval-queries";
 
 export const moderatorProfileOptions = (userId: string) => queryOptions({
   queryKey: ["moderator-profile", userId],
@@ -218,4 +223,77 @@ export const moderatorApprovalHistoryDetailOptions = (historyId: string) => quer
     // Return first item from items array or null if not found
     return result?.approvalHistories?.items?.[0] || null;
   },
+});
+
+// Track approval query options for moderator
+export const moderatorPendingTracksOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") => queryOptions({
+  queryKey: ["moderator-pending-tracks", page, pageSize, searchTerm],
+  queryFn: async () => {
+    const variables: {
+      pageNumber: number;
+      pageSize: number;
+      where?: {
+        items?: {
+          some?: {
+            track?: {
+              name?: { contains: string };
+            };
+          };
+        };
+      };
+    } = {
+      pageNumber: page,
+      pageSize,
+    };
+    
+    // Add track name search filter if provided
+    if (searchTerm.trim()) {
+      variables.where = {
+        items: {
+          some: {
+            track: {
+              name: { contains: searchTerm }
+            }
+          }
+        }
+      };
+    }
+    
+    const result = await execute(PENDING_TRACK_UPLOAD_REQUESTS_QUERY, variables);
+    return result;
+  },
+  staleTime: 2 * 60 * 1000, // 2 minutes
+});
+
+// Track detail query options for moderator
+export const moderatorTrackDetailOptions = (trackId: string) => queryOptions({
+  queryKey: ["moderator-track-detail", trackId],
+  queryFn: async () => {
+    const result = await execute(PENDING_TRACK_UPLOAD_REQUEST_DETAIL_QUERY, {
+      where: {
+        items: {
+          some: {
+            track: {
+              id: { eq: trackId }
+            }
+          }
+        }
+      }
+    });
+    
+    return result.pendingTrackUploadRequests?.items?.[0] || null;
+  },
+  enabled: !!trackId,
+  staleTime: 5 * 60 * 1000, // 5 minutes
+});
+
+// Original file track query options
+export const moderatorTrackOriginalFileOptions = (trackId: string) => queryOptions({
+  queryKey: ["moderator-track-original-file", trackId],
+  queryFn: async () => {
+    const result = await execute(ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY, { trackId });
+    return result.originalFileTrackUploadRequest;
+  },
+  enabled: !!trackId,
+  staleTime: 10 * 60 * 1000, // 10 minutes
 });
