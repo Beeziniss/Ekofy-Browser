@@ -24,16 +24,19 @@ import { useAuthStore } from "@/store";
 import { authApi } from "@/services/auth-services";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserRole } from "@/types/role";
+import { useRouter } from "next/navigation";
 
 const AuthButton = () => {
   const { isAuthenticated, user, clearUserData } = useAuthStore();
   const [hasNotification] = useState(false);
+  const router = useRouter();
 
   // Logout mutation
   const { mutate: logout } = useMutation({
     mutationFn: authApi.general.logout,
     onSuccess: () => {
       clearUserData();
+      router.replace("/");
     },
     onError: (error) => {
       console.error("Logout failed:", error);
@@ -65,7 +68,10 @@ const AuthButton = () => {
         profileLinks.push({ label: "Artist Profile", href: "/artist/profile" });
         break;
       case UserRole.MODERATOR:
-        profileLinks.push({ label: "Moderator Profile", href: "/moderator/profile" });
+        profileLinks.push({
+          label: "Moderator Profile",
+          href: "/moderator/profile",
+        });
         break;
       case UserRole.ADMIN:
         profileLinks.push({ label: "Admin Profile", href: "/admin/profile" });
@@ -113,7 +119,9 @@ const AuthButton = () => {
                   <DropdownMenuItem key={link.href} asChild>
                     <Link href={link.href} className="flex items-center">
                       <User className="text-main-white mr-2 size-4" />
-                      <span className="text-main-white text-base">{link.label}</span>
+                      <span className="text-main-white text-base">
+                        {link.label}
+                      </span>
                     </Link>
                   </DropdownMenuItem>
                 ))}

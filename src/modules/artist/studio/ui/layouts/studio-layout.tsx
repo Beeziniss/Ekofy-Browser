@@ -7,7 +7,8 @@ import React from "react";
 import StudioSidebar from "../components/studio-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { MessageCircle } from "lucide-react";
+import { CloudUploadIcon, MessageCircle } from "lucide-react";
+import Link from "next/link";
 
 interface StudioLayoutProps {
   children: React.ReactNode;
@@ -18,7 +19,7 @@ const StudioLayout = ({ children }: StudioLayoutProps) => {
     <SidebarProvider>
       <StudioSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-white/30 px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 sticky top-0 !bg-main-dark-bg z-50">
+        <header className="!bg-main-dark-bg sticky top-0 z-50 flex h-16 items-center justify-between gap-2 border-b border-white/30 px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator
@@ -27,9 +28,17 @@ const StudioLayout = ({ children }: StudioLayoutProps) => {
             />
           </div>
 
-          <Button variant="ghost" size="iconXs">
-            <MessageCircle className="size-4" />
-          </Button>
+          <div className="flex items-center gap-x-2">
+            <Link href={"/artist/track-upload"}>
+              <Button variant="outline">
+                <CloudUploadIcon className="size-4" /> Upload
+              </Button>
+            </Link>
+
+            <Button variant="ghost" size="iconXs">
+              <MessageCircle className="size-4" />
+            </Button>
+          </div>
         </header>
         {children}
       </SidebarInset>
