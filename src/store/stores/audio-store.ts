@@ -31,6 +31,7 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
       currentTime: 0,
       currentPlaylistId: null, // Clear playlist when setting individual track
       error: null,
+      isPlaying: true, // Auto-play when setting new track
     });
   },
 

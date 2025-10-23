@@ -5,9 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { moderatorPendingTracksOptions } from "@/gql/options/moderator-options";
 import { TrackApprovalTable } from "../components/track-approval-table";
 import { TrackApprovalFilters } from "../components/track-approval-filters";
-import { TrackApprovalStats } from "../components/track-approval-stats";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+// import { TrackApprovalStats } from "../components/track-approval-stats";
 import { useRouter } from "next/navigation";
 export function TrackApprovalSection() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,7 +40,7 @@ export function TrackApprovalSection() {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <TrackApprovalStats />
+      {/* <TrackApprovalStats /> */}
 
       {/* Filters and Actions */}
       <div className="flex items-center justify-between">
@@ -50,10 +48,6 @@ export function TrackApprovalSection() {
           searchTerm={searchTerm}
           onSearchChange={handleSearch}
         />
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Bulk Actions
-        </Button>
       </div>
 
       {/* Table */}

@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TrackUploadRequest } from "@/types/approval-track";
-import { AudioPlayer } from "./audio-player";
+import { SimplePlayButton } from "./simple-play-button";
 import { formatDistanceToNow } from "date-fns";
 import { 
   MoreHorizontal, 
@@ -31,7 +31,8 @@ import {
   CheckCircle, 
   XCircle, 
   Download,
-  Music
+  Music,
+  User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { execute } from "@/gql/execute";
@@ -138,7 +139,6 @@ export function TrackApprovalTable({
               <TableHead>Artists</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Requested</TableHead>
-              <TableHead>Status</TableHead>
               <TableHead>Preview</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
@@ -148,6 +148,9 @@ export function TrackApprovalTable({
               <TableRow key={index}>
                 <TableCell>
                   <Checkbox disabled />
+                </TableCell>
+                <TableCell>
+                  <div className="h-8 w-8 bg-muted animate-pulse rounded" />
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-3">
@@ -169,9 +172,6 @@ export function TrackApprovalTable({
                 </TableCell>
                 <TableCell>
                   <div className="h-6 w-20 bg-muted animate-pulse rounded" />
-                </TableCell>
-                <TableCell>
-                  <div className="h-8 w-8 bg-muted animate-pulse rounded" />
                 </TableCell>
                 <TableCell>
                   <div className="h-8 w-8 bg-muted animate-pulse rounded" />
@@ -209,12 +209,11 @@ export function TrackApprovalTable({
                   aria-label="Select all"
                 />
               </TableHead>
+              <TableHead className="w-12"></TableHead>
               <TableHead>Track</TableHead>
               <TableHead>Artists</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Requested</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Preview</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
@@ -231,10 +230,19 @@ export function TrackApprovalTable({
                   />
                 </TableCell>
                 <TableCell>
+                  <SimplePlayButton
+                    trackId={item.track.id}
+                    trackName={item.track.name}
+                    trackArtist={item.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
+                    trackCoverImage={item.track.coverImage}
+                    size="sm"
+                  />
+                </TableCell>
+                <TableCell>
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-12 w-12">
                       <AvatarImage 
-                        src={item.track.coverImage || "/placeholder-track.jpg"} 
+                        src={item.track.coverImage || "/ekofy-logo.svg"} 
                         alt={item.track.name}
                       />
                       <AvatarFallback>
@@ -254,17 +262,23 @@ export function TrackApprovalTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="space-y-1">
-                    {item.mainArtists?.items?.slice(0, 2).map((artist) => (
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage 
+                        src={item.mainArtists?.items?.map(artist => artist.avatarImage).join(", ") || " "} 
+                        alt={item.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Various Artists"}
+                      />
+                      <AvatarFallback>
+                        <User className="h-6 w-6" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                     {item.mainArtists?.items?.slice(0, 2).map((artist) => (
                       <div key={artist.id} className="text-sm">
                         {artist.stageName}
                       </div>
                     ))}
-                    {(item.mainArtists?.items?.length || 0) > 2 && (
-                      <div className="text-xs text-muted-foreground">
-                        +{(item.mainArtists?.items?.length || 0) - 2} more
-                      </div>
-                    )}
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -281,14 +295,6 @@ export function TrackApprovalTable({
                       addSuffix: true,
                     })}
                   </time>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className="text-yellow-600">
-                    Pending
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <AudioPlayer trackId={item.track.id} />
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>

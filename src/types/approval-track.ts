@@ -41,6 +41,7 @@ export interface TrackUploadRequest {
       stageNameUnsigned: string;
       email: string;
       artistType: string;
+        avatarImage?: string | null;
       members?: Array<{
         fullName: string;
         email: string;
@@ -70,6 +71,8 @@ export interface TrackUploadRequest {
       fullName: string;
       gender: string;
       birthDate: string;
+      phoneNumber?: string | null;
+      status: string;
     }> | null;
   } | null;
   workUsers?: {
@@ -81,15 +84,27 @@ export interface TrackUploadRequest {
       fullName: string;
       gender: string;
       birthDate: string;
+      phoneNumber?: string | null;
+      status: string;
     }> | null;
   } | null;
   work?: {
     id: string;
     description?: string | null;
+    workSplits?: Array<{
+      userId: string;
+      artistRole: string;
+      percentage: number;
+    }> | null;
   };
   recording?: {
     id: string;
     description?: string | null;
+    recordingSplitRequests?: Array<{
+      userId: string;
+      artistRole: string;
+      percentage: number;
+    }> | null;
   };
 }
 

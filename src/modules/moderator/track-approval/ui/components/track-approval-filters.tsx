@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 interface TrackApprovalFiltersProps {
   searchTerm: string;
@@ -83,25 +83,9 @@ export function TrackApprovalFilters({
       </Select>
 
       {/* Status Filter */}
-      <Select value={statusFilter} onValueChange={setStatusFilter}>
-        <SelectTrigger className="w-32">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Status</SelectItem>
-          <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="approved">Approved</SelectItem>
-          <SelectItem value="rejected">Rejected</SelectItem>
-        </SelectContent>
-      </Select>
 
       {/* Filter Actions */}
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm">
-          <Filter className="mr-2 h-4 w-4" />
-          More Filters
-        </Button>
-        
         {(localSearchTerm || trackTypeFilter !== "all" || statusFilter !== "pending") && (
           <Button variant="ghost" size="sm" onClick={clearAllFilters}>
             Clear All

@@ -47,6 +47,7 @@ export const PENDING_TRACK_UPLOAD_REQUESTS_QUERY = graphql(`
             stageNameUnsigned
             email
             artistType
+            avatarImage
           }
         }
         featuredArtists {
@@ -132,6 +133,7 @@ export const PENDING_TRACK_UPLOAD_REQUEST_DETAIL_QUERY = graphql(`
             stageNameUnsigned
             email
             artistType
+            avatarImage
           }
         }
         featuredArtists {
@@ -141,6 +143,8 @@ export const PENDING_TRACK_UPLOAD_REQUEST_DETAIL_QUERY = graphql(`
             stageName
             stageNameUnsigned
             email
+            artistType
+            avatarImage
           }
         }
         recordingUsers {
@@ -150,6 +154,8 @@ export const PENDING_TRACK_UPLOAD_REQUEST_DETAIL_QUERY = graphql(`
             fullName
             gender
             birthDate
+            phoneNumber
+            status
           }
         }
         workUsers {
@@ -159,15 +165,27 @@ export const PENDING_TRACK_UPLOAD_REQUEST_DETAIL_QUERY = graphql(`
             fullName
             gender
             birthDate
+            phoneNumber
+            status
           }
         }
         work {
           id
           description
+          workSplits {
+                    userId
+                    artistRole
+                    percentage
+                }
         }
         recording {
           id
           description
+          recordingSplitRequests {
+                    userId
+                    artistRole
+                    percentage
+                }
         }
       }
     }
