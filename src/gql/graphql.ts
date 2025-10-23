@@ -298,13 +298,11 @@ export type ArtistPackage = {
   __typename?: 'ArtistPackage';
   amount: Scalars['Decimal']['output'];
   artistId: Scalars['String']['output'];
-  artistId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   currency: CurrencyType;
   description?: Maybe<Scalars['String']['output']>;
   estimateDeliveryDays: Scalars['Int']['output'];
   id: Scalars['String']['output'];
-  isDelete: Scalars['Boolean']['output'];
   isDelete: Scalars['Boolean']['output'];
   packageName: Scalars['String']['output'];
   serviceDetails: Array<Metadata>;
@@ -316,13 +314,11 @@ export type ArtistPackageFilterInput = {
   amount?: InputMaybe<DecimalOperationFilterInput>;
   and?: InputMaybe<Array<ArtistPackageFilterInput>>;
   artistId?: InputMaybe<StringOperationFilterInput>;
-  artistId?: InputMaybe<StringOperationFilterInput>;
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
   currency?: InputMaybe<CurrencyTypeOperationFilterInput>;
   description?: InputMaybe<StringOperationFilterInput>;
   estimateDeliveryDays?: InputMaybe<IntOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
-  isDelete?: InputMaybe<BooleanOperationFilterInput>;
   isDelete?: InputMaybe<BooleanOperationFilterInput>;
   or?: InputMaybe<Array<ArtistPackageFilterInput>>;
   packageName?: InputMaybe<StringOperationFilterInput>;
@@ -334,13 +330,11 @@ export type ArtistPackageFilterInput = {
 export type ArtistPackageSortInput = {
   amount?: InputMaybe<SortEnumType>;
   artistId?: InputMaybe<SortEnumType>;
-  artistId?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
   currency?: InputMaybe<SortEnumType>;
   description?: InputMaybe<SortEnumType>;
   estimateDeliveryDays?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
-  isDelete?: InputMaybe<SortEnumType>;
   isDelete?: InputMaybe<SortEnumType>;
   packageName?: InputMaybe<SortEnumType>;
   status?: InputMaybe<SortEnumType>;
@@ -4827,7 +4821,6 @@ export type PlaylistDetailTrackListQueryVariables = Exact<{
 
 
 export type PlaylistDetailTrackListQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, isExplicit: boolean, mainArtistIds: Array<string>, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null } | null, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }> }> | null } | null };
-export type PlaylistDetailTrackListQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, isExplicit: boolean, mainArtistIds: Array<string>, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null } | null, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }> }> | null } | null };
 
 export type SearchArtistsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -4854,7 +4847,7 @@ export type SearchTracksQueryVariables = Exact<{
 }>;
 
 
-export type SearchTracksQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, coverImage: string, restriction: { __typename?: 'Restriction', type: RestrictionType }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType }> | null } | null }> | null } | null };
+export type SearchTracksQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, coverImage: string, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType }> | null } | null, restriction: { __typename?: 'Restriction', type: RestrictionType } }> | null } | null };
 
 export type SearchPlaylistsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -4870,7 +4863,6 @@ export type TrackDetailQueryVariables = Exact<{
 }>;
 
 
-export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, mainArtistIds: Array<string>, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string, followerCount: any }> | null } | null }> | null } | null };
 export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, mainArtistIds: Array<string>, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string, followerCount: any }> | null } | null }> | null } | null };
 
 export type ApprovalHistoriesListQueryVariables = Exact<{
@@ -4892,7 +4884,7 @@ export type ModeratorApprovalHistoryDetailQuery = { __typename?: 'QueryInitializ
 export type PendingArtistRegistrationsListQueryVariables = Exact<{
   pageNumber: Scalars['Int']['input'];
   pageSize: Scalars['Int']['input'];
-  where?: InputMaybe<PaginatedDataOfPaginatedDataOfPendingArtistRegistrationResponseFilterInput>;
+  where?: InputMaybe<PaginatedDataOfPendingArtistRegistrationResponseFilterInput>;
 }>;
 
 
@@ -4903,7 +4895,7 @@ export type PendingArtistRegistrationsDetailQueryVariables = Exact<{
 }>;
 
 
-export type PendingArtistRegistrationsDetailQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrations: { __typename?: 'PaginatedDataOfPendingArtistRegistrationResponse', items: { __typename?: 'PaginatedDataOfPendingArtistRegistrationResponse', items: Array<{ __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string, requestedAt: any, timeToLive?: any | null, identityCardNumber: string, identityCardDateOfBirth: any, identityCardFullName: string, placeOfOrigin: string, placeOfResidence: string, frontImageUrl?: string | null, backImageUrl?: string | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }> }> } } };
+export type PendingArtistRegistrationsDetailQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrations: { __typename?: 'PaginatedDataOfPendingArtistRegistrationResponse', items: Array<{ __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string, requestedAt: any, timeToLive?: any | null, identityCardNumber: string, identityCardDateOfBirth: any, identityCardFullName: string, placeOfOrigin: string, placeOfResidence: string, frontImageUrl?: string | null, backImageUrl?: string | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }> }> } };
 
 export type ApproveArtistRegistrationMutationVariables = Exact<{
   request: ArtistRegistrationApprovalRequestInput;
@@ -5269,7 +5261,6 @@ export const TrackListHomeDocument = new TypedDocumentString(`
       coverImage
       mainArtistIds
       mainArtists {
-      mainArtists {
         items {
           id
           stageName
@@ -5388,7 +5379,6 @@ export const PlaylistDetailTrackListDocument = new TypedDocumentString(`
           isExplicit
           mainArtistIds
           mainArtists {
-          mainArtists {
             items {
               stageName
             }
@@ -5465,11 +5455,6 @@ export const SearchTracksDocument = new TypedDocumentString(`
       type
       categoryIds
       mainArtistIds
-      coverImage
-      restriction {
-        type
-      }
-      mainArtists {
       mainArtists {
         items {
           id
@@ -5523,7 +5508,6 @@ export const TrackDetailDocument = new TypedDocumentString(`
       favoriteCount
       streamCount
       mainArtistIds
-      mainArtists {
       mainArtists {
         items {
           stageName
@@ -5584,7 +5568,7 @@ export const ModeratorApprovalHistoryDetailDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<ModeratorApprovalHistoryDetailQuery, ModeratorApprovalHistoryDetailQueryVariables>;
 export const PendingArtistRegistrationsListDocument = new TypedDocumentString(`
-    query PendingArtistRegistrationsList($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPaginatedDataOfPendingArtistRegistrationResponseFilterInput) {
+    query PendingArtistRegistrationsList($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPendingArtistRegistrationResponseFilterInput) {
   pendingArtistRegistrations(
     pageNumber: $pageNumber
     pageSize: $pageSize
@@ -5592,18 +5576,16 @@ export const PendingArtistRegistrationsListDocument = new TypedDocumentString(`
   ) {
     totalCount
     items {
-      items {
       email
-        fullName
-        stageName
+      fullName
+      stageName
       stageNameUnsigned
-        artistType
-        gender
-        birthDate
-        phoneNumber
-        avatarImage
-        id
-    }
+      artistType
+      gender
+      birthDate
+      phoneNumber
+      avatarImage
+      id
       requestedAt
     }
   }

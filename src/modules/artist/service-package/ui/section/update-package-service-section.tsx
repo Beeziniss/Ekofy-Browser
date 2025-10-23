@@ -48,6 +48,8 @@ const UpdatePackageServiceSection = ({
       toast.success('Package updated successfully');
       queryClient.invalidateQueries({ queryKey: ['package-detail', packageId] });
       queryClient.invalidateQueries({ queryKey: ['artist-packages'] });
+      queryClient.invalidateQueries({ queryKey: ['pending-packages'] });
+      queryClient.invalidateQueries({ queryKey: ['moderator-pending-packages'] });
       onSuccess();
     },
     onError: (error) => {

@@ -53,6 +53,8 @@ const CreatePackageServiceSection: React.FC<CreatePackageServiceSectionProps> = 
     onSuccess: () => {
       toast.success('Package created successfully');
       queryClient.invalidateQueries({ queryKey: ['artist-packages'] });
+      queryClient.invalidateQueries({ queryKey: ['pending-packages'] });
+      queryClient.invalidateQueries({ queryKey: ['moderator-pending-packages'] });
       onSuccess();
     },
     onError: (error) => {

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,12 +10,11 @@ import { RefreshCw, Search, X } from 'lucide-react';
 import ApprovalPackageList from '../component/approval-package-list';
 import ApprovalConfirmDialog from '../component/approval-confirm-dialog';
 import { PendingArtistPackageResponse } from '@/gql/graphql';
-import { execute } from '@/gql/execute';
 import { moderatorPendingPackagesOptions } from '@/gql/options/moderator-options';
 import { 
-  approveArtistPackageMutation,
-  rejectArtistPackageMutation 
-} from '@/modules/artist/service-package/ui/view/service-package-service-view';
+  useApproveArtistPackage,
+  useRejectArtistPackage 
+} from '@/gql/client-mutation-options/moderator-mutation';
 
 const ApprovalServicePackageSection= () => {
   const [confirmAction, setConfirmAction] = useState<{
@@ -34,31 +33,9 @@ const ApprovalServicePackageSection= () => {
     refetchInterval: 30 * 1000, // Auto refresh every 30 seconds
   });
 
-  // Approve mutation
-  const approveMutation = useMutation({
-    mutationFn: (packageId: string) => execute(approveArtistPackageMutation, { id: packageId }),
-    onSuccess: () => {
-      toast.success('Package approved successfully');
-      queryClient.invalidateQueries({ queryKey: ['moderator-pending-packages'] });
-    },
-    onError: (error) => {
-      toast.error('Failed to approve package');
-      console.error('Approve error:', error);
-    },
-  });
-
-  // Reject mutation
-  const rejectMutation = useMutation({
-    mutationFn: (packageId: string) => execute(rejectArtistPackageMutation, { id: packageId }),
-    onSuccess: () => {
-      toast.success('Package rejected successfully');
-      queryClient.invalidateQueries({ queryKey: ['moderator-pending-packages'] });
-    },
-    onError: (error) => {
-      toast.error('Failed to reject package');
-      console.error('Reject error:', error);
-    },
-  });
+  // Use custom hooks for approve and reject mutations with built-in invalidateQueries
+  const approveMutation = useApproveArtistPackage();
+  const rejectMutation = useRejectArtistPackage();
 
   const handleApprove = (packageId: string) => {
     const pkg = pendingPackages.find((p: PendingArtistPackageResponse) => p.id === packageId);
@@ -82,9 +59,25 @@ const ApprovalServicePackageSection= () => {
     if (!confirmAction) return;
     
     if (confirmAction.type === 'approve') {
-      approveMutation.mutate(confirmAction.packageId);
+      approveMutation.mutate(confirmAction.packageId, {
+        onSuccess: () => {
+          toast.success('Package approved successfully');
+        },
+        onError: (error) => {
+          toast.error('Failed to approve package');
+          console.error('Approve error:', error);
+        },
+      });
     } else {
-      rejectMutation.mutate(confirmAction.packageId);
+      rejectMutation.mutate(confirmAction.packageId, {
+        onSuccess: () => {
+          toast.success('Package rejected successfully');
+        },
+        onError: (error) => {
+          toast.error('Failed to reject package');
+          console.error('Reject error:', error);
+        },
+      });
     }
     setConfirmAction(null);
   };

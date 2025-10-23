@@ -15,7 +15,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 const serviceDetailSchema = z.object({
   key: z.string()
     .regex(/^\d+$/, "Key must be numeric"),
-  value: z.string().min(1, 'Value is required'),
+  value: z.string()
+    .min(1, 'Value is required')
+    .regex(/^[A-Za-z\s]+$/, 'Value must only contain letters and spaces'), // Only letters and spaces allowed
 });
 
 const createPackageSchema = z.object({
@@ -202,9 +204,15 @@ const CreatePackageService = ({
                               render={({ field }) => (
                                 <FormControl>
                                   <Input
-                                    {...field}
-                                    placeholder="Description"
-                                    className="bg-gray-700 border-gray-600 text-white"
+                                  {...field}
+                                  placeholder="Description"
+                                  className="bg-gray-700 border-gray-600 text-white"
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^[A-Za-z\s]*$/.test(value)) {
+                                    field.onChange(value);
+                                    }
+                                  }}
                                   />
                                 </FormControl>
                               )}

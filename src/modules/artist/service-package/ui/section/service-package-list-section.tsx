@@ -70,6 +70,8 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
     onSuccess: () => {
       toast.success('Package status updated successfully');
       queryClient.invalidateQueries({ queryKey: ['artist-packages'] });
+      queryClient.invalidateQueries({ queryKey: ['pending-packages'] });
+      queryClient.invalidateQueries({ queryKey: ['moderator-pending-packages'] });
     },
     onError: (error) => {
       toast.error('Failed to update package status');
@@ -86,6 +88,8 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
     onSuccess: () => {
       toast.success('Package deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['artist-packages'] });
+      queryClient.invalidateQueries({ queryKey: ['pending-packages'] });
+      queryClient.invalidateQueries({ queryKey: ['moderator-pending-packages'] });
       setDeleteModalOpen(false);
       setPackageToDelete('');
     },
