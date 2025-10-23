@@ -7,11 +7,25 @@ import {
 } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
+import {
+  CategoriesQuery,
+  UserLicenseQuery,
+} from "@/modules/artist/track-upload/ui/views/track-upload-view";
 import { ArtistPackageFilterInput, PaginatedDataOfPendingArtistPackageResponseFilterInput } from "@/gql/graphql";
 
 export const trackListOptions = queryOptions({
   queryKey: ["tracks"],
   queryFn: () => execute(TrackListWithFiltersQuery, { skip: 0, take: 10 }),
+});
+
+export const categoriesOptions = queryOptions({
+  queryKey: ["categories"],
+  queryFn: async () => await execute(CategoriesQuery),
+});
+
+export const userLicenseOptions = queryOptions({
+  queryKey: ["user-license"],
+  queryFn: async () => await execute(UserLicenseQuery),
 });
 
 export const artistProfileOptions = (userId: string) =>

@@ -9,13 +9,18 @@ import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import PlaylistCreate from "../../../playlist/ui/components/playlist-create";
 import PlaylistList from "@/modules/client/playlist/ui/components/playlist-list";
 import InfiniteScroll from "@/modules/shared/ui/components/infinite-scroll";
+import { useAuthStore } from "@/store";
 
 const PlaylistSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
+  const { user } = useAuthStore();
+
   const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } =
-    useSuspenseInfiniteQuery(playlistOptions(debouncedSearchQuery, 11));
+    useSuspenseInfiniteQuery(
+      playlistOptions(user?.userId || "", debouncedSearchQuery, 11),
+    );
 
   return (
     <div className="w-full space-y-6">
