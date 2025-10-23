@@ -19,7 +19,7 @@ const StudioLayout = ({ children }: StudioLayoutProps) => {
     <SidebarProvider>
       <StudioSidebar />
       <SidebarInset>
-        <header className="!bg-main-dark-bg sticky top-0 z-50 flex h-16 items-center justify-between gap-2 border-b border-white/30 px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <header className="!bg-main-dark-bg sticky top-0 z-50 flex h-18 items-center justify-between gap-2 border-b border-white/30 px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-16">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator
@@ -30,8 +30,8 @@ const StudioLayout = ({ children }: StudioLayoutProps) => {
 
           <div className="flex items-center gap-x-2">
             <Link href={"/artist/track-upload"}>
-              <Button variant="outline">
-                <CloudUploadIcon className="size-4" /> Upload
+              <Button variant="outline" size={"lg"}>
+                <CloudUploadIcon className="size-5" /> Upload
               </Button>
             </Link>
 

@@ -34,6 +34,7 @@ export function NavProjects({
               asChild
               tooltip={item.name}
               isActive={pathname.startsWith(item.url)}
+              size={"lg"}
             >
               <Link href={item.url}>
                 <item.icon />
