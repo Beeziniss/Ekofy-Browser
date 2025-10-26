@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { SearchView } from '@/modules/client/search/ui/view/search-view';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getQueryClient } from '@/providers/get-query-client';
+import { SearchType } from '@/types/search';
 
 const SearchPage = () => {
   const searchParams = useSearchParams();
@@ -24,7 +25,7 @@ const SearchPage = () => {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <SearchView 
         query={query}
-        type={type as any}
+        type={type as SearchType}
         onTypeChange={handleTypeChange}
       />
     </HydrationBoundary>

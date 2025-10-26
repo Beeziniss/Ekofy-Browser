@@ -8,11 +8,11 @@ import { ChevronDown, ChevronUp, Eye, EyeOff, Edit } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 
-interface ChangePasswordSectionProps {
-  onSave: (data: any) => void;
-}
+// interface ChangePasswordSectionProps {
+//   onSave: (data: any) => void;
+// }
 
-const ChangePasswordSection = ({ onSave }: ChangePasswordSectionProps) => {
+const ChangePasswordSection = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showPasswords, setShowPasswords] = useState({
     current: false,
@@ -50,7 +50,7 @@ const ChangePasswordSection = ({ onSave }: ChangePasswordSectionProps) => {
       return;
     }
 
-    onSave(formData);
+    // onSave(formData);
     setFormData({
       currentPassword: "",
       newPassword: "",

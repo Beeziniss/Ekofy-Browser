@@ -15,6 +15,7 @@ import { execute } from "@/gql/execute";
 import { CreateModeratorMutation } from "../views/admin-user-managenent";
 import { DeActiveUserMutation, ReActiveUserMutation } from "../views/admin-user-managenent";
 import { toast } from "sonner";
+import { UserManagementUser } from "@/types";
 export function UserManagementSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -163,7 +164,7 @@ export function UserManagementSection() {
 
       {/* User Table */}
       <UserTable
-        data={users as any[]}
+        data={users as UserManagementUser[]}
         totalCount={totalCount}
         currentPage={currentPage}
         pageSize={pageSize}

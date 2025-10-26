@@ -8,11 +8,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import {
-  LayoutDashboardIcon,
-  ShieldCheck,
   CircleUser,
   Boxes,
-  Settings,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";

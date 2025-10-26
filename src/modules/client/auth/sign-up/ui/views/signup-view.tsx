@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import SignUpLayout from '../layouts/signup-layout';
 import { 
   SignUpImageSection, 
@@ -8,10 +8,22 @@ import {
   OTPVerificationSection, 
   ProfileCompletionSection 
 } from '../sections';
-import { useSignUpStore } from '../../../../../../store/stores/listener-signup-store';
+import { useSignUpStore } from '@/store/stores/listener-signup-store';
+// import { ClientSignUpStep } from '@/types/client-auth';
 
 const SignUpView = () => {
   const { currentStep, formData } = useSignUpStore();
+
+  // Helper function to normalize date from store
+  const normalizeDateFromStore = (dateValue: Date | string | undefined): Date | undefined => {
+    if (!dateValue) return undefined;
+    if (dateValue instanceof Date) return dateValue;
+    if (typeof dateValue === 'string') {
+      const date = new Date(dateValue);
+      return isNaN(date.getTime()) ? undefined : date;
+    }
+    return undefined;
+  };
 
   const renderCurrentStep = () => {
     switch (currentStep) {
@@ -21,8 +33,7 @@ const SignUpView = () => {
             <SignUpFormSection 
               onNext={() => {}}
               initialData={{
-                email: formData.email || '',
-                // password: formData.password || ''
+                email: formData.email || ''
               }}
             />
             <SignUpImageSection />
@@ -35,8 +46,9 @@ const SignUpView = () => {
             onBack={() => {}}
             initialData={{
               displayName: formData.displayName || '',
-              dateOfBirth: formData.birthDate,
-              gender: formData.gender || '',
+              fullName: formData.fullName || '',
+              dateOfBirth: normalizeDateFromStore(formData.birthDate),
+              gender: (formData.gender as 'Male' | 'Female' | 'Other') || 'Male',
               avatar: null
             }}
           />
@@ -57,8 +69,7 @@ const SignUpView = () => {
             <SignUpFormSection 
               onNext={() => {}}
               initialData={{
-                email: formData.email || '',
-                // password: formData.password || ''
+                email: formData.email || ''
               }}
             />
             <SignUpImageSection />

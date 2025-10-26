@@ -9,7 +9,7 @@ export const TrackListHomeQuery = graphql(`
         name
         coverImage
         mainArtistIds
-        mainArtistsAsync {
+        mainArtists {
           items {
             id
             stageName

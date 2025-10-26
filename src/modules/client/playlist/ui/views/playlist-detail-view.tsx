@@ -87,7 +87,7 @@ export const PlaylistDetailTrackListQuery = graphql(`
             coverImage
             isExplicit
             mainArtistIds
-            mainArtistsAsync {
+            mainArtists {
               items {
                 stageName
               }

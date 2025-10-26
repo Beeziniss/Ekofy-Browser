@@ -3,7 +3,7 @@ import { fptAIService, FPTAIResponse, ParsedCCCDData } from "@/services/fpt-ai-s
 import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import { useCloudinaryUpload } from "./use-cloudinary-upload";
 import { toast } from "sonner";
-
+import { UserGender } from "@/gql/graphql";
 export const useFPTAI = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [frontResponse, setFrontResponse] = useState<FPTAIResponse | null>(null);
@@ -57,13 +57,19 @@ export const useFPTAI = () => {
       // Use Cloudinary URL
       const frontImageUrl = cloudinaryResult.secure_url;
       
-      
       toast.success("Successfully read and uploaded front side of ID card!");
       
-      // If we have both sides, parse the data
-      if (cccdBackProcessed && backResponse) {
+      // Parse data immediately from front side (don't wait for back side)
+      const parsed = fptAIService.parseCCCDResponse(fptResponse);
+      if (parsed) {
+        setParsedData(parsed);
+      }
+      
+      // If we have both sides, parse the complete data
+      const currentState = useArtistSignUpStore.getState();
+      if (currentState.cccdBackProcessed && backResponse) {
         // Get existing back image if already stored
-        const existingBackImage = useArtistSignUpStore.getState().formData.identityCard?.backImage;
+        const existingBackImage = currentState.formData.identityCard?.backImage;
         await parseCompleteData(fptResponse, backResponse, frontImageUrl, existingBackImage);
       } else {
         // Store just the front image for now
@@ -97,6 +103,7 @@ export const useFPTAI = () => {
         uploadCCCD(imageFile, "back") // Upload to Cloudinary
       ]);
       
+      
       if (fptResponse.errorCode !== 0) {
         throw new Error(fptResponse.errorMessage || "Unable to read ID card information");
       }
@@ -114,11 +121,13 @@ export const useFPTAI = () => {
       toast.success("Successfully read and uploaded back side of ID card!");
       
       // If we have both sides, parse the data
-      if (cccdFrontProcessed && frontResponse) {
+      const currentState = useArtistSignUpStore.getState();
+      if (currentState.cccdFrontProcessed && frontResponse) {
         // Get existing front image if already stored
-        const existingFrontImage = useArtistSignUpStore.getState().formData.identityCard?.frontImage;
+        const existingFrontImage = currentState.formData.identityCard?.frontImage;
         await parseCompleteData(frontResponse, fptResponse, existingFrontImage, backImageUrl);
       } else {
+        console.log("📝 Only back side processed, storing back image...");
         updateIdentityCard({ backImage: backImageUrl });
       }
       
@@ -137,13 +146,12 @@ export const useFPTAI = () => {
     frontImageUrl?: string,
     backImageUrl?: string
   ): Promise<void> => {
-    try {
+    try {      
       const parsed = fptAIService.parseCCCDResponse(frontResp, backResp);
       
       if (!parsed) {
         throw new Error("Unable to process ID card data");
       }
-
       setParsedData(parsed);
       
       // Get current stored images to preserve them
@@ -156,7 +164,7 @@ export const useFPTAI = () => {
         number: parsed.id,
         fullName: parsed.name,
         dateOfBirth: parsed.dateOfBirth,
-        gender: parsed.sex as any, // Will be converted properly
+        gender: parsed.sex as UserGender, // Will be converted properly
         placeOfOrigin: parsed.placeOfOrigin,
         nationality: parsed.nationality,
         placeOfResidence: {
@@ -174,14 +182,18 @@ export const useFPTAI = () => {
       
       // Also update main form data with CCCD info to ensure required fields are not missing
       const { updateFormData } = useArtistSignUpStore.getState();
-      updateFormData({
+      const formDataUpdate = {
         fullName: parsed.name, // Auto-map CCCD fullName to main form fullName
         birthDate: parsed.dateOfBirth, // Auto-map CCCD dateOfBirth to main form birthDate
-        gender: parsed.sex as any, // Auto-map CCCD gender to main form gender
-      });
+        gender: parsed.sex as UserGender, // Auto-map CCCD gender to main form gender
+      };
+      
+      console.log("📝 Updating form data with:", formDataUpdate);
+      updateFormData(formDataUpdate);
       
       toast.success("ID card information processing completed!");
     } catch (error) {
+      console.error("Error parsing complete CCCD data:", error);
       toast.error("An error occurred while processing ID card data");
     }
   };

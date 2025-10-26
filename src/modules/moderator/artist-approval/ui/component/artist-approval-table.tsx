@@ -28,13 +28,22 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { UserManagementArtist } from "@/types/user-management";
+
+// Extended interface for artist approval data with additional fields
+interface ArtistApprovalTableData extends Omit<UserManagementArtist, 'followers'> {
+  fullName?: string;
+  gender?: string;
+  birthDate?: string;
+  phoneNumber?: string;
+  followers?: number;
+  followerCount?: number;
+}
 
 interface ArtistApprovalTableProps {
-  data: any[]; // Using any[] to work with GraphQL response
+  data: ArtistApprovalTableData[];
   totalCount: number;
   currentPage: number;
   pageSize: number;
@@ -42,9 +51,9 @@ interface ArtistApprovalTableProps {
   onSearch: (searchTerm: string) => void;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
-  searchTerm: string; // Add searchTerm prop to control input value
-  isLoading?: boolean; // Add loading state
-  error?: Error | null; // Add error state
+  searchTerm: string;
+  isLoading?: boolean;
+  error?: Error | null;
 }
 
 export function ArtistApprovalTable({
@@ -64,7 +73,7 @@ export function ArtistApprovalTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<ArtistApprovalTableData>[] = [
     {
       accessorKey: "stageName",
       header: "Stage Name",

@@ -1,4 +1,4 @@
-import { GetUserProfileQuery } from "@/modules/moderator/profile/ui/views/moderator-profile-view";
+import { GetUserProfileQuery } from "@/modules/admin/profile/ui/views/admin-profile-view";
 import { AdminGetListUser, AdminGetStatistics } from "@/modules/admin/user-management/ui/views/admin-user-managenent";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";

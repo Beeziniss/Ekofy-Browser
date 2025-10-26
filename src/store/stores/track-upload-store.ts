@@ -104,7 +104,7 @@ export const useTrackUploadStore = create<TrackUploadStore>()(
         }));
       },
 
-      completeUpload: (trackId: string) => {
+      completeUpload: () => {
         set(() => ({
           isUploading: false,
           // Keep currentUpload data instead of setting to null

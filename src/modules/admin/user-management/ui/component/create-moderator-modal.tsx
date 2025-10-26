@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -21,7 +20,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { UserGender } from "@/gql/graphql";
 import { Eye, EyeOff } from 'lucide-react';
 
 interface CreateModeratorModalProps {

@@ -26,7 +26,7 @@ export function ModeratorUserManagementSection() {
   const {
     data: usersData,
     isLoading,
-    isFetching,
+    // isFetching,
     error,
   } = useQuery(moderatorUsersQueryOptions(currentPage, pageSize, searchQuery));
 

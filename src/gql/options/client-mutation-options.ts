@@ -9,8 +9,8 @@ import {
   RemoveFromPlaylistMutation,
   UpdatePlaylistMutation,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
+import { UserGender } from "../graphql";
 import { UpdateListenerProfileMutation } from "@/modules/client/profile/ui/views/queries";
-import type { UserGender } from "@/gql/graphql";
 
 export const createPlaylistMutationOptions = mutationOptions({
   mutationKey: ["create-playlist"],
@@ -56,16 +56,15 @@ export const addToPlaylistMutationOptions = mutationOptions({
 
 export const removeFromPlaylistMutationOptions = mutationOptions({
   mutationKey: ["remove-from-playlist"],
-  mutationFn: async (addToPlaylistRequest: {
+  mutationFn: async (removeFromPlaylistRequest: {
     playlistId?: string;
     playlistName?: string;
     trackId: string;
   }) =>
     await execute(RemoveFromPlaylistMutation, {
-      removeFromPlaylistRequest: addToPlaylistRequest,
+      removeFromPlaylistRequest,
     }),
 });
-
 export const updateListenerProfileMutationOptions = mutationOptions({
   mutationKey: ["update-listener-profile"],
   mutationFn: async (updateListenerRequest: {

@@ -65,12 +65,16 @@ export const trackDetailOptions = (trackId: string) =>
     enabled: !!trackId,
   });
 
-export const playlistOptions = (name?: string, take: number = 12) =>
+export const playlistOptions = (
+  userId: string,
+  name?: string,
+  take: number = 12,
+) =>
   infiniteQueryOptions({
-    queryKey: ["playlists", name],
+    queryKey: ["playlists", userId, name],
     queryFn: async ({ pageParam }) => {
       const skip = (pageParam - 1) * take;
-      return await execute(PlaylistsQuery, { name, take, skip });
+      return await execute(PlaylistsQuery, { userId, name, take, skip });
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
@@ -78,6 +82,7 @@ export const playlistOptions = (name?: string, take: number = 12) =>
         ? allPages.length + 1
         : undefined;
     },
+    enabled: !!userId,
   });
 
 export const playlistDetailOptions = (playlistId: string) =>

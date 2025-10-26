@@ -56,14 +56,14 @@ export const validatePassword = (password: string): string[] => {
   return errors;
 };
 
-export const handleAPIError = (error: any): string => {
+export const handleAPIError = (error: unknown): string => {
   if (isAxiosError(error)) {
     const data = error.response?.data;
     // Just return detail if available, otherwise generic message
     return data?.detail || "An error occurred. Please try again.";
   }
   
-  if (error?.message) {
+  if (error instanceof Error && error.message) {
     return error.message;
   }
   
@@ -87,7 +87,7 @@ export const formatServiceError = (error: unknown): string => {
   return "An error occurred. Please try again.";
 };
 
-export const formatSimpleAPIError = (error: any): string => {
+export const formatSimpleAPIError = (error: unknown): string => {
   if (isAxiosError(error)) {
     const response = error.response;
     const data = response?.data;
@@ -160,7 +160,7 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
   }
 
   // Handle phone number - could be from form or a default
-  let finalPhoneNumber = formData.phoneNumber;
+  const finalPhoneNumber = formData.phoneNumber;
   if (!finalPhoneNumber) {
     // For now, we'll require phone to be entered separately
     // In future, this could be extracted from CCCD or other sources

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import EkofyLogo from '../../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';

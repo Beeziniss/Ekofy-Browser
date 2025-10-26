@@ -9,15 +9,9 @@ import { ArrowLeft } from 'lucide-react';
 import { useSignUpStore } from '@/store/stores/index';
 import useSignUp from '../../hook/use-sign-up';
 import { toast } from 'sonner';
-interface OTPVerificationSectionProps {
-  onNext: (data?: any) => void;
-  onBack: () => void;
-  initialData?: {
-    otp: string;
-  };
-}
+import { ClientOTPVerificationSectionProps } from '@/types/listener-auth';
 
-const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerificationSectionProps) => {
+const OTPVerificationSection = ({ onNext, onBack, initialData }: ClientOTPVerificationSectionProps) => {
   const { completeOTPVerification, goToPreviousStepFromOTP, formData, clearOTPData } = useSignUpStore();
   
   // Initialize state from global store or initial data
@@ -28,10 +22,10 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
   const { 
     verifyOTP, 
     isVerifyingOTP, 
-    verifyOTPError,
+    // verifyOTPError,
     resendOTP, 
     isResendingOTP, 
-    resendOTPError 
+    // resendOTPError 
   } = useSignUp();
 
   // Countdown timer effect - starts immediately when component mounts
@@ -167,7 +161,7 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
 
           {/* Resend Code Link */}
           <div className="text-center">
-            <span className="text-gray-400 text-sm">Haven't received the code? </span>
+            <span className="text-gray-400 text-sm">Have not received the code? </span>
             <button
               type="button"
               onClick={handleResendCode}

@@ -10,3 +10,9 @@ export interface UserProfile {
   createdAt: string;
   updatedAt?: string | null;
 }
+export interface UpdateUserProfileData {
+  fullName?: string;
+  gender?: string;
+  birthDate?: string;
+  phoneNumber?: string;
+}

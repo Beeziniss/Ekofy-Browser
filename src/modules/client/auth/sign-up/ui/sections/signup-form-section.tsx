@@ -9,16 +9,9 @@ import Link from "next/link";
 import { useSignUpStore } from "@/store/stores";
 import { validateEmail, validatePassword } from "@/utils/signup-utils";
 import { Eye, EyeOff } from "lucide-react";
+import { ClientSignUpFormSectionProps } from "@/types/listener-auth";
 
-interface SignUpFormSectionProps {
-  onNext: (data?: any) => void;
-  initialData?: {
-    email: string;
-    // password: string;
-  };
-}
-
-const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
+const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps) => {
   const { goToNextStep, updateFormData, formData } = useSignUpStore();
   
   // Initialize state from global store or initial data
@@ -159,7 +152,7 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
           <h2 className="mb-4 text-4xl font-bold text-white">
-            Let's get started
+            Let`s get started
           </h2>
           <p className="mb-8 text-sm text-gray-300">
             Enter your email and password to create a new account.

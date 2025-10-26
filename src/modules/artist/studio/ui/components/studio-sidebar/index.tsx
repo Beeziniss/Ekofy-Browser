@@ -8,13 +8,13 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import {
-  Command,
+  // Command,
   AlbumIcon,
-  AudioWaveform,
+  // AudioWaveform,
   AudioLinesIcon,
-  GalleryVerticalEnd,
+  // GalleryVerticalEnd,
   LayoutDashboardIcon,
-  Music4Icon,
+  // Music4Icon,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";

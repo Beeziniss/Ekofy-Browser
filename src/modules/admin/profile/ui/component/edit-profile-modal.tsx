@@ -9,19 +9,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Camera, X } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { UserProfile } from "@/types/profile";
+import { UpdateUserProfileData, UserProfile } from "@/types/profile";
 
 interface EditProfileModalProps {
   isOpen: boolean;
   userProfile: UserProfile;
   onClose: () => void;
-  onSave: (data: any) => void;
+  // onSave: (data: any) => void;
 }
 
-const EditProfileModal = ({ isOpen, userProfile, onClose, onSave }: EditProfileModalProps) => {
+const EditProfileModal = ({ isOpen, userProfile, onClose }: EditProfileModalProps) => {
   const [formData, setFormData] = useState({
     fullName: "",
     gender: "NOT_SPECIFIED",
@@ -46,21 +46,21 @@ const EditProfileModal = ({ isOpen, userProfile, onClose, onSave }: EditProfileM
     }
   }, [userProfile]);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: keyof UpdateUserProfileData, value: string | Date) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
-  const handleSubmit = () => {
-    const submitData = {
-      ...formData,
-      birthDate: format(formData.birthDate, "yyyy-MM-dd"),
-    };
-    onSave(submitData);
-    onClose();
-  };
+  // const handleSubmit = () => {
+  //   const submitData = {
+  //     ...formData,
+  //     birthDate: format(formData.birthDate, "yyyy-MM-dd"),
+  //   };
+  //   // onSave(submitData);
+  //   onClose();
+  // };
 
   const handleCancel = () => {
     // Reset to original user data
@@ -238,7 +238,7 @@ const EditProfileModal = ({ isOpen, userProfile, onClose, onSave }: EditProfileM
               Cancel
             </Button>
             <Button
-              onClick={handleSubmit}
+              onClick={() => console.log("Save change clicked")}
               className="primary_gradient hover:opacity-60 text-white"
             >
               Save change

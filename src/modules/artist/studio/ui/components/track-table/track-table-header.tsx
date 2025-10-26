@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -116,7 +116,7 @@ const TrackTableHeader = ({
           {totalTracks} track{totalTracks !== 1 ? "s" : ""}
           {serverTotalCount && totalTracks !== serverTotalCount && (
             <span className="text-main-grey ml-1">
-              (of {serverTotalCount} total)
+              of {serverTotalCount} total
             </span>
           )}
         </span>
