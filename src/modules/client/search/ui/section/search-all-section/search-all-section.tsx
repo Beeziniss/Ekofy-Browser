@@ -15,6 +15,7 @@ import {
   SearchArtistItem,
   SearchPlaylistItem,
 } from "@/types/search";
+import { GenericActionMenu } from "../../component";
 
 interface SearchAllSectionProps {
   query: string;
@@ -273,6 +274,13 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
                         togglePlayPause(playlist.id, "playlist", playlist.name)
                       }
                       size="medium"
+                    />
+                  </div>
+                  {/* Action menu */}
+                  <div className="absolute top-2 right-2">
+                    <GenericActionMenu 
+                      item={playlist}
+                      type="playlist"
                     />
                   </div>
                 </div>

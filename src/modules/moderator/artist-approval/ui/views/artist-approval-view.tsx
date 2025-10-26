@@ -5,32 +5,25 @@ import { ArtistApprovalLayout } from "../layout";
 import { ArtistApprovalSection } from "../section";
 
 export const PendingArtistRegistrationsQuery = graphql(`
-  query PendingArtistRegistrationsView(
-    $pageNumber: Int!
-    $pageSize: Int!
-    $where: PaginatedDataOfPendingArtistRegistrationResponseFilterInput
-  ) {
-    pendingArtistRegistrations(
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-      where: $where
-    ) {
+  query PendingArtistRegistrationsList($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPendingArtistRegistrationResponseFilterInput) {
+    pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize, where: $where) {
+      totalCount
       items {
         email
         fullName
         stageName
+        stageNameUnsigned
         artistType
         gender
         birthDate
         phoneNumber
         avatarImage
         id
+        requestedAt
       }
-      totalCount
     }
   }
-`);
-
+`)
 export function ArtistApprovalView() {
   return (
     <ArtistApprovalLayout

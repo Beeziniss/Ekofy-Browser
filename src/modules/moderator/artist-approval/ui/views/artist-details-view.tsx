@@ -9,10 +9,8 @@ interface ArtistDetailsViewProps {
 }
 
 export const PendingArtistRegistrationsDetailQuery = graphql(`
-  query PendingArtistRegistrationsDetail($id: String) {
-    pendingArtistRegistrations(
-      where: { items: { some: { id: { eq: $id } } } }
-    ) {
+  query PendingArtistRegistrationsDetail($where: PaginatedDataOfPendingArtistRegistrationResponseFilterInput) {
+    pendingArtistRegistrations(where: $where) {
       items {
         email
         fullName
@@ -22,6 +20,7 @@ export const PendingArtistRegistrationsDetailQuery = graphql(`
         birthDate
         phoneNumber
         avatarImage
+        id
         members {
           fullName
           email
@@ -29,7 +28,6 @@ export const PendingArtistRegistrationsDetailQuery = graphql(`
           isLeader
           gender
         }
-        id
         requestedAt
         timeToLive
         identityCardNumber
@@ -42,7 +40,7 @@ export const PendingArtistRegistrationsDetailQuery = graphql(`
       }
     }
   }
-`);
+`)
 
 export const ApproveArtistRegistrationMutation = graphql(`
   mutation ApproveArtistRegistration(
@@ -50,7 +48,7 @@ export const ApproveArtistRegistrationMutation = graphql(`
   ) {
     approveArtistRegistration(request: $request)
   }
-`);
+`)
 
 export const RejectArtistRegistrationMutation = graphql(`
   mutation RejectArtistRegistration(
@@ -58,7 +56,7 @@ export const RejectArtistRegistrationMutation = graphql(`
   ) {
     rejectArtistRegistration(request: $request)
   }
-`);
+`)
 
 export function ArtistDetailsView({ userId }: ArtistDetailsViewProps) {
   return (

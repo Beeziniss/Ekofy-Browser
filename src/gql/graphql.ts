@@ -937,6 +937,7 @@ export type CouponsCollectionSegment = {
 
 export type CreateAdminRequestInput = {
   email: Scalars['String']['input'];
+  fullName: Scalars['String']['input'];
   password: Scalars['String']['input'];
 };
 
@@ -1018,6 +1019,7 @@ export type CreateLegalPolicyRequestInput = {
 
 export type CreateModeratorRequestInput = {
   email: Scalars['String']['input'];
+  fullName: Scalars['String']['input'];
   password: Scalars['String']['input'];
 };
 
@@ -1360,10 +1362,6 @@ export type FloatOperationFilterInput = {
   nlte?: InputMaybe<Scalars['Float']['input']>;
 };
 
-export type FollowUserRequestInput = {
-  targetUserId: Scalars['String']['input'];
-};
-
 /** A segment of a collection. */
 export type FollowersUserCollectionSegment = {
   __typename?: 'FollowersUserCollectionSegment';
@@ -1382,46 +1380,6 @@ export type FollowingsUserCollectionSegment = {
   /** Information to aid in pagination. */
   pageInfo: CollectionSegmentInfo;
   totalCount: Scalars['Int']['output'];
-};
-
-export type Follows = {
-  __typename?: 'Follows';
-  createdAt: Scalars['DateTime']['output'];
-  followedId: Scalars['String']['output'];
-  followedType: UserRole;
-  followerId: Scalars['String']['output'];
-  followerType: UserRole;
-  id: Scalars['String']['output'];
-};
-
-/** A segment of a collection. */
-export type FollowsCollectionSegment = {
-  __typename?: 'FollowsCollectionSegment';
-  /** A flattened list of the items. */
-  items?: Maybe<Array<Follows>>;
-  /** Information to aid in pagination. */
-  pageInfo: CollectionSegmentInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
-export type FollowsFilterInput = {
-  and?: InputMaybe<Array<FollowsFilterInput>>;
-  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
-  followedId?: InputMaybe<StringOperationFilterInput>;
-  followedType?: InputMaybe<UserRoleOperationFilterInput>;
-  followerId?: InputMaybe<StringOperationFilterInput>;
-  followerType?: InputMaybe<UserRoleOperationFilterInput>;
-  id?: InputMaybe<StringOperationFilterInput>;
-  or?: InputMaybe<Array<FollowsFilterInput>>;
-};
-
-export type FollowsSortInput = {
-  createdAt?: InputMaybe<SortEnumType>;
-  followedId?: InputMaybe<SortEnumType>;
-  followedType?: InputMaybe<SortEnumType>;
-  followerId?: InputMaybe<SortEnumType>;
-  followerType?: InputMaybe<SortEnumType>;
-  id?: InputMaybe<SortEnumType>;
 };
 
 export enum HistoryActionType {
@@ -2210,6 +2168,12 @@ export type MutationInitializationCreateEntitlementArgs = {
 };
 
 
+export type MutationInitializationCreateExpressConnectedAccountArgs = {
+  refreshUrl?: Scalars['String']['input'];
+  returnUrl?: Scalars['String']['input'];
+};
+
+
 export type MutationInitializationCreateLegalPolicyArgs = {
   createLegalPolicyRequest: CreateLegalPolicyRequestInput;
 };
@@ -2326,7 +2290,7 @@ export type MutationInitializationEntitlementUserCountArgs = {
 
 
 export type MutationInitializationFollowUserArgs = {
-  request: FollowUserRequestInput;
+  request: UserEngagementRequestInput;
 };
 
 
@@ -2382,7 +2346,7 @@ export type MutationInitializationUnbanUserArgs = {
 
 
 export type MutationInitializationUnfollowUserArgs = {
-  request: UnfollowUserRequestInput;
+  request: UserEngagementRequestInput;
 };
 
 
@@ -2546,26 +2510,13 @@ export enum PaymentMethodType {
   Link = 'LINK'
 }
 
-export enum PaymentStatus {
-  Paid = 'PAID',
-  Pending = 'PENDING',
-  Unpaid = 'UNPAID'
-}
-
-export type PaymentStatusOperationFilterInput = {
-  eq?: InputMaybe<PaymentStatus>;
-  in?: InputMaybe<Array<PaymentStatus>>;
-  neq?: InputMaybe<PaymentStatus>;
-  nin?: InputMaybe<Array<PaymentStatus>>;
-};
-
 export type PaymentTransaction = {
   __typename?: 'PaymentTransaction';
   amount: Scalars['Decimal']['output'];
   createdAt: Scalars['DateTime']['output'];
   currency: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  paymentStatus: PaymentStatus;
+  paymentStatus: PaymentTransactionStatus;
   status: TransactionStatus;
   stripeCheckoutSessionId: Scalars['String']['output'];
   stripePaymentId?: Maybe<Scalars['String']['output']>;
@@ -2588,7 +2539,7 @@ export type PaymentTransactionFilterInput = {
   currency?: InputMaybe<StringOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<PaymentTransactionFilterInput>>;
-  paymentStatus?: InputMaybe<PaymentStatusOperationFilterInput>;
+  paymentStatus?: InputMaybe<PaymentTransactionStatusOperationFilterInput>;
   status?: InputMaybe<TransactionStatusOperationFilterInput>;
   stripeCheckoutSessionId?: InputMaybe<StringOperationFilterInput>;
   stripePaymentId?: InputMaybe<StringOperationFilterInput>;
@@ -2608,6 +2559,98 @@ export type PaymentTransactionSortInput = {
   stripePaymentId?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
   userId?: InputMaybe<SortEnumType>;
+};
+
+export enum PaymentTransactionStatus {
+  Paid = 'PAID',
+  Pending = 'PENDING',
+  Unpaid = 'UNPAID'
+}
+
+export type PaymentTransactionStatusOperationFilterInput = {
+  eq?: InputMaybe<PaymentTransactionStatus>;
+  in?: InputMaybe<Array<PaymentTransactionStatus>>;
+  neq?: InputMaybe<PaymentTransactionStatus>;
+  nin?: InputMaybe<Array<PaymentTransactionStatus>>;
+};
+
+export type PayoutTransaction = {
+  __typename?: 'PayoutTransaction';
+  amount: Scalars['Decimal']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  currency: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  destinationAccountId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  level: AggregationLevel;
+  method?: Maybe<Scalars['String']['output']>;
+  royaltyReportId: Scalars['String']['output'];
+  status: PayoutTransactionStatus;
+  stripePayoutId: Scalars['String']['output'];
+  stripeTransferId: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId: Scalars['String']['output'];
+};
+
+export type PayoutTransactionFilterInput = {
+  amount?: InputMaybe<DecimalOperationFilterInput>;
+  and?: InputMaybe<Array<PayoutTransactionFilterInput>>;
+  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  currency?: InputMaybe<StringOperationFilterInput>;
+  description?: InputMaybe<StringOperationFilterInput>;
+  destinationAccountId?: InputMaybe<StringOperationFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  level?: InputMaybe<AggregationLevelOperationFilterInput>;
+  method?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<PayoutTransactionFilterInput>>;
+  royaltyReportId?: InputMaybe<StringOperationFilterInput>;
+  status?: InputMaybe<PayoutTransactionStatusOperationFilterInput>;
+  stripePayoutId?: InputMaybe<StringOperationFilterInput>;
+  stripeTransferId?: InputMaybe<StringOperationFilterInput>;
+  updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
+  userId?: InputMaybe<StringOperationFilterInput>;
+};
+
+export type PayoutTransactionSortInput = {
+  amount?: InputMaybe<SortEnumType>;
+  createdAt?: InputMaybe<SortEnumType>;
+  currency?: InputMaybe<SortEnumType>;
+  description?: InputMaybe<SortEnumType>;
+  destinationAccountId?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  level?: InputMaybe<SortEnumType>;
+  method?: InputMaybe<SortEnumType>;
+  royaltyReportId?: InputMaybe<SortEnumType>;
+  status?: InputMaybe<SortEnumType>;
+  stripePayoutId?: InputMaybe<SortEnumType>;
+  stripeTransferId?: InputMaybe<SortEnumType>;
+  updatedAt?: InputMaybe<SortEnumType>;
+  userId?: InputMaybe<SortEnumType>;
+};
+
+export enum PayoutTransactionStatus {
+  Canceled = 'CANCELED',
+  Failed = 'FAILED',
+  InTransit = 'IN_TRANSIT',
+  Paid = 'PAID',
+  Pending = 'PENDING'
+}
+
+export type PayoutTransactionStatusOperationFilterInput = {
+  eq?: InputMaybe<PayoutTransactionStatus>;
+  in?: InputMaybe<Array<PayoutTransactionStatus>>;
+  neq?: InputMaybe<PayoutTransactionStatus>;
+  nin?: InputMaybe<Array<PayoutTransactionStatus>>;
+};
+
+/** A segment of a collection. */
+export type PayoutTransactionsCollectionSegment = {
+  __typename?: 'PayoutTransactionsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<PayoutTransaction>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type PendingArtistPackageResponse = {
@@ -2860,7 +2903,6 @@ export type QueryInitialization = {
   commentThread?: Maybe<CommentThreadCollectionSegment>;
   coupons?: Maybe<CouponsCollectionSegment>;
   entitlements?: Maybe<EntitlementsCollectionSegment>;
-  follows?: Maybe<FollowsCollectionSegment>;
   initialize: Scalars['String']['output'];
   invoices?: Maybe<InvoicesCollectionSegment>;
   isCommentInThread: Scalars['Boolean']['output'];
@@ -2872,6 +2914,7 @@ export type QueryInitialization = {
   metadataWorkUploadRequest: WorkTempRequest;
   monthlyStreamCounts?: Maybe<MonthlyStreamCountsCollectionSegment>;
   originalFileTrackUploadRequest: Scalars['String']['output'];
+  payoutTransactions?: Maybe<PayoutTransactionsCollectionSegment>;
   pendingArtistPackages: PaginatedDataOfPendingArtistPackageResponse;
   pendingArtistRegistrations: PaginatedDataOfPendingArtistRegistrationResponse;
   pendingTrackUploadRequests: PaginatedDataOfCombinedUploadRequest;
@@ -2894,6 +2937,7 @@ export type QueryInitialization = {
   trackComments?: Maybe<TrackCommentsCollectionSegment>;
   tracks?: Maybe<TracksCollectionSegment>;
   transactions?: Maybe<TransactionsCollectionSegment>;
+  userEngagement?: Maybe<UserEngagementCollectionSegment>;
   userSubscriptions?: Maybe<UserSubscriptionsCollectionSegment>;
   users?: Maybe<UsersCollectionSegment>;
   works?: Maybe<WorksCollectionSegment>;
@@ -2965,14 +3009,6 @@ export type QueryInitializationEntitlementsArgs = {
 };
 
 
-export type QueryInitializationFollowsArgs = {
-  order?: InputMaybe<Array<FollowsSortInput>>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<FollowsFilterInput>;
-};
-
-
 export type QueryInitializationInvoicesArgs = {
   order?: InputMaybe<Array<InvoiceSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -3028,6 +3064,14 @@ export type QueryInitializationMonthlyStreamCountsArgs = {
 
 export type QueryInitializationOriginalFileTrackUploadRequestArgs = {
   trackId: Scalars['String']['input'];
+};
+
+
+export type QueryInitializationPayoutTransactionsArgs = {
+  order?: InputMaybe<Array<PayoutTransactionSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PayoutTransactionFilterInput>;
 };
 
 
@@ -3185,6 +3229,14 @@ export type QueryInitializationTransactionsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<PaymentTransactionFilterInput>;
+};
+
+
+export type QueryInitializationUserEngagementArgs = {
+  order?: InputMaybe<Array<UserEngagementSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<UserEngagementFilterInput>;
 };
 
 
@@ -4081,6 +4133,7 @@ export type Track = {
   alternativeDescription: Scalars['String']['output'];
   categories?: Maybe<CategoriesCollectionSegment>;
   categoryIds: Array<Scalars['String']['output']>;
+  checkTrackInFavorite: Scalars['Boolean']['output'];
   coverImage: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   createdBy?: Maybe<Scalars['String']['output']>;
@@ -4289,10 +4342,6 @@ export type TransactionsCollectionSegment = {
   totalCount: Scalars['Int']['output'];
 };
 
-export type UnfollowUserRequestInput = {
-  targetUserId: Scalars['String']['input'];
-};
-
 export type UpdateArtistPackageRequestInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
@@ -4368,6 +4417,83 @@ export type User = {
   stripeCustomerId?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type UserEngagement = {
+  __typename?: 'UserEngagement';
+  action: UserEngagementAction;
+  actorId: Scalars['String']['output'];
+  actorType: UserEngagementTargetType;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  targetId: Scalars['String']['output'];
+  targetType: UserEngagementTargetType;
+};
+
+export enum UserEngagementAction {
+  Bookmark = 'BOOKMARK',
+  Follow = 'FOLLOW',
+  Like = 'LIKE'
+}
+
+export type UserEngagementActionOperationFilterInput = {
+  eq?: InputMaybe<UserEngagementAction>;
+  in?: InputMaybe<Array<UserEngagementAction>>;
+  neq?: InputMaybe<UserEngagementAction>;
+  nin?: InputMaybe<Array<UserEngagementAction>>;
+};
+
+/** A segment of a collection. */
+export type UserEngagementCollectionSegment = {
+  __typename?: 'UserEngagementCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<UserEngagement>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type UserEngagementFilterInput = {
+  action?: InputMaybe<UserEngagementActionOperationFilterInput>;
+  actorId?: InputMaybe<StringOperationFilterInput>;
+  actorType?: InputMaybe<UserEngagementTargetTypeOperationFilterInput>;
+  and?: InputMaybe<Array<UserEngagementFilterInput>>;
+  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<UserEngagementFilterInput>>;
+  targetId?: InputMaybe<StringOperationFilterInput>;
+  targetType?: InputMaybe<UserEngagementTargetTypeOperationFilterInput>;
+};
+
+export type UserEngagementRequestInput = {
+  action: UserEngagementAction;
+  targetId: Scalars['String']['input'];
+  targetType: UserEngagementTargetType;
+};
+
+export type UserEngagementSortInput = {
+  action?: InputMaybe<SortEnumType>;
+  actorId?: InputMaybe<SortEnumType>;
+  actorType?: InputMaybe<SortEnumType>;
+  createdAt?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  targetId?: InputMaybe<SortEnumType>;
+  targetType?: InputMaybe<SortEnumType>;
+};
+
+export enum UserEngagementTargetType {
+  Album = 'ALBUM',
+  Artist = 'ARTIST',
+  Listener = 'LISTENER',
+  Playlist = 'PLAYLIST',
+  Track = 'TRACK'
+}
+
+export type UserEngagementTargetTypeOperationFilterInput = {
+  eq?: InputMaybe<UserEngagementTargetType>;
+  in?: InputMaybe<Array<UserEngagementTargetType>>;
+  neq?: InputMaybe<UserEngagementTargetType>;
+  nin?: InputMaybe<Array<UserEngagementTargetType>>;
 };
 
 export type UserFilterInput = {
@@ -4685,13 +4811,11 @@ export type UsersListQueryVariables = Exact<{
 export type UsersListQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, isLinkedWithGoogle: boolean, stripeCustomerId?: string | null, stripeAccountId?: string | null, lastLoginAt?: any | null, createdAt: any, updatedAt?: any | null }> | null } | null, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, categoryIds: Array<string>, biography?: string | null, followerCount: any, popularity: any, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, createdAt: any, updatedAt?: any | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, nationality: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', street?: string | null, ward?: string | null, province?: string | null, oldDistrict?: string | null, oldWard?: string | null, oldProvince?: string | null, addressLine?: string | null } } }> | null } | null, listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, isVerified: boolean, verifiedAt?: any | null, followerCount: any, followingCount: any, lastFollowers: Array<string>, lastFollowings: Array<string>, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type UsersStatisticQueryVariables = Exact<{
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<UserFilterInput>;
 }>;
 
 
-export type UsersStatisticQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, isLinkedWithGoogle: boolean, stripeCustomerId?: string | null, stripeAccountId?: string | null, lastLoginAt?: any | null, createdAt: any, updatedAt?: any | null }> | null } | null };
+export type UsersStatisticQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, phoneNumber?: string | null, status: UserStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type CreateModeratorMutationVariables = Exact<{
   createModeratorRequest: CreateModeratorRequestInput;
@@ -4707,12 +4831,12 @@ export type BanUserMutationVariables = Exact<{
 
 export type BanUserMutation = { __typename?: 'MutationInitialization', banUser: boolean };
 
-export type ReActiveUserMutationVariables = Exact<{
+export type UnbanUserMutationVariables = Exact<{
   targetUserId: Scalars['String']['input'];
 }>;
 
 
-export type ReActiveUserMutation = { __typename?: 'MutationInitialization', unbanUser: boolean };
+export type UnbanUserMutation = { __typename?: 'MutationInitialization', unbanUser: boolean };
 
 export type TracksWithFiltersQueryVariables = Exact<{
   skip: Scalars['Int']['input'];
@@ -4825,38 +4949,38 @@ export type PlaylistDetailTrackListQuery = { __typename?: 'QueryInitialization',
 export type SearchArtistsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  contains?: InputMaybe<Scalars['String']['input']>;
+  stageName: Scalars['String']['input'];
 }>;
 
 
-export type SearchArtistsQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null, followerCount: any, user: Array<{ __typename?: 'User', fullName: string, role: UserRole }> }> | null } | null };
+export type SearchArtistsQuery = { __typename?: 'QueryInitialization', searchArtists?: { __typename?: 'SearchArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null, followerCount: any, user: Array<{ __typename?: 'User', fullName: string, role: UserRole }> }> | null } | null };
 
 export type SearchListenersQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  contains?: InputMaybe<Scalars['String']['input']>;
+  displayName: Scalars['String']['input'];
 }>;
 
 
-export type SearchListenersQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, displayNameUnsigned: string, email: string, avatarImage?: string | null, followerCount: any, followingCount: any, user: Array<{ __typename?: 'User', fullName: string, role: UserRole }> }> | null } | null };
+export type SearchListenersQuery = { __typename?: 'QueryInitialization', searchListeners?: { __typename?: 'SearchListenersCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, displayNameUnsigned: string, email: string, avatarImage?: string | null, followerCount: any, followingCount: any, user: Array<{ __typename?: 'User', fullName: string, role: UserRole }> }> | null } | null };
 
 export type SearchTracksQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  contains?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 }>;
 
 
-export type SearchTracksQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, coverImage: string, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType }> | null } | null, restriction: { __typename?: 'Restriction', type: RestrictionType } }> | null } | null };
+export type SearchTracksQuery = { __typename?: 'QueryInitialization', searchTracks?: { __typename?: 'SearchTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, coverImage: string, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType }> | null } | null, restriction: { __typename?: 'Restriction', type: RestrictionType } }> | null } | null };
 
 export type SearchPlaylistsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  contains?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 }>;
 
 
-export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
+export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', searchPlaylists?: { __typename?: 'SearchPlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
 
 export type TrackDetailQueryVariables = Exact<{
   trackId: Scalars['String']['input'];
@@ -4881,17 +5005,17 @@ export type ModeratorApprovalHistoryDetailQueryVariables = Exact<{
 
 export type ModeratorApprovalHistoryDetailQuery = { __typename?: 'QueryInitialization', approvalHistories?: { __typename?: 'ApprovalHistoriesCollectionSegment', items?: Array<{ __typename?: 'ApprovalHistory', id: string, approvalType: ApprovalType, actionByUserId: string, actionAt: any, action: HistoryActionType, notes?: string | null, snapshot: any, targetId: string, approvedBy: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null } | null };
 
-export type PendingArtistRegistrationsViewQueryVariables = Exact<{
+export type PendingArtistRegistrationsListQueryVariables = Exact<{
   pageNumber: Scalars['Int']['input'];
   pageSize: Scalars['Int']['input'];
   where?: InputMaybe<PaginatedDataOfPendingArtistRegistrationResponseFilterInput>;
 }>;
 
 
-export type PendingArtistRegistrationsViewQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrations: { __typename?: 'PaginatedDataOfPendingArtistRegistrationResponse', totalCount: number, items: Array<{ __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string }> } };
+export type PendingArtistRegistrationsListQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrations: { __typename?: 'PaginatedDataOfPendingArtistRegistrationResponse', totalCount: number, items: Array<{ __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, stageNameUnsigned: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string, requestedAt: any }> } };
 
 export type PendingArtistRegistrationsDetailQueryVariables = Exact<{
-  id?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<PaginatedDataOfPendingArtistRegistrationResponseFilterInput>;
 }>;
 
 
@@ -5156,26 +5280,15 @@ export const UsersListDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<UsersListQuery, UsersListQueryVariables>;
 export const UsersStatisticDocument = new TypedDocumentString(`
-    query UsersStatistic($skip: Int, $take: Int, $where: UserFilterInput) {
-  users(skip: $skip, take: $take, where: $where) {
+    query UsersStatistic($where: UserFilterInput) {
+  users(where: $where) {
     totalCount
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-    }
     items {
       id
       email
       fullName
-      gender
-      birthDate
-      role
       phoneNumber
       status
-      isLinkedWithGoogle
-      stripeCustomerId
-      stripeAccountId
-      lastLoginAt
       createdAt
       updatedAt
     }
@@ -5188,15 +5301,15 @@ export const CreateModeratorDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<CreateModeratorMutation, CreateModeratorMutationVariables>;
 export const BanUserDocument = new TypedDocumentString(`
-    mutation banUser($targetUserId: String!) {
+    mutation BanUser($targetUserId: String!) {
   banUser(targetUserId: $targetUserId)
 }
     `) as unknown as TypedDocumentString<BanUserMutation, BanUserMutationVariables>;
-export const ReActiveUserDocument = new TypedDocumentString(`
-    mutation ReActiveUser($targetUserId: String!) {
+export const UnbanUserDocument = new TypedDocumentString(`
+    mutation UnbanUser($targetUserId: String!) {
   unbanUser(targetUserId: $targetUserId)
 }
-    `) as unknown as TypedDocumentString<ReActiveUserMutation, ReActiveUserMutationVariables>;
+    `) as unknown as TypedDocumentString<UnbanUserMutation, UnbanUserMutationVariables>;
 export const TracksWithFiltersDocument = new TypedDocumentString(`
     query TracksWithFilters($skip: Int!, $take: Int!, $where: TrackFilterInput, $order: [TrackSortInput!]) {
   tracks(skip: $skip, take: $take, where: $where, order: $order) {
@@ -5394,12 +5507,8 @@ export const PlaylistDetailTrackListDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<PlaylistDetailTrackListQuery, PlaylistDetailTrackListQueryVariables>;
 export const SearchArtistsDocument = new TypedDocumentString(`
-    query SearchArtists($skip: Int, $take: Int, $contains: String) {
-  artists(
-    skip: $skip
-    take: $take
-    where: {stageNameUnsigned: {contains: $contains}}
-  ) {
+    query SearchArtists($skip: Int, $take: Int, $stageName: String!) {
+  searchArtists(skip: $skip, take: $take, stageName: $stageName) {
     totalCount
     items {
       id
@@ -5419,12 +5528,8 @@ export const SearchArtistsDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<SearchArtistsQuery, SearchArtistsQueryVariables>;
 export const SearchListenersDocument = new TypedDocumentString(`
-    query SearchListeners($skip: Int, $take: Int, $contains: String) {
-  listeners(
-    skip: $skip
-    take: $take
-    where: {displayNameUnsigned: {contains: $contains}}
-  ) {
+    query SearchListeners($skip: Int, $take: Int, $displayName: String!) {
+  searchListeners(skip: $skip, take: $take, displayName: $displayName) {
     totalCount
     items {
       id
@@ -5444,8 +5549,8 @@ export const SearchListenersDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<SearchListenersQuery, SearchListenersQueryVariables>;
 export const SearchTracksDocument = new TypedDocumentString(`
-    query SearchTracks($skip: Int, $take: Int, $contains: String) {
-  tracks(skip: $skip, take: $take, where: {nameUnsigned: {contains: $contains}}) {
+    query SearchTracks($skip: Int, $take: Int, $name: String!) {
+  searchTracks(skip: $skip, take: $take, name: $name) {
     totalCount
     items {
       id
@@ -5472,12 +5577,8 @@ export const SearchTracksDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<SearchTracksQuery, SearchTracksQueryVariables>;
 export const SearchPlaylistsDocument = new TypedDocumentString(`
-    query SearchPlaylists($skip: Int, $take: Int, $contains: String) {
-  playlists(
-    skip: $skip
-    take: $take
-    where: {nameUnsigned: {contains: $contains}, isPublic: {eq: true}}
-  ) {
+    query SearchPlaylists($skip: Int, $take: Int, $name: String!) {
+  searchPlaylists(skip: $skip, take: $take, name: $name) {
     totalCount
     items {
       id
@@ -5567,13 +5668,33 @@ export const ModeratorApprovalHistoryDetailDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<ModeratorApprovalHistoryDetailQuery, ModeratorApprovalHistoryDetailQueryVariables>;
-export const PendingArtistRegistrationsViewDocument = new TypedDocumentString(`
-    query PendingArtistRegistrationsView($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPendingArtistRegistrationResponseFilterInput) {
+export const PendingArtistRegistrationsListDocument = new TypedDocumentString(`
+    query PendingArtistRegistrationsList($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPendingArtistRegistrationResponseFilterInput) {
   pendingArtistRegistrations(
     pageNumber: $pageNumber
     pageSize: $pageSize
     where: $where
   ) {
+    totalCount
+    items {
+      email
+      fullName
+      stageName
+      stageNameUnsigned
+      artistType
+      gender
+      birthDate
+      phoneNumber
+      avatarImage
+      id
+      requestedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PendingArtistRegistrationsListQuery, PendingArtistRegistrationsListQueryVariables>;
+export const PendingArtistRegistrationsDetailDocument = new TypedDocumentString(`
+    query PendingArtistRegistrationsDetail($where: PaginatedDataOfPendingArtistRegistrationResponseFilterInput) {
+  pendingArtistRegistrations(where: $where) {
     items {
       email
       fullName
@@ -5584,23 +5705,6 @@ export const PendingArtistRegistrationsViewDocument = new TypedDocumentString(`
       phoneNumber
       avatarImage
       id
-    }
-    totalCount
-  }
-}
-    `) as unknown as TypedDocumentString<PendingArtistRegistrationsViewQuery, PendingArtistRegistrationsViewQueryVariables>;
-export const PendingArtistRegistrationsDetailDocument = new TypedDocumentString(`
-    query PendingArtistRegistrationsDetail($id: String) {
-  pendingArtistRegistrations(where: {items: {some: {id: {eq: $id}}}}) {
-    items {
-      email
-      fullName
-      stageName
-      artistType
-      gender
-      birthDate
-      phoneNumber
-      avatarImage
       members {
         fullName
         email
@@ -5608,7 +5712,6 @@ export const PendingArtistRegistrationsDetailDocument = new TypedDocumentString(
         isLeader
         gender
       }
-      id
       requestedAt
       timeToLive
       identityCardNumber

@@ -43,8 +43,6 @@ export const adminUsersStatsOptions = () => queryOptions({
   queryKey: ["admin-users-stats"],
   queryFn: async () => {
     const result = await execute(AdminGetStatistics, { 
-      skip: 0,
-      take: 0,
       where: {}
     });
     
