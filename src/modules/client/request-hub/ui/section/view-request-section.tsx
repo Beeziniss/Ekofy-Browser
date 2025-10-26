@@ -46,9 +46,9 @@ export function ViewRequestSection({
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-center mb-8">Request Hub</h1>
         <div className="flex justify-between items-center mb-6">
-          <Button onClick={onCreateNew} className="flex items-center space-x-2">
-            <Plus className="h-4 w-4" />
-            <span>Create</span>
+          <Button onClick={onCreateNew} className="flex items-center space-x-2 bg-black border-2 border-white/30 hover:bg-white/10">
+            <Plus className="h-4 w-4 text-white" />
+            <span className="text-white">Create</span>
           </Button>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
