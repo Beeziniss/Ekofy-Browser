@@ -80,7 +80,7 @@ export function NavUser({
                 <span className="truncate font-medium">{displayName}</span>
                 <span className="truncate text-xs">{displayEmail}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -110,7 +110,9 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push('/artist/studio/profile')}>
+              <DropdownMenuItem
+                onClick={() => router.push("/artist/studio/profile")}
+              >
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
