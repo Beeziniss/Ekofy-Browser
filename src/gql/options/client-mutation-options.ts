@@ -9,6 +9,8 @@ import {
   RemoveFromPlaylistMutation,
   UpdatePlaylistMutation,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
+import { UserGender } from "../graphql";
+import { UpdateListenerProfileMutation } from "@/modules/client/profile/ui/views/queries";
 
 export const createPlaylistMutationOptions = mutationOptions({
   mutationKey: ["create-playlist"],
@@ -61,5 +63,22 @@ export const removeFromPlaylistMutationOptions = mutationOptions({
   }) =>
     await execute(RemoveFromPlaylistMutation, {
       removeFromPlaylistRequest,
+    }),
+});
+export const updateListenerProfileMutationOptions = mutationOptions({
+  mutationKey: ["update-listener-profile"],
+  mutationFn: async (updateListenerRequest: {
+    displayName?: string;
+    email?: string;
+    avatarImage?: string;
+    bannerImage?: string;
+    fullName?: string;
+    phoneNumber?: string;
+    // Newly supported fields
+    birthDate?: string; // ISO 8601 string e.g. 1990-01-01T00:00:00.000Z
+    gender?: UserGender;
+  }) =>
+    await execute(UpdateListenerProfileMutation, {
+      updateListenerRequest,
     }),
 });

@@ -61,3 +61,12 @@ export const GetArtistProfileQuery = `
   },
   { where?: ArtistFilterInput; take?: number; skip?: number }
 >;
+
+export const UpdateArtistProfileMutation = `
+  mutation UpdateArtistProfile($updateArtistRequest: UpdateArtistRequestInput!) {
+    updateArtistProfile(updateArtistRequest: $updateArtistRequest)
+  }
+` as unknown as TypedDocumentString<
+  { updateArtistProfile: boolean },
+  { updateArtistRequest: { biography?: string | null; avatarImage?: string | null; bannerImage?: string | null } }
+>;

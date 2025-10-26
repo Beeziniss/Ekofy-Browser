@@ -119,8 +119,6 @@ export const useCloudinaryUpload = (): UseCloudinaryUploadState & UseCloudinaryU
         isUploading: false,
         uploadProgress: 0
       }));
-
-      toast.success(`Upload ${type === "avatar" ? "avatar" : "banner"} successful!`);
             
       return result;
 
@@ -134,7 +132,7 @@ export const useCloudinaryUpload = (): UseCloudinaryUploadState & UseCloudinaryU
         error: errorMessage 
       }));
 
-      toast.error(`Lỗi upload ${type}: ${errorMessage}`);      
+      toast.error(`Error uploading ${type}: ${errorMessage}`);      
       return null;
     }
   };
