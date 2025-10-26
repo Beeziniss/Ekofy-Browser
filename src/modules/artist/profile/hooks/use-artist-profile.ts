@@ -20,7 +20,7 @@ export function useArtistProfile() {
   const createdAt = query.data?.createdAt
     ? (() => {
         try {
-          return format(new Date(query.data!.createdAt), "yyyy-MM-dd");
+          return format(new Date(query.data!.createdAt), "dd-MM-yyyy");
         } catch {
           return undefined;
         }
