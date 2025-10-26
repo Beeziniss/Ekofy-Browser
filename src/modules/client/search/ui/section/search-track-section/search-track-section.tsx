@@ -102,7 +102,7 @@ export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
                       />
                       <div className="min-w-0">
                         <p className="text-white font-medium truncate">{track.name}</p>
-                        <p className="text-gray-400 text-sm truncate">{track.mainArtistsAsync.items[0]?.stageName}</p>
+                        <p className="text-gray-400 text-sm truncate">{track.mainArtists.items[0]?.stageName}</p>
                       </div>
                     </div>
                   </TableCell>

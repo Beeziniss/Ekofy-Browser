@@ -30,6 +30,10 @@ interface CreateModeratorModalProps {
 
 // Zod schema for form validation
 const createModeratorSchema = z.object({
+  fullName: z
+    .string()
+    .min(2, "Full name must be at least 2 characters long")
+    .max(100, "Full name must be less than 100 characters"),
   email: z
     .string()
     .min(1, "Email is required")
@@ -111,6 +115,28 @@ export function CreateModeratorModal({
                 )}
               />
 
+              {/* Full Name */}
+              <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-300">
+                      Full Name <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Enter full name"
+                        className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-400" />
+                  </FormItem>
+                )}
+              />
+              
               {/* Password */}
               <FormField
                 control={form.control}
