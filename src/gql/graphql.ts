@@ -4946,6 +4946,42 @@ export type PlaylistDetailTrackListQueryVariables = Exact<{
 
 export type PlaylistDetailTrackListQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, isExplicit: boolean, mainArtistIds: Array<string>, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null } | null, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }> }> | null } | null };
 
+export type SearchArtistsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  stageName: Scalars['String']['input'];
+}>;
+
+
+export type SearchArtistsQuery = { __typename?: 'QueryInitialization', searchArtists?: { __typename?: 'SearchArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null, followerCount: any, user: Array<{ __typename?: 'User', fullName: string, role: UserRole }> }> | null } | null };
+
+export type SearchListenersQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  displayName: Scalars['String']['input'];
+}>;
+
+
+export type SearchListenersQuery = { __typename?: 'QueryInitialization', searchListeners?: { __typename?: 'SearchListenersCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, displayNameUnsigned: string, email: string, avatarImage?: string | null, followerCount: any, followingCount: any, user: Array<{ __typename?: 'User', fullName: string, role: UserRole }> }> | null } | null };
+
+export type SearchTracksQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+}>;
+
+
+export type SearchTracksQuery = { __typename?: 'QueryInitialization', searchTracks?: { __typename?: 'SearchTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, coverImage: string, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType }> | null } | null, restriction: { __typename?: 'Restriction', type: RestrictionType } }> | null } | null };
+
+export type SearchPlaylistsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+}>;
+
+
+export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', searchPlaylists?: { __typename?: 'SearchPlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
+
 export type TrackDetailQueryVariables = Exact<{
   trackId: Scalars['String']['input'];
 }>;
@@ -5470,6 +5506,99 @@ export const PlaylistDetailTrackListDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PlaylistDetailTrackListQuery, PlaylistDetailTrackListQueryVariables>;
+export const SearchArtistsDocument = new TypedDocumentString(`
+    query SearchArtists($skip: Int, $take: Int, $stageName: String!) {
+  searchArtists(skip: $skip, take: $take, stageName: $stageName) {
+    totalCount
+    items {
+      id
+      userId
+      stageName
+      stageNameUnsigned
+      email
+      artistType
+      avatarImage
+      followerCount
+      user {
+        fullName
+        role
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SearchArtistsQuery, SearchArtistsQueryVariables>;
+export const SearchListenersDocument = new TypedDocumentString(`
+    query SearchListeners($skip: Int, $take: Int, $displayName: String!) {
+  searchListeners(skip: $skip, take: $take, displayName: $displayName) {
+    totalCount
+    items {
+      id
+      userId
+      displayName
+      displayNameUnsigned
+      email
+      avatarImage
+      followerCount
+      followingCount
+      user {
+        fullName
+        role
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SearchListenersQuery, SearchListenersQueryVariables>;
+export const SearchTracksDocument = new TypedDocumentString(`
+    query SearchTracks($skip: Int, $take: Int, $name: String!) {
+  searchTracks(skip: $skip, take: $take, name: $name) {
+    totalCount
+    items {
+      id
+      name
+      description
+      nameUnsigned
+      type
+      categoryIds
+      mainArtistIds
+      mainArtists {
+        items {
+          id
+          userId
+          stageName
+          artistType
+        }
+      }
+      coverImage
+      restriction {
+        type
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SearchTracksQuery, SearchTracksQueryVariables>;
+export const SearchPlaylistsDocument = new TypedDocumentString(`
+    query SearchPlaylists($skip: Int, $take: Int, $name: String!) {
+  searchPlaylists(skip: $skip, take: $take, name: $name) {
+    totalCount
+    items {
+      id
+      userId
+      name
+      nameUnsigned
+      tracksInfo {
+        trackId
+        addedTime
+      }
+      coverImage
+      isPublic
+      user {
+        id
+        fullName
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SearchPlaylistsQuery, SearchPlaylistsQueryVariables>;
 export const TrackDetailDocument = new TypedDocumentString(`
     query TrackDetail($trackId: String!) {
   tracks(where: {id: {eq: $trackId}}) {

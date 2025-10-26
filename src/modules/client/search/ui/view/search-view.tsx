@@ -4,12 +4,9 @@ import React from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   SearchType,
-  SearchTrackItem,
   SearchArtistItem,
   SearchPlaylistItem,
   SearchTrackItem,
-  SearchArtistItem,
-  SearchPlaylistItem,
 } from "@/types/search";
 import { SearchLayout } from "../layout/search-layout";
 import { SearchAllSection } from "../section/search-all-section/search-all-section";
@@ -22,6 +19,7 @@ import {
   searchArtistsInfiniteOptions,
   searchPlaylistsInfiniteOptions,
 } from "@/gql/options/search-options";
+import { graphql } from "@/gql";
 
 // Types for search responses
 interface SearchResponse {
@@ -44,16 +42,11 @@ interface SearchViewProps {
 }
 
 // GraphQL Queries - using raw strings until schema is updated
-export const SEARCH_ARTISTS = `
-  query SearchArtists($skip: Int, $take: Int, $stageName: String!) {
-    searchArtists(
-// GraphQL Queries - using raw strings until schema is updated
-export const SEARCH_ARTISTS = `
+export const SEARCH_ARTISTS = graphql(`
   query SearchArtists($skip: Int, $take: Int, $stageName: String!) {
     searchArtists(
       skip: $skip
       take: $take
-      stageName: $stageName
       stageName: $stageName
     ) {
       totalCount
@@ -73,18 +66,14 @@ export const SEARCH_ARTISTS = `
       }
     }
   }
-`;
-`;
+`);
 
-export const SEARCH_LISTENERS = `
-  query SearchListeners($skip: Int, $take: Int, $displayName: String!) {
-    searchListeners(
-export const SEARCH_LISTENERS = `
+
+export const SEARCH_LISTENERS = graphql(`
   query SearchListeners($skip: Int, $take: Int, $displayName: String!) {
     searchListeners(
       skip: $skip
       take: $take
-      displayName: $displayName
       displayName: $displayName
     ) {
       totalCount
@@ -104,10 +93,9 @@ export const SEARCH_LISTENERS = `
       }
     }
   }
-`;
-`;
+`);
 
-export const SEARCH_TRACKS = `
+export const SEARCH_TRACKS = graphql(`
   query SearchTracks($skip: Int, $take: Int, $name: String!) {
     searchTracks(
       skip: $skip
@@ -138,17 +126,13 @@ export const SEARCH_TRACKS = `
       }
     }
   }
-`;
+`);
 
-export const SEARCH_PLAYLISTS = `
-  query SearchPlaylists($skip: Int, $take: Int, $name: String!) {
-    searchPlaylists(
-export const SEARCH_PLAYLISTS = `
+export const SEARCH_PLAYLISTS = graphql(`
   query SearchPlaylists($skip: Int, $take: Int, $name: String!) {
     searchPlaylists(
       skip: $skip
       take: $take
-      name: $name
       name: $name
     ) {
       totalCount
@@ -170,8 +154,8 @@ export const SEARCH_PLAYLISTS = `
       }
     }
   }
-`;
-`;
+`);
+
 
 export const SearchView: React.FC<SearchViewProps> = ({
   query,
