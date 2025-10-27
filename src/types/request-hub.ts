@@ -2,15 +2,27 @@ export interface RequestHubItem {
   id: string;
   title: string;
   description: string;
-  duration: string;
-  attachments?: string[];
-  createdAt: string;
+  budget: {
+    min: number;
+    max: number;
+  };
+  deadline: string;
+  category: string;
+  tags: string[];
+  applicationCount: number;
+  postedTime: string;
   author: {
     id: string;
     name: string;
     avatar?: string;
+    memberSince?: string;
+    location?: string;
+    jobsPosted?: number;
   };
-  comments: RequestHubComment[];
+  requirements?: string[];
+  deliverables?: string[];
+  timeline?: string[];
+  skills?: string[];
 }
 
 export interface RequestHubComment {
@@ -28,12 +40,21 @@ export interface RequestHubComment {
 export interface CreateRequestData {
   title: string;
   description: string;
-  duration: string;
-  attachments?: File[];
+  budget: {
+    min: number;
+    max: number;
+  };
+  deadline: string;
+  category: string;
+  tags: string[];
+  requirements?: string[];
+  deliverables?: string[];
+  timeline?: string[];
+  skills?: string[];
 }
 
 export interface UpdateRequestData extends CreateRequestData {
   id: string;
 }
 
-export type RequestHubMode = 'view' | 'create' | 'edit';
+export type RequestHubMode = 'view' | 'create' | 'edit' | 'detail';

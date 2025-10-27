@@ -1,91 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Search } from "lucide-react";
-import { RequestCard, DeleteConfirmModal } from "../component";
+import { RequestCard } from "../component/request-card";
+import { RequestListSkeleton } from "../component/request-card-skeleton";
 import { RequestHubItem } from "@/types/request-hub";
 
 interface ViewRequestSectionProps {
   requests: RequestHubItem[];
-  onCreateNew: () => void;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
-  onContact: (id: string) => void;
-  onReport: (id: string) => void;
+  isLoading?: boolean;
+  onViewDetails: (id: string) => void;
+  onApply: (id: string) => void;
+  onSave?: (id: string) => void;
 }
 
 export function ViewRequestSection({ 
   requests, 
-  onCreateNew, 
-  onDelete, 
-  onContact, 
-  onReport 
+  isLoading = false,
+  onViewDetails,
+  onApply,
+  onSave
 }: ViewRequestSectionProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  if (isLoading) {
+    return <RequestListSkeleton count={6} />;
+  }
 
-  const filteredRequests = requests.filter(request =>
-    request.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    request.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleDeleteConfirm = () => {
-    if (selectedRequestId) {
-      onDelete(selectedRequestId);
-      setDeleteModalOpen(false);
-      setSelectedRequestId(null);
-    }
-  };
+  if (requests.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">No requests found</h3>
+        <p className="text-gray-500">Try adjusting your search criteria or check back later for new requests.</p>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-center mb-8">Request Hub</h1>
-        <div className="flex justify-between items-center mb-6">
-          <Button onClick={onCreateNew} className="flex items-center space-x-2 bg-black border-2 border-white/30 hover:bg-white/10">
-            <Plus className="h-4 w-4 text-white" />
-            <span className="text-white">Create</span>
-          </Button>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-64"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Request Cards */}
-      <div className="space-y-6">
-        {filteredRequests.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No requests found</p>
-          </div>
-        ) : (
-          filteredRequests.map((request) => (
-            <RequestCard
-              key={request.id}
-              request={request}
-              onContact={onContact}
-              onReport={onReport}
-            />
-          ))
-        )}
-      </div>
-
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmModal
-        isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={handleDeleteConfirm}
-      />
+    <div className="space-y-6">
+      {requests.map((request) => (
+        <RequestCard
+          key={request.id}
+          request={request}
+          onViewDetails={onViewDetails}
+          onApply={onApply}
+          onSave={onSave}
+        />
+      ))}
     </div>
   );
 }
