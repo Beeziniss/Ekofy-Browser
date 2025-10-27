@@ -42,6 +42,7 @@ export interface AudioActions {
   play: () => void;
   pause: () => void;
   togglePlayPause: () => void;
+  autoPlayWhenReady: () => void;
 
   // Time control
   setCurrentTime: (time: number) => void;

@@ -41,23 +41,23 @@ export function TrackInfoCard({ track }: TrackInfoCardProps) {
       <CardContent className="space-y-6">
         <div className="flex items-start gap-4">
           <div className="relative group">
-            <Avatar className="h-20 w-20">
+            <Avatar className="h-32 w-32">
               <AvatarImage 
                 src={track.track.coverImage || undefined} 
                 alt={track.track.name}
               />
               <AvatarFallback>
-                <Music className="h-8 w-8" />
+                <Music className="h-12 w-12" />
               </AvatarFallback>
             </Avatar>
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <SimplePlayButton
                 trackId={track.track.id}
                 trackName={track.track.name}
                 trackArtist={track.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
                 trackCoverImage={track.track.coverImage}
-                size="md"
-                className="bg-black/70 hover:bg-black/90 text-white border-0"
+                size="full"
+                className="h-full w-full bg-transparent hover:bg-black/20 text-white border-0 rounded-full"
               />
             </div>
           </div>

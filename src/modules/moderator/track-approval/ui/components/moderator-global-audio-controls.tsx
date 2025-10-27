@@ -7,13 +7,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Play, 
   Pause, 
-  SkipBack, 
-  SkipForward, 
+  // SkipBack, 
+  // SkipForward, 
   Volume2, 
   VolumeX,
   Music,
-  Shuffle,
-  Repeat
+  // Shuffle,
+  // Repeat
 } from "lucide-react";
 import { formatMilliseconds } from "@/utils/format-milliseconds";
 
@@ -27,18 +27,18 @@ export function ModeratorGlobalAudioControls() {
     isMuted,
     isLoading,
     error,
-    queue,
-    currentIndex,
-    isShuffling,
-    isRepeating,
+    // queue,
+    // currentIndex,
+    // isShuffling,
+    // isRepeating,
     togglePlayPause,
     seek,
     setVolume,
     toggleMute,
-    skipToNext,
-    skipToPrevious,
-    toggleShuffle,
-    toggleRepeat,
+    // skipToNext,
+    // skipToPrevious,
+    // toggleShuffle,
+    // toggleRepeat,
   } = useAudioStore();
 
   const handleSeek = (value: number[]) => {
@@ -51,8 +51,8 @@ export function ModeratorGlobalAudioControls() {
   };
 
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
-  const hasNextTrack = queue.length > 0 && currentIndex < queue.length - 1;
-  const hasPrevTrack = queue.length > 0 && currentIndex > 0;
+  // const hasNextTrack = queue.length > 0 && currentIndex < queue.length - 1;
+  // const hasPrevTrack = queue.length > 0 && currentIndex > 0;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 transition-[margin-left] duration-200 ease-linear ml-0 lg:ml-64 group-has-data-[collapsible=icon]/sidebar-wrapper:lg:ml-12">
@@ -61,7 +61,7 @@ export function ModeratorGlobalAudioControls() {
         <div className="flex-1 flex items-center gap-6 max-w-4xl mx-auto">
           {/* Control Buttons */}
           <div className="flex items-center justify-center gap-4">
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               onClick={toggleShuffle}
@@ -69,9 +69,9 @@ export function ModeratorGlobalAudioControls() {
               className={`h-8 w-8 p-0 hover:bg-gray-600 disabled:opacity-50 ${isShuffling ? 'text-green-400' : 'text-gray-300'}`}
             >
               <Shuffle className="h-4 w-4" />
-            </Button>
+            </Button> */}
             
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               onClick={skipToPrevious}
@@ -79,7 +79,7 @@ export function ModeratorGlobalAudioControls() {
               className="h-8 w-8 p-0 hover:bg-gray-600 disabled:opacity-50"
             >
               <SkipBack className="h-4 w-4" />
-            </Button>
+            </Button> */}
             
             <Button
               variant="ghost"
@@ -97,7 +97,7 @@ export function ModeratorGlobalAudioControls() {
               )}
             </Button>
             
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               onClick={skipToNext}
@@ -105,9 +105,9 @@ export function ModeratorGlobalAudioControls() {
               className="h-8 w-8 p-0 hover:bg-gray-600 disabled:opacity-50"
             >
               <SkipForward className="h-4 w-4" />
-            </Button>
+            </Button> */}
             
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               onClick={toggleRepeat}
@@ -115,7 +115,7 @@ export function ModeratorGlobalAudioControls() {
               className={`h-8 w-8 p-0 hover:bg-gray-600 disabled:opacity-50 ${isRepeating ? 'text-green-400' : 'text-gray-300'}`}
             >
               <Repeat className="h-4 w-4" />
-            </Button>
+            </Button> */}
           </div>
 
           {/* Progress Bar */}

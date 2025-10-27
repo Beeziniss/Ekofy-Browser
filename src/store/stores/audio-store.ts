@@ -24,10 +24,7 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
 
   // Track control
   setCurrentTrack: (track: Track) => {
-    const state = get();
-    // Don't auto-play if we're just switching tracks - let the player component handle it
-    const shouldAutoPlay = state.currentTrack?.id !== track.id;
-    
+    // Don't auto-play immediately - let the audio player handle it when ready
     set({
       currentTrack: track,
       queue: [track],
@@ -35,7 +32,7 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
       currentTime: 0,
       currentPlaylistId: null, // Clear playlist when setting individual track
       error: null,
-      isPlaying: shouldAutoPlay, // Only auto-play for different tracks
+      isPlaying: false, // Don't auto-play immediately
       isLoading: true, // Set loading when changing tracks
     });
   },
@@ -54,16 +51,14 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
       newIndex = existingIndex;
     }
 
-    // Don't auto-play if we're just switching tracks - let the player component handle it
-    const shouldAutoPlay = state.currentTrack?.id !== track.id;
-
+    // Don't auto-play immediately - let the audio player handle it when ready
     set({
       currentTrack: track,
       queue: newQueue,
       currentIndex: newIndex,
       currentTime: 0,
       error: null,
-      isPlaying: shouldAutoPlay, // Only auto-play for different tracks
+      isPlaying: false, // Don't auto-play immediately
       isLoading: true, // Set loading when changing tracks
     });
   },
@@ -71,6 +66,9 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
   play: () => set({ isPlaying: true }),
   pause: () => set({ isPlaying: false }),
   togglePlayPause: () => set((state) => ({ isPlaying: !state.isPlaying })),
+  
+  // Auto-play when audio is ready (called by audio player)
+  autoPlayWhenReady: () => set({ isPlaying: true }),
 
   // Time control
   setCurrentTime: (time: number) => set({ currentTime: time }),

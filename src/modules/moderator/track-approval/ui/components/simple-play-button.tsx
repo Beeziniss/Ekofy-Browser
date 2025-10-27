@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback } from "react";
 
 interface SimplePlayButtonProps {
   trackId: string;
@@ -13,7 +13,7 @@ interface SimplePlayButtonProps {
   trackArtist: string;
   trackCoverImage?: string | null;
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "full";
 }
 
 export function SimplePlayButton({ 
@@ -24,8 +24,6 @@ export function SimplePlayButton({
   className,
   size = "sm" 
 }: SimplePlayButtonProps) {
-  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
   const {
     currentTrack,
     isPlaying,
@@ -38,47 +36,34 @@ export function SimplePlayButton({
   const isCurrentlyPlaying = isCurrentTrack && isPlaying;
 
   const handleClick = useCallback(() => {
-    // Debounce clicks to prevent multiple rapid calls
-    if (clickTimeoutRef.current) {
-      clearTimeout(clickTimeoutRef.current);
+    if (isCurrentTrack) {
+      // If it's the current track, toggle play/pause
+      togglePlayPause();
+    } else {
+      // If it's a different track, set as current track
+      setCurrentTrack({
+        id: trackId,
+        name: trackName,
+        artist: trackArtist,
+        coverImage: trackCoverImage || undefined,
+      });
+      // Audio player will auto-play when ready
     }
-    
-    clickTimeoutRef.current = setTimeout(() => {
-      if (isCurrentTrack) {
-        // If it's the current track, toggle play/pause
-        togglePlayPause();
-      } else {
-        // If it's a different track, set as current and it will auto-play
-        setCurrentTrack({
-          id: trackId,
-          name: trackName,
-          artist: trackArtist,
-          coverImage: trackCoverImage || undefined,
-        });
-      }
-    }, 100); // 100ms debounce
   }, [isCurrentTrack, togglePlayPause, setCurrentTrack, trackId, trackName, trackArtist, trackCoverImage]);
 
   const sizeClasses = {
     sm: "h-8 w-8 p-0",
     md: "h-10 w-10 p-0", 
-    lg: "h-12 w-12 p-0"
+    lg: "h-12 w-12 p-0",
+    full: "h-full w-full p-0"
   };
 
   const iconSizes = {
     sm: "h-4 w-4",
     md: "h-5 w-5",
-    lg: "h-6 w-6"
+    lg: "h-6 w-6",
+    full: "h-16 w-16"
   };
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <Button
@@ -95,15 +80,15 @@ export function SimplePlayButton({
         <Image
           src={"/pause-button.svg"}
           alt="Ekofy Pause Button"
-          width={32}
-          height={32}
+          width={size === "full" ? 64 : 32}
+          height={size === "full" ? 64 : 32}
         />
       ) : (
         <Image
           src={"/play-button.svg"}
           alt="Ekofy Play Button"
-          width={32}
-          height={32}
+          width={size === "full" ? 64 : 32}
+          height={size === "full" ? 64 : 32}
         />  
       )}
     </Button>

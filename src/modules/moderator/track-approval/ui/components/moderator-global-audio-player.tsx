@@ -25,6 +25,7 @@ const ModeratorGlobalAudioPlayer = () => {
     setError,
     resetSeekRequest,
     pause,
+    autoPlayWhenReady,
   } = useAudioStore();
 
   // Get moderator original file URL for current track using GraphQL
@@ -107,6 +108,8 @@ const ModeratorGlobalAudioPlayer = () => {
             if (currentTrack?.id === trackId) {
               setTimeout(() => {
                 if (audioRef.current && audioRef.current.src === audioUrl) {
+                  // Set playing state first, then play audio
+                  autoPlayWhenReady();
                   audioRef.current.play().catch((error) => {
                     console.error("Error playing audio:", error);
                     if (!error.message.includes("interrupted") && !error.message.includes("aborted")) {
@@ -154,7 +157,7 @@ const ModeratorGlobalAudioPlayer = () => {
         loadingRef.current = false;
       }
     },
-    [setLoading, setError, currentTrack?.id],
+    [setLoading, setError, currentTrack?.id, autoPlayWhenReady]
   );
 
   // Handle play/pause - improved to prevent interrupted errors
