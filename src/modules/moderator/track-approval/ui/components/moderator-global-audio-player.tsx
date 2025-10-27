@@ -9,40 +9,40 @@ const ModeratorGlobalAudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const lastTrackIdRef = useRef<string | null>(null);
   const loadingRef = useRef<boolean>(false);
-  
   const {
     currentTrack,
     isPlaying,
     volume,
     isMuted,
+    queue,
+    currentIndex,
     seekRequested,
     currentTime,
     setCurrentTime,
     setDuration,
+    skipToNext,
     setLoading,
     setError,
     resetSeekRequest,
     pause,
   } = useAudioStore();
 
-  // Get audio URL for current track
-  const { data: audioUrl, isLoading: isLoadingUrl, error: urlError } = useQuery({
+  // Get moderator original file URL for current track using GraphQL
+  const { data: moderatorAudioUrl, isLoading: isLoadingModeratorUrl } = useQuery({
     ...moderatorTrackOriginalFileOptions(currentTrack?.id || ""),
     enabled: !!currentTrack?.id,
   });
 
-  // Debug logging
+  // Debug logging for GraphQL response
   useEffect(() => {
     if (currentTrack?.id) {
-      console.log("ModeratorGlobalAudioPlayer - Current track:", {
-        id: currentTrack.id,
-        name: currentTrack.name,
-        audioUrl,
-        isLoadingUrl,
-        urlError
+      console.log("GraphQL query result:", {
+        trackId: currentTrack.id,
+        moderatorAudioUrl,
+        isLoadingModeratorUrl
       });
     }
-  }, [currentTrack?.id, currentTrack?.name, audioUrl, isLoadingUrl, urlError]);
+  }, [currentTrack?.id, moderatorAudioUrl, isLoadingModeratorUrl]);
 
   // Handle seeking when seekRequested changes
   useEffect(() => {
@@ -53,10 +53,15 @@ const ModeratorGlobalAudioPlayer = () => {
     }
   }, [seekRequested, currentTime, resetSeekRequest]);
 
-  // Load track - simplified and more reliable version
+  // Load and play track - simplified for direct file URLs only (GraphQL response)
   const loadTrack = useCallback(
-    async (trackId: string, url: string) => {
+    async (trackId: string, audioUrl: string) => {
       if (!audioRef.current || loadingRef.current) return;
+
+      console.log("loadTrack called with:", {
+        trackId,
+        audioUrl
+      });
 
       try {
         loadingRef.current = true;
@@ -65,42 +70,58 @@ const ModeratorGlobalAudioPlayer = () => {
 
         const audio = audioRef.current;
         
-        // Stop current playback
-        audio.pause();
+        // Abort any current play request first
+        try {
+          audio.pause();
+          // Small delay to ensure pause completes
+          await new Promise(resolve => setTimeout(resolve, 50));
+        } catch {
+          // Ignore pause errors
+        }
         
         // Clear any previous source
         if (audio.src) {
           audio.removeAttribute('src');
           audio.load();
+          // Small delay to ensure load completes
+          await new Promise(resolve => setTimeout(resolve, 50));
         }
-        
-        // Set new source
-        audio.src = url;
+
+        console.log("Using GraphQL direct file URL for track:", trackId, "URL:", audioUrl);
+
+        // Set new source (direct file URL from GraphQL)
+        audio.src = audioUrl;
         audio.load();
         
-        // Wait for audio to be ready using events
+        // Wait for audio to be ready
         const handleCanPlayThrough = () => {
-          if (loadingRef.current) {
-            console.log("Audio can play through:", url);
+          if (loadingRef.current && audioRef.current) {
+            console.log("Audio ready to play:", audioUrl);
             setLoading(false);
             loadingRef.current = false;
             
-            // Try to play if should be playing
-            if (isPlaying && audioRef.current) {
-              audioRef.current.play().catch((error) => {
-                console.error("Error playing audio:", error);
-                setError("Failed to play audio");
-              });
-            }
-            
-            // Remove event listener
+            // Remove event listener first
             audio.removeEventListener('canplaythrough', handleCanPlayThrough);
+            
+            // Auto-start playing the new track after successful load
+            if (currentTrack?.id === trackId) {
+              setTimeout(() => {
+                if (audioRef.current && audioRef.current.src === audioUrl) {
+                  audioRef.current.play().catch((error) => {
+                    console.error("Error playing audio:", error);
+                    if (!error.message.includes("interrupted") && !error.message.includes("aborted")) {
+                      setError("Failed to play audio");
+                    }
+                  });
+                }
+              }, 100);
+            }
           }
         };
 
         const handleLoadError = () => {
           if (loadingRef.current) {
-            console.error("Error loading audio:", url);
+            console.error("Error loading audio:", audioUrl);
             setError("Failed to load audio file");
             setLoading(false);
             loadingRef.current = false;
@@ -113,30 +134,30 @@ const ModeratorGlobalAudioPlayer = () => {
         audio.addEventListener('canplaythrough', handleCanPlayThrough);
         audio.addEventListener('error', handleLoadError);
         
-        // Fallback timeout in case events don't fire
+        // Fallback timeout
         setTimeout(() => {
           if (loadingRef.current) {
-            console.log("Audio load timeout, assuming ready:", url);
+            console.log("Audio load timeout, assuming ready:", audioUrl);
             setLoading(false);
             loadingRef.current = false;
             audio.removeEventListener('canplaythrough', handleCanPlayThrough);
             audio.removeEventListener('error', handleLoadError);
           }
-        }, 3000); // 3 second timeout
+        }, 3000);
         
       } catch (error) {
-        console.error("Error loading track:", error);
+        console.error("Error loading track from GraphQL:", error);
         setError(
-          error instanceof Error ? error.message : "Failed to load track",
+          error instanceof Error ? error.message : "Failed to load track from GraphQL ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY",
         );
         setLoading(false);
         loadingRef.current = false;
       }
     },
-    [setLoading, setError, isPlaying],
+    [setLoading, setError, currentTrack?.id],
   );
 
-  // Handle play/pause - improved with better error handling
+  // Handle play/pause - improved to prevent interrupted errors
   useEffect(() => {
     if (!audioRef.current || loadingRef.current) return;
 
@@ -145,13 +166,27 @@ const ModeratorGlobalAudioPlayer = () => {
     if (isPlaying) {
       // Only play if audio has a source and is ready
       if (audio.src && audio.readyState >= 2) {
-        audio.play().catch((error) => {
-          console.error("Error playing audio:", error);
-          setError("Failed to play audio");
-        });
+        // Add small delay to prevent interrupt conflicts
+        setTimeout(() => {
+          if (audioRef.current && audioRef.current.src && !loadingRef.current) {
+            audioRef.current.play().catch((error) => {
+              console.error("Error playing audio:", error);
+              // Only set error if it's not an abort error from track switching
+              if (!error.message.includes("interrupted") && !error.message.includes("aborted")) {
+                setError("Failed to play audio");
+              }
+            });
+          }
+        }, 50);
       }
     } else {
-      audio.pause();
+      // Pause immediately
+      try {
+        audio.pause();
+      } catch (error) {
+        // Ignore pause errors
+        console.log("Pause error (ignored):", error);
+      }
     }
   }, [isPlaying, setError]);
 
@@ -161,38 +196,49 @@ const ModeratorGlobalAudioPlayer = () => {
     audioRef.current.volume = isMuted ? 0 : volume / 100;
   }, [volume, isMuted]);
 
-  // Handle URL error
+  // Load new track when currentTrack changes and audio URL is available
   useEffect(() => {
-    if (urlError) {
-      console.error("Error fetching audio URL:", urlError);
-      setError("Failed to fetch audio URL");
+    if (currentTrack?.id && currentTrack.id !== lastTrackIdRef.current && moderatorAudioUrl) {
+      console.log("Track changed and audio URL available:", {
+        trackId: currentTrack.id,
+        audioUrl: moderatorAudioUrl
+      });
+      
+      // Stop any current playback first to prevent "interrupted" error
+      if (audioRef.current && lastTrackIdRef.current) {
+        try {
+          audioRef.current.pause();
+        } catch {
+          // Ignore pause errors
+        }
+      }
+      
+      lastTrackIdRef.current = currentTrack.id;
+      loadTrack(currentTrack.id, moderatorAudioUrl);
+    } else if (!currentTrack?.id && lastTrackIdRef.current) {
+      // Clear audio when no track is selected
+      if (audioRef.current) {
+        try {
+          audioRef.current.pause();
+          audioRef.current.removeAttribute('src');
+          audioRef.current.load();
+        } catch {
+          // Ignore errors during cleanup
+        }
+      }
+      lastTrackIdRef.current = null;
+      setError(null);
       setLoading(false);
       loadingRef.current = false;
     }
-  }, [urlError, setError, setLoading]);
+  }, [currentTrack?.id, moderatorAudioUrl, loadTrack, setError, setLoading]);
 
-  // Load new track when currentTrack changes (but not when just playing/pausing)
-  useEffect(() => {
-    if (currentTrack?.id && currentTrack.id !== lastTrackIdRef.current) {
-      if (audioUrl) {
-        console.log("Loading new track:", { trackId: currentTrack.id, audioUrl });
-        lastTrackIdRef.current = currentTrack.id;
-        loadTrack(currentTrack.id, audioUrl);
-      } else if (!isLoadingUrl && !urlError) {
-        // Audio URL is not available and not loading, show error
-        console.warn("No audio URL available for track:", currentTrack.id);
-        setError("Audio file not available");
-        lastTrackIdRef.current = currentTrack.id;
-      }
-    }
-  }, [currentTrack?.id, audioUrl, loadTrack, isLoadingUrl, urlError, setError]);
-
-  // Handle loading state from URL query
+  // Set loading state when fetching moderator URL from GraphQL
   useEffect(() => {
     if (currentTrack?.id) {
-      setLoading(isLoadingUrl);
+      setLoading(isLoadingModeratorUrl);
     }
-  }, [isLoadingUrl, currentTrack?.id, setLoading]);
+  }, [isLoadingModeratorUrl, currentTrack?.id, setLoading]);
 
   // Audio event handlers
   const handleTimeUpdate = () => {
@@ -208,71 +254,86 @@ const ModeratorGlobalAudioPlayer = () => {
   };
 
   const handleEnded = () => {
-    pause();
+    // Auto skip to next track when current track ends
+    if (queue.length > 0 && currentIndex < queue.length - 1) {
+      skipToNext();
+    } else {
+      pause();
+    }
   };
 
   const handleError = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
     const target = e.target as HTMLAudioElement;
-    console.error("Audio element error:", {
-      error: target.error,
-      networkState: target.networkState,
-      readyState: target.readyState,
-      src: target.src
-    });
     
-    // More specific error messages
-    let errorMessage = "Failed to play audio file";
-    if (target.error) {
-      switch (target.error.code) {
-        case MediaError.MEDIA_ERR_ABORTED:
-          errorMessage = "Audio playback was aborted";
-          break;
-        case MediaError.MEDIA_ERR_NETWORK:
-          errorMessage = "Network error occurred while loading audio";
-          break;
-        case MediaError.MEDIA_ERR_DECODE:
-          errorMessage = "Audio file format not supported";
-          break;
-        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-          errorMessage = "Audio source not supported";
-          break;
+    // Only log and set error if there's actually a track selected
+    if (currentTrack?.id) {
+      console.error("Audio element error for track:", currentTrack.id, {
+        error: target.error,
+        networkState: target.networkState,
+        readyState: target.readyState,
+        src: target.src
+      });
+      
+      if (target.error) {
+        let errorMessage = "Failed to play audio file";
+        switch (target.error.code) {
+          case MediaError.MEDIA_ERR_ABORTED:
+            errorMessage = "Audio playback was aborted";
+            break;
+          case MediaError.MEDIA_ERR_NETWORK:
+            errorMessage = "Network error occurred while loading audio";
+            break;
+          case MediaError.MEDIA_ERR_DECODE:
+            errorMessage = "Audio file format not supported";
+            break;
+          case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            errorMessage = "Audio source not supported";
+            break;
+        }
+        setError(errorMessage);
+      } else {
+        setError("Failed to play audio file");
       }
     }
     
-    setError(errorMessage);
     setLoading(false);
     loadingRef.current = false;
   };
 
   const handleLoadStart = () => {
-    if (!loadingRef.current) {
+    // Only set loading if there's a valid track
+    if (currentTrack?.id) {
       setLoading(true);
     }
   };
 
   const handleCanPlay = () => {
-    if (loadingRef.current) {
+    // Only clear loading if there's a valid track
+    if (currentTrack?.id && loadingRef.current) {
       setLoading(false);
       loadingRef.current = false;
     }
   };
 
-  // Cleanup on unmount
+  // Cleanup on unmount or page change
   useEffect(() => {
     const audioElement = audioRef.current;
     return () => {
       if (audioElement) {
         loadingRef.current = false;
-        audioElement.pause();
-        audioElement.src = '';
-        audioElement.load();
+        try {
+          audioElement.pause();
+          audioElement.removeAttribute('src');
+          audioElement.load();
+        } catch {
+          // Ignore cleanup errors
+        }
       }
+      // Reset states
+      setError(null);
+      setLoading(false);
     };
-  }, []);
-
-  if (!currentTrack) {
-    return null;
-  }
+  }, [setError, setLoading]);
 
   return (
     <audio

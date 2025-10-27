@@ -22,8 +22,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TrackUploadRequest } from "@/types/approval-track";
+import { TrackUploadRequestListItem } from "@/types/approval-track";
 import { SimplePlayButton } from "./simple-play-button";
+import { ApproveTrackDialog } from "./approve-track-dialog";
+import { RejectTrackDialog } from "./reject-track-dialog";
 import { formatDistanceToNow } from "date-fns";
 import { 
   MoreHorizontal, 
@@ -49,7 +51,7 @@ export function TrackApprovalTable({
   pageSize,
   onViewDetailAction,
 }: {
-  data: TrackUploadRequest[];
+  data: TrackUploadRequestListItem[];
   totalCount: number;
   isLoading: boolean;
   currentPage: number;
@@ -57,6 +59,28 @@ export function TrackApprovalTable({
   onViewDetailAction: (trackId: string) => void;
 }) {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [approveDialog, setApproveDialog] = useState<{
+    open: boolean;
+    uploadId: string;
+    trackName: string;
+    artistName: string;
+  }>({
+    open: false,
+    uploadId: "",
+    trackName: "",
+    artistName: "",
+  });
+  const [rejectDialog, setRejectDialog] = useState<{
+    open: boolean;
+    uploadId: string;
+    trackName: string;
+    artistName: string;
+  }>({
+    open: false,
+    uploadId: "",
+    trackName: "",
+    artistName: "",
+  });
   const queryClient = useQueryClient();
 
   // Approve mutation
@@ -79,20 +103,41 @@ export function TrackApprovalTable({
     },
   });
 
-  const handleApprove = async (uploadId: string) => {
+  const handleApproveConfirm = async () => {
     try {
-      await approveMutation.mutateAsync(uploadId);
+      await approveMutation.mutateAsync(approveDialog.uploadId);
     } catch (error) {
       console.error("Failed to approve track:", error);
     }
   };
 
-  const handleReject = async (uploadId: string, reasonReject: string = "Rejected by moderator") => {
+  const handleRejectConfirm = async (reasonReject: string) => {
     try {
-      await rejectMutation.mutateAsync({ uploadId, reasonReject });
+      await rejectMutation.mutateAsync({ 
+        uploadId: rejectDialog.uploadId, 
+        reasonReject 
+      });
     } catch (error) {
       console.error("Failed to reject track:", error);
     }
+  };
+
+  const openApproveDialog = (item: TrackUploadRequestListItem) => {
+    setApproveDialog({
+      open: true,
+      uploadId: item.id,
+      trackName: item.track.name,
+      artistName: item.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist",
+    });
+  };
+
+  const openRejectDialog = (item: TrackUploadRequestListItem) => {
+    setRejectDialog({
+      open: true,
+      uploadId: item.id,
+      trackName: item.track.name,
+      artistName: item.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist",
+    });
   };
 
   const handleSelectAll = (checked: boolean) => {
@@ -218,7 +263,7 @@ export function TrackApprovalTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((item: TrackUploadRequest) => (
+            {data.map((item: TrackUploadRequestListItem) => (
               <TableRow key={item.id}>
                 <TableCell>
                   <Checkbox
@@ -233,7 +278,7 @@ export function TrackApprovalTable({
                   <SimplePlayButton
                     trackId={item.track.id}
                     trackName={item.track.name}
-                    trackArtist={item.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
+                    trackArtist={item.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
                     trackCoverImage={item.track.coverImage}
                     size="sm"
                   />
@@ -265,8 +310,8 @@ export function TrackApprovalTable({
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-12 w-12">
                       <AvatarImage 
-                        src={item.mainArtists?.items?.map(artist => artist.avatarImage).join(", ") || " "} 
-                        alt={item.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Various Artists"}
+                        src={item.mainArtists?.items?.map((artist) => artist.avatarImage).join(", ") || " "} 
+                        alt={item.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Various Artists"}
                       />
                       <AvatarFallback>
                         <User className="h-6 w-6" />
@@ -317,7 +362,7 @@ export function TrackApprovalTable({
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
                         className="text-green-600"
-                        onClick={() => handleApprove(item.id)}
+                        onClick={() => openApproveDialog(item)}
                         disabled={approveMutation.isPending}
                       >
                         <CheckCircle className="mr-2 h-4 w-4" />
@@ -325,7 +370,7 @@ export function TrackApprovalTable({
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         className="text-red-600"
-                        onClick={() => handleReject(item.id)}
+                        onClick={() => openRejectDialog(item)}
                         disabled={rejectMutation.isPending}
                       >
                         <XCircle className="mr-2 h-4 w-4" />
@@ -348,6 +393,26 @@ export function TrackApprovalTable({
         </div>
         {/* Add pagination component here */}
       </div>
+
+      {/* Approve Dialog */}
+      <ApproveTrackDialog
+        open={approveDialog.open}
+        onOpenChange={(open) => setApproveDialog({ ...approveDialog, open })}
+        trackName={approveDialog.trackName}
+        artistName={approveDialog.artistName}
+        onConfirm={handleApproveConfirm}
+        isLoading={approveMutation.isPending}
+      />
+
+      {/* Reject Dialog */}
+      <RejectTrackDialog
+        open={rejectDialog.open}
+        onOpenChange={(open) => setRejectDialog({ ...rejectDialog, open })}
+        trackName={rejectDialog.trackName}
+        artistName={rejectDialog.artistName}
+        onConfirm={handleRejectConfirm}
+        isLoading={rejectMutation.isPending}
+      />
     </div>
   );
 }

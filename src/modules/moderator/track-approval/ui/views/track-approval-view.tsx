@@ -7,7 +7,6 @@ import {
 } from "@/gql/graphql";
 import { TrackApprovalLayout } from "../layout";
 import { TrackApprovalSection } from "../section";
-import { ModeratorGlobalAudioControls, ModeratorGlobalAudioPlayer } from "../components";
 
 // Re-export the existing GraphQL documents for track approval
 export const PendingTrackUploadRequestsQuery = PendingTrackUploadRequestsListDocument;

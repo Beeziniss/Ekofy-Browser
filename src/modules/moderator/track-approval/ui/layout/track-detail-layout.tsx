@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ModeratorGlobalAudioControls, ModeratorGlobalAudioPlayer } from "../components";
+import { ModeratorGlobalAudioControls } from "../components";
 
 interface TrackDetailLayoutProps {
   children: ReactNode;
@@ -9,16 +9,13 @@ interface TrackDetailLayoutProps {
 
 export function TrackDetailLayout({ children }: TrackDetailLayoutProps) {
   return (
-    <div className="min-h-screen bg-background">
-
+    <div className="min-h-screen bg-background pb-24">
       <main className="flex-1">
-              {/* Global Audio Player - Hidden audio element */}
-      <ModeratorGlobalAudioPlayer />
         {children}
-              {/* Audio Controls Footer - chỉ trong Track Approval Center */}
-      <ModeratorGlobalAudioControls />
       </main>
-
+      
+      {/* Audio Controls Footer for Track Detail - nằm trong content area, tránh sidebar */}
+      <ModeratorGlobalAudioControls />
     </div>
   );
 }

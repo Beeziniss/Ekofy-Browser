@@ -3,17 +3,79 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Calendar, Clock } from "lucide-react";
+import { Download, FileText, Calendar, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { TrackUploadRequest } from "@/types/approval-track";
 
 interface TrackDetailSidebarProps {
   track: TrackUploadRequest;
   onDownloadOriginal: () => void;
+  onApprove?: () => void;
+  onReject?: () => void;
+  isApproving?: boolean;
+  isRejecting?: boolean;
 }
 
-export function TrackDetailSidebar({ track, onDownloadOriginal }: TrackDetailSidebarProps) {
+export function TrackDetailSidebar({ 
+  track, 
+  onDownloadOriginal, 
+  onApprove, 
+  onReject, 
+  isApproving = false, 
+  isRejecting = false 
+}: TrackDetailSidebarProps) {
   return (
     <div className="space-y-4">
+      {/* Status Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 text-orange-500" />
+            Review Status
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center">
+            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+              Pending Review
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground mt-2 text-center">
+            This track is awaiting moderator approval
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Review Actions */}
+      {(onApprove || onReject) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Review Actions</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {onApprove && (
+              <Button 
+                className="w-full justify-start bg-green-600 hover:bg-green-700 text-white"
+                onClick={onApprove}
+                disabled={isApproving || isRejecting}
+              >
+                <CheckCircle className="mr-2 h-4 w-4" />
+                {isApproving ? "Approving..." : "Approve Track"}
+              </Button>
+            )}
+            {onReject && (
+              <Button 
+                variant="outline"
+                className="w-full justify-start text-red-600 border-red-600 hover:bg-red-50"
+                onClick={onReject}
+                disabled={isApproving || isRejecting}
+              >
+                <XCircle className="mr-2 h-4 w-4" />
+                {isRejecting ? "Rejecting..." : "Reject Track"}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Actions */}
       <Card>

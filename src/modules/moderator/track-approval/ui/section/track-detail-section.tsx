@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { execute } from "@/gql/execute";
 import { 
@@ -15,7 +16,9 @@ import {
   ArtistsContributorsCard,
   WorkRecordingDetailsCard,
   LegalDocumentsCard,
-  TrackDetailSidebar
+  TrackDetailSidebar,
+  ApproveTrackDialog,
+  RejectTrackDialog
 } from "../components";
 import { toast } from "sonner";
 
@@ -27,6 +30,9 @@ interface TrackDetailSectionProps {
 export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSectionProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  
+  const [approveDialogOpen, setApproveDialogOpen] = useState(false);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
 
   // Approve mutation
   const approveMutation = useMutation({
@@ -60,7 +66,7 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
     }
   });
 
-  const handleApprove = async () => {
+  const handleApproveConfirm = async () => {
     try {
       await approveMutation.mutateAsync(track.id);
     } catch {
@@ -68,11 +74,11 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
     }
   };
 
-  const handleReject = async () => {
+  const handleRejectConfirm = async (reasonReject: string) => {
     try {
       await rejectMutation.mutateAsync({ 
         uploadId: track.id, 
-        reasonReject: "Rejected by moderator after detailed review" 
+        reasonReject 
       });
     } catch {
       // Error handled in onError callback
@@ -92,27 +98,11 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to List
           </Button>
+        </div>
+
+      </div>
+      <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Track Review</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={handleReject}
-            disabled={rejectMutation.isPending}
-            className="text-red-600 hover:text-red-700"
-          >
-            <XCircle className="mr-2 h-4 w-4" />
-            {rejectMutation.isPending ? "Rejecting..." : "Reject"}
-          </Button>
-          <Button
-            onClick={handleApprove}
-            disabled={approveMutation.isPending}
-            className="text-green-600 hover:text-green-700"
-          >
-            <CheckCircle className="mr-2 h-4 w-4" />
-            {approveMutation.isPending ? "Approving..." : "Approve"}
-          </Button>
-        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -138,9 +128,33 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
           <TrackDetailSidebar 
             track={track} 
             onDownloadOriginal={onDownloadOriginal}
+            onApprove={() => setApproveDialogOpen(true)}
+            onReject={() => setRejectDialogOpen(true)}
+            isApproving={approveMutation.isPending}
+            isRejecting={rejectMutation.isPending}
           />
         </div>
       </div>
+
+      {/* Approve Dialog */}
+      <ApproveTrackDialog
+        open={approveDialogOpen}
+        onOpenChange={setApproveDialogOpen}
+        trackName={track.track.name}
+        artistName={track.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
+        onConfirm={handleApproveConfirm}
+        isLoading={approveMutation.isPending}
+      />
+
+      {/* Reject Dialog */}
+      <RejectTrackDialog
+        open={rejectDialogOpen}
+        onOpenChange={setRejectDialogOpen}
+        trackName={track.track.name}
+        artistName={track.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
+        onConfirm={handleRejectConfirm}
+        isLoading={rejectMutation.isPending}
+      />
     </div>
   );
 }

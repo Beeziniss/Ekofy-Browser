@@ -72,6 +72,7 @@ export interface AudioActions {
   // State management
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  clearAudioState: () => void;
   reset: () => void;
 }
 

@@ -10,3 +10,5 @@ export { TrackDetailSidebar } from "./track-detail-sidebar";
 export { default as ModeratorGlobalAudioPlayer } from "./moderator-global-audio-player";
 export { ModeratorGlobalAudioControls } from "./moderator-global-audio-controls";
 export { SimplePlayButton } from "./simple-play-button";
+export { ApproveTrackDialog } from "./approve-track-dialog";
+export { RejectTrackDialog } from "./reject-track-dialog";
