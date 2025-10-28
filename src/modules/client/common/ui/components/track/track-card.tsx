@@ -18,6 +18,8 @@ import {
   GraphQLTrack,
   convertGraphQLTracksToStore,
 } from "@/utils/track-converter";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-options";
 
 type ArtistInfo = {
   id: string;
@@ -30,6 +32,7 @@ interface TrackCardProps {
   trackName?: string;
   artists?: (ArtistInfo | null)[];
   trackQueue?: GraphQLTrack[];
+  checkTrackInFavorite?: boolean;
 }
 
 const TrackCard = ({
@@ -38,8 +41,9 @@ const TrackCard = ({
   trackName,
   artists,
   trackQueue,
+  checkTrackInFavorite,
 }: TrackCardProps) => {
-  const [isLiked, setIsLiked] = useState(false);
+  const queryClient = useQueryClient();
   const [isHovered, setIsHovered] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -53,6 +57,22 @@ const TrackCard = ({
     setQueue,
     skipToTrack,
   } = useAudioStore();
+
+  const { mutate: favoriteTrack, isPending: isAddingToFavorite } = useMutation({
+    ...favoriteTrackMutationOptions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["track-detail", trackId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["tracks-home"],
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to add track to favorites:", error);
+      toast.error("Failed to add track to favorites. Please try again.");
+    },
+  });
 
   // Check if this is the currently playing track
   const isCurrentTrack = currentTrack?.id === trackId;
@@ -102,6 +122,20 @@ const TrackCard = ({
     toast.info("Copied!");
   };
 
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    if (!trackId) return;
+
+    if (checkTrackInFavorite) {
+      favoriteTrack({ trackId, isAdding: false });
+      toast.success(`${trackName} removed from favorites!`);
+    } else {
+      favoriteTrack({ trackId, isAdding: true });
+      toast.success(`${trackName} added to favorites!`);
+    }
+  };
+
   return (
     <div className="max-w-70 rounded-sm">
       <Link href={`/track/${trackId}`}>
@@ -131,11 +165,11 @@ const TrackCard = ({
             <Button
               variant="ghost"
               size="iconMd"
-              onClick={() => setIsLiked(!isLiked)}
-              className="text-main-white rounded-full duration-0 hover:brightness-90"
+              onClick={handleFavorite}
+              className="rounded-full duration-0 hover:brightness-90"
             >
               <Heart
-                className={`size-6 ${isLiked ? "fill-main-purple text-main-purple" : "text-main-white"}`}
+                className={`size-6 ${checkTrackInFavorite ? "fill-main-purple text-main-purple" : "text-main-white"}`}
               />
             </Button>
 

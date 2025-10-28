@@ -1,12 +1,12 @@
-import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { execute } from "../execute";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { TrackListHomeQuery } from "@/modules/client/home/ui/views/home-view";
 import {
   GetListenerProfileQuery,
   GetUserActiveSubscriptionQuery,
 } from "@/modules/client/profile/ui/views/queries";
-import { TrackDetailViewQuery } from "@/modules/client/track/ui/views/track-detail-view";
 import { PlaylistsQuery } from "@/modules/client/library/ui/views/library-view";
+import { TrackDetailViewQuery } from "@/modules/client/track/ui/views/track-detail-view";
 import {
   CheckTrackInPlaylistQuery,
   PlaylistBriefQuery,
@@ -98,10 +98,11 @@ export const playlistDetailTrackListOptions = (playlistId: string) =>
       await execute(PlaylistDetailTrackListQuery, { playlistId }),
   });
 
-export const playlistBriefOptions = queryOptions({
-  queryKey: ["playlist-brief"],
-  queryFn: async () => await execute(PlaylistBriefQuery),
-});
+export const playlistBriefOptions = (userId: string) =>
+  queryOptions({
+    queryKey: ["playlist-brief", userId],
+    queryFn: async () => await execute(PlaylistBriefQuery, { userId }),
+  });
 
 export const checkTrackInPlaylistOptions = (trackId: string) =>
   queryOptions({

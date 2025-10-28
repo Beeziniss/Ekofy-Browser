@@ -48,6 +48,7 @@ const TrackCarousel = ({ data, isLoading }: TrackCarouselProps) => {
                 trackId={track.id}
                 coverImage={track.coverImage}
                 trackName={track.name}
+                checkTrackInFavorite={track.checkTrackInFavorite}
                 artists={
                   track.mainArtists?.items?.map((artist) => ({
                     id: artist.id,

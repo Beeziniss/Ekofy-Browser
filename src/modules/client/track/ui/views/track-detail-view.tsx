@@ -23,10 +23,18 @@ export const TrackDetailViewQuery = graphql(`
           items {
             stageName
             followerCount
+            avatarImage
           }
         }
+        checkTrackInFavorite
       }
     }
+  }
+`);
+
+export const FavoriteTrackMutation = graphql(`
+  mutation FavoriteTrack($trackId: String!, $isAdding: Boolean!) {
+    updateFavoriteCount(trackId: $trackId, isAdding: $isAdding)
   }
 `);
 

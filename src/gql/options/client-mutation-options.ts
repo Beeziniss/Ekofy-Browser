@@ -11,6 +11,7 @@ import {
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
 import { UserGender } from "../graphql";
 import { UpdateListenerProfileMutation } from "@/modules/client/profile/ui/views/queries";
+import { FavoriteTrackMutation } from "@/modules/client/track/ui/views/track-detail-view";
 
 export const createPlaylistMutationOptions = mutationOptions({
   mutationKey: ["create-playlist"],
@@ -54,6 +55,18 @@ export const addToPlaylistMutationOptions = mutationOptions({
     }),
 });
 
+export const favoriteTrackMutationOptions = mutationOptions({
+  mutationKey: ["favorite-track"],
+  mutationFn: async (favoriteTrackRequest: {
+    trackId: string;
+    isAdding: boolean;
+  }) =>
+    await execute(FavoriteTrackMutation, {
+      trackId: favoriteTrackRequest.trackId,
+      isAdding: favoriteTrackRequest.isAdding,
+    }),
+});
+
 export const removeFromPlaylistMutationOptions = mutationOptions({
   mutationKey: ["remove-from-playlist"],
   mutationFn: async (removeFromPlaylistRequest: {
@@ -65,6 +78,7 @@ export const removeFromPlaylistMutationOptions = mutationOptions({
       removeFromPlaylistRequest,
     }),
 });
+
 export const updateListenerProfileMutationOptions = mutationOptions({
   mutationKey: ["update-listener-profile"],
   mutationFn: async (updateListenerRequest: {
@@ -82,3 +96,12 @@ export const updateListenerProfileMutationOptions = mutationOptions({
       updateListenerRequest,
     }),
 });
+
+export const addTrackToFavoritePlaylistMutationOptions = (trackId: string) =>
+  mutationOptions({
+    mutationKey: ["add-to-favorite-playlist", trackId],
+    mutationFn: async () =>
+      await execute(AddToPlaylistMutation, {
+        addToPlaylistRequest: { trackId, playlistName: "Favorites" },
+      }),
+  });

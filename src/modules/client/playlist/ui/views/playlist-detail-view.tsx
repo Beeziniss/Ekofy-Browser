@@ -23,8 +23,8 @@ export const RemoveFromPlaylistMutation = graphql(`
 `);
 
 export const PlaylistBriefQuery = graphql(`
-  query PlaylistBrief {
-    playlists {
+  query PlaylistBrief($userId: String!) {
+    playlists(where: { userId: { eq: $userId } }) {
       items {
         id
         name
