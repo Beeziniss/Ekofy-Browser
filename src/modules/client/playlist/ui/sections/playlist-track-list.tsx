@@ -83,7 +83,7 @@ const PlaylistTrackListSuspense = ({ playlistId }: PlaylistTrackListProps) => {
           coverImage: track.coverImage || "",
           isExplicit: track.isExplicit,
           artist:
-            track.mainArtistsAsync?.items
+            track.mainArtists?.items
               ?.map((a) => a?.stageName)
               .filter(Boolean)
               .join(", ") || "Unknown Artist",
