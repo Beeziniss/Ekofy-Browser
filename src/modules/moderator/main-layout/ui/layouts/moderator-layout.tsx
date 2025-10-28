@@ -8,7 +8,6 @@ import ModeratorSidebar from "../components/moderator-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
-import { ModeratorGlobalAudioPlayer } from "@/modules/moderator/track-approval/ui/components";
 
 interface ModeratorLayoutProps {
   children: React.ReactNode;
@@ -17,9 +16,6 @@ interface ModeratorLayoutProps {
 const ModeratorLayout = ({ children }: ModeratorLayoutProps) => {
   return (
     <SidebarProvider>
-      {/* Global Audio Player for all moderator pages */}
-      <ModeratorGlobalAudioPlayer />
-      
       <ModeratorSidebar />
       <SidebarInset>
         <header className="!bg-main-dark-bg sticky top-0 z-50 flex h-18 shrink-0 items-center justify-between gap-2 border-b border-white/30 px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-16">
