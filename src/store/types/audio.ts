@@ -4,6 +4,7 @@ export interface Track {
   artist: string;
   coverImage?: string;
   duration?: number;
+  uploadId?: string; // For track approval context
 }
 
 export interface AudioState {

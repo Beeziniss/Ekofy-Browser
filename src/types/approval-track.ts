@@ -197,7 +197,7 @@ export interface TrackApprovalTableProps {
   pageSize: number;
   onPageChange: (page: number) => void;
   onSearch: (term: string) => void;
-  onViewDetail: (trackId: string) => void;
+  onViewDetail: (uploadId: string) => void;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
   searchTerm: string;
@@ -219,10 +219,10 @@ export interface AudioPlayerState {
 }
 
 export interface AudioPlayerProps {
-  trackId: string;
+  uploadId: string;
   className?: string;
 }
 
 export interface TrackDetailViewProps {
-  trackId: string;
+  uploadId: string;
 }

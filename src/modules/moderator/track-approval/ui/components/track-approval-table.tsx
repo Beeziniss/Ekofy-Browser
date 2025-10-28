@@ -56,7 +56,7 @@ export function TrackApprovalTable({
   isLoading: boolean;
   currentPage: number;
   pageSize: number;
-  onViewDetailAction: (trackId: string) => void;
+  onViewDetailAction: (uploadId: string) => void;
 }) {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [approveDialog, setApproveDialog] = useState<{

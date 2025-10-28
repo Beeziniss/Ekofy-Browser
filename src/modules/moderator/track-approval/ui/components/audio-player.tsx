@@ -11,9 +11,9 @@ import { useAudioStore } from "@/store";
 import { formatMilliseconds } from "@/utils/format-milliseconds";
 import { useEffect } from "react";
 
-export function AudioPlayer({ trackId, className }: AudioPlayerProps) {
+export function AudioPlayer({ uploadId, className }: AudioPlayerProps) {
   const { data: audioUrl, isLoading: isLoadingUrl } = useQuery(
-    moderatorTrackOriginalFileOptions(trackId)
+    moderatorTrackOriginalFileOptions(uploadId)
   );
 
   const {
@@ -33,7 +33,7 @@ export function AudioPlayer({ trackId, className }: AudioPlayerProps) {
   } = useAudioStore();
 
   // Check if this track is currently playing
-  const isCurrentTrack = currentTrack?.id === trackId;
+  const isCurrentTrack = currentTrack?.id === uploadId;
 
   useEffect(() => {
     // If we have audio URL and this becomes the current track, no additional setup needed
@@ -49,8 +49,8 @@ export function AudioPlayer({ trackId, className }: AudioPlayerProps) {
     } else {
       // Set this as the current track (this will automatically start playing if isPlaying is true)
       setCurrentTrack({
-        id: trackId,
-        name: `Track ${trackId}`,
+        id: uploadId,
+        name: `Upload ${uploadId}`,
         artist: "Unknown Artist"
       });
       if (!isPlaying) {

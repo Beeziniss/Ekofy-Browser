@@ -22,9 +22,9 @@ export function TrackApprovalSection() {
     setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handleViewDetail = (trackId: string) => {
-    // Navigate to detail page
-    router.push(`/moderator/track-approval/${trackId}`);
+  const handleViewDetail = (uploadId: string) => {
+    // Navigate to detail page - route parameter is named trackId but it's actually uploadId
+    router.push(`/moderator/track-approval/${uploadId}`);
   };
 
   if (error) {

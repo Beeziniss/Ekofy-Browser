@@ -12,6 +12,7 @@ interface SimplePlayButtonProps {
   trackName: string;
   trackArtist: string;
   trackCoverImage?: string | null;
+  uploadId?: string; // For track approval context
   className?: string;
   size?: "sm" | "md" | "lg" | "full";
 }

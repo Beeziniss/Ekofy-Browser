@@ -9,15 +9,15 @@ import { useRouter } from "next/navigation";
 import { TrackDetailLayout } from "../layout";
 import { TrackDetailSection } from "../section";
 
-export function TrackDetailView({ trackId }: TrackDetailViewProps) {
+export function TrackDetailView({ uploadId }: TrackDetailViewProps) {
   const router = useRouter();
 
   const { data: track, isLoading, error } = useQuery(
-    moderatorTrackDetailOptions(trackId)
+    moderatorTrackDetailOptions(uploadId)
   );
 
   const { data: originalFileUrl } = useQuery(
-    moderatorTrackOriginalFileOptions(trackId)
+    moderatorTrackOriginalFileOptions(uploadId)
   );
 
   const handleDownloadOriginal = () => {
