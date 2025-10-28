@@ -25,7 +25,7 @@ const HomeView = () => {
   return (
     <div className="w-full p-2">
       {/* Trending section coming soon */}
-      {/* <TrackTrendingSection /> */}
+      <TrackTrendingSection />
     </div>
   );
 };

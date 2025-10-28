@@ -5,7 +5,11 @@ import {
   GetListenerProfileQuery,
   GetUserActiveSubscriptionQuery,
 } from "@/modules/client/profile/ui/views/queries";
-import { TrackDetailViewQuery } from "@/modules/client/track/ui/views/track-detail-view";
+import {
+  TrackCommentRepliesQuery,
+  TrackCommentsQuery,
+  TrackDetailViewQuery,
+} from "@/modules/client/track/ui/views/track-detail-view";
 import { PlaylistsQuery } from "@/modules/client/library/ui/views/library-view";
 import {
   CheckTrackInPlaylistQuery,
@@ -13,6 +17,10 @@ import {
   PlaylistDetailQuery,
   PlaylistDetailTrackListQuery,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
+import {
+  ArtistQuery,
+  ListenerQuery,
+} from "@/modules/shared/queries/user-queries";
 
 export const trackListHomeOptions = queryOptions({
   queryKey: ["tracks-home"],
@@ -107,4 +115,32 @@ export const checkTrackInPlaylistOptions = (trackId: string) =>
   queryOptions({
     queryKey: ["check-track-in-playlist", trackId],
     queryFn: async () => await execute(CheckTrackInPlaylistQuery, { trackId }),
+  });
+
+export const trackCommentsOptions = (targetId: string) =>
+  queryOptions({
+    queryKey: ["track-comments", targetId],
+    queryFn: async () => await execute(TrackCommentsQuery, { targetId }),
+    enabled: !!targetId,
+  });
+
+export const trackCommentRepliesOptions = (rootCommentId: string) =>
+  queryOptions({
+    queryKey: ["track-comment-replies", rootCommentId],
+    queryFn: async () =>
+      await execute(TrackCommentRepliesQuery, { rootCommentId }),
+  });
+
+export const listenerOptions = (userId: string, listenerId: string) =>
+  queryOptions({
+    queryKey: ["listener", userId],
+    queryFn: async () => await execute(ListenerQuery, { userId }),
+    enabled: !!listenerId,
+  });
+
+export const artistOptions = (userId: string, artistId: string) =>
+  queryOptions({
+    queryKey: ["artist", userId],
+    queryFn: async () => await execute(ArtistQuery, { userId }),
+    enabled: !!artistId,
   });

@@ -1,8 +1,6 @@
-import { Input } from "@/components/ui/input";
-import { formatDistanceToNow } from "date-fns";
-import { Button } from "@/components/ui/button";
-import { formatNumber } from "@/utils/format-number";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +17,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { CommentResponse, CommentType } from "@/gql/graphql";
+import {
+  createTrackCommentMutationOptions,
+  updateTrackCommentMutationOptions,
+  deleteTrackCommentMutationOptions,
+} from "@/gql/options/client-mutation-options";
+import { formatDistanceToNow } from "date-fns";
+import { formatNumber } from "@/utils/format-number";
+import { trackCommentRepliesOptions } from "@/gql/options/client-options";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -28,30 +36,25 @@ import {
   Edit,
   Trash2,
 } from "lucide-react";
-import React, { useState } from "react";
-import TrackCommentReply from "./track-comment-reply";
-import { CommentThread, CommentType } from "@/gql/graphql";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  createTrackCommentMutationOptions,
-  updateTrackCommentMutationOptions,
-  deleteTrackCommentMutationOptions,
-} from "@/gql/options/client-mutation-options";
+import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
 
-interface TrackCommentUserProps {
-  thread: Omit<CommentThread, "hasMoreReplies" | "lastActivity">;
+// Component for handling replies that might have nested replies
+interface ReplyCommentProps {
+  reply: CommentResponse;
   trackId: string;
-  level?: number;
+  level: number;
+  rootCommentId?: string;
 }
 
-const TrackCommentUser = ({
-  thread,
+const TrackCommentReply = ({
+  reply,
   trackId,
-  level = 0,
-}: TrackCommentUserProps) => {
-  const [showReplies, setShowReplies] = useState(false);
+  level,
+  rootCommentId,
+}: ReplyCommentProps) => {
+  const [showNestedReplies, setShowNestedReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -60,10 +63,19 @@ const TrackCommentUser = ({
 
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const comment = thread.rootComment;
 
-  // Check if current user is the owner of this comment
-  const isOwner = user?.userId === comment.commenterId;
+  // Check if current user is the owner of this reply
+  const isOwner = user?.userId === reply.commenterId;
+
+  // Check if this reply has nested replies
+  const hasNestedReplies =
+    reply.replyCount !== undefined && reply.replyCount > 0;
+
+  // Fetch nested replies if this reply has replyCount > 0
+  const { data: nestedReplies } = useQuery({
+    ...trackCommentRepliesOptions(reply.id),
+    enabled: showNestedReplies && hasNestedReplies,
+  });
 
   const { mutate: createReply, isPending } = useMutation({
     ...createTrackCommentMutationOptions,
@@ -72,47 +84,47 @@ const TrackCommentUser = ({
         queryKey: ["track-comments", trackId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["track-comment-replies", comment.id],
+        queryKey: ["track-comment-replies", reply.id],
       });
       setReplyContent("");
       setShowReplyInput(false);
     },
   });
 
-  const { mutate: updateComment, isPending: isUpdating } = useMutation({
+  const { mutate: updateReply, isPending: isUpdating } = useMutation({
     ...updateTrackCommentMutationOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["track-comments", trackId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["track-comment-replies", comment.id],
+        queryKey: ["track-comment-replies", reply.id],
       });
       setIsEditing(false);
       setEditContent("");
-      toast.success("Comment updated successfully");
+      toast.success("Reply updated successfully");
     },
     onError: (error) => {
-      toast.error("Failed to update comment");
-      console.error("Update comment error:", error);
+      toast.error("Failed to update reply");
+      console.error("Update reply error:", error);
     },
   });
 
-  const { mutate: deleteComment, isPending: isDeleting } = useMutation({
+  const { mutate: deleteReply, isPending: isDeleting } = useMutation({
     ...deleteTrackCommentMutationOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["track-comments", trackId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["track-comment-replies", comment.id],
+        queryKey: ["track-comment-replies", reply.id],
       });
       setShowDeleteDialog(false);
-      toast.success("Comment deleted successfully");
+      toast.success("Reply deleted successfully");
     },
     onError: (error) => {
-      toast.error("Failed to delete comment");
-      console.error("Delete comment error:", error);
+      toast.error("Failed to delete reply");
+      console.error("Delete reply error:", error);
     },
   });
 
@@ -122,20 +134,20 @@ const TrackCommentUser = ({
         targetId: trackId,
         commentType: CommentType.Track,
         content: replyContent.trim(),
-        parentCommentId: comment.id,
+        parentCommentId: rootCommentId,
       });
     }
   };
 
-  const handleEditComment = () => {
-    setEditContent(comment.content);
+  const handleEditReply = () => {
+    setEditContent(reply.content);
     setIsEditing(true);
   };
 
   const handleSaveEdit = () => {
     if (editContent.trim() && !isUpdating) {
-      updateComment({
-        commentId: comment.id,
+      updateReply({
+        commentId: reply.id,
         content: editContent.trim(),
       });
     }
@@ -146,65 +158,68 @@ const TrackCommentUser = ({
     setEditContent("");
   };
 
-  const handleDeleteComment = () => {
+  const handleDeleteReply = () => {
     if (!isDeleting) {
-      deleteComment(comment.id);
+      deleteReply(reply.id);
     }
+  };
+
+  // Get user name from commenterId (hardcoded for now)
+  const getUserName = (commenterId: string) => {
+    return `User ${commenterId.substring(0, 8)}`;
   };
 
   return (
     <div className={`flex gap-x-3 ${level > 0 ? "ml-8" : ""}`}>
-      <Avatar className="size-12">
+      <Avatar className="size-10">
         <AvatarImage
           src={
-            comment.commenter?.listener?.avatarImage ||
-            comment.commenter?.artist?.avatarImage ||
+            reply.commenter?.listener?.avatarImage ||
+            reply.commenter?.artist?.avatarImage ||
             undefined
           }
         />
-        <AvatarFallback>
-          {comment.commenter?.fullName.slice(0, 2)}
-        </AvatarFallback>
+        <AvatarFallback>{reply.commenter?.fullName.slice(0, 2)}</AvatarFallback>
       </Avatar>
 
       <div className="flex flex-1 flex-col gap-y-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-2">
-            <span className="text-main-white text-base font-semibold">
-              {comment.commenter?.fullName}
+            <span className="text-main-white text-sm font-semibold">
+              {getUserName(reply.commenterId)}
             </span>
-            <span className="text-main-grey text-sm">
-              {formatDistanceToNow(new Date(comment.createdAt), {
+            <span className="text-main-grey text-xs">
+              {formatDistanceToNow(new Date(reply.createdAt), {
                 addSuffix: true,
               })}
             </span>
           </div>
 
-          {/* Actions dropdown for comment owner */}
+          {/* Actions dropdown for reply owner */}
           {isOwner && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-main-grey hover:text-main-white h-6 w-6 p-0"
+                  className="text-main-grey hover:text-main-white h-5 w-5 p-0"
                 >
-                  <MoreVertical className="h-4 w-4" />
+                  <MoreVertical className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem
-                  onClick={handleEditComment}
-                  className="cursor-pointer text-sm"
+                  onClick={handleEditReply}
+                  className="cursor-pointer text-xs"
                 >
-                  <Edit className="mr-2 h-4 w-4" />
+                  <Edit className="mr-2 h-3 w-3" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setShowDeleteDialog(true)}
-                  className="cursor-pointer text-sm text-red-500 focus:text-red-500"
+                  className="cursor-pointer text-xs text-red-500 focus:text-red-500"
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <Trash2 className="mr-2 h-3 w-3" />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -212,7 +227,7 @@ const TrackCommentUser = ({
           )}
         </div>
 
-        {/* Comment Content - either display or edit mode */}
+        {/* Reply Content - either display or edit mode */}
         {isEditing ? (
           <div className="space-y-2">
             <Input
@@ -226,8 +241,9 @@ const TrackCommentUser = ({
                   handleCancelEdit();
                 }
               }}
-              className="bg-main-card-bg border-white/30 text-sm"
-              placeholder="Edit your comment..."
+              autoFocus
+              className="bg-main-card-bg h-6 border-white/30 text-xs"
+              placeholder="Edit your reply..."
               disabled={isUpdating}
             />
             <div className="flex items-center gap-x-2">
@@ -235,7 +251,7 @@ const TrackCommentUser = ({
                 size="sm"
                 onClick={handleSaveEdit}
                 disabled={!editContent.trim() || isUpdating}
-                className="h-7 text-xs"
+                className="h-5 px-2 text-xs"
               >
                 {isUpdating ? "Saving..." : "Save"}
               </Button>
@@ -244,47 +260,46 @@ const TrackCommentUser = ({
                 variant="ghost"
                 onClick={handleCancelEdit}
                 disabled={isUpdating}
-                className="h-7 text-xs"
+                className="h-5 px-2 text-xs"
               >
                 Cancel
               </Button>
             </div>
           </div>
         ) : (
-          <span className="text-sm">{comment.content}</span>
+          <span className="text-sm">{reply.content}</span>
         )}
 
         <div className="flex items-center gap-x-2">
           <div className="flex items-center gap-x-2">
-            <HeartIcon className="text-main-white hover:text-main-grey hover:fill-main-grey size-5 hover:cursor-pointer" />
-            <span>{formatNumber(0)}</span>
+            <HeartIcon className="text-main-white hover:text-main-grey hover:fill-main-grey size-4 hover:cursor-pointer" />
+            <span className="text-xs">{formatNumber(0)}</span>
           </div>
 
           <Button
             variant={"ghost"}
             onClick={() => setShowReplyInput(!showReplyInput)}
-            className="text-main-white hover:text-main-grey cursor-pointer"
+            className="text-main-white hover:text-main-grey h-6 cursor-pointer px-2 text-xs"
           >
             Reply
           </Button>
 
-          {/* Show replies button */}
-          {(thread.replies.length > 0 || comment.replyCount > 0) && (
+          {/* Show nested replies button */}
+          {hasNestedReplies && (
             <Button
               variant={"ghost"}
-              onClick={() => setShowReplies(!showReplies)}
-              className="text-main-purple hover:text-main-purple hover:bg-main-purple/20 flex cursor-pointer items-center gap-x-2"
+              size={"sm"}
+              onClick={() => setShowNestedReplies(!showNestedReplies)}
+              className="text-main-purple hover:text-main-purple hover:bg-main-purple/20 flex h-6 cursor-pointer items-center gap-x-1 px-2"
             >
-              {showReplies ? (
-                <ChevronUpIcon className="size-4" />
+              {showNestedReplies ? (
+                <ChevronUpIcon className="size-3" />
               ) : (
-                <ChevronDownIcon className="size-4" />
+                <ChevronDownIcon className="size-3" />
               )}
-              <span className="text-sm">
-                {thread.totalReplies || comment.replyCount}{" "}
-                {(thread.totalReplies || comment.replyCount) === 1
-                  ? "reply"
-                  : "replies"}
+              <span className="text-xs">
+                {reply.replyCount}{" "}
+                {reply.replyCount === 1 ? "reply" : "replies"}
               </span>
             </Button>
           )}
@@ -292,17 +307,17 @@ const TrackCommentUser = ({
 
         {/* Reply Input */}
         {showReplyInput && (
-          <div className="mt-3 flex items-center gap-x-3">
-            <Avatar className="size-8">
+          <div className="mt-2 flex items-center gap-x-2">
+            <Avatar className="size-6">
               <AvatarImage
                 src={
-                  comment.commenter?.listener?.avatarImage ||
-                  comment.commenter?.artist?.avatarImage ||
+                  reply.commenter?.listener?.avatarImage ||
+                  reply.commenter?.artist?.avatarImage ||
                   undefined
                 }
               />
               <AvatarFallback>
-                {comment.commenter?.fullName.slice(0, 2)}
+                {reply.commenter?.fullName.slice(0, 2)}
               </AvatarFallback>
             </Avatar>
             <div className="relative flex-1">
@@ -317,15 +332,15 @@ const TrackCommentUser = ({
                     handleCreateReply();
                   }
                 }}
-                className="bg-main-card-bg h-8 rounded-full border-white/30 px-3 py-2 pr-20"
+                className="bg-main-card-bg h-6 rounded-full border-white/30 px-2 py-1 pr-16 text-xs"
               />
               <Button
                 onClick={handleCreateReply}
                 disabled={!replyContent.trim() || isPending}
                 size="sm"
-                className="bg-main-white absolute top-0 right-0 h-8 rounded-tl-none rounded-tr-full rounded-br-full rounded-bl-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-main-white absolute top-0 right-0 h-6 rounded-tl-none rounded-tr-full rounded-br-full rounded-bl-none px-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <SendIcon className="size-3" />
+                <SendIcon className="size-2" />
                 <span className="text-xs">
                   {isPending ? "Posting..." : "Reply"}
                 </span>
@@ -334,28 +349,31 @@ const TrackCommentUser = ({
           </div>
         )}
 
-        {/* Replies */}
-        {showReplies && thread.replies && thread.replies.length > 0 && (
-          <div className="mt-4 space-y-4">
-            {thread.replies.map((reply, index) => (
-              <TrackCommentReply
-                key={`${reply.id}-${index}`}
-                reply={reply}
-                trackId={trackId}
-                level={level + 1}
-                rootCommentId={comment.id}
-              />
-            ))}
-          </div>
-        )}
+        {/* Nested Replies */}
+        {showNestedReplies &&
+          nestedReplies?.commentReplies?.replies &&
+          nestedReplies.commentReplies.replies.length > 0 && (
+            <div className="mt-3 space-y-3">
+              {nestedReplies.commentReplies.replies.map(
+                (nestedReply, index) => (
+                  <TrackCommentReply
+                    key={`${nestedReply.id}-${index}`}
+                    reply={nestedReply}
+                    trackId={trackId}
+                    level={level + 1}
+                  />
+                ),
+              )}
+            </div>
+          )}
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Comment</AlertDialogTitle>
+              <AlertDialogTitle>Delete Reply</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this comment? This action cannot
+                Are you sure you want to delete this reply? This action cannot
                 be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
@@ -364,7 +382,7 @@ const TrackCommentUser = ({
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction
-                onClick={handleDeleteComment}
+                onClick={handleDeleteReply}
                 disabled={isDeleting}
                 className="bg-red-500 hover:bg-red-600"
               >
@@ -378,4 +396,4 @@ const TrackCommentUser = ({
   );
 };
 
-export default TrackCommentUser;
+export default TrackCommentReply;
