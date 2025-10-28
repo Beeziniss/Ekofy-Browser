@@ -31,7 +31,9 @@ const ModeratorLayout = ({ children }: ModeratorLayoutProps) => {
             <MessageCircle className="size-4" />
           </Button>
         </header>
-        {children}
+        <div>
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

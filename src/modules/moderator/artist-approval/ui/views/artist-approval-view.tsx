@@ -5,8 +5,8 @@ import { ArtistApprovalLayout } from "../layout";
 import { ArtistApprovalSection } from "../section";
 
 export const PendingArtistRegistrationsQuery = graphql(`
-  query PendingArtistRegistrationsList($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPendingArtistRegistrationResponseFilterInput) {
-    pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize, where: $where) {
+  query PendingArtistRegistrationsList($pageNumber: Int!, $pageSize: Int!) {
+    pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize) {
       totalCount
       items {
         email
