@@ -9,8 +9,13 @@ import {
   RemoveFromPlaylistMutation,
   UpdatePlaylistMutation,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
-import { UserGender } from "../graphql";
+import { CommentType, UserGender } from "../graphql";
 import { UpdateListenerProfileMutation } from "@/modules/client/profile/ui/views/queries";
+import {
+  CreateTrackCommentMutation,
+  TrackCommentDeleteMutation,
+  TrackCommentUpdateMutation,
+} from "@/modules/client/track/ui/views/track-detail-view";
 
 export const createPlaylistMutationOptions = mutationOptions({
   mutationKey: ["create-playlist"],
@@ -65,6 +70,7 @@ export const removeFromPlaylistMutationOptions = mutationOptions({
       removeFromPlaylistRequest,
     }),
 });
+
 export const updateListenerProfileMutationOptions = mutationOptions({
   mutationKey: ["update-listener-profile"],
   mutationFn: async (updateListenerRequest: {
@@ -81,4 +87,26 @@ export const updateListenerProfileMutationOptions = mutationOptions({
     await execute(UpdateListenerProfileMutation, {
       updateListenerRequest,
     }),
+});
+
+export const createTrackCommentMutationOptions = mutationOptions({
+  mutationKey: ["create-track-comment"],
+  mutationFn: async (input: {
+    targetId: string;
+    commentType: CommentType;
+    content: string;
+    parentCommentId?: string;
+  }) => await execute(CreateTrackCommentMutation, input),
+});
+
+export const updateTrackCommentMutationOptions = mutationOptions({
+  mutationKey: ["update-track-comment"],
+  mutationFn: async (input: { commentId: string; content: string }) =>
+    await execute(TrackCommentUpdateMutation, input),
+});
+
+export const deleteTrackCommentMutationOptions = mutationOptions({
+  mutationKey: ["delete-track-comment"],
+  mutationFn: async (commentId: string) =>
+    await execute(TrackCommentDeleteMutation, { commentId }),
 });
