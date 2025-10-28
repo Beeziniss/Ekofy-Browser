@@ -293,3 +293,29 @@ export const moderatorTrackOriginalFileOptions = (uploadId: string) => queryOpti
   enabled: !!uploadId,
   staleTime: 10 * 60 * 1000, // 10 minutes
 });
+
+export const moderatorPendingPackagesOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = '') => queryOptions({
+  queryKey: ["moderator-pending-packages", page, pageSize, searchTerm],
+  queryFn: () => {
+    let where: PaginatedDataOfPendingArtistPackageResponseFilterInput | undefined = undefined;
+    
+    // Add packageName filter if search term is provided
+    if (searchTerm.trim()) {
+      where = {
+        items: {
+          some: {
+            packageName: { contains: searchTerm }
+          }
+        }
+      };
+    }
+    
+    return execute(PendingArtistPackagesQuery, {
+      pageNumber: page,
+      pageSize: pageSize,
+      where, // Apply search filter if provided
+      artistWhere: {} // Get all artists
+    });
+  },
+  staleTime: 1 * 60 * 1000, // 1 minute
+});
