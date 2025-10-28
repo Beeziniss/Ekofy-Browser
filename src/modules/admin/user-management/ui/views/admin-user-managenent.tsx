@@ -93,26 +93,15 @@ export const AdminGetListUser = graphql(`
 `);
 
 export const AdminGetStatistics = graphql(`
-  query UsersStatistic($skip: Int, $take: Int, $where: UserFilterInput) {
-    users(skip: $skip, take: $take, where: $where) {
+  query UsersStatistic($where: UserFilterInput) {
+    users(where: $where) {
       totalCount
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-      }
       items {
         id
         email
         fullName
-        gender
-        birthDate
-        role
         phoneNumber
         status
-        isLinkedWithGoogle
-        stripeCustomerId
-        stripeAccountId
-        lastLoginAt
         createdAt
         updatedAt
       }
@@ -129,7 +118,7 @@ export const CreateModeratorMutation = graphql(`
 `);
 
 export const DeActiveUserMutation = graphql(`
-  mutation banUser($targetUserId: String!) {
+  mutation BanUser($targetUserId: String!) {
     banUser(targetUserId: $targetUserId)
   }
 `);

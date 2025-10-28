@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TrackDetailQuery } from "@/gql/graphql";
+import { ArtistQuery, TrackDetailQuery } from "@/gql/graphql";
 import { formatNumber } from "@/utils/format-number";
 import {
   CopyIcon,
@@ -22,12 +22,13 @@ import { toast } from "sonner";
 
 interface TrackOwnerSectionProps {
   data: TrackDetailQuery;
+  artistData?: ArtistQuery;
 }
 
-const TrackOwnerSection = ({ data }: TrackOwnerSectionProps) => {
+const TrackOwnerSection = ({ data, artistData }: TrackOwnerSectionProps) => {
   return (
     <Suspense fallback={<TrackOwnerSectionSkeleton />}>
-      <TrackOwnerSectionSuspense data={data} />
+      <TrackOwnerSectionSuspense data={data} artistData={artistData} />
     </Suspense>
   );
 };
@@ -36,10 +37,14 @@ const TrackOwnerSectionSkeleton = () => {
   return <div>Loading...</div>;
 };
 
-const TrackOwnerSectionSuspense = ({ data }: TrackOwnerSectionProps) => {
+const TrackOwnerSectionSuspense = ({
+  data,
+  artistData,
+}: TrackOwnerSectionProps) => {
   const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
 
   const trackId = data.tracks?.items?.[0]?.id;
+  const trackData = data.tracks?.items?.[0];
 
   const handleCopyLink = () => {
     if (trackId) {
@@ -60,19 +65,21 @@ const TrackOwnerSectionSuspense = ({ data }: TrackOwnerSectionProps) => {
         <div className="flex items-center gap-x-6">
           <div className="flex flex-col gap-y-1">
             <span className="text-main-white text-sm font-bold">
-              {data.tracks?.items?.[0]?.mainArtistsAsync?.items?.[0]
-                ?.stageName || "Unknown Artist"}
+              {trackData?.mainArtists?.items?.[0]?.stageName ||
+                "Unknown Artist"}
             </span>
             <span className="text-main-grey-dark-1 flex items-center gap-x-1 text-sm">
               <UserIcon className="inline-block size-5" />{" "}
-              {data.tracks?.items?.[0]?.mainArtistsAsync?.items?.[0]
-                ?.followerCount || 0}{" "}
-              followers
+              {trackData?.mainArtists?.items?.[0]?.followerCount || 0} followers
             </span>
           </div>
-          <Button className="bg-main-white px-10 py-2 text-sm font-bold">
-            Follow
-          </Button>
+          {artistData &&
+          artistData.artists?.items?.[0]?.userId ===
+            trackData?.mainArtists?.items?.[0]?.userId ? null : (
+            <Button className="bg-main-white px-10 py-2 text-sm font-bold">
+              Follow
+            </Button>
+          )}
         </div>
       </div>
 
@@ -80,7 +87,7 @@ const TrackOwnerSectionSuspense = ({ data }: TrackOwnerSectionProps) => {
         <Button variant="reaction" className="group text-sm font-bold">
           <HeartIcon className="group-hover:text-main-grey group-hover:fill-main-grey fill-main-purple text-main-purple inline-block size-4" />
           <span className="text-main-grey">
-            {formatNumber(data.tracks?.items?.[0]?.favoriteCount || 0)}
+            {formatNumber(trackData?.favoriteCount || 0)}
           </span>
         </Button>
         <DropdownMenu>

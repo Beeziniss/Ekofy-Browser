@@ -4,6 +4,7 @@ import {
 } from "@/modules/moderator/artist-approval/ui/views/artist-details-view";
 import { PendingArtistRegistrationsQuery } from "@/modules/moderator/artist-approval/ui/views/artist-approval-view";
 import { ModeratorApprovalHistoryDetailQuery, ApprovalHistoriesListQuery } from "@/modules/moderator/approval-histories/ui/views/approval-histories-view";
+import { PendingArtistPackagesQuery } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
 import { 
@@ -12,6 +13,7 @@ import {
   ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType, 
   ApprovalHistoryFilterInput, 
   ApprovalType,
+  PaginatedDataOfPendingArtistPackageResponseFilterInput,
 } from "@/gql/graphql";
 import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
 import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/moderator/user-management/ui/views/moderator-user-detail-view";

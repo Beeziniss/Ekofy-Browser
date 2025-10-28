@@ -26,26 +26,27 @@ export function useClientProfile() {
 
   const listener = listenerQuery.data;
 
+  const firstUser = Array.isArray(listener?.user) ? listener?.user[0] : undefined;
   const personal = {
     displayName: listener?.displayName || "",
     email: listener?.email || "",
-    birthDate: listener?.user?.birthDate
+    birthDate: firstUser?.birthDate
       ? (() => {
           try {
-            return format(new Date(listener.user.birthDate as unknown as string), "yyyy-MM-dd");
+            return format(new Date(firstUser.birthDate as unknown as string), "yyyy-MM-dd");
           } catch {
             return undefined;
           }
         })()
       : undefined,
-    gender: listener?.user?.gender || undefined,
+    gender: firstUser?.gender || undefined,
   } as const;
 
   const account = {
     createdAt: listener?.createdAt
       ? (() => {
           try {
-            return format(new Date(listener.createdAt as unknown as string), "yyyy-MM-dd");
+            return format(new Date(listener.createdAt as unknown as string), "dd-MM-yyyy");
           } catch {
             return undefined;
           }

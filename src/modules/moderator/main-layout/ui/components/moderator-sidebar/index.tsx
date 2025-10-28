@@ -14,6 +14,7 @@ import {
   UserCheck,
   UserRoundCheck,
   // Settings,
+  LayoutPanelLeft
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
@@ -56,6 +57,11 @@ const data = {
       name: "Approval Histories",
       url: "/moderator/approval-histories",
       icon: ShieldCheck,
+    },
+    {
+      name: "Approval Service Packages",
+      url: "/moderator/approval-service-packages",
+      icon: LayoutPanelLeft,
     }
   ],
 };

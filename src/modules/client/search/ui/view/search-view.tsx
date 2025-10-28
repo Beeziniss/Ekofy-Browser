@@ -3,10 +3,10 @@
 import React from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
-  SearchTracksResponse,
-  SearchArtistsResponse,
-  SearchPlaylistsResponse,
   SearchType,
+  SearchArtistItem,
+  SearchPlaylistItem,
+  SearchTrackItem,
 } from "@/types/search";
 import { SearchLayout } from "../layout/search-layout";
 import { SearchAllSection } from "../section/search-all-section/search-all-section";
@@ -21,19 +21,33 @@ import {
 } from "@/gql/options/search-options";
 import { graphql } from "@/gql";
 
+// Types for search responses
+interface SearchResponse {
+  searchTracks?: { items: SearchTrackItem[] };
+  searchArtists?: { items: SearchArtistItem[] };
+  searchPlaylists?: { items: SearchPlaylistItem[] };
+}
+
+// Types for search responses
+interface SearchResponse {
+  searchTracks?: { items: SearchTrackItem[] };
+  searchArtists?: { items: SearchArtistItem[] };
+  searchPlaylists?: { items: SearchPlaylistItem[] };
+}
+
 interface SearchViewProps {
   query: string;
   type: SearchType;
   onTypeChange: (type: string) => void;
 }
 
-// GraphQL Queries
+// GraphQL Queries - using raw strings until schema is updated
 export const SEARCH_ARTISTS = graphql(`
-  query SearchArtists($skip: Int, $take: Int, $contains: String) {
-    artists(
+  query SearchArtists($skip: Int, $take: Int, $stageName: String!) {
+    searchArtists(
       skip: $skip
       take: $take
-      where: { stageNameUnsigned: { contains: $contains } }
+      stageName: $stageName
     ) {
       totalCount
       items {
@@ -54,12 +68,13 @@ export const SEARCH_ARTISTS = graphql(`
   }
 `);
 
+
 export const SEARCH_LISTENERS = graphql(`
-  query SearchListeners($skip: Int, $take: Int, $contains: String) {
-    listeners(
+  query SearchListeners($skip: Int, $take: Int, $displayName: String!) {
+    searchListeners(
       skip: $skip
       take: $take
-      where: { displayNameUnsigned: { contains: $contains } }
+      displayName: $displayName
     ) {
       totalCount
       items {
@@ -81,40 +96,44 @@ export const SEARCH_LISTENERS = graphql(`
 `);
 
 export const SEARCH_TRACKS = graphql(`
-    query SearchTracks($skip: Int, $take: Int, $contains: String) {
-        tracks(skip: $skip, take: $take, where: { nameUnsigned: { contains: $contains } }) {
-            totalCount
-            items {
-                id
-                name
-                description
-                nameUnsigned
-                type
-                categoryIds
-                mainArtistIds
-                coverImage
-                restriction {
-                    type
-                }
-                mainArtists {
-                items {
-                    id
-                    userId
-                    stageName
-                    artistType
-                }
-}
-            }
+  query SearchTracks($skip: Int, $take: Int, $name: String!) {
+    searchTracks(
+      skip: $skip
+      take: $take
+      name: $name
+    ) {
+      totalCount
+      items {
+        id
+        name
+        description
+        nameUnsigned
+        type
+        categoryIds
+        mainArtistIds
+        mainArtists {
+          items {
+            id
+            userId
+            stageName
+            artistType
+          }
         }
+        coverImage
+        restriction {
+          type
+        }
+      }
     }
+  }
 `);
 
 export const SEARCH_PLAYLISTS = graphql(`
-  query SearchPlaylists($skip: Int, $take: Int, $contains: String) {
-    playlists(
+  query SearchPlaylists($skip: Int, $take: Int, $name: String!) {
+    searchPlaylists(
       skip: $skip
       take: $take
-      where: { nameUnsigned: { contains: $contains }, isPublic: { eq: true } }
+      name: $name
     ) {
       totalCount
       items {
@@ -136,6 +155,7 @@ export const SEARCH_PLAYLISTS = graphql(`
     }
   }
 `);
+
 
 export const SearchView: React.FC<SearchViewProps> = ({
   query,
@@ -196,15 +216,15 @@ export const SearchView: React.FC<SearchViewProps> = ({
   // Extract data from queries
   const tracks =
     tracksQuery.data?.pages.flatMap(
-      (page) => (page as SearchTracksResponse).tracks?.items || [],
+      (page) => (page as SearchResponse).searchTracks?.items || [],
     ) || [];
   const artists =
     artistsQuery.data?.pages.flatMap(
-      (page) => (page as SearchArtistsResponse).artists?.items || [],
+      (page) => (page as SearchResponse).searchArtists?.items || [],
     ) || [];
   const playlists =
     playlistsQuery.data?.pages.flatMap(
-      (page) => (page as SearchPlaylistsResponse).playlists?.items || [],
+      (page) => (page as SearchResponse).searchPlaylists?.items || [],
     ) || [];
 
   const renderContent = () => {

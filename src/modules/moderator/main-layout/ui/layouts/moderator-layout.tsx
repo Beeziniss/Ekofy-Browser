@@ -22,7 +22,7 @@ const ModeratorLayout = ({ children }: ModeratorLayoutProps) => {
       
       <ModeratorSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-white/30 px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 sticky top-0 !bg-main-dark-bg z-50">
+        <header className="!bg-main-dark-bg sticky top-0 z-50 flex h-18 shrink-0 items-center justify-between gap-2 border-b border-white/30 px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-16">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator

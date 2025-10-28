@@ -5,12 +5,15 @@ import { useArtistProfile } from "../../hooks/use-artist-profile";
 export default function ArtistAccountDetailSection() {
   const { data, createdAt, userStatus, artistType, membershipStatus } = useArtistProfile();
 
+  const humanize = (value?: string | null) =>
+    value ? value.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()) : "-";
+
   const accountFields = [
     { title: "Stage name", value: data?.stageName || "-" },
     { title: "Created date", value: createdAt || "-" },
-    { title: "Artist type", value: artistType || "-" },
+    { title: "Artist type", value: humanize(artistType as unknown as string) },
     { title: "Membership status", value: membershipStatus || "-" },
-    { title: "Account status", value: userStatus || "-" },
+    { title: "Account status", value: humanize(userStatus as unknown as string) },
   ];
 
   return (
