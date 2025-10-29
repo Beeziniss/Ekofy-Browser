@@ -1,9 +1,10 @@
 import { execute } from "@/gql/execute";
-import type {
+import {
   InvoiceFilterInput,
   InvoiceSortInput,
   PaymentTransactionFilterInput,
   PaymentTransactionSortInput,
+  SortEnumType,
 } from "@/gql/graphql";
 import {
   GetListenerInvoicesQuery,
@@ -23,7 +24,7 @@ export function listenerTransactionsOptions(params: {
   const where: PaymentTransactionFilterInput = {
     userId: { eq: userId },
   };
-  const order: PaymentTransactionSortInput[] = [{ createdAt: "DESC" as any }];
+  const order: PaymentTransactionSortInput[] = [{ createdAt: SortEnumType.Desc }];
 
   return {
     queryKey: ["listener-transactions", userId, page, pageSize],
@@ -44,7 +45,7 @@ export function listenerInvoicesOptions(params: {
   const where: InvoiceFilterInput = {
     userId: { eq: userId },
   };
-  const order: InvoiceSortInput[] = [{ paidAt: "DESC" as any }];
+  const order: InvoiceSortInput[] = [{ paidAt: SortEnumType.Desc }];
 
   return {
     queryKey: ["listener-invoices", userId, page, pageSize],
