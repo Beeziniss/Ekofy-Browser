@@ -266,7 +266,40 @@ export const PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY = graphql(`
                 status
             }
         }
+     mainArtists {
+            items {
+                id
+                userId
+                stageName
+                stageNameUnsigned
+                email
+                artistType
+            }
+        }
+      featuredArtists {
+            items {
+                id
+                userId
+                stageName
+                stageNameUnsigned
+                email
+                artistType
+            }
+        }             
     }
+}
+`);
+
+export const QUERY_USER_CREATED_BY = graphql(`
+  query UserCreatedBy($where: UserFilterInput!) {
+    users(where: $where) {
+    items {
+      id
+      email
+      fullName
+      role
+    }
+  }
 }
 `);
 

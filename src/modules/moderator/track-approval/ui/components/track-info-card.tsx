@@ -12,9 +12,16 @@ import { SimplePlayButton } from "./simple-play-button";
 
 interface TrackInfoCardProps {
   track: TrackUploadRequest;
+  createdByUser?: {
+    id: string;
+    email: string;
+    fullName: string;
+    role: string;
+  } | null;
+  isLoadingUser?: boolean;
 }
 
-export function TrackInfoCard({ track }: TrackInfoCardProps) {
+export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfoCardProps) {
   const getTrackTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case "original":
@@ -85,7 +92,13 @@ export function TrackInfoCard({ track }: TrackInfoCardProps) {
               </div>
               <div className="flex items-center gap-1">
                 <User className="h-4 w-4" />
-                Created by: {track.createdBy}
+                {isLoadingUser ? (
+                  "Loading user..."
+                ) : createdByUser ? (
+                  `Created by: ${createdByUser.fullName}`
+                ) : (
+                  `Created by: ${track.createdBy}`
+                )}
               </div>
             </div>
           </div>

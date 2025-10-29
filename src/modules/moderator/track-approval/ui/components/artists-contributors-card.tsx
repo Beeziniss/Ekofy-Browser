@@ -29,7 +29,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
             </h3>
             <div className="grid gap-3">
               {track.mainArtists.items.map((artist) => (
-                <div key={artist.id} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                <div key={artist.id} className="flex items-center border-2 border-white gap-3 p-3 rounded-lg">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={artist.avatarImage || undefined} alt={artist.stageName} />
                     <AvatarFallback>
@@ -83,7 +83,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
             </h3>
             <div className="grid gap-3">
               {track.recordingUsers.items.map((user) => (
-                <div key={user.id} className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                <div key={user.id} className="flex items-center border-2 border-white gap-3 p-3 rounded-lg">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback>
                       <User className="h-5 w-5" />
@@ -97,7 +97,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
                       {user.phoneNumber && <span>• Phone: {user.phoneNumber}</span>}
                     </div>
                   </div>
-                  <Badge variant="secondary">{user.status}</Badge>
+                  <Badge className="bg-green-700 text-white">{user.status}</Badge>
                 </div>
               ))}
             </div>
@@ -113,7 +113,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
             </h3>
             <div className="grid gap-3">
               {track.workUsers.items.map((user) => (
-                <div key={user.id} className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+                <div key={user.id} className="flex items-center border-2 border-white gap-3 p-3 rounded-lg">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback>
                       <User className="h-5 w-5" />
@@ -127,7 +127,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
                       {user.phoneNumber && <span>• Phone: {user.phoneNumber}</span>}
                     </div>
                   </div>
-                  <Badge variant="secondary">{user.status}</Badge>
+                  <Badge className="bg-green-700 text-white">{user.status}</Badge>
                 </div>
               ))}
             </div>
