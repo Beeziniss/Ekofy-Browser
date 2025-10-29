@@ -126,6 +126,7 @@ export const GetListenerTransactionsQuery = `
   {
     transactions?: {
       totalCount: number;
+      pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
       items?: Array<
         | {
             id: string;
@@ -170,6 +171,7 @@ export const GetListenerInvoicesQuery = `
   {
     invoices?: {
       totalCount: number;
+      pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
       items?: Array<
         | {
             id: string;
