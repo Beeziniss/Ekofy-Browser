@@ -4,9 +4,6 @@ import { getAccessTokenFromLocalStorage } from "@/utils/auth-utils";
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_URL_ENDPOINT!,
   withCredentials: true,
-  headers: {
-    Origin: process.env.NEXT_PUBLIC_URL_ENDPOINT!,
-  },
 });
 
 // Add request interceptor to include Authorization header
