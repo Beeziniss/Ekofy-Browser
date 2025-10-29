@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Editor } from "@/modules/shared/ui/components/editor";
 import { Card, CardContent } from "@/components/ui/card";
 import { X } from "lucide-react";
 
@@ -96,12 +96,11 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel }: RequestFo
 
         <div>
           <label className="block text-sm font-medium mb-2">Tell us more</label>
-          <Textarea
+          <Editor
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={setDescription}
             placeholder="Description for requests or something else..."
-            className="w-full h-32 resize-none"
-            required
+            className="w-full"
           />
         </div>
 

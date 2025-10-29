@@ -4,3 +4,4 @@ export { RequestCardSkeleton, RequestListSkeleton } from './request-card-skeleto
 export { RequestDetailView } from './request-detail-view';
 export { RequestDetailSkeleton } from './request-detail-skeleton';
 export { DeleteConfirmModal } from './delete-confirm-modal';
+export { CommentSection } from './comment-section';

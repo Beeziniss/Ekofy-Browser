@@ -5,30 +5,117 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageCircle, Bookmark, Clock, Send } from "lucide-react";
+import { MessageCircle, Clock, Send, ChevronDown, ChevronUp } from "lucide-react";
 import { RequestHubItem } from "@/types/request-hub";
+import { CommentSection } from "./comment-section";
 import { cn } from "@/lib/utils";
 
 interface RequestCardProps {
   request: RequestHubItem;
   onViewDetails?: (id: string) => void;
   onApply?: (id: string) => void;
-  onSave?: (id: string) => void;
   className?: string;
 }
 
 export function RequestCard({ 
   request, 
   onViewDetails, 
-  onApply, 
-  onSave,
+  onApply,
   className 
 }: RequestCardProps) {
-  const [isSaved, setIsSaved] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState([
+    {
+      id: "1",
+      author: {
+        name: "Sarah Johnson",
+        avatar: undefined
+      },
+      content: "This sounds like an interesting project! I have 8 years of experience with jazz saxophone and would love to discuss this opportunity.",
+      timestamp: "2024-10-29T10:30:00Z",
+      likes: 3,
+      isLiked: false,
+      replies: [
+        {
+          id: "1-1",
+          author: {
+            name: "Marcus Chen",
+            avatar: undefined
+          },
+          content: "Thanks for your interest! Can you share some samples of your previous work?",
+          timestamp: "2024-10-29T11:00:00Z",
+          likes: 1,
+          isLiked: false
+        }
+      ]
+    },
+    {
+      id: "2",
+      author: {
+        name: "Mike Davis",
+        avatar: undefined
+      },
+      content: "What's the timeline for this recording? I'm available next week.",
+      timestamp: "2024-10-29T09:15:00Z",
+      likes: 1,
+      isLiked: true
+    }
+  ]);
 
-  const handleSave = () => {
-    setIsSaved(!isSaved);
-    onSave?.(request.id);
+  const handleToggleComments = () => {
+    setShowComments(!showComments);
+  };
+
+  const handleAddComment = (content: string) => {
+    const newComment = {
+      id: Date.now().toString(),
+      author: {
+        name: "Current User", // This would come from auth context
+        avatar: undefined
+      },
+      content,
+      timestamp: new Date().toISOString(),
+      likes: 0,
+      isLiked: false
+    };
+    setComments([...comments, newComment]);
+  };
+
+  const handleLikeComment = (commentId: string) => {
+    setComments(comments.map(comment => {
+      if (comment.id === commentId) {
+        return {
+          ...comment,
+          isLiked: !comment.isLiked,
+          likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1
+        };
+      }
+      return comment;
+    }));
+  };
+
+  const handleReplyComment = (commentId: string, content: string) => {
+    const newReply = {
+      id: `${commentId}-${Date.now()}`,
+      author: {
+        name: "Current User", // This would come from auth context
+        avatar: undefined
+      },
+      content,
+      timestamp: new Date().toISOString(),
+      likes: 0,
+      isLiked: false
+    };
+
+    setComments(comments.map(comment => {
+      if (comment.id === commentId) {
+        return {
+          ...comment,
+          replies: [...(comment.replies || []), newReply]
+        };
+      }
+      return comment;
+    }));
   };
 
   const formatBudget = (budget: { min: number; max: number }) => {
@@ -127,10 +214,20 @@ export function RequestCard({
 
         {/* Footer with Applications Count and Action Buttons */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          <div className="flex items-center text-sm text-gray-500">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleToggleComments}
+            className="flex items-center text-sm text-gray-500 hover:text-primary p-0"
+          >
             <MessageCircle className="h-4 w-4 mr-1" />
             {request.applicationCount} applications
-          </div>
+            {showComments ? (
+              <ChevronUp className="h-4 w-4 ml-1" />
+            ) : (
+              <ChevronDown className="h-4 w-4 ml-1" />
+            )}
+          </Button>
           <div className="flex space-x-2">
             <Button 
               variant="outline" 
@@ -151,6 +248,19 @@ export function RequestCard({
           </div>
         </div>
       </CardContent>
+
+      {/* Comments Section */}
+      {showComments && (
+        <div className="border-t border-gray-100">
+          <CommentSection
+            requestId={request.id}
+            comments={comments}
+            onAddComment={handleAddComment}
+            onLikeComment={handleLikeComment}
+            onReplyComment={handleReplyComment}
+          />
+        </div>
+      )}
     </Card>
   );
 }
