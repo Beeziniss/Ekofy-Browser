@@ -56,6 +56,7 @@ export function TrackInfoCard({ track }: TrackInfoCardProps) {
                 trackName={track.track.name}
                 trackArtist={track.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
                 trackCoverImage={track.track.coverImage}
+                uploadId={track.id} // Pass uploadId for audio player
                 size="full"
                 className="h-full w-full bg-transparent hover:bg-black/20 text-white border-0 rounded-full"
               />

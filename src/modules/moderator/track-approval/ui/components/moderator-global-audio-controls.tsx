@@ -55,8 +55,8 @@ export function ModeratorGlobalAudioControls() {
   // const hasPrevTrack = queue.length > 0 && currentIndex > 0;
 
   return (
-    <div className="fixed bottom-0 z-50 transition-[left] duration-200 ease-linear left-0 right-0 md:left-12 xl:left-64">
-      <section className="flex h-14 items-center gap-x-2 bg-[#303030] px-3 py-2 text-white shadow-2xl overflow-hidden">
+    <div className="sticky bottom-0 left-0 right-0 z-50 mt-auto">
+      <section className="flex h-14 items-center gap-x-4 bg-[#303030] px-3 py-2 text-white shadow-2xl overflow-hidden">
         {/* Control Button */}
         <div className="flex-shrink-0">
           <Button
@@ -94,26 +94,8 @@ export function ModeratorGlobalAudioControls() {
           </span>
         </div>
 
-        {/* Track Info */}
-        <div className="flex items-center gap-2 flex-shrink-0 min-w-0 max-w-[100px] sm:max-w-[140px] lg:max-w-[180px]">
-          <Avatar className="h-8 w-8 flex-shrink-0">
-            <AvatarImage src={currentTrack?.coverImage || undefined} alt={currentTrack?.name || "No track"} />
-            <AvatarFallback className="bg-gray-600">
-              <Music className="h-4 w-4" />
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0 flex-1 hidden md:block">
-            <p className="font-medium truncate text-xs">
-              {currentTrack?.name || "No track selected"}
-            </p>
-            <p className="text-xs text-gray-300 truncate">
-              {currentTrack?.artist || "Select a track"}
-            </p>
-          </div>
-        </div>
-
         {/* Volume Control */}
-        <div className="items-center gap-1 w-12 flex-shrink-0 hidden lg:flex">
+        <div className="items-center gap-1 w-24 hidden lg:flex">
           <Button
             variant="ghost"
             size="sm"
@@ -133,6 +115,24 @@ export function ModeratorGlobalAudioControls() {
             step={1}
             className="flex-1 [&_[role=slider]]:bg-white [&_[role=slider]]:border-white"
           />
+        </div>
+
+        {/* Track Info */}
+        <div className="flex items-center gap-2 flex-shrink-0 min-w-0 max-w-[100px] sm:max-w-[140px] lg:max-w-[180px]">
+          <Avatar className="h-8 w-8 flex-shrink-0">
+            <AvatarImage src={currentTrack?.coverImage || undefined} alt={currentTrack?.name || "No track"} />
+            <AvatarFallback className="bg-gray-600">
+              <Music className="h-4 w-4" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1 hidden md:block">
+            <p className="font-medium truncate text-xs">
+              {currentTrack?.name || "No track selected"}
+            </p>
+            <p className="text-xs text-gray-300 truncate">
+              {currentTrack?.artist || "Select a track"}
+            </p>
+          </div>
         </div>
 
         {/* Error State */}

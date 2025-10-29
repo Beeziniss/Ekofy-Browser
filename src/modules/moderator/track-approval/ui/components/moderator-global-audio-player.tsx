@@ -30,20 +30,9 @@ const ModeratorGlobalAudioPlayer = () => {
 
   // Get moderator original file URL for current track using GraphQL
   const { data: moderatorAudioUrl, isLoading: isLoadingModeratorUrl } = useQuery({
-    ...moderatorTrackOriginalFileOptions(currentTrack?.id || ""),
-    enabled: !!currentTrack?.id,
+    ...moderatorTrackOriginalFileOptions(currentTrack?.uploadId || ""),
+    enabled: !!currentTrack?.uploadId,
   });
-
-  // Debug logging for GraphQL response
-  useEffect(() => {
-    if (currentTrack?.id) {
-      console.log("GraphQL query result:", {
-        trackId: currentTrack.id,
-        moderatorAudioUrl,
-        isLoadingModeratorUrl
-      });
-    }
-  }, [currentTrack?.id, moderatorAudioUrl, isLoadingModeratorUrl]);
 
   // Handle seeking when seekRequested changes
   useEffect(() => {
@@ -58,11 +47,6 @@ const ModeratorGlobalAudioPlayer = () => {
   const loadTrack = useCallback(
     async (trackId: string, audioUrl: string) => {
       if (!audioRef.current || loadingRef.current) return;
-
-      console.log("loadTrack called with:", {
-        trackId,
-        audioUrl
-      });
 
       try {
         loadingRef.current = true;
@@ -87,9 +71,6 @@ const ModeratorGlobalAudioPlayer = () => {
           // Small delay to ensure load completes
           await new Promise(resolve => setTimeout(resolve, 50));
         }
-
-        console.log("Using GraphQL direct file URL for track:", trackId, "URL:", audioUrl);
-
         // Set new source (direct file URL from GraphQL)
         audio.src = audioUrl;
         audio.load();
@@ -201,23 +182,22 @@ const ModeratorGlobalAudioPlayer = () => {
 
   // Load new track when currentTrack changes and audio URL is available
   useEffect(() => {
-    if (currentTrack?.id && currentTrack.id !== lastTrackIdRef.current && moderatorAudioUrl) {
-      console.log("Track changed and audio URL available:", {
-        trackId: currentTrack.id,
-        audioUrl: moderatorAudioUrl
-      });
+    if (currentTrack?.id && currentTrack?.uploadId && moderatorAudioUrl) {
       
-      // Stop any current playback first to prevent "interrupted" error
-      if (audioRef.current && lastTrackIdRef.current) {
-        try {
-          audioRef.current.pause();
-        } catch {
-          // Ignore pause errors
+      // Load track if it's a new track OR if we don't have audio loaded yet
+      if (currentTrack.id !== lastTrackIdRef.current || !audioRef.current?.src) {
+        // Stop any current playback first to prevent "interrupted" error
+        if (audioRef.current && lastTrackIdRef.current) {
+          try {
+            audioRef.current.pause();
+          } catch {
+            // Ignore pause errors
+          }
         }
+        
+        lastTrackIdRef.current = currentTrack.id;
+        loadTrack(currentTrack.id, moderatorAudioUrl);
       }
-      
-      lastTrackIdRef.current = currentTrack.id;
-      loadTrack(currentTrack.id, moderatorAudioUrl);
     } else if (!currentTrack?.id && lastTrackIdRef.current) {
       // Clear audio when no track is selected
       if (audioRef.current) {
@@ -234,14 +214,14 @@ const ModeratorGlobalAudioPlayer = () => {
       setLoading(false);
       loadingRef.current = false;
     }
-  }, [currentTrack?.id, moderatorAudioUrl, loadTrack, setError, setLoading]);
+  }, [currentTrack?.id, currentTrack?.uploadId, moderatorAudioUrl, loadTrack, setError, setLoading]);
 
   // Set loading state when fetching moderator URL from GraphQL
   useEffect(() => {
-    if (currentTrack?.id) {
+    if (currentTrack?.uploadId) {
       setLoading(isLoadingModeratorUrl);
     }
-  }, [isLoadingModeratorUrl, currentTrack?.id, setLoading]);
+  }, [isLoadingModeratorUrl, currentTrack?.uploadId, setLoading]);
 
   // Audio event handlers
   const handleTimeUpdate = () => {

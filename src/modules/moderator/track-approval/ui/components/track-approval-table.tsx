@@ -280,6 +280,7 @@ export function TrackApprovalTable({
                     trackName={item.track.name}
                     trackArtist={item.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
                     trackCoverImage={item.track.coverImage}
+                    uploadId={item.id} // Pass uploadId for audio player
                     size="sm"
                   />
                 </TableCell>
