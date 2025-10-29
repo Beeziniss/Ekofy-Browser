@@ -21,7 +21,11 @@ import PlaylistAddModal from "@/modules/client/playlist/ui/components/playlist-a
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
-import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-options";
+import {
+  favoriteTrackMutationOptions,
+  userFollowMutationOptions,
+  userUnfollowMutationOptions,
+} from "@/gql/options/client-mutation-options";
 import { getUserInitials } from "@/utils/format-shorten-name";
 import Link from "next/link";
 
@@ -48,6 +52,7 @@ const TrackOwnerSectionSuspense = ({
 }: TrackOwnerSectionProps) => {
   const queryClient = useQueryClient();
   const trackDetail = data.tracks?.items?.[0];
+  const trackDetailArtist = trackDetail?.mainArtists?.items?.[0];
   const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
 
   const { mutate: favoriteTrack } = useMutation({
@@ -147,6 +152,147 @@ const TrackOwnerSectionSuspense = ({
       });
     },
   });
+
+  const { mutate: followUser } = useMutation({
+    ...userFollowMutationOptions,
+    onMutate: async () => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: ["track-detail", trackDetail?.id],
+      });
+
+      // Snapshot the previous value
+      const previousTrackDetail = queryClient.getQueryData([
+        "track-detail",
+        trackDetail?.id,
+      ]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData<TrackDetailQuery>(
+        ["track-detail", trackDetail?.id],
+        (old) => {
+          if (!old?.tracks?.items?.[0]?.mainArtists?.items?.[0]?.user?.[0])
+            return old;
+
+          return {
+            ...old,
+            tracks: {
+              ...old.tracks,
+              items: [
+                {
+                  ...old.tracks.items[0],
+                  mainArtists: {
+                    ...old.tracks.items[0].mainArtists,
+                    items: [
+                      {
+                        ...old.tracks.items[0].mainArtists.items[0],
+                        user: [
+                          {
+                            ...old.tracks.items[0].mainArtists.items[0].user[0],
+                            checkUserFollowing: true,
+                          },
+                        ],
+                      },
+                      ...(old.tracks.items[0].mainArtists.items.slice(1) || []),
+                    ],
+                  },
+                },
+                ...(old.tracks.items.slice(1) || []),
+              ],
+            },
+          };
+        },
+      );
+
+      return { previousTrackDetail };
+    },
+    onError: (error, variables, context) => {
+      if (context?.previousTrackDetail) {
+        queryClient.setQueryData(
+          ["track-detail", trackDetail?.id],
+          context.previousTrackDetail,
+        );
+      }
+      console.error("Failed to follow user:", error);
+      toast.error("Failed to follow user. Please try again.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["track-detail", trackDetail?.id],
+      });
+    },
+  });
+
+  const { mutate: unfollowUser } = useMutation({
+    ...userUnfollowMutationOptions,
+    onMutate: async () => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: ["track-detail", trackDetail?.id],
+      });
+
+      // Snapshot the previous value
+      const previousTrackDetail = queryClient.getQueryData([
+        "track-detail",
+        trackDetail?.id,
+      ]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData<TrackDetailQuery>(
+        ["track-detail", trackDetail?.id],
+        (old) => {
+          if (!old?.tracks?.items?.[0]?.mainArtists?.items?.[0]?.user?.[0])
+            return old;
+
+          return {
+            ...old,
+            tracks: {
+              ...old.tracks,
+              items: [
+                {
+                  ...old.tracks.items[0],
+                  mainArtists: {
+                    ...old.tracks.items[0].mainArtists,
+                    items: [
+                      {
+                        ...old.tracks.items[0].mainArtists.items[0],
+                        user: [
+                          {
+                            ...old.tracks.items[0].mainArtists.items[0].user[0],
+                            checkUserFollowing: false,
+                          },
+                        ],
+                      },
+                      ...(old.tracks.items[0].mainArtists.items.slice(1) || []),
+                    ],
+                  },
+                },
+                ...(old.tracks.items.slice(1) || []),
+              ],
+            },
+          };
+        },
+      );
+
+      return { previousTrackDetail };
+    },
+    onError: (error, variables, context) => {
+      if (context?.previousTrackDetail) {
+        queryClient.setQueryData(
+          ["track-detail", trackDetail?.id],
+          context.previousTrackDetail,
+        );
+      }
+      console.error("Failed to unfollow user:", error);
+      toast.error("Failed to unfollow user. Please try again.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["track-detail", trackDetail?.id],
+      });
+    },
+  });
+
   const trackData = data.tracks?.items?.[0];
 
   const handleCopyLink = () => {
@@ -174,6 +320,26 @@ const TrackOwnerSectionSuspense = ({
         },
       },
     );
+  };
+
+  const handleFollowToggle = () => {
+    if (!trackDetailArtist?.userId) return;
+
+    const isCurrentlyFollowing = trackDetailArtist?.user[0]?.checkUserFollowing;
+
+    if (isCurrentlyFollowing) {
+      unfollowUser(trackDetailArtist.userId, {
+        onSuccess: () => {
+          toast.success(`Unfollowed ${trackDetailArtist.stageName}!`);
+        },
+      });
+    } else {
+      followUser(trackDetailArtist.userId, {
+        onSuccess: () => {
+          toast.success(`Now following ${trackDetailArtist.stageName}!`);
+        },
+      });
+    }
   };
 
   return (
@@ -209,9 +375,19 @@ const TrackOwnerSectionSuspense = ({
           </div>
           {artistData &&
           artistData.artists?.items?.[0]?.userId ===
-            trackData?.mainArtists?.items?.[0]?.userId ? null : (
-            <Button className="bg-main-white px-10 py-2 text-sm font-bold">
-              Follow
+            trackDetailArtist?.userId ? null : (
+            <Button
+              variant={
+                trackDetailArtist?.user[0]?.checkUserFollowing
+                  ? "reaction"
+                  : "default"
+              }
+              className="px-10 py-2 text-sm font-bold"
+              onClick={handleFollowToggle}
+            >
+              {trackDetailArtist?.user[0]?.checkUserFollowing
+                ? "Following"
+                : "Follow"}
             </Button>
           )}
         </div>

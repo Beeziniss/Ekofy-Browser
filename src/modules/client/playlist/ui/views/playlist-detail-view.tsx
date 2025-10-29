@@ -2,26 +2,6 @@ import { graphql } from "@/gql";
 import PlaylistTrackList from "../sections/playlist-track-list";
 import PlaylistInfoSection from "../sections/playlist-info-section";
 
-export const AddToPlaylistMutation = graphql(`
-  mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {
-    addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)
-  }
-`);
-
-export const UpdatePlaylistMutation = graphql(`
-  mutation UpdatePlaylist($updatePlaylistRequest: UpdatePlaylistRequestInput!) {
-    updatePlaylist(updatePlaylistRequest: $updatePlaylistRequest)
-  }
-`);
-
-export const RemoveFromPlaylistMutation = graphql(`
-  mutation RemoveFromPlaylist(
-    $removeFromPlaylistRequest: RemoveFromPlaylistRequestInput!
-  ) {
-    removeFromPlaylist(removeFromPlaylistRequest: $removeFromPlaylistRequest)
-  }
-`);
-
 export const PlaylistBriefQuery = graphql(`
   query PlaylistBrief($userId: String!) {
     playlists(where: { userId: { eq: $userId } }) {

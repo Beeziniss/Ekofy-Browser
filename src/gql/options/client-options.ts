@@ -1,16 +1,9 @@
 import { execute } from "../execute";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
-import { TrackListHomeQuery } from "@/modules/client/home/ui/views/home-view";
 import {
   GetListenerProfileQuery,
   GetUserActiveSubscriptionQuery,
 } from "@/modules/client/profile/ui/views/queries";
-import { PlaylistsQuery } from "@/modules/client/library/ui/views/library-view";
-import {
-  TrackCommentRepliesQuery,
-  TrackCommentsQuery,
-  TrackDetailViewQuery,
-} from "@/modules/client/track/ui/views/track-detail-view";
 import {
   CheckTrackInPlaylistQuery,
   PlaylistBriefQuery,
@@ -18,9 +11,21 @@ import {
   PlaylistDetailTrackListQuery,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
 import {
+  TrackDetailViewQuery,
+  TrackListHomeQuery,
+} from "@/modules/shared/queries/client/track-queries";
+import {
+  TrackCommentRepliesQuery,
+  TrackCommentsQuery,
+} from "@/modules/shared/queries/client/track-comment-queries";
+import {
   ArtistQuery,
   ListenerQuery,
-} from "@/modules/shared/queries/user-queries";
+} from "@/modules/shared/queries/client/user-queries";
+import {
+  PlaylistsHomeQuery,
+  PlaylistsPersonalQuery,
+} from "@/modules/shared/queries/client/playlist-queries";
 
 export const trackListHomeOptions = queryOptions({
   queryKey: ["tracks-home"],
@@ -82,7 +87,12 @@ export const playlistOptions = (
     queryKey: ["playlists", userId, name],
     queryFn: async ({ pageParam }) => {
       const skip = (pageParam - 1) * take;
-      return await execute(PlaylistsQuery, { userId, name, take, skip });
+      return await execute(PlaylistsPersonalQuery, {
+        userId,
+        name,
+        take,
+        skip,
+      });
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
@@ -145,3 +155,8 @@ export const artistOptions = (userId: string, artistId: string) =>
     queryFn: async () => await execute(ArtistQuery, { userId }),
     enabled: !!artistId,
   });
+
+export const playlistsHomeOptions = queryOptions({
+  queryKey: ["playlists-home"],
+  queryFn: async () => await execute(PlaylistsHomeQuery, { take: 10 }),
+});
