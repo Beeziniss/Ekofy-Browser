@@ -184,13 +184,13 @@ export const ModeratorGetAnalytics = graphql(`
   }
 `);
 export const DeActiveUserMutation = graphql(`
-  mutation banUser($targetUserId: String!) {
+  mutation BanUser($targetUserId: String!) {
     banUser(targetUserId: $targetUserId)
   }
 `);
 
 export const ReActiveUserMutation = graphql(`
-  mutation ReActiveUser($targetUserId: String!) {
+  mutation UnbanUser($targetUserId: String!) {
     unbanUser(targetUserId: $targetUserId)
   }
 `);

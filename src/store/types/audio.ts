@@ -4,6 +4,7 @@ export interface Track {
   artist: string;
   coverImage?: string;
   duration?: number;
+  uploadId?: string; // For track approval context
 }
 
 export interface AudioState {
@@ -42,6 +43,7 @@ export interface AudioActions {
   play: () => void;
   pause: () => void;
   togglePlayPause: () => void;
+  autoPlayWhenReady: () => void;
 
   // Time control
   setCurrentTime: (time: number) => void;
@@ -72,6 +74,7 @@ export interface AudioActions {
   // State management
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  clearAudioState: () => void;
   reset: () => void;
 }
 

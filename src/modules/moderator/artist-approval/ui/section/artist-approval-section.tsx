@@ -55,10 +55,10 @@ export function ArtistApprovalSection() {
       <div className="text-red-500">Error loading data: {error.message}</div>
     );
   }
-
-  const artistsRaw = artistsData?.pendingArtistRegistrations.items || [];
-  const totalCount = artistsData?.pendingArtistRegistrations.totalCount || 0;
-
+  
+  const artistsRaw = artistsData?.pendingArtistRegistrations?.items || [];
+  const totalCount = artistsData?.pendingArtistRegistrations?.totalCount || 0;
+  
   // Transform data to match expected interface
   const artists = artistsRaw.map((artist) => ({
     id: artist.id || "",

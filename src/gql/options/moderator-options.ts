@@ -4,11 +4,24 @@ import {
 } from "@/modules/moderator/artist-approval/ui/views/artist-details-view";
 import { PendingArtistRegistrationsQuery } from "@/modules/moderator/artist-approval/ui/views/artist-approval-view";
 import { ModeratorApprovalHistoryDetailQuery, ApprovalHistoriesListQuery } from "@/modules/moderator/approval-histories/ui/views/approval-histories-view";
+import { PendingArtistPackagesQuery } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
-import { UserRole, UserFilterInput, ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType, ApprovalHistoryFilterInput, ApprovalType } from "@/gql/graphql";
+import { 
+  UserRole, 
+  UserFilterInput, 
+  ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType, 
+  ApprovalHistoryFilterInput, 
+  ApprovalType,
+  PaginatedDataOfPendingArtistPackageResponseFilterInput,
+} from "@/gql/graphql";
 import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
 import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/moderator/user-management/ui/views/moderator-user-detail-view";
+import { 
+  PENDING_TRACK_UPLOAD_REQUESTS_QUERY,
+  PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY,
+  ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY
+} from "@/modules/moderator/track-approval/ui/queries/track-approval-queries";
 
 export const moderatorProfileOptions = (userId: string) => queryOptions({
   queryKey: ["moderator-profile", userId],
@@ -27,25 +40,34 @@ export const moderatorProfileOptions = (userId: string) => queryOptions({
 export const moderatorArtistsQueryOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") => queryOptions({
   queryKey: ["artists", page, pageSize, searchTerm],
   queryFn: async () => {
-    // Build variables object with where filter
+    // Build variables object with nested where filter for items
     const variables: {
       pageNumber: number;
       pageSize: number;
-      where: {
-        stageNameUnsigned?: { contains: string };
+      where?: {
+        items?: {
+          some?: {
+            stageNameUnsigned?: { contains: string };
+          };
+        };
       };
     } = {
       pageNumber: page,
       pageSize,
-      where: {} // Always pass where object, even if empty
     };
     
-    // Add stageNameUnsigned filter to where object if searchTerm is not empty
+    // Add nested stageNameUnsigned filter if searchTerm is provided
     if (searchTerm && searchTerm.trim() !== "") {
-      variables.where.stageNameUnsigned = { contains: searchTerm.trim() };
+      variables.where = {
+        items: {
+          some: {
+            stageNameUnsigned: { contains: searchTerm.trim() }
+          }
+        }
+      };
     }
     
-    const result = await execute(PendingArtistRegistrationsQuery, variables);
+    const result = await execute(PendingArtistRegistrationsQuery, variables) 
     
     return result;
   },
@@ -55,11 +77,11 @@ export const moderatorArtistDetailsQueryOptions = (userId: string) => queryOptio
   queryKey: ["artist-details", userId],
   queryFn: async () => {
     const result = await execute(PendingArtistRegistrationsDetailQuery, { 
-      id: userId
+      artistRegistrationId: userId
     });
     
     // Return first artist from items array
-    return result.pendingArtistRegistrations?.[0] || null;
+    return result.pendingArtistRegistrationById || null;
   },
 });
 
@@ -197,4 +219,103 @@ export const moderatorApprovalHistoryDetailOptions = (historyId: string) => quer
     // Return first item from items array or null if not found
     return result?.approvalHistories?.items?.[0] || null;
   },
+});
+
+// Track approval query options for moderator
+export const moderatorPendingTracksOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") => queryOptions({
+  queryKey: ["moderator-pending-tracks", page, pageSize, searchTerm],
+  queryFn: async () => {
+    const variables: {
+      pageNumber: number;
+      pageSize: number;
+      where?: {
+        items?: {
+          some?: {
+            track?: {
+              name?: { contains: string };
+            };
+          };
+        };
+      };
+    } = {
+      pageNumber: page,
+      pageSize,
+    };
+    
+    // Add track name search filter if provided
+    if (searchTerm.trim()) {
+      variables.where = {
+        items: {
+          some: {
+            track: {
+              name: { contains: searchTerm }
+            }
+          }
+        }
+      };
+    }
+    
+    const result = await execute(PENDING_TRACK_UPLOAD_REQUESTS_QUERY, variables);
+    return result;
+  },
+  staleTime: 2 * 60 * 1000, // 2 minutes
+});
+
+// Track detail query options for moderator
+export const moderatorTrackDetailOptions = (uploadId: string) => queryOptions({
+  queryKey: ["moderator-track-detail", uploadId],
+  queryFn: async () => {
+    const result = await execute(PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY, {
+      uploadId: uploadId
+    });
+    
+    return result.pendingTrackUploadRequestById || null;
+  },
+  enabled: !!uploadId,
+  staleTime: 5 * 60 * 1000, // 5 minutes
+});
+
+// Original file track query options
+export const moderatorTrackOriginalFileOptions = (uploadId: string) => queryOptions({
+  queryKey: ["moderator-track-original-file", uploadId],
+  queryFn: async () => {
+    // First get the track details to get the track ID
+    const trackResult = await execute(PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY, { uploadId });
+    const trackId = trackResult.pendingTrackUploadRequestById?.track?.id;
+    
+    if (!trackId) {
+      throw new Error("Track ID not found");
+    }
+    
+    const result = await execute(ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY, { trackId });
+    return result.originalFileTrackUploadRequest;
+  },
+  enabled: !!uploadId,
+  staleTime: 10 * 60 * 1000, // 10 minutes
+});
+
+export const moderatorPendingPackagesOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = '') => queryOptions({
+  queryKey: ["moderator-pending-packages", page, pageSize, searchTerm],
+  queryFn: () => {
+    let where: PaginatedDataOfPendingArtistPackageResponseFilterInput | undefined = undefined;
+    
+    // Add packageName filter if search term is provided
+    if (searchTerm.trim()) {
+      where = {
+        items: {
+          some: {
+            packageName: { contains: searchTerm }
+          }
+        }
+      };
+    }
+    
+    return execute(PendingArtistPackagesQuery, {
+      pageNumber: page,
+      pageSize: pageSize,
+      where, // Apply search filter if provided
+      artistWhere: {} // Get all artists
+    });
+  },
+  staleTime: 1 * 60 * 1000, // 1 minute
 });

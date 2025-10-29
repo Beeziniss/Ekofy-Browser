@@ -27,7 +27,7 @@ export function middleware(request: NextRequest) {
   const roleBasedRoutes = {
     admin: /^\/admin(?!\/login)/,
     moderator: /^\/moderator(?!\/login)/,
-    artist: /^\/artist(?!\/login)/,
+    artist: /^\/artist(?!\/login|\/sign-up)/,
   };
 
   // Check if current path matches any protected route
@@ -90,6 +90,7 @@ export function middleware(request: NextRequest) {
     /^\/admin\/login$/,
     /^\/moderator\/login$/,
     /^\/artist\/login$/,
+     /^\/artist\/sign-up$/,
   ];
 
   const isAuthPage = authPagePatterns.some((pattern) => pattern.test(pathname));
