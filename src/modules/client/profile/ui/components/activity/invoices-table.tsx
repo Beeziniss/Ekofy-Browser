@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { listenerInvoicesOptions } from "@/gql/options/listener-activity-options";
+import { useListenerInvoices } from "@/modules/client/profile/hooks/use-listener-invoices";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -21,9 +20,7 @@ interface InvoicesTableProps {
 export default function InvoicesTable({ userId, pageSize = 10 }: InvoicesTableProps) {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isError } = useQuery({
-    ...listenerInvoicesOptions({ userId, page, pageSize }),
-  });
+  const { data, isLoading, isError } = useListenerInvoices({ userId, page, pageSize });
 
   const items = data?.invoices?.items ?? [];
   const totalCount = data?.invoices?.totalCount ?? 0;

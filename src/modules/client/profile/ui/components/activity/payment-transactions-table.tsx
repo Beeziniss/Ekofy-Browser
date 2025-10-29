@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { listenerTransactionsOptions } from "@/gql/options/listener-activity-options";
+import { useListenerTransactions } from "@/modules/client/profile/hooks/use-listener-transactions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,9 +35,7 @@ const statusBadge = (status: PaymentTransactionStatus) => {
 export default function PaymentTransactionsTable({ userId, pageSize = 10 }: PaymentTransactionsTableProps) {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isError } = useQuery({
-    ...listenerTransactionsOptions({ userId, page, pageSize }),
-  });
+  const { data, isLoading, isError } = useListenerTransactions({ userId, page, pageSize });
 
   const items = data?.transactions?.items ?? [];
   const totalCount = data?.transactions?.totalCount ?? 0;

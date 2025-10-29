@@ -1,7 +1,7 @@
 
 import React from "react";
 import DetailItem from "../components/detail-item";
-import { useClientProfile } from "../../hook/use-client-profile";
+import { useClientProfile } from "../../hooks/use-client-profile";
 
 const AccountDetailSection = () => {
   const { account } = useClientProfile();
