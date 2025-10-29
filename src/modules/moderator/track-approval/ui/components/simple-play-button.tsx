@@ -22,6 +22,7 @@ export function SimplePlayButton({
   trackName, 
   trackArtist, 
   trackCoverImage, 
+  uploadId, // Add this to the destructuring
   className,
   size = "sm" 
 }: SimplePlayButtonProps) {
@@ -33,7 +34,9 @@ export function SimplePlayButton({
     isLoading,
   } = useAudioStore();
 
-  const isCurrentTrack = currentTrack?.id === trackId;
+  // Use uploadId if available, otherwise fall back to trackId
+  const audioTrackId = uploadId || trackId;
+  const isCurrentTrack = currentTrack?.id === audioTrackId;
   const isCurrentlyPlaying = isCurrentTrack && isPlaying;
 
   const handleClick = useCallback(() => {
@@ -43,14 +46,15 @@ export function SimplePlayButton({
     } else {
       // If it's a different track, set as current track
       setCurrentTrack({
-        id: trackId,
+        id: trackId, // Use actual trackId for identification
         name: trackName,
         artist: trackArtist,
         coverImage: trackCoverImage || undefined,
+        uploadId: uploadId, // Store uploadId for audio loading
       });
       // Audio player will auto-play when ready
     }
-  }, [isCurrentTrack, togglePlayPause, setCurrentTrack, trackId, trackName, trackArtist, trackCoverImage]);
+  }, [isCurrentTrack, togglePlayPause, setCurrentTrack, trackId, trackName, trackArtist, trackCoverImage, uploadId]);
 
   const sizeClasses = {
     sm: "h-8 w-8 p-0",

@@ -14,8 +14,8 @@ export function TrackApprovalLayout({
   children,
 }: TrackApprovalLayoutProps) {
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-6 py-8 pb-24">
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-1 container mx-auto px-6 py-8">
         {/* Header */}
         <div className="pb-6">
           <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
@@ -28,7 +28,7 @@ export function TrackApprovalLayout({
         </div>
       </div>
       
-      {/* Audio Controls Footer - nằm trong content area, tránh sidebar */}
+      {/* Audio Controls Footer - sticky at bottom */}
       <ModeratorGlobalAudioControls />
     </div>
   );
