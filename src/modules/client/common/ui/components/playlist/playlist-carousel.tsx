@@ -6,15 +6,15 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrackListHomeQuery } from "@/gql/graphql";
-import TrackCard from "@/modules/client/common/ui/components/track/track-card";
+import { PlaylistsHomeQuery } from "@/gql/graphql";
+import PlaylistCard from "@/modules/client/playlist/ui/components/playlist-card";
 
-interface TrackCarouselProps {
-  data: TrackListHomeQuery;
+interface PlaylistCarouselProps {
+  data: PlaylistsHomeQuery;
   isLoading: boolean;
 }
 
-const TrackCarousel = ({ data, isLoading }: TrackCarouselProps) => {
+const PlaylistCarousel = ({ data, isLoading }: PlaylistCarouselProps) => {
   return (
     <Carousel
       opts={{
@@ -41,32 +41,16 @@ const TrackCarousel = ({ data, isLoading }: TrackCarouselProps) => {
             </CarouselItem>
           ))}
         {!isLoading &&
-          data?.tracks?.items &&
-          data.tracks.items.map((track) => (
-            <CarouselItem key={track.id} className="basis-auto pl-8">
-              <TrackCard
-                trackId={track.id}
-                coverImage={track.coverImage}
-                trackName={track.name}
-                checkTrackInFavorite={track.checkTrackInFavorite}
-                artists={
-                  track.mainArtists?.items?.map((artist) => ({
-                    id: artist.id,
-                    stageName: artist.stageName,
-                  })) || []
-                }
-                trackQueue={
-                  data.tracks?.items?.filter(
-                    (item): item is NonNullable<typeof item> => item !== null,
-                  ) || []
-                }
-              />
+          data?.playlists?.items &&
+          data.playlists.items.map((playlist) => (
+            <CarouselItem key={playlist.id} className="basis-auto pl-8">
+              <PlaylistCard playlist={playlist} />
             </CarouselItem>
           ))}
         {!isLoading &&
-          (!data?.tracks?.items || data.tracks.items.length === 0) && (
+          (!data?.playlists?.items || data.playlists.items.length === 0) && (
             <div className="flex w-full items-center justify-center py-8">
-              <p className="text-muted-foreground">No tracks available</p>
+              <p className="text-muted-foreground">No playlists available</p>
             </div>
           )}
       </CarouselContent>
@@ -76,4 +60,4 @@ const TrackCarousel = ({ data, isLoading }: TrackCarouselProps) => {
   );
 };
 
-export default TrackCarousel;
+export default PlaylistCarousel;
