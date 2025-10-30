@@ -23,25 +23,6 @@ export function TrackDetailSidebar({
 }: TrackDetailSidebarProps) {
   return (
     <div className="space-y-4">
-      {/* Status Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            Review Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center">
-            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-              Pending Review
-            </Badge>
-          </div>
-          <p className="text-sm text-muted-foreground mt-2 text-center">
-            This track is awaiting moderator approval
-          </p>
-        </CardContent>
-      </Card>
-
       {/* Track Details */}
       <Card>
         <CardHeader>

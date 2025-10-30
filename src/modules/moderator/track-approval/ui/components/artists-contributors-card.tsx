@@ -97,7 +97,15 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
                       {user.phoneNumber && <span>• Phone: {user.phoneNumber}</span>}
                     </div>
                   </div>
-                  <Badge className="bg-green-700 text-white">{user.status}</Badge>
+                    <Badge
+                    className={`${
+                      user.status === "ACTIVE"
+                      ? "bg-green-700 text-white"
+                      : "bg-red-700 text-white"
+                    }`}
+                    >
+                    {user.status}
+                    </Badge>
                 </div>
               ))}
             </div>
@@ -127,7 +135,15 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
                       {user.phoneNumber && <span>• Phone: {user.phoneNumber}</span>}
                     </div>
                   </div>
-                  <Badge className="bg-green-700 text-white">{user.status}</Badge>
+                  <Badge
+                    className={`${
+                      user.status === "ACTIVE"
+                      ? "bg-green-700 text-white"
+                      : "bg-red-700 text-white"
+                    }`}
+                    >
+                    {user.status}
+                    </Badge>
                 </div>
               ))}
             </div>
