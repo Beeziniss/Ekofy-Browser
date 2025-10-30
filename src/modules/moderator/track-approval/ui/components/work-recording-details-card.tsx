@@ -61,7 +61,7 @@ export function WorkRecordingDetailsCard({ track }: WorkRecordingDetailsCardProp
                 </h4>
                 <div className="space-y-2">
                   {track.work.workSplits.map((split, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <div key={index} className="flex items-center border-2 border-white gap-3 p-3 rounded-lg">
                       <div className="flex-1">
                         <p className="text-sm font-medium">{getWorkUserName(split.userId)}</p>
                         <Badge variant="outline" className="text-xs">{split.artistRole}</Badge>
@@ -102,7 +102,7 @@ export function WorkRecordingDetailsCard({ track }: WorkRecordingDetailsCardProp
                 </h4>
                 <div className="space-y-2">
                   {track.recording.recordingSplitRequests.map((split, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <div key={index} className="flex items-center gap-3 p-3 border-2 border-white rounded-lg">
                       <div className="flex-1">
                         <p className="text-sm font-medium">{getRecordingUserName(split.userId)}</p>
                         <Badge variant="outline" className="text-xs">{split.artistRole}</Badge>
