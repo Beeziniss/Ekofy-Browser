@@ -17,7 +17,7 @@ export const ListenerQuery = graphql(`
 
 export const ArtistQuery = graphql(`
   query Artist($userId: String!) {
-    artists(where: { userId: { eq: $userId } }) {
+    artists(where: { userId: { eq: $userId }, isVisible: { eq: true } }) {
       items {
         userId
         stageName
@@ -26,6 +26,37 @@ export const ArtistQuery = graphql(`
           fullName
         }
       }
+    }
+  }
+`);
+
+export const ArtistListQuery = graphql(`
+  query ArtistList($take: Int, $skip: Int) {
+    artists(
+      where: { isVisible: { eq: true } }
+      take: $take
+      skip: $skip
+      order: { popularity: DESC }
+    ) {
+      items {
+        userId
+        stageName
+        biography
+        avatarImage
+        identityCard {
+          nationality
+          placeOfResidence {
+            province
+          }
+        }
+        user {
+          fullName
+        }
+      }
+      pageInfo {
+        hasNextPage
+      }
+      totalCount
     }
   }
 `);

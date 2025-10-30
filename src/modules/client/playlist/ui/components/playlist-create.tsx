@@ -12,9 +12,9 @@ const PlaylistCreate = () => {
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <div className="flex max-w-70 flex-col gap-y-2.5">
+        <div className="flex w-full flex-col gap-y-2.5">
           <DialogTrigger asChild>
-            <div className="bg-main-card-bg hover:bg-main-purple/20 flex size-70 cursor-pointer items-center justify-center rounded-md transition">
+            <div className="bg-main-card-bg hover:bg-main-purple/20 flex aspect-square w-full cursor-pointer items-center justify-center rounded-md transition">
               <PlusIcon className="text-main-white size-9" />
             </div>
           </DialogTrigger>

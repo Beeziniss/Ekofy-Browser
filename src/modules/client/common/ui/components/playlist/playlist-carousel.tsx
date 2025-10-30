@@ -31,10 +31,10 @@ const PlaylistCarousel = ({ data, isLoading }: PlaylistCarouselProps) => {
                 <Skeleton className="size-70 rounded-sm text-sm">
                   &nbsp;
                 </Skeleton>
-                <Skeleton className="mt-2 h-4 w-32 rounded-sm text-sm">
+                <Skeleton className="mt-2 h-5 w-32 rounded-sm text-sm">
                   &nbsp;
                 </Skeleton>
-                <Skeleton className="mt-1 h-3 w-24 rounded-sm text-sm">
+                <Skeleton className="mt-1 h-4 w-24 rounded-sm text-sm">
                   &nbsp;
                 </Skeleton>
               </div>
@@ -43,8 +43,13 @@ const PlaylistCarousel = ({ data, isLoading }: PlaylistCarouselProps) => {
         {!isLoading &&
           data?.playlists?.items &&
           data.playlists.items.map((playlist) => (
-            <CarouselItem key={playlist.id} className="basis-auto pl-8">
-              <PlaylistCard playlist={playlist} />
+            <CarouselItem
+              key={playlist.id}
+              className="shrink-0 grow-0 basis-[312px] pl-8"
+            >
+              <div className="w-[280px]">
+                <PlaylistCard playlist={playlist} />
+              </div>
             </CarouselItem>
           ))}
         {!isLoading &&

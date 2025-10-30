@@ -27,7 +27,7 @@ export function middleware(request: NextRequest) {
   const roleBasedRoutes = {
     admin: /^\/admin(?!\/login)/,
     moderator: /^\/moderator(?!\/login)/,
-    artist: /^\/artist(?!\/login|\/sign-up)/,
+    artist: /^\/artist(?!\/(login|sign-up))/,
   };
 
   // Check if current path matches any protected route
@@ -90,7 +90,7 @@ export function middleware(request: NextRequest) {
     /^\/admin\/login$/,
     /^\/moderator\/login$/,
     /^\/artist\/login$/,
-     /^\/artist\/sign-up$/,
+    /^\/artist\/sign-up$/,
   ];
 
   const isAuthPage = authPagePatterns.some((pattern) => pattern.test(pathname));
@@ -120,8 +120,5 @@ export const config = {
      * - static files (/_next/, /favicon.ico etc.)
      */
     "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
-    "/artist/(.*)",
-    "/admin/(.*)",
-    "/moderator/(.*)",
   ],
 };

@@ -19,6 +19,7 @@ import {
   TrackCommentsQuery,
 } from "@/modules/shared/queries/client/track-comment-queries";
 import {
+  ArtistListQuery,
   ArtistQuery,
   ListenerQuery,
 } from "@/modules/shared/queries/client/user-queries";
@@ -27,11 +28,7 @@ import {
   PlaylistsPersonalQuery,
 } from "@/modules/shared/queries/client/playlist-queries";
 
-export const trackListHomeOptions = queryOptions({
-  queryKey: ["tracks-home"],
-  queryFn: async () => await execute(TrackListHomeQuery, { take: 10 }),
-});
-
+// PROFILE QUERIES
 export const listenerProfileOptions = (
   userId: string,
   enabled: boolean = true,
@@ -71,12 +68,22 @@ export const userActiveSubscriptionOptions = (userId: string) =>
     enabled: !!userId,
   });
 
+export const trackListHomeOptions = queryOptions({
+  queryKey: ["tracks-home"],
+  queryFn: async () => await execute(TrackListHomeQuery, { take: 10 }),
+});
+
 export const trackDetailOptions = (trackId: string) =>
   queryOptions({
     queryKey: ["track-detail", trackId],
     queryFn: async () => await execute(TrackDetailViewQuery, { trackId }),
     enabled: !!trackId,
   });
+
+export const playlistsHomeOptions = queryOptions({
+  queryKey: ["playlists-home"],
+  queryFn: async () => await execute(PlaylistsHomeQuery, { take: 10 }),
+});
 
 export const playlistOptions = (
   userId: string,
@@ -128,6 +135,7 @@ export const checkTrackInPlaylistOptions = (trackId: string) =>
     queryFn: async () => await execute(CheckTrackInPlaylistQuery, { trackId }),
   });
 
+// TRACK COMMENTS QUERIES
 export const trackCommentsOptions = (targetId: string) =>
   queryOptions({
     queryKey: ["track-comments", targetId],
@@ -142,6 +150,7 @@ export const trackCommentRepliesOptions = (rootCommentId: string) =>
       await execute(TrackCommentRepliesQuery, { rootCommentId }),
   });
 
+// USER QUERIES
 export const listenerOptions = (userId: string, listenerId: string) =>
   queryOptions({
     queryKey: ["listener", userId],
@@ -156,7 +165,17 @@ export const artistOptions = (userId: string, artistId: string) =>
     enabled: !!artistId,
   });
 
-export const playlistsHomeOptions = queryOptions({
-  queryKey: ["playlists-home"],
-  queryFn: async () => await execute(PlaylistsHomeQuery, { take: 10 }),
-});
+export const artistListOptions = (take: number = 12) =>
+  infiniteQueryOptions({
+    queryKey: ["artist-list"],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+      return await execute(ArtistListQuery, { take, skip });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.artists?.pageInfo.hasNextPage
+        ? allPages.length + 1
+        : undefined;
+    },
+  });

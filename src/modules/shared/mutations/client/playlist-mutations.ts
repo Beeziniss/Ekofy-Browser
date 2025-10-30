@@ -3,7 +3,7 @@ import { graphql } from "@/gql";
 // CRUD mutations for playlists
 export const PlaylistFavoriteMutation = graphql(`
   mutation PlaylistFavorite($playlistId: String!, $isAdding: Boolean!) {
-    addToFavorite(playlistId: $playlistId, isAdding: $isAdding)
+    addToFavoritePlaylist(playlistId: $playlistId, isAdding: $isAdding)
   }
 `);
 

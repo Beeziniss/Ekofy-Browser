@@ -112,17 +112,17 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   };
 
   return (
-    <div key={playlist.id} className="space-y-2.5">
+    <div key={playlist.id} className="flex w-full flex-col space-y-2.5">
       <Link
         href={`/playlists/${playlist.id}`}
-        className={`group relative flex size-70 cursor-pointer items-center justify-center rounded-md transition-opacity after:absolute after:inset-0 after:rounded-md after:bg-black after:content-[''] hover:after:opacity-20 ${isMenuOpen ? "after:opacity-20" : "after:opacity-0"}`}
+        className={`group relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-md transition-opacity after:absolute after:inset-0 after:rounded-md after:bg-black after:content-[''] hover:after:opacity-20 ${isMenuOpen ? "after:opacity-20" : "after:opacity-0"}`}
       >
         <Image
           src={playlist.coverImage || "https://placehold.co/280"}
           alt={playlist.name}
-          className="size-70 rounded-md object-cover"
-          width={280}
-          height={280}
+          className="h-full w-full rounded-md object-cover"
+          width={300}
+          height={300}
           unoptimized
         />
 
