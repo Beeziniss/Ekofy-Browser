@@ -15,6 +15,7 @@ interface RequestCardProps {
   onViewDetails?: (id: string) => void;
   onApply?: (id: string) => void;
   className?: string;
+  onSave?: (id: string) => void;
 }
 
 export function RequestCard({ 

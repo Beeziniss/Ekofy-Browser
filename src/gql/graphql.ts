@@ -1347,6 +1347,26 @@ export type EntitlementsCollectionSegment = {
 };
 
 /** A segment of a collection. */
+export type FavoritePlaylistsCollectionSegment = {
+  __typename?: 'FavoritePlaylistsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Playlist>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
+export type FavoriteTracksCollectionSegment = {
+  __typename?: 'FavoriteTracksCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Track>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
 export type FeaturedArtistsCollectionSegment = {
   __typename?: 'FeaturedArtistsCollectionSegment';
   /** A flattened list of the items. */
@@ -1996,13 +2016,15 @@ export enum MoodType {
 
 export type MutationInitialization = {
   __typename?: 'MutationInitialization';
-  addToFavorite: Scalars['Boolean']['output'];
+  addToFavoritePlaylist: Scalars['Boolean']['output'];
+  addToFavoriteTrack: Scalars['Boolean']['output'];
   addToPlaylist: Scalars['Boolean']['output'];
   approveArtistPackage: Scalars['Boolean']['output'];
   approveArtistRegistration: Scalars['Boolean']['output'];
   approveTrackUploadRequest: Scalars['Boolean']['output'];
   assignReportToModerator: Scalars['Boolean']['output'];
   banUser: Scalars['Boolean']['output'];
+  cancelSubscriptionAtPeriodEnd: Scalars['Boolean']['output'];
   changeArtistPackageStatus: Scalars['Boolean']['output'];
   convertToHls: Scalars['String']['output'];
   convertToWavFile: WavFileResponse;
@@ -2011,6 +2033,7 @@ export type MutationInitialization = {
   createBillingPortalConfiguration: Scalars['Boolean']['output'];
   createCategory: Scalars['Boolean']['output'];
   createCoupon: Scalars['Boolean']['output'];
+  createCustomConnectedAccount: AccountLinkResponse;
   createCustomerPortalSession: Scalars['String']['output'];
   /** Create a test entitlement for demonstration purposes. */
   createEntilement: Scalars['Boolean']['output'];
@@ -2048,13 +2071,13 @@ export type MutationInitialization = {
   rejectArtistRegistration: Scalars['Boolean']['output'];
   rejectTrackUploadRequest: Scalars['Boolean']['output'];
   removeFromPlaylist: Scalars['Boolean']['output'];
+  resumeSubscription: Scalars['Boolean']['output'];
   seedEntitlements: Scalars['Boolean']['output'];
   seedRoyaltyPolicyData: Scalars['Boolean']['output'];
   unbanUser: Scalars['Boolean']['output'];
   unfollowUser: Scalars['Boolean']['output'];
   updateArtistPackage: Scalars['Boolean']['output'];
   updateArtistProfile: Scalars['Boolean']['output'];
-  updateFavoriteCount: Scalars['Boolean']['output'];
   updateListenerProfile: Scalars['Boolean']['output'];
   updatePlaylist: Scalars['Boolean']['output'];
   updateRequest: Scalars['Boolean']['output'];
@@ -2062,12 +2085,19 @@ export type MutationInitialization = {
   uploadFile: Scalars['String']['output'];
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
+  upsertTopTrackCount: Scalars['Boolean']['output'];
 };
 
 
-export type MutationInitializationAddToFavoriteArgs = {
+export type MutationInitializationAddToFavoritePlaylistArgs = {
   isAdding: Scalars['Boolean']['input'];
   playlistId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationAddToFavoriteTrackArgs = {
+  isAdding: Scalars['Boolean']['input'];
+  trackId: Scalars['String']['input'];
 };
 
 
@@ -2351,12 +2381,6 @@ export type MutationInitializationUpdateArtistProfileArgs = {
 };
 
 
-export type MutationInitializationUpdateFavoriteCountArgs = {
-  isAdding: Scalars['Boolean']['input'];
-  trackId: Scalars['String']['input'];
-};
-
-
 export type MutationInitializationUpdateListenerProfileArgs = {
   updateListenerRequest: UpdateListenerRequestInput;
 };
@@ -2396,6 +2420,11 @@ export type MutationInitializationUploadTrackFingerprintArgs = {
   file: Scalars['Upload']['input'];
   trackId: Scalars['String']['input'];
   trackName: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationUpsertTopTrackCountArgs = {
+  trackId: Scalars['String']['input'];
 };
 
 export type NullableOfReportActionOperationFilterInput = {
@@ -2856,6 +2885,8 @@ export type QueryInitialization = {
   commentThread?: Maybe<CommentThreadCollectionSegment>;
   coupons?: Maybe<CouponsCollectionSegment>;
   entitlements?: Maybe<EntitlementsCollectionSegment>;
+  favoritePlaylists?: Maybe<FavoritePlaylistsCollectionSegment>;
+  favoriteTracks?: Maybe<FavoriteTracksCollectionSegment>;
   initialize: Scalars['String']['output'];
   invoices?: Maybe<InvoicesCollectionSegment>;
   isCommentInThread: Scalars['Boolean']['output'];
@@ -2888,6 +2919,7 @@ export type QueryInitialization = {
   subscriptionPlans?: Maybe<SubscriptionPlansCollectionSegment>;
   subscriptions?: Maybe<SubscriptionsCollectionSegment>;
   threadedComments: ThreadedCommentsResponse;
+  topTracks: Array<TopTrackResponse>;
   trackBySemanticSearch: Array<Track>;
   trackComments?: Maybe<TrackCommentsCollectionSegment>;
   tracks?: Maybe<TracksCollectionSegment>;
@@ -2961,6 +2993,22 @@ export type QueryInitializationEntitlementsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<EntitlementFilterInput>;
+};
+
+
+export type QueryInitializationFavoritePlaylistsArgs = {
+  order?: InputMaybe<Array<PlaylistSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PlaylistFilterInput>;
+};
+
+
+export type QueryInitializationFavoriteTracksArgs = {
+  order?: InputMaybe<Array<TrackSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TrackFilterInput>;
 };
 
 
@@ -4083,6 +4131,17 @@ export type TimeSpanOperationFilterInput = {
   nlte?: InputMaybe<Scalars['TimeSpan']['input']>;
 };
 
+export type TopTrackInfo = {
+  __typename?: 'TopTrackInfo';
+  playedCount: Scalars['Int']['output'];
+  trackId: Scalars['String']['output'];
+};
+
+export type TopTrackResponse = {
+  __typename?: 'TopTrackResponse';
+  tracksInfo: Array<TopTrackInfo>;
+};
+
 export type Track = {
   __typename?: 'Track';
   alternativeDescription: Scalars['String']['output'];
@@ -4565,6 +4624,7 @@ export type UserSubscription = {
   isActive: Scalars['Boolean']['output'];
   periodEnd?: Maybe<Scalars['DateTime']['output']>;
   periodStart: Scalars['DateTime']['output'];
+  stripeSubscriptionId?: Maybe<Scalars['String']['output']>;
   subscription: Array<Subscription>;
   subscriptionId: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -4595,6 +4655,7 @@ export type UserSubscriptionFilterInput = {
   or?: InputMaybe<Array<UserSubscriptionFilterInput>>;
   periodEnd?: InputMaybe<DateTimeOperationFilterInput>;
   periodStart?: InputMaybe<DateTimeOperationFilterInput>;
+  stripeSubscriptionId?: InputMaybe<StringOperationFilterInput>;
   subscriptionId?: InputMaybe<StringOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
   userId?: InputMaybe<StringOperationFilterInput>;
@@ -4609,6 +4670,7 @@ export type UserSubscriptionSortInput = {
   isActive?: InputMaybe<SortEnumType>;
   periodEnd?: InputMaybe<SortEnumType>;
   periodStart?: InputMaybe<SortEnumType>;
+  stripeSubscriptionId?: InputMaybe<SortEnumType>;
   subscriptionId?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
   userId?: InputMaybe<SortEnumType>;

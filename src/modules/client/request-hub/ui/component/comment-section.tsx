@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,50 +29,31 @@ interface CommentSectionProps {
   className?: string;
 }
 
-export function CommentSection({
-  comments,
-  onAddComment,
+// Move CommentItem outside to prevent re-creation
+interface CommentItemProps {
+  comment: Comment;
+  isReply?: boolean;
+  replyingTo: string | null;
+  replyContents: Record<string, string>;
+  onLikeComment: (commentId: string) => void;
+  onSetReplyingTo: (commentId: string | null) => void;
+  onSetReplyContent: (commentId: string, content: string) => void;
+  onSubmitReply: (commentId: string) => void;
+  formatTimeAgo: (timestamp: string) => string;
+}
+
+function CommentItem({
+  comment,
+  isReply = false,
+  replyingTo,
+  replyContents,
   onLikeComment,
-  onReplyComment,
-  className
-}: CommentSectionProps) {
-  const [newComment, setNewComment] = useState("");
-  const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [replyContent, setReplyContent] = useState("");
-
-  const formatTimeAgo = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffMinutes = Math.ceil(diffTime / (1000 * 60));
-    
-    if (diffMinutes < 60) {
-      return `${diffMinutes}m ago`;
-    } else if (diffMinutes < 1440) {
-      const diffHours = Math.ceil(diffMinutes / 60);
-      return `${diffHours}h ago`;
-    } else {
-      const diffDays = Math.ceil(diffMinutes / 1440);
-      return `${diffDays}d ago`;
-    }
-  };
-
-  const handleSubmitComment = () => {
-    if (newComment.trim()) {
-      onAddComment(newComment.trim());
-      setNewComment("");
-    }
-  };
-
-  const handleSubmitReply = (commentId: string) => {
-    if (replyContent.trim()) {
-      onReplyComment(commentId, replyContent.trim());
-      setReplyContent("");
-      setReplyingTo(null);
-    }
-  };
-
-  const CommentItem = ({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) => (
+  onSetReplyingTo,
+  onSetReplyContent,
+  onSubmitReply,
+  formatTimeAgo
+}: CommentItemProps) {
+  return (
     <div className={cn("space-y-3", isReply && "ml-8 border-l-2 pl-4")}>
       <div className="flex space-x-3">
         <Avatar className="h-8 w-8">
@@ -116,7 +97,7 @@ export function CommentSection({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                onClick={() => onSetReplyingTo(replyingTo === comment.id ? null : comment.id)}
                 className="h-6 px-2 text-xs text-gray-400 hover:text-blue-500"
               >
                 <Reply className="h-3 w-3 mr-1" />
@@ -139,16 +120,17 @@ export function CommentSection({
       {replyingTo === comment.id && (
         <div className="ml-11 space-y-2">
           <Textarea
-            value={replyContent}
-            onChange={(e) => setReplyContent(e.target.value)}
+            value={replyContents[comment.id] || ""}
+            onChange={(e) => onSetReplyContent(comment.id, e.target.value)}
             placeholder="Write a reply..."
             className="min-h-[60px] text-sm resize-none bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+            autoFocus
           />
           <div className="flex space-x-2">
             <Button
               size="sm"
-              onClick={() => handleSubmitReply(comment.id)}
-              disabled={!replyContent.trim()}
+              onClick={() => onSubmitReply(comment.id)}
+              disabled={!(replyContents[comment.id] || "").trim()}
               className="primary_gradient text-white text-xs"
             >
               <Send className="h-3 w-3 mr-1" />
@@ -158,8 +140,8 @@ export function CommentSection({
               variant="outline"
               size="sm"
               onClick={() => {
-                setReplyingTo(null);
-                setReplyContent("");
+                onSetReplyingTo(null);
+                onSetReplyContent(comment.id, "");
               }}
               className="text-xs border-gray-600 text-gray-300 hover:bg-gray-700"
             >
@@ -173,15 +155,75 @@ export function CommentSection({
       {comment.replies && comment.replies.length > 0 && (
         <div className="space-y-3">
           {comment.replies.map((reply) => (
-            <CommentItem key={reply.id} comment={reply} isReply={true} />
+            <CommentItem
+              key={reply.id}
+              comment={reply}
+              isReply={true}
+              replyingTo={replyingTo}
+              replyContents={replyContents}
+              onLikeComment={onLikeComment}
+              onSetReplyingTo={onSetReplyingTo}
+              onSetReplyContent={onSetReplyContent}
+              onSubmitReply={onSubmitReply}
+              formatTimeAgo={formatTimeAgo}
+            />
           ))}
         </div>
       )}
     </div>
   );
+}
+
+export function CommentSection({
+  comments,
+  onAddComment,
+  onLikeComment,
+  onReplyComment,
+  className
+}: CommentSectionProps) {
+  const [newComment, setNewComment] = useState("");
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyContents, setReplyContents] = useState<Record<string, string>>({});
+
+  const formatTimeAgo = useCallback((timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+    
+    if (diffMinutes < 60) {
+      return `${diffMinutes}m ago`;
+    } else if (diffMinutes < 1440) {
+      const diffHours = Math.ceil(diffMinutes / 60);
+      return `${diffHours}h ago`;
+    } else {
+      const diffDays = Math.ceil(diffMinutes / 1440);
+      return `${diffDays}d ago`;
+    }
+  }, []);
+
+  const handleSubmitComment = useCallback(() => {
+    if (newComment.trim()) {
+      onAddComment(newComment.trim());
+      setNewComment("");
+    }
+  }, [newComment, onAddComment]);
+
+  const handleSubmitReply = useCallback((commentId: string) => {
+    const replyContent = replyContents[commentId] || "";
+    if (replyContent.trim()) {
+      onReplyComment(commentId, replyContent.trim());
+      setReplyContents(prev => ({ ...prev, [commentId]: "" }));
+      setReplyingTo(null);
+    }
+  }, [replyContents, onReplyComment]);
+
+  const handleSetReplyContent = useCallback((commentId: string, content: string) => {
+    setReplyContents(prev => ({ ...prev, [commentId]: content }));
+  }, []);
 
   return (
-    <div className={cn("p-4 space-y-4 bg-gray-900/50", className)}>
+    <div className={cn("p-4 space-y-4", className)}>
       <h4 className="font-medium text-white">
         Comments ({comments.length})
       </h4>
@@ -214,7 +256,17 @@ export function CommentSection({
           </div>
         ) : (
           comments.map((comment) => (
-            <CommentItem key={comment.id} comment={comment} />
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              replyingTo={replyingTo}
+              replyContents={replyContents}
+              onLikeComment={onLikeComment}
+              onSetReplyingTo={setReplyingTo}
+              onSetReplyContent={handleSetReplyContent}
+              onSubmitReply={handleSubmitReply}
+              formatTimeAgo={formatTimeAgo}
+            />
           ))
         )}
       </div>
