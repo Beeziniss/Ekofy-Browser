@@ -16,6 +16,7 @@ import {
   LayoutDashboardIcon,
   // Music4Icon,
   LayoutPanelLeftIcon,
+  ClipboardClockIcon,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
@@ -53,6 +54,11 @@ const data = {
       name: "Service Packages",
       url: "/artist/studio/service-package",
       icon: LayoutPanelLeftIcon,
+    },
+    {
+      name: "Pending Requests",
+      url: "/artist/studio/pending-request",
+      icon: ClipboardClockIcon,
     }
   ],
 };
