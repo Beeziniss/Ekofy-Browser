@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Ellipsis, Heart, LinkIcon, ListPlus } from "lucide-react";
-import { useAudioStore, Track } from "@/store";
+import { useAudioStore } from "@/store";
 import {
   GraphQLTrack,
   convertGraphQLTracksToStore,
