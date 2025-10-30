@@ -52,7 +52,7 @@ const TrackUploadHeader = () => {
   };
 
   return (
-    <header className="bg-main-dark-bg fixed top-0 flex w-full items-center justify-between px-6 py-3">
+    <header className="bg-main-dark-bg fixed top-0 z-1000 flex w-full items-center justify-between px-6 py-3">
       <div className="flex items-center gap-x-2">
         <Image
           src={"/ekofy-logo-xs.svg"}

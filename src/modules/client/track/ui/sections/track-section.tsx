@@ -54,7 +54,7 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
     id: trackId,
     name: data?.tracks?.items?.[0]?.name || "Unknown Track",
     artist:
-      data?.tracks?.items?.[0]?.mainArtistsAsync?.items
+      data?.tracks?.items?.[0]?.mainArtists?.items
         ?.map((a) => a?.stageName)
         .filter(Boolean)
         .join(", ") || "Unknown Artist",
@@ -90,7 +90,7 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
             {data.tracks?.items?.[0]?.name}
           </h1>
           <p className="text-lg font-semibold">
-            {data.tracks?.items?.[0].mainArtistsAsync?.items?.[0]?.stageName}
+            {data.tracks?.items?.[0].mainArtists?.items?.[0]?.stageName}
           </p>
 
           <div className="bg-main-dark-bg-1 flex w-fit items-center gap-x-3 rounded-sm border-white/30 px-2 py-1">
@@ -113,7 +113,7 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
         <Button
           variant="ghost"
           size="iconXl"
-          className="text-main-white mt-auto duration-0 hover:brightness-90"
+          className="text-main-white mt-auto rounded-full duration-0 hover:brightness-90"
           onClick={handlePlayPauseClick}
         >
           {isCurrentTrack && globalIsPlaying ? (

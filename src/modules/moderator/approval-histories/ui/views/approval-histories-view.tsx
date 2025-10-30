@@ -11,7 +11,6 @@ export const ApprovalHistoriesListQuery = graphql(`
       items {
         id
         approvalType
-        actionByUserId
         actionAt
         action
         notes
@@ -38,7 +37,6 @@ export const ModeratorApprovalHistoryDetailQuery = graphql(`
       items {
         id
         approvalType
-        actionByUserId
         actionAt
         action
         notes

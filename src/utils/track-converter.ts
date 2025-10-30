@@ -7,8 +7,8 @@ export type GraphQLTrack = {
   name: string;
   coverImage: string;
   mainArtistIds: Array<string>;
-  mainArtistsAsync?: {
-    __typename?: "MainArtistsAsyncCollectionSegment";
+  mainArtists?: {
+    __typename?: "MainArtistsCollectionSegment";
     items?: Array<{
       __typename?: "Artist";
       id: string;
@@ -27,7 +27,7 @@ export const convertGraphQLTrackToStore = (
     id: gqlTrack.id,
     name: gqlTrack.name,
     artist:
-      gqlTrack.mainArtistsAsync?.items
+      gqlTrack.mainArtists?.items
         ?.map((a) => a?.stageName)
         .filter(Boolean)
         .join(", ") || "Unknown Artist",

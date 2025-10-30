@@ -1,11 +1,7 @@
-import React from 'react'
+"use client";
 
-const TrackApprovalPage = () => {
-  return (
-    <div>
-      This is Track Approval Page
-    </div>
-  )
+import { TrackApprovalView } from "@/modules/moderator/track-approval/ui/views/track-approval-view";
+
+export default function TrackApprovalPage() {
+  return <TrackApprovalView />;
 }
-
-export default TrackApprovalPage

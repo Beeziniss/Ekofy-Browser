@@ -31,7 +31,7 @@ type AdminLoginFormData = z.infer<typeof adminLoginSchema>;
 
 const AdminLoginFormSection = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { signIn, isLoading, error } = useAdminSignIn();
+  const { signIn, isLoading } = useAdminSignIn();
 
   const form = useForm<AdminLoginFormData>({
     resolver: zodResolver(adminLoginSchema),
@@ -62,14 +62,6 @@ const AdminLoginFormSection = () => {
           </div>
           <h2 className="text-4xl font-bold text-white mb-8">Welcome Back, Admin</h2>
         </div>
-
-         {/* Error Display */}
-        {error && (
-          <div className="mb-4 rounded-md border border-red-500 bg-red-900/50 px-4 py-3 text-sm text-red-200">
-            {error.message}
-          </div>
-        )}
-
 
         {/* Login Form */}
         <Form {...form}>

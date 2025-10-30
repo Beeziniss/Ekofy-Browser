@@ -20,11 +20,11 @@ export const ApprovalHistoryBasicInfo = ({ history }: ApprovalHistoryBasicInfoPr
   const getActionBadge = (action: string) => {
     switch (action) {
       case "APPROVED":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Approved</Badge>;
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">APPROVED</Badge>;
       case "REJECTED":
-        return <Badge variant="destructive">Rejected</Badge>;
+        return <Badge variant="destructive">REJECTED</Badge>;
       case "PENDING":
-        return <Badge variant="secondary">Pending</Badge>;
+        return <Badge variant="secondary">PENDING</Badge>;
       default:
         return <Badge variant="outline">{action}</Badge>;
     }

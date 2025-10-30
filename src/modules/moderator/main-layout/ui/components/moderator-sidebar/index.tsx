@@ -11,9 +11,12 @@ import {
   LayoutDashboardIcon,
   ShieldCheck,
   Flag,
-  UserCheck,
+  // UserCheck,
   UserRoundCheck,
   // Settings,
+  // LayoutPanelLeft,
+  AudioLines,
+  PackageCheck
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
@@ -35,7 +38,7 @@ const data = {
     {
       name: "Track Approval",
       url: "/moderator/track-approval",
-      icon: UserCheck,
+      icon: AudioLines,
     },
     {
       name: "Report Control",
@@ -56,6 +59,11 @@ const data = {
       name: "Approval Histories",
       url: "/moderator/approval-histories",
       icon: ShieldCheck,
+    },
+    {
+      name: "Approval Service Packages",
+      url: "/moderator/approval-service-packages",
+      icon: PackageCheck,
     }
   ],
 };

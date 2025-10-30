@@ -39,7 +39,7 @@ export default function RootLayout({
         <Toaster
           theme="dark"
           richColors
-          position="bottom-right"
+          position="bottom-center"
           offset={{
             bottom: 60,
             right: 12,

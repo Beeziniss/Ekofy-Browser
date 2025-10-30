@@ -31,7 +31,7 @@ type ModeratorLoginFormData = z.infer<typeof moderatorLoginSchema>;
 
 const ModeratorLoginFormSection = () => {
   const [showPassword, setShowPassword] = useState(false); 
-  const { signIn, isLoading, error } = useModeratorSignIn();
+  const { signIn, isLoading } = useModeratorSignIn();
 
   const form = useForm<ModeratorLoginFormData>({
     resolver: zodResolver(moderatorLoginSchema),
@@ -62,13 +62,6 @@ const ModeratorLoginFormSection = () => {
           </div>
           <h2 className="text-4xl font-bold text-white mb-8">Welcome Back, Moderator</h2>
         </div>
-
-      {/* Error Display */}
-        {error && (
-          <div className="mb-4 rounded-md border border-red-500 bg-red-900/50 px-4 py-3 text-sm text-red-200">
-            {error.message}
-          </div>
-        )}
 
 
         {/* Login Form */}

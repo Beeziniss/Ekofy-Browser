@@ -16,7 +16,7 @@ const ArtistLoginFormSection = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [customErrors, setCustomErrors] = useState<{ [key: string]: string }>({});
-  const { signIn, isLoading, error } = useArtistSignIn();
+  const { signIn, isLoading } = useArtistSignIn();
 
   // Custom validation function
   const validateField = (field: string, value: string) => {
@@ -88,13 +88,6 @@ const ArtistLoginFormSection = () => {
             Enter your email and password to access your artist account
           </p>
         </div>
-
-        {/* Error Display */}
-        {error && (
-          <div className="mb-4 rounded-md border border-red-500 bg-red-900/50 px-4 py-3 text-sm text-red-200">
-            {error.message}
-          </div>
-        )}
 
         {/* Login Form */}
         <form onSubmit={onSubmit} className="space-y-6">

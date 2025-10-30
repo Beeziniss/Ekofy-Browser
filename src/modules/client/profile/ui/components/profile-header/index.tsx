@@ -20,9 +20,6 @@ export default function ProfileHeader({
   onChangeAvatar,
   onChangeBackground,
 }: ProfileHeaderProps) {
-  // Prevent unused warning for optional prop currently not wired to any UI control
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  onChangeBackground;
   const initials = React.useMemo(() => {
     const parts = name.trim().split(" ");
     const letters = (parts[0]?.[0] || "").concat(parts[parts.length - 1]?.[0] || "");
@@ -34,10 +31,10 @@ export default function ProfileHeader({
     if (file) onChangeAvatar?.(file);
   };
 
-  // const handleBackgroundChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-  //   if (file) onChangeBackground?.(file);
-  // };
+  const handleBackgroundChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) onChangeBackground?.(file);
+  };
 
   return (
     <div className="w-full">
@@ -55,8 +52,8 @@ export default function ProfileHeader({
         
 
         {/* Edit background button */}
-        {/* <div className="absolute right-3 top-3 z-20">
-          <label htmlFor="profile-bg-upload">
+        {onChangeBackground ? (
+          <div className="absolute right-3 top-3 z-20">
             <input
               id="profile-bg-upload"
               type="file"
@@ -65,15 +62,18 @@ export default function ProfileHeader({
               onChange={handleBackgroundChange}
             />
             <Button
+              asChild
               type="button"
               variant="ghost"
               size="iconMd"
               className="rounded-full bg-black/40 text-white hover:bg-black/60"
             >
-              <ImagePlus className="size-5" />
+              <label htmlFor="profile-bg-upload" className="cursor-pointer">
+                <Camera className="size-5" />
+              </label>
             </Button>
-          </label>
-        </div> */}
+          </div>
+        ) : null}
 
   {/* Avatar and basic info overlay */}
   <div className="absolute left-4 top-1/2 z-20 -translate-y-1/2 px-2 md:left-6 md:px-0">
@@ -85,23 +85,24 @@ export default function ProfileHeader({
               </Avatar>
 
               {/* Edit avatar button */}
-              <label htmlFor="profile-avatar-upload" className="absolute -bottom-2 -right-2">
-                <input
-                  id="profile-avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarChange}
-                />
-                <Button
-                  type="button"
-                  size="iconSm"
-                  variant="secondary"
-                  className="rounded-full shadow-md"
-                >
+              <input
+                id="profile-avatar-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
+              />
+              <Button
+                asChild
+                type="button"
+                size="iconSm"
+                variant="secondary"
+                className="absolute -bottom-2 -right-2 rounded-full shadow-md"
+              >
+                <label htmlFor="profile-avatar-upload" className="cursor-pointer">
                   <Camera className="size-4" />
-                </Button>
-              </label>
+                </label>
+              </Button>
             </div>
 
             <div className=" pb-2 md:block">

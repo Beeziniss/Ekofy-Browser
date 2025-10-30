@@ -55,6 +55,7 @@ export function UserManagementSection() {
     mutationFn: async (data: CreateModeratorData) => {
       return await execute(CreateModeratorMutation, {
         createModeratorRequest: {
+          fullName: data.fullName,
           email: data.email,
           password: data.password,
         }
