@@ -5,12 +5,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisIcon, LinkIcon, PauseIcon, PlayIcon } from "lucide-react";
+import {
+  EllipsisIcon,
+  HeartIcon,
+  LinkIcon,
+  PauseIcon,
+  PlayIcon,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { usePlaylistPlayback } from "../../hooks/use-playlist-playback";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { playlistFavoriteMutationOptions } from "@/gql/options/client-mutation-options";
+import { useAuthStore } from "@/store";
 
 interface PlaylistCardProps {
   playlist: {
@@ -19,11 +28,15 @@ interface PlaylistCardProps {
     name: string;
     coverImage?: string | null | undefined;
     isPublic: boolean;
+    userId: string;
+    checkPlaylistInFavorite?: boolean;
   };
 }
 
 const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useAuthStore();
+  const queryClient = useQueryClient();
 
   // Use custom hook for playlist playback functionality
   const {
@@ -33,11 +46,60 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
     playlistTracks,
   } = usePlaylistPlayback(playlist.id);
 
+  // Check if current user is the owner of the playlist
+  const isOwnPlaylist = user?.userId === playlist.userId;
+
+  // State for favorite status with optimistic updates
+  const [isFavorited, setIsFavorited] = useState(
+    playlist.checkPlaylistInFavorite || false,
+  );
+
+  // Favorite playlist mutation
+  const { mutate: favoritePlaylist, isPending: isFavoriting } = useMutation({
+    ...playlistFavoriteMutationOptions,
+    onMutate: async () => {
+      // Optimistic update
+      setIsFavorited(!isFavorited);
+    },
+    onSuccess: () => {
+      // Invalidate queries to refetch updated data
+      queryClient.invalidateQueries({
+        queryKey: ["playlists-home"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["playlist-detail", playlist.id],
+      });
+      toast.success(
+        isFavorited
+          ? "Added to your favorites!"
+          : "Removed from your favorites!",
+      );
+    },
+    onError: () => {
+      // Revert optimistic update on error
+      setIsFavorited(isFavorited);
+      toast.error("Failed to update favorite status. Please try again.");
+    },
+  });
+
   // Handle play/pause click for playlist
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     await handlePlayPause();
+  };
+
+  // Handle favorite button click
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isFavoriting) return; // Prevent multiple clicks
+
+    favoritePlaylist({
+      playlistId: playlist.id,
+      isAdding: !isFavorited,
+    });
   };
 
   const onCopy = (e: React.MouseEvent) => {
@@ -77,6 +139,22 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
               )}
             </Button>
           )}
+
+          {playlist.isPublic && !isOwnPlaylist && (
+            <Button
+              onClick={handleFavoriteClick}
+              className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity group-hover:opacity-100 ${isMenuOpen ? "opacity-100" : "opacity-0"}`}
+            >
+              <HeartIcon
+                className={`size-5 ${
+                  isFavorited
+                    ? "text-main-purple fill-main-purple"
+                    : "text-main-dark-bg"
+                }`}
+              />
+            </Button>
+          )}
+
           {playlist.isPublic && (
             <DropdownMenu onOpenChange={setIsMenuOpen}>
               <DropdownMenuTrigger asChild>

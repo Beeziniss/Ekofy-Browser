@@ -113,7 +113,7 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
         <Button
           variant="ghost"
           size="iconXl"
-          className="text-main-white mt-auto duration-0 hover:brightness-90"
+          className="text-main-white mt-auto rounded-full duration-0 hover:brightness-90"
           onClick={handlePlayPauseClick}
         >
           {isCurrentTrack && globalIsPlaying ? (
