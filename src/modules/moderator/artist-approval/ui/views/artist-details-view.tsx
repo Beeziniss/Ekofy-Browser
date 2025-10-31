@@ -9,35 +9,33 @@ interface ArtistDetailsViewProps {
 }
 
 export const PendingArtistRegistrationsDetailQuery = graphql(`
-  query PendingArtistRegistrationsDetail($where: PaginatedDataOfPendingArtistRegistrationResponseFilterInput) {
-    pendingArtistRegistrations(where: $where) {
-      items {
-        email
+  query PendingArtistRegistrationById($artistRegistrationId: String!) {
+    pendingArtistRegistrationById(artistRegistrationId: $artistRegistrationId) {
+      email
+      fullName
+      stageName
+      artistType
+      gender
+      birthDate
+      phoneNumber
+      avatarImage
+      id
+      members {
         fullName
-        stageName
-        artistType
-        gender
-        birthDate
+        email
         phoneNumber
-        avatarImage
-        id
-        members {
-          fullName
-          email
-          phoneNumber
-          isLeader
-          gender
-        }
-        requestedAt
-        timeToLive
-        identityCardNumber
-        identityCardDateOfBirth
-        identityCardFullName
-        placeOfOrigin
-        placeOfResidence
-        frontImageUrl
-        backImageUrl
+        isLeader
+        gender
       }
+      requestedAt
+      timeToLive
+      identityCardNumber
+      identityCardDateOfBirth
+      identityCardFullName
+      placeOfOrigin
+      placeOfResidence
+      frontImageUrl
+      backImageUrl
     }
   }
 `)

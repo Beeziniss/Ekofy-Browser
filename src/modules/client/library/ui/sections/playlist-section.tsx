@@ -43,7 +43,7 @@ const PlaylistSection = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-6 flex-wrap gap-8">
+      <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {debouncedSearchQuery === "" && <PlaylistCreate />}
 
         <PlaylistList data={data} isPending={isPending} />

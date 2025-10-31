@@ -6,7 +6,7 @@ process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
 
 const config: CodegenConfig = {
   schema: process.env.NEXT_PUBLIC_URL_ENDPOINT + "/graphql",
-  documents: ["src/**/*.tsx"],
+  documents: ["src/**/*.tsx", "src/**/*.ts"],
   ignoreNoDocuments: true,
   generates: {
     "./src/gql/": {
