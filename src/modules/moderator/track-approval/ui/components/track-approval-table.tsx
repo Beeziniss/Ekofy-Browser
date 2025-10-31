@@ -32,7 +32,6 @@ import {
   Eye, 
   CheckCircle, 
   XCircle, 
-  Download,
   Music,
   User
 } from "lucide-react";
@@ -280,6 +279,7 @@ export function TrackApprovalTable({
                     trackName={item.track.name}
                     trackArtist={item.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
                     trackCoverImage={item.track.coverImage}
+                    uploadId={item.id} // Pass uploadId for audio player
                     size="sm"
                   />
                 </TableCell>
@@ -354,10 +354,6 @@ export function TrackApprovalTable({
                       <DropdownMenuItem onClick={() => onViewDetailAction(item.id)}>
                         <Eye className="mr-2 h-4 w-4" />
                         View Details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Download className="mr-2 h-4 w-4" />
-                        Download Original
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 

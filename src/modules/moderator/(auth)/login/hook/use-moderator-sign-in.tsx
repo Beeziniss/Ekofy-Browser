@@ -60,7 +60,7 @@ const useModeratorSignIn = () => {
     },
     onError: (error) => {
       console.error("Moderator sign-in error:", error);
-      toast.error(error.message);
+      toast.error("Invalid credentials. Please try again.");
       setAuthenticated(false);
     },
   });

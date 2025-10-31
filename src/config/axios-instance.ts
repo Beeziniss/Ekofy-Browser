@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAccessTokenFromLocalStorage } from "@/utils/auth-utils";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_URL_ENDPOINT,
+  baseURL: process.env.NEXT_PUBLIC_URL_ENDPOINT!,
   withCredentials: true,
 });
 

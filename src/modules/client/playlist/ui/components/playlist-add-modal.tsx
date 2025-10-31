@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { SearchIcon, PlusIcon, LockIcon, CheckIcon } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/store";
 
 interface PlaylistAddModalProps {
   open: boolean;
@@ -38,10 +39,13 @@ const PlaylistAddModal = ({
   trackId,
   trigger,
 }: PlaylistAddModalProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
   const queryClient = useQueryClient();
+  const [searchQuery, setSearchQuery] = useState("");
+  const { user } = useAuthStore();
 
-  const { data: playlistsData, isLoading } = useQuery(playlistBriefOptions);
+  const { data: playlistsData, isLoading } = useQuery(
+    playlistBriefOptions(user!.userId!),
+  );
   const { data: trackInPlaylistsData } = useQuery(
     checkTrackInPlaylistOptions(trackId),
   );

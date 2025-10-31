@@ -1,112 +1,28 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Calendar, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { TrackUploadRequest } from "@/types/approval-track";
 
 interface TrackDetailSidebarProps {
   track: TrackUploadRequest;
   onDownloadOriginal: () => void;
-  onApprove?: () => void;
-  onReject?: () => void;
-  isApproving?: boolean;
-  isRejecting?: boolean;
+  createdByUser?: {
+    id: string;
+    email: string;
+    fullName: string;
+    role: string;
+  } | null;
+  isLoadingUser?: boolean;
 }
 
 export function TrackDetailSidebar({ 
   track, 
-  onDownloadOriginal, 
-  onApprove, 
-  onReject, 
-  isApproving = false, 
-  isRejecting = false 
+  createdByUser,
+  isLoadingUser
 }: TrackDetailSidebarProps) {
   return (
     <div className="space-y-4">
-      {/* Status Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 text-orange-500" />
-            Review Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center">
-            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-              Pending Review
-            </Badge>
-          </div>
-          <p className="text-sm text-muted-foreground mt-2 text-center">
-            This track is awaiting moderator approval
-          </p>
-        </CardContent>
-      </Card>
-
-      {/* Review Actions */}
-      {(onApprove || onReject) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Review Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {onApprove && (
-              <Button 
-                className="w-full justify-start bg-green-600 hover:bg-green-700 text-white"
-                onClick={onApprove}
-                disabled={isApproving || isRejecting}
-              >
-                <CheckCircle className="mr-2 h-4 w-4" />
-                {isApproving ? "Approving..." : "Approve Track"}
-              </Button>
-            )}
-            {onReject && (
-              <Button 
-                variant="outline"
-                className="w-full justify-start text-red-600 border-red-600 hover:bg-red-50"
-                onClick={onReject}
-                disabled={isApproving || isRejecting}
-              >
-                <XCircle className="mr-2 h-4 w-4" />
-                {isRejecting ? "Rejecting..." : "Reject Track"}
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Actions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <Button 
-            variant="outline" 
-            className="w-full justify-start"
-            onClick={onDownloadOriginal}
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Download Original
-          </Button>
-          {track.track.legalDocuments && track.track.legalDocuments.length > 0 && (
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
-              onClick={() => {
-                const element = document.getElementById('legal-documents');
-                element?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              View Legal Documents
-            </Button>
-          )}
-        </CardContent>
-      </Card>
-
       {/* Track Details */}
       <Card>
         <CardHeader>
@@ -119,7 +35,7 @@ export function TrackDetailSidebar({
           </div>
           <div className="text-sm">
             <span className="font-medium">Explicit: </span>
-            <span className={track.track.isExplicit ? "text-red-600" : "text-green-600"}>
+            <span>
               {track.track.isExplicit ? "Yes" : "No"}
             </span>
           </div>
@@ -135,12 +51,6 @@ export function TrackDetailSidebar({
               {track.track.mainArtistIds?.length || 0} artists
             </span>
           </div>
-          <div className="text-sm">
-            <span className="font-medium">Featured Artists: </span>
-            <span className="text-muted-foreground">
-              {track.track.featuredArtistIds?.length || 0} artists
-            </span>
-          </div>
         </CardContent>
       </Card>
 
@@ -149,7 +59,6 @@ export function TrackDetailSidebar({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
               Release Information
             </CardTitle>
           </CardHeader>
@@ -190,7 +99,6 @@ export function TrackDetailSidebar({
       <Card>
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
-            <Clock className="h-4 w-4" />
             Request Information
           </CardTitle>
         </CardHeader>
@@ -203,7 +111,18 @@ export function TrackDetailSidebar({
           </div>
           <div className="text-sm">
             <span className="font-medium">Created by: </span>
-            <span className="text-muted-foreground">{track.createdBy}</span>
+            {isLoadingUser ? (
+              <span className="text-muted-foreground">Loading...</span>
+            ) : createdByUser ? (
+              <div className="text-muted-foreground">
+                <div>{createdByUser.fullName}</div>
+                <Badge variant="outline" className="text-xs mt-1">
+                  {createdByUser.role}
+                </Badge>
+              </div>
+            ) : (
+              <span className="text-muted-foreground">{track.createdBy}</span>
+            )}
           </div>
         </CardContent>
       </Card>
