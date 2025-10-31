@@ -1624,7 +1624,7 @@ const TrackUploadMetadataSection = () => {
                                       setWorkSplits(newSplits);
                                     }}
                                     placeholder="Select user"
-                                    isArtist={true}
+                                    // isArtist={true}
                                   />
                                   <Select
                                     value={split.artistRole}
@@ -1908,7 +1908,7 @@ const TrackUploadMetadataSection = () => {
                                       setRecordingSplits(newSplits);
                                     }}
                                     placeholder="Select user"
-                                    isArtist={true}
+                                    // isArtist={true}
                                   />
                                   <Select
                                     value={split.artistRole}
