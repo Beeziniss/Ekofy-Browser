@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useListenerTransactions } from "@/modules/client/profile/hooks/use-listener-transactions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ export default function PaymentTransactionsTable({ userId, pageSize = 10 }: Paym
   const totalCount = data?.transactions?.totalCount ?? 0;
   const hasNext = !!data?.transactions?.pageInfo?.hasNextPage;
   const hasPrev = !!data?.transactions?.pageInfo?.hasPreviousPage;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
   return (
     <div className="space-y-4">
@@ -53,16 +55,17 @@ export default function PaymentTransactionsTable({ userId, pageSize = 10 }: Paym
               <TableHead>Method</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Transaction</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5}>Loading...</TableCell>
+                <TableCell colSpan={6}>Loading...</TableCell>
               </TableRow>
             ) : isError ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-red-500">Failed to load transactions.</TableCell>
+                <TableCell colSpan={6} className="text-red-500">Failed to load transactions.</TableCell>
               </TableRow>
             ) : items && items.length > 0 ? (
               items.map((tx, idx) => (
@@ -80,17 +83,28 @@ export default function PaymentTransactionsTable({ userId, pageSize = 10 }: Paym
                   </TableCell>
                   <TableCell>{tx?.paymentStatus ? statusBadge(tx.paymentStatus) : "-"}</TableCell>
                   <TableCell>
-                    {tx?.stripePaymentId
-                      ? `#${tx.stripePaymentId.slice(-8)}`
-                      : tx?.id
-                      ? `#${tx.id.slice(-8)}`
-                      : "-"}
+                    {tx?.stripePaymentId || tx?.id ? (
+                      <Link href={`/profile/payment-history/${tx?.stripePaymentId || tx?.id}`} className="text-primary hover:underline">
+                        #{(tx?.stripePaymentId || tx?.id)!.slice(-8)}
+                      </Link>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {tx?.stripePaymentId || tx?.id ? (
+                      <Link href={`/profile/payment-history/${tx?.stripePaymentId || tx?.id}`} className="text-primary hover:underline">
+                        View
+                      </Link>
+                    ) : (
+                      "-"
+                    )}
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5}>No transactions found.</TableCell>
+                <TableCell colSpan={6}>No transactions found.</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -98,9 +112,7 @@ export default function PaymentTransactionsTable({ userId, pageSize = 10 }: Paym
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, totalCount)} of {totalCount}
-        </div>
+        <div className="text-sm text-muted-foreground">Page {page} of {totalPages}</div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={!hasPrev}>
             Previous

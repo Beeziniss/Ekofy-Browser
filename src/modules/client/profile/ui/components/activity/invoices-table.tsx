@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useListenerInvoices } from "@/modules/client/profile/hooks/use-listener-invoices";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,7 @@ export default function InvoicesTable({ userId, pageSize = 10 }: InvoicesTablePr
   const totalCount = data?.invoices?.totalCount ?? 0;
   const hasNext = !!data?.invoices?.pageInfo?.hasNextPage;
   const hasPrev = !!data?.invoices?.pageInfo?.hasPreviousPage;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
   return (
     <div className="space-y-4">
@@ -39,16 +41,17 @@ export default function InvoicesTable({ userId, pageSize = 10 }: InvoicesTablePr
               <TableHead>From</TableHead>
               <TableHead>Invoice</TableHead>
               <TableHead>Transaction</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6}>Loading...</TableCell>
+                <TableCell colSpan={7}>Loading...</TableCell>
               </TableRow>
             ) : isError ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-red-500">Failed to load invoices.</TableCell>
+                <TableCell colSpan={7} className="text-red-500">Failed to load invoices.</TableCell>
               </TableRow>
             ) : items && items.length > 0 ? (
               items.map((inv, idx) => (
@@ -61,13 +64,38 @@ export default function InvoicesTable({ userId, pageSize = 10 }: InvoicesTablePr
                   </TableCell>
                   <TableCell>{inv?.to || inv?.email || "-"}</TableCell>
                   <TableCell>{inv?.from || "-"}</TableCell>
-                  <TableCell>{inv?.id ? `#${inv.id.slice(-8)}` : "-"}</TableCell>
-                  <TableCell>{inv?.paymentTransactionId ? `#${inv.paymentTransactionId.slice(-8)}` : "-"}</TableCell>
+                  <TableCell>
+                    {inv?.id ? (
+                      <Link href={`/profile/invoices/${inv.id}`} className="text-primary hover:underline">
+                        #{inv.id.slice(-8)}
+                      </Link>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {inv?.paymentTransactionId ? (
+                      <Link href={`/profile/payment-history/${inv.paymentTransactionId}`} className="text-primary hover:underline">
+                        #{inv.paymentTransactionId.slice(-8)}
+                      </Link>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {inv?.id ? (
+                      <Link href={`/profile/invoices/${inv.id}`} className="text-primary hover:underline">
+                        View
+                      </Link>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6}>No invoices found.</TableCell>
+                <TableCell colSpan={7}>No invoices found.</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -75,9 +103,7 @@ export default function InvoicesTable({ userId, pageSize = 10 }: InvoicesTablePr
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, totalCount)} of {totalCount}
-        </div>
+        <div className="text-sm text-muted-foreground">Page {page} of {totalPages}</div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={!hasPrev}>
             Previous

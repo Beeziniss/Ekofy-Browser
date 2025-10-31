@@ -1,10 +1,12 @@
 "use client";
 
 import React, { Suspense } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
 import PaymentTransactionsTable from "@/modules/client/profile/ui/components/activity/payment-transactions-table";
+import { Button } from "@/components/ui/button";
 
 export default function PaymentHistoryPage() {
   const router = useRouter();
@@ -27,10 +29,13 @@ export default function PaymentHistoryPage() {
   return (
     <Suspense fallback={<div className="p-4">Loading payment history…</div>}>
       <div className="mx-auto w-full max-w-6xl px-4 md:px-6 py-6">
-        <div className="mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Payment History</h1>
-          <p className="text-sm text-muted-foreground">Your payments in reverse chronological order.</p>
+          <Button variant="ghost" asChild>
+            <Link href="/profile">&larr; Back to Profile</Link>
+          </Button>
         </div>
+        <p className="text-sm text-muted-foreground mb-2">All payments you made on Ekofy.</p>
         <PaymentTransactionsTable userId={user!.userId} />
       </div>
     </Suspense>
