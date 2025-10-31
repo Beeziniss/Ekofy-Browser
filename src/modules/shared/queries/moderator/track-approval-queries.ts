@@ -1,5 +1,3 @@
-"use client";
-
 import { graphql } from "@/gql";
 
 // Track approval GraphQL queries using proper graphql() function
