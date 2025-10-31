@@ -1,11 +1,9 @@
+"use client";
+
 import React from "react";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemTitle,
-} from "@/components/ui/item";
+import Link from "next/link";
 import { ChevronRightIcon } from "lucide-react";
+import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item";
 
 const ActivitySection = () => {
   return (
@@ -14,14 +12,28 @@ const ActivitySection = () => {
         <h2 className="text-xl font-bold">My Activity</h2>
       </div>
       <div className="flex flex-col gap-6 pt-8">
-        <Item variant="muted">
-          <ItemContent>
-            <ItemTitle>Payment History</ItemTitle>
-          </ItemContent>
-          <ItemActions>
-            <ChevronRightIcon className="size-8" />
-          </ItemActions>
+        <Item asChild variant="muted">
+          <Link href="/profile/payment-history" className="no-underline">
+            <ItemContent>
+              <ItemTitle>Payment History</ItemTitle>
+            </ItemContent>
+            <ItemActions>
+              <ChevronRightIcon className="size-8" />
+            </ItemActions>
+          </Link>
         </Item>
+
+        <Item asChild variant="muted">
+          <Link href="/profile/invoices" className="no-underline">
+            <ItemContent>
+              <ItemTitle>Invoices</ItemTitle>
+            </ItemContent>
+            <ItemActions>
+              <ChevronRightIcon className="size-8" />
+            </ItemActions>
+          </Link>
+        </Item>
+
         <Item variant="muted">
           <ItemContent>
             <ItemTitle>Order History</ItemTitle>

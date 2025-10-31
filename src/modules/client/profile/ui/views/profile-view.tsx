@@ -3,7 +3,7 @@
 import ProfileHeader from "../components/profile-header";
 import DetailView from "./detail-view";
 import HelpCard from "../components/help-item";
-import { useClientProfile } from "../../hook/use-client-profile";
+import { useClientProfile } from "../../hooks/use-client-profile";
 import * as React from "react";
 import { useAuthStore } from "@/store";
 import { useRouter } from "next/navigation";
@@ -25,8 +25,7 @@ export default function ProfileView() {
     avatarUrl: rest.data?.avatarImage || "",
     backgroundUrl: rest.data?.bannerImage || "/image-login.png",
   };
-  // With Suspense + server prefetch via HydrationBoundary, we don't need a mounted guard
-
+  
   const handleAvatar = (file: File) => {
     console.log("Avatar chọn:", file.name);
   };

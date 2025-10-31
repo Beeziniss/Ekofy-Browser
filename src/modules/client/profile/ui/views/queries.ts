@@ -7,6 +7,11 @@ import type {
   SubscriptionTier,
   SubscriptionStatus,
   UpdateListenerRequestInput,
+  PaymentTransactionFilterInput,
+  PaymentTransactionSortInput,
+  InvoiceFilterInput,
+  InvoiceSortInput,
+  PaymentTransactionStatus,
 } from "@/gql/graphql";
 
 // Raw typed query string to avoid relying on codegen's graphql() union at dev-time.
@@ -98,4 +103,94 @@ export const UpdateListenerProfileMutation = `
 ` as unknown as TypedDocumentString<
   { updateListenerProfile: boolean },
   { updateListenerRequest: UpdateListenerRequestInput }
+>;
+
+// Payment Transactions list for a listener (by userId)
+export const GetListenerTransactionsQuery = `
+  query GetListenerTransactions($where: PaymentTransactionFilterInput, $order: [PaymentTransactionSortInput!], $skip: Int, $take: Int) {
+    transactions(where: $where, order: $order, skip: $skip, take: $take) {
+      totalCount
+      items {
+        id
+        amount
+        currency
+        createdAt
+        paymentStatus
+        stripePaymentMethod
+        stripePaymentId
+      }
+      pageInfo { hasNextPage hasPreviousPage }
+    }
+  }
+` as unknown as TypedDocumentString<
+  {
+    transactions?: {
+      totalCount: number;
+      pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
+      items?: Array<
+        | {
+            id: string;
+            amount: number;
+            currency: string;
+            createdAt: Scalars['DateTime']['output'];
+            paymentStatus: PaymentTransactionStatus;
+            stripePaymentMethod: string[];
+            stripePaymentId?: string | null;
+          }
+        | null
+      > | null;
+    } | null;
+  },
+  {
+    where?: PaymentTransactionFilterInput;
+    order?: PaymentTransactionSortInput[];
+    skip?: number;
+    take?: number;
+  }
+>;
+
+// Invoices list for a listener (by userId)
+export const GetListenerInvoicesQuery = `
+  query GetListenerInvoices($where: InvoiceFilterInput, $order: [InvoiceSortInput!], $skip: Int, $take: Int) {
+    invoices(where: $where, order: $order, skip: $skip, take: $take) {
+      totalCount
+      items {
+        id
+        amount
+        currency
+        email
+        to
+        from
+        paidAt
+        paymentTransactionId
+      }
+      pageInfo { hasNextPage hasPreviousPage }
+    }
+  }
+` as unknown as TypedDocumentString<
+  {
+    invoices?: {
+      totalCount: number;
+      pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
+      items?: Array<
+        | {
+            id: string;
+            amount: number;
+            currency: string;
+            email: string;
+            to: string;
+            from: string;
+            paidAt: Scalars['DateTime']['output'];
+            paymentTransactionId: string;
+          }
+        | null
+      > | null;
+    } | null;
+  },
+  {
+    where?: InvoiceFilterInput;
+    order?: InvoiceSortInput[];
+    skip?: number;
+    take?: number;
+  }
 >;
