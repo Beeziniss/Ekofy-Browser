@@ -22,8 +22,19 @@ export const ArtistQuery = graphql(`
         userId
         stageName
         avatarImage
+        bannerImage
+        biography
+        email
         user {
           fullName
+          checkUserFollowing
+        }
+        followerCount
+        categoryIds
+        categories {
+          items {
+            name
+          }
         }
       }
     }

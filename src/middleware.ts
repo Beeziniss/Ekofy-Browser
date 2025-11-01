@@ -23,11 +23,21 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Allow public artist listing/detail pages under /artists (plural) to be accessible
+  // (these should be public pages for listeners/guests)
+  if (pathname === "/artists" || pathname.startsWith("/artists/")) {
+    return NextResponse.next();
+  }
+
   // Define protected routes and their required roles (excluding login pages)
+  // IMPORTANT: the artist regex is written so it only matches the singular "/artist"
+  // segment (e.g. /artist/studio, /artist, etc.) and will NOT match "/artists/..."
   const roleBasedRoutes = {
     admin: /^\/admin(?!\/login)/,
     moderator: /^\/moderator(?!\/login)/,
-    artist: /^\/artist(?!\/(login|sign-up))/,
+    // require that "/artist" is followed by either a slash or end-of-string,
+    // and exclude "/artist/login" and "/artist/sign-up"
+    artist: /^\/artist(\/(?!login|sign-up).*)?$/,
   };
 
   // Check if current path matches any protected route

@@ -158,7 +158,7 @@ export const listenerOptions = (userId: string, listenerId: string) =>
     enabled: !!listenerId,
   });
 
-export const artistOptions = (userId: string, artistId: string) =>
+export const artistOptions = (userId: string, artistId?: string) =>
   queryOptions({
     queryKey: ["artist", userId],
     queryFn: async () => await execute(ArtistQuery, { userId }),

@@ -362,7 +362,7 @@ const TrackOwnerSectionSuspense = ({
         <div className="flex items-center gap-x-6">
           <div className="flex flex-col gap-y-1">
             <Link
-              href={"#"}
+              href={`/artists/${trackData?.mainArtists?.items?.[0]?.userId}`}
               className="text-main-white hover:text-main-purple text-sm font-bold transition-colors"
             >
               {data.tracks?.items?.[0]?.mainArtists?.items?.[0]?.stageName ||
