@@ -5,7 +5,7 @@ import { RequestHubLayout } from "../layout";
 import { CreateRequestSection, ViewRequestSection } from "../section";
 import { RequestDetailView } from "../component";
 import { RequestHubItem, RequestHubMode, CreateRequestData } from "@/types/request-hub";
-
+import { useRouter } from "next/navigation";
 // Mock data theo định dạng mới
 const mockRequests: RequestHubItem[] = [
   {
@@ -123,7 +123,7 @@ export function RequestHubView() {
   const [selectedRequest, setSelectedRequest] = useState<RequestHubItem | null>(null);
   const [isLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-
+  const router = useRouter();
   // Filter requests based on search
   const filteredRequests = requests.filter(request =>
     request.title.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -138,7 +138,7 @@ export function RequestHubView() {
 
   const handleBrowseArtists = () => {
     // Navigate to artists page
-    console.log('Browse artists');
+    router.push('/hire-artists');
   };
 
   const handleViewDetails = (id: string) => {

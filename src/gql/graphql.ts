@@ -23,6 +23,8 @@ export type Scalars = {
   /** Polymorphic scalar for String, Int, Long, Double, Decimal, Boolean, DateTime, Object, Array. */
   EntitlementValue: { input: any; output: any; }
   JSON: { input: any; output: any; }
+  /** The `LocalDate` scalar type represents a ISO date string, represented as UTF-8 character sequences YYYY-MM-DD. The scalar follows the specification defined in RFC3339 */
+  LocalDate: { input: any; output: any; }
   /** The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1. */
   Long: { input: any; output: any; }
   /** The `TimeSpan` scalar represents an ISO-8601 compliant duration type. */
@@ -2037,6 +2039,7 @@ export type MutationInitialization = {
   approveTrackUploadRequest: Scalars['Boolean']['output'];
   assignReportToModerator: Scalars['Boolean']['output'];
   banUser: Scalars['Boolean']['output'];
+  blockRequest: Scalars['Boolean']['output'];
   cancelSubscriptionAtPeriodEnd: Scalars['Boolean']['output'];
   changeArtistPackageStatus: Scalars['Boolean']['output'];
   convertToHls: Scalars['String']['output'];
@@ -2146,6 +2149,11 @@ export type MutationInitializationAssignReportToModeratorArgs = {
 
 export type MutationInitializationBanUserArgs = {
   targetUserId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationBlockRequestArgs = {
+  requestId: Scalars['String']['input'];
 };
 
 
@@ -2961,12 +2969,14 @@ export type QueryInitialization = {
   queryTracks: Array<QueryAudioFingerprintResponse>;
   recordings?: Maybe<RecordingsCollectionSegment>;
   reports?: Maybe<ReportsCollectionSegment>;
+  requestById?: Maybe<RequestHub>;
   requests: Array<RequestHub>;
   royaltyPolicies?: Maybe<RoyaltyPoliciesCollectionSegment>;
   royaltyReports?: Maybe<RoyaltyReportsCollectionSegment>;
   searchArtists?: Maybe<SearchArtistsCollectionSegment>;
   searchListeners?: Maybe<SearchListenersCollectionSegment>;
   searchPlaylists?: Maybe<SearchPlaylistsCollectionSegment>;
+  searchRequests: Array<RequestHub>;
   searchTracks?: Maybe<SearchTracksCollectionSegment>;
   subscriptionPlans?: Maybe<SubscriptionPlansCollectionSegment>;
   subscriptions?: Maybe<SubscriptionsCollectionSegment>;
@@ -3193,6 +3203,11 @@ export type QueryInitializationReportsArgs = {
 };
 
 
+export type QueryInitializationRequestByIdArgs = {
+  requestId: Scalars['String']['input'];
+};
+
+
 export type QueryInitializationRoyaltyPoliciesArgs = {
   order?: InputMaybe<Array<RoyaltyPolicySortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -3233,6 +3248,11 @@ export type QueryInitializationSearchPlaylistsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<PlaylistFilterInput>;
+};
+
+
+export type QueryInitializationSearchRequestsArgs = {
+  searchTerm: Scalars['String']['input'];
 };
 
 
@@ -3616,30 +3636,41 @@ export type ReportsCollectionSegment = {
 };
 
 export type RequestCreatingRequestInput = {
-  attachments?: InputMaybe<Array<Scalars['String']['input']>>;
-  description: Scalars['String']['input'];
+  budget: Scalars['Decimal']['input'];
+  deadline: Scalars['LocalDate']['input'];
+  detailDescription: Scalars['String']['input'];
+  summary: Scalars['String']['input'];
   title: Scalars['String']['input'];
 };
 
 export type RequestHub = {
   __typename?: 'RequestHub';
-  attachments?: Maybe<Array<Scalars['String']['output']>>;
+  budget: Scalars['Decimal']['output'];
   createdAt: Scalars['DateTime']['output'];
-  description?: Maybe<Scalars['String']['output']>;
+  deadline: Scalars['LocalDate']['output'];
+  detailDescription: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  isClosed: Scalars['Boolean']['output'];
-  isDeleted: Scalars['Boolean']['output'];
-  isVisible: Scalars['Boolean']['output'];
+  requestUserId: Scalars['String']['output'];
+  status: RequestStatus;
+  summary: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export enum RequestStatus {
+  Blocked = 'BLOCKED',
+  Closed = 'CLOSED',
+  Deleted = 'DELETED',
+  Open = 'OPEN'
+}
+
 export type RequestUpdatingRequestInput = {
-  attachments?: InputMaybe<Array<Scalars['String']['input']>>;
-  description?: InputMaybe<Scalars['String']['input']>;
+  budget?: InputMaybe<Scalars['Decimal']['input']>;
+  deadline?: InputMaybe<Scalars['LocalDate']['input']>;
+  detailDescription?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
-  isClosed?: InputMaybe<Scalars['Boolean']['input']>;
-  isDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  status?: InputMaybe<RequestStatus>;
+  summary?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
