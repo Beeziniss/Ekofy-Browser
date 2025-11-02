@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MoreHorizontal, Plus, Heart, Share, Flag } from 'lucide-react';
+import { MoreHorizontal, Plus, Heart, Share, Flag, Eye } from 'lucide-react';
+import { SearchArtistItem, SearchPlaylistItem } from '@/types/search';
+import { useRouter } from 'next/navigation';
 
 interface GenericActionMenuProps {
-  item: any;
+  item: SearchArtistItem | SearchPlaylistItem;
   type: 'artist' | 'playlist' | 'album';
   className?: string;
 }
@@ -17,7 +19,7 @@ export const GenericActionMenu: React.FC<GenericActionMenuProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState<'right' | 'left'>('right');
   const menuRef = useRef<HTMLDivElement>(null);
-
+  const router = useRouter();
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -102,6 +104,14 @@ export const GenericActionMenu: React.FC<GenericActionMenuProps> = ({
             icon: Plus,
             label: 'Add to Your Library',
             action: () => console.log('Add playlist to library', item),
+          },
+          {
+            icon: Eye,
+            label: 'View Details',
+            action: () => {
+              router.push(`/playlists/${item.id}`);
+              setIsMenuOpen(false);
+            },
           },
           ...commonItems,
         ];

@@ -8,17 +8,16 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
 import { toast } from 'sonner';
+import { ArtistOTPData, ArtistSignUpSectionProps } from '@/types/artist_type';
 
-interface ArtistOTPVerificationSectionProps {
-  onNext: (data?: any) => void;
+type ArtistOTPVerificationSectionProps = ArtistSignUpSectionProps<ArtistOTPData> & {
   onBack: () => void;
-  initialData?: {
-    otp: string[];
-  };
-}
+};
 
 const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTPVerificationSectionProps) => {
-  const [otp, setOtp] = useState(initialData?.otp || ['', '', '', '', '', '']);
+  const [otp, setOtp] = useState<string[]>(
+    Array.isArray(initialData?.otp) ? initialData.otp : ['', '', '', '', '', '']
+  );
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   // Store and hooks
@@ -61,7 +60,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
     const otpCode = otp.join('');
     
     if (otpCode.length !== 6) {
-      toast.error('Vui lòng nhập đầy đủ mã OTP 6 số');
+      toast.error('Please enter a complete 6-digit OTP code');
       return;
     }
     
@@ -69,8 +68,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
       // Update OTP in store
       completeOTPVerification({ otp: otpCode });
       
-      console.log("🎉 OTP Verification completed successfully!");
-      toast.success("Xác thực OTP thành công! Đăng ký hoàn tất.");
+      toast.success("OTP verification successful! Registration completed.");
       
       // Call onNext to trigger final navigation
       onNext({ otp: otpCode });
@@ -79,7 +77,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+        toast.error("An error occurred. Please try again.");
       }
     }
   };
@@ -173,7 +171,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
         {/* Help Text */}
         <div className="text-center mt-4">
           <p className="text-gray-400 text-xs">
-            Didn't receive the code? Check your spam folder or{' '}
+            Did not receive the code? Check your spam folder or{' '}
             <button className="text-blue-400 hover:text-blue-300">
               change email address
             </button>

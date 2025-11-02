@@ -22,8 +22,8 @@ import {
 import useAdminSignIn from '../../hook/use-admin-sign-in';
 
 const adminLoginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email("Please enter a valid email address").max(50, "Email must be less than 50 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(50, "Password must be less than 50 characters"),
   rememberMe: z.boolean(),
 });
 
@@ -31,7 +31,7 @@ type AdminLoginFormData = z.infer<typeof adminLoginSchema>;
 
 const AdminLoginFormSection = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { signIn, isLoading, error } = useAdminSignIn();
+  const { signIn, isLoading } = useAdminSignIn();
 
   const form = useForm<AdminLoginFormData>({
     resolver: zodResolver(adminLoginSchema),
@@ -63,14 +63,6 @@ const AdminLoginFormSection = () => {
           <h2 className="text-4xl font-bold text-white mb-8">Welcome Back, Admin</h2>
         </div>
 
-         {/* Error Display */}
-        {error && (
-          <div className="mb-4 rounded-md border border-red-500 bg-red-900/50 px-4 py-3 text-sm text-red-200">
-            {error.message}
-          </div>
-        )}
-
-
         {/* Login Form */}
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -89,6 +81,7 @@ const AdminLoginFormSection = () => {
                   {...field}
                   disabled={isLoading}
                   placeholder="Enter your email"
+                  maxLength={50}
                   className="border-gradient-input h-12 w-full text-white placeholder-gray-400"
                 />
                 </FormControl>
@@ -111,6 +104,7 @@ const AdminLoginFormSection = () => {
                       type={showPassword ? "text" : "password"}
                       disabled={isLoading}
                       placeholder="Enter your password"
+                      maxLength={50}
                       className="border-gradient-input h-12 w-full text-white placeholder-gray-400 pr-10"
                       {...field}
                     />

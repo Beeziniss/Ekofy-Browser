@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import EkofyLogo from "../../../../../../../public/ekofy-logo.svg";
 import { Button } from "@/components/ui/button";
@@ -9,36 +9,48 @@ import Link from "next/link";
 import { useSignUpStore } from "@/store/stores";
 import { validateEmail, validatePassword } from "@/utils/signup-utils";
 import { Eye, EyeOff } from "lucide-react";
+import { ClientSignUpFormSectionProps } from "@/types/listener-auth";
 
-interface SignUpFormSectionProps {
-  onNext: (data?: any) => void;
-  initialData?: {
-    email: string;
-    password: string;
-  };
-}
-
-const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
-  const [email, setEmail] = useState(initialData?.email || "");
-  const [password, setPassword] = useState(initialData?.password || "");
+const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps) => {
+  const { goToNextStep, updateFormData, formData } = useSignUpStore();
+  
+  // Initialize state from global store or initial data
+  const [email, setEmail] = useState(initialData?.email || formData.email || "");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { goToNextStep, updateFormData } = useSignUpStore();
+  // Load data from global state when component mounts or store updates
+  useEffect(() => {
+    if (formData.email && !initialData?.email) setEmail(formData.email);
+  }, [formData, initialData]);
+
+  // Save form data to global state on input change
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      updateFormData({ email, password, confirmPassword });
+    }, 300); // Debounce to avoid too many updates
+
+    return () => clearTimeout(timeoutId);
+  }, [email, password, confirmPassword, updateFormData]);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
     if (!email) {
-      newErrors.email = "Email là bắt buộc";
+      newErrors.email = "Email is required";
+    } else if (email.length > 254) {
+      newErrors.email = "Email must be less than 254 characters";
     } else if (!validateEmail(email)) {
-      newErrors.email = "Email không hợp lệ";
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (!password) {
-      newErrors.password = "Mật khẩu là bắt buộc";
+      newErrors.password = "Password is required";
+    } else if (password.length > 128) {
+      newErrors.password = "Password must be less than 128 characters";
     } else {
       const passwordErrors = validatePassword(password);
       if (passwordErrors.length > 0) {
@@ -47,13 +59,64 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = "Xác nhận mật khẩu là bắt buộc";
+      newErrors.confirmPassword = "Confirm password is required";
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Real-time validation
+  const validateField = (field: string, value: string) => {
+    const newErrors = { ...errors };
+    
+    if (field === 'email') {
+      if (!value) {
+        newErrors.email = "Email is required";
+      } else if (value.length > 50) {
+        newErrors.email = "Email must be less than 50 characters";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        newErrors.email = "Please enter a valid email address";
+      } else {
+        delete newErrors.email;
+      }
+    }
+    
+    if (field === 'password') {
+      if (!value) {
+        newErrors.password = "Password is required";
+      } else if (value.length > 50) {
+        newErrors.password = "Password must be less than 50 characters";
+      } else {
+        const passwordErrors = validatePassword(value);
+        if (passwordErrors.length > 0) {
+          newErrors.password = passwordErrors[0];
+        } else {
+          delete newErrors.password;
+        }
+      }
+      
+      // Re-validate confirm password if password changes
+      if (confirmPassword && value !== confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match";
+      } else if (confirmPassword && value === confirmPassword) {
+        delete newErrors.confirmPassword;
+      }
+    }
+    
+    if (field === 'confirmPassword') {
+      if (!value) {
+        newErrors.confirmPassword = "Confirm password is required";
+      } else if (password !== value) {
+        newErrors.confirmPassword = "Passwords do not match";
+      } else {
+        delete newErrors.confirmPassword;
+      }
+    }
+    
+    setErrors(newErrors);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -89,7 +152,7 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
           <h2 className="mb-4 text-4xl font-bold text-white">
-            Let's get started
+            Let`s get started
           </h2>
           <p className="mb-8 text-sm text-gray-300">
             Enter your email and password to create a new account.
@@ -112,10 +175,23 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              maxLength={50}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value.length <= 50) {
+                  setEmail(value);
+                  validateField("email", value);
+                } else {
+                  // Show notification that limit is reached
+                  const newErrors = { ...errors };
+                  newErrors.email = "Email must be less than 50 characters";
+                  setErrors(newErrors);
+                }
+              }}
               placeholder="Enter your email"
-              required
-              className="border-gradient-input h-12 w-full text-white focus:border-blue-500 focus:ring-blue-500/50"
+              className={`border-gradient-input h-12 w-full text-white focus:border-blue-500 focus:ring-blue-500/50 ${
+                errors.email ? "border-red-500" : ""
+              }`}
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-500">{errors.email}</p>
@@ -123,7 +199,7 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
           </div>
 
           {/* Password Field */}
-          <div className="relative">
+          <div>
             <label
               htmlFor="password"
               className="mb-2 block text-sm font-medium text-white"
@@ -135,30 +211,43 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                maxLength={50}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 50) {
+                    setPassword(value);
+                    validateField("password", value);
+                  } else {
+                    // Show notification that limit is reached
+                    const newErrors = { ...errors };
+                    newErrors.password = "Password must be less than 50 characters";
+                    setErrors(newErrors);
+                  }
+                }}
                 placeholder="Password"
-                required
-                className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
+                className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 ${
+                  errors.password ? "border-red-500" : ""
+                }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
+                  <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <Eye className="h-4 w-4 text-gray-400 hover:text-white" />
                 )}
               </button>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-              )}
             </div>
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+            )}
           </div>
 
           {/* Confirm Password Field */}
-          <div className="relative">
+          <div>
             <label
               htmlFor="confirmPassword"
               className="mb-2 block text-sm font-medium text-white"
@@ -170,28 +259,41 @@ const SignUpFormSection = ({ onNext, initialData }: SignUpFormSectionProps) => {
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                maxLength={50}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 50) {
+                    setConfirmPassword(value);
+                    validateField("confirmPassword", value);
+                  } else {
+                    // Show notification that limit is reached
+                    const newErrors = { ...errors };
+                    newErrors.confirmPassword = "Password must be less than 50 characters";
+                    setErrors(newErrors);
+                  }
+                }}
                 placeholder="Confirm Password"
-                required
-                className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
+                className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 ${
+                  errors.confirmPassword ? "border-red-500" : ""
+                }`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
               >
                 {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
+                  <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <Eye className="h-4 w-4 text-gray-400 hover:text-white" />
                 )}
               </button>
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.confirmPassword}
-                </p>
-              )}
             </div>
+            {errors.confirmPassword && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.confirmPassword}
+              </p>
+            )}
           </div>
 
           {/* Continue Button */}

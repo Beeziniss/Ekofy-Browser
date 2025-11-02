@@ -147,7 +147,7 @@ export interface ModeratorArtistMember {
   email?: string;
   phoneNumber?: string;
   isLeader?: boolean;
-  gender?: any;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER' | string;
   role?: string;
 }
 
@@ -201,11 +201,11 @@ export interface ModeratorArtistDetailMember {
 export interface ModeratorIdentityCard {
   number: string;
   fullName: string;
-  dateOfBirth: any; // Can be string or Date
+  dateOfBirth: string | Date;
   gender: UserGender;
   placeOfOrigin: string;
   nationality: string;
-  validUntil?: any; // Optional field
+  validUntil?: string | Date;
   placeOfResidence: ModeratorPlaceOfResidence;
 }
 

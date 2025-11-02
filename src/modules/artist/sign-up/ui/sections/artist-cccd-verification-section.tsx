@@ -10,43 +10,29 @@ import {
 } from "../components";
 import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import { useFPTAI } from "../../hooks/use-fpt-ai";
-import { isValidPhoneNumber, formatPhoneNumber } from "@/utils/signup-utils";
+// import { isValidPhoneNumber, formatPhoneNumber } from "@/utils/signup-utils";
 import { toast } from "sonner";
-import { uploadImageToCloudinary, validateImageFile } from "@/utils/cloudinary-utils";
+import { validateImageFile } from "@/utils/cloudinary-utils";
+import { convertDateToISO, convertISOToDisplayDate } from "@/utils/signup-utils";
+import { UserGender } from "@/gql/graphql";
+import { ArtistCCCDData, ArtistSignUpSectionProps } from '@/types/artist_type';
 
-interface ArtistCCCDVerificationSectionProps {
-  onNext: (data?: any) => void;
+type ArtistCCCDVerificationSectionProps = ArtistSignUpSectionProps<ArtistCCCDData> & {
   onBack: () => void;
-  initialData?: {
-    frontId: File | null;
-    backId: File | null;
-    authorizationLetter: File | null;
-    citizenId: string;
-    fullName: string;
-    gender: string;
-    placeOfOrigin: string;
-    placeOfResidence: string;
-    dateOfExpiration: string;
-    phoneNumber: string;
-    dateOfBirth: string;
-    managerEmail: string;
-    managerPassword: string;
-    hasManager: boolean;
-  };
-}
+};
 
 const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCCCDVerificationSectionProps) => {
   // Get data from store
-  const { 
+  const {
     formData, 
     goToNextStep, 
-    goToPreviousStep, 
+    // goToPreviousStep, 
     updateIdentityCard,
     updateFormData,
-    isProcessingCCCD 
-  } = useArtistSignUpStore();
-  
-  // FPT AI hook
+    isProcessingCCCD,
+    setCCCDFrontProcessed,
+    setCCCDBackProcessed
+  } = useArtistSignUpStore();  // FPT AI hook
   const {
     isAnalyzing,
     cccdFrontProcessed,
@@ -67,7 +53,9 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     initialData?.fullName || formData.identityCard?.fullName || ""
   );
   const [dateOfBirth, setDateOfBirth] = useState(
-    initialData?.dateOfBirth || formData.identityCard?.dateOfBirth || ""
+    initialData?.dateOfBirth || 
+    (formData.identityCard?.dateOfBirth ? convertISOToDisplayDate(formData.identityCard.dateOfBirth) : "") ||
+    (formData.birthDate ? convertISOToDisplayDate(formData.birthDate) : "") || ""
   );
   const [gender, setGender] = useState(
     initialData?.gender || formData.identityCard?.gender || ""
@@ -79,38 +67,100 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     initialData?.placeOfResidence || formData.identityCard?.placeOfResidence?.addressLine || ""
   );
   const [dateOfExpiration, setDateOfExpiration] = useState(
-    initialData?.dateOfExpiration || formData.identityCard?.validUntil || ""
+    initialData?.dateOfExpiration || 
+    (formData.identityCard?.validUntil ? convertISOToDisplayDate(formData.identityCard.validUntil) : "") || ""
   );
   const [phoneNumber, setPhoneNumber] = useState(
     initialData?.phoneNumber || formData.phoneNumber || ""
   );
-  const [isManager, setIsManager] = useState(initialData?.hasManager || false);
+  const [isManager] = useState(initialData?.hasManager || false);
   const [authorizationLetter, setAuthorizationLetter] = useState<File | null>(
     initialData?.authorizationLetter || null,
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Phone number validation (must be exactly 10 digits)
+  const validatePhoneNumber = (phone: string) => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone.replace(/\s/g, ''));
+  };
+
+  // Date formatting function - keeps DD/MM/YYYY format
+  // const formatDate = (date: Date | string) => {
+  //   if (date instanceof Date) {
+  //     return format(date, "dd/MM/yyyy");
+  //   }
+  //   // If it's already a string, check if it's DD/MM/YYYY format or ISO format
+  //   if (typeof date === 'string') {
+  //     // If it's ISO format, convert back to DD/MM/YYYY
+  //     if (date.includes('T') && date.includes('Z')) {
+  //       const dateObj = new Date(date);
+  //       return format(dateObj, "dd/MM/yyyy");
+  //     }
+  //     // If it's already DD/MM/YYYY format, keep it
+  //     if (date.includes('/')) {
+  //       return date;
+  //     }
+  //   }
+  //   return date;
+  // };
+
+  // Parse date from DD/MM/YYYY format
+  // const parseDate = (dateString: string): Date | undefined => {
+  //   if (!dateString) return undefined;
+  //   const [day, month, year] = dateString.split('/');
+  //   if (day && month && year) {
+  //     return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  //   }
+  //   return undefined;
+  // };
+
+  // Save form data to global state on input change (debounced)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      updateFormData({ phoneNumber });
+      updateIdentityCard({
+        number: citizenId,
+        fullName,
+        dateOfBirth: dateOfBirth ? convertDateToISO(dateOfBirth) : "", // Convert DD/MM/YYYY to ISO for global state
+        gender: gender as UserGender,
+        placeOfOrigin,
+        placeOfResidence: { addressLine: placeOfResidence },
+        validUntil: dateOfExpiration ? convertDateToISO(dateOfExpiration) : "", // Convert DD/MM/YYYY to ISO for global state
+        // Only update image URLs if they are not blob URLs (to preserve Cloudinary URLs)
+        ...(frontIdPreview && !frontIdPreview.startsWith('blob:') && { frontImage: frontIdPreview }),
+        ...(backIdPreview && !backIdPreview.startsWith('blob:') && { backImage: backIdPreview }),
+      });
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [citizenId, fullName, dateOfBirth, gender, placeOfOrigin, placeOfResidence, dateOfExpiration, phoneNumber, frontIdPreview, backIdPreview, updateFormData, updateIdentityCard]);
 
   // Setup preview images for existing CCCD images when component mounts
   useEffect(() => {
     // Check if we have stored CCCD images from previous step navigation
     if (formData.identityCard?.frontImage && !frontId) {
       setFrontIdPreview(formData.identityCard.frontImage);
+      // Mark as processed if we have stored image URL
+      setCCCDFrontProcessed(true);
     } else if (frontId) {
       const url = URL.createObjectURL(frontId);
       setFrontIdPreview(url);
       return () => URL.revokeObjectURL(url);
     }
-  }, [frontId, formData.identityCard?.frontImage]);
+  }, [frontId, formData.identityCard?.frontImage, setCCCDFrontProcessed]);
 
   useEffect(() => {
     if (formData.identityCard?.backImage && !backId) {
       setBackIdPreview(formData.identityCard.backImage);
+      // Mark as processed if we have stored image URL
+      setCCCDBackProcessed(true);
     } else if (backId) {
       const url = URL.createObjectURL(backId);
       setBackIdPreview(url);
       return () => URL.revokeObjectURL(url);
     }
-  }, [backId, formData.identityCard?.backImage]);
+  }, [backId, formData.identityCard?.backImage, setCCCDBackProcessed]);
 
   // Auto-populate fields when FPT AI data is available
   useEffect(() => {
@@ -124,8 +174,8 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
       setDateOfExpiration(parsedData.validUntil || "");
       updateFormData({
         fullName: parsedData.name || "",
-        birthDate: parsedData.dateOfBirth || "",
-        gender: parsedData.sex as any,
+        birthDate: parsedData.dateOfBirth ? convertDateToISO(parsedData.dateOfBirth) : "", // Convert DD/MM/YYYY to ISO for global state
+        gender: parsedData.sex as UserGender,
       });
     }
   }, [parsedData, updateFormData]);
@@ -133,63 +183,85 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
   const handleSubmit = () => {
     const newErrors: Record<string, string> = {};
     
-    // Validate required fields
-    if (!frontId) {
-      newErrors.frontId = "Vui lòng tải lên mặt trước của CCCD";
+    // Validate required fields with English messages
+    // Check for front ID: either file, preview URL, or stored URL in global state
+    if (!frontId && !frontIdPreview && !formData.identityCard?.frontImage) {
+      newErrors.frontId = "Please upload the front side of your ID card";
     }
     
-    if (!backId) {
-      newErrors.backId = "Vui lòng tải lên mặt sau của CCCD";
+    // Check for back ID: either file, preview URL, or stored URL in global state
+    if (!backId && !backIdPreview && !formData.identityCard?.backImage) {
+      newErrors.backId = "Please upload the back side of your ID card";
     }
     
     if (!citizenId.trim()) {
-      newErrors.citizenId = "Vui lòng nhập số CCCD";
+      newErrors.citizenId = "Please enter your citizen ID number";
     }
     
     if (!fullName.trim()) {
-      newErrors.fullName = "Vui lòng nhập họ và tên";
+      newErrors.fullName = "Please enter your full name";
     }
     
     if (!dateOfBirth.trim()) {
-      newErrors.dateOfBirth = "Vui lòng nhập ngày sinh";
+      newErrors.dateOfBirth = "Please enter your date of birth";
+    } else {
+      // Check if user is at least 18 years old
+      const birthDateISO = convertDateToISO(dateOfBirth);
+      if (birthDateISO) {
+        const today = new Date();
+        const birthDateObj = new Date(birthDateISO);
+        const age = today.getFullYear() - birthDateObj.getFullYear();
+        const monthDiff = today.getMonth() - birthDateObj.getMonth();
+        const dayDiff = today.getDate() - birthDateObj.getDate();
+        
+        // Calculate exact age
+        let exactAge = age;
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+          exactAge--;
+        }
+        
+        if (exactAge < 18) {
+          newErrors.dateOfBirth = "You must be at least 18 years old to register as an artist";
+        }
+      }
     }
     
     if (!gender) {
-      newErrors.gender = "Vui lòng chọn giới tính";
+      newErrors.gender = "Please select your gender";
     }
     
     if (!placeOfOrigin.trim()) {
-      newErrors.placeOfOrigin = "Vui lòng nhập quê quán";
+      newErrors.placeOfOrigin = "Please enter your place of origin";
     }
     
     if (!placeOfResidence.trim()) {
-      newErrors.placeOfResidence = "Vui lòng nhập nơi thường trú";
+      newErrors.placeOfResidence = "Please enter your place of residence";
     }
     
     if (!dateOfExpiration.trim()) {
-      newErrors.dateOfExpiration = "Vui lòng nhập ngày hết hạn";
+      newErrors.dateOfExpiration = "Please enter expiration date";
     }
     
     if (!phoneNumber.trim()) {
-      newErrors.phoneNumber = "Vui lòng nhập số điện thoại";
-    } else if (!isValidPhoneNumber(phoneNumber)) {
-      newErrors.phoneNumber = "Số điện thoại không đúng định dạng. Sử dụng: 0xxxxxxxxx hoặc +84xxxxxxxxx";
+      newErrors.phoneNumber = "Please enter your phone number";
+    } else if (!validatePhoneNumber(phoneNumber)) {
+      newErrors.phoneNumber = "Phone number must be exactly 10 digits";
     }
     
     // Check if CCCD processing is still in progress
     if (isProcessingCCCD || isAnalyzing) {
-      toast.error("Đang xử lý CCCD, vui lòng đợi...");
+      toast.error("ID card processing in progress, please wait...");
       return;
     }
     
     // Recommend completing FPT AI processing
     if (!cccdFrontProcessed || !cccdBackProcessed) {
-      toast.warning("Khuyến nghị: Hãy chờ hệ thống đọc xong thông tin CCCD để tự động điền thông tin");
+      toast.warning("Recommendation: Please wait for the system to finish reading the ID card information for automatic completion");
     }
     
     // If user is manager, authorization letter is required
     if (isManager && !authorizationLetter) {
-      newErrors.authorizationLetter = "Vui lòng tải lên giấy ủy quyền vì bạn đang thực hiện với tư cách quản lý";
+      newErrors.authorizationLetter = "Please upload authorization letter as you are acting as a manager";
     }
     
     // Update errors state
@@ -203,7 +275,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
         number: citizenId,
         fullName: fullName,
         dateOfBirth: dateOfBirth,
-        gender: gender as any,
+        gender: gender as UserGender,
         placeOfOrigin: placeOfOrigin,
         nationality: "Việt Nam",
         placeOfResidence: {
@@ -212,7 +284,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
           ward: parsedData?.addressEntities?.ward || "",
           province: parsedData?.addressEntities?.province || "",
         },
-        validUntil: dateOfExpiration,
+        validUntil: dateOfExpiration ? convertDateToISO(dateOfExpiration) : "", // Convert DD/MM/YYYY to ISO for global state
         // Preserve existing images if they exist in store
         frontImage: formData.identityCard?.frontImage || "",
         backImage: formData.identityCard?.backImage || "",
@@ -220,10 +292,10 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
       
       // Auto-map data from CCCD to main form fields (this ensures required fields are not missing)
       const additionalData = {
-        phoneNumber: formatPhoneNumber(phoneNumber), // Format phone number
+        phoneNumber: phoneNumber, // Format phone number
         birthDate: dateOfBirth, // Map CCCD dateOfBirth to main form birthDate
-        fullName: fullName, // Map CCCD fullName to main form fullName  
-        gender: gender as any, // Map CCCD gender to main form gender
+        fullName: fullName, // Map CCCD fullName to main form fullName
+        gender: gender as UserGender, // Map CCCD gender to main form gender
       };
       // Update store with identity card data
       updateIdentityCard(identityCardData);
@@ -242,7 +314,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
         placeOfOrigin,
         placeOfResidence,
         dateOfExpiration,
-        phoneNumber: formatPhoneNumber(phoneNumber), // Format phone number
+        phoneNumber: phoneNumber,
         isManager,
         authorizationLetter,
         managerEmail: "",
@@ -266,47 +338,23 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
 
     if (type === "front") {
       setFrontId(file);
-      // Automatically analyze with FPT AI
+      // Only call FPT AI analysis - it already handles Cloudinary upload
       try {
         await analyzeFrontSide(file);
-        
-        // Upload to Cloudinary and store the URL
-        const uploadResult = await uploadImageToCloudinary(file, {
-          folder: 'artist-cccd',
-          tags: ['cccd', 'front', 'artist']
-        });
-        
-        // Update the form data to persist the image URL
-        updateIdentityCard({
-          frontImage: uploadResult.secure_url
-        });
-        
-        toast.success('Tải ảnh mặt trước CCCD thành công!');
+        // Success message and state update are handled in the hook
       } catch (error) {
         console.error("Error processing front side:", error);
-        toast.error("Lỗi khi xử lý ảnh mặt trước CCCD");
+        toast.error("Error processing front side of ID card");
       }
     } else if (type === "back") {
       setBackId(file);
-      // Automatically analyze with FPT AI
+      // Only call FPT AI analysis - it already handles Cloudinary upload
       try {
         await analyzeBackSide(file);
-        
-        // Upload to Cloudinary and store the URL
-        const uploadResult = await uploadImageToCloudinary(file, {
-          folder: 'artist-cccd',
-          tags: ['cccd', 'back', 'artist']
-        });
-        
-        // Update the form data to persist the image URL
-        updateIdentityCard({
-          backImage: uploadResult.secure_url
-        });
-        
-        toast.success('Tải ảnh mặt sau CCCD thành công!');
+        // Success message and state update are handled in the hook
       } catch (error) {
         console.error("Error processing back side:", error);
-        toast.error("Lỗi khi xử lý ảnh mặt sau CCCD");
+        toast.error("Error processing back side of ID card");
       }
     } else {
       setAuthorizationLetter(file);
@@ -390,7 +438,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
             className="rounded-md primary_gradient px-8 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-60"
             size="lg"
           >
-            Continute
+            Continue
           </Button>
         </div>
       </div>

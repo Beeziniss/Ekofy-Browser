@@ -1,20 +1,22 @@
 import React, { useEffect } from 'react';
-import { Clock, Play } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { TrackActionMenu } from '../../component/track-action-menu';
 import { PlayPauseButton } from '../../component/play-pause-button';
 import { Button } from '@/components/ui/button';
 import { usePlayPause } from '@/hooks/use-play-pause';
 import {
-  Table,
+  // Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Image from 'next/image';
+import { SearchTrackItem } from '@/types/search';
 
 interface SearchTrackSectionProps {
-  tracks: any[];
+  tracks: SearchTrackItem[];
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   fetchNextPage?: () => void;
@@ -91,14 +93,16 @@ export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
                   
                   <TableCell>
                     <div className="flex items-center space-x-3">
-                      <img
+                      <Image
                         src={track.coverImage || "/default-track.png"}
                         alt={track.name}
+                        width={40}
+                        height={40}
                         className="w-10 h-10 rounded object-cover flex-shrink-0"
                       />
                       <div className="min-w-0">
                         <p className="text-white font-medium truncate">{track.name}</p>
-                        <p className="text-gray-400 text-sm truncate">{track.mainArtistsAsync[0]?.stageName}</p>
+                        <p className="text-gray-400 text-sm truncate">{track.mainArtists.items[0]?.stageName}</p>
                       </div>
                     </div>
                   </TableCell>

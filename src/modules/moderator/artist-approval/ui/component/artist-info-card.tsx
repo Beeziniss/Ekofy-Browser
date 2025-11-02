@@ -1,43 +1,65 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { DotIcon } from "lucide-react";
 import Image from "next/image";
+import { UserManagementArtist } from "@/types/user-management";
+
+// Extended artist interface for approval process with additional ID card properties
+interface ArtistApprovalData extends UserManagementArtist {
+  frontImageUrl?: string;
+  backImageUrl?: string;
+  identityCardNumber?: string;
+  identityCardFullName?: string;
+  identityCardDateOfBirth?: string;
+  gender?: string;
+  placeOfOrigin?: string;
+  placeOfResidence?: string;
+  phoneNumber?: string;
+}
 
 interface ArtistInfoCardProps {
-  artist: any; // Using any for now to work with GraphQL response
+  artist: ArtistApprovalData;
 }
 
 export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
   return (
     <div className="space-y-4">
       {/* Header with Avatar and Info */}
-      <div className="mx-auto w-full rounded-lg bg-[#121212] pt-6 pb-6">
-        <div className="primary_gradient h-32 w-full rounded-lg"></div>
-
-        <div className="relative">
-          <div className="primary_gradient absolute -top-12 left-6 h-24 w-24 rounded-full border-2 border-black overflow-hidden">
-            {artist.avatarImage ? (
-              <Image
-          src={artist.avatarImage}
-          alt="Artist Avatar"
-          width={96}
-          height={96}
-          className="h-full w-full object-cover"
-              />
-            ) : null}
+      <div className="mx-auto w-full rounded-lg bg-[#121212] pt-6 pb-16">
+        <div className="primary_gradient h-60 w-full rounded-lg relative">
+          {/* Avatar positioned inside/overlapping the gradient rectangle */}
+          <div className="absolute bottom-0 left-6 transform translate-y-1/2">
+            <div className="primary_gradient h-36 w-36 rounded-full border-4 border-black overflow-hidden flex-shrink-0">
+              {artist.avatarImage ? (
+                <Image
+                  src={artist.avatarImage}
+                  alt="Artist Avatar"
+                  width={144}
+                  height={144}
+                  className="h-full w-full object-cover"
+                />
+              ) : null}
+            </div>
           </div>
         </div>
 
-        <div className="mt-16 flex items-center gap-3 px-6 text-lg font-semibold text-white">
-          <span>{artist.stageName}</span>
-          <span className="text-white/60">•</span>
-          <span>{artist.email}</span>
+        {/* Artist name and type positioned below, aligned with avatar */}
+        <div className="mt-5 flex items-center gap-4 px-6">
+          {/* Spacing to align with avatar */}
+          <div className="w-36"></div>
+          
+          {/* Artist info next to avatar */}
+          <div className="flex items-center gap-3 text-lg font-semibold text-white">
+            <span className="text-[20px]">{artist.stageName}</span>
+            <DotIcon className="size-8"/>
+            <span className="text-[20px]">Artist</span>
+          </div>
         </div>
       </div>
 
       {/* Identity Card Information */}
-        <div className="border-gradient-input rounded-xl border-2 bg-black/40 p-6">
+        <div className="border-gray-400 border-solid transparent rounded-xl border-2 bg-black/40 p-6">
           <h3 className="mb-4 text-lg font-semibold text-white">
             Identity card information
           </h3>
@@ -50,7 +72,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <label className="mb-2 block text-sm text-gray-300">
                   Front Image
                 </label>
-                <div className="border-gradient-input flex h-40 w-full items-center justify-center overflow-hidden rounded-lg bg-blue-600">
+                <div className="border-gray-400 border-2 border-solid transparent flex h-40 w-full items-center justify-center overflow-hidden rounded-lg bg-blue-600">
                   {artist.frontImageUrl ? (
                     <Image
                       src={artist.frontImageUrl}
@@ -70,7 +92,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <label className="mb-2 block text-sm text-gray-300">
                   Back Image
                 </label>
-                <div className="border-gradient-input flex h-40 w-full items-center justify-center overflow-hidden rounded-lg bg-blue-600">
+                <div className="border-gray-400 border-2 border-solid transparent flex h-40 w-full items-center justify-center overflow-hidden rounded-lg bg-blue-600">
                   {artist.backImageUrl ? (
                     <Image
                       src={artist.backImageUrl}
@@ -95,7 +117,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <Input
                   value={artist.identityCardNumber || "Number of Citizen"}
                   readOnly
-                  className="border-gradient-input h-9 bg-transparent text-white"
+                  className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                   placeholder="Number of Citizen"
                 />
               </div>
@@ -107,7 +129,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <Input
                   value={artist.identityCardFullName || "Full Name"}
                   readOnly
-                  className="border-gradient-input h-9 bg-transparent text-white"
+                  className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                   placeholder="Full Name"
                 />
               </div>
@@ -126,7 +148,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                         : "dd/mm/yyyy"
                     }
                     readOnly
-                    className="border-gradient-input h-9 bg-transparent text-white"
+                    className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                     placeholder="dd/mm/yyyy"
                   />
                 </div>
@@ -137,7 +159,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                   <Input
                     value={artist.gender || "Gender"}
                     readOnly
-                    className="border-gradient-input h-9 bg-transparent text-white"
+                    className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                     placeholder="Gender"
                   />
                 </div>
@@ -150,7 +172,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <Input
                   value={artist.placeOfOrigin || "Place of origin"}
                   readOnly
-                  className="border-gradient-input h-9 bg-transparent text-white"
+                  className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                   placeholder="Place of origin"
                 />
               </div>
@@ -165,7 +187,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                     "Place of residence"
                   }
                   readOnly
-                  className="border-gradient-input h-9 bg-transparent text-white"
+                  className="border-gray-400 border-2 border-solid transparent h-9 bg-transparent text-white"
                   placeholder="Place of residence"
                 />
               </div>
@@ -206,14 +228,14 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
 
       {/* Contact Information */}
       <div className="space-y-4">
-        <div className="border-gradient-input rounded-lg border bg-[#121212] p-4">
+        <div className="border-gray-400 border-2 border-solid transparent rounded-lg bg-[#121212] p-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="mb-1 block text-sm text-gray-300">Email</label>
               <Input
                 value={artist.email || "Email Artist"}
                 readOnly
-                className="border-gradient-input bg-gray-700 text-white"
+                className="border-gray-400 border-2 border-solid transparent bg-gray-700 text-white"
               />
             </div>
             <div>
@@ -221,9 +243,9 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 Phone Number
               </label>
               <Input
-                value={artist.user?.phoneNumber || "Phone Number"}
+                value={artist.phoneNumber || "Phone Number"}
                 readOnly
-                className="border-gradient-input bg-gray-700 text-white"
+                className="border-gray-400 border-2 border-solid transparent bg-gray-700 text-white"
               />
             </div>
             <div>
@@ -233,10 +255,10 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               <Input
                 value={artist.artistType}
                 readOnly
-                className="border-gradient-input bg-gray-700 text-white"
+                className="border-gray-400 border-2 border-solid transparent bg-gray-700 text-white"
               />
             </div>
-            <div>
+            {/* <div>
               <label className="mb-1 block text-sm text-gray-300">
                 Is Verified
               </label>
@@ -245,7 +267,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 readOnly
                 className="border-gradient-input bg-gray-700 text-white"
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

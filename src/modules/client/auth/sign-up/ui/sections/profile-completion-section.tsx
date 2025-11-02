@@ -15,57 +15,87 @@ import useSignUp from '../../hook/use-sign-up';
 import { formatDate } from '@/utils/signup-utils';
 import { toast } from 'sonner';
 import { uploadImageToCloudinary, validateImageFile } from '@/utils/cloudinary-utils';
+import { ClientProfileCompletionSectionProps } from '@/types/listener-auth';
 
-interface ProfileCompletionSectionProps {
-  onNext: (data?: any) => void;
-  onBack: () => void;
-  initialData?: {
-    displayName: string;
-    dateOfBirth: Date | undefined;
-    gender: string;
-    avatar?: File | null;
-  };
-}
-
-const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileCompletionSectionProps) => {
-  const [displayName, setDisplayName] = useState(initialData?.displayName || '');
-  const [fullName, setFullName] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(initialData?.dateOfBirth);
-  const [gender, setGender] = useState(initialData?.gender || '');
-  const [avatar, setAvatar] = useState<File | null>(initialData?.avatar || null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [avatarUploading, setAvatarUploading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [dateError, setDateError] = useState('');
-
-  // Use the signup hook for API calls with auto-navigation to OTP step
-  const { signUp, isLoading: isRegistering, isError, isSuccess, error } = useSignUp(
-    () => {
-      // This callback is called when navigation happens automatically
-      onNext({ displayName, fullName, dateOfBirth, gender, avatar });
-    }
-  );
-  
-  // Use the store for step navigation and form data
+const ProfileCompletionSection = ({ onNext, onBack, initialData }: ClientProfileCompletionSectionProps) => {
   const { 
     goToPreviousStep, 
-    goToNextStep, 
+    // goToNextStep, 
     formData,
     updateFormData
   } = useSignUpStore();
 
-  // Populate fields from store when component mounts
+  // Helper function to normalize date from store
+  const normalizeDateFromStore = (dateValue: Date | string | undefined): Date | undefined => {
+    if (!dateValue) return undefined;
+    if (dateValue instanceof Date) return dateValue;
+    if (typeof dateValue === 'string') {
+      const date = new Date(dateValue);
+      return isNaN(date.getTime()) ? undefined : date;
+    }
+    return undefined;
+  };
+
+  // Initialize state from global store or initial data
+  const [displayName, setDisplayName] = useState(initialData?.displayName || formData.displayName || '');
+  const [fullName, setFullName] = useState(initialData?.fullName || formData.fullName || '');
+  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(
+    initialData?.dateOfBirth || normalizeDateFromStore(formData.birthDate)
+  );
+  const [gender, setGender] = useState<'Male' | 'Female' | 'Other'>(
+    (initialData?.gender as 'Male' | 'Female' | 'Other') || 
+    (formData.gender as 'Male' | 'Female' | 'Other') || 
+    'Male'
+  );
+  const [avatar, setAvatar] = useState<File | null>(initialData?.avatar || null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(formData.avatarImage || null);
+  const [dateError, setDateError] = useState('');
+
+  // Use the signup hook for API calls with auto-navigation to OTP step
+  const { signUp, isLoading: isRegistering} = useSignUp(
+    () => {
+      // This callback is called when navigation happens automatically
+      if (dateOfBirth) {
+        onNext({ displayName, fullName, dateOfBirth, gender, avatar });
+      }
+    }
+  );
+
+  // Load data from global state when component mounts or store updates
   useEffect(() => {
     if (formData.displayName) setDisplayName(formData.displayName);
     if (formData.fullName) setFullName(formData.fullName);
-    if (formData.birthDate) setDateOfBirth(formData.birthDate);
-    if (formData.gender) setGender(formData.gender);
+    if (formData.birthDate) {
+      // Handle both Date objects and string dates from localStorage
+      const dateValue = normalizeDateFromStore(formData.birthDate);
+      if (dateValue) {
+        setDateOfBirth(dateValue);
+      }
+    }
+    if (formData.gender) setGender(formData.gender as 'Male' | 'Female' | 'Other');
     // Set avatar URL if exists in store
     if (formData.avatarImage) {
       setAvatarUrl(formData.avatarImage);
       setAvatarPreview(formData.avatarImage);
     }
   }, [formData]);
+
+  // Save profile data to global state on input change
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      updateFormData({ 
+        displayName, 
+        fullName: fullName || displayName, 
+        birthDate: dateOfBirth, 
+        gender,
+        avatarImage: avatarUrl || undefined 
+      });
+    }, 300); // Debounce to avoid too many updates
+
+    return () => clearTimeout(timeoutId);
+  }, [displayName, fullName, dateOfBirth, gender, avatarUrl, updateFormData]);
 
   useEffect(() => {
     if (avatar) {
@@ -82,6 +112,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     // Validate date of birth
     if (!dateOfBirth) {
       setDateError('Date of birth is required');
@@ -92,6 +123,24 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       setDateError('Date of birth cannot be in the future');
       return;
     }
+    
+    // Check if user is at least 13 years old
+    const today = new Date();
+    const age = today.getFullYear() - dateOfBirth.getFullYear();
+    const monthDiff = today.getMonth() - dateOfBirth.getMonth();
+    const dayDiff = today.getDate() - dateOfBirth.getDate();
+    
+    // Calculate exact age
+    let exactAge = age;
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      exactAge--;
+    }
+    
+    if (exactAge < 13) {
+      setDateError('You must be at least 13 years old to register');
+      return;
+    }
+    
     // Clear any previous errors
     setDateError('');
     
@@ -114,7 +163,10 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       toast.error("Email and password are required");
       return;
     }
-    
+    if (!/^[a-zA-Z\s]+$/.test(completeData.fullName)) {
+      toast.error("Full name can only contain letters and spaces");
+      return;
+    }
     if (!completeData.fullName || !completeData.displayName) {
       toast.error("Full name is required");
       return;
@@ -122,6 +174,12 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
     
     if (!completeData.birthDate || !completeData.gender) {
       toast.error("Date of birth and gender are required");
+      return;
+    }
+    
+    // Additional validation for birthDate to ensure it's a valid Date object
+    if (!(completeData.birthDate instanceof Date) || isNaN(completeData.birthDate.getTime())) {
+      toast.error("Please select a valid date of birth");
       return;
     }
     
@@ -136,7 +194,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       displayName: completeData.displayName,
       avatarImage: avatarUrl, // Add avatar image URL
     };
-    
+
     try {
       await signUp(registerData);
       // Success handling is done in useEffect
@@ -157,7 +215,29 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       setDateError('Date of birth cannot be in the future');
       return;
     }
-    setDateError('');
+    
+    // Check age validation on date selection
+    if (date) {
+      const today = new Date();
+      const age = today.getFullYear() - date.getFullYear();
+      const monthDiff = today.getMonth() - date.getMonth();
+      const dayDiff = today.getDate() - date.getDate();
+      
+      // Calculate exact age
+      let exactAge = age;
+      if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+        exactAge--;
+      }
+      
+      if (exactAge < 13) {
+        setDateError('You must be at least 13 years old to register');
+      } else {
+        setDateError('');
+      }
+    } else {
+      setDateError('');
+    }
+    
     setDateOfBirth(date);
   };
 
@@ -188,13 +268,13 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       });
 
       setAvatarUrl(uploadResult.secure_url);
-      toast.success('Tải ảnh lên thành công!');
+      toast.success('Image uploaded successfully!');
       
       // Store avatar URL in form data immediately
       updateFormData({ avatarImage: uploadResult.secure_url });
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      toast.error('Lỗi khi tải ảnh lên. Vui lòng thử lại.');
+      toast.error('Failed to upload avatar. Please try again.');
       setAvatar(null);
       setAvatarUrl(null);
     } finally {
@@ -244,7 +324,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                     />
                     {avatarUploading && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-                        <div className="text-white text-sm">Đang tải lên...</div>
+                        <div className="text-white text-sm">Uploading...</div>
                       </div>
                     )}
                     {/* Clear button */}
@@ -297,7 +377,13 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                   id="fullName"
                   type="text"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  maxLength={50}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= 50) {
+                      setFullName(value);
+                    }
+                  }}
                   placeholder="Enter your full name"
                   required
                   className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
@@ -313,7 +399,13 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                   id="displayName"
                   type="text"
                   value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
+                  maxLength={50}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= 50) {
+                      setDisplayName(value);
+                    }
+                  }}
                   placeholder="Enter your display name"
                   required
                   className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
@@ -388,7 +480,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                 <label htmlFor="gender" className="block text-sm font-medium text-white mb-2">
                   Gender*
                 </label>
-                <Select value={gender} onValueChange={setGender} required>
+                <Select value={gender} onValueChange={(value) => setGender(value as 'Male' | 'Female' | 'Other')} required>
                   <SelectTrigger className="w-full border-gradient-input text-white h-12">
                     <SelectValue placeholder="Gender" className="text-gray-400" />
                   </SelectTrigger>
@@ -408,7 +500,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                   className="w-full primary_gradient hover:opacity-90 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
                   size="lg"
                 >
-                  {avatarUploading ? "Đang tải ảnh..." : isRegistering ? "Creating Account..." : "Create Account"}
+                  {avatarUploading ? "Uploading avatar..." : isRegistering ? "Creating Account..." : "Create Account"}
                 </Button>
               </div>
             </form>

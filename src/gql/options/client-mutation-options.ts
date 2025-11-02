@@ -1,14 +1,30 @@
-import { mutationOptions } from "@tanstack/react-query";
 import { execute } from "../execute";
+import { CommentType, UserGender } from "../graphql";
+import { mutationOptions } from "@tanstack/react-query";
 import {
-  CreatePlaylistMutation,
-  DeletePlaylistMutation,
-} from "@/modules/client/library/ui/views/library-view";
+  TrackCommentCreateMutation,
+  TrackCommentDeleteMutation,
+  TrackCommentUpdateMutation,
+} from "@/modules/shared/mutations/client/track-comment-mutations";
+import {
+  RequestHubCommentCreateMutation,
+  RequestHubCommentDeleteMutation,
+  RequestHubCommentUpdateMutation,
+} from "@/modules/shared/mutations/client/request-hub-comment-mutation";
+import {
+  UserFollowMutation,
+  UserUnfollowMutation,
+} from "@/modules/shared/mutations/client/user-mutations";
+import { FavoriteTrackMutation } from "@/modules/shared/mutations/client/track-queries";
+import { UpdateListenerProfileMutation } from "@/modules/client/profile/ui/views/queries";
 import {
   AddToPlaylistMutation,
+  CreatePlaylistMutation,
+  DeletePlaylistMutation,
+  PlaylistFavoriteMutation,
   RemoveFromPlaylistMutation,
   UpdatePlaylistMutation,
-} from "@/modules/client/playlist/ui/views/playlist-detail-view";
+} from "@/modules/shared/mutations/client/playlist-mutations";
 
 export const createPlaylistMutationOptions = mutationOptions({
   mutationKey: ["create-playlist"],
@@ -54,12 +70,104 @@ export const addToPlaylistMutationOptions = mutationOptions({
 
 export const removeFromPlaylistMutationOptions = mutationOptions({
   mutationKey: ["remove-from-playlist"],
-  mutationFn: async (addToPlaylistRequest: {
+  mutationFn: async (removeFromPlaylistRequest: {
     playlistId?: string;
     playlistName?: string;
     trackId: string;
   }) =>
     await execute(RemoveFromPlaylistMutation, {
-      addToPlaylistRequest,
+      removeFromPlaylistRequest,
     }),
+});
+
+export const favoriteTrackMutationOptions = mutationOptions({
+  mutationKey: ["favorite-track"],
+  mutationFn: async (favoriteTrackRequest: {
+    trackId: string;
+    isAdding: boolean;
+  }) =>
+    await execute(FavoriteTrackMutation, {
+      trackId: favoriteTrackRequest.trackId,
+      isAdding: favoriteTrackRequest.isAdding,
+    }),
+});
+
+export const updateListenerProfileMutationOptions = mutationOptions({
+  mutationKey: ["update-listener-profile"],
+  mutationFn: async (updateListenerRequest: {
+    displayName?: string;
+    email?: string;
+    avatarImage?: string;
+    bannerImage?: string;
+    fullName?: string;
+    phoneNumber?: string;
+    // Newly supported fields
+    birthDate?: string; // ISO 8601 string e.g. 1990-01-01T00:00:00.000Z
+    gender?: UserGender;
+  }) =>
+    await execute(UpdateListenerProfileMutation, {
+      updateListenerRequest,
+    }),
+});
+
+export const createTrackCommentMutationOptions = mutationOptions({
+  mutationKey: ["create-track-comment"],
+  mutationFn: async (input: {
+    targetId: string;
+    commentType: CommentType;
+    content: string;
+    parentCommentId?: string;
+  }) => await execute(TrackCommentCreateMutation, input),
+});
+
+export const updateTrackCommentMutationOptions = mutationOptions({
+  mutationKey: ["update-track-comment"],
+  mutationFn: async (input: { commentId: string; content: string }) =>
+    await execute(TrackCommentUpdateMutation, input),
+});
+
+export const deleteTrackCommentMutationOptions = mutationOptions({
+  mutationKey: ["delete-track-comment"],
+  mutationFn: async (commentId: string) =>
+    await execute(TrackCommentDeleteMutation, { commentId }),
+});
+
+export const createRequestHubCommentMutationOptions = mutationOptions({
+  mutationKey: ["create-request-hub-comment"],
+  mutationFn: async (input: {
+    targetId: string;
+    commentType: CommentType;
+    content: string;
+    parentCommentId?: string;
+  }) => await execute(RequestHubCommentCreateMutation, input),
+});
+
+export const updateRequestHubCommentMutationOptions = mutationOptions({
+  mutationKey: ["update-request-hub-comment"],
+  mutationFn: async (input: { commentId: string; content: string }) =>
+    await execute(RequestHubCommentUpdateMutation, input),
+});
+
+export const deleteRequestHubCommentMutationOptions = mutationOptions({
+  mutationKey: ["delete-request-hub-comment"],
+  mutationFn: async (commentId: string) =>
+    await execute(RequestHubCommentDeleteMutation, { commentId }),
+});
+
+export const userFollowMutationOptions = mutationOptions({
+  mutationKey: ["user-follow"],
+  mutationFn: async (targetId: string) =>
+    await execute(UserFollowMutation, { targetId }),
+});
+
+export const userUnfollowMutationOptions = mutationOptions({
+  mutationKey: ["user-unfollow"],
+  mutationFn: async (targetId: string) =>
+    await execute(UserUnfollowMutation, { targetId }),
+});
+
+export const playlistFavoriteMutationOptions = mutationOptions({
+  mutationKey: ["playlist-favorite"],
+  mutationFn: async (input: { playlistId: string; isAdding: boolean }) =>
+    await execute(PlaylistFavoriteMutation, { ...input }),
 });

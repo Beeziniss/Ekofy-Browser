@@ -8,27 +8,24 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 import { useSignUpStore } from '@/store/stores/index';
 import useSignUp from '../../hook/use-sign-up';
-interface OTPVerificationSectionProps {
-  onNext: (data?: any) => void;
-  onBack: () => void;
-  initialData?: {
-    otp: string;
-  };
-}
+import { toast } from 'sonner';
+import { ClientOTPVerificationSectionProps } from '@/types/listener-auth';
 
-const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerificationSectionProps) => {
-  const [otp, setOtp] = useState(initialData?.otp || '');
+const OTPVerificationSection = ({ onNext, onBack, initialData }: ClientOTPVerificationSectionProps) => {
+  const { completeOTPVerification, goToPreviousStepFromOTP, formData, clearOTPData } = useSignUpStore();
+  
+  // Initialize state from global store or initial data
+  const [otp, setOtp] = useState(initialData?.otp || formData.otp || '');
   const [countdown, setCountdown] = useState(60); // Start with 60 seconds
   const [canResend, setCanResend] = useState(false); // Start disabled
   
-  const { completeOTPVerification, goToPreviousStep, formData } = useSignUpStore();
   const { 
     verifyOTP, 
     isVerifyingOTP, 
-    verifyOTPError,
+    // verifyOTPError,
     resendOTP, 
     isResendingOTP, 
-    resendOTPError 
+    // resendOTPError 
   } = useSignUp();
 
   // Countdown timer effect - starts immediately when component mounts
@@ -61,8 +58,8 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!otp || otp.length < 4 ) {
-      console.log('Please enter a valid 6-digit OTP');
+    if (!otp || otp.length !== 6 || !/^\d+$/.test(otp)) {
+      toast.error('Please enter a valid 6-digit numeric OTP');
       return;
     }
     
@@ -83,6 +80,10 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
 
   const handleOTPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value; 
+    // Allow only numeric input and limit to 6 characters
+    if (!/^\d*$/.test(value) || value.length > 6) {
+      return;
+    }
     setOtp(value);
   };
 
@@ -103,8 +104,12 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
   };
 
   const handleBack = () => {
-    // Use hook to go back
-    goToPreviousStep();
+    // Clear OTP data when going back
+    clearOTPData();
+    setOtp(''); // Clear local OTP state
+    
+    // Use hook to go back directly to form step
+    goToPreviousStepFromOTP();
     // Also call the original onBack for component communication
     onBack();
   };
@@ -129,9 +134,9 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
             </div>
             <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Xác thực tài khoản</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Account Verification</h2>
           <p className="text-gray-300 text-sm mb-8">
-            Vui lòng kiểm tra email và nhập mã xác thực được gửi đến email của bạn.
+            Please check your email and enter the verification code sent to your email.
           </p>
         </div>
 
@@ -148,7 +153,7 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
               maxLength={6}
               value={otp}
               onChange={handleOTPChange}
-              placeholder="Nhập mã xác thực"
+              placeholder="Enter your 6-digit OTP"
               required
               className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
             />
@@ -156,7 +161,7 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
 
           {/* Resend Code Link */}
           <div className="text-center">
-            <span className="text-gray-400 text-sm">Chưa nhận được mã? </span>
+            <span className="text-gray-400 text-sm">Have not received the code? </span>
             <button
               type="button"
               onClick={handleResendCode}
@@ -168,10 +173,10 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
               }`}
             >
               {isResendingOTP 
-                ? "Đang gửi..." 
+                ? "Sending..." 
                 : !canResend 
-                ? `Gửi lại sau ${countdown}s` 
-                : "Gửi lại mã xác thực"}
+                ? `Resend later ${countdown}s` 
+                : "Resend verification code"}
             </button>
           </div>
 
@@ -182,7 +187,7 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: OTPVerification
             className="w-full primary_gradient hover:opacity-90 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
             size="lg"
           >
-            {isVerifyingOTP ? "Đang xác thực..." : "Xác thực OTP"}
+            {isVerifyingOTP ? "Verifying..." : "Verify OTP"}
           </Button>
         </form>
       </div>

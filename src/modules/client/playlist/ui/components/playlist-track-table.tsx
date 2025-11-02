@@ -380,11 +380,11 @@ const PlaylistTrackTable = ({
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className="flex items-center">
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className={`text-main-white ${header.column.id === "name" ? "flex-1" : ""} ${header.column.id === "stageName" ? "w-[15%]" : ""} ${header.column.id === "addedTime" ? "w-25" : ""} ${header.column.id === "actions" ? "w-14" : ""}`}
+                  className={`text-main-white ${header.column.id === "name" ? "flex-1" : ""} ${header.column.id === "stageName" ? "w-[15%]" : ""} ${header.column.id === "addedTime" ? "w-25" : ""} ${header.column.id === "actions" ? "w-14" : ""} flex items-center`}
                 >
                   {header.isPlaceholder ? null : (
                     <div
@@ -423,7 +423,7 @@ const PlaylistTrackTable = ({
           </tr>
           {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} className="group">
+              <TableRow key={row.id} className="group flex items-center">
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}

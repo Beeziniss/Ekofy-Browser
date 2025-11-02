@@ -66,7 +66,7 @@ export const useCloudinaryUpload = (): UseCloudinaryUploadState & UseCloudinaryU
         uploadProgress: 0
       }));
 
-      toast.success(`Upload CCCD ${side === "front" ? "mặt trước" : "mặt sau"} thành công!`);
+      toast.success(`Upload CCCD ${side === "front" ? "front" : "back"} successful!`);
             
       return result;
 
@@ -80,7 +80,7 @@ export const useCloudinaryUpload = (): UseCloudinaryUploadState & UseCloudinaryU
         error: errorMessage 
       }));
 
-      toast.error(`Lỗi upload CCCD: ${errorMessage}`);      
+      toast.error(`Error upload CCCD: ${errorMessage}`);      
       return null;
     }
   };
@@ -119,8 +119,6 @@ export const useCloudinaryUpload = (): UseCloudinaryUploadState & UseCloudinaryU
         isUploading: false,
         uploadProgress: 0
       }));
-
-      toast.success(`Upload ${type === "avatar" ? "ảnh đại diện" : "ảnh bìa"} thành công!`);
             
       return result;
 
@@ -134,7 +132,7 @@ export const useCloudinaryUpload = (): UseCloudinaryUploadState & UseCloudinaryU
         error: errorMessage 
       }));
 
-      toast.error(`Lỗi upload ${type}: ${errorMessage}`);      
+      toast.error(`Error uploading ${type}: ${errorMessage}`);      
       return null;
     }
   };

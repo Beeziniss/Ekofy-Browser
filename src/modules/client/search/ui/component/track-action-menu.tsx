@@ -5,27 +5,28 @@ import {
   MoreHorizontal, 
   Plus, 
   Heart, 
-  ListMusic, 
-  Clock, 
-  Radio, 
-  User, 
+  // ListMusic, 
+  // Clock, 
+  // Radio, 
+  // User, 
   Album, 
-  BarChart3, 
+  // BarChart3, 
   Share,
-  Flag,
+  // Flag,
   Search,
   Eye
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { SearchTrackItem } from '@/types/search';
 
 interface TrackActionMenuProps {
-  track: any;
+  track: SearchTrackItem;
   isVisible?: boolean;
 }
 
 export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({ 
   track, 
-  isVisible = false 
+  // isVisible = false 
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPlaylistMenuOpen, setIsPlaylistMenuOpen] = useState(false);

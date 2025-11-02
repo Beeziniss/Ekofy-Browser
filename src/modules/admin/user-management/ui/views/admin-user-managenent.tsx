@@ -92,6 +92,23 @@ export const AdminGetListUser = graphql(`
   }
 `);
 
+export const AdminGetStatistics = graphql(`
+  query UsersStatistic($where: UserFilterInput) {
+    users(where: $where) {
+      totalCount
+      items {
+        id
+        email
+        fullName
+        phoneNumber
+        status
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`);
+
 export const CreateModeratorMutation = graphql(`
   mutation CreateModerator(
     $createModeratorRequest: CreateModeratorRequestInput!
@@ -101,14 +118,14 @@ export const CreateModeratorMutation = graphql(`
 `);
 
 export const DeActiveUserMutation = graphql(`
-  mutation banUser($targetUserId: String!) {
+  mutation BanUser($targetUserId: String!) {
     banUser(targetUserId: $targetUserId)
   }
 `);
 
 export const ReActiveUserMutation = graphql(`
-  mutation ReActiveUser($targetUserId: String!) {
-    reActiveUser(targetUserId: $targetUserId)
+  mutation UnbanUser($targetUserId: String!) {
+    unbanUser(targetUserId: $targetUserId)
   }
 `);
 

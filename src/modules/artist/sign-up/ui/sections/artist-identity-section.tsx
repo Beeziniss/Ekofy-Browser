@@ -12,56 +12,57 @@ import { convertArtistStoreDataToAPIFormat } from '@/utils/signup-utils';
 import { toast } from 'sonner';
 import { uploadImageToCloudinary, validateImageFile } from '@/utils/cloudinary-utils';
 import { useRouter } from 'next/navigation';
+import { ArtistIdentityData, ArtistSignUpSectionProps } from '@/types/artist_type';
 
-interface ArtistIdentitySectionProps {
-  onNext: (data?: any) => void;
+type ArtistIdentitySectionProps = ArtistSignUpSectionProps<ArtistIdentityData> & {
   onBack: () => void;
-  initialData?: {
-    // coverImage: File | null;
-    stageName: string;
-    avatarImage?: File | null;
-  };
-}
+};
 
 const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySectionProps) => {
   const router = useRouter();
-  const { formData, updateFormData, goToNextStep } = useArtistSignUpStore();
+  const { formData, sessionData, updateFormData, goToNextStep, resetForm, clearSessionData } = useArtistSignUpStore();
   
   // Handle navigation to login after successful registration
   const handleNavigateToLogin = () => {
+    // Clear all global state data after successful registration
+    resetForm();
+    clearSessionData();
     router.push('/artist/login');
   };
   
   const { signUp, isLoading } = useArtistSignUp(handleNavigateToLogin);
   
-  // const [coverImage, setCoverImage] = useState<File | null>(initialData?.coverImage || null);
-  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
+  // Initialize state from global store or initial data
+  // const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
   const [avatarImage, setAvatarImage] = useState<File | null>(initialData?.avatarImage || null);
   const [avatarImagePreview, setAvatarImagePreview] = useState<string | null>(null);
   const [stageName, setStageName] = useState(initialData?.stageName || formData.stageName || '');
-  const [coverUploading, setCoverUploading] = useState(false);
+  // const [coverUploading, setCoverUploading] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
-  const [avatarImageUrl, setAvatarImageUrl] = useState<string | null>(null);
+  // const [coverImageUrl, setCoverImageUrl] = useState<string | null>(formData.avatarImage || null);
+  const [avatarImageUrl, setAvatarImageUrl] = useState<string | null>(formData.avatarImage || null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Populate data from store when component mounts
+  // Load data from global state when component mounts or store updates
   useEffect(() => {
     if (formData.stageName) setStageName(formData.stageName);
     if (formData.avatarImage) {
       setAvatarImageUrl(formData.avatarImage);
       setAvatarImagePreview(formData.avatarImage);
-      console.log("🖼️ Loaded avatar from store:", formData.avatarImage);
     }
   }, [formData]);
 
-  // useEffect(() => {
-  //   if (coverImage) {
-  //     const url = URL.createObjectURL(coverImage);
-  //     setCoverImagePreview(url);
-  //     return () => URL.revokeObjectURL(url);
-  //   }
-  // }, [coverImage]);
+  // Save form data to global state on input change (debounced)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      updateFormData({ 
+        stageName,
+        avatarImage: avatarImageUrl || undefined 
+      });
+    }, 300); // Debounce to avoid too many updates
+
+    return () => clearTimeout(timeoutId);
+  }, [stageName, avatarImageUrl, updateFormData]);
 
   useEffect(() => {
     if (avatarImage) {
@@ -84,7 +85,7 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
     // }
     
     if (!stageName.trim()) {
-      newErrors.stageName = "Vui lòng nhập nghệ danh";
+      newErrors.stageName = "Please enter your stage name";
     }
     
     setErrors(newErrors);
@@ -100,33 +101,26 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
       
       // Check artist type to determine next action
       if (formData.artistType === "INDIVIDUAL") {
+        // Check if password exists in session data before attempting registration
+        if (!sessionData.password || !sessionData.confirmPassword) {
+          toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
+          // Navigate back to form step to re-enter password
+          // router.push('/artist/sign-up');
+          return;
+        }
+
         try {
-          // Combine current formData with new identity data
+          // Combine current formData with new identity data and session data (including password)
           const combinedData = {
             ...formData,
+            ...sessionData, // Include password from session data
             ...identityData
           };
-          
-          // Debug: Log the combined data
-          console.log("🔍 Combined Data before API call:", combinedData);
-          console.log("📋 Required fields check:");
-          console.log("- email:", combinedData.email ? "✅" : "❌");
-          console.log("- password:", combinedData.password ? "✅" : "❌");
-          console.log("- confirmPassword:", combinedData.confirmPassword ? "✅" : "❌");
-          console.log("- fullName:", combinedData.fullName ? "✅" : "❌");
-          console.log("- phoneNumber:", combinedData.phoneNumber ? "✅" : "❌");
-          console.log("- stageName:", combinedData.stageName ? "✅" : "❌");
-          console.log("- avatarImage:", combinedData.avatarImage ? "✅" : "❌");
-          console.log("- identityCard:", combinedData.identityCard ? "✅" : "❌");
-          
           // Convert store data to API format for registration
           const registrationData = convertArtistStoreDataToAPIFormat({
             ...combinedData,
             avatarImage: avatarImageUrl || undefined // Add avatar image URL
           });
-          
-          // Debug: Log the registration data
-          console.log("🚀 Registration Data:", registrationData);
           
           // Call registration API
           signUp(registrationData);
@@ -136,9 +130,15 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
         } catch (error) {
           console.error("❌ Registration error:", error);
           if (error instanceof Error) {
+            // Check if error is related to missing password and redirect accordingly
+            if (error.message.includes("password")) {
+              toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
+              // router.push('/artist/sign-up');
+              return;
+            }
             toast.error(error.message);
           } else {
-            toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+            toast.error("An error occurred. Please try again.");
           }
         }
       } else {
@@ -154,36 +154,36 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
     }
   };
 
-  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    // Validate the file
-    if (!validateImageFile(file, 5)) {
-      return;
-    }
+  //   // Validate the file
+  //   if (!validateImageFile(file, 5)) {
+  //     return;
+  //   }
 
-    // setCoverImage(file);
-    setCoverUploading(true);
+  //   // setCoverImage(file);
+  //   setCoverUploading(true);
 
-    try {
-      // Upload to Cloudinary
-      const uploadResult = await uploadImageToCloudinary(file, {
-        folder: 'artist-covers',
-        tags: ['artist', 'cover']
-      });
+  //   try {
+  //     // Upload to Cloudinary
+  //     const uploadResult = await uploadImageToCloudinary(file, {
+  //       folder: 'artist-covers',
+  //       tags: ['artist', 'cover']
+  //     });
 
-      setCoverImageUrl(uploadResult.secure_url);
-      toast.success('Tải ảnh bìa lên thành công!');
-    } catch (error) {
-      console.error('Error uploading cover image:', error);
-      toast.error('Lỗi khi tải ảnh bìa lên. Vui lòng thử lại.');
-      // setCoverImage(null);
-      setCoverImageUrl(null);
-    } finally {
-      setCoverUploading(false);
-    }
-  };
+  //     setCoverImageUrl(uploadResult.secure_url);
+  //     toast.success('Tải ảnh bìa lên thành công!');
+  //   } catch (error) {
+  //     console.error('Error uploading cover image:', error);
+  //     toast.error('Error uploading cover image. Please try again.');
+  //     // setCoverImage(null);
+  //     setCoverImageUrl(null);
+  //   } finally {
+  //     setCoverUploading(false);
+  //   }
+  // };
 
   const handleAvatarImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -205,14 +205,13 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
       });
 
       setAvatarImageUrl(uploadResult.secure_url);
-      toast.success('Tải ảnh đại diện lên thành công!');
+      toast.success('Profile picture uploaded successfully!');
       
       // Store avatar URL in form data immediately
       updateFormData({ avatarImage: uploadResult.secure_url });
-      console.log("✅ Avatar uploaded and stored:", uploadResult.secure_url);
     } catch (error) {
       console.error('Error uploading avatar image:', error);
-      toast.error('Lỗi khi tải ảnh đại diện lên. Vui lòng thử lại.');
+      toast.error('Error uploading profile image. Please try again.');
       setAvatarImage(null);
       setAvatarImageUrl(null);
     } finally {
@@ -263,7 +262,7 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
                     />
                     {avatarUploading && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-                        <div className="text-white text-sm">Đang tải lên...</div>
+                        <div className="text-white text-sm">Uploading...</div>
                       </div>
                     )}
                     {/* Clear button */}
@@ -323,7 +322,7 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
                     />
                     {coverUploading && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-                        <div className="text-white text-sm">Đang tải lên...</div>
+                        <div className="text-white text-sm">Uploading...</div>
                       </div>
                     )}
                   </div>
@@ -368,7 +367,7 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
                 <p className="mt-2 text-sm text-red-400">{errors.stageName}</p>
               )}
               <p className="text-gray-400 text-xs mt-2">
-                Your stage name will appear on your profile and tracks. Make sure it's unique and easy to recognize.
+                Your stage name will appear on your profile and tracks. Make sure it is unique and easy to recognize.
               </p>
             </div>
           </div>
@@ -380,9 +379,9 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
             onClick={handleSubmit}
             className="primary_gradient hover:opacity-90 text-white font-medium py-3 px-8 rounded-md transition duration-300 ease-in-out"
             size="lg"
-            disabled={isLoading || coverUploading || avatarUploading}
+            disabled={isLoading || avatarUploading}
           >
-            {coverUploading || avatarUploading ? 'Đang tải ảnh...' : isLoading ? 'Đang xử lý...' : (formData.artistType === "INDIVIDUAL" ? 'Tiếp tục' : 'Tiếp tục và Đăng ký')}
+            { avatarUploading ? 'Uploading images...' : isLoading ? 'Processing...' : (formData.artistType === "INDIVIDUAL" ? 'Register' : 'Continue')}
           </Button>
         </div>
       </div>

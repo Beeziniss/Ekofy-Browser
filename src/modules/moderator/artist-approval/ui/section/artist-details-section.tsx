@@ -103,6 +103,47 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
     );
   }
 
+  // Transform pending artist registration data to match ArtistApprovalData interface
+  const transformedArtist = {
+    id: artist.id,
+    userId: artist.id, // Use id as userId for pending registrations
+    email: artist.email,
+    stageName: artist.stageName,
+    artistType: artist.artistType,
+    categoryIds: [], // Not available in pending registration
+    followers: 0, // Not available in pending registration
+    popularity: 0, // Not available in pending registration
+    avatarImage: artist.avatarImage || undefined,
+    bannerImage: undefined, // Not available in pending registration
+    isVerified: false, // Not verified yet
+    verifiedAt: undefined,
+    createdAt: artist.requestedAt || new Date().toISOString(),
+    updatedAt: artist.requestedAt || new Date().toISOString(),
+    user: {
+      id: artist.id,
+      fullName: artist.fullName,
+      email: artist.email,
+      gender: artist.gender,
+      phoneNumber: artist.phoneNumber,
+      birthDate: artist.birthDate,
+      status: "ACTIVE" as const,
+      role: "ARTIST" as const,
+      createdAt: artist.requestedAt || new Date().toISOString(),
+      updatedAt: undefined,
+    },
+    members: artist.members || [],
+    // Additional properties for approval process
+    frontImageUrl: artist.frontImageUrl || undefined,
+    backImageUrl: artist.backImageUrl || undefined,
+    identityCardNumber: artist.identityCardNumber || undefined,
+    identityCardFullName: artist.identityCardFullName || undefined,
+    identityCardDateOfBirth: artist.identityCardDateOfBirth || undefined,
+    gender: artist.gender,
+    placeOfOrigin: artist.placeOfOrigin || undefined,
+    placeOfResidence: artist.placeOfResidence || undefined,
+    phoneNumber: artist.phoneNumber || undefined,
+  };
+
   return (
     <div className="space-y-6">
        <button
@@ -114,17 +155,17 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
         </button>
 
       {/* Artist Information Card */}
-      <ArtistInfoCard artist={artist as any} />
+      <ArtistInfoCard artist={transformedArtist} />
 
       {/* Band Members Card (only show if artist type is BAND or GROUP) */}
-      {(artist.artistType === ArtistType.Band || artist.artistType === ArtistType.Group) && 
-       artist.members && artist.members.length > 0 && (
-        <BandMembersCard members={artist.members} />
+      {(transformedArtist.artistType === ArtistType.Band || transformedArtist.artistType === ArtistType.Group) && 
+       transformedArtist.members && transformedArtist.members.length > 0 && (
+        <BandMembersCard members={transformedArtist.members} />
       )}
 
       {/* Action Buttons */}
       <ArtistActionsCard
-        artistName={artist.stageName}
+        artistName={transformedArtist.stageName}
         userId={userId}
         onApprove={handleApprove}
         onReject={handleReject}

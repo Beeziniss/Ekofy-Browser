@@ -9,12 +9,13 @@ import {
   StatusConfirmModal,
   CreateModeratorData 
 } from "../component";
-import { adminUsersQueryOptions } from "@/gql/options/admin-options";
+import { adminUsersQueryOptions, adminUsersStatsOptions } from "@/gql/options/admin-options";
 import { UserStatus } from "@/gql/graphql";
 import { execute } from "@/gql/execute";
 import { CreateModeratorMutation } from "../views/admin-user-managenent";
 import { DeActiveUserMutation, ReActiveUserMutation } from "../views/admin-user-managenent";
 import { toast } from "sonner";
+import { UserManagementUser } from "@/types";
 export function UserManagementSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,9 +37,16 @@ export function UserManagementSection() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
+  // Separate query for user stats
+  const {
+    data: statsData,
+    isLoading: isStatsLoading,
+  } = useQuery(adminUsersStatsOptions());
+
+  // Query for users list
   const {
     data: usersData,
-    isLoading,
+    isLoading: isUsersLoading,
     error,
   } = useQuery(adminUsersQueryOptions(currentPage, pageSize, debouncedSearchTerm));
 
@@ -47,13 +55,16 @@ export function UserManagementSection() {
     mutationFn: async (data: CreateModeratorData) => {
       return await execute(CreateModeratorMutation, {
         createModeratorRequest: {
+          fullName: data.fullName,
           email: data.email,
           password: data.password,
         }
       });
     },
     onSuccess: () => {
+      // Invalidate both queries
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-users-stats"] });
       toast.success("Moderator created successfully!");
     },
     onError: (error) => {
@@ -72,7 +83,9 @@ export function UserManagementSection() {
       }
     },
     onSuccess: () => {
+      // Invalidate both queries
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-users-stats"] });
       toast.success("User status updated successfully!");
     },
     onError: (errors) => {
@@ -112,18 +125,11 @@ export function UserManagementSection() {
     setSelectedUser(null);
   };
 
-  if (isLoading) {
+  // Show stats loading error if exists
+  if (isStatsLoading && !statsData) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading users...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-400">Error loading users: {error.message}</div>
+        <div className="text-gray-400">Loading statistics...</div>
       </div>
     );
   }
@@ -132,12 +138,13 @@ export function UserManagementSection() {
   const totalCount = usersData?.users?.totalCount || 0;
   const pageInfo = usersData?.users?.pageInfo;
 
-  // Calculate stats (mock data for now)
+  // Get stats from separate query - calculate from users data
+  const allUsers = statsData?.users?.items || [];
   const stats = {
-    totalUsers: totalCount,
-    activeUsers: users.filter(user => user.status === UserStatus.Active).length,
-    inactiveUsers: users.filter(user => user.status === UserStatus.Inactive).length,
-    newUsers: users.filter(user => {
+    totalUsers: statsData?.users?.totalCount || 0,
+    activeUsers: allUsers.filter(user => user.status === UserStatus.Active).length,
+    inactiveUsers: allUsers.filter(user => user.status === UserStatus.Inactive || user.status === UserStatus.Banned).length,
+    newUsers: allUsers.filter(user => {
       const createdDate = new Date(user.createdAt);
       const today = new Date();
       const diffTime = Math.abs(today.getTime() - createdDate.getTime());
@@ -158,7 +165,7 @@ export function UserManagementSection() {
 
       {/* User Table */}
       <UserTable
-        data={users as any[]}
+        data={users as UserManagementUser[]}
         totalCount={totalCount}
         currentPage={currentPage}
         pageSize={pageSize}
@@ -169,6 +176,8 @@ export function UserManagementSection() {
         searchTerm={searchTerm}
         onStatusChange={handleStatusChange}
         onCreateModerator={handleCreateModerator}
+        isLoading={isUsersLoading}
+        error={error}
       />
 
       {/* Create Moderator Modal */}

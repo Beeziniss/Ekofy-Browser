@@ -3,9 +3,11 @@ import { GenericActionMenu } from '../../component/generic-action-menu';
 import { PlayPauseButton } from '../../component/play-pause-button';
 import { Button } from '@/components/ui/button';
 import { usePlayPause } from '@/hooks/use-play-pause';
+import Image from 'next/image';
+import { SearchArtistItem } from '@/types/search';
 
 interface SearchArtistSectionProps {
-  artists: any[];
+  artists: SearchArtistItem[];
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   fetchNextPage?: () => void;
@@ -60,9 +62,11 @@ export const SearchArtistSection: React.FC<SearchArtistSectionProps> = ({
             
             <div className="relative">
               {artist.avatarImage ? (
-                <img
+                <Image
                   src={artist.avatarImage}
                   alt={artist.stageName}
+                  width={144}
+                  height={144}
                   className="w-36 h-36 rounded-full object-cover"
                 />
               ) : (

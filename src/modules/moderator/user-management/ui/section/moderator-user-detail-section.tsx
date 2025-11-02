@@ -6,8 +6,8 @@ import { moderatorArtistDetailOptions, moderatorListenerDetailOptions } from "@/
 import { ArtistType, UserRole, UserStatus, UserGender } from "@/gql/graphql";
 import { ModeratorArtistDetailCard, ModeratorListenerDetailCard, ModeratorArtistTeamMembers } from "../component";
 import { 
-  ModeratorArtist, 
-  ModeratorListener, 
+  // ModeratorArtist, 
+  // ModeratorListener, 
   ModeratorUser,
   ModeratorArtistDetailResponse,
   ModeratorListenerDetailResponse,
@@ -31,63 +31,69 @@ const transformToModeratorUser = (userData: ModeratorUserBasic, userId: string):
   updatedAt: undefined,
 });
 
-const transformToModeratorArtist = (artistData: any): ModeratorArtistDetailResponse => ({
-  id: artistData?.id || "",
-  userId: artistData?.userId || "",
-  stageName: artistData?.stageName || "",
-  email: artistData?.email || "",
-  artistType: artistData?.artistType || ArtistType.Individual,
-  members: artistData?.members?.map((member: any) => ({
-    fullName: member.fullName,
-    email: member.email,
-    phoneNumber: member.phoneNumber,
-    isLeader: member.isLeader,
-    gender: member.gender,
-  })) || [],
-  categoryIds: artistData?.categoryIds || [],
-  biography: artistData?.biography,
-  followerCount: artistData?.followerCount || 0,
-  popularity: artistData?.popularity || 0,
-  avatarImage: artistData?.avatarImage,
-  bannerImage: artistData?.bannerImage,
-  isVerified: artistData?.isVerified || false,
-  verifiedAt: artistData?.verifiedAt,
-  identityCard: artistData?.identityCard || {
-    number: "",
-    fullName: "",
-    dateOfBirth: "",
-    gender: UserGender.Male,
-    placeOfOrigin: "",
-    nationality: "",
-    validUntil: "",
-    placeOfResidence: {
-      street: "",
-      ward: "",
-      province: "",
-      oldDistrict: "",
-      oldWard: "",
-      oldProvince: "",
-      addressLine: "",
+const transformToModeratorArtist = (artistData: unknown): ModeratorArtistDetailResponse => {
+  const data = artistData as Record<string, unknown>;
+  return {
+    id: (data?.id as string) || "",
+    userId: (data?.userId as string) || "",
+    stageName: (data?.stageName as string) || "",
+    email: (data?.email as string) || "",
+    artistType: (data?.artistType as ArtistType) || ArtistType.Individual,
+    members: ((data?.members as Record<string, unknown>[]) || []).map((member) => ({
+      fullName: (member.fullName as string) || "",
+      email: (member.email as string) || "",
+      phoneNumber: (member.phoneNumber as string) || "",
+      isLeader: (member.isLeader as boolean) || false,
+      gender: (member.gender as UserGender) || UserGender.Male,
+    })),
+    categoryIds: (data?.categoryIds as string[]) || [],
+    biography: (data?.biography as string) || undefined,
+    followerCount: (data?.followerCount as number) || 0,
+    popularity: (data?.popularity as number) || 0,
+    avatarImage: (data?.avatarImage as string) || undefined,
+    bannerImage: (data?.bannerImage as string) || undefined,
+    isVerified: (data?.isVerified as boolean) || false,
+    verifiedAt: (data?.verifiedAt as string) || undefined,
+    identityCard: {
+      number: ((data?.identityCard as Record<string, unknown>)?.number as string) || "",
+      fullName: ((data?.identityCard as Record<string, unknown>)?.fullName as string) || "",
+      dateOfBirth: ((data?.identityCard as Record<string, unknown>)?.dateOfBirth as string) || "",
+      gender: ((data?.identityCard as Record<string, unknown>)?.gender as UserGender) || UserGender.Male,
+      placeOfOrigin: ((data?.identityCard as Record<string, unknown>)?.placeOfOrigin as string) || "",
+      nationality: ((data?.identityCard as Record<string, unknown>)?.nationality as string) || "",
+      validUntil: ((data?.identityCard as Record<string, unknown>)?.validUntil as string) || undefined,
+      placeOfResidence: {
+        street: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.street as string) || "",
+        ward: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.ward as string) || "",
+        province: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.province as string) || "",
+        oldDistrict: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.oldDistrict as string) || "",
+        oldWard: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.oldWard as string) || "",
+        oldProvince: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.oldProvince as string) || "",
+        addressLine: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.addressLine as string) || "",
+      },
     },
-  },
-  createdAt: artistData?.createdAt || new Date().toISOString(),
-  user: artistData?.user || { fullName: "", role: UserRole.Artist },
-});
+    createdAt: (data?.createdAt as string) || new Date().toISOString(),
+    user: (data?.user as { fullName: string; role: UserRole }) || { fullName: "", role: UserRole.Artist },
+  };
+};
 
-const transformToModeratorListener = (listenerData: any): ModeratorListenerDetailResponse => ({
-  id: listenerData?.id || "",
-  userId: listenerData?.userId || "",
-  displayName: listenerData?.displayName || "",
-  bannerImage: listenerData?.bannerImage,
-  avatarImage: listenerData?.avatarImage,
-  followerCount: listenerData?.followerCount || 0,
-  followingCount: listenerData?.followingCount || 0,
-    email: listenerData?.email || "",
-    isVerified: listenerData?.isVerified || false,
-    verifiedAt: listenerData?.verifiedAt,
-  createdAt: listenerData?.createdAt || new Date().toISOString(),
-  user: listenerData?.user || { fullName: "", role: UserRole.Listener },
-});
+const transformToModeratorListener = (listenerData: unknown): ModeratorListenerDetailResponse => {
+  const data = listenerData as Record<string, unknown>;
+  return {
+    id: (data?.id as string) || "",
+    userId: (data?.userId as string) || "",
+    displayName: (data?.displayName as string) || "",
+    bannerImage: (data?.bannerImage as string) || undefined,
+    avatarImage: (data?.avatarImage as string) || undefined,
+    followerCount: (data?.followerCount as number) || 0,
+    followingCount: (data?.followingCount as number) || 0,
+    email: (data?.email as string) || "",
+    isVerified: (data?.isVerified as boolean) || false,
+    verifiedAt: (data?.verifiedAt as string) || undefined,
+    createdAt: (data?.createdAt as string) || new Date().toISOString(),
+    user: (data?.user as { fullName: string; role: UserRole }) || { fullName: "", role: UserRole.Listener },
+  };
+};
 
 export function ModeratorUserDetailSection({ userId }: ModeratorUserDetailSectionProps) {
   const searchParams = useSearchParams();
@@ -130,8 +136,11 @@ export function ModeratorUserDetailSection({ userId }: ModeratorUserDetailSectio
   const listener = listenerQuery.data;
 
   // Transform data to component-compatible types
-  const transformedUser = artist?.user ? transformToModeratorUser(artist.user as ModeratorUserBasic, userId) : 
-                         listener?.user ? transformToModeratorUser(listener.user as ModeratorUserBasic, userId) : null;
+  const artistUser = Array.isArray(artist?.user) ? artist.user[0] : artist?.user;
+  const listenerUser = Array.isArray(listener?.user) ? listener.user[0] : listener?.user;
+  
+  const transformedUser = artistUser ? transformToModeratorUser(artistUser as unknown as ModeratorUserBasic, userId) : 
+                         listenerUser ? transformToModeratorUser(listenerUser as unknown as ModeratorUserBasic, userId) : null;
   const transformedArtist = artist ? transformToModeratorArtist(artist) : null;
   const transformedListener = listener ? transformToModeratorListener(listener) : null;
   

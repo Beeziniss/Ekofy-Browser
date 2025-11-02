@@ -1,4 +1,3 @@
-import React from "react";
 import TrackUploadSection from "../sections/track-upload-section";
 
 const TrackUploadView = () => {

@@ -1,31 +1,14 @@
-import { graphql } from "@/gql";
 import TrackTrendingSection from "../sections/track-trending-section";
-
-export const TrackListHomeQuery = graphql(`
-  query TrackListHome($take: Int!) {
-    tracks(take: $take) {
-      totalCount
-      items {
-        id
-        name
-        coverImage
-        mainArtistIds
-        mainArtistsAsync {
-          items {
-            id
-            stageName
-          }
-        }
-      }
-    }
-  }
-`);
+// import PlaylistTrendingSection from "../sections/playlist-trending-section";
 
 const HomeView = () => {
   return (
-    <div className="w-full p-2">
+    <div className="w-full space-y-4 p-2">
       {/* Trending section coming soon */}
       <TrackTrendingSection />
+
+      {/* Playlist Trending Section */}
+      {/* <PlaylistTrendingSection /> */}
     </div>
   );
 };

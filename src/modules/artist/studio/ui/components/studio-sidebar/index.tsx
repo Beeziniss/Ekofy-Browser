@@ -8,13 +8,14 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import {
-  Command,
+  // Command,
   AlbumIcon,
-  AudioWaveform,
+  // AudioWaveform,
   AudioLinesIcon,
-  GalleryVerticalEnd,
+  // GalleryVerticalEnd,
   LayoutDashboardIcon,
-  Music4Icon,
+  // Music4Icon,
+  LayoutPanelLeftIcon,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
@@ -48,6 +49,11 @@ const data = {
       url: "/artist/studio/albums",
       icon: AlbumIcon,
     },
+    {
+      name: "Service Packages",
+      url: "/artist/studio/service-package",
+      icon: LayoutPanelLeftIcon,
+    }
   ],
 };
 

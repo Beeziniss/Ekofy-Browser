@@ -1,6 +1,7 @@
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import React, { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 interface InfiniteScrollProps {
   isManual?: boolean;
@@ -43,10 +44,11 @@ const InfiniteScroll = ({
       <div ref={targetRef} className="h-1" />
       {hasNextPage ? (
         <Button
-          variant={"secondary"}
+          variant={"ekofy"}
           disabled={!hasNextPage || isFetchingNextPage}
           onClick={() => fetchNextPage()}
         >
+          {isFetchingNextPage && <Spinner />}
           {isFetchingNextPage ? "Loading..." : "Load more"}
         </Button>
       ) : (

@@ -1,15 +1,28 @@
-import { GetUserProfileQuery } from "@/modules/moderator/profile/ui/views/moderator-profile-view";
+import { GetUserProfileQuery } from "@/modules/shared/queries/moderator/moderator-profile-queries";
 import { 
   PendingArtistRegistrationsDetailQuery, 
-  ApproveArtistRegistrationMutation, 
-  RejectArtistRegistrationMutation 
-} from "@/modules/moderator/artist-approval/ui/views/artist-details-view";
-import { PendingArtistRegistrationsQuery } from "@/modules/moderator/artist-approval/ui/views/artist-approval-view";
+} from "@/modules/shared/queries/moderator/artist-approval-queries";
+import { PendingArtistRegistrationsQuery } from "@/modules/shared/queries/moderator/artist-approval-queries";
+import { ModeratorApprovalHistoryDetailQuery, ApprovalHistoriesListQuery } from "@/modules/shared/queries/moderator/approval-histories-queries";
+import { PendingArtistPackagesQuery } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { execute } from "../execute";
-import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserRole, UserFilterInput } from "@/gql/graphql";
-import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
-import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/moderator/user-management/ui/views/moderator-user-detail-view";
+import { queryOptions } from "@tanstack/react-query";
+import { 
+  UserRole, 
+  UserFilterInput, 
+  ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType, 
+  ApprovalHistoryFilterInput, 
+  ApprovalType,
+  PaginatedDataOfPendingArtistPackageResponseFilterInput,
+} from "@/gql/graphql";
+import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/shared/queries/moderator/user-management-queries";
+import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/shared/queries/moderator/user-management-queries";
+import { 
+  PENDING_TRACK_UPLOAD_REQUESTS_QUERY,
+  PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY,
+  ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY
+} from "@/modules/shared/queries/moderator/track-approval-queries";
+import { QUERY_USER_CREATED_BY } from "@/modules/shared/queries/moderator/track-approval-queries";
 
 export const moderatorProfileOptions = (userId: string) => queryOptions({
   queryKey: ["moderator-profile", userId],
@@ -28,10 +41,34 @@ export const moderatorProfileOptions = (userId: string) => queryOptions({
 export const moderatorArtistsQueryOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") => queryOptions({
   queryKey: ["artists", page, pageSize, searchTerm],
   queryFn: async () => {
-    const result = await execute(PendingArtistRegistrationsQuery, { 
+    // Build variables object with nested where filter for items
+    const variables: {
+      pageNumber: number;
+      pageSize: number;
+      where?: {
+        items?: {
+          some?: {
+            stageNameUnsigned?: { contains: string };
+          };
+        };
+      };
+    } = {
       pageNumber: page,
-      pageSize
-    });
+      pageSize,
+    };
+    
+    // Add nested stageNameUnsigned filter if searchTerm is provided
+    if (searchTerm && searchTerm.trim() !== "") {
+      variables.where = {
+        items: {
+          some: {
+            stageNameUnsigned: { contains: searchTerm.trim() }
+          }
+        }
+      };
+    }
+    
+    const result = await execute(PendingArtistRegistrationsQuery, variables) 
     
     return result;
   },
@@ -41,11 +78,11 @@ export const moderatorArtistDetailsQueryOptions = (userId: string) => queryOptio
   queryKey: ["artist-details", userId],
   queryFn: async () => {
     const result = await execute(PendingArtistRegistrationsDetailQuery, { 
-      id: userId
+      artistRegistrationId: userId
     });
     
     // Return first artist from items array
-    return result.pendingArtistRegistrations?.[0] || null;
+    return result.pendingArtistRegistrationById || null;
   },
 });
 
@@ -144,4 +181,159 @@ export const moderatorUserDetailOptions = (userId: string) => queryOptions({
       listeners: result.listeners?.items || [],
     };
   },
+});
+
+// Approval histories query options for moderator
+export const moderatorApprovalHistoriesOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") => queryOptions({
+  queryKey: ["moderator-approval-histories", page, pageSize, searchTerm],
+  queryFn: async () => {
+    const skip = (page - 1) * pageSize;
+    // const where: Record<string, unknown> = {};
+    // Add search filter if search term is provided
+    const where: ApprovalHistoryFilterInput = {
+      approvalType: { in: [ApprovalType.ArtistRegistration] }
+    };
+    if (searchTerm.trim()) {
+      where.snapshot = {
+        contains: searchTerm
+      };
+    }
+    const result = await execute(ApprovalHistoriesListQuery, { 
+      skip,
+      take: pageSize,
+      where
+    }) as { approvalHistories: { totalCount: number; items: unknown[]; pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean } } };
+    
+    return result;
+  },
+  placeholderData: (previousData) => previousData,
+});
+
+// Approval history detail query options for moderator
+export const moderatorApprovalHistoryDetailOptions = (historyId: string) => queryOptions({
+  queryKey: ["moderator-approval-history-detail", historyId],
+  queryFn: async () => {
+    const result = await execute(ModeratorApprovalHistoryDetailQuery, { 
+      where: { id: { eq: historyId } }
+    }) as ModeratorApprovalHistoryDetailQueryType;
+    
+    // Return first item from items array or null if not found
+    return result?.approvalHistories?.items?.[0] || null;
+  },
+});
+
+// Track approval query options for moderator
+export const moderatorPendingTracksOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") => queryOptions({
+  queryKey: ["moderator-pending-tracks", page, pageSize, searchTerm],
+  queryFn: async () => {
+    const variables: {
+      pageNumber: number;
+      pageSize: number;
+      where?: {
+        items?: {
+          some?: {
+            track?: {
+              name?: { contains: string };
+            };
+          };
+        };
+      };
+    } = {
+      pageNumber: page,
+      pageSize,
+    };
+    
+    // Add track name search filter if provided
+    if (searchTerm.trim()) {
+      variables.where = {
+        items: {
+          some: {
+            track: {
+              name: { contains: searchTerm }
+            }
+          }
+        }
+      };
+    }
+    
+    const result = await execute(PENDING_TRACK_UPLOAD_REQUESTS_QUERY, variables);
+    return result;
+  },
+  staleTime: 2 * 60 * 1000, // 2 minutes
+});
+
+// Track detail query options for moderator
+export const moderatorTrackDetailOptions = (uploadId: string) => queryOptions({
+  queryKey: ["moderator-track-detail", uploadId],
+  queryFn: async () => {
+    const result = await execute(PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY, {
+      uploadId: uploadId
+    });
+    
+    return result.pendingTrackUploadRequestById || null;
+  },
+  enabled: !!uploadId,
+  staleTime: 5 * 60 * 1000, // 5 minutes
+});
+
+// Original file track query options
+export const moderatorTrackOriginalFileOptions = (uploadId: string) => queryOptions({
+  queryKey: ["moderator-track-original-file", uploadId],
+  queryFn: async () => {
+    // First get the track details to get the track ID
+    const trackResult = await execute(PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY, { uploadId });
+    const trackId = trackResult.pendingTrackUploadRequestById?.track?.id;
+    
+    if (!trackId) {
+      throw new Error("Track ID not found");
+    }
+    
+    const result = await execute(ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY, { trackId });
+    return result.originalFileTrackUploadRequest;
+  },
+  enabled: !!uploadId,
+  staleTime: 10 * 60 * 1000, // 10 minutes
+});
+
+export const moderatorPendingPackagesOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = '') => queryOptions({
+  queryKey: ["moderator-pending-packages", page, pageSize, searchTerm],
+  queryFn: () => {
+    let where: PaginatedDataOfPendingArtistPackageResponseFilterInput | undefined = undefined;
+    
+    // Add packageName filter if search term is provided
+    if (searchTerm.trim()) {
+      where = {
+        items: {
+          some: {
+            packageName: { contains: searchTerm }
+          }
+        }
+      };
+    }
+    
+    return execute(PendingArtistPackagesQuery, {
+      pageNumber: page,
+      pageSize: pageSize,
+      where, // Apply search filter if provided
+      artistWhere: {} // Get all artists
+    });
+  },
+  staleTime: 1 * 60 * 1000, // 1 minute
+});
+
+// User created by query options for moderator (for track detail)
+export const moderatorUserCreatedByOptions = (userId: string) => queryOptions({
+  queryKey: ["user-created-by", userId],
+  queryFn: async () => {
+    const result = await execute(QUERY_USER_CREATED_BY, {
+      where: {
+        id: {
+          eq: userId
+        }
+      }
+    });
+    return result?.users?.items?.[0] || null;
+  },
+  enabled: !!userId,
+  staleTime: 5 * 60 * 1000, // 5 minutes
 });

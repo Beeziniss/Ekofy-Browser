@@ -1,0 +1,231 @@
+"use client";
+
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MessageCircle, Clock, Send, ChevronDown, ChevronUp, SquarePen } from "lucide-react";
+import { RequestsQuery } from "@/gql/graphql";
+import { userForRequestsOptions } from "@/gql/options/client-options";
+import { RequestHubCommentSection } from "./";
+import { cn } from "@/lib/utils";
+
+type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
+
+interface RequestCardProps {
+  request: RequestItem;
+  onViewDetails?: (id: string) => void;
+  onApply?: (id: string) => void;
+  onEdit?: (id: string) => void;
+  className?: string;
+  onSave?: (id: string) => void;
+  isOwner?: boolean;
+}
+
+export function RequestCard({ 
+  request, 
+  onViewDetails, 
+  onApply,
+  onEdit,
+  className,
+  isOwner = false
+}: RequestCardProps) {
+  const [showComments, setShowComments] = useState(false);
+  
+  // Fetch user data for the request creator
+  const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
+  
+  // Format status from GraphQL enum to display text
+  const formatStatus = (status: string) => {
+    switch (status) {
+      case 'Open':
+        return 'Open';
+      case 'Closed':
+        return 'Closed';
+      case 'Blocked':
+        return 'Blocked';
+      case 'Deleted':
+        return 'Deleted';
+      default:
+        return status;
+    }
+  };
+
+  // Get status color variant
+  const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+    switch (status) {
+      case 'Open':
+        return 'default';
+      case 'Closed':
+        return 'secondary';
+      case 'Blocked':
+        return 'destructive';
+      case 'Deleted':
+        return 'outline';
+      default:
+        return 'secondary';
+    }
+  };
+  
+  const handleToggleComments = () => {
+    setShowComments(!showComments);
+  };  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+    
+    if (diffHours < 24) {
+      return `${diffHours} hours ago`;
+    } else {
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    }
+  };
+
+  const formatBudget = (budget: { min: number; max: number }, currency: string) => {
+    const formatCurrency = (amount: number) => {
+      switch (currency.toUpperCase()) {
+        case 'VND':
+          return `${amount.toLocaleString()} VND`;
+        case 'USD':
+          return `$${amount.toLocaleString()}`;
+        case 'EUR':
+          return `€${amount.toLocaleString()}`;
+        default:
+          return `${amount.toLocaleString()} ${currency.toUpperCase()}`;
+      }
+    };
+
+    if (budget.min === budget.max) {
+      return formatCurrency(budget.min);
+    }
+    return `${formatCurrency(budget.min)} - ${formatCurrency(budget.max)}`;
+  };
+
+  const formatDeadline = (deadline: string | Date) => {
+    const date = typeof deadline === 'string' ? new Date(deadline) : deadline;
+    return date.toLocaleDateString();
+  };
+
+  return (
+    <Card className={cn("w-full hover:shadow-md transition-shadow", className)}>
+      <CardContent className="p-6">
+        {/* Header with Avatar and Save Button */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <Avatar className="h-12 w-12">
+              <AvatarFallback className="bg-gray-200 text-gray-600">
+                {requestUser?.fullName?.charAt(0).toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h4 className="font-medium text-white">
+                {requestUser?.fullName || `User ${request.requestUserId.slice(-4)}`}
+              </h4>
+              <p className="text-sm text-white">
+                {formatTimeAgo(request.createdAt)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Title */}
+        <h3 className="text-lg font-semibold text-white mb-3 line-clamp-2 cursor-pointer hover:text-gray-300" 
+            onClick={() => onViewDetails?.(request.id)}>
+          {request.title}
+        </h3>
+
+        {/* Summary */}
+        <p className="text-white mb-4 line-clamp-3 text-sm leading-relaxed">
+          {request.summary}
+        </p>
+
+        {/* Status Badge */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          <Badge 
+            variant={getStatusVariant(request.status)}
+            className="text-xs"
+          >
+            {formatStatus(request.status)}
+          </Badge>
+        </div>
+
+        {/* Budget and Deadline */}
+        <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+          <div>
+            <p className="text-white mb-1">Budget</p>
+            <p className="font-medium text-primary-gradient">
+              {formatBudget(request.budget, request.currency)}
+            </p>
+          </div>
+          <div>
+            <p className="text-white mb-1">
+              <Clock className="h-3 w-3 inline mr-1" />
+              Deadline
+            </p>
+            <p className="font-medium text-primary-gradient">{formatDeadline(request.deadline)}</p>
+          </div>
+        </div>
+
+        {/* Footer with Action Buttons */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleToggleComments}
+            className="flex items-center text-sm text-gray-500 hover:text-primary p-0"
+          >
+            <MessageCircle className="h-4 w-4 mr-1" />
+            View Comments
+            {showComments ? (
+              <ChevronUp className="h-4 w-4 ml-1" />
+            ) : (
+              <ChevronDown className="h-4 w-4 ml-1" />
+            )}
+          </Button>
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onViewDetails?.(request.id)}
+              className="text-sm"
+            >
+              View Details
+            </Button>
+            {isOwner && onEdit ? (
+              <Button 
+                size="sm"
+                onClick={() => onEdit(request.id)}
+                className="primary_gradient hover:opacity-65 text-white text-sm"
+              >
+                <SquarePen className="h-3 w-3 mr-1" />
+                Edit
+              </Button>
+            ) : (
+              <Button 
+                size="sm"
+                onClick={() => onApply?.(request.id)}
+                className="primary_gradient hover:opacity-65 text-white text-sm"
+              >
+                <Send className="h-3 w-3 mr-1" />
+                Apply Now
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+
+      {/* Comments Section */}
+      {showComments && (
+        <div className="border-t border-gray-100">
+          <RequestHubCommentSection
+            requestId={request.id}
+          />
+        </div>
+      )}
+    </Card>
+  );
+}

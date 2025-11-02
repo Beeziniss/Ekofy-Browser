@@ -43,7 +43,7 @@ export function ModeratorArtistTeamMembers({ members }: ModeratorArtistTeamMembe
         <div className="text-center py-12">
           <div className="text-gray-400 mb-4">No team members found</div>
           <p className="text-gray-500 text-sm">
-            This artist doesn't have any registered team members.
+            This artist doesn`t have any registered team members.
           </p>
         </div>
       )}

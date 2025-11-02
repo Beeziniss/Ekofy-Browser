@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import EkofyLogo from '../../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
@@ -22,8 +22,8 @@ import {
 import useModeratorSignIn from '../../hook/use-moderator-sign-in';
 
 const moderatorLoginSchema = z.object({
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email("Please enter a valid email address").max(50, "Email must be less than 50 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(50, "Password must be less than 50 characters"),
   rememberMe: z.boolean(),
 });
 
@@ -31,7 +31,7 @@ type ModeratorLoginFormData = z.infer<typeof moderatorLoginSchema>;
 
 const ModeratorLoginFormSection = () => {
   const [showPassword, setShowPassword] = useState(false); 
-  const { signIn, isLoading, error } = useModeratorSignIn();
+  const { signIn, isLoading } = useModeratorSignIn();
 
   const form = useForm<ModeratorLoginFormData>({
     resolver: zodResolver(moderatorLoginSchema),
@@ -63,13 +63,6 @@ const ModeratorLoginFormSection = () => {
           <h2 className="text-4xl font-bold text-white mb-8">Welcome Back, Moderator</h2>
         </div>
 
-      {/* Error Display */}
-        {error && (
-          <div className="mb-4 rounded-md border border-red-500 bg-red-900/50 px-4 py-3 text-sm text-red-200">
-            {error.message}
-          </div>
-        )}
-
 
         {/* Login Form */}
         <Form {...form}>
@@ -89,6 +82,7 @@ const ModeratorLoginFormSection = () => {
                   {...field}
                   disabled={isLoading}
                   placeholder="Enter your email"
+                  maxLength={50}
                   className="border-gradient-input h-12 w-full text-white placeholder-gray-400"
                 />
                 </FormControl>
@@ -111,6 +105,7 @@ const ModeratorLoginFormSection = () => {
                       type={showPassword ? "text" : "password"}
                       disabled={isLoading}
                       placeholder="Enter your password"
+                      maxLength={50}
                       className="border-gradient-input h-12 w-full text-white placeholder-gray-400 pr-10"
                       {...field}
                     />

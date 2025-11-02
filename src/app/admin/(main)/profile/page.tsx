@@ -8,11 +8,15 @@ import { adminProfileOptions } from "@/gql/options/admin-options";
 
 const ProfilePage = () => {
   const queryClient = getQueryClient();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
 
-  const userId = user?.userId || ""; // Get user ID from auth context
+  const userId = user?.userId; // Get user ID from auth context
 
-  void queryClient.prefetchQuery(adminProfileOptions(userId));
+  // Only prefetch query if user is authenticated and has userId
+  if (isAuthenticated && userId) {
+    void queryClient.prefetchQuery(adminProfileOptions(userId));
+  }
+  
   return (
     <div>
       <HydrationBoundary state={dehydrate(queryClient)}>

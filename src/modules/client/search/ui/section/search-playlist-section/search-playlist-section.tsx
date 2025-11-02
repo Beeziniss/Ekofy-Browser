@@ -3,9 +3,11 @@ import { GenericActionMenu } from '../../component/generic-action-menu';
 import { PlayPauseButton } from '../../component/play-pause-button';
 import { Button } from '@/components/ui/button';
 import { usePlayPause } from '@/hooks/use-play-pause';
+import { SearchPlaylistItem } from '@/types';
+import Image from 'next/image';
 
 interface SearchPlaylistSectionProps {
-  playlists: any[];
+  playlists: SearchPlaylistItem[];
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   fetchNextPage?: () => void;
@@ -54,9 +56,11 @@ export const SearchPlaylistSection: React.FC<SearchPlaylistSectionProps> = ({
             className="bg-gray-900 rounded-lg p-4 hover:bg-gray-800 transition-colors cursor-pointer group"
           >
             <div className="relative mb-4">
-              <img
+              <Image
                 src={playlist.coverImage || "/default-playlist.png"}
                 alt={playlist.name}
+                width={200}
+                height={200}
                 className="w-full aspect-square rounded-lg object-cover"
               />
               {/* Play/Pause button overlay */}

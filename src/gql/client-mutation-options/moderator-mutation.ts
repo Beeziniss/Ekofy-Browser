@@ -1,13 +1,14 @@
 import { 
   ApproveArtistRegistrationMutation, 
   RejectArtistRegistrationMutation 
-} from "@/modules/moderator/artist-approval/ui/views/artist-details-view";
+} from "@/modules/shared/mutations/moderator/artist-approval-mutation";
 import { 
   DeActiveUserMutation, 
   ReActiveUserMutation 
-} from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
+} from "@/modules/shared/mutations/moderator/user-management-mutation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { execute } from "../execute";
+import { ApproveTrackUploadRequestMutation, RejectTrackUploadRequestMutation } from "@/modules/shared/queries/moderator/track-approval-queries";
 
 export const useApproveArtistRegistration = () => {
   const queryClient = useQueryClient();
@@ -72,3 +73,40 @@ export const useReActiveUser = () => {
     },
   });
 };
+
+// Export the service package mutations from the artist service package mutation file
+export { 
+  useApproveArtistPackage,
+  useRejectArtistPackage 
+} from './artist-service-package-mutation';
+
+// Track mutations with enhanced feedback
+export const useApproveTrackWithFeedback = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (uploadId: string) => {
+      return await execute(ApproveTrackUploadRequestMutation, { uploadId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["moderator-pending-tracks"] });
+    },
+  });
+};
+
+export const useRejectTrackWithFeedback = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ uploadId, reasonReject }: { uploadId: string; reasonReject: string }) => {
+      return await execute(RejectTrackUploadRequestMutation, { uploadId, reasonReject });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["moderator-pending-tracks"] });
+    },
+  });
+};
+
+// Legacy aliases for backward compatibility
+export const useApproveTrackUploadRequest = useApproveTrackWithFeedback;
+export const useRejectTrackUploadRequest = useRejectTrackWithFeedback;

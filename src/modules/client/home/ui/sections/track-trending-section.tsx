@@ -14,13 +14,23 @@ const TrackTrendingSection = () => {
 };
 
 const TrackTrendingSkeleton = () => {
-  return <TrackCarousel data={{}} isLoading />;
+  return (
+    <div className="w-full space-y-6 px-4">
+      <div className="text-xl font-semibold">Trending Tracks</div>
+      <TrackCarousel data={{}} isLoading />
+    </div>
+  );
 };
 
 const TrackTrendingSectionSuspense = () => {
   const { data, isPending } = useSuspenseQuery(trackListHomeOptions);
 
-  return <TrackCarousel data={data} isLoading={isPending} />;
+  return (
+    <div className="w-full space-y-6 px-4">
+      <div className="text-xl font-semibold">Trending Tracks</div>
+      <TrackCarousel data={data} isLoading={isPending} />
+    </div>
+  );
 };
 
 export default TrackTrendingSection;

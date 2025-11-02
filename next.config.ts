@@ -11,11 +11,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "placehold.co",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
         hostname: "www.onlandscape.co.uk",
         pathname: "/**",
       },
@@ -32,6 +27,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "cdn.discordapp.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "placehold.co",
         pathname: "/**",
       },
     ],

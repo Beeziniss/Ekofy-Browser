@@ -231,15 +231,17 @@ const PlaylistInfoSectionSuspense = ({
       </div>
 
       {/* Edit Playlist Modal */}
-      <PlaylistManagementModal
-        mode="edit"
-        open={editModalOpen}
-        onOpenChange={setEditModalOpen}
-        initialData={playlistForEdit}
-        onSuccess={() => {
-          // The modal handles query invalidation internally
-        }}
-      />
+      {playlistData && (
+        <PlaylistManagementModal
+          mode="edit"
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+          initialData={playlistForEdit}
+          onSuccess={() => {
+            // The modal handles query invalidation internally
+          }}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       {playlistData && (
