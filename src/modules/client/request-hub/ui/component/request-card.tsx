@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MessageCircle, Clock, Send, ChevronDown, ChevronUp, SquarePen } from "lucide-react";
 import { RequestsQuery } from "@/gql/graphql";
 import { userForRequestsOptions } from "@/gql/options/client-options";
-import { CommentSection } from "./comment-section";
+import { RequestHubCommentSection } from "./";
 import { cn } from "@/lib/utils";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
@@ -69,101 +69,9 @@ export function RequestCard({
     }
   };
   
-  const [comments, setComments] = useState([
-    {
-      id: "1",
-      author: {
-        name: "Sarah Johnson",
-        avatar: undefined
-      },
-      content: "This sounds like an interesting project! I have 8 years of experience with jazz saxophone and would love to discuss this opportunity.",
-      timestamp: "2024-10-29T10:30:00Z",
-      likes: 3,
-      isLiked: false,
-      replies: [
-        {
-          id: "1-1",
-          author: {
-            name: "Marcus Chen",
-            avatar: undefined
-          },
-          content: "Thanks for your interest! Can you share some samples of your previous work?",
-          timestamp: "2024-10-29T11:00:00Z",
-          likes: 1,
-          isLiked: false
-        }
-      ]
-    },
-    {
-      id: "2",
-      author: {
-        name: "Mike Davis",
-        avatar: undefined
-      },
-      content: "What's the timeline for this recording? I'm available next week.",
-      timestamp: "2024-10-29T09:15:00Z",
-      likes: 1,
-      isLiked: true
-    }
-  ]);
-
   const handleToggleComments = () => {
     setShowComments(!showComments);
-  };
-
-  const handleAddComment = (content: string) => {
-    const newComment = {
-      id: Date.now().toString(),
-      author: {
-        name: "Current User", // This would come from auth context
-        avatar: undefined
-      },
-      content,
-      timestamp: new Date().toISOString(),
-      likes: 0,
-      isLiked: false
-    };
-    setComments([...comments, newComment]);
-  };
-
-  const handleLikeComment = (commentId: string) => {
-    setComments(comments.map(comment => {
-      if (comment.id === commentId) {
-        return {
-          ...comment,
-          isLiked: !comment.isLiked,
-          likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1
-        };
-      }
-      return comment;
-    }));
-  };
-
-  const handleReplyComment = (commentId: string, content: string) => {
-    const newReply = {
-      id: `${commentId}-${Date.now()}`,
-      author: {
-        name: "Current User", // This would come from auth context
-        avatar: undefined
-      },
-      content,
-      timestamp: new Date().toISOString(),
-      likes: 0,
-      isLiked: false
-    };
-
-    setComments(comments.map(comment => {
-      if (comment.id === commentId) {
-        return {
-          ...comment,
-          replies: [...(comment.replies || []), newReply]
-        };
-      }
-      return comment;
-    }));
-  };
-
-  const formatTimeAgo = (dateString: string) => {
+  };  const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
@@ -313,12 +221,8 @@ export function RequestCard({
       {/* Comments Section */}
       {showComments && (
         <div className="border-t border-gray-100">
-          <CommentSection
+          <RequestHubCommentSection
             requestId={request.id}
-            comments={comments}
-            onAddComment={handleAddComment}
-            onLikeComment={handleLikeComment}
-            onReplyComment={handleReplyComment}
           />
         </div>
       )}

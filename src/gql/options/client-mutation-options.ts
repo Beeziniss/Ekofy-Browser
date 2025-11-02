@@ -7,6 +7,11 @@ import {
   TrackCommentUpdateMutation,
 } from "@/modules/shared/mutations/client/track-comment-mutations";
 import {
+  RequestHubCommentCreateMutation,
+  RequestHubCommentDeleteMutation,
+  RequestHubCommentUpdateMutation,
+} from "@/modules/shared/mutations/client/request-hub-comment-mutation";
+import {
   UserFollowMutation,
   UserUnfollowMutation,
 } from "@/modules/shared/mutations/client/user-mutations";
@@ -125,6 +130,28 @@ export const deleteTrackCommentMutationOptions = mutationOptions({
   mutationKey: ["delete-track-comment"],
   mutationFn: async (commentId: string) =>
     await execute(TrackCommentDeleteMutation, { commentId }),
+});
+
+export const createRequestHubCommentMutationOptions = mutationOptions({
+  mutationKey: ["create-request-hub-comment"],
+  mutationFn: async (input: {
+    targetId: string;
+    commentType: CommentType;
+    content: string;
+    parentCommentId?: string;
+  }) => await execute(RequestHubCommentCreateMutation, input),
+});
+
+export const updateRequestHubCommentMutationOptions = mutationOptions({
+  mutationKey: ["update-request-hub-comment"],
+  mutationFn: async (input: { commentId: string; content: string }) =>
+    await execute(RequestHubCommentUpdateMutation, input),
+});
+
+export const deleteRequestHubCommentMutationOptions = mutationOptions({
+  mutationKey: ["delete-request-hub-comment"],
+  mutationFn: async (commentId: string) =>
+    await execute(RequestHubCommentDeleteMutation, { commentId }),
 });
 
 export const userFollowMutationOptions = mutationOptions({

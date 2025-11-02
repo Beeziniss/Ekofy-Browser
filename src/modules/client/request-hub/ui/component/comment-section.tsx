@@ -1,275 +1,163 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Send, Heart, Reply, MoreHorizontal } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SendIcon, MessageSquare } from "lucide-react";
+import RequestHubCommentUser from "./request-hub-comment-user";
+import {
+  useMutation,
+  useSuspenseQuery,
+  useQueryClient,
+  useQuery,
+} from "@tanstack/react-query";
+import { createRequestHubCommentMutationOptions } from "@/gql/options/client-mutation-options";
+import { CommentType } from "@/gql/graphql";
+import { requestHubCommentsOptions, userForRequestsOptions } from "@/gql/options/client-options";
+import { useState } from "react";
+import { useAuthStore } from "@/store";
 
-interface Comment {
-  id: string;
-  author: {
-    name: string;
-    avatar?: string;
-  };
-  content: string;
-  timestamp: string;
-  likes: number;
-  isLiked: boolean;
-  replies?: Comment[];
-}
-
-interface CommentSectionProps {
+interface RequestHubCommentSectionProps {
   requestId: string;
-  comments: Comment[];
-  onAddComment: (content: string) => void;
-  onLikeComment: (commentId: string) => void;
-  onReplyComment: (commentId: string, content: string) => void;
-  className?: string;
 }
 
-// Move CommentItem outside to prevent re-creation
-interface CommentItemProps {
-  comment: Comment;
-  isReply?: boolean;
-  replyingTo: string | null;
-  replyContents: Record<string, string>;
-  onLikeComment: (commentId: string) => void;
-  onSetReplyingTo: (commentId: string | null) => void;
-  onSetReplyContent: (commentId: string, content: string) => void;
-  onSubmitReply: (commentId: string) => void;
-  formatTimeAgo: (timestamp: string) => string;
-}
+const RequestHubCommentSection = ({
+  requestId,
+}: RequestHubCommentSectionProps) => {
+  const queryClient = useQueryClient();
+  const [comment, setComment] = useState("");
+  const { user } = useAuthStore();
 
-function CommentItem({
-  comment,
-  isReply = false,
-  replyingTo,
-  replyContents,
-  onLikeComment,
-  onSetReplyingTo,
-  onSetReplyContent,
-  onSubmitReply,
-  formatTimeAgo
-}: CommentItemProps) {
+  // Fetch current user data for avatar and name
+  const { data: currentUserData } = useQuery({
+    ...userForRequestsOptions(user?.userId || ""),
+    enabled: !!user?.userId,
+  });
+
+  const { data: commentsData } = useSuspenseQuery(
+    requestHubCommentsOptions(requestId),
+  );
+  const { mutate: createComment, isPending } = useMutation({
+    ...createRequestHubCommentMutationOptions,
+    onSuccess: () => {
+      // Invalidate and refetch comments after successful creation
+      queryClient.invalidateQueries({
+        queryKey: ["request-hub-comments", requestId],
+      });
+    },
+  });
+
+  const handleCreateComment = (content: string) => {
+    createComment({
+      targetId: requestId,
+      commentType: CommentType.RequestHub,
+      content,
+    });
+  };
+
+  const handleSubmitComment = () => {
+    if (comment.trim() && !isPending) {
+      handleCreateComment(comment.trim());
+      setComment("");
+    }
+  };
+
   return (
-    <div className={cn("space-y-3", isReply && "ml-8 border-l-2 pl-4")}>
-      <div className="flex space-x-3">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src={comment.author.avatar} />
-          <AvatarFallback className="bg-gray-700 text-gray-200 text-xs">
-            {comment.author.name.charAt(0).toUpperCase()}
+    <div className="w-full space-y-6 p-4 rounded-lg border border-gray-700/50">
+      {/* Comments Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <MessageSquare className="w-5 h-5 text-purple-400" />
+          <span className="text-white text-lg font-semibold">
+            {commentsData.threadedComments.totalThreads || 0} Comments
+          </span>
+        </div>
+
+        <Select defaultValue="sort-newest">
+          <SelectTrigger className="w-[140px] bg-gray-800 border-gray-600 text-gray-200">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent side="bottom" align="end" className="bg-gray-800 border-gray-600">
+            <SelectGroup>
+              <SelectLabel className="text-gray-400">Sort Options</SelectLabel>
+              <SelectItem value="sort-newest" className="text-gray-200 focus:bg-gray-700">Newest First</SelectItem>
+              <SelectItem value="sort-most-liked" className="text-gray-200 focus:bg-gray-700">Most Liked</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Comment Input */}
+      <div className="flex items-start gap-3 p-4 rounded-lg border border-gray-700/30">
+        <Avatar className="w-10 h-10 border-2 border-purple-500/30">
+          <AvatarImage
+            src={undefined}
+            alt={currentUserData?.fullName || "User"}
+          />
+          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-sm font-medium">
+            {currentUserData?.fullName?.slice(0, 2).toUpperCase() || "U"}
           </AvatarFallback>
         </Avatar>
-        
-        <div className="flex-1 space-y-2">
-          <div className="flex items-center space-x-2">
-            <span className="font-medium text-sm text-white">
-              {comment.author.name}
-            </span>
-            <span className="text-xs text-gray-400">
-              {formatTimeAgo(comment.timestamp)}
-            </span>
-          </div>
-          
-          <p className="text-sm text-gray-300 leading-relaxed">
-            {comment.content}
-          </p>
-          
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onLikeComment(comment.id)}
-              className="h-6 px-2 text-xs text-gray-400 hover:text-red-500"
-            >
-              <Heart 
-                className={cn(
-                  "h-3 w-3 mr-1", 
-                  comment.isLiked ? "fill-current text-red-500" : ""
-                )} 
-              />
-              {comment.likes}
-            </Button>
-            
-            {!isReply && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onSetReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                className="h-6 px-2 text-xs text-gray-400 hover:text-blue-500"
-              >
-                <Reply className="h-3 w-3 mr-1" />
-                Reply
-              </Button>
-            )}
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 px-1 text-gray-400 hover:text-gray-600"
-            >
-              <MoreHorizontal className="h-3 w-3" />
-            </Button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Reply Input */}
-      {replyingTo === comment.id && (
-        <div className="ml-11 space-y-2">
-          <Textarea
-            value={replyContents[comment.id] || ""}
-            onChange={(e) => onSetReplyContent(comment.id, e.target.value)}
-            placeholder="Write a reply..."
-            className="min-h-[60px] text-sm resize-none bg-gray-800 border-gray-700 text-white placeholder-gray-400"
-            autoFocus
-          />
-          <div className="flex space-x-2">
-            <Button
-              size="sm"
-              onClick={() => onSubmitReply(comment.id)}
-              disabled={!(replyContents[comment.id] || "").trim()}
-              className="primary_gradient text-white text-xs"
-            >
-              <Send className="h-3 w-3 mr-1" />
-              Reply
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                onSetReplyingTo(null);
-                onSetReplyContent(comment.id, "");
+
+        <div className="flex-1 space-y-3">
+          <div className="relative">
+            <Input
+              placeholder="Share your thoughts on this request..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmitComment();
+                }
               }}
-              className="text-xs border-gray-600 text-gray-300 hover:bg-gray-700"
+              className="bg-gray-700/50 border-gray-600/50 text-gray-100 placeholder-gray-400 rounded-lg px-4 py-3 pr-16 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30"
+            />
+
+            <Button
+              onClick={handleSubmitComment}
+              disabled={!comment.trim() || isPending}
+              size="sm"
+              className="absolute right-0.5 top-1/2 -translate-y-1/2 primary_gradient hover:opacity-70 text-white border-0 px-3 py-1.5 disabled:cursor-not-allowed"
             >
-              Cancel
+              <SendIcon className="w-4 h-4 mr-1" />
+              {isPending ? "Posting..." : "Comment"}
             </Button>
           </div>
         </div>
-      )}
-      
-      {/* Replies */}
-      {comment.replies && comment.replies.length > 0 && (
-        <div className="space-y-3">
-          {comment.replies.map((reply) => (
-            <CommentItem
-              key={reply.id}
-              comment={reply}
-              isReply={true}
-              replyingTo={replyingTo}
-              replyContents={replyContents}
-              onLikeComment={onLikeComment}
-              onSetReplyingTo={onSetReplyingTo}
-              onSetReplyContent={onSetReplyContent}
-              onSubmitReply={onSubmitReply}
-              formatTimeAgo={formatTimeAgo}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function CommentSection({
-  comments,
-  onAddComment,
-  onLikeComment,
-  onReplyComment,
-  className
-}: CommentSectionProps) {
-  const [newComment, setNewComment] = useState("");
-  const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [replyContents, setReplyContents] = useState<Record<string, string>>({});
-
-  const formatTimeAgo = useCallback((timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffMinutes = Math.ceil(diffTime / (1000 * 60));
-    
-    if (diffMinutes < 60) {
-      return `${diffMinutes}m ago`;
-    } else if (diffMinutes < 1440) {
-      const diffHours = Math.ceil(diffMinutes / 60);
-      return `${diffHours}h ago`;
-    } else {
-      const diffDays = Math.ceil(diffMinutes / 1440);
-      return `${diffDays}d ago`;
-    }
-  }, []);
-
-  const handleSubmitComment = useCallback(() => {
-    if (newComment.trim()) {
-      onAddComment(newComment.trim());
-      setNewComment("");
-    }
-  }, [newComment, onAddComment]);
-
-  const handleSubmitReply = useCallback((commentId: string) => {
-    const replyContent = replyContents[commentId] || "";
-    if (replyContent.trim()) {
-      onReplyComment(commentId, replyContent.trim());
-      setReplyContents(prev => ({ ...prev, [commentId]: "" }));
-      setReplyingTo(null);
-    }
-  }, [replyContents, onReplyComment]);
-
-  const handleSetReplyContent = useCallback((commentId: string, content: string) => {
-    setReplyContents(prev => ({ ...prev, [commentId]: content }));
-  }, []);
-
-  return (
-    <div className={cn("p-4 space-y-4", className)}>
-      <h4 className="font-medium text-white">
-        Comments ({comments.length})
-      </h4>
-      
-      {/* Add New Comment */}
-      <div className="space-y-3">
-        <Textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-          className="min-h-[80px] resize-none bg-gray-800 border-gray-700 text-white placeholder-gray-400"
-        />
-        <div className="flex justify-end">
-          <Button
-            onClick={handleSubmitComment}
-            disabled={!newComment.trim()}
-            className="primary_gradient text-white"
-          >
-            <Send className="h-4 w-4 mr-1" />
-            Comment
-          </Button>
-        </div>
       </div>
-      
+
       {/* Comments List */}
       <div className="space-y-4">
-        {comments.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
-            <p>No comments yet. Be the first to comment!</p>
-          </div>
-        ) : (
-          comments.map((comment) => (
-            <CommentItem
-              key={comment.id}
-              comment={comment}
-              replyingTo={replyingTo}
-              replyContents={replyContents}
-              onLikeComment={onLikeComment}
-              onSetReplyingTo={setReplyingTo}
-              onSetReplyContent={handleSetReplyContent}
-              onSubmitReply={handleSubmitReply}
-              formatTimeAgo={formatTimeAgo}
-            />
+        {commentsData.threadedComments.threads &&
+        commentsData.threadedComments.threads.length > 0 ? (
+          commentsData.threadedComments.threads.map((thread, index) => (
+            <div key={`${thread.rootComment.id}-${index}`} className="rounded-lg p-4 border border-gray-700/30">
+              <RequestHubCommentUser
+                thread={thread}
+                requestId={requestId}
+              />
+            </div>
           ))
+        ) : (
+          <div className="text-center py-12">
+            <MessageSquare className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+            <p className="text-gray-400 text-lg font-medium mb-2">No comments yet</p>
+            <p className="text-gray-500 text-sm">Be the first to share your thoughts on this request!</p>
+          </div>
         )}
       </div>
     </div>
   );
-}
+};
+
+export default RequestHubCommentSection;

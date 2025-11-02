@@ -2064,6 +2064,7 @@ export type MutationInitialization = {
   createArtistPackage: Scalars['Boolean']['output'];
   createBillingPortalConfiguration: Scalars['Boolean']['output'];
   createCategory: Scalars['Boolean']['output'];
+  createComment: Scalars['Boolean']['output'];
   createCoupon: Scalars['Boolean']['output'];
   createCustomerPortalSession: Scalars['String']['output'];
   createEntitlement: Scalars['Boolean']['output'];
@@ -2081,12 +2082,11 @@ export type MutationInitialization = {
   createSubscription: Scalars['Boolean']['output'];
   createSubscriptionCheckoutSession: CheckoutSessionResponse;
   createSubscriptionPlan: Scalars['Boolean']['output'];
-  createTrackComment: Scalars['Boolean']['output'];
   deactiveEntitlement: Scalars['Boolean']['output'];
   deleteArtistPackage: Scalars['Boolean']['output'];
+  deleteComment: Scalars['Boolean']['output'];
   deleteCoupon: Scalars['Boolean']['output'];
   deletePlaylist: Scalars['Boolean']['output'];
-  deleteTrackComment: Scalars['Boolean']['output'];
   deleteUserManual: Scalars['Boolean']['output'];
   deprecateCoupon: Scalars['Boolean']['output'];
   deprecateSubscription: Scalars['Boolean']['output'];
@@ -2112,12 +2112,12 @@ export type MutationInitialization = {
   unfollowUser: Scalars['Boolean']['output'];
   updateArtistPackage: Scalars['Boolean']['output'];
   updateArtistProfile: Scalars['Boolean']['output'];
+  updateComment: Scalars['Boolean']['output'];
   updateEscrowCommissionPolicy: Scalars['Boolean']['output'];
   updateListenerProfile: Scalars['Boolean']['output'];
   updatePlaylist: Scalars['Boolean']['output'];
   updateRequest: Scalars['Boolean']['output'];
   updateRoyaltyPolicy: Scalars['Boolean']['output'];
-  updateTrackComment: Scalars['Boolean']['output'];
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
   upsertTopTrackCount: Scalars['Boolean']['output'];
@@ -2194,6 +2194,11 @@ export type MutationInitializationCreateBillingPortalConfigurationArgs = {
 
 export type MutationInitializationCreateCategoryArgs = {
   categoryRequest: CreateCategoryRequestInput;
+};
+
+
+export type MutationInitializationCreateCommentArgs = {
+  request: CreateCommentRequestInput;
 };
 
 
@@ -2284,11 +2289,6 @@ export type MutationInitializationCreateSubscriptionPlanArgs = {
 };
 
 
-export type MutationInitializationCreateTrackCommentArgs = {
-  request: CreateCommentRequestInput;
-};
-
-
 export type MutationInitializationDeactiveEntitlementArgs = {
   code: Scalars['String']['input'];
 };
@@ -2299,6 +2299,11 @@ export type MutationInitializationDeleteArtistPackageArgs = {
 };
 
 
+export type MutationInitializationDeleteCommentArgs = {
+  request: DeleteCommentRequestInput;
+};
+
+
 export type MutationInitializationDeleteCouponArgs = {
   couponIds: Array<Scalars['String']['input']>;
 };
@@ -2306,11 +2311,6 @@ export type MutationInitializationDeleteCouponArgs = {
 
 export type MutationInitializationDeletePlaylistArgs = {
   playlistId: Scalars['String']['input'];
-};
-
-
-export type MutationInitializationDeleteTrackCommentArgs = {
-  request: DeleteCommentRequestInput;
 };
 
 
@@ -2434,6 +2434,11 @@ export type MutationInitializationUpdateArtistProfileArgs = {
 };
 
 
+export type MutationInitializationUpdateCommentArgs = {
+  request: UpdateTrackCommentRequestInput;
+};
+
+
 export type MutationInitializationUpdateEscrowCommissionPolicyArgs = {
   updateRequest: UpdateEscrowCommissionPolicyRequestInput;
 };
@@ -2456,11 +2461,6 @@ export type MutationInitializationUpdateRequestArgs = {
 
 export type MutationInitializationUpdateRoyaltyPolicyArgs = {
   updateRoyalPolicyRequest: UpdateRoyalPolicyRequestInput;
-};
-
-
-export type MutationInitializationUpdateTrackCommentArgs = {
-  request: UpdateTrackCommentRequestInput;
 };
 
 
@@ -5210,6 +5210,31 @@ export type RemoveFromPlaylistMutationVariables = Exact<{
 
 export type RemoveFromPlaylistMutation = { __typename?: 'MutationInitialization', removeFromPlaylist: boolean };
 
+export type UpdateRequestHubCommentMutationVariables = Exact<{
+  commentId: Scalars['String']['input'];
+  content: Scalars['String']['input'];
+}>;
+
+
+export type UpdateRequestHubCommentMutation = { __typename?: 'MutationInitialization', updateComment: boolean };
+
+export type DeleteRequestHubCommentMutationVariables = Exact<{
+  commentId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteRequestHubCommentMutation = { __typename?: 'MutationInitialization', deleteComment: boolean };
+
+export type CreateRequestHubCommentMutationVariables = Exact<{
+  targetId: Scalars['String']['input'];
+  commentType: CommentType;
+  content: Scalars['String']['input'];
+  parentCommentId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CreateRequestHubCommentMutation = { __typename?: 'MutationInitialization', createComment: boolean };
+
 export type CreateRequestMutationVariables = Exact<{
   request: RequestCreatingRequestInput;
 }>;
@@ -5237,14 +5262,14 @@ export type UpdateTrackCommentMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTrackCommentMutation = { __typename?: 'MutationInitialization', updateTrackComment: boolean };
+export type UpdateTrackCommentMutation = { __typename?: 'MutationInitialization', updateComment: boolean };
 
 export type DeleteTrackCommentMutationVariables = Exact<{
   commentId: Scalars['String']['input'];
 }>;
 
 
-export type DeleteTrackCommentMutation = { __typename?: 'MutationInitialization', deleteTrackComment: boolean };
+export type DeleteTrackCommentMutation = { __typename?: 'MutationInitialization', deleteComment: boolean };
 
 export type CreateTrackCommentMutationVariables = Exact<{
   targetId: Scalars['String']['input'];
@@ -5254,7 +5279,7 @@ export type CreateTrackCommentMutationVariables = Exact<{
 }>;
 
 
-export type CreateTrackCommentMutation = { __typename?: 'MutationInitialization', createTrackComment: boolean };
+export type CreateTrackCommentMutation = { __typename?: 'MutationInitialization', createComment: boolean };
 
 export type FavoriteTrackMutationVariables = Exact<{
   trackId: Scalars['String']['input'];
@@ -5295,6 +5320,20 @@ export type PlaylistsHomeQueryVariables = Exact<{
 
 
 export type PlaylistsHomeQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, userId: string, isPublic: boolean, checkPlaylistInFavorite: boolean }> | null } | null };
+
+export type RequestHubThreadCommentsQueryVariables = Exact<{
+  targetId: Scalars['String']['input'];
+}>;
+
+
+export type RequestHubThreadCommentsQuery = { __typename?: 'QueryInitialization', threadedComments: { __typename?: 'ThreadedCommentsResponse', totalThreads: number, threads: Array<{ __typename?: 'CommentThread', totalReplies: number, rootComment: { __typename?: 'CommentResponse', id: string, content: string, createdAt: any, replyCount: any, commenterId: string, commentType: CommentType, isDeleted: boolean, isEdited: boolean, depth: number, targetId: string, threadPath: Array<string>, threadUpdatedAt: any, totalRepliesCount: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }, replies: Array<{ __typename?: 'CommentResponse', id: string, content: string, createdAt: any, replyCount: any, commenterId: string, commentType: CommentType, isDeleted: boolean, isEdited: boolean, depth: number, targetId: string, threadPath: Array<string>, threadUpdatedAt: any, totalRepliesCount: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }> }> } };
+
+export type RequestHubCommentThreadRepliesQueryVariables = Exact<{
+  rootCommentId: Scalars['String']['input'];
+}>;
+
+
+export type RequestHubCommentThreadRepliesQuery = { __typename?: 'QueryInitialization', commentReplies: { __typename?: 'CommentRepliesResponse', replies: Array<{ __typename?: 'CommentResponse', id: string, content: string, createdAt: any, commenterId: string, commentType: CommentType, depth: number, isDeleted: boolean, isEdited: boolean, replyCount: any, targetId: string, threadPath: Array<string>, totalRepliesCount: any, threadUpdatedAt: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }> } };
 
 export type RequestsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -5983,6 +6022,23 @@ export const RemoveFromPlaylistDocument = new TypedDocumentString(`
   removeFromPlaylist(removeFromPlaylistRequest: $removeFromPlaylistRequest)
 }
     `) as unknown as TypedDocumentString<RemoveFromPlaylistMutation, RemoveFromPlaylistMutationVariables>;
+export const UpdateRequestHubCommentDocument = new TypedDocumentString(`
+    mutation UpdateRequestHubComment($commentId: String!, $content: String!) {
+  updateComment(request: {commentId: $commentId, content: $content})
+}
+    `) as unknown as TypedDocumentString<UpdateRequestHubCommentMutation, UpdateRequestHubCommentMutationVariables>;
+export const DeleteRequestHubCommentDocument = new TypedDocumentString(`
+    mutation DeleteRequestHubComment($commentId: String!) {
+  deleteComment(request: {commentId: $commentId})
+}
+    `) as unknown as TypedDocumentString<DeleteRequestHubCommentMutation, DeleteRequestHubCommentMutationVariables>;
+export const CreateRequestHubCommentDocument = new TypedDocumentString(`
+    mutation CreateRequestHubComment($targetId: String!, $commentType: CommentType!, $content: String!, $parentCommentId: String) {
+  createComment(
+    request: {targetId: $targetId, commentType: $commentType, content: $content, parentCommentId: $parentCommentId}
+  )
+}
+    `) as unknown as TypedDocumentString<CreateRequestHubCommentMutation, CreateRequestHubCommentMutationVariables>;
 export const CreateRequestDocument = new TypedDocumentString(`
     mutation CreateRequest($request: RequestCreatingRequestInput!) {
   createRequest(request: $request)
@@ -6000,17 +6056,17 @@ export const BlockRequestDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<BlockRequestMutation, BlockRequestMutationVariables>;
 export const UpdateTrackCommentDocument = new TypedDocumentString(`
     mutation UpdateTrackComment($commentId: String!, $content: String!) {
-  updateTrackComment(request: {commentId: $commentId, content: $content})
+  updateComment(request: {commentId: $commentId, content: $content})
 }
     `) as unknown as TypedDocumentString<UpdateTrackCommentMutation, UpdateTrackCommentMutationVariables>;
 export const DeleteTrackCommentDocument = new TypedDocumentString(`
     mutation DeleteTrackComment($commentId: String!) {
-  deleteTrackComment(request: {commentId: $commentId})
+  deleteComment(request: {commentId: $commentId})
 }
     `) as unknown as TypedDocumentString<DeleteTrackCommentMutation, DeleteTrackCommentMutationVariables>;
 export const CreateTrackCommentDocument = new TypedDocumentString(`
     mutation CreateTrackComment($targetId: String!, $commentType: CommentType!, $content: String!, $parentCommentId: String) {
-  createTrackComment(
+  createComment(
     request: {targetId: $targetId, commentType: $commentType, content: $content, parentCommentId: $parentCommentId}
   )
 }
@@ -6072,6 +6128,137 @@ export const PlaylistsHomeDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PlaylistsHomeQuery, PlaylistsHomeQueryVariables>;
+export const RequestHubThreadCommentsDocument = new TypedDocumentString(`
+    query RequestHubThreadComments($targetId: String!) {
+  threadedComments(
+    request: {targetId: $targetId, commentType: REQUEST_HUB, page: 1, pageSize: 10, sortOrder: THREAD_ACTIVITY}
+  ) {
+    threads {
+      rootComment {
+        id
+        content
+        createdAt
+        replyCount
+        commenterId
+        commenter {
+          fullName
+          email
+          isVerified
+          role
+          userId
+          listener {
+            avatarImage
+            displayName
+            followerCount
+            id
+            isVerified
+          }
+          artist {
+            avatarImage
+            stageName
+            followerCount
+            id
+            isVerified
+            popularity
+          }
+        }
+        commentType
+        isDeleted
+        isEdited
+        depth
+        targetId
+        threadPath
+        threadUpdatedAt
+        totalRepliesCount
+      }
+      replies {
+        id
+        content
+        createdAt
+        replyCount
+        commenterId
+        commenter {
+          fullName
+          email
+          isVerified
+          role
+          userId
+          listener {
+            avatarImage
+            displayName
+            followerCount
+            id
+            isVerified
+          }
+          artist {
+            avatarImage
+            stageName
+            followerCount
+            id
+            isVerified
+            popularity
+          }
+        }
+        commentType
+        isDeleted
+        isEdited
+        depth
+        targetId
+        threadPath
+        threadUpdatedAt
+        totalRepliesCount
+      }
+      totalReplies
+    }
+    totalThreads
+  }
+}
+    `) as unknown as TypedDocumentString<RequestHubThreadCommentsQuery, RequestHubThreadCommentsQueryVariables>;
+export const RequestHubCommentThreadRepliesDocument = new TypedDocumentString(`
+    query RequestHubCommentThreadReplies($rootCommentId: String!) {
+  commentReplies(
+    request: {commentId: $rootCommentId, page: 1, pageSize: 10, sortOrder: CHRONOLOGICAL}
+  ) {
+    replies {
+      id
+      content
+      createdAt
+      commenterId
+      commentType
+      commenter {
+        fullName
+        email
+        isVerified
+        role
+        userId
+        listener {
+          avatarImage
+          displayName
+          followerCount
+          id
+          isVerified
+        }
+        artist {
+          avatarImage
+          stageName
+          followerCount
+          id
+          isVerified
+          popularity
+        }
+      }
+      depth
+      isDeleted
+      isEdited
+      replyCount
+      targetId
+      threadPath
+      totalRepliesCount
+      threadUpdatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RequestHubCommentThreadRepliesQuery, RequestHubCommentThreadRepliesQueryVariables>;
 export const RequestsDocument = new TypedDocumentString(`
     query Requests($skip: Int, $take: Int, $where: RequestHubFilterInput) {
   requests(skip: $skip, take: $take, where: $where) {

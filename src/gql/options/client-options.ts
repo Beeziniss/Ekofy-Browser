@@ -19,6 +19,10 @@ import {
   TrackCommentsQuery,
 } from "@/modules/shared/queries/client/track-comment-queries";
 import {
+  RequestHubCommentThreadsQuery,
+  RequestHubCommentThreadRepliesQuery,
+} from "@/modules/shared/queries/client/request-hub-comment-queries";
+import {
   ArtistListQuery,
   ArtistQuery,
   ListenerQuery,
@@ -162,6 +166,21 @@ export const trackCommentRepliesOptions = (rootCommentId: string) =>
     queryKey: ["track-comment-replies", rootCommentId],
     queryFn: async () =>
       await execute(TrackCommentRepliesQuery, { rootCommentId }),
+  });
+
+// REQUEST HUB COMMENTS QUERIES  
+export const requestHubCommentsOptions = (targetId: string) =>
+  queryOptions({
+    queryKey: ["request-hub-comments", targetId],
+    queryFn: async () => await execute(RequestHubCommentThreadsQuery, { targetId }),
+    enabled: !!targetId,
+  });
+
+export const requestHubCommentRepliesOptions = (rootCommentId: string) =>
+  queryOptions({
+    queryKey: ["request-hub-comment-replies", rootCommentId],
+    queryFn: async () =>
+      await execute(RequestHubCommentThreadRepliesQuery, { rootCommentId }),
   });
 
 // USER QUERIES
