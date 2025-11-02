@@ -1,11 +1,8 @@
 import React, { useEffect } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, PauseIcon, PlayIcon } from 'lucide-react';
 import { TrackActionMenu } from '../../component/track-action-menu';
-import { PlayPauseButton } from '../../component/play-pause-button';
 import { Button } from '@/components/ui/button';
-import { usePlayPause } from '@/hooks/use-play-pause';
 import {
-  // Table,
   TableBody,
   TableCell,
   TableHead,
@@ -14,6 +11,9 @@ import {
 } from "@/components/ui/table";
 import Image from 'next/image';
 import { SearchTrackItem } from '@/types/search';
+import { useTrackPlayback } from '@/hooks/use-track-playback';
+import { useAudioStore } from '@/store';
+import { formatDuration } from '@/utils/duration-utils';
 
 interface SearchTrackSectionProps {
   tracks: SearchTrackItem[];
@@ -28,7 +28,6 @@ export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
   isFetchingNextPage,
   fetchNextPage
 }) => {
-  const { togglePlayPause, isPlaying } = usePlayPause();
   // Auto-load more when scrolling near bottom
   useEffect(() => {
     const handleScroll = () => {
@@ -72,60 +71,7 @@ export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
             </TableHeader>
             <TableBody>
               {tracks.map((track, index) => (
-                <TableRow 
-                  key={track.id} 
-                  className="group hover:bg-gray-800/50 border-b border-gray-800/50 relative"
-                >
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center w-8 h-8">
-                      <span className="group-hover:hidden text-gray-400 text-sm">
-                        {index + 1}
-                      </span>
-                      <div className="hidden group-hover:block">
-                        <PlayPauseButton
-                          isPlaying={isPlaying(track.id)}
-                          onClick={() => togglePlayPause(track.id, 'track', track.name)}
-                          size="small"
-                        />
-                      </div>
-                    </div>
-                  </TableCell>
-                  
-                  <TableCell>
-                    <div className="flex items-center space-x-3">
-                      <Image
-                        src={track.coverImage || "/default-track.png"}
-                        alt={track.name}
-                        width={40}
-                        height={40}
-                        className="w-10 h-10 rounded object-cover flex-shrink-0"
-                      />
-                      <div className="min-w-0">
-                        <p className="text-white font-medium truncate">{track.name}</p>
-                        <p className="text-gray-400 text-sm truncate">{track.mainArtists.items[0]?.stageName}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  
-                  <TableCell>
-                    <p className="text-gray-400 text-sm truncate">
-                      {track.name} {/* Album name could be added to GraphQL query */}
-                    </p>
-                  </TableCell>
-                  
-                  <TableCell className="text-center">
-                    <span className="text-gray-400 text-sm">3:45</span>
-                  </TableCell>
-                  
-                  <TableCell className="relative">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
-                      <TrackActionMenu 
-                        track={track} 
-                        isVisible={false}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
+                <TrackRow key={track.id} track={track} index={index} />
               ))}
             </TableBody>
           </table>
@@ -152,5 +98,111 @@ export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
         </div>
       )}
     </div>
+  );
+};
+
+// Individual Track Row Component
+interface TrackRowProps {
+  track: SearchTrackItem;
+  index: number;
+}
+
+const TrackRow = ({ track, index }: TrackRowProps) => {
+  // Use track playback hook for this specific track
+  const {
+    isTrackCurrentlyPlaying,
+    isPlaying,
+    handlePlayPause,
+  } = useTrackPlayback(track.id, {
+    id: track.id,
+    name: track.name,
+    coverImage: track.coverImage,
+    mainArtists: track.mainArtists,
+  });
+
+  // Get audio store for duration
+  const { duration } = useAudioStore();
+
+  const handlePlayPauseClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await handlePlayPause();
+  };
+
+  // Get duration to display
+  const getDuration = () => {
+    // If this track is currently playing and we have duration from audio store
+    if (isTrackCurrentlyPlaying && duration > 0) {
+      return formatDuration(duration);
+    }
+    // Default fallback duration (could be replaced with real duration from API in future)
+    return "3:45";
+  };
+
+  return (
+    <TableRow 
+      className="group hover:bg-gray-800/50 border-b border-gray-800/50 relative"
+    >
+      <TableCell className="text-center">
+        <div className="flex items-center justify-center w-8 h-8">
+          <span className={`group-hover:hidden text-gray-400 text-sm ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : ""}`}>
+            {isTrackCurrentlyPlaying && isPlaying ? "♪" : index + 1}
+          </span>
+          <div className="hidden group-hover:block">
+            <Button
+              onClick={handlePlayPauseClick}
+              className="bg-transparent hover:bg-gray-700 p-0 w-8 h-8 rounded-full"
+            >
+              {isTrackCurrentlyPlaying && isPlaying ? (
+                <PauseIcon className="text-white w-4 h-4" />
+              ) : (
+                <PlayIcon className="text-white w-4 h-4" />
+              )}
+            </Button>
+          </div>
+        </div>
+      </TableCell>
+      
+      <TableCell>
+        <div className="flex items-center space-x-3">
+          <Image
+            src={track.coverImage || "/default-track.png"}
+            alt={track.name}
+            width={40}
+            height={40}
+            className="w-10 h-10 rounded object-cover flex-shrink-0"
+          />
+          <div className="min-w-0">
+            <p className={`font-medium truncate ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-white"}`}>
+              {track.name}
+            </p>
+            <p className="text-gray-400 text-sm truncate">
+              {track.mainArtists?.items?.[0]?.stageName || "Unknown Artist"}
+            </p>
+          </div>
+        </div>
+      </TableCell>
+      
+      <TableCell>
+        <p className="text-gray-400 text-sm truncate">
+          {track.name} {/* Album name could be added to GraphQL query */}
+        </p>
+      </TableCell>
+      
+      <TableCell className="text-center">
+        <span className="text-gray-400 text-sm">
+          {getDuration()}
+        </span>
+      </TableCell>
+      
+      <TableCell className="relative">
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
+          <TrackActionMenu 
+            track={track} 
+            isVisible={true}
+          />
+        </div>
+      </TableCell>
+    </TableRow>
   );
 };

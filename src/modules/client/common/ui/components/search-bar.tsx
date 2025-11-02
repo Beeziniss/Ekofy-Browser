@@ -2,23 +2,52 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Search } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "use-debounce";
 
 const SearchBar = () => {
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearchValue] = useDebounce(searchValue, 500);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Initialize search value from URL params or localStorage on mount
+  useEffect(() => {
+    // First check URL params
+    const queryFromUrl = searchParams.get('q');
+    if (queryFromUrl) {
+      setSearchValue(queryFromUrl);
+      // Save to localStorage
+      localStorage.setItem('search-query', queryFromUrl);
+    } else {
+      // Then check localStorage
+      const savedQuery = localStorage.getItem('search-query');
+      if (savedQuery) {
+        setSearchValue(savedQuery);
+      }
+    }
+  }, [searchParams]);
 
   // Auto navigate when user types (debounced)
   useEffect(() => {
     if (debouncedSearchValue.trim()) {
+      // Save to localStorage
+      localStorage.setItem('search-query', debouncedSearchValue.trim());
+      // Navigate to search page
       router.push(`/search?q=${encodeURIComponent(debouncedSearchValue.trim())}`);
+    } else {
+      // Clear localStorage if search is empty
+      localStorage.removeItem('search-query');
     }
   }, [debouncedSearchValue, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
+    const value = e.target.value;
+    setSearchValue(value);
+    // Save to localStorage immediately for better UX
+    if (value.trim()) {
+      localStorage.setItem('search-query', value);
+    }
   };
 
   return (

@@ -165,9 +165,9 @@ const RequestHubCommentReply = ({
   };
 
   // Get user name from commenterId (hardcoded for now)
-  const getUserName = (commenterId: string) => {
-    return `User ${commenterId.substring(0, 8)}`;
-  };
+  // const getUserName = (commenterId: string) => {
+  //   return `User ${commenterId.substring(0, 8)}`;
+  // };
 
   return (
     <div className="flex gap-x-3 ml-6 pl-4 border-l-2 border-gray-700/50">
@@ -180,7 +180,9 @@ const RequestHubCommentReply = ({
           }
         />
         <AvatarFallback className="bg-gray-700 text-gray-300 text-xs">
-          {reply.commenter?.fullName.slice(0, 2)}
+          {reply.commenter?.listener?.displayName.slice(0, 2)||
+            reply.commenter?.artist?.stageName.slice(0, 2) ||
+            `User ${reply.commenterId.slice(-2)}`}
         </AvatarFallback>
       </Avatar>
 
@@ -188,7 +190,9 @@ const RequestHubCommentReply = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-2">
             <span className="text-gray-200 text-sm font-medium">
-              {getUserName(reply.commenterId)}
+              {reply.commenter?.listener?.displayName ||
+                reply.commenter?.artist?.stageName ||
+                `User ${reply.commenterId.slice(-4)}`}
             </span>
             <span className="text-gray-500 text-xs">
               {formatDistanceToNow(new Date(reply.createdAt), {

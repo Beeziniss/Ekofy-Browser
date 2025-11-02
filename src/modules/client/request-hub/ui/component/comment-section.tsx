@@ -71,6 +71,18 @@ const RequestHubCommentSection = ({
     }
   };
 
+  const getTotalCommentCount = () => {
+    if (!commentsData?.threadedComments) return 0;
+    
+    const threads = commentsData.threadedComments.threads || [];
+    return threads.reduce((total, thread) => {
+      // Count root comment + all replies
+      return total + 1 + (thread.totalReplies || 0);
+    }, 0);
+  };
+  
+  const totalComments = getTotalCommentCount();
+
   return (
     <div className="w-full space-y-6 p-4 rounded-lg border border-gray-700/50">
       {/* Comments Header */}
@@ -78,7 +90,7 @@ const RequestHubCommentSection = ({
         <div className="flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-purple-400" />
           <span className="text-white text-lg font-semibold">
-            {commentsData.threadedComments.totalThreads || 0} Comments
+            {totalComments > 0 && `(${totalComments})`} Comments
           </span>
         </div>
 
