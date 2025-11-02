@@ -1,9 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArtistQuery } from "@/gql/graphql";
+import { ArtistDetailQuery } from "@/gql/graphql";
 import { getUserInitials } from "@/utils/format-shorten-name";
 
 interface ArtistAvatarSectionProps {
-  artistData: ArtistQuery;
+  artistData: ArtistDetailQuery;
 }
 
 const ArtistAvatarSection = ({ artistData }: ArtistAvatarSectionProps) => {

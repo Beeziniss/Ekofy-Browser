@@ -19,6 +19,7 @@ import {
   TrackCommentsQuery,
 } from "@/modules/shared/queries/client/track-comment-queries";
 import {
+  ArtistDetailQuery,
   ArtistListQuery,
   ArtistQuery,
   ListenerQuery,
@@ -27,6 +28,11 @@ import {
   PlaylistsHomeQuery,
   PlaylistsPersonalQuery,
 } from "@/modules/shared/queries/client/playlist-queries";
+import {
+  FollowerQuery,
+  FollowingQuery,
+} from "@/modules/shared/queries/client/follow-queries";
+import { ArtistPackageQuery } from "@/modules/shared/queries/client/service-package-queries";
 
 // PROFILE QUERIES
 export const listenerProfileOptions = (
@@ -158,10 +164,23 @@ export const listenerOptions = (userId: string, listenerId: string) =>
     enabled: !!listenerId,
   });
 
-export const artistOptions = (userId: string, artistId?: string) =>
+export const artistOptions = ({
+  userId,
+  artistId,
+}: {
+  userId: string;
+  artistId?: string;
+}) =>
   queryOptions({
     queryKey: ["artist", userId],
     queryFn: async () => await execute(ArtistQuery, { userId }),
+    enabled: !!artistId,
+  });
+
+export const artistDetailOptions = (artistId: string) =>
+  queryOptions({
+    queryKey: ["artist-detail", artistId],
+    queryFn: async () => await execute(ArtistDetailQuery, { artistId }),
     enabled: !!artistId,
   });
 
@@ -178,4 +197,26 @@ export const artistListOptions = (take: number = 12) =>
         ? allPages.length + 1
         : undefined;
     },
+  });
+
+// FOLLOW QUERIES
+export const followerOptions = (userId: string) =>
+  queryOptions({
+    queryKey: ["follower", userId],
+    queryFn: async () => await execute(FollowerQuery, { userId }),
+    enabled: !!userId,
+  });
+
+export const followingOptions = (userId: string) =>
+  queryOptions({
+    queryKey: ["following", userId],
+    queryFn: async () => await execute(FollowingQuery, { userId }),
+    enabled: !!userId,
+  });
+
+// SERVICE PACKAGE QUERIES
+export const servicePackageOptions = (artistId: string) =>
+  queryOptions({
+    queryKey: ["service-packages", artistId],
+    queryFn: async () => await execute(ArtistPackageQuery, { artistId }),
   });

@@ -7,7 +7,13 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import {
+  followerOptions,
+  followingOptions,
+} from "@/gql/options/client-options";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   AlbumIcon,
   HeartIcon,
@@ -69,13 +75,24 @@ const activeItemStyles =
 
 const LibraryLayout = ({ children }: LibraryLayoutProps) => {
   const route = usePathname();
+  const { user } = useAuthStore();
+
+  const { data: followers } = useSuspenseQuery(
+    followerOptions(user?.userId || ""),
+  );
+  const { data: following } = useSuspenseQuery(
+    followingOptions(user?.userId || ""),
+  );
+
+  const followerCount = followers?.followersByUserId?.totalCount || 0;
+  const followingCount = following?.followingsByUserId?.totalCount || 0;
 
   return (
     <div className="w-full px-6 pt-6">
       {/* Title */}
       <h1 className="text-5xl font-bold">Library</h1>
       <p className="text-main-grey mt-7 text-base">
-        {0} followers | {0} following
+        {followerCount} followers | {followingCount} following
       </p>
 
       {/* Tabs Management */}

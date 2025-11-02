@@ -2,13 +2,13 @@ import { graphql } from "@/gql";
 
 export const TrackCommentUpdateMutation = graphql(`
   mutation UpdateTrackComment($commentId: String!, $content: String!) {
-    updateTrackComment(request: { commentId: $commentId, content: $content })
+    updateComment(request: { commentId: $commentId, content: $content })
   }
 `);
 
 export const TrackCommentDeleteMutation = graphql(`
   mutation DeleteTrackComment($commentId: String!) {
-    deleteTrackComment(request: { commentId: $commentId })
+    deleteComment(request: { commentId: $commentId })
   }
 `);
 
@@ -19,7 +19,7 @@ export const TrackCommentCreateMutation = graphql(`
     $content: String!
     $parentCommentId: String
   ) {
-    createTrackComment(
+    createComment(
       request: {
         targetId: $targetId
         commentType: $commentType
