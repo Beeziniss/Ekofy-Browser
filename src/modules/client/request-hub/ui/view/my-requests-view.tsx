@@ -1,50 +1,59 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { requestHubOptions } from "@/gql/options/client-options";
-import { useCreateRequest, useUpdateRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
+import { myRequestsOptions } from "@/gql/options/client-options";
+import { useCreateRequest, useUpdateRequest, useDeleteRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { RequestHubLayout } from "../layout";
 import { CreateRequestSection, ViewRequestSection, EditRequestSection } from "../section";
-import { RequestDetailView, Pagination } from "../component";
+import { Pagination } from "../component";
 import { CreateRequestData, UpdateRequestData } from "@/types/request-hub";
 import { RequestsQuery, RequestStatus as GqlRequestStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type RequestHubMode = 'view' | 'create' | 'edit' | 'detail';
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
 
-export function RequestHubView() {
+export function MyRequestsView() {
   const [mode, setMode] = useState<RequestHubMode>('view');
-  const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
   const [editingRequest, setEditingRequest] = useState<RequestItem | null>(null);
   const [searchValue, setSearchValue] = useState("");
+  const [statusFilter, setStatusFilter] = useState<GqlRequestStatus | 'ALL'>('ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const router = useRouter();
+  const { user } = useAuthStore();
 
   // Fetch requests with pagination
-  const { data: requestsData, isLoading } = useQuery(
-    requestHubOptions((currentPage - 1) * pageSize, pageSize, { 
-      status: { eq: GqlRequestStatus.Open } 
-    })
-  );
+  const skip = (currentPage - 1) * pageSize;
+  const where = {
+    ...(searchValue && { title: { contains: searchValue } }),
+    ...(statusFilter !== 'ALL' && { status: { eq: statusFilter } }),
+    // Filter by current user's requests only
+    ...(user?.userId && { requestUserId: { eq: user.userId } }),
+  };
+  
+  const { data: requestsData, isLoading } = useQuery(myRequestsOptions(skip, pageSize, where));
   const requests = requestsData?.items || [];
-  const totalCount = requestsData?.totalCount || 0;
-  const totalPages = Math.ceil(totalCount / pageSize);
+  const totalItems = requestsData?.totalCount || 0;
+  const totalPages = Math.ceil(totalItems / pageSize);
 
   // Mutations
   const createRequestMutation = useCreateRequest();
   const updateRequestMutation = useUpdateRequest();
+  const deleteRequestMutation = useDeleteRequest();
 
-  // Filter requests based on search (already filtered to OPEN by query)
-  const filteredRequests = requests
-    .filter((request: RequestItem) =>
-      request.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-      request.summary.toLowerCase().includes(searchValue.toLowerCase())
-    );
+  // Display requests (filtering already handled by query)
+  const displayRequests = requests;
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchValue, statusFilter]);
 
   const handlePostRequest = () => {
     setMode('create');
@@ -54,8 +63,8 @@ export function RequestHubView() {
     router.push('/hire-artists');
   };
 
-  const handleMyRequests = () => {
-    router.push('/request-hub/my-requests');
+  const handleBackToHub = () => {
+    router.push('/request-hub');
   };
 
   const handleViewDetails = (id: string) => {
@@ -81,15 +90,9 @@ export function RequestHubView() {
     toast.info('Bookmark feature coming soon!');
   };
 
-  const handleBackToList = () => {
+  const handleCancel = () => {
     setMode('view');
-    setSelectedRequest(null);
     setEditingRequest(null);
-  };
-
-  const handleContactClient = () => {
-    console.log('Contact client');
-    toast.info('Contact feature coming soon!');
   };
 
   const handleCreateSubmit = async (data: CreateRequestData) => {
@@ -133,10 +136,36 @@ export function RequestHubView() {
     }
   };
 
-  const handleCancel = () => {
-    setMode('view');
-    setEditingRequest(null);
+  const handleDelete = async () => {
+    try {
+      if (!editingRequest) return;
+      
+      const deleteInput = {
+        id: editingRequest.id,
+        title: editingRequest.title,
+        summary: editingRequest.summary,
+        detailDescription: editingRequest.detailDescription,
+        budget: editingRequest.budget,
+        deadline: editingRequest.deadline instanceof Date ? editingRequest.deadline.toISOString() : editingRequest.deadline,
+      };
+      
+      await deleteRequestMutation.mutateAsync(deleteInput);
+      toast.success('Request deleted successfully!');
+      setMode('view');
+      setEditingRequest(null);
+    } catch (error) {
+      toast.error('Failed to delete request');
+      console.error('Delete request error:', error);
+    }
   };
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-white">Please login to view your requests</div>
+      </div>
+    );
+  }
 
   const renderContent = () => {
     switch (mode) {
@@ -160,15 +189,7 @@ export function RequestHubView() {
             }}
             onSubmit={handleUpdateSubmit}
             onCancel={handleCancel}
-          />
-        ) : null;
-      case 'detail':
-        return selectedRequest ? (
-          <RequestDetailView
-            request={selectedRequest}
-            onBack={handleBackToList}
-            onApply={() => handleApply(selectedRequest.id)}
-            onContactClient={handleContactClient}
+            onDelete={handleDelete}
           />
         ) : null;
       case 'view':
@@ -177,12 +198,30 @@ export function RequestHubView() {
           <RequestHubLayout
             onPostRequest={handlePostRequest}
             onBrowseArtists={handleBrowseArtists}
-            onMyRequests={handleMyRequests}
+            onMyRequests={handleBackToHub}
+            myRequestsButtonText="Back to Hub"
             searchValue={searchValue}
             onSearchChange={setSearchValue}
           >
+            <div className="mb-6">
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-white">Filter by status:</span>
+                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as GqlRequestStatus | 'ALL')}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">All Statuses</SelectItem>
+                    <SelectItem value={GqlRequestStatus.Open}>Open</SelectItem>
+                    <SelectItem value={GqlRequestStatus.Closed}>Closed</SelectItem>
+                    <SelectItem value={GqlRequestStatus.Blocked}>Blocked</SelectItem>
+                    <SelectItem value={GqlRequestStatus.Deleted}>Deleted</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <ViewRequestSection
-              requests={filteredRequests}
+              requests={displayRequests}
               isLoading={isLoading}
               onViewDetails={handleViewDetails}
               onApply={handleApply}
@@ -190,14 +229,16 @@ export function RequestHubView() {
               onSave={handleSave}
             />
             
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalCount}
-              itemsPerPage={pageSize}
-              onPageChange={setCurrentPage}
-              isLoading={isLoading}
-            />
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                isLoading={isLoading}
+                totalItems={totalItems}
+                itemsPerPage={pageSize}
+              />
+            )}
           </RequestHubLayout>
         );
     }

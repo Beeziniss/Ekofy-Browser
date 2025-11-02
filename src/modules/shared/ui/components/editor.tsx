@@ -94,9 +94,9 @@ export function Editor({
   // Update content and call onChange
   const updateContent = () => {
     if (editorRef.current) {
-      // Get plain text content for the form
-      const textContent = editorRef.current.innerText || "";
-      onChange(textContent);
+      // Get HTML content to preserve formatting
+      const htmlContent = editorRef.current.innerHTML || "";
+      onChange(htmlContent);
     }
   };
 
@@ -125,8 +125,8 @@ export function Editor({
 
   // Set initial content and cleanup
   useEffect(() => {
-    if (editorRef.current && editorRef.current.innerText !== value) {
-      editorRef.current.innerText = value;
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value;
     }
     
     // Cleanup on unmount
@@ -294,7 +294,9 @@ export function Editor({
             {isFocused ? "Use toolbar for formatting" : "Rich text editor"}
           </span>
         </div>
-        <span className="font-medium">{value.length} characters</span>
+        <span className="font-medium">
+          {editorRef.current?.innerText.length || 0} characters
+        </span>
       </div>
     </div>
   );

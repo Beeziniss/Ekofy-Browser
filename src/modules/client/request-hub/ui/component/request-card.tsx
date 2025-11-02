@@ -1,30 +1,74 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageCircle, Clock, Send, ChevronDown, ChevronUp } from "lucide-react";
-import { RequestHubItem } from "@/types/request-hub";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MessageCircle, Clock, Send, ChevronDown, ChevronUp, SquarePen } from "lucide-react";
+import { RequestsQuery } from "@/gql/graphql";
+import { userForRequestsOptions } from "@/gql/options/client-options";
 import { CommentSection } from "./comment-section";
 import { cn } from "@/lib/utils";
 
+type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
+
 interface RequestCardProps {
-  request: RequestHubItem;
+  request: RequestItem;
   onViewDetails?: (id: string) => void;
   onApply?: (id: string) => void;
+  onEdit?: (id: string) => void;
   className?: string;
   onSave?: (id: string) => void;
+  isOwner?: boolean;
 }
 
 export function RequestCard({ 
   request, 
   onViewDetails, 
   onApply,
-  className 
+  onEdit,
+  className,
+  isOwner = false
 }: RequestCardProps) {
   const [showComments, setShowComments] = useState(false);
+  
+  // Fetch user data for the request creator
+  const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
+  
+  // Format status from GraphQL enum to display text
+  const formatStatus = (status: string) => {
+    switch (status) {
+      case 'Open':
+        return 'Open';
+      case 'Closed':
+        return 'Closed';
+      case 'Blocked':
+        return 'Blocked';
+      case 'Deleted':
+        return 'Deleted';
+      default:
+        return status;
+    }
+  };
+
+  // Get status color variant
+  const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+    switch (status) {
+      case 'Open':
+        return 'default';
+      case 'Closed':
+        return 'secondary';
+      case 'Blocked':
+        return 'destructive';
+      case 'Deleted':
+        return 'outline';
+      default:
+        return 'secondary';
+    }
+  };
+  
   const [comments, setComments] = useState([
     {
       id: "1",
@@ -119,10 +163,6 @@ export function RequestCard({
     }));
   };
 
-  const formatBudget = (budget: { min: number; max: number }) => {
-    return `$${budget.min} - $${budget.max}`;
-  };
-
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -137,6 +177,31 @@ export function RequestCard({
     }
   };
 
+  const formatBudget = (budget: { min: number; max: number }, currency: string) => {
+    const formatCurrency = (amount: number) => {
+      switch (currency.toUpperCase()) {
+        case 'VND':
+          return `${amount.toLocaleString()} VND`;
+        case 'USD':
+          return `$${amount.toLocaleString()}`;
+        case 'EUR':
+          return `€${amount.toLocaleString()}`;
+        default:
+          return `${amount.toLocaleString()} ${currency.toUpperCase()}`;
+      }
+    };
+
+    if (budget.min === budget.max) {
+      return formatCurrency(budget.min);
+    }
+    return `${formatCurrency(budget.min)} - ${formatCurrency(budget.max)}`;
+  };
+
+  const formatDeadline = (deadline: string | Date) => {
+    const date = typeof deadline === 'string' ? new Date(deadline) : deadline;
+    return date.toLocaleDateString();
+  };
+
   return (
     <Card className={cn("w-full hover:shadow-md transition-shadow", className)}>
       <CardContent className="p-6">
@@ -144,28 +209,19 @@ export function RequestCard({
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={request.author.avatar} />
               <AvatarFallback className="bg-gray-200 text-gray-600">
-                {request.author.name.charAt(0).toUpperCase()}
+                {requestUser?.fullName?.charAt(0).toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h4 className="font-medium text-white">{request.author.name}</h4>
+              <h4 className="font-medium text-white">
+                {requestUser?.fullName || `User ${request.requestUserId.slice(-4)}`}
+              </h4>
               <p className="text-sm text-white">
-                {formatTimeAgo(request.postedTime)}
+                {formatTimeAgo(request.createdAt)}
               </p>
             </div>
           </div>
-          {/* <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleSave}
-            className="h-8 w-8 p-0"
-          >
-            <Bookmark 
-              className={cn("h-4 w-4", isSaved ? "fill-current text-blue-600" : "text-gray-400")} 
-            />
-          </Button> */}
         </div>
 
         {/* Title */}
@@ -174,46 +230,39 @@ export function RequestCard({
           {request.title}
         </h3>
 
-        {/* Description */}
+        {/* Summary */}
         <p className="text-white mb-4 line-clamp-3 text-sm leading-relaxed">
-          {request.description}
+          {request.summary}
         </p>
 
-        {/* Tags */}
+        {/* Status Badge */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {request.tags.slice(0, 3).map((tag) => (
-            <Badge 
-              key={tag} 
-              variant="secondary" 
-              className="bg-gray-100 text-gray-700 hover:bg-gray-200 text-xs"
-            >
-              {tag}
-            </Badge>
-          ))}
+          <Badge 
+            variant={getStatusVariant(request.status)}
+            className="text-xs"
+          >
+            {formatStatus(request.status)}
+          </Badge>
         </div>
 
-        {/* Budget, Category, Deadline */}
-        <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
+        {/* Budget and Deadline */}
+        <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
           <div>
             <p className="text-white mb-1">Budget</p>
             <p className="font-medium text-primary-gradient">
-              {formatBudget(request.budget)}
+              {formatBudget(request.budget, request.currency)}
             </p>
-          </div>
-          <div>
-            <p className="text-white mb-1">Category</p>
-            <p className="font-medium text-primary-gradient">{request.category}</p>
           </div>
           <div>
             <p className="text-white mb-1">
               <Clock className="h-3 w-3 inline mr-1" />
               Deadline
             </p>
-            <p className="font-medium text-primary-gradient">{request.deadline}</p>
+            <p className="font-medium text-primary-gradient">{formatDeadline(request.deadline)}</p>
           </div>
         </div>
 
-        {/* Footer with Applications Count and Action Buttons */}
+        {/* Footer with Action Buttons */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <Button
             variant="ghost"
@@ -222,7 +271,7 @@ export function RequestCard({
             className="flex items-center text-sm text-gray-500 hover:text-primary p-0"
           >
             <MessageCircle className="h-4 w-4 mr-1" />
-            {request.applicationCount} applications
+            View Comments
             {showComments ? (
               <ChevronUp className="h-4 w-4 ml-1" />
             ) : (
@@ -238,14 +287,25 @@ export function RequestCard({
             >
               View Details
             </Button>
-            <Button 
-              size="sm"
-              onClick={() => onApply?.(request.id)}
-              className="primary_gradient hover:opacity-65 text-white text-sm"
-            >
-              <Send className="h-3 w-3 mr-1" />
-              Apply Now
-            </Button>
+            {isOwner && onEdit ? (
+              <Button 
+                size="sm"
+                onClick={() => onEdit(request.id)}
+                className="primary_gradient hover:opacity-65 text-white text-sm"
+              >
+                <SquarePen className="h-3 w-3 mr-1" />
+                Edit
+              </Button>
+            ) : (
+              <Button 
+                size="sm"
+                onClick={() => onApply?.(request.id)}
+                className="primary_gradient hover:opacity-65 text-white text-sm"
+              >
+                <Send className="h-3 w-3 mr-1" />
+                Apply Now
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>

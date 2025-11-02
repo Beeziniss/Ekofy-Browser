@@ -1,14 +1,18 @@
 "use client";
 
+import { useAuthStore } from "@/store";
 import { RequestCard } from "../component/request-card";
 import { RequestListSkeleton } from "../component/request-card-skeleton";
-import { RequestHubItem } from "@/types/request-hub";
+import { RequestsQuery } from "@/gql/graphql";
+
+type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
 
 interface ViewRequestSectionProps {
-  requests: RequestHubItem[];
+  requests: RequestItem[];
   isLoading?: boolean;
   onViewDetails: (id: string) => void;
   onApply: (id: string) => void;
+  onEdit?: (id: string) => void;
   onSave?: (id: string) => void;
 }
 
@@ -17,8 +21,11 @@ export function ViewRequestSection({
   isLoading = false,
   onViewDetails,
   onApply,
+  onEdit,
   onSave
 }: ViewRequestSectionProps) {
+  const { user } = useAuthStore();
+
   if (isLoading) {
     return <RequestListSkeleton count={6} />;
   }
@@ -34,15 +41,21 @@ export function ViewRequestSection({
 
   return (
     <div className="space-y-6">
-      {requests.map((request) => (
-        <RequestCard
-          key={request.id}
-          request={request}
-          onViewDetails={onViewDetails}
-          onApply={onApply}
-          onSave={onSave}
-        />
-      ))}
+      {requests.map((request) => {
+        const isOwner = user?.userId === request.requestUserId;
+        
+        return (
+          <RequestCard
+            key={request.id}
+            request={request}
+            onViewDetails={onViewDetails}
+            onApply={onApply}
+            onEdit={isOwner ? onEdit : undefined}
+            onSave={onSave}
+            isOwner={isOwner}
+          />
+        );
+      })}
     </div>
   );
 }

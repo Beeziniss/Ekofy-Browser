@@ -7,25 +7,30 @@ import {
   Search, 
   // Filter, 
   Plus, 
-  Users
+  Users,
+  FileText
 } from "lucide-react";
 
 interface RequestHubLayoutProps {
   children: ReactNode;
   onPostRequest?: () => void;
   onBrowseArtists?: () => void;
+  onMyRequests?: () => void;
   showFilters?: boolean;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
+  myRequestsButtonText?: string;
 }
 
 export function RequestHubLayout({ 
   children, 
   onPostRequest,
   onBrowseArtists,
+  onMyRequests,
   showFilters = true,
   searchValue = "",
-  onSearchChange
+  onSearchChange,
+  myRequestsButtonText = "My Requests"
 }: RequestHubLayoutProps) {
   return (
     <div className="min-h-screen">
@@ -39,6 +44,14 @@ export function RequestHubLayout({
               <p className="text-gray-600">Find the perfect artist for your project</p>
             </div>
             <div className="flex space-x-3">
+              <Button 
+                variant="outline" 
+                onClick={onMyRequests}
+                className="flex items-center gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                {myRequestsButtonText}
+              </Button>
               <Button 
                 variant="outline" 
                 onClick={onBrowseArtists}

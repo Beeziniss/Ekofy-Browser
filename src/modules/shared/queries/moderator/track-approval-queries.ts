@@ -23,7 +23,7 @@ export const PENDING_TRACK_UPLOAD_REQUESTS_QUERY = graphql(`
           createdBy
           requestedAt
           releaseInfo {
-            isReleased
+            isRelease
             releaseDate
             releasedAt
             releaseStatus
@@ -212,7 +212,7 @@ export const PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY = graphql(`
             createdBy
             requestedAt
             releaseInfo {
-                isReleased
+                isRelease
                 releaseDate
                 releasedAt
                 releaseStatus

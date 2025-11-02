@@ -1,28 +1,19 @@
+export interface RequestBudget {
+  min: number;
+  max: number;
+}
+
 export interface RequestHubItem {
   id: string;
+  requestUserId: string;
   title: string;
-  description: string;
-  budget: {
-    min: number;
-    max: number;
-  };
-  deadline: string;
-  category: string;
-  tags: string[];
-  applicationCount: number;
-  postedTime: string;
-  author: {
-    id: string;
-    name: string;
-    avatar?: string;
-    memberSince?: string;
-    location?: string;
-    jobsPosted?: number;
-  };
-  requirements?: string[];
-  deliverables?: string[];
-  timeline?: string[];
-  skills?: string[];
+  summary: string;
+  detailDescription: string;
+  budget: RequestBudget;
+  deadline: Date;
+  status: RequestStatus;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface RequestHubComment {
@@ -39,22 +30,45 @@ export interface RequestHubComment {
 
 export interface CreateRequestData {
   title: string;
-  description: string;
-  budget: {
-    min: number;
-    max: number;
-  };
-  deadline: string;
-  category: string;
-  tags: string[];
-  requirements?: string[];
-  deliverables?: string[];
-  timeline?: string[];
-  skills?: string[];
+  summary: string;
+  detailDescription: string;
+  budget: RequestBudget;
+  deadline: Date;
 }
 
-export interface UpdateRequestData extends CreateRequestData {
+export interface UpdateRequestData {
   id: string;
+  title: string;
+  summary: string;
+  detailDescription: string;
+  budget: RequestBudget;
+  deadline: Date;
+  status?: RequestStatus;
+}
+
+export enum RequestStatus {
+  OPEN = 'OPEN',
+  CLOSED = 'CLOSED',
+  BLOCKED = 'BLOCKED',
+  DELETED = 'DELETED',
+}
+
+export interface RequestCreatingRequestInput {
+  title: string;
+  summary: string;
+  detailDescription: string;
+  budget: RequestBudget;
+  deadline: Date;
+}
+
+export interface RequestUpdatingRequestInput {
+  id: string;
+  title: string;
+  summary: string;
+  detailDescription: string;
+  budget: RequestBudget;
+  deadline: Date;
+  status?: RequestStatus;
 }
 
 export type RequestHubMode = 'view' | 'create' | 'edit' | 'detail';

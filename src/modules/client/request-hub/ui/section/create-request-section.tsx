@@ -9,13 +9,8 @@ interface CreateRequestSectionProps {
 }
 
 export function CreateRequestSection({ onSubmit, onCancel }: CreateRequestSectionProps) {
-  const handleSubmit = (data: { title: string; description: string; duration: string; attachments: File[] }) => {
-    onSubmit({
-      title: data.title,
-      description: data.description,
-      duration: data.duration,
-      attachments: data.attachments,
-    });
+  const handleSubmit = (data: CreateRequestData) => {
+    onSubmit(data);
   };
 
   return <RequestForm mode="create" onSubmit={handleSubmit} onCancel={onCancel} />;

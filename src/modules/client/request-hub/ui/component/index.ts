@@ -5,3 +5,4 @@ export { RequestDetailView } from './request-detail-view';
 export { RequestDetailSkeleton } from './request-detail-skeleton';
 export { DeleteConfirmModal } from './delete-confirm-modal';
 export { CommentSection } from './comment-section';
+export { Pagination } from './pagination';

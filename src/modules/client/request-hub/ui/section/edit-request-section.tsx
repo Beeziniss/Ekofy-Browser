@@ -1,37 +1,46 @@
 "use client";
 
 import { RequestForm } from "../component";
-import { UpdateRequestData } from "@/types/request-hub";
+import { UpdateRequestData, CreateRequestData, RequestBudget } from "@/types/request-hub";
 
 interface EditRequestSectionProps {
   initialData: {
     id: string;
     title: string;
-    description: string;
-    duration: string;
+    summary: string;
+    detailDescription: string;
+    budget: RequestBudget;
+    deadline: Date | string;
   };
   onSubmit: (data: UpdateRequestData) => void;
   onCancel?: () => void;
   onDelete?: () => void;
 }
 
-export function EditRequestSection({ initialData, onSubmit, onCancel }: EditRequestSectionProps) {
-  const handleSubmit = (data: { title: string; description: string; duration: string; attachments: File[] }) => {
-    onSubmit({
-      id: initialData.id,
-      title: data.title,
-      description: data.description,
-      duration: data.duration,
-      attachments: data.attachments,
-    });
+export function EditRequestSection({ initialData, onSubmit, onCancel, onDelete }: EditRequestSectionProps) {
+  const handleSubmit = (data: CreateRequestData | UpdateRequestData) => {
+    onSubmit(data as UpdateRequestData);
+  };
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete();
+    }
+  };
+
+  // Convert deadline to Date if it's a string
+  const processedInitialData = {
+    ...initialData,
+    deadline: typeof initialData.deadline === 'string' ? new Date(initialData.deadline) : initialData.deadline
   };
 
   return (
     <RequestForm 
       mode="edit" 
-      initialData={initialData}
+      initialData={processedInitialData}
       onSubmit={handleSubmit} 
       onCancel={onCancel}
+      onDelete={handleDelete}
     />
   );
 }

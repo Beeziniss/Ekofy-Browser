@@ -3,13 +3,13 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { requestHubOptions } from "@/gql/options/client-options";
-import { RequestHubView } from "@/modules/client/request-hub";
+import { MyRequestsView } from "@/modules/client/request-hub";
 
-const RequestHubPage = () => {
+const MyRequestsPage = () => {
   // Prefetch requests data
   useQuery(requestHubOptions());
 
-  return <RequestHubView />;
+  return <MyRequestsView />;
 };
 
-export default RequestHubPage;
+export default MyRequestsPage;
