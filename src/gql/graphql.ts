@@ -5083,26 +5083,6 @@ export type TracksWithFiltersQueryVariables = Exact<{
 
 export type TracksWithFiltersQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean } }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
-export type UploadTrackMutationVariables = Exact<{
-  file: Scalars['Upload']['input'];
-  createTrackRequest: CreateTrackRequestInput;
-  createWorkRequest: CreateWorkRequestInput;
-  createRecordingRequest: CreateRecordingRequestInput;
-}>;
-
-
-export type UploadTrackMutation = { __typename?: 'MutationInitialization', uploadTrack: boolean };
-
-export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CategoriesQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null };
-
-export type UserLicenseQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type UserLicenseQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, fullName: string }> | null } | null };
-
 export type PlaylistBriefQueryVariables = Exact<{
   userId: Scalars['String']['input'];
 }>;
@@ -5166,6 +5146,16 @@ export type SearchPlaylistsQueryVariables = Exact<{
 
 
 export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', searchPlaylists?: { __typename?: 'SearchPlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
+
+export type UploadTrackMutationVariables = Exact<{
+  file: Scalars['Upload']['input'];
+  createTrackRequest: CreateTrackRequestInput;
+  createWorkRequest: CreateWorkRequestInput;
+  createRecordingRequest: CreateRecordingRequestInput;
+}>;
+
+
+export type UploadTrackMutation = { __typename?: 'MutationInitialization', uploadTrack: boolean };
 
 export type PlaylistFavoriteMutationVariables = Exact<{
   playlistId: Scalars['String']['input'];
@@ -5302,6 +5292,16 @@ export type RejectArtistRegistrationMutationVariables = Exact<{
 
 
 export type RejectArtistRegistrationMutation = { __typename?: 'MutationInitialization', rejectArtistRegistration: boolean };
+
+export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CategoriesQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null };
+
+export type TrackUploadArtistListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TrackUploadArtistListQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, user: Array<{ __typename?: 'User', stripeAccountId?: string | null }> }> | null } | null };
 
 export type PlaylistsQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -5792,36 +5792,6 @@ export const TracksWithFiltersDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TracksWithFiltersQuery, TracksWithFiltersQueryVariables>;
-export const UploadTrackDocument = new TypedDocumentString(`
-    mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!) {
-  uploadTrack(
-    file: $file
-    createTrackRequest: $createTrackRequest
-    createWorkRequest: $createWorkRequest
-    createRecordingRequest: $createRecordingRequest
-  )
-}
-    `) as unknown as TypedDocumentString<UploadTrackMutation, UploadTrackMutationVariables>;
-export const CategoriesDocument = new TypedDocumentString(`
-    query Categories {
-  categories {
-    items {
-      id
-      name
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<CategoriesQuery, CategoriesQueryVariables>;
-export const UserLicenseDocument = new TypedDocumentString(`
-    query UserLicense {
-  users {
-    items {
-      id
-      fullName
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<UserLicenseQuery, UserLicenseQueryVariables>;
 export const PlaylistBriefDocument = new TypedDocumentString(`
     query PlaylistBrief($userId: String!) {
   playlists(where: {userId: {eq: $userId}}) {
@@ -5992,6 +5962,16 @@ export const SearchPlaylistsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SearchPlaylistsQuery, SearchPlaylistsQueryVariables>;
+export const UploadTrackDocument = new TypedDocumentString(`
+    mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!) {
+  uploadTrack(
+    file: $file
+    createTrackRequest: $createTrackRequest
+    createWorkRequest: $createWorkRequest
+    createRecordingRequest: $createRecordingRequest
+  )
+}
+    `) as unknown as TypedDocumentString<UploadTrackMutation, UploadTrackMutationVariables>;
 export const PlaylistFavoriteDocument = new TypedDocumentString(`
     mutation PlaylistFavorite($playlistId: String!, $isAdding: Boolean!) {
   addToFavoritePlaylist(playlistId: $playlistId, isAdding: $isAdding)
@@ -6086,6 +6066,30 @@ export const RejectArtistRegistrationDocument = new TypedDocumentString(`
   rejectArtistRegistration(request: $request)
 }
     `) as unknown as TypedDocumentString<RejectArtistRegistrationMutation, RejectArtistRegistrationMutationVariables>;
+export const CategoriesDocument = new TypedDocumentString(`
+    query Categories {
+  categories {
+    items {
+      id
+      name
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CategoriesQuery, CategoriesQueryVariables>;
+export const TrackUploadArtistListDocument = new TypedDocumentString(`
+    query TrackUploadArtistList {
+  artists(where: {isVisible: {eq: true}}, take: 50) {
+    items {
+      id
+      userId
+      stageName
+      user {
+        stripeAccountId
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackUploadArtistListQuery, TrackUploadArtistListQueryVariables>;
 export const PlaylistsDocument = new TypedDocumentString(`
     query Playlists($userId: String!, $name: String, $take: Int, $skip: Int) {
   playlists(

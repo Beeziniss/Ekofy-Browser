@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTrackUploadStore } from "@/store";
 import {
   CircleQuestionMarkIcon,
-  Copy,
+  // Copy,
   CreativeCommonsIcon,
   EarthIcon,
   FileAudioIcon,
@@ -22,6 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -39,7 +40,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   categoriesOptions,
-  userLicenseOptions,
+  trackUploadArtistListOptions,
 } from "@/gql/options/artist-options";
 import { trackUploadMutationOptions } from "@/gql/options/artist-mutation-options";
 import {
@@ -51,7 +52,7 @@ import {
   CreateRecordingRequestInput,
 } from "@/gql/graphql";
 import { useAuthStore } from "@/store";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, FileRejection } from "react-dropzone";
 import { uploadImageToCloudinary } from "@/utils/cloudinary-utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -70,153 +71,141 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  CalendarIcon,
-  Plus,
-  Trash2,
-  Check,
-  ChevronsUpDown,
-} from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+import { CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import TrackUserCombobox from "../components/track-user-combobox";
+import { TrackUploadArtist } from "../../types";
 
-const FormSchema = z.object({
-  title: z.string().min(1, { message: "Title is required." }),
-  description: z.string().optional(),
-  mainArtist: z.string().optional(),
-  categoryIds: z
-    .array(z.string())
-    .min(1, { message: "Please select at least one category." }),
-  tags: z.array(z.string()).optional(),
-  isReleased: z.boolean(),
-  releaseDate: z.date().optional(),
-  coverImage: z.instanceof(File).optional(),
-  isExplicit: z.boolean(),
-  isOriginal: z.boolean(),
-  legalDocuments: z.array(
-    z.object({
-      documentType: z.string(),
-      documentUrl: z.string(),
-      name: z.string(),
-      note: z.string().optional(),
-    }),
-  ),
-  workSplits: z
-    .array(
-      z.object({
-        userId: z.string(),
-        artistRole: z.string(),
-        percentage: z.number().min(0).max(100),
-      }),
-    )
-    .optional()
-    .refine(
-      (splits) => {
-        if (!splits || splits.length === 0) return true;
-        const total = splits.reduce((sum, split) => sum + split.percentage, 0);
-        return total === 100;
-      },
-      {
-        message: "Work splits must total exactly 100%",
-      },
-    ),
-  recordingSplits: z
-    .array(
-      z.object({
-        userId: z.string(),
-        artistRole: z.string(),
-        percentage: z.number().min(0).max(100),
-      }),
-    )
-    .optional()
-    .refine(
-      (splits) => {
-        if (!splits || splits.length === 0) return true;
-        const total = splits.reduce((sum, split) => sum + split.percentage, 0);
-        return total === 100;
-      },
-      {
-        message: "Recording splits must total exactly 100%",
-      },
-    ),
-});
+const FormSchema = z
+  .object({
+    title: z.string().min(1, { message: "Title is required." }),
+    description: z.string().optional(),
+    mainArtistIds: z
+      .array(z.string())
+      .min(1, { message: "Please select at least one main artist." }),
+    featuredArtistIds: z.array(z.string()),
+    categoryIds: z
+      .array(z.string())
+      .min(1, { message: "Please select at least one category." }),
+    tags: z
+      .array(z.string())
+      .min(1, { message: "Please add at least one tag." }),
+    coverImage: z
+      .instanceof(File, {
+        message: "A cover image file is required.",
+      })
+      .refine((file) => file.size <= 5 * 1024 * 1024, {
+        message: "Image size must be less than 5MB.",
+      })
+      .refine(
+        (file) =>
+          ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+            file.type,
+          ),
+        {
+          message: "Only JPEG, PNG, and WebP images are allowed.",
+        },
+      ),
+    isExplicit: z.boolean(),
+    isReleased: z.boolean(),
+    releaseDate: z.date().optional(),
+    isOriginal: z.boolean(),
+    legalDocuments: z
+      .array(
+        z.object({
+          documentType: z.string(),
+          documentUrl: z.url({
+            error: "Please enter a valid URL (e.g., https://example.com)",
+          }),
+          name: z.string().min(1, { message: "Document name is required." }),
+          note: z.string().min(1, { message: "Note is required." }),
+        }),
+      )
+      .min(1, { message: "At least one legal document is required." })
+      .refine(
+        (documents) =>
+          documents.every(
+            (doc) =>
+              doc.name.trim() !== "" &&
+              doc.documentUrl.trim() !== "" &&
+              doc.note.trim() !== "",
+          ),
+        {
+          message: "At least one document must have all fields completed.",
+        },
+      ),
+    workSplits: z
+      .array(
+        z.object({
+          userId: z.string(),
+          artistRole: z.string(),
+          percentage: z.number().min(0).max(100),
+        }),
+      )
+      .optional()
+      .refine(
+        (splits) => {
+          if (!splits || splits.length === 0) return true;
+          const total = splits.reduce(
+            (sum, split) => sum + split.percentage,
+            0,
+          );
+          return total === 100;
+        },
+        {
+          message: "Work splits must total exactly 100%",
+        },
+      ),
+    recordingSplits: z
+      .array(
+        z.object({
+          userId: z.string(),
+          artistRole: z.string(),
+          percentage: z.number().min(0).max(100),
+        }),
+      )
+      .optional()
+      .refine(
+        (splits) => {
+          if (!splits || splits.length === 0) return true;
+          const total = splits.reduce(
+            (sum, split) => sum + split.percentage,
+            0,
+          );
+          return total === 100;
+        },
+        {
+          message: "Recording splits must total exactly 100%",
+        },
+      ),
+  })
+  .superRefine((data, ctx) => {
+    // Validate release date logic
+    if (data.isReleased && data.releaseDate) {
+      // If released and date is provided, it must be at least 4 days from now
+      const minDate = new Date();
+      minDate.setDate(minDate.getDate() + 4);
+
+      if (data.releaseDate < minDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["releaseDate"],
+          message: "Release date must be at least 4 days from today",
+        });
+      }
+    }
+
+    // If not released, release date should not be set
+    if (!data.isReleased && data.releaseDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["releaseDate"],
+        message: "Release date cannot be set when track is not released",
+      });
+    }
+  });
 
 type FormData = z.infer<typeof FormSchema>;
-
-interface User {
-  id: string;
-  fullName: string;
-}
-
-interface UserComboboxProps {
-  users: User[];
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-}
-
-const UserCombobox = ({
-  users,
-  value,
-  onChange,
-  placeholder = "Select user...",
-}: UserComboboxProps) => {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="h-8 w-full justify-between"
-        >
-          {value
-            ? users?.find((user) => user.id === value)?.fullName ||
-              "Unknown User"
-            : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
-        <Command>
-          <CommandInput placeholder="Search users..." className="h-9" />
-          <CommandList>
-            <CommandEmpty>No user found.</CommandEmpty>
-            <CommandGroup>
-              {users?.map((user) => (
-                <CommandItem
-                  key={user.id}
-                  value={user.id}
-                  onSelect={(currentValue) => {
-                    onChange(currentValue === value ? "" : currentValue);
-                    setOpen(false);
-                  }}
-                >
-                  {user.fullName}
-                  <Check
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      value === user.id ? "opacity-100" : "opacity-0",
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
-};
 
 // Helper function to redistribute percentages evenly
 const redistributePercentages = (
@@ -242,39 +231,33 @@ const redistributePercentages = (
 // Helper function to get user display name
 const getUserDisplayName = (
   userId: string,
-  users: User[],
+  users: TrackUploadArtist[],
   currentUserId?: string,
 ) => {
   if (userId === currentUserId) return "You";
-  const user = users?.find((u) => u.id === userId);
-  return user?.fullName || "Unknown User";
+  const user = users?.find((u) => u.userId === userId);
+
+  return user?.stageName || "Unknown User";
 };
 
 const TrackUploadMetadataSection = () => {
-  const router = useRouter();
   const { currentUpload, uploadedTracks, clearCurrentUpload } =
     useTrackUploadStore();
+  const router = useRouter();
   const { user } = useAuthStore();
-  const [displayTrack, setDisplayTrack] = useState(currentUpload);
   const [isUploading, setIsUploading] = useState(false);
+  const [displayTrack, setDisplayTrack] = useState(currentUpload);
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
     null,
   );
-  const [trackUrl, setTrackUrl] = useState<string>("");
-  const [workSplits, setWorkSplits] = useState([
-    {
-      userId: user?.userId || "",
-      artistRole: ArtistRole.Main,
-      percentage: 100,
-    },
-  ]);
-  const [recordingSplits, setRecordingSplits] = useState([
-    {
-      userId: user?.userId || "",
-      artistRole: ArtistRole.Main,
-      percentage: 100,
-    },
-  ]);
+
+  // const [trackUrl, setTrackUrl] = useState<string>("");
+  const [workSplits, setWorkSplits] = useState<
+    Array<{ userId: string; artistRole: ArtistRole; percentage: number }>
+  >([]);
+  const [recordingSplits, setRecordingSplits] = useState<
+    Array<{ userId: string; artistRole: ArtistRole; percentage: number }>
+  >([]);
   const [legalDocuments, setLegalDocuments] = useState<
     {
       documentType: DocumentType;
@@ -293,29 +276,10 @@ const TrackUploadMetadataSection = () => {
 
   // Get minimum date (3 days from today)
   const minDate = new Date();
-  minDate.setDate(minDate.getDate() + 3);
+  minDate.setDate(minDate.getDate() + 4);
 
-  // Copy track URL to clipboard
-  const handleCopyUrl = async () => {
-    if (trackUrl) {
-      try {
-        await navigator.clipboard.writeText(trackUrl);
-        toast.success("Track URL copied to clipboard!");
-      } catch {
-        toast.error("Failed to copy URL");
-      }
-    } else {
-      toast.error("No track URL available yet");
-    }
-  };
-
-  // Fetch categories from the backend
+  const { data: artistsData } = useQuery(trackUploadArtistListOptions);
   const { data: categoriesData } = useQuery(categoriesOptions);
-
-  // Fetch users for splits selection
-  const { data: usersData } = useQuery(userLicenseOptions);
-
-  // Upload track mutation
   const uploadTrackMutation = useMutation(trackUploadMutationOptions);
 
   const form = useForm<FormData>({
@@ -323,7 +287,8 @@ const TrackUploadMetadataSection = () => {
     defaultValues: {
       title: "",
       description: "",
-      mainArtist: "",
+      mainArtistIds: [],
+      featuredArtistIds: [],
       categoryIds: [],
       tags: [],
       isReleased: false,
@@ -337,12 +302,126 @@ const TrackUploadMetadataSection = () => {
     },
   });
 
+  // Helper function to check if an artist can be removed from splits
+  const canRemoveArtistFromSplit = useCallback(
+    (userId: string, splitType: "work" | "recording") => {
+      if (!artistsData?.artists?.items) return true;
+
+      const allSelectedArtistIds = [
+        ...form.watch("mainArtistIds"),
+        ...form.watch("featuredArtistIds"),
+      ];
+
+      // Find the artist by userId
+      const artist = artistsData.artists.items.find((a) => a.userId === userId);
+      if (!artist || !allSelectedArtistIds.includes(artist.id)) return true; // Not a selected artist, can remove
+
+      // Get current splits from both work and recording (excluding the one being removed)
+      const currentWorkUserIds =
+        splitType === "work"
+          ? workSplits
+              .filter((split) => split.userId !== userId)
+              .map((split) => split.userId)
+          : workSplits.map((split) => split.userId);
+
+      const currentRecordingUserIds =
+        splitType === "recording"
+          ? recordingSplits
+              .filter((split) => split.userId !== userId)
+              .map((split) => split.userId)
+          : recordingSplits.map((split) => split.userId);
+
+      const allRemainingUserIds = [
+        ...currentWorkUserIds,
+        ...currentRecordingUserIds,
+      ];
+
+      // Check if the artist would still appear in at least one split after removal
+      return allRemainingUserIds.includes(userId);
+    },
+    [artistsData?.artists?.items, form, workSplits, recordingSplits],
+  );
+
+  // Helper function to update splits based on selected artists
+  const updateSplitsFromArtists = useCallback(
+    (artistIds: string[]) => {
+      if (!artistsData?.artists?.items) return;
+
+      // If no artists selected, reset splits to empty
+      if (artistIds.length === 0) {
+        setWorkSplits([]);
+        setRecordingSplits([]);
+        return;
+      }
+
+      const mainArtistIds = form.watch("mainArtistIds");
+      const featuredArtistIds = form.watch("featuredArtistIds");
+
+      // Create new splits with equal percentages for ALL selected artists
+      const equalPercentage = Math.floor(100 / artistIds.length);
+      const remainder = 100 - equalPercentage * artistIds.length;
+
+      const newSplits = artistIds.map((artistId, index) => {
+        const artist = artistsData.artists?.items?.find(
+          (a) => a.id === artistId,
+        );
+        const isMainArtist = mainArtistIds.includes(artistId);
+        const isFeaturedArtist = featuredArtistIds.includes(artistId);
+
+        return {
+          userId: artist?.userId || artistId,
+          artistRole: isMainArtist
+            ? ArtistRole.Main
+            : isFeaturedArtist
+              ? ArtistRole.Featured
+              : ArtistRole.Main,
+          percentage:
+            index === 0 ? equalPercentage + remainder : equalPercentage,
+        };
+      });
+
+      setWorkSplits(newSplits);
+      setRecordingSplits(newSplits);
+    },
+    [artistsData?.artists?.items, form],
+  );
+
   // Handle cover image upload
   const onDropCoverImage = useCallback(
-    async (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+      // Handle rejected files first
+      if (rejectedFiles.length > 0) {
+        const error = rejectedFiles[0].errors?.[0];
+        if (error?.code === "file-too-large") {
+          toast.error("Image size must be less than 5MB");
+        } else if (error?.code === "file-invalid-type") {
+          toast.error("Only JPEG, PNG, and WebP images are allowed");
+        } else {
+          toast.error("Invalid file selected");
+        }
+        return;
+      }
+
       const file = acceptedFiles[0];
       if (file) {
+        // Additional size validation (belt and suspenders)
+        if (file.size > 5 * 1024 * 1024) {
+          toast.error("Image size must be less than 5MB");
+          return;
+        }
+
+        // Additional type validation
+        if (
+          !["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+            file.type,
+          )
+        ) {
+          toast.error("Only JPEG, PNG, and WebP images are allowed");
+          return;
+        }
+
         form.setValue("coverImage", file);
+        form.clearErrors("coverImage"); // Clear any previous errors
 
         // Create preview URL
         const previewUrl = URL.createObjectURL(file);
@@ -362,12 +441,55 @@ const TrackUploadMetadataSection = () => {
       "image/*": [".jpeg", ".jpg", ".png", ".webp"],
     },
     multiple: false,
+    maxSize: 5 * 1024 * 1024, // 5MB
   });
 
   async function onSubmit(data: FormData) {
     if (!displayTrack || !user?.userId) {
       toast.error("No track found or user not authenticated");
       return;
+    }
+
+    // Validate that all selected artists appear in at least one split
+    const allSelectedArtistIds = [
+      ...data.mainArtistIds,
+      ...data.featuredArtistIds,
+    ];
+
+    if (allSelectedArtistIds.length > 0 && artistsData?.artists?.items) {
+      // Get all user IDs from both work and recording splits
+      const allSplitUserIds = [
+        ...workSplits.map((split) => split.userId),
+        ...recordingSplits.map((split) => split.userId),
+      ];
+
+      // Check if every selected artist appears in at least one split
+      const missingArtists = allSelectedArtistIds.filter((artistId) => {
+        const artist = artistsData.artists?.items?.find(
+          (a) => a.id === artistId,
+        );
+        return artist && !allSplitUserIds.includes(artist.userId);
+      });
+
+      if (missingArtists.length > 0) {
+        const missingArtistNames = missingArtists.map((artistId) => {
+          const artist = artistsData.artists?.items?.find(
+            (a) => a.id === artistId,
+          );
+          return artist?.stageName || "Unknown Artist";
+        });
+
+        if (missingArtistNames.length === 1) {
+          toast.error(
+            `${missingArtistNames[0]} must appear in at least one work or recording split.`,
+          );
+        } else {
+          toast.error(
+            `The following artists must appear in at least one work or recording split: ${missingArtistNames.join(", ")}`,
+          );
+        }
+        return;
+      }
     }
 
     setIsUploading(true);
@@ -384,6 +506,22 @@ const TrackUploadMetadataSection = () => {
         coverImageUrl = uploadResult.secure_url;
       }
 
+      // Determine release status based on business logic
+      let releaseStatus = ReleaseStatus.NotAnnounced;
+
+      if (data.isReleased) {
+        if (data.releaseDate) {
+          // If released and date is set, status is NotAnnounced
+          releaseStatus = ReleaseStatus.NotAnnounced;
+        } else {
+          // If released but no date selected, status is Official
+          releaseStatus = ReleaseStatus.Official;
+        }
+      } else {
+        // If not released, status is NotAnnounced
+        releaseStatus = ReleaseStatus.NotAnnounced;
+      }
+
       // Prepare the mutation data
       const mutationData = {
         file: displayTrack.file,
@@ -394,10 +532,10 @@ const TrackUploadMetadataSection = () => {
           coverImage: coverImageUrl,
           isReleased: data.isReleased,
           releaseDate: data.releaseDate ? data.releaseDate.toISOString() : null,
-          releaseStatus: ReleaseStatus.NotAnnounced,
+          releaseStatus: releaseStatus,
           isOriginal: data.isOriginal,
-          mainArtistIds: [], // Empty for now as per your example
-          featuredArtistIds: [], // Empty for now as per your example
+          mainArtistIds: data.mainArtistIds,
+          featuredArtistIds: data.featuredArtistIds,
           tags: data.tags || [],
           isExplicit: data.isExplicit,
           legalDocuments: legalDocuments
@@ -460,7 +598,8 @@ const TrackUploadMetadataSection = () => {
       form.reset({
         title: displayTrack.metadata.title || "",
         description: "",
-        mainArtist: "",
+        mainArtistIds: [],
+        featuredArtistIds: [],
         categoryIds: [],
         tags: [],
         isReleased: false,
@@ -473,21 +612,8 @@ const TrackUploadMetadataSection = () => {
         recordingSplits: [],
       });
       setCoverImagePreview(null);
-      // Reset splits to default
-      setWorkSplits([
-        {
-          userId: user?.userId || "",
-          artistRole: ArtistRole.Main,
-          percentage: 100,
-        },
-      ]);
-      setRecordingSplits([
-        {
-          userId: user?.userId || "",
-          artistRole: ArtistRole.Main,
-          percentage: 100,
-        },
-      ]);
+      setWorkSplits([]);
+      setRecordingSplits([]);
       setLegalDocuments([
         {
           documentType: DocumentType.License,
@@ -497,11 +623,11 @@ const TrackUploadMetadataSection = () => {
         },
       ]);
       // Set a placeholder URL based on track name
-      if (typeof window !== "undefined") {
+      /* if (typeof window !== "undefined") {
         setTrackUrl(
           `${window.location.origin}/track/${displayTrack.id || "pending"}`,
         );
-      }
+      } */
     }
   }, [displayTrack, form, user]);
 
@@ -513,6 +639,76 @@ const TrackUploadMetadataSection = () => {
   useEffect(() => {
     form.setValue("recordingSplits", recordingSplits);
   }, [recordingSplits, form]);
+
+  useEffect(() => {
+    form.setValue("legalDocuments", legalDocuments);
+  }, [legalDocuments, form]);
+
+  // Clear release date when isReleased is set to false
+  useEffect(() => {
+    const subscription = form.watch((data) => {
+      if (!data.isReleased && data.releaseDate) {
+        form.setValue("releaseDate", undefined);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  // Initialize current user as main artist by default
+  useEffect(() => {
+    if (
+      artistsData?.artists?.items &&
+      user?.userId &&
+      form.watch("mainArtistIds").length === 0
+    ) {
+      const currentUserArtist = artistsData.artists.items.find(
+        (artist) => artist.userId === user.userId,
+      );
+      if (currentUserArtist) {
+        form.setValue("mainArtistIds", [currentUserArtist.id]);
+      }
+    }
+  }, [artistsData, user, form]);
+
+  // Watch for changes in artist selections and automatically update splits
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "mainArtistIds" || name === "featuredArtistIds") {
+        const mainIds: string[] = Array.isArray(value.mainArtistIds)
+          ? value.mainArtistIds.filter(
+              (id): id is string => typeof id === "string",
+            )
+          : [];
+        const featuredIds: string[] = Array.isArray(value.featuredArtistIds)
+          ? value.featuredArtistIds.filter(
+              (id): id is string => typeof id === "string",
+            )
+          : [];
+        const allSelectedArtists = [...mainIds, ...featuredIds];
+
+        if (allSelectedArtists.length > 0) {
+          updateSplitsFromArtists(allSelectedArtists);
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, updateSplitsFromArtists]);
+
+  // Copy track URL to clipboard
+  /* const handleCopyUrl = async () => {
+    if (trackUrl) {
+      try {
+        await navigator.clipboard.writeText(trackUrl);
+        toast.success("Track URL copied to clipboard!");
+      } catch {
+        toast.error("Failed to copy URL");
+      }
+    } else {
+      toast.error("No track URL available yet");
+    }
+  }; */
 
   if (!displayTrack) {
     return (
@@ -532,7 +728,7 @@ const TrackUploadMetadataSection = () => {
   return (
     <div className="w-full">
       {/* Track Link */}
-      <div className="primary_gradient w-full rounded-lg p-0.5">
+      {/* <div className="primary_gradient w-full rounded-lg p-0.5">
         <div className="bg-main-dark-bg flex w-full items-center rounded-md px-2.5 py-1">
           <span className="primary_gradient mr-2 bg-clip-text text-base text-transparent">
             Track Link |
@@ -545,23 +741,29 @@ const TrackUploadMetadataSection = () => {
             onClick={handleCopyUrl}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Track Metadata */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8">
           <div className="flex w-full items-start justify-between">
             <div className="w-full max-w-[598px] space-y-6">
-              <div className="bg-main-dark-bg-1 rounded-md border border-white/30 px-3 pt-2 pb-1">
-                <div className="flex items-center gap-x-1.5"></div>
-
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem className="gap-1">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field, fieldState }) => (
+                  <FormItem className="gap-1">
+                    <div
+                      className={cn(
+                        "bg-main-dark-bg-1 rounded-md border px-3 pt-2 pb-1 transition-colors",
+                        fieldState.error
+                          ? "border-destructive"
+                          : "border-white/30",
+                      )}
+                    >
                       <FormLabel className="flex items-center gap-x-1.5">
                         <span className="text-sm font-medium">Title</span>
+                        <span className="text-red-500">*</span>
                         <CircleQuestionMarkIcon className="size-3" />
                       </FormLabel>
 
@@ -576,33 +778,127 @@ const TrackUploadMetadataSection = () => {
                       </FormControl>
 
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                    </div>
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
-                name="mainArtist"
+                name="mainArtistIds"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="bg-main-dark-bg-1 rounded-md border border-white/30 px-3 pt-2 pb-1">
-                      <div className="flex items-center gap-x-1.5">
-                        <span className="text-sm font-medium">
-                          Main Artist(s)
-                        </span>
-                        <CircleQuestionMarkIcon className="size-3" />
-                      </div>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="text"
-                          placeholder="Credit Main Artist of the track"
-                          className="mt-1 border-0 !bg-transparent px-0 text-sm font-semibold outline-none focus:ring-0 focus:outline-none focus-visible:ring-0"
-                        />
-                      </FormControl>
-                    </div>
+                    <FormLabel className="text-sm font-medium">
+                      Main Artist(s)<span className="text-red-500">*</span>
+                    </FormLabel>
+
+                    <FormControl>
+                      <MultiSelect
+                        options={
+                          artistsData?.artists?.items
+                            ?.filter(
+                              (artist) =>
+                                !form
+                                  .watch("featuredArtistIds")
+                                  .includes(artist.id),
+                            )
+                            ?.map((artist) => ({
+                              value: artist.id,
+                              label: artist.user?.[0]?.stripeAccountId
+                                ? artist.stageName
+                                : `${artist.stageName} (Account Setup Required)`,
+                              disabled: !artist.user?.[0]?.stripeAccountId,
+                            })) || []
+                        }
+                        defaultValue={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          // Update work and recording splits when main artists change
+                          updateSplitsFromArtists([
+                            ...value,
+                            ...form.watch("featuredArtistIds"),
+                          ]);
+                        }}
+                        placeholder="Choose main artists..."
+                        maxCount={5}
+                        resetOnDefaultValueChange={true}
+                        emptyIndicator={
+                          <div className="p-4 text-center text-gray-400">
+                            <p>No eligible main artists found.</p>
+                            <p className="mt-1 text-xs">
+                              Artists need to complete their Stripe account
+                              setup to be selectable.
+                            </p>
+                          </div>
+                        }
+                      />
+                    </FormControl>
+
                     <FormMessage />
+                    <p className="mt-1 text-xs text-gray-400">
+                      💡 Artists without Stripe account setup are disabled and
+                      shown with &ldquo;(Account Setup Required)&rdquo;
+                    </p>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="featuredArtistIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      Featured Artist(s)
+                    </FormLabel>
+
+                    <FormControl>
+                      <MultiSelect
+                        options={
+                          artistsData?.artists?.items
+                            ?.filter(
+                              (artist) =>
+                                !form
+                                  .watch("mainArtistIds")
+                                  .includes(artist.id),
+                            )
+                            ?.map((artist) => ({
+                              value: artist.id,
+                              label: artist.user?.[0]?.stripeAccountId
+                                ? artist.stageName
+                                : `${artist.stageName} (Account Setup Required)`,
+                              disabled: !artist.user?.[0]?.stripeAccountId,
+                            })) || []
+                        }
+                        defaultValue={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          // Update work and recording splits when featured artists change
+                          updateSplitsFromArtists([
+                            ...form.watch("mainArtistIds"),
+                            ...value,
+                          ]);
+                        }}
+                        placeholder="Choose featured artists..."
+                        maxCount={5}
+                        resetOnDefaultValueChange={true}
+                        emptyIndicator={
+                          <div className="p-4 text-center text-gray-400">
+                            <p>No eligible featured artists found.</p>
+                            <p className="mt-1 text-xs">
+                              Artists need to complete their Stripe account
+                              setup to be selectable.
+                            </p>
+                          </div>
+                        }
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                    <p className="mt-1 text-xs text-gray-400">
+                      💡 Artists without Stripe account setup are disabled and
+                      shown with &ldquo;(Account Setup Required)&rdquo;
+                    </p>
                   </FormItem>
                 )}
               />
@@ -610,9 +906,16 @@ const TrackUploadMetadataSection = () => {
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
-                    <div className="bg-main-dark-bg-1 rounded-md border border-white/30 px-3 pt-2 pb-1">
+                    <div
+                      className={cn(
+                        "bg-main-dark-bg-1 rounded-md border px-3 pt-2 pb-1 transition-colors",
+                        fieldState.error
+                          ? "border-destructive"
+                          : "border-white/30",
+                      )}
+                    >
                       <div className="flex items-center gap-x-1.5">
                         <span className="text-sm font-medium">Description</span>
                         <CircleQuestionMarkIcon className="size-3" />
@@ -630,131 +933,120 @@ const TrackUploadMetadataSection = () => {
                 )}
               />
 
-              <div>
-                <FormField
-                  control={form.control}
-                  name="categoryIds"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">
-                        Categories
-                      </FormLabel>
+              <FormField
+                control={form.control}
+                name="categoryIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      Categories<span className="text-red-500">*</span>
+                    </FormLabel>
 
-                      <FormControl>
-                        <MultiSelect
-                          options={
-                            categoriesData?.categories?.items?.map(
-                              (category) => ({
-                                value: category.id,
-                                label: category.name,
-                              }),
-                            ) || []
-                          }
-                          defaultValue={field.value}
-                          onValueChange={field.onChange}
-                          placeholder="Choose music genres..."
-                          maxCount={5}
-                          resetOnDefaultValueChange={true}
-                        />
-                      </FormControl>
+                    <FormControl>
+                      <MultiSelect
+                        options={
+                          categoriesData?.categories?.items?.map(
+                            (category) => ({
+                              value: category.id,
+                              label: category.name,
+                            }),
+                          ) || []
+                        }
+                        defaultValue={field.value}
+                        onValueChange={field.onChange}
+                        placeholder="Choose music genres..."
+                        maxCount={5}
+                        resetOnDefaultValueChange={true}
+                      />
+                    </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div>
-                {/* <FormField
-                  control={form.control}
-                  name="tags"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">Tags</FormLabel>
-  
-                      <FormControl>
-                        <MultiSelect
-                          options={tagsList}
-                          defaultValue={field.value}
-                          onValueChange={field.onChange}
-                          placeholder="Add your desired tags..."
-                          maxCount={5}
-                          resetOnDefaultValueChange={true}
-                        />
-                      </FormControl>
-  
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
-                <FormField
-                  control={form.control}
-                  name="tags"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">
-                        Tags
-                      </FormLabel>
+              <FormField
+                control={form.control}
+                name="tags"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      Tags<span className="text-red-500">*</span>
+                    </FormLabel>
 
-                      <FormControl>
-                        <InputTags
-                          value={field.value!}
-                          onChange={field.onChange}
-                          placeholder="Add your desired tags..."
-                        />
-                        {/* <MultiSelect
-                          options={tagsList}
-                          defaultValue={field.value}
-                          onValueChange={field.onChange}
-                          placeholder="Add your desired tags..."
-                          maxCount={5}
-                          resetOnDefaultValueChange={true}
-                        /> */}
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                    <FormControl>
+                      <InputTags
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Add your desired tags..."
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Hint: Use , or Enter to add tags
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             {/* Track Cover Section */}
             <div className="w-full max-w-90 space-y-6">
               {/* Cover Image */}
-              <div
-                {...getCoverRootProps()}
-                className={`bg-main-dark-bg-1 flex size-90 cursor-pointer flex-col items-center justify-center gap-y-4 rounded-md border border-dashed transition-colors ${
-                  isCoverDragActive
-                    ? "border-blue-400 bg-blue-50/10"
-                    : "border-white/30"
-                }`}
-              >
-                <input {...getCoverInputProps()} />
-                {coverImagePreview ? (
-                  <div className="relative h-full w-full">
-                    <Image
-                      src={coverImagePreview}
-                      alt="Track cover preview"
-                      fill
-                      className="rounded-md object-cover"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity hover:opacity-100">
-                      <span className="text-sm text-white">
-                        Click to change
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <ImageIcon className="text-main-white size-25 stroke-1" />
-                    <span className="text-main-white text-sm">
-                      {isCoverDragActive
-                        ? "Drop image here..."
-                        : "Add track cover"}
-                    </span>
-                  </>
+              <FormField
+                control={form.control}
+                name="coverImage"
+                render={({ fieldState }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      Track Cover<span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <div
+                        {...getCoverRootProps()}
+                        className={cn(
+                          "bg-main-dark-bg-1 flex size-90 cursor-pointer flex-col items-center justify-center gap-y-4 rounded-md border border-dashed transition-colors",
+                          isCoverDragActive
+                            ? "border-blue-400 bg-blue-50/10"
+                            : fieldState.error
+                              ? "border-destructive"
+                              : "border-white/30",
+                        )}
+                      >
+                        <input {...getCoverInputProps()} />
+                        {coverImagePreview ? (
+                          <div className="relative h-full w-full">
+                            <Image
+                              src={coverImagePreview}
+                              alt="Track cover preview"
+                              fill
+                              className="rounded-md object-cover"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity hover:opacity-100">
+                              <span className="text-sm text-white">
+                                Click to change
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <ImageIcon className="text-main-white size-25 stroke-1" />
+                            <span className="text-main-white text-sm">
+                              {isCoverDragActive
+                                ? "Drop image here..."
+                                : "Add track cover"}
+                            </span>
+                            <span className="text-main-grey-dark-1 text-center text-xs">
+                              JPEG, PNG, WebP (max 5MB)
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
+              />
 
               <div className="w-full">
                 <FormField
@@ -787,6 +1079,13 @@ const TrackUploadMetadataSection = () => {
                         </Select>
                       </FormControl>
 
+                      <FormDescription className="text-xs text-gray-400">
+                        Public tracks can optionally set a release date (min. 4
+                        days from today). Without a date, they release
+                        immediately as Official. With a date, they remain as
+                        NotAnnounced until release.
+                      </FormDescription>
+
                       <FormMessage />
                     </FormItem>
                   )}
@@ -800,20 +1099,26 @@ const TrackUploadMetadataSection = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">
-                        Release Date
+                        Release Date {!form.watch("isReleased") && "(Optional)"}
                       </FormLabel>
+
                       <FormControl>
                         <Popover>
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
                               className="w-full justify-start text-left font-normal"
+                              disabled={!form.watch("isReleased")}
                             >
                               <CalendarIcon className="mr-2 h-4 w-4" />
                               {field.value ? (
                                 field.value.toLocaleDateString()
                               ) : (
-                                <span>Pick a release date</span>
+                                <span>
+                                  {!form.watch("isReleased")
+                                    ? "Release must be enabled to set date"
+                                    : "Pick a release date"}
+                                </span>
                               )}
                             </Button>
                           </PopoverTrigger>
@@ -823,11 +1128,16 @@ const TrackUploadMetadataSection = () => {
                               selected={field.value}
                               onSelect={field.onChange}
                               disabled={(date) => date < minDate}
-                              initialFocus
+                              captionLayout="dropdown"
                             />
                           </PopoverContent>
                         </Popover>
                       </FormControl>
+                      <FormDescription className="text-xs text-gray-400">
+                        {form.watch("isReleased")
+                          ? "Optional: Set a future release date (min. 4 days from today) or leave empty for immediate release"
+                          : "Only available for public tracks"}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -846,7 +1156,7 @@ const TrackUploadMetadataSection = () => {
             </Button>
           </div>
 
-          <div className="mt-32">
+          <div className="mt-20">
             <Accordion type="multiple">
               <AccordionItem value="advanced-settings">
                 <AccordionTrigger>
@@ -898,138 +1208,232 @@ const TrackUploadMetadataSection = () => {
                     />
 
                     {/* Legal Documents */}
-                    <div>
-                      <p className="text-main-white mb-2 text-xs font-bold">
-                        Legal Documents
-                      </p>
-                      <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
-                        Upload legal documents such as licenses, contracts, or
-                        other relevant files.
-                      </p>
+                    <FormField
+                      control={form.control}
+                      name="legalDocuments"
+                      render={({ fieldState }) => (
+                        <FormItem>
+                          <div>
+                            <p className="text-main-white mb-2 text-xs font-bold">
+                              Legal Documents{" "}
+                              <span className="text-red-500">*</span>
+                            </p>
+                            <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
+                              Upload legal documents such as licenses,
+                              contracts, or other relevant files.
+                            </p>
 
-                      <div className="space-y-4">
-                        {legalDocuments.map((doc, index) => (
-                          <div
-                            key={index}
-                            className="space-y-3 rounded-md border border-white/20 p-4"
-                          >
-                            <div className="flex items-center justify-between">
-                              <h4 className="text-sm font-medium text-white">
-                                Document {index + 1}
-                              </h4>
-                              {legalDocuments.length > 1 && (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    const newDocs = legalDocuments.filter(
-                                      (_, i) => i !== index,
-                                    );
-                                    setLegalDocuments(newDocs);
-                                  }}
+                            <div className="space-y-4">
+                              {legalDocuments.map((doc, index) => (
+                                <div
+                                  key={index}
+                                  className={cn(
+                                    "space-y-3 rounded-md border p-4 transition-colors",
+                                    form.formState.isSubmitted &&
+                                      (!doc.name.trim() ||
+                                        !doc.documentUrl.trim() ||
+                                        !doc.note.trim() ||
+                                        !/^https?:\/\/.+/.test(doc.documentUrl))
+                                      ? "border-destructive/50 bg-destructive/5"
+                                      : "border-white/20",
+                                  )}
                                 >
-                                  <Trash2 className="size-4" />
-                                </Button>
-                              )}
-                            </div>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <h4 className="text-sm font-medium text-white">
+                                        Document {index + 1}
+                                      </h4>
+                                      {form.formState.isSubmitted &&
+                                        (!doc.name.trim() ||
+                                          !doc.documentUrl.trim() ||
+                                          !doc.note.trim() ||
+                                          !/^https?:\/\/.+/.test(
+                                            doc.documentUrl,
+                                          )) && (
+                                          <span className="text-destructive text-xs font-medium">
+                                            (Incomplete)
+                                          </span>
+                                        )}
+                                    </div>
+                                    {legalDocuments.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          const newDocs = legalDocuments.filter(
+                                            (_, i) => i !== index,
+                                          );
+                                          setLegalDocuments(newDocs);
+                                          form.setValue(
+                                            "legalDocuments",
+                                            newDocs,
+                                          );
+                                        }}
+                                      >
+                                        <Trash2 className="size-4" />
+                                      </Button>
+                                    )}
+                                  </div>
 
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="space-y-1">
-                                <Label className="text-xs">Document Type</Label>
-                                <Select
-                                  value={doc.documentType}
-                                  onValueChange={(value) => {
-                                    const newDocs = [...legalDocuments];
-                                    newDocs[index].documentType =
-                                      value as DocumentType;
-                                    setLegalDocuments(newDocs);
-                                  }}
-                                >
-                                  <SelectTrigger size="sm">
-                                    <SelectValue
-                                      className="h-8"
-                                      placeholder="Select type"
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">
+                                        Document Type
+                                      </Label>
+                                      <Select
+                                        value={doc.documentType}
+                                        onValueChange={(value) => {
+                                          const newDocs = [...legalDocuments];
+                                          newDocs[index].documentType =
+                                            value as DocumentType;
+                                          setLegalDocuments(newDocs);
+                                          form.setValue(
+                                            "legalDocuments",
+                                            newDocs,
+                                          );
+                                        }}
+                                      >
+                                        <SelectTrigger size="sm">
+                                          <SelectValue
+                                            className="h-8"
+                                            placeholder="Select type"
+                                          />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem
+                                            value={DocumentType.License}
+                                          >
+                                            License
+                                          </SelectItem>
+                                          <SelectItem
+                                            value={DocumentType.Contract}
+                                          >
+                                            Contract
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">
+                                        Document Name{" "}
+                                        <span className="text-red-500">*</span>
+                                      </Label>
+                                      <Input
+                                        placeholder="Enter document name"
+                                        value={doc.name}
+                                        onChange={(e) => {
+                                          const newDocs = [...legalDocuments];
+                                          newDocs[index].name = e.target.value;
+                                          setLegalDocuments(newDocs);
+                                          form.setValue(
+                                            "legalDocuments",
+                                            newDocs,
+                                          );
+                                          if (fieldState.error) {
+                                            form.clearErrors("legalDocuments");
+                                          }
+                                        }}
+                                        className={cn(
+                                          "h-8",
+                                          fieldState.error
+                                            ? "border-destructive"
+                                            : "",
+                                        )}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-1">
+                                    <Label className="text-xs">
+                                      Document URL{" "}
+                                      <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Input
+                                      placeholder="Enter document URL (https://example.com)"
+                                      value={doc.documentUrl}
+                                      onChange={(e) => {
+                                        const newDocs = [...legalDocuments];
+                                        newDocs[index].documentUrl =
+                                          e.target.value;
+                                        setLegalDocuments(newDocs);
+                                        form.setValue(
+                                          "legalDocuments",
+                                          newDocs,
+                                        );
+                                        if (fieldState.error) {
+                                          form.clearErrors("legalDocuments");
+                                        }
+                                      }}
+                                      className={cn(
+                                        "h-8",
+                                        fieldState.error
+                                          ? "border-destructive"
+                                          : "",
+                                      )}
                                     />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value={DocumentType.License}>
-                                      License
-                                    </SelectItem>
-                                    <SelectItem value={DocumentType.Contract}>
-                                      Contract
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
+                                  </div>
 
-                              <div className="space-y-1">
-                                <Label className="text-xs">Document Name</Label>
-                                <Input
-                                  placeholder="Enter document name"
-                                  value={doc.name}
-                                  onChange={(e) => {
-                                    const newDocs = [...legalDocuments];
-                                    newDocs[index].name = e.target.value;
-                                    setLegalDocuments(newDocs);
-                                  }}
-                                  className="h-8"
-                                />
-                              </div>
-                            </div>
-
-                            <div className="space-y-1">
-                              <Label className="text-xs">Document URL</Label>
-                              <Input
-                                placeholder="Enter document URL"
-                                value={doc.documentUrl}
-                                onChange={(e) => {
-                                  const newDocs = [...legalDocuments];
-                                  newDocs[index].documentUrl = e.target.value;
-                                  setLegalDocuments(newDocs);
-                                }}
-                                className="h-8"
-                              />
-                            </div>
-
-                            <div className="space-y-1">
-                              <Label className="text-xs">Note (Optional)</Label>
-                              <Input
-                                placeholder="Add a note about this document"
-                                value={doc.note}
-                                onChange={(e) => {
-                                  const newDocs = [...legalDocuments];
-                                  newDocs[index].note = e.target.value;
-                                  setLegalDocuments(newDocs);
-                                }}
-                                className="h-8"
-                              />
+                                  <div className="space-y-1">
+                                    <Label className="text-xs">
+                                      Note{" "}
+                                      <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Input
+                                      placeholder="Add a note about this document"
+                                      value={doc.note}
+                                      onChange={(e) => {
+                                        const newDocs = [...legalDocuments];
+                                        newDocs[index].note = e.target.value;
+                                        setLegalDocuments(newDocs);
+                                        form.setValue(
+                                          "legalDocuments",
+                                          newDocs,
+                                        );
+                                        if (fieldState.error) {
+                                          form.clearErrors("legalDocuments");
+                                        }
+                                      }}
+                                      className={cn(
+                                        "h-8",
+                                        fieldState.error
+                                          ? "border-destructive"
+                                          : "",
+                                      )}
+                                    />
+                                  </div>
+                                </div>
+                              ))}
                             </div>
                           </div>
-                        ))}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setLegalDocuments([
-                              ...legalDocuments,
-                              {
-                                documentType: DocumentType.License,
-                                documentUrl: "",
-                                name: "",
-                                note: "",
-                              },
-                            ]);
-                          }}
-                          className="w-full"
-                        >
-                          <Plus className="mr-2 size-4" />
-                          Add Document
-                        </Button>
-                      </div>
-                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newDocs = [
+                          ...legalDocuments,
+                          {
+                            documentType: DocumentType.License,
+                            documentUrl: "",
+                            name: "",
+                            note: "",
+                          },
+                        ];
+                        setLegalDocuments(newDocs);
+                        form.setValue("legalDocuments", newDocs);
+                      }}
+                      className="w-full"
+                    >
+                      <Plus className="mr-2 size-4" />
+                      Add Document
+                    </Button>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -1088,94 +1492,183 @@ const TrackUploadMetadataSection = () => {
                       <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
                         Define how songwriting credits are split. Total must
                         equal 100%.
+                        <span className="text-yellow-400">
+                          All selected artists must appear in at least one work
+                          or recording split.
+                        </span>
                       </p>
 
                       <div className="space-y-3">
-                        {workSplits.map((split, index) => (
-                          <div
-                            key={index}
-                            className="rounded-md border border-white/20 p-3"
-                          >
-                            <div className="mb-2 flex items-center justify-between">
-                              <span className="text-sm font-medium text-white">
-                                {getUserDisplayName(
-                                  split.userId,
-                                  usersData?.users?.items || [],
-                                  user?.userId,
-                                )}{" "}
-                                - {split.percentage}%
-                              </span>
-                              {workSplits.length === 1 ? (
-                                <span className="text-xs text-gray-400">
-                                  (Default - Read Only)
+                        {workSplits.length === 0 ? (
+                          <div className="rounded-md border border-white/20 p-4 text-center text-gray-400">
+                            <p className="text-sm">
+                              No artists selected yet. Please select main or
+                              featured artists above to see work splits.
+                            </p>
+                          </div>
+                        ) : (
+                          workSplits.map((split, index) => (
+                            <div
+                              key={index}
+                              className="rounded-md border border-white/20 p-3"
+                            >
+                              <div className="mb-2 flex items-center justify-between">
+                                <span className="text-sm font-medium text-white">
+                                  {getUserDisplayName(
+                                    split.userId,
+                                    artistsData?.artists?.items || [],
+                                    user?.userId,
+                                  )}{" "}
+                                  - {split.percentage}%
                                 </span>
-                              ) : (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    const newSplits = redistributePercentages(
-                                      workSplits,
-                                      index,
-                                    );
-                                    setWorkSplits(newSplits);
-                                  }}
-                                >
-                                  <Trash2 className="size-4" />
-                                </Button>
+                                {workSplits.length === 1 ? (
+                                  <span className="text-xs text-gray-400">
+                                    (Default - Read Only)
+                                  </span>
+                                ) : (
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    disabled={
+                                      !canRemoveArtistFromSplit(
+                                        split.userId,
+                                        "work",
+                                      )
+                                    }
+                                    onClick={() => {
+                                      const canRemove =
+                                        canRemoveArtistFromSplit(
+                                          split.userId,
+                                          "work",
+                                        );
+
+                                      if (!canRemove) {
+                                        const artist =
+                                          artistsData?.artists?.items?.find(
+                                            (a) => a.userId === split.userId,
+                                          );
+                                        const artistName =
+                                          artist?.stageName || "Artist";
+                                        toast.error(
+                                          `${artistName} must appear in at least one work or recording split since they are selected as an artist for this track.`,
+                                        );
+                                        return;
+                                      }
+
+                                      const newSplits = redistributePercentages(
+                                        workSplits,
+                                        index,
+                                      );
+                                      setWorkSplits(newSplits);
+                                    }}
+                                    title={
+                                      !canRemoveArtistFromSplit(
+                                        split.userId,
+                                        "work",
+                                      )
+                                        ? "This artist must appear in at least one split"
+                                        : "Remove from work splits"
+                                    }
+                                  >
+                                    <Trash2 className="size-4" />
+                                  </Button>
+                                )}
+                              </div>
+                              {workSplits.length > 1 && (
+                                <div className="grid grid-cols-3 gap-2">
+                                  <TrackUserCombobox
+                                    users={
+                                      (artistsData?.artists?.items?.filter(
+                                        (artist) => {
+                                          // Only show artists that are selected in main/featured
+                                          const isSelectedArtist = [
+                                            ...form.watch("mainArtistIds"),
+                                            ...form.watch("featuredArtistIds"),
+                                          ].includes(artist.id);
+
+                                          // Don't show artists that are already used in other splits (except current one)
+                                          const isUsedInOtherSplits =
+                                            workSplits.some(
+                                              (otherSplit, otherIndex) =>
+                                                otherIndex !== index &&
+                                                otherSplit.userId ===
+                                                  artist.userId,
+                                            );
+
+                                          return (
+                                            isSelectedArtist &&
+                                            !isUsedInOtherSplits
+                                          );
+                                        },
+                                      ) as TrackUploadArtist[]) || []
+                                    }
+                                    value={split.userId}
+                                    onChange={(value) => {
+                                      const newSplits = [...workSplits];
+                                      const selectedArtist =
+                                        artistsData?.artists?.items?.find(
+                                          (a) => a.userId === value,
+                                        );
+                                      if (selectedArtist) {
+                                        newSplits[index].userId = value;
+                                        // Auto-assign role based on main/featured selection
+                                        const isMainArtist = form
+                                          .watch("mainArtistIds")
+                                          .includes(selectedArtist.id);
+                                        newSplits[index].artistRole =
+                                          isMainArtist
+                                            ? ArtistRole.Main
+                                            : ArtistRole.Featured;
+                                      }
+                                      setWorkSplits(newSplits);
+                                    }}
+                                    placeholder="Select user"
+                                    // isArtist={true}
+                                  />
+                                  <Select
+                                    value={split.artistRole}
+                                    onValueChange={(value) => {
+                                      const newSplits = [...workSplits];
+                                      newSplits[index].artistRole =
+                                        value as ArtistRole;
+                                      setWorkSplits(newSplits);
+                                    }}
+                                    disabled={true}
+                                  >
+                                    <SelectTrigger
+                                      size="sm"
+                                      className="cursor-not-allowed opacity-50"
+                                    >
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value={ArtistRole.Main}>
+                                        Main
+                                      </SelectItem>
+                                      <SelectItem value={ArtistRole.Featured}>
+                                        Featured
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={split.percentage}
+                                    onChange={(e) => {
+                                      const newSplits = [...workSplits];
+                                      newSplits[index].percentage =
+                                        parseInt(e.target.value) || 0;
+                                      setWorkSplits(newSplits);
+                                    }}
+                                    className="h-8"
+                                  />
+                                </div>
                               )}
                             </div>
-                            {workSplits.length > 1 && (
-                              <div className="grid grid-cols-3 gap-2">
-                                <UserCombobox
-                                  users={usersData?.users?.items || []}
-                                  value={split.userId}
-                                  onChange={(value) => {
-                                    const newSplits = [...workSplits];
-                                    newSplits[index].userId = value;
-                                    setWorkSplits(newSplits);
-                                  }}
-                                  placeholder="Select user"
-                                />
-                                <Select
-                                  value={split.artistRole}
-                                  onValueChange={(value) => {
-                                    const newSplits = [...workSplits];
-                                    newSplits[index].artistRole =
-                                      value as ArtistRole;
-                                    setWorkSplits(newSplits);
-                                  }}
-                                >
-                                  <SelectTrigger size="sm">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value={ArtistRole.Main}>
-                                      Main
-                                    </SelectItem>
-                                    <SelectItem value={ArtistRole.Featured}>
-                                      Featured
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <Input
-                                  type="number"
-                                  min="0"
-                                  max="100"
-                                  value={split.percentage}
-                                  onChange={(e) => {
-                                    const newSplits = [...workSplits];
-                                    newSplits[index].percentage =
-                                      parseInt(e.target.value) || 0;
-                                    setWorkSplits(newSplits);
-                                  }}
-                                  className="h-8"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                          ))
+                        )}
 
                         <div className="text-right text-xs">
                           <span
@@ -1215,29 +1708,63 @@ const TrackUploadMetadataSection = () => {
                           )}
                         />
 
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const newSplits = [
-                              ...workSplits,
-                              {
-                                userId: "",
-                                artistRole: ArtistRole.Featured,
-                                percentage: 0,
-                              },
-                            ];
-                            // Auto-distribute percentages equally
-                            const redistributed =
-                              redistributePercentages(newSplits);
-                            setWorkSplits(redistributed);
-                          }}
-                          className="w-full"
-                        >
-                          <Plus className="mr-2 size-4" />
-                          Add Work Split
-                        </Button>
+                        {(() => {
+                          const allSelectedArtists = [
+                            ...form.watch("mainArtistIds"),
+                            ...form.watch("featuredArtistIds"),
+                          ];
+                          const usedArtistIds = workSplits
+                            .map((split) => {
+                              const artist = artistsData?.artists?.items?.find(
+                                (a) => a.userId === split.userId,
+                              );
+                              return artist?.id;
+                            })
+                            .filter(Boolean);
+                          const availableArtists = allSelectedArtists.filter(
+                            (id) => !usedArtistIds.includes(id),
+                          );
+
+                          return (
+                            availableArtists.length > 0 && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const nextArtistId = availableArtists[0];
+                                  const nextArtist =
+                                    artistsData?.artists?.items?.find(
+                                      (a) => a.id === nextArtistId,
+                                    );
+                                  if (nextArtist) {
+                                    const isMainArtist = form
+                                      .watch("mainArtistIds")
+                                      .includes(nextArtistId);
+                                    const newSplits = [
+                                      ...workSplits,
+                                      {
+                                        userId: nextArtist.userId,
+                                        artistRole: isMainArtist
+                                          ? ArtistRole.Main
+                                          : ArtistRole.Featured,
+                                        percentage: 0,
+                                      },
+                                    ];
+                                    // Auto-distribute percentages equally
+                                    const redistributed =
+                                      redistributePercentages(newSplits);
+                                    setWorkSplits(redistributed);
+                                  }
+                                }}
+                                className="w-full"
+                              >
+                                <Plus className="mr-2 size-4" />
+                                Add Work Split
+                              </Button>
+                            )
+                          );
+                        })()}
                       </div>
                     </div>
 
@@ -1249,94 +1776,183 @@ const TrackUploadMetadataSection = () => {
                       <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
                         Define how recording performance credits are split.
                         Total must equal 100%.
+                        <span className="text-yellow-400">
+                          All selected artists must appear in at least one work
+                          or recording split.
+                        </span>
                       </p>
 
                       <div className="space-y-3">
-                        {recordingSplits.map((split, index) => (
-                          <div
-                            key={index}
-                            className="rounded-md border border-white/20 p-3"
-                          >
-                            <div className="mb-2 flex items-center justify-between">
-                              <span className="text-sm font-medium text-white">
-                                {getUserDisplayName(
-                                  split.userId,
-                                  usersData?.users?.items || [],
-                                  user?.userId,
-                                )}{" "}
-                                - {split.percentage}%
-                              </span>
-                              {recordingSplits.length === 1 ? (
-                                <span className="text-xs text-gray-400">
-                                  (Default - Read Only)
+                        {recordingSplits.length === 0 ? (
+                          <div className="rounded-md border border-white/20 p-4 text-center text-gray-400">
+                            <p className="text-sm">
+                              No artists selected yet. Please select main or
+                              featured artists above to see recording splits.
+                            </p>
+                          </div>
+                        ) : (
+                          recordingSplits.map((split, index) => (
+                            <div
+                              key={index}
+                              className="rounded-md border border-white/20 p-3"
+                            >
+                              <div className="mb-2 flex items-center justify-between">
+                                <span className="text-sm font-medium text-white">
+                                  {getUserDisplayName(
+                                    split.userId,
+                                    artistsData?.artists?.items || [],
+                                    user?.userId,
+                                  )}{" "}
+                                  - {split.percentage}%
                                 </span>
-                              ) : (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    const newSplits = redistributePercentages(
-                                      recordingSplits,
-                                      index,
-                                    );
-                                    setRecordingSplits(newSplits);
-                                  }}
-                                >
-                                  <Trash2 className="size-4" />
-                                </Button>
+                                {recordingSplits.length === 1 ? (
+                                  <span className="text-xs text-gray-400">
+                                    (Default - Read Only)
+                                  </span>
+                                ) : (
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    disabled={
+                                      !canRemoveArtistFromSplit(
+                                        split.userId,
+                                        "recording",
+                                      )
+                                    }
+                                    onClick={() => {
+                                      const canRemove =
+                                        canRemoveArtistFromSplit(
+                                          split.userId,
+                                          "recording",
+                                        );
+
+                                      if (!canRemove) {
+                                        const artist =
+                                          artistsData?.artists?.items?.find(
+                                            (a) => a.userId === split.userId,
+                                          );
+                                        const artistName =
+                                          artist?.stageName || "Artist";
+                                        toast.error(
+                                          `${artistName} must appear in at least one work or recording split since they are selected as an artist for this track.`,
+                                        );
+                                        return;
+                                      }
+
+                                      const newSplits = redistributePercentages(
+                                        recordingSplits,
+                                        index,
+                                      );
+                                      setRecordingSplits(newSplits);
+                                    }}
+                                    title={
+                                      !canRemoveArtistFromSplit(
+                                        split.userId,
+                                        "recording",
+                                      )
+                                        ? "This artist must appear in at least one split"
+                                        : "Remove from recording splits"
+                                    }
+                                  >
+                                    <Trash2 className="size-4" />
+                                  </Button>
+                                )}
+                              </div>
+                              {recordingSplits.length > 1 && (
+                                <div className="grid grid-cols-3 gap-2">
+                                  <TrackUserCombobox
+                                    users={
+                                      (artistsData?.artists?.items?.filter(
+                                        (artist) => {
+                                          // Only show artists that are selected in main/featured
+                                          const isSelectedArtist = [
+                                            ...form.watch("mainArtistIds"),
+                                            ...form.watch("featuredArtistIds"),
+                                          ].includes(artist.id);
+
+                                          // Don't show artists that are already used in other splits (except current one)
+                                          const isUsedInOtherSplits =
+                                            recordingSplits.some(
+                                              (otherSplit, otherIndex) =>
+                                                otherIndex !== index &&
+                                                otherSplit.userId ===
+                                                  artist.userId,
+                                            );
+
+                                          return (
+                                            isSelectedArtist &&
+                                            !isUsedInOtherSplits
+                                          );
+                                        },
+                                      ) as TrackUploadArtist[]) || []
+                                    }
+                                    value={split.userId}
+                                    onChange={(value) => {
+                                      const newSplits = [...recordingSplits];
+                                      const selectedArtist =
+                                        artistsData?.artists?.items?.find(
+                                          (a) => a.userId === value,
+                                        );
+                                      if (selectedArtist) {
+                                        newSplits[index].userId = value;
+                                        // Auto-assign role based on main/featured selection
+                                        const isMainArtist = form
+                                          .watch("mainArtistIds")
+                                          .includes(selectedArtist.id);
+                                        newSplits[index].artistRole =
+                                          isMainArtist
+                                            ? ArtistRole.Main
+                                            : ArtistRole.Featured;
+                                      }
+                                      setRecordingSplits(newSplits);
+                                    }}
+                                    placeholder="Select user"
+                                    // isArtist={true}
+                                  />
+                                  <Select
+                                    value={split.artistRole}
+                                    onValueChange={(value) => {
+                                      const newSplits = [...recordingSplits];
+                                      newSplits[index].artistRole =
+                                        value as ArtistRole;
+                                      setRecordingSplits(newSplits);
+                                    }}
+                                    disabled={true}
+                                  >
+                                    <SelectTrigger
+                                      size="sm"
+                                      className="cursor-not-allowed opacity-50"
+                                    >
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value={ArtistRole.Main}>
+                                        Main
+                                      </SelectItem>
+                                      <SelectItem value={ArtistRole.Featured}>
+                                        Featured
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={split.percentage}
+                                    onChange={(e) => {
+                                      const newSplits = [...recordingSplits];
+                                      newSplits[index].percentage =
+                                        parseInt(e.target.value) || 0;
+                                      setRecordingSplits(newSplits);
+                                    }}
+                                    className="h-8"
+                                  />
+                                </div>
                               )}
                             </div>
-                            {recordingSplits.length > 1 && (
-                              <div className="grid grid-cols-3 gap-2">
-                                <UserCombobox
-                                  users={usersData?.users?.items || []}
-                                  value={split.userId}
-                                  onChange={(value) => {
-                                    const newSplits = [...recordingSplits];
-                                    newSplits[index].userId = value;
-                                    setRecordingSplits(newSplits);
-                                  }}
-                                  placeholder="Select user"
-                                />
-                                <Select
-                                  value={split.artistRole}
-                                  onValueChange={(value) => {
-                                    const newSplits = [...recordingSplits];
-                                    newSplits[index].artistRole =
-                                      value as ArtistRole;
-                                    setRecordingSplits(newSplits);
-                                  }}
-                                >
-                                  <SelectTrigger size="sm">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value={ArtistRole.Main}>
-                                      Main
-                                    </SelectItem>
-                                    <SelectItem value={ArtistRole.Featured}>
-                                      Featured
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <Input
-                                  type="number"
-                                  min="0"
-                                  max="100"
-                                  value={split.percentage}
-                                  onChange={(e) => {
-                                    const newSplits = [...recordingSplits];
-                                    newSplits[index].percentage =
-                                      parseInt(e.target.value) || 0;
-                                    setRecordingSplits(newSplits);
-                                  }}
-                                  className="h-8"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                          ))
+                        )}
 
                         <div className="text-right text-xs">
                           <span
@@ -1376,29 +1992,63 @@ const TrackUploadMetadataSection = () => {
                           )}
                         />
 
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const newSplits = [
-                              ...recordingSplits,
-                              {
-                                userId: "",
-                                artistRole: ArtistRole.Featured,
-                                percentage: 0,
-                              },
-                            ];
-                            // Auto-distribute percentages equally
-                            const redistributed =
-                              redistributePercentages(newSplits);
-                            setRecordingSplits(redistributed);
-                          }}
-                          className="w-full"
-                        >
-                          <Plus className="mr-2 size-4" />
-                          Add Recording Split
-                        </Button>
+                        {(() => {
+                          const allSelectedArtists = [
+                            ...form.watch("mainArtistIds"),
+                            ...form.watch("featuredArtistIds"),
+                          ];
+                          const usedArtistIds = recordingSplits
+                            .map((split) => {
+                              const artist = artistsData?.artists?.items?.find(
+                                (a) => a.userId === split.userId,
+                              );
+                              return artist?.id;
+                            })
+                            .filter(Boolean);
+                          const availableArtists = allSelectedArtists.filter(
+                            (id) => !usedArtistIds.includes(id),
+                          );
+
+                          return (
+                            availableArtists.length > 0 && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const nextArtistId = availableArtists[0];
+                                  const nextArtist =
+                                    artistsData?.artists?.items?.find(
+                                      (a) => a.id === nextArtistId,
+                                    );
+                                  if (nextArtist) {
+                                    const isMainArtist = form
+                                      .watch("mainArtistIds")
+                                      .includes(nextArtistId);
+                                    const newSplits = [
+                                      ...recordingSplits,
+                                      {
+                                        userId: nextArtist.userId,
+                                        artistRole: isMainArtist
+                                          ? ArtistRole.Main
+                                          : ArtistRole.Featured,
+                                        percentage: 0,
+                                      },
+                                    ];
+                                    // Auto-distribute percentages equally
+                                    const redistributed =
+                                      redistributePercentages(newSplits);
+                                    setRecordingSplits(redistributed);
+                                  }
+                                }}
+                                className="w-full"
+                              >
+                                <Plus className="mr-2 size-4" />
+                                Add Recording Split
+                              </Button>
+                            )
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>

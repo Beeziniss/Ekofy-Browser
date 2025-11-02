@@ -5,7 +5,7 @@ import React from "react";
 import DetailItem from "../components/detail-item";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
-import { useClientProfile } from "../../hook/use-client-profile";
+import { useClientProfile } from "../../hooks/use-client-profile";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";

@@ -9,6 +9,8 @@ const InputTags = ({
   className,
   onChange,
   value: tags,
+  "aria-invalid": ariaInvalid,
+  id,
   ...props
 }: Omit<ComponentProps<"input">, "onChange" | "value"> & {
   onChange: Dispatch<SetStateAction<string[]>>;
@@ -16,9 +18,11 @@ const InputTags = ({
 }) => (
   <label
     className={cn(
-      "has-[input:focus-visible]:border-ring has-[input:focus-visible]:ring-ring/50 dark:bg-input/30 flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-md border border-white/30 p-1 text-sm transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 has-[input:focus-visible]:ring-[3px]",
+      "has-[input:focus-visible]:border-ring has-[input:focus-visible]:ring-ring/50 dark:bg-input/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-md border border-white/30 p-1 text-sm transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 has-[input:focus-visible]:ring-[3px]",
       className,
     )}
+    aria-invalid={ariaInvalid}
+    id={id}
   >
     {tags.map((t) => (
       <span
