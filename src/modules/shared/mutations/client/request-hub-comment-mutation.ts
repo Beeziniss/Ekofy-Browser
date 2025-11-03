@@ -1,19 +1,19 @@
 import { graphql } from "@/gql";
 
-export const TrackCommentUpdateMutation = graphql(`
-  mutation UpdateTrackComment($commentId: String!, $content: String!) {
+export const RequestHubCommentUpdateMutation = graphql(`
+  mutation UpdateRequestHubComment($commentId: String!, $content: String!) {
     updateComment(request: { commentId: $commentId, content: $content })
   }
 `);
 
-export const TrackCommentDeleteMutation = graphql(`
-  mutation DeleteTrackComment($commentId: String!) {
+export const RequestHubCommentDeleteMutation = graphql(`
+  mutation DeleteRequestHubComment($commentId: String!) {
     deleteComment(request: { commentId: $commentId })
   }
 `);
 
-export const TrackCommentCreateMutation = graphql(`
-  mutation CreateTrackComment(
+export const RequestHubCommentCreateMutation = graphql(`
+  mutation CreateRequestHubComment(
     $targetId: String!
     $commentType: CommentType!
     $content: String!

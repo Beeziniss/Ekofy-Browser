@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Table,
   TableBody,
@@ -36,11 +35,7 @@ import {
   User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { execute } from "@/gql/execute";
-import { 
-  ApproveTrackUploadRequestMutation, 
-  RejectTrackUploadRequestMutation 
-} from "../queries/track-approval-queries";
+import { useApproveTrackUploadRequest, useRejectTrackUploadRequest } from "@/gql/client-mutation-options/moderator-mutation";
 
 export function TrackApprovalTable({
   data,
@@ -80,27 +75,8 @@ export function TrackApprovalTable({
     trackName: "",
     artistName: "",
   });
-  const queryClient = useQueryClient();
-
-  // Approve mutation
-  const approveMutation = useMutation({
-    mutationFn: async (uploadId: string) => {
-      return await execute(ApproveTrackUploadRequestMutation, { uploadId });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["moderator-pending-tracks"] });
-    },
-  });
-
-  // Reject mutation
-  const rejectMutation = useMutation({
-    mutationFn: async ({ uploadId, reasonReject }: { uploadId: string; reasonReject: string }) => {
-      return await execute(RejectTrackUploadRequestMutation, { uploadId, reasonReject });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["moderator-pending-tracks"] });
-    },
-  });
+  const approveMutation = useApproveTrackUploadRequest();
+  const rejectMutation = useRejectTrackUploadRequest();
 
   const handleApproveConfirm = async () => {
     try {

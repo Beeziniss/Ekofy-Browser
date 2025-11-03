@@ -1,9 +1,9 @@
-import { GetUserProfileQuery } from "@/modules/moderator/profile/ui/views/moderator-profile-view";
+import { GetUserProfileQuery } from "@/modules/shared/queries/moderator/moderator-profile-queries";
 import { 
   PendingArtistRegistrationsDetailQuery, 
-} from "@/modules/moderator/artist-approval/ui/views/artist-details-view";
-import { PendingArtistRegistrationsQuery } from "@/modules/moderator/artist-approval/ui/views/artist-approval-view";
-import { ModeratorApprovalHistoryDetailQuery, ApprovalHistoriesListQuery } from "@/modules/moderator/approval-histories/ui/views/approval-histories-view";
+} from "@/modules/shared/queries/moderator/artist-approval-queries";
+import { PendingArtistRegistrationsQuery } from "@/modules/shared/queries/moderator/artist-approval-queries";
+import { ModeratorApprovalHistoryDetailQuery, ApprovalHistoriesListQuery } from "@/modules/shared/queries/moderator/approval-histories-queries";
 import { PendingArtistPackagesQuery } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
@@ -15,13 +15,14 @@ import {
   ApprovalType,
   PaginatedDataOfPendingArtistPackageResponseFilterInput,
 } from "@/gql/graphql";
-import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/moderator/user-management/ui/views/moderator-user-management-view";
-import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/moderator/user-management/ui/views/moderator-user-detail-view";
+import { ModeratorGetListUser, ModeratorGetAnalytics } from "@/modules/shared/queries/moderator/user-management-queries";
+import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "@/modules/shared/queries/moderator/user-management-queries";
 import { 
   PENDING_TRACK_UPLOAD_REQUESTS_QUERY,
   PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY,
   ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY
-} from "@/modules/moderator/track-approval/ui/queries/track-approval-queries";
+} from "@/modules/shared/queries/moderator/track-approval-queries";
+import { QUERY_USER_CREATED_BY } from "@/modules/shared/queries/moderator/track-approval-queries";
 
 export const moderatorProfileOptions = (userId: string) => queryOptions({
   queryKey: ["moderator-profile", userId],
@@ -318,4 +319,21 @@ export const moderatorPendingPackagesOptions = (page: number = 1, pageSize: numb
     });
   },
   staleTime: 1 * 60 * 1000, // 1 minute
+});
+
+// User created by query options for moderator (for track detail)
+export const moderatorUserCreatedByOptions = (userId: string) => queryOptions({
+  queryKey: ["user-created-by", userId],
+  queryFn: async () => {
+    const result = await execute(QUERY_USER_CREATED_BY, {
+      where: {
+        id: {
+          eq: userId
+        }
+      }
+    });
+    return result?.users?.items?.[0] || null;
+  },
+  enabled: !!userId,
+  staleTime: 5 * 60 * 1000, // 5 minutes
 });

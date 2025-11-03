@@ -27,7 +27,7 @@ export const TrackListWithFiltersQuery = graphql(`
         isExplicit
         releaseInfo {
           releaseDate
-          isReleased
+          isRelease
         }
       }
       pageInfo {
