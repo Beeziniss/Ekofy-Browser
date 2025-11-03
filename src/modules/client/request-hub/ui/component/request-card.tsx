@@ -170,22 +170,21 @@ export function RequestCard({
         </div>
 
         {/* Budget and Deadline */}
-        <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-          <div>
-            <p className="text-white mb-1">Budget</p>
-            <p className="font-medium text-primary-gradient">
+        <div className="flex items-center justify-between mb-4 text-sm">
+          <div className="flex items-center">
+            <p className="text-white mr-1">Budget:</p>
+            <p className="font-medium text-main-purple">
               {formatBudget(request.budget, request.currency)}
             </p>
           </div>
-          <div>
-            <p className="text-white mb-1">
-              <Clock className="h-3 w-3 inline mr-1" />
-              Deadline
+          <div className="flex items-center">
+            <Clock className="h-4 w-4 text-white mr-2" />
+            <p className="text-white mr-1">Deadline:</p>
+            <p className="font-medium text-main-purple">
+              {formatDeadline(request.deadline)}
             </p>
-            <p className="font-medium text-primary-gradient">{formatDeadline(request.deadline)}</p>
           </div>
         </div>
-
         {/* Footer with Action Buttons */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <Button

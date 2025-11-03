@@ -5171,6 +5171,20 @@ export type SearchPlaylistsQueryVariables = Exact<{
 
 export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', searchPlaylists?: { __typename?: 'SearchPlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
 
+export type CreateSubscriptionMutationVariables = Exact<{
+  createSubscriptionRequest: CreateSubscriptionRequestInput;
+}>;
+
+
+export type CreateSubscriptionMutation = { __typename?: 'MutationInitialization', createSubscription: boolean };
+
+export type CreateSubscriptionPlanMutationVariables = Exact<{
+  createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput;
+}>;
+
+
+export type CreateSubscriptionPlanMutation = { __typename?: 'MutationInitialization', createSubscriptionPlan: boolean };
+
 export type UploadTrackMutationVariables = Exact<{
   file: Scalars['Upload']['input'];
   createTrackRequest: CreateTrackRequestInput;
@@ -5316,6 +5330,31 @@ export type RejectArtistRegistrationMutationVariables = Exact<{
 
 
 export type RejectArtistRegistrationMutation = { __typename?: 'MutationInitialization', rejectArtistRegistration: boolean };
+
+export type SubscriptionsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where: SubscriptionFilterInput;
+}>;
+
+
+export type SubscriptionsQuery = { __typename?: 'QueryInitialization', subscriptions?: { __typename?: 'SubscriptionsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, status: SubscriptionStatus, createdAt: any, tier: SubscriptionTier, amount: any }> | null } | null };
+
+export type SubscriptionsDetailQueryVariables = Exact<{
+  where?: InputMaybe<SubscriptionFilterInput>;
+}>;
+
+
+export type SubscriptionsDetailQuery = { __typename?: 'QueryInitialization', subscriptions?: { __typename?: 'SubscriptionsCollectionSegment', items?: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, version: number, amount: any, currency: CurrencyType, tier: SubscriptionTier, status: SubscriptionStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type SubscriptionPlansQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<SubscriptionPlanFilterInput>;
+}>;
+
+
+export type SubscriptionPlansQuery = { __typename?: 'QueryInitialization', subscriptionPlans?: { __typename?: 'SubscriptionPlansCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'SubscriptionPlan', id: string, subscriptionId: string, stripeProductId: string, stripeProductActive: boolean, stripeProductName: string, stripeProductImages?: Array<string> | null, stripeProductType: string, stripeProductMetadata?: Array<{ __typename?: 'Metadata', key: string, value: string }> | null, subscriptionPlanPrices: Array<{ __typename?: 'SubscriptionPlanPrice', stripePriceId: string, stripePriceActive: boolean, stripePriceUnitAmount: any, stripePriceCurrency: string, stripePriceLookupKey: string, interval: PeriodTime, intervalCount: any }>, subscription: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, version: number, amount: any, currency: CurrencyType, tier: SubscriptionTier, status: SubscriptionStatus, createdAt: any, updatedAt?: any | null }> }> | null } | null };
 
 export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -5987,6 +6026,18 @@ export const SearchPlaylistsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SearchPlaylistsQuery, SearchPlaylistsQueryVariables>;
+export const CreateSubscriptionDocument = new TypedDocumentString(`
+    mutation CreateSubscription($createSubscriptionRequest: CreateSubscriptionRequestInput!) {
+  createSubscription(createSubscriptionRequest: $createSubscriptionRequest)
+}
+    `) as unknown as TypedDocumentString<CreateSubscriptionMutation, CreateSubscriptionMutationVariables>;
+export const CreateSubscriptionPlanDocument = new TypedDocumentString(`
+    mutation CreateSubscriptionPlan($createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!) {
+  createSubscriptionPlan(
+    createSubScriptionPlanRequest: $createSubScriptionPlanRequest
+  )
+}
+    `) as unknown as TypedDocumentString<CreateSubscriptionPlanMutation, CreateSubscriptionPlanMutationVariables>;
 export const UploadTrackDocument = new TypedDocumentString(`
     mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!) {
   uploadTrack(
@@ -6091,6 +6142,92 @@ export const RejectArtistRegistrationDocument = new TypedDocumentString(`
   rejectArtistRegistration(request: $request)
 }
     `) as unknown as TypedDocumentString<RejectArtistRegistrationMutation, RejectArtistRegistrationMutationVariables>;
+export const SubscriptionsDocument = new TypedDocumentString(`
+    query Subscriptions($skip: Int, $take: Int, $where: SubscriptionFilterInput!) {
+  subscriptions(skip: $skip, take: $take, where: $where) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      name
+      description
+      code
+      status
+      createdAt
+      tier
+      amount
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<SubscriptionsQuery, SubscriptionsQueryVariables>;
+export const SubscriptionsDetailDocument = new TypedDocumentString(`
+    query SubscriptionsDetail($where: SubscriptionFilterInput) {
+  subscriptions(where: $where) {
+    items {
+      id
+      name
+      description
+      code
+      version
+      amount
+      currency
+      tier
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SubscriptionsDetailQuery, SubscriptionsDetailQueryVariables>;
+export const SubscriptionPlansDocument = new TypedDocumentString(`
+    query SubscriptionPlans($skip: Int, $take: Int, $where: SubscriptionPlanFilterInput) {
+  subscriptionPlans(skip: $skip, take: $take, where: $where) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      subscriptionId
+      stripeProductId
+      stripeProductActive
+      stripeProductName
+      stripeProductImages
+      stripeProductType
+      stripeProductMetadata {
+        key
+        value
+      }
+      subscriptionPlanPrices {
+        stripePriceId
+        stripePriceActive
+        stripePriceUnitAmount
+        stripePriceCurrency
+        stripePriceLookupKey
+        interval
+        intervalCount
+      }
+      subscription {
+        id
+        name
+        description
+        code
+        version
+        amount
+        currency
+        tier
+        status
+        createdAt
+        updatedAt
+      }
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<SubscriptionPlansQuery, SubscriptionPlansQueryVariables>;
 export const CategoriesDocument = new TypedDocumentString(`
     query Categories {
   categories {

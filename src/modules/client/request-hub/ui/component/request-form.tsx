@@ -177,7 +177,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Budget ($)</label>
+          <label className="block text-sm font-medium mb-2">Budget (VND)</label>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-gray-500 mb-1">Minimum Budget</label>
@@ -315,7 +315,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
               Cancel
             </Button>
           )}
-          <Button type="submit">
+          <Button type="submit" variant="ekofy">
             {mode === 'create' ? 'Submit' : 'Update'}
           </Button>
         </div>
