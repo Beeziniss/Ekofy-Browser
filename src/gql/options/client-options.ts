@@ -200,18 +200,30 @@ export const artistListOptions = (take: number = 12) =>
   });
 
 // FOLLOW QUERIES
-export const followerOptions = (userId: string) =>
+export const followerOptions = ({
+  artistId,
+  userId,
+}: {
+  artistId?: string;
+  userId?: string;
+}) =>
   queryOptions({
-    queryKey: ["follower", userId],
-    queryFn: async () => await execute(FollowerQuery, { userId }),
-    enabled: !!userId,
+    queryKey: ["follower", artistId],
+    queryFn: async () => await execute(FollowerQuery, { artistId, userId }),
+    enabled: !!artistId,
   });
 
-export const followingOptions = (userId: string) =>
+export const followingOptions = ({
+  artistId,
+  userId,
+}: {
+  artistId?: string;
+  userId?: string;
+}) =>
   queryOptions({
-    queryKey: ["following", userId],
-    queryFn: async () => await execute(FollowingQuery, { userId }),
-    enabled: !!userId,
+    queryKey: ["following", artistId],
+    queryFn: async () => await execute(FollowingQuery, { artistId, userId }),
+    enabled: !!artistId,
   });
 
 // SERVICE PACKAGE QUERIES

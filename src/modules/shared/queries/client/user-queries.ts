@@ -74,6 +74,7 @@ export const ArtistDetailQuery = graphql(`
         biography
         email
         user {
+          id
           fullName
           checkUserFollowing
         }

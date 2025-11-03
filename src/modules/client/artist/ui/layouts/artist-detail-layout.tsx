@@ -20,8 +20,12 @@ const ArtistDetailLayout = ({ children }: ArtistDetailLayoutProps) => {
 
   const { data } = useSuspenseQuery(artistDetailOptions(artistId));
 
-  const { data: followerData } = useSuspenseQuery(followerOptions(artistId));
-  const { data: followingData } = useSuspenseQuery(followingOptions(artistId));
+  const { data: followerData } = useSuspenseQuery(
+    followerOptions({ artistId }),
+  );
+  const { data: followingData } = useSuspenseQuery(
+    followingOptions({ artistId }),
+  );
 
   return (
     <div className="w-full">
@@ -29,11 +33,11 @@ const ArtistDetailLayout = ({ children }: ArtistDetailLayoutProps) => {
       <ArtistOptionsSection artistData={data} artistId={artistId} />
 
       <div className="grid grid-cols-8 px-6">
-        <div className="col-span-6 h-[1000px] w-full">{children}</div>
+        <div className="col-span-6 w-full">{children}</div>
         <div className="col-span-2 w-full">
           <div className="bg-main-purple/20 sticky top-20 rounded-md p-4 shadow">
             <ArtistInfoSection
-              followerCount={followerData?.followersByUserId?.totalCount ?? 0}
+              followerCount={followerData?.followers?.totalCount ?? 0}
               followingCount={
                 followingData?.followingsByUserId?.totalCount ?? 0
               }

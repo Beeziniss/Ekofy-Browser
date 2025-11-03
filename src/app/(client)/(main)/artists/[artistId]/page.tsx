@@ -16,8 +16,8 @@ const Page = async ({ params }: PageProps) => {
 
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(followerOptions(artistId));
-  void queryClient.prefetchQuery(followingOptions(artistId));
+  void queryClient.prefetchQuery(followerOptions({ artistId }));
+  void queryClient.prefetchQuery(followingOptions({ artistId }));
   void queryClient.prefetchQuery(artistDetailOptions(artistId));
 
   return (

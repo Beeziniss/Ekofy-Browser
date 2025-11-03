@@ -27,8 +27,9 @@ import {
   MailIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { toast } from "sonner";
+import { usePathname } from "next/navigation";
+import { useArtistFollow } from "@/hooks/use-artist-follow";
 
 const activeItemStyles =
   "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
@@ -80,6 +81,33 @@ const ArtistOptionsSection = ({
     },
   ];
 
+  const { followUser, unfollowUser } = useArtistFollow({ artistId });
+
+  const handleFollowToggle = () => {
+    if (!artistData.artists?.items?.[0]?.user[0]?.id) return;
+
+    const isCurrentlyFollowing =
+      artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing;
+
+    if (isCurrentlyFollowing) {
+      unfollowUser(artistData.artists?.items?.[0]?.user[0]?.id, {
+        onSuccess: () => {
+          toast.success(
+            `Unfollowed ${artistData.artists?.items?.[0]?.stageName}!`,
+          );
+        },
+      });
+    } else {
+      followUser(artistData.artists?.items?.[0]?.user[0]?.id, {
+        onSuccess: () => {
+          toast.success(
+            `Now following ${artistData.artists?.items?.[0]?.stageName}!`,
+          );
+        },
+      });
+    }
+  };
+
   return (
     <div className="flex items-center justify-between px-6 py-4">
       <NavigationMenu className="flex h-full items-stretch">
@@ -118,20 +146,18 @@ const ArtistOptionsSection = ({
               : "default"
           }
           className="px-10 py-2 text-sm font-bold"
-          // onClick={handleFollowToggle}
+          onClick={handleFollowToggle}
         >
-          Follow
+          {artistData.artists?.items?.[0]?.user[0].checkUserFollowing
+            ? "Following"
+            : "Follow"}
         </Button>
         <TooltipButton content="Contact Artist" side="top">
           <Link
             href={`mailto:${artistData.artists?.items?.[0].email}`}
             target="_blank"
           >
-            <Button
-              variant="reaction"
-              className="text-sm font-bold"
-              // onClick={handleFavorite}
-            >
+            <Button variant="reaction" className="text-sm font-bold">
               <MailIcon className={"inline-block size-4"} />
             </Button>
           </Link>

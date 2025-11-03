@@ -74,10 +74,10 @@ const ArtistServiceSectionSuspense = ({
 
   if (servicePackages.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center px-4 py-12">
+      <div className="flex flex-col items-center justify-center px-4 py-8">
         <div className="space-y-3 text-center">
-          <div className="bg-muted mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-            <PackageXIcon className="text-muted-foreground h-8 w-8" />
+          <div className="bg-muted mx-auto flex size-16 items-center justify-center rounded-full">
+            <PackageXIcon className="text-muted-foreground size-8" />
           </div>
           <h3 className="text-lg font-semibold">
             No Service Packages Available

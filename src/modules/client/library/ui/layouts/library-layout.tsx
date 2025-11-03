@@ -78,13 +78,13 @@ const LibraryLayout = ({ children }: LibraryLayoutProps) => {
   const { user } = useAuthStore();
 
   const { data: followers } = useSuspenseQuery(
-    followerOptions(user?.userId || ""),
+    followerOptions({ userId: user?.userId || "" }),
   );
   const { data: following } = useSuspenseQuery(
-    followingOptions(user?.userId || ""),
+    followingOptions({ userId: user?.userId || "" }),
   );
 
-  const followerCount = followers?.followersByUserId?.totalCount || 0;
+  const followerCount = followers?.followers?.totalCount || 0;
   const followingCount = following?.followingsByUserId?.totalCount || 0;
 
   return (

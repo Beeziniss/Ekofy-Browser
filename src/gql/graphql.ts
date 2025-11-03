@@ -1405,8 +1405,8 @@ export type FloatOperationFilterInput = {
 };
 
 /** A segment of a collection. */
-export type FollowersByUserIdCollectionSegment = {
-  __typename?: 'FollowersByUserIdCollectionSegment';
+export type FollowersCollectionSegment = {
+  __typename?: 'FollowersCollectionSegment';
   /** A flattened list of the items. */
   items?: Maybe<Array<User>>;
   /** Information to aid in pagination. */
@@ -2978,7 +2978,7 @@ export type QueryInitialization = {
   entitlements?: Maybe<EntitlementsCollectionSegment>;
   favoritePlaylists?: Maybe<FavoritePlaylistsCollectionSegment>;
   favoriteTracks?: Maybe<FavoriteTracksCollectionSegment>;
-  followersByUserId?: Maybe<FollowersByUserIdCollectionSegment>;
+  followers?: Maybe<FollowersCollectionSegment>;
   followingsByUserId?: Maybe<FollowingsByUserIdCollectionSegment>;
   initialize: Scalars['String']['output'];
   invoices?: Maybe<InvoicesCollectionSegment>;
@@ -3108,20 +3108,22 @@ export type QueryInitializationFavoriteTracksArgs = {
 };
 
 
-export type QueryInitializationFollowersByUserIdArgs = {
+export type QueryInitializationFollowersArgs = {
+  artistId?: InputMaybe<Scalars['String']['input']>;
   order?: InputMaybe<Array<UserSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  userId: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<UserFilterInput>;
 };
 
 
 export type QueryInitializationFollowingsByUserIdArgs = {
+  artistId?: InputMaybe<Scalars['String']['input']>;
   order?: InputMaybe<Array<UserSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  userId: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<UserFilterInput>;
 };
 
@@ -5388,14 +5390,16 @@ export type TrackUploadArtistListQueryVariables = Exact<{ [key: string]: never; 
 export type TrackUploadArtistListQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, user: Array<{ __typename?: 'User', stripeAccountId?: string | null }> }> | null } | null };
 
 export type FollowersQueryVariables = Exact<{
-  userId: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
+  artistId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type FollowersQuery = { __typename?: 'QueryInitialization', followersByUserId?: { __typename?: 'FollowersByUserIdCollectionSegment', totalCount: number } | null };
+export type FollowersQuery = { __typename?: 'QueryInitialization', followers?: { __typename?: 'FollowersCollectionSegment', totalCount: number } | null };
 
 export type FollowingsQueryVariables = Exact<{
-  userId: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
+  artistId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -5452,7 +5456,7 @@ export type TrackDetailQueryVariables = Exact<{
 }>;
 
 
-export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
+export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
 
 export type ListenerQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -5481,7 +5485,7 @@ export type ArtistDetailQueryVariables = Exact<{
 }>;
 
 
-export type ArtistDetailQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', userId: string, stageName: string, avatarImage?: string | null, bannerImage?: string | null, biography?: string | null, email: string, followerCount: any, categoryIds: Array<string>, user: Array<{ __typename?: 'User', fullName: string, checkUserFollowing: boolean }>, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', name: string }> | null } | null }> | null } | null };
+export type ArtistDetailQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', userId: string, stageName: string, avatarImage?: string | null, bannerImage?: string | null, biography?: string | null, email: string, followerCount: any, categoryIds: Array<string>, user: Array<{ __typename?: 'User', id: string, fullName: string, checkUserFollowing: boolean }>, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', name: string }> | null } | null }> | null } | null };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -6408,15 +6412,15 @@ export const TrackUploadArtistListDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<TrackUploadArtistListQuery, TrackUploadArtistListQueryVariables>;
 export const FollowersDocument = new TypedDocumentString(`
-    query Followers($userId: String!) {
-  followersByUserId(userId: $userId) {
+    query Followers($userId: String, $artistId: String) {
+  followers(userId: $userId, artistId: $artistId) {
     totalCount
   }
 }
     `) as unknown as TypedDocumentString<FollowersQuery, FollowersQueryVariables>;
 export const FollowingsDocument = new TypedDocumentString(`
-    query Followings($userId: String!) {
-  followingsByUserId(userId: $userId) {
+    query Followings($userId: String, $artistId: String) {
+  followingsByUserId(userId: $userId, artistId: $artistId) {
     totalCount
   }
 }
@@ -6640,6 +6644,7 @@ export const TrackDetailDocument = new TypedDocumentString(`
       mainArtistIds
       mainArtists {
         items {
+          id
           stageName
           followerCount
           avatarImage
@@ -6726,6 +6731,7 @@ export const ArtistDetailDocument = new TypedDocumentString(`
       biography
       email
       user {
+        id
         fullName
         checkUserFollowing
       }
