@@ -5160,7 +5160,7 @@ export type SearchTracksQueryVariables = Exact<{
 }>;
 
 
-export type SearchTracksQuery = { __typename?: 'QueryInitialization', searchTracks?: { __typename?: 'SearchTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, coverImage: string, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType }> | null } | null, restriction: { __typename?: 'Restriction', type: RestrictionType } }> | null } | null };
+export type SearchTracksQuery = { __typename?: 'QueryInitialization', searchTracks?: { __typename?: 'SearchTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, nameUnsigned: string, type: TrackType, categoryIds: Array<string>, mainArtistIds: Array<string>, createdAt: any, coverImage: string, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, artistType: ArtistType }> | null } | null, restriction: { __typename?: 'Restriction', type: RestrictionType } }> | null } | null };
 
 export type SearchPlaylistsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -5947,6 +5947,7 @@ export const SearchTracksDocument = new TypedDocumentString(`
       type
       categoryIds
       mainArtistIds
+      createdAt
       mainArtists {
         items {
           id

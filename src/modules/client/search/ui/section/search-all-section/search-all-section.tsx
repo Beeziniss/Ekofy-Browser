@@ -69,7 +69,8 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
       </div>
     );
   }
-  console.log(tracks, artists, playlists);
+
+
   return (
     <div className="space-y-8">
             {/* Playlists */}
@@ -176,6 +177,24 @@ const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
     mainArtists: track.mainArtists,
   });
 
+  const formatCreatedAt = (createdAt: string) => {
+    /* const date = new Date(addedTime);
+    const now = new Date();
+    const diffInDays = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    if (diffInDays === 0) return "Today";
+    if (diffInDays === 1) return "Yesterday";
+    if (diffInDays < 7) return `${diffInDays} days ago`; */
+
+    return new Date(createdAt).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -183,9 +202,9 @@ const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
   };
 
   // Use real duration if track is currently playing, otherwise fallback
-  const displayDuration = isTrackCurrentlyPlaying && duration > 0 
-    ? formatDuration(duration) 
-    : "3:45";
+  const displayDuration = isTrackCurrentlyPlaying && duration > 0
+    ? formatDuration(duration)
+    : formatCreatedAt(track.createdAt);
 
   return (
     <TableRow className="group relative border-b border-gray-800/50 hover:bg-gray-800/50">
@@ -281,35 +300,34 @@ const ArtistCardAll = ({ artist }: ArtistCardAllProps) => {
           </div>
         )}
         
-        {/* Bottom left icons - only show on hover */}
-        <div className="absolute bottom-2 left-2 flex items-center gap-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        {/* Bottom center icons - only show on hover */}
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center items-center gap-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <Button
             onClick={(e) => {
               e.stopPropagation();
               // TODO: Play artist's top tracks
               console.log(`Play ${artist.stageName}'s music`);
             }}
-            className="bg-white hover:bg-gray-100 text-black size-10 rounded-full shadow-lg"
+            className="bg-white hover:bg-gray-100 text-black size-12 rounded-full shadow-lg"
           >
-            <PlayIcon className="w-5 h-5 fill-current" />
+            <PlayIcon className="w-8 h-8 fill-current" />
           </Button>
           
           <Button
             onClick={handleFavoriteClick}
-            className="bg-white hover:bg-gray-100 text-black size-10 rounded-full shadow-lg"
+            className="bg-white hover:bg-gray-100 text-black size-12 rounded-full shadow-lg"
           >
-            <HeartIcon 
-              className={`w-4 h-4 ${isFavorited ? "fill-red-500 text-red-500" : ""}`} 
+            <HeartIcon
+              className={`w-6 h-6 ${isFavorited ? "fill-red-500 text-red-500" : ""}`}
             />
           </Button>
         </div>
       </div>
       
       <div className="flex flex-col items-center text-center w-full">
-        <h3 className="text-white font-semibold text-sm truncate w-full group-hover:text-purple-300 transition-colors duration-200">
+        <h3 className="text-white font-semibold text-sm truncate w-full group-hover:text-purple-300 hover:underline transition-colors duration-200">
           {artist.stageName}
         </h3>
-        <p className="text-gray-400 text-xs uppercase tracking-wide">{artist.user[0]?.role}</p>
         <p className="text-gray-500 text-xs mt-1">
           {artist.followerCount?.toLocaleString() || '0'} fans
         </p>
