@@ -31,8 +31,8 @@ const LibraryPage = async () => {
     void queryClient.prefetchInfiniteQuery(
       playlistOptions(userId, undefined, 11),
     );
-    void queryClient.prefetchQuery(followerOptions(userId));
-    void queryClient.prefetchQuery(followingOptions(userId));
+    void queryClient.prefetchQuery(followerOptions({ userId }));
+    void queryClient.prefetchQuery(followingOptions({ userId }));
   }
 
   return (
