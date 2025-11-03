@@ -5,26 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store";
 import { moderatorProfileOptions } from "@/gql/options/moderator-options";
 import ProfileSection from "../section/profile-section";
-import { graphql } from "@/gql";
 
-export const GetUserProfileQuery = graphql(`
-  query Users($where: UserFilterInput) {
-    users(where: $where) {
-      items {
-        id
-        email
-        fullName
-        gender
-        birthDate
-        role
-        phoneNumber
-        status
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`);
 
 const ModeratorProfileView = () => {
   const { user, isAuthenticated } = useAuthStore();

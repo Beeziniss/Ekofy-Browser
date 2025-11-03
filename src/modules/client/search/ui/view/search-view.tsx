@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -111,6 +111,7 @@ export const SEARCH_TRACKS = graphql(`
         type
         categoryIds
         mainArtistIds
+        createdAt
         mainArtists {
           items {
             id

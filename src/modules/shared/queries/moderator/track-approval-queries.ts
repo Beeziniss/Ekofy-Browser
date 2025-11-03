@@ -1,12 +1,10 @@
-"use client";
-
 import { graphql } from "@/gql";
 
 // Track approval GraphQL queries using proper graphql() function
-/* export const PENDING_TRACK_UPLOAD_REQUESTS_QUERY = graphql(`
+export const PENDING_TRACK_UPLOAD_REQUESTS_QUERY = graphql(`
   query PendingTrackUploadRequestsList($pageNumber: Int!, $pageSize: Int!) {
-      pendingTrackUploadRequests(pageNumber: $pageNumber, pageSize: $pageSize) {
-        totalCount
+    pendingTrackUploadRequests(pageNumber: $pageNumber, pageSize: $pageSize) {
+      totalCount
       items {
         id
         track {
@@ -25,7 +23,7 @@ import { graphql } from "@/gql";
           createdBy
           requestedAt
           releaseInfo {
-            isReleased
+            isRelease
             releaseDate
             releasedAt
             releaseStatus
@@ -88,7 +86,7 @@ import { graphql } from "@/gql";
       }
     }
   }
-`); */
+`);
 
 // export const PENDING_TRACK_UPLOAD_REQUEST_DETAIL_QUERY = graphql(`
 //   query PendingTrackUploadRequestsDetail($where: PaginatedDataOfCombinedUploadRequestFilterInput) {
@@ -192,7 +190,7 @@ import { graphql } from "@/gql";
 //   }
 // `);
 
-/* export const PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY = graphql(`
+export const PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY = graphql(`
   query PendingTrackUploadRequestById($uploadId: String!) {
     pendingTrackUploadRequestById(uploadId: $uploadId) {
       id
@@ -214,7 +212,7 @@ import { graphql } from "@/gql";
         createdBy
         requestedAt
         releaseInfo {
-          isReleased
+          isRelease
           releaseDate
           releasedAt
           releaseStatus
@@ -288,7 +286,7 @@ import { graphql } from "@/gql";
       }
     }
   }
-`); */
+`);
 
 export const QUERY_USER_CREATED_BY = graphql(`
   query UserCreatedBy($where: UserFilterInput!) {

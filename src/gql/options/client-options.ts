@@ -19,6 +19,10 @@ import {
   TrackCommentsQuery,
 } from "@/modules/shared/queries/client/track-comment-queries";
 import {
+  RequestHubCommentThreadsQuery,
+  RequestHubCommentThreadRepliesQuery,
+} from "@/modules/shared/queries/client/request-hub-comment-queries";
+import {
   ArtistDetailQuery,
   ArtistListQuery,
   ArtistQuery,
@@ -33,6 +37,20 @@ import {
   FollowingQuery,
 } from "@/modules/shared/queries/client/follow-queries";
 import { ArtistPackageQuery } from "@/modules/shared/queries/client/service-package-queries";
+import {
+  REQUEST_HUB_QUERY,
+  REQUEST_BY_ID_QUERY,
+  SEARCH_REQUESTS_QUERY,
+  USER_QUERY_FOR_REQUESTS,
+  MY_REQUESTS_QUERY,
+} from "@/modules/shared/queries/client/request-hub-queries";
+import {
+  RequestHubFilterInput,
+  QueryInitializationRequestsArgs,
+  QueryInitializationRequestDetailByIdArgs,
+  QueryInitializationSearchRequestsArgs,
+  QueryInitializationOwnRequestsArgs,
+} from "../graphql";
 
 // PROFILE QUERIES
 export const listenerProfileOptions = (
@@ -156,6 +174,22 @@ export const trackCommentRepliesOptions = (rootCommentId: string) =>
       await execute(TrackCommentRepliesQuery, { rootCommentId }),
   });
 
+// REQUEST HUB COMMENTS QUERIES
+export const requestHubCommentsOptions = (targetId: string) =>
+  queryOptions({
+    queryKey: ["request-hub-comments", targetId],
+    queryFn: async () =>
+      await execute(RequestHubCommentThreadsQuery, { targetId }),
+    enabled: !!targetId,
+  });
+
+export const requestHubCommentRepliesOptions = (rootCommentId: string) =>
+  queryOptions({
+    queryKey: ["request-hub-comment-replies", rootCommentId],
+    queryFn: async () =>
+      await execute(RequestHubCommentThreadRepliesQuery, { rootCommentId }),
+  });
+
 // USER QUERIES
 export const listenerOptions = (userId: string, listenerId: string) =>
   queryOptions({
@@ -231,4 +265,129 @@ export const servicePackageOptions = (artistId: string) =>
   queryOptions({
     queryKey: ["service-packages", artistId],
     queryFn: async () => await execute(ArtistPackageQuery, { artistId }),
+  });
+
+// Helper function to convert deadline string to Date
+const convertRequestDeadlines = <T extends { deadline?: string | Date }>(
+  items: T[] | null | undefined,
+): T[] => {
+  return (
+    items?.map((item) => ({
+      ...item,
+      deadline: item.deadline
+        ? typeof item.deadline === "string"
+          ? new Date(item.deadline)
+          : item.deadline
+        : null,
+    })) || []
+  );
+};
+
+// REQUEST HUB QUERIES
+export const requestHubOptions = (
+  skip: number = 0,
+  take: number = 20,
+  where?: RequestHubFilterInput,
+) =>
+  queryOptions({
+    queryKey: ["requests", skip, take, where],
+    queryFn: async () => {
+      const variables: QueryInitializationRequestsArgs = { skip, take, where };
+      const result = await execute(REQUEST_HUB_QUERY, variables);
+      const requests = result.requests || {
+        items: [],
+        pageInfo: { hasNextPage: false, hasPreviousPage: false },
+        totalCount: 0,
+      };
+      return {
+        ...requests,
+        items: convertRequestDeadlines(requests.items),
+      };
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+
+export const requestByIdOptions = (requestId: string) =>
+  queryOptions({
+    queryKey: ["request", requestId],
+    queryFn: async () => {
+      const variables: QueryInitializationRequestDetailByIdArgs = { requestId };
+      const result = await execute(REQUEST_BY_ID_QUERY, variables);
+      const request = result.requestDetailById;
+      if (!request) return null;
+      return {
+        ...request,
+        deadline: request.deadline ? new Date(request.deadline) : null,
+      };
+    },
+    enabled: !!requestId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+export const searchRequestsOptions = (
+  searchTerm: string,
+  skip: number = 0,
+  take: number = 20,
+  isIndividual: boolean = true,
+) =>
+  queryOptions({
+    queryKey: ["search-requests", searchTerm, skip, take, isIndividual],
+    queryFn: async () => {
+      const variables: QueryInitializationSearchRequestsArgs = {
+        searchTerm,
+        skip,
+        take,
+        isIndividual,
+      };
+      const result = await execute(SEARCH_REQUESTS_QUERY, variables);
+      const requests = result.searchRequests || {
+        items: [],
+        pageInfo: { hasNextPage: false, hasPreviousPage: false },
+        totalCount: 0,
+      };
+      return {
+        ...requests,
+        items: convertRequestDeadlines(requests.items),
+      };
+    },
+    enabled: !!searchTerm.trim(),
+    staleTime: 1 * 60 * 1000, // 1 minute
+  });
+
+export const userForRequestsOptions = (userId: string) =>
+  queryOptions({
+    queryKey: ["user-for-requests", userId],
+    queryFn: async () => {
+      const result = await execute(USER_QUERY_FOR_REQUESTS, { userId });
+      return result.users?.items?.[0] || null;
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+export const myRequestsOptions = (
+  skip: number = 0,
+  take: number = 20,
+  where?: RequestHubFilterInput,
+) =>
+  queryOptions({
+    queryKey: ["my-requests", skip, take, where],
+    queryFn: async () => {
+      const variables: QueryInitializationOwnRequestsArgs = {
+        skip,
+        take,
+        where,
+      };
+      const result = await execute(MY_REQUESTS_QUERY, variables);
+      const requests = result.requests || {
+        items: [],
+        pageInfo: { hasNextPage: false, hasPreviousPage: false },
+        totalCount: 0,
+      };
+      return {
+        ...requests,
+        items: convertRequestDeadlines(requests.items),
+      };
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });

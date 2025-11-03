@@ -1,16 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { execute } from "@/gql/execute";
-import { 
-  ApproveTrackUploadRequestMutation, 
-  RejectTrackUploadRequestMutation,
-  QUERY_USER_CREATED_BY 
-} from "../queries/track-approval-queries";
+import { moderatorUserCreatedByOptions } from "@/gql/options/moderator-options";
+import { useApproveTrackWithFeedback, useRejectTrackWithFeedback } from "@/gql/client-mutation-options/moderator-mutation";
 import { TrackUploadRequest } from "@/types/approval-track";
 import {
   TrackInfoCard,
@@ -30,64 +26,27 @@ interface TrackDetailSectionProps {
 
 export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSectionProps) {
   const router = useRouter();
-  const queryClient = useQueryClient();
   
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
 
-  // Fetch user information by createdBy ID
-  const { data: createdByUser, isLoading: isLoadingUser } = useQuery({
-    queryKey: ["user-created-by", track.createdBy],
-    queryFn: async () => {
-      const result = await execute(QUERY_USER_CREATED_BY, {
-        where: {
-          id: {
-            eq: track.createdBy
-          }
-        }
-      });
-      return result?.users?.items?.[0] || null;
-    },
-    enabled: !!track.createdBy
-  });
+  // Fetch user information by createdBy ID using query options
+  const { data: createdByUser, isLoading: isLoadingUser } = useQuery(
+    moderatorUserCreatedByOptions(track.createdBy)
+  );
 
-  // Approve mutation
-  const approveMutation = useMutation({
-    mutationFn: async (uploadId: string) => {
-      return await execute(ApproveTrackUploadRequestMutation, { uploadId });
-    },
-    onSuccess: () => {
-      toast.success("Track approved successfully");
-      queryClient.invalidateQueries({ queryKey: ["moderator-pending-tracks"] });
-      router.push("/moderator/track-approval");
-    },
-    onError: (error) => {
-      toast.error("Failed to approve track");
-      console.error("Failed to approve track:", error);
-    }
-  });
-
-  // Reject mutation
-  const rejectMutation = useMutation({
-    mutationFn: async ({ uploadId, reasonReject }: { uploadId: string; reasonReject: string }) => {
-      return await execute(RejectTrackUploadRequestMutation, { uploadId, reasonReject });
-    },
-    onSuccess: () => {
-      toast.success("Track rejected successfully");
-      queryClient.invalidateQueries({ queryKey: ["moderator-pending-tracks"] });
-      router.push("/moderator/track-approval");
-    },
-    onError: (error) => {
-      toast.error("Failed to reject track");
-      console.error("Failed to reject track:", error);
-    }
-  });
+  // Use mutation hooks with built-in success/error handling
+  const approveMutation = useApproveTrackWithFeedback();
+  const rejectMutation = useRejectTrackWithFeedback();
 
   const handleApproveConfirm = async () => {
     try {
       await approveMutation.mutateAsync(track.id);
-    } catch {
-      // Error handled in onError callback
+      toast.success("Track approved successfully");
+      router.push("/moderator/track-approval");
+    } catch (error) {
+      toast.error("Failed to approve track");
+      console.error("Failed to approve track:", error);
     }
   };
 
@@ -97,8 +56,11 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
         uploadId: track.id, 
         reasonReject 
       });
-    } catch {
-      // Error handled in onError callback
+      toast.success("Track rejected successfully");
+      router.push("/moderator/track-approval");
+    } catch (error) {
+      toast.error("Failed to reject track");
+      console.error("Failed to reject track:", error);
     }
   };
 
