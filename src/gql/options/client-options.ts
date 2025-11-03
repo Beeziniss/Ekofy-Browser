@@ -23,6 +23,7 @@ import {
   RequestHubCommentThreadRepliesQuery,
 } from "@/modules/shared/queries/client/request-hub-comment-queries";
 import {
+  ArtistDetailQuery,
   ArtistListQuery,
   ArtistQuery,
   ListenerQuery,
@@ -32,13 +33,18 @@ import {
   PlaylistsPersonalQuery,
 } from "@/modules/shared/queries/client/playlist-queries";
 import {
+  FollowerQuery,
+  FollowingQuery,
+} from "@/modules/shared/queries/client/follow-queries";
+import { ArtistPackageQuery } from "@/modules/shared/queries/client/service-package-queries";
+import {
   REQUEST_HUB_QUERY,
   REQUEST_BY_ID_QUERY,
   SEARCH_REQUESTS_QUERY,
   USER_QUERY_FOR_REQUESTS,
   MY_REQUESTS_QUERY,
 } from "@/modules/shared/queries/client/request-hub-queries";
-import { 
+import {
   RequestHubFilterInput,
   QueryInitializationRequestsArgs,
   QueryInitializationRequestDetailByIdArgs,
@@ -168,11 +174,12 @@ export const trackCommentRepliesOptions = (rootCommentId: string) =>
       await execute(TrackCommentRepliesQuery, { rootCommentId }),
   });
 
-// REQUEST HUB COMMENTS QUERIES  
+// REQUEST HUB COMMENTS QUERIES
 export const requestHubCommentsOptions = (targetId: string) =>
   queryOptions({
     queryKey: ["request-hub-comments", targetId],
-    queryFn: async () => await execute(RequestHubCommentThreadsQuery, { targetId }),
+    queryFn: async () =>
+      await execute(RequestHubCommentThreadsQuery, { targetId }),
     enabled: !!targetId,
   });
 
@@ -191,10 +198,23 @@ export const listenerOptions = (userId: string, listenerId: string) =>
     enabled: !!listenerId,
   });
 
-export const artistOptions = (userId: string, artistId: string) =>
+export const artistOptions = ({
+  userId,
+  artistId,
+}: {
+  userId: string;
+  artistId?: string;
+}) =>
   queryOptions({
     queryKey: ["artist", userId],
     queryFn: async () => await execute(ArtistQuery, { userId }),
+    enabled: !!artistId,
+  });
+
+export const artistDetailOptions = (artistId: string) =>
+  queryOptions({
+    queryKey: ["artist-detail", artistId],
+    queryFn: async () => await execute(ArtistDetailQuery, { artistId }),
     enabled: !!artistId,
   });
 
@@ -213,25 +233,75 @@ export const artistListOptions = (take: number = 12) =>
     },
   });
 
+// FOLLOW QUERIES
+export const followerOptions = ({
+  artistId,
+  userId,
+}: {
+  artistId?: string;
+  userId?: string;
+}) =>
+  queryOptions({
+    queryKey: ["follower", artistId],
+    queryFn: async () => await execute(FollowerQuery, { artistId, userId }),
+    enabled: !!artistId,
+  });
+
+export const followingOptions = ({
+  artistId,
+  userId,
+}: {
+  artistId?: string;
+  userId?: string;
+}) =>
+  queryOptions({
+    queryKey: ["following", artistId],
+    queryFn: async () => await execute(FollowingQuery, { artistId, userId }),
+    enabled: !!artistId,
+  });
+
+// SERVICE PACKAGE QUERIES
+export const servicePackageOptions = (artistId: string) =>
+  queryOptions({
+    queryKey: ["service-packages", artistId],
+    queryFn: async () => await execute(ArtistPackageQuery, { artistId }),
+  });
+
 // Helper function to convert deadline string to Date
-const convertRequestDeadlines = <T extends { deadline?: string | Date }>(items: T[] | null | undefined): T[] => {
-  return items?.map(item => ({
-    ...item,
-    deadline: item.deadline ? (typeof item.deadline === 'string' ? new Date(item.deadline) : item.deadline) : null
-  })) || [];
+const convertRequestDeadlines = <T extends { deadline?: string | Date }>(
+  items: T[] | null | undefined,
+): T[] => {
+  return (
+    items?.map((item) => ({
+      ...item,
+      deadline: item.deadline
+        ? typeof item.deadline === "string"
+          ? new Date(item.deadline)
+          : item.deadline
+        : null,
+    })) || []
+  );
 };
 
 // REQUEST HUB QUERIES
-export const requestHubOptions = (skip: number = 0, take: number = 20, where?: RequestHubFilterInput) =>
+export const requestHubOptions = (
+  skip: number = 0,
+  take: number = 20,
+  where?: RequestHubFilterInput,
+) =>
   queryOptions({
     queryKey: ["requests", skip, take, where],
     queryFn: async () => {
       const variables: QueryInitializationRequestsArgs = { skip, take, where };
       const result = await execute(REQUEST_HUB_QUERY, variables);
-      const requests = result.requests || { items: [], pageInfo: { hasNextPage: false, hasPreviousPage: false }, totalCount: 0 };
+      const requests = result.requests || {
+        items: [],
+        pageInfo: { hasNextPage: false, hasPreviousPage: false },
+        totalCount: 0,
+      };
       return {
         ...requests,
-        items: convertRequestDeadlines(requests.items)
+        items: convertRequestDeadlines(requests.items),
       };
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -247,23 +317,37 @@ export const requestByIdOptions = (requestId: string) =>
       if (!request) return null;
       return {
         ...request,
-        deadline: request.deadline ? new Date(request.deadline) : null
+        deadline: request.deadline ? new Date(request.deadline) : null,
       };
     },
     enabled: !!requestId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-export const searchRequestsOptions = (searchTerm: string, skip: number = 0, take: number = 20, isIndividual: boolean = true) =>
+export const searchRequestsOptions = (
+  searchTerm: string,
+  skip: number = 0,
+  take: number = 20,
+  isIndividual: boolean = true,
+) =>
   queryOptions({
     queryKey: ["search-requests", searchTerm, skip, take, isIndividual],
     queryFn: async () => {
-      const variables: QueryInitializationSearchRequestsArgs = { searchTerm, skip, take, isIndividual };
+      const variables: QueryInitializationSearchRequestsArgs = {
+        searchTerm,
+        skip,
+        take,
+        isIndividual,
+      };
       const result = await execute(SEARCH_REQUESTS_QUERY, variables);
-      const requests = result.searchRequests || { items: [], pageInfo: { hasNextPage: false, hasPreviousPage: false }, totalCount: 0 };
+      const requests = result.searchRequests || {
+        items: [],
+        pageInfo: { hasNextPage: false, hasPreviousPage: false },
+        totalCount: 0,
+      };
       return {
         ...requests,
-        items: convertRequestDeadlines(requests.items)
+        items: convertRequestDeadlines(requests.items),
       };
     },
     enabled: !!searchTerm.trim(),
@@ -281,16 +365,28 @@ export const userForRequestsOptions = (userId: string) =>
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: RequestHubFilterInput) =>
+export const myRequestsOptions = (
+  skip: number = 0,
+  take: number = 20,
+  where?: RequestHubFilterInput,
+) =>
   queryOptions({
     queryKey: ["my-requests", skip, take, where],
     queryFn: async () => {
-      const variables: QueryInitializationOwnRequestsArgs = { skip, take, where };
+      const variables: QueryInitializationOwnRequestsArgs = {
+        skip,
+        take,
+        where,
+      };
       const result = await execute(MY_REQUESTS_QUERY, variables);
-      const requests = result.requests || { items: [], pageInfo: { hasNextPage: false, hasPreviousPage: false }, totalCount: 0 };
+      const requests = result.requests || {
+        items: [],
+        pageInfo: { hasNextPage: false, hasPreviousPage: false },
+        totalCount: 0,
+      };
       return {
         ...requests,
-        items: convertRequestDeadlines(requests.items)
+        items: convertRequestDeadlines(requests.items),
       };
     },
     staleTime: 2 * 60 * 1000, // 2 minutes

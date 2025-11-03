@@ -24,7 +24,9 @@ export const ArtistQuery = graphql(`
         avatarImage
         user {
           fullName
+          checkUserFollowing
         }
+        followerCount
       }
     }
   }
@@ -57,6 +59,33 @@ export const ArtistListQuery = graphql(`
         hasNextPage
       }
       totalCount
+    }
+  }
+`);
+
+export const ArtistDetailQuery = graphql(`
+  query ArtistDetail($artistId: String!) {
+    artists(where: { id: { eq: $artistId }, isVisible: { eq: true } }) {
+      items {
+        userId
+        stageName
+        avatarImage
+        bannerImage
+        biography
+        email
+        user {
+          id
+          fullName
+          checkUserFollowing
+        }
+        followerCount
+        categoryIds
+        categories {
+          items {
+            name
+          }
+        }
+      }
     }
   }
 `);

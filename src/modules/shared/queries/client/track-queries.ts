@@ -33,6 +33,7 @@ export const TrackDetailViewQuery = graphql(`
         mainArtistIds
         mainArtists {
           items {
+            id
             stageName
             followerCount
             avatarImage

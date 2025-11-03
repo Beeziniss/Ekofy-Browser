@@ -7,13 +7,14 @@ import {
 interface TooltipButtonProps {
   children: React.ReactNode;
   content: string;
+  side?: "top" | "right" | "bottom" | "left";
 }
 
-const TooltipButton = ({ children, content }: TooltipButtonProps) => {
+const TooltipButton = ({ children, content, side }: TooltipButtonProps) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipContent>
+      <TooltipContent side={side}>
         <p className="font-medium">{content}</p>
       </TooltipContent>
     </Tooltip>

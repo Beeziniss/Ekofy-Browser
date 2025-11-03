@@ -34,7 +34,7 @@ const navBarItems: ClientNavbarProps[] = [
     useStartsWith: false,
   },
   {
-    href: "/hire-artists",
+    href: "/artists-for-hire",
     label: "Artists for Hire",
     activeStyle: "border-b-2 border-b-main-white text-main-white",
     useStartsWith: false,

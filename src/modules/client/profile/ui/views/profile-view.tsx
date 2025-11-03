@@ -25,7 +25,7 @@ export default function ProfileView() {
     avatarUrl: rest.data?.avatarImage || "",
     backgroundUrl: rest.data?.bannerImage || "/image-login.png",
   };
-  
+
   const handleAvatar = (file: File) => {
     console.log("Avatar chọn:", file.name);
   };
@@ -50,7 +50,7 @@ export default function ProfileView() {
             <DetailView />
           </div>
           <div className="md:col-span-3">
-            <HelpCard className="md:sticky md:top-10 " />
+            <HelpCard className="md:sticky md:top-18" />
           </div>
         </div>
       </div>
