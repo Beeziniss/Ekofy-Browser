@@ -5,19 +5,26 @@ import {
   MoreHorizontal, 
   Plus, 
   Heart, 
-  // ListMusic, 
-  // Clock, 
-  // Radio, 
-  // User, 
   Album, 
-  // BarChart3, 
   Share,
-  // Flag,
   Search,
-  Eye
+  Eye,
+  CheckIcon
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { SearchTrackItem } from '@/types/search';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { 
+  playlistBriefOptions,
+  checkTrackInPlaylistOptions 
+} from '@/gql/options/client-options';
+import {
+  addToPlaylistMutationOptions,
+  removeFromPlaylistMutationOptions
+} from '@/gql/options/client-mutation-options';
+import { useAuthStore } from '@/store';
+import { toast } from 'sonner';
+import Image from 'next/image';
 
 interface TrackActionMenuProps {
   track: SearchTrackItem;
@@ -36,17 +43,74 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const playlistMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { user } = useAuthStore();
 
-  // Mock playlists data
-  const playlists = [
-    { id: 1, name: 'Nhạc chầu âu', isCreated: false },
-    { id: 2, name: 'Nhạc game', isCreated: false },
-    { id: 3, name: 'Đọc truyện 12', isCreated: false },
-  ];
+  // Real playlist data from GraphQL
+  const { data: playlistsData, isLoading: isLoadingPlaylists } = useQuery(
+    playlistBriefOptions(user?.userId || ""),
+  );
+  
+  const { data: trackInPlaylistsData } = useQuery(
+    checkTrackInPlaylistOptions(track.id),
+  );
+
+  // Mutations for playlist operations
+  const { mutate: addToPlaylist, isPending: isAddingToPlaylist } = useMutation({
+    ...addToPlaylistMutationOptions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["playlist-detail"] });
+      queryClient.invalidateQueries({ queryKey: ["playlist-detail-tracklist"] });
+      queryClient.invalidateQueries({ queryKey: ["check-track-in-playlist", track.id] });
+      toast.success("Track added to playlist successfully!");
+    },
+    onError: (error) => {
+      console.error("Failed to add track to playlist:", error);
+      toast.error("Failed to add track to playlist. Please try again.");
+    },
+  });
+
+  const { mutate: removeFromPlaylist, isPending: isRemovingFromPlaylist } = useMutation({
+    ...removeFromPlaylistMutationOptions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["playlist-detail"] });
+      queryClient.invalidateQueries({ queryKey: ["playlist-detail-tracklist"] });
+      queryClient.invalidateQueries({ queryKey: ["check-track-in-playlist", track.id] });
+      toast.success("Track removed from playlist successfully!");
+    },
+    onError: (error) => {
+      console.error("Failed to remove track from playlist:", error);
+      toast.error("Failed to remove track from playlist. Please try again.");
+    },
+  });
+
+  // Get playlists and track status
+  const playlists = playlistsData?.playlists?.items || [];
+  const trackInPlaylistsIds = trackInPlaylistsData?.playlists?.items?.map((p) => p.id) || [];
 
   const filteredPlaylists = playlists.filter(playlist =>
     playlist.name.toLowerCase().includes(playlistSearch.toLowerCase())
   );
+
+  const isPending = isAddingToPlaylist || isRemovingFromPlaylist;
+
+  const isTrackInPlaylist = (playlistId: string) => {
+    return trackInPlaylistsIds.includes(playlistId);
+  };
+
+  const handleAddToPlaylist = (playlistId: string) => {
+    addToPlaylist({
+      playlistId,
+      trackId: track.id,
+    });
+  };
+
+  const handleRemoveFromPlaylist = (playlistId: string) => {
+    removeFromPlaylist({
+      playlistId,
+      trackId: track.id,
+    });
+  };
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -92,10 +156,13 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
     if (menuRef.current) {
       const buttonRect = menuRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
       const menuWidth = 280;
+      const menuHeight = 250; // Estimated menu height
       
       const spaceRight = viewportWidth - buttonRect.right;
       const spaceLeft = buttonRect.left;
+      const spaceBelow = viewportHeight - buttonRect.bottom;
       
       if (spaceRight >= menuWidth + 20) {
         setMainMenuPosition('right');
@@ -103,6 +170,11 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
         setMainMenuPosition('left');
       } else {
         setMainMenuPosition(spaceRight >= spaceLeft ? 'right' : 'left');
+      }
+      
+      // Check if menu should appear above when near bottom
+      if (spaceBelow < menuHeight + 20) {
+        // Will be handled in JSX with dynamic positioning
       }
     }
   };
@@ -122,10 +194,13 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
     if (menuRef.current) {
       const buttonRect = menuRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
       const submenuWidth = 300;
+      const submenuHeight = 350; // Estimated submenu height
       
       const spaceRight = viewportWidth - buttonRect.right;
       const spaceLeft = buttonRect.left;
+      const spaceBelow = viewportHeight - buttonRect.bottom;
       
       if (spaceRight >= submenuWidth + 20) {
         setSubmenuPosition('right');
@@ -133,6 +208,11 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
         setSubmenuPosition('left');
       } else {
         setSubmenuPosition(spaceRight >= spaceLeft ? 'right' : 'left');
+      }
+      
+      // Check if submenu should appear above when near bottom
+      if (spaceBelow < submenuHeight + 20) {
+        // Will be handled in JSX with dynamic positioning
       }
     }
   };
@@ -185,11 +265,26 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
       {/* Main context menu */}
       {isMenuOpen && (
         <div 
-          className={`absolute top-8 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 w-[280px] z-[60] ${
+          className={`absolute bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 w-[280px] z-[60] ${
             mainMenuPosition === 'right' 
               ? 'right-0' 
               : 'left-0 -translate-x-full'
           }`}
+          style={{
+            top: menuRef.current ? (() => {
+              const rect = menuRef.current.getBoundingClientRect();
+              const viewportHeight = window.innerHeight;
+              const menuHeight = 250;
+              const spaceBelow = viewportHeight - rect.bottom;
+              
+              if (spaceBelow < menuHeight + 20) {
+                // Position above the button
+                return `-${menuHeight}px`;
+              }
+              // Position below the button (default)
+              return '32px';
+            })() : '32px'
+          }}
         >
           {menuItems.map((item, index) => (
             <div key={index} className="relative">
@@ -217,11 +312,25 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
               {item.label === 'Add to playlist' && isPlaylistMenuOpen && (
                 <div 
                   ref={playlistMenuRef}
-                  className={`absolute top-0 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 w-[300px] max-h-[400px] overflow-y-auto z-[70] ${
+                  className={`absolute bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 w-[300px] max-h-[400px] overflow-y-auto z-[70] ${
                     submenuPosition === 'right' 
                       ? 'left-full ml-1' 
                       : 'right-full mr-1'
                   }`}
+                  style={{
+                    top: menuRef.current ? (() => {
+                      const rect = menuRef.current.getBoundingClientRect();
+                      const viewportHeight = window.innerHeight;
+                      const submenuHeight = 350;
+                      const spaceBelow = viewportHeight - rect.bottom;
+                      
+                      if (spaceBelow < submenuHeight + 20) {
+                        // Position to align with bottom of viewport if needed
+                        return `-${Math.max(0, submenuHeight - spaceBelow)}px`;
+                      }
+                      return '0px';
+                    })() : '0px'
+                  }}
                 >
                   {/* Search bar */}
                   <div className="px-3 pb-2">
@@ -237,37 +346,56 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
                     </div>
                   </div>
 
-                  {/* Create new playlist */}
-                  <button className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-white hover:bg-gray-700 transition-colors">
-                    <Plus className="w-4 h-4" />
-                    <span>New playlist</span>
-                  </button>
-
-                  <div className="border-t border-gray-700 my-2"></div>
-
                   {/* Playlist items */}
                   <div className="max-h-60 overflow-y-auto">
-                    {filteredPlaylists.map((playlist) => (
-                      <button
-                        key={playlist.id}
-                        onClick={() => {
-                          console.log(`Add to playlist: ${playlist.name}`);
-                          setIsMenuOpen(false);
-                          setIsPlaylistMenuOpen(false);
-                        }}
-                        className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-white hover:bg-gray-700 transition-colors"
-                      >
-                        <div className="w-4 h-4 bg-gray-600 rounded flex-shrink-0"></div>
-                        <span className="truncate">{playlist.name}</span>
-                      </button>
-                    ))}
+                    {isLoadingPlaylists ? (
+                      <div className="px-4 py-2 text-sm text-gray-400">
+                        Loading playlists...
+                      </div>
+                    ) : filteredPlaylists.length === 0 ? (
+                      <div className="px-4 py-2 text-sm text-gray-400">
+                        {playlistSearch ? "No playlists found" : "No playlists available"}
+                      </div>
+                    ) : (
+                      filteredPlaylists.map((playlist) => {
+                        const inPlaylist = isTrackInPlaylist(playlist.id);
+                        return (
+                          <button
+                            key={playlist.id}
+                            onClick={() => {
+                              if (inPlaylist) {
+                                handleRemoveFromPlaylist(playlist.id);
+                              } else {
+                                handleAddToPlaylist(playlist.id);
+                              }
+                            }}
+                            disabled={isPending}
+                            className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-white hover:bg-gray-700 transition-colors"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className="relative w-4 h-4">
+                                {playlist.coverImage ? (
+                                  <Image
+                                    src={playlist.coverImage}
+                                    alt={playlist.name}
+                                    width={16}
+                                    height={16}
+                                    className="w-4 h-4 rounded flex-shrink-0 object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-4 h-4 bg-gray-600 rounded flex-shrink-0"></div>
+                                )}
+                              </div>
+                              <span className="truncate">{playlist.name}</span>
+                            </div>
+                            {inPlaylist && (
+                              <CheckIcon className="w-4 h-4 text-green-500" />
+                            )}
+                          </button>
+                        );
+                      })
+                    )}
                   </div>
-
-                  {filteredPlaylists.length === 0 && playlistSearch && (
-                    <div className="px-4 py-2 text-sm text-gray-400">
-                      No playlists found
-                    </div>
-                  )}
                 </div>
               )}
             </div>

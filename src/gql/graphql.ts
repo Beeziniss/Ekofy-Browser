@@ -2108,6 +2108,7 @@ export type MutationInitialization = {
   seedMonthlyStreamCountByTrackId: Scalars['Boolean']['output'];
   seedRoyaltyPolicyData: Scalars['Boolean']['output'];
   testGenrateMonthlyRoyaltyReportsAynsc: Scalars['Boolean']['output'];
+  testTransferMoneyToArtist: TransferResponse;
   unbanUser: Scalars['Boolean']['output'];
   unfollowUser: Scalars['Boolean']['output'];
   updateArtistPackage: Scalars['Boolean']['output'];
@@ -2414,6 +2415,12 @@ export type MutationInitializationTestGenrateMonthlyRoyaltyReportsAynscArgs = {
 };
 
 
+export type MutationInitializationTestTransferMoneyToArtistArgs = {
+  amount: Scalars['Decimal']['input'];
+  artistAccountId: Scalars['String']['input'];
+};
+
+
 export type MutationInitializationUnbanUserArgs = {
   targetUserId: Scalars['String']['input'];
 };
@@ -2483,6 +2490,13 @@ export type MutationInitializationUploadTrackFingerprintArgs = {
 
 export type MutationInitializationUpsertTopTrackCountArgs = {
   trackId: Scalars['String']['input'];
+};
+
+export type NullableOfAggregationLevelOperationFilterInput = {
+  eq?: InputMaybe<AggregationLevel>;
+  in?: InputMaybe<Array<InputMaybe<AggregationLevel>>>;
+  neq?: InputMaybe<AggregationLevel>;
+  nin?: InputMaybe<Array<InputMaybe<AggregationLevel>>>;
 };
 
 export type NullableOfReportActionOperationFilterInput = {
@@ -2665,9 +2679,9 @@ export type PayoutTransaction = {
   description: Scalars['String']['output'];
   destinationAccountId: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  level: AggregationLevel;
+  level?: Maybe<AggregationLevel>;
   method?: Maybe<Scalars['String']['output']>;
-  royaltyReportId: Scalars['String']['output'];
+  royaltyReportId?: Maybe<Scalars['String']['output']>;
   status: PayoutTransactionStatus;
   stripePayoutId: Scalars['String']['output'];
   stripeTransferId: Scalars['String']['output'];
@@ -2683,7 +2697,7 @@ export type PayoutTransactionFilterInput = {
   description?: InputMaybe<StringOperationFilterInput>;
   destinationAccountId?: InputMaybe<StringOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
-  level?: InputMaybe<AggregationLevelOperationFilterInput>;
+  level?: InputMaybe<NullableOfAggregationLevelOperationFilterInput>;
   method?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<PayoutTransactionFilterInput>>;
   royaltyReportId?: InputMaybe<StringOperationFilterInput>;
@@ -4537,6 +4551,16 @@ export type TransactionsCollectionSegment = {
   /** Information to aid in pagination. */
   pageInfo: CollectionSegmentInfo;
   totalCount: Scalars['Int']['output'];
+};
+
+export type TransferResponse = {
+  __typename?: 'TransferResponse';
+  amount: Scalars['Long']['output'];
+  created: Scalars['DateTime']['output'];
+  currency: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  destinationAccountId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
 };
 
 export type UpdateArtistPackageRequestInput = {

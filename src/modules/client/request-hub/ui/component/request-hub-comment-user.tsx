@@ -163,7 +163,9 @@ const RequestHubCommentUser = ({
           }
         />
         <AvatarFallback className="bg-gray-700 text-gray-300 text-xs">
-          {comment.commenter?.fullName.slice(0, 2)}
+          {comment.commenter?.listener?.displayName.slice(0, 2) ||
+            comment.commenter?.artist?.stageName.slice(0, 2) ||
+            `User ${comment.commenterId.slice(-2)}`}
         </AvatarFallback>
       </Avatar>
 
@@ -171,7 +173,9 @@ const RequestHubCommentUser = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-2">
             <span className="text-gray-200 text-sm font-medium">
-              {comment.commenter?.fullName}
+              {comment.commenter?.listener?.displayName ||
+                comment.commenter?.artist?.stageName ||
+                `User ${comment.commenterId.slice(-4)}`}
             </span>
             <span className="text-gray-500 text-xs">
               {formatDistanceToNow(new Date(comment.createdAt), {

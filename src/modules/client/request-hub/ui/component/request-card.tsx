@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MessageCircle, Clock, Send, ChevronDown, ChevronUp, SquarePen } from "lucide-react";
 import { RequestsQuery } from "@/gql/graphql";
-import { userForRequestsOptions } from "@/gql/options/client-options";
+import { userForRequestsOptions, requestHubCommentsOptions } from "@/gql/options/client-options";
 import { RequestHubCommentSection } from "./";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +36,22 @@ export function RequestCard({
   
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
+  
+  // Fetch comment count for this request
+  const { data: commentsData } = useQuery(requestHubCommentsOptions(request.id));
+  
+  // Calculate total comment count (including replies)
+  const getTotalCommentCount = () => {
+    if (!commentsData?.threadedComments) return 0;
+    
+    const threads = commentsData.threadedComments.threads || [];
+    return threads.reduce((total, thread) => {
+      // Count root comment + all replies
+      return total + 1 + (thread.totalReplies || 0);
+    }, 0);
+  };
+
+  const totalComments = getTotalCommentCount();
   
   // Format status from GraphQL enum to display text
   const formatStatus = (status: string) => {
@@ -179,7 +195,8 @@ export function RequestCard({
             className="flex items-center text-sm text-gray-500 hover:text-primary p-0"
           >
             <MessageCircle className="h-4 w-4 mr-1" />
-            View Comments
+            View Comments {totalComments > 0 && `(${totalComments})`}
+
             {showComments ? (
               <ChevronUp className="h-4 w-4 ml-1" />
             ) : (

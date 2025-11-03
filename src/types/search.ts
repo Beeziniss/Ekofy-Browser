@@ -71,7 +71,7 @@ export interface SearchArtistItem {
   user: {
     fullName: string;
     role: string;
-  };
+  }[];
   // Add other artist properties as needed
 }
 
@@ -89,7 +89,7 @@ export interface SearchPlaylistItem {
   user: {
     id: string;
     fullName: string;
-  };
+  }[];
   // Add other playlist properties as needed
 }
 
