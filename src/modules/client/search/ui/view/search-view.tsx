@@ -111,6 +111,7 @@ export const SEARCH_TRACKS = graphql(`
         type
         categoryIds
         mainArtistIds
+        createdAt
         mainArtists {
           items {
             id

@@ -129,6 +129,24 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
     await handlePlayPause();
   };
 
+    const formatCreatedAt = (createdAt: string) => {
+    /* const date = new Date(addedTime);
+    const now = new Date();
+    const diffInDays = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    if (diffInDays === 0) return "Today";
+    if (diffInDays === 1) return "Yesterday";
+    if (diffInDays < 7) return `${diffInDays} days ago`; */
+
+    return new Date(createdAt).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   // Get duration to display
   const getDuration = () => {
     // If this track is currently playing and we have duration from audio store
@@ -136,7 +154,7 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
       return formatDuration(duration);
     }
     // Default fallback duration (could be replaced with real duration from API in future)
-    return "3:45";
+    return formatCreatedAt(track.createdAt);
   };
 
   return (

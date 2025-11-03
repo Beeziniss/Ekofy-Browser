@@ -44,6 +44,7 @@ export interface SearchTrackItem {
   type: string;
   categoryIds: string[];
   mainArtistIds: string[];
+  createdAt: string;
   coverImage: string;
   restriction: {
     type: string;
