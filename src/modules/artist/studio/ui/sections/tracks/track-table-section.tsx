@@ -56,7 +56,7 @@ const TrackTableSection = () => {
   }
   if (privacyFilter !== "all") {
     where.releaseInfo = {
-      isReleased: { eq: privacyFilter === "public" },
+      isRelease: { eq: privacyFilter === "public" },
     };
   }
 

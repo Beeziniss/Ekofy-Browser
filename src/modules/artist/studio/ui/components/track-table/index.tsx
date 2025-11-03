@@ -57,7 +57,7 @@ export interface Track {
   isExplicit: boolean;
   releaseInfo: {
     releaseDate?: string;
-    isReleased: boolean;
+    isRelease: boolean;
   };
 }
 
@@ -149,7 +149,7 @@ const TrackTable = ({
       accessorKey: "releaseInfo.isReleased",
       header: "Privacy",
       cell: ({ row }) => {
-        const isReleased = row.original.releaseInfo.isReleased;
+        const isReleased = row.original.releaseInfo.isRelease;
         return (
           <div className="flex items-center gap-2">
             {isReleased ? (

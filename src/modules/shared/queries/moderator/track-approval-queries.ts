@@ -3,8 +3,8 @@ import { graphql } from "@/gql";
 // Track approval GraphQL queries using proper graphql() function
 export const PENDING_TRACK_UPLOAD_REQUESTS_QUERY = graphql(`
   query PendingTrackUploadRequestsList($pageNumber: Int!, $pageSize: Int!) {
-      pendingTrackUploadRequests(pageNumber: $pageNumber, pageSize: $pageSize) {
-        totalCount
+    pendingTrackUploadRequests(pageNumber: $pageNumber, pageSize: $pageSize) {
+      totalCount
       items {
         id
         track {
@@ -194,111 +194,111 @@ export const PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY = graphql(`
   query PendingTrackUploadRequestById($uploadId: String!) {
     pendingTrackUploadRequestById(uploadId: $uploadId) {
       id
-        requestedAt
+      requestedAt
+      createdBy
+      track {
+        id
+        name
+        description
+        type
+        mainArtistIds
+        featuredArtistIds
+        categoryIds
+        tags
+        coverImage
+        previewVideo
+        isExplicit
+        lyrics
         createdBy
-        track {
-            id
-            name
-            description
-            type
-            mainArtistIds
-            featuredArtistIds
-            categoryIds
-            tags
-            coverImage
-            previewVideo
-            isExplicit
-            lyrics
-            createdBy
-            requestedAt
-            releaseInfo {
-                isRelease
-                releaseDate
-                releasedAt
-                releaseStatus
-            }
-            legalDocuments {
-                name
-                documentUrl
-                documentType
-                note
-            }
+        requestedAt
+        releaseInfo {
+          isRelease
+          releaseDate
+          releasedAt
+          releaseStatus
         }
-        work {
-            id
-            description
-            workSplits {
-                userId
-                artistRole
-                percentage
-            }
+        legalDocuments {
+          name
+          documentUrl
+          documentType
+          note
         }
-        recording {
-            id
-            description
-            recordingSplitRequests {
-                userId
-                artistRole
-                percentage
-            }
+      }
+      work {
+        id
+        description
+        workSplits {
+          userId
+          artistRole
+          percentage
         }
-        workUsers {
-            items {
-                id
-                email
-                fullName
-                gender
-                birthDate
-                phoneNumber
-                status
-            }
+      }
+      recording {
+        id
+        description
+        recordingSplitRequests {
+          userId
+          artistRole
+          percentage
         }
-        recordingUsers {
-            items {
-                id
-                email
-                fullName
-                gender
-                birthDate
-                phoneNumber
-                status
-            }
+      }
+      workUsers {
+        items {
+          id
+          email
+          fullName
+          gender
+          birthDate
+          phoneNumber
+          status
         }
-     mainArtists {
-            items {
-                id
-                userId
-                stageName
-                stageNameUnsigned
-                email
-                artistType
-            }
+      }
+      recordingUsers {
+        items {
+          id
+          email
+          fullName
+          gender
+          birthDate
+          phoneNumber
+          status
         }
+      }
+      mainArtists {
+        items {
+          id
+          userId
+          stageName
+          stageNameUnsigned
+          email
+          artistType
+        }
+      }
       featuredArtists {
-            items {
-                id
-                userId
-                stageName
-                stageNameUnsigned
-                email
-                artistType
-            }
-        }             
+        items {
+          id
+          userId
+          stageName
+          stageNameUnsigned
+          email
+          artistType
+        }
+      }
     }
-}
+  }
 `);
 
 export const QUERY_USER_CREATED_BY = graphql(`
   query UserCreatedBy($where: UserFilterInput!) {
     users(where: $where) {
-    items {
-      id
-      email
-      fullName
-      role
+      items {
+        id
+        email
+        fullName
+        role
+      }
     }
   }
-}
 `);
 
 export const ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY = graphql(`
@@ -309,7 +309,10 @@ export const ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY = graphql(`
 
 // Mutations for track approval actions
 export const RejectTrackUploadRequestMutation = graphql(`
-  mutation RejectTrackUploadRequest($uploadId: String!, $reasonReject: String!) {
+  mutation RejectTrackUploadRequest(
+    $uploadId: String!
+    $reasonReject: String!
+  ) {
     rejectTrackUploadRequest(uploadId: $uploadId, reasonReject: $reasonReject)
   }
 `);

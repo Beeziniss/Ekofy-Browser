@@ -22,7 +22,10 @@ const TrackDetailView = ({ trackId }: TrackDetailViewProps) => {
   const { data } = useSuspenseQuery(trackDetailOptions(trackId));
 
   const { data: artistData } = useQuery(
-    artistOptions(user?.userId || "", user?.artistId || ""),
+    artistOptions({
+      userId: user?.userId || "",
+      artistId: user?.artistId || "",
+    }),
   );
   const { data: listenerData } = useQuery(
     listenerOptions(user?.userId || "", user?.listenerId || ""),

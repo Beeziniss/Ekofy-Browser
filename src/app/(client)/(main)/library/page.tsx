@@ -1,5 +1,9 @@
 import { cookies } from "next/headers";
-import { playlistOptions } from "@/gql/options/client-options";
+import {
+  followerOptions,
+  followingOptions,
+  playlistOptions,
+} from "@/gql/options/client-options";
 import LibraryView from "@/modules/client/library/ui/views/library-view";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -24,7 +28,11 @@ const LibraryPage = async () => {
 
   // Prefetch playlists if user is available
   if (userId) {
-    void queryClient.prefetchInfiniteQuery(playlistOptions(userId, undefined, 11));
+    void queryClient.prefetchInfiniteQuery(
+      playlistOptions(userId, undefined, 11),
+    );
+    void queryClient.prefetchQuery(followerOptions({ userId }));
+    void queryClient.prefetchQuery(followingOptions({ userId }));
   }
 
   return (
