@@ -12,6 +12,7 @@ interface ClientNavbarProps {
   label: string;
   activeStyle: string;
   useStartsWith?: boolean; // Add this flag to determine matching strategy
+  requireAuth?: boolean;
 }
 
 const navBarItems: ClientNavbarProps[] = [
@@ -20,24 +21,28 @@ const navBarItems: ClientNavbarProps[] = [
     label: "Home",
     activeStyle: "border-b-2 border-b-main-white text-main-white",
     useStartsWith: false,
+    requireAuth: false,
   },
   {
     href: "/library",
     label: "Library",
     activeStyle: "border-b-2 border-b-main-white text-main-white",
     useStartsWith: true,
+    requireAuth: true,
   },
   {
     href: "/request-hub",
     label: "Request Hub",
     activeStyle: "border-b-2 border-b-main-white text-main-white",
     useStartsWith: false,
+    requireAuth: false,
   },
   {
     href: "/artists-for-hire",
     label: "Artists for Hire",
     activeStyle: "border-b-2 border-b-main-white text-main-white",
     useStartsWith: false,
+    requireAuth: false,
   },
 ];
 
@@ -83,6 +88,7 @@ const ClientHeader = () => {
               className={cn(
                 `text-main-grey-dark-1 hover:text-main-white inline-block py-[19px]`,
                 isNavItemActive(item) ? item.activeStyle : "",
+                item.requireAuth ? "hidden" : "",
               )}
             >
               <span className="text-sm font-semibold">{item.label}</span>

@@ -681,79 +681,6 @@ export type CombinedUploadRequestWorkUsersArgs = {
   where?: InputMaybe<UserFilterInput>;
 };
 
-export type Comment = {
-  __typename?: 'Comment';
-  artist: Array<Artist>;
-  commentType: CommentType;
-  commenterId: Scalars['String']['output'];
-  content: Scalars['String']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  depth: Scalars['Int']['output'];
-  id: Scalars['String']['output'];
-  isDeleted: Scalars['Boolean']['output'];
-  isEdited: Scalars['Boolean']['output'];
-  isVisible: Scalars['Boolean']['output'];
-  listener: Array<Listener>;
-  parentCommentId?: Maybe<Scalars['String']['output']>;
-  replyCount: Scalars['Long']['output'];
-  rootCommentId?: Maybe<Scalars['String']['output']>;
-  sortOrder: Scalars['Int']['output'];
-  targetId: Scalars['String']['output'];
-  threadPath: Array<Scalars['String']['output']>;
-  threadUpdatedAt: Scalars['DateTime']['output'];
-  totalRepliesCount: Scalars['Long']['output'];
-  track: Array<Track>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  user: Array<User>;
-};
-
-
-export type CommentArtistArgs = {
-  order?: InputMaybe<Array<ArtistSortInput>>;
-  where?: InputMaybe<ArtistFilterInput>;
-};
-
-
-export type CommentListenerArgs = {
-  order?: InputMaybe<Array<ListenerSortInput>>;
-  where?: InputMaybe<ListenerFilterInput>;
-};
-
-
-export type CommentTrackArgs = {
-  order?: InputMaybe<Array<TrackSortInput>>;
-  where?: InputMaybe<TrackFilterInput>;
-};
-
-
-export type CommentUserArgs = {
-  order?: InputMaybe<Array<UserSortInput>>;
-  where?: InputMaybe<UserFilterInput>;
-};
-
-export type CommentFilterInput = {
-  and?: InputMaybe<Array<CommentFilterInput>>;
-  commentType?: InputMaybe<CommentTypeOperationFilterInput>;
-  commenterId?: InputMaybe<StringOperationFilterInput>;
-  content?: InputMaybe<StringOperationFilterInput>;
-  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
-  depth?: InputMaybe<IntOperationFilterInput>;
-  id?: InputMaybe<StringOperationFilterInput>;
-  isDeleted?: InputMaybe<BooleanOperationFilterInput>;
-  isEdited?: InputMaybe<BooleanOperationFilterInput>;
-  isVisible?: InputMaybe<BooleanOperationFilterInput>;
-  or?: InputMaybe<Array<CommentFilterInput>>;
-  parentCommentId?: InputMaybe<StringOperationFilterInput>;
-  replyCount?: InputMaybe<LongOperationFilterInput>;
-  rootCommentId?: InputMaybe<StringOperationFilterInput>;
-  sortOrder?: InputMaybe<IntOperationFilterInput>;
-  targetId?: InputMaybe<StringOperationFilterInput>;
-  threadPath?: InputMaybe<ListStringOperationFilterInput>;
-  threadUpdatedAt?: InputMaybe<DateTimeOperationFilterInput>;
-  totalRepliesCount?: InputMaybe<LongOperationFilterInput>;
-  updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
-};
-
 export type CommentRepliesRequestInput = {
   commentId: Scalars['String']['input'];
   page: Scalars['Int']['input'];
@@ -792,26 +719,6 @@ export type CommentResponse = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-export type CommentSortInput = {
-  commentType?: InputMaybe<SortEnumType>;
-  commenterId?: InputMaybe<SortEnumType>;
-  content?: InputMaybe<SortEnumType>;
-  createdAt?: InputMaybe<SortEnumType>;
-  depth?: InputMaybe<SortEnumType>;
-  id?: InputMaybe<SortEnumType>;
-  isDeleted?: InputMaybe<SortEnumType>;
-  isEdited?: InputMaybe<SortEnumType>;
-  isVisible?: InputMaybe<SortEnumType>;
-  parentCommentId?: InputMaybe<SortEnumType>;
-  replyCount?: InputMaybe<SortEnumType>;
-  rootCommentId?: InputMaybe<SortEnumType>;
-  sortOrder?: InputMaybe<SortEnumType>;
-  targetId?: InputMaybe<SortEnumType>;
-  threadUpdatedAt?: InputMaybe<SortEnumType>;
-  totalRepliesCount?: InputMaybe<SortEnumType>;
-  updatedAt?: InputMaybe<SortEnumType>;
-};
-
 export enum CommentSortOrder {
   Chronological = 'CHRONOLOGICAL',
   PopularityBased = 'POPULARITY_BASED',
@@ -828,16 +735,6 @@ export type CommentThread = {
   totalReplies: Scalars['Int']['output'];
 };
 
-/** A segment of a collection. */
-export type CommentThreadCollectionSegment = {
-  __typename?: 'CommentThreadCollectionSegment';
-  /** A flattened list of the items. */
-  items?: Maybe<Array<CommentResponse>>;
-  /** Information to aid in pagination. */
-  pageInfo: CollectionSegmentInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
 export type CommentThreadRequestInput = {
   commentId: Scalars['String']['input'];
   includeDeleted: Scalars['Boolean']['input'];
@@ -849,13 +746,6 @@ export enum CommentType {
   RequestHub = 'REQUEST_HUB',
   Track = 'TRACK'
 }
-
-export type CommentTypeOperationFilterInput = {
-  eq?: InputMaybe<CommentType>;
-  in?: InputMaybe<Array<CommentType>>;
-  neq?: InputMaybe<CommentType>;
-  nin?: InputMaybe<Array<CommentType>>;
-};
 
 export type CommenterInfo = {
   __typename?: 'CommenterInfo';
@@ -2119,6 +2009,7 @@ export type MutationInitialization = {
   updatePlaylist: Scalars['Boolean']['output'];
   updateRequest: Scalars['Boolean']['output'];
   updateRoyaltyPolicy: Scalars['Boolean']['output'];
+  updateSubscriptionPlan: Scalars['Boolean']['output'];
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
   upsertTopTrackCount: Scalars['Boolean']['output'];
@@ -2468,6 +2359,11 @@ export type MutationInitializationUpdateRequestArgs = {
 
 export type MutationInitializationUpdateRoyaltyPolicyArgs = {
   updateRoyalPolicyRequest: UpdateRoyalPolicyRequestInput;
+};
+
+
+export type MutationInitializationUpdateSubscriptionPlanArgs = {
+  updateSubscriptionPlanRequest: UpdateSubscriptionPlanRequestInput;
 };
 
 
@@ -2973,7 +2869,7 @@ export type QueryInitialization = {
   categories?: Maybe<CategoriesCollectionSegment>;
   commentDepth: Scalars['Int']['output'];
   commentReplies: CommentRepliesResponse;
-  commentThread?: Maybe<CommentThreadCollectionSegment>;
+  commentThread: Array<CommentResponse>;
   coupons?: Maybe<CouponsCollectionSegment>;
   entitlements?: Maybe<EntitlementsCollectionSegment>;
   favoritePlaylists?: Maybe<FavoritePlaylistsCollectionSegment>;
@@ -3017,7 +2913,6 @@ export type QueryInitialization = {
   threadedComments: ThreadedCommentsResponse;
   topTracks: Array<TopTrackResponse>;
   trackBySemanticSearch: Array<Track>;
-  trackComments?: Maybe<TrackCommentsCollectionSegment>;
   tracks?: Maybe<TracksCollectionSegment>;
   transactions?: Maybe<TransactionsCollectionSegment>;
   userEngagement?: Maybe<UserEngagementCollectionSegment>;
@@ -3071,8 +2966,6 @@ export type QueryInitializationCommentRepliesArgs = {
 
 export type QueryInitializationCommentThreadArgs = {
   request: CommentThreadRequestInput;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -3362,14 +3255,6 @@ export type QueryInitializationThreadedCommentsArgs = {
 
 export type QueryInitializationTrackBySemanticSearchArgs = {
   term: Scalars['String']['input'];
-};
-
-
-export type QueryInitializationTrackCommentsArgs = {
-  order?: InputMaybe<Array<CommentSortInput>>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<CommentFilterInput>;
 };
 
 
@@ -4420,16 +4305,6 @@ export type TrackMainArtistsArgs = {
   where?: InputMaybe<ArtistFilterInput>;
 };
 
-/** A segment of a collection. */
-export type TrackCommentsCollectionSegment = {
-  __typename?: 'TrackCommentsCollectionSegment';
-  /** A flattened list of the items. */
-  items?: Maybe<Array<Comment>>;
-  /** Information to aid in pagination. */
-  pageInfo: CollectionSegmentInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
 export type TrackFilterInput = {
   alternativeDescription?: InputMaybe<StringOperationFilterInput>;
   and?: InputMaybe<Array<TrackFilterInput>>;
@@ -4617,6 +4492,15 @@ export type UpdatePlaylistRequestInput = {
   playlistId: Scalars['String']['input'];
 };
 
+export type UpdatePriceRequestInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  interval?: InputMaybe<PeriodTime>;
+  intervalCount?: InputMaybe<Scalars['Long']['input']>;
+  lookupKey?: InputMaybe<Scalars['String']['input']>;
+  metadata?: InputMaybe<Array<KeyValuePairOfStringAndStringInput>>;
+  stripePriceId: Scalars['String']['input'];
+};
+
 export type UpdateRoyalPolicyRequestInput = {
   currency?: InputMaybe<CurrencyType>;
   ratePerStream?: InputMaybe<Scalars['Decimal']['input']>;
@@ -4628,6 +4512,15 @@ export type UpdateRoyalPolicyRequestInput = {
 export type UpdateStatusArtistPackageRequestInput = {
   id: Scalars['String']['input'];
   status: ArtistPackageStatus;
+};
+
+export type UpdateSubscriptionPlanRequestInput = {
+  images?: InputMaybe<Array<Scalars['String']['input']>>;
+  metadata?: InputMaybe<Array<KeyValuePairOfStringAndStringInput>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  newPrices: Array<CreatePriceRequestInput>;
+  subscriptionPlanId: Scalars['String']['input'];
+  updatePrices: Array<UpdatePriceRequestInput>;
 };
 
 export type UpdateTrackCommentRequestInput = {

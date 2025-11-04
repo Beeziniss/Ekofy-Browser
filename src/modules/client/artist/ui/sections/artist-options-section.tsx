@@ -31,6 +31,8 @@ import { toast } from "sonner";
 import { usePathname } from "next/navigation";
 import { useArtistFollow } from "@/hooks/use-artist-follow";
 import { useAuthStore } from "@/store";
+import { useAuthAction } from "@/hooks/use-auth-action";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
 const activeItemStyles =
   "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
@@ -53,12 +55,6 @@ const ArtistOptionsSection = ({
 }: ArtistOptionsSectionProps) => {
   const route = usePathname();
   const { user } = useAuthStore();
-
-  const handleCopyLink = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    toast.success("Copied!");
-  };
 
   const mainNavItems: NavItem[] = [
     {
@@ -83,9 +79,23 @@ const ArtistOptionsSection = ({
     },
   ];
 
+  const handleCopyLink = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    toast.success("Copied!");
+  };
+
   const { handleFollowToggle } = useArtistFollow({
     artistId,
   });
+
+  const {
+    showWarningDialog,
+    setShowWarningDialog,
+    warningAction,
+    trackName,
+    executeWithAuth,
+  } = useAuthAction();
 
   return (
     <div className="flex items-center justify-between px-6 py-4">
@@ -134,10 +144,14 @@ const ArtistOptionsSection = ({
               const user = artistData.artists?.items?.[0]?.user[0];
               const artist = artistData.artists?.items?.[0];
               if (user?.id && artist?.stageName) {
-                handleFollowToggle(
-                  user.id,
-                  user.checkUserFollowing ?? false,
-                  artist.stageName,
+                executeWithAuth(
+                  () =>
+                    handleFollowToggle(
+                      user.id,
+                      user.checkUserFollowing ?? false,
+                      artist.stageName,
+                    ),
+                  "follow",
                 );
               }
             }}
@@ -173,6 +187,13 @@ const ArtistOptionsSection = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <WarningAuthDialog
+        open={showWarningDialog}
+        onOpenChange={setShowWarningDialog}
+        action={warningAction}
+        trackName={trackName}
+      />
     </div>
   );
 };
