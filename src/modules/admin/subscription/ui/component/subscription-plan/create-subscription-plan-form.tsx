@@ -31,11 +31,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2 } from "lucide-react";
 import { useCreateSubscriptionPlanMutation } from "@/gql/client-mutation-options/subscription-mutation-options";
 import { PeriodTime } from "@/gql/graphql";
+import type { CreateSubscriptionPlanInput } from "@/types";
 
 const priceSchema = z.object({
   interval: z.nativeEnum(PeriodTime),
   intervalCount: z.number().min(1, "Interval count must be at least 1"),
-  lookupKey: z.string().min(1, "Lookup key is required"),
+  lookupKey: z.string()
+    .min(1, "Lookup key is required")
+    .regex(/^[a-z][a-z0-9_]*$/, "Lookup key must be lowercase, start with a letter, and contain only letters, numbers, and underscores"),
 });
 
 const metadataSchema = z.object({
@@ -49,7 +52,9 @@ const imageSchema = z.object({
 
 const createSubscriptionPlanSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  subscriptionCode: z.string().min(1, "Subscription code is required"),
+  subscriptionCode: z.string()
+    .min(1, "Subscription code is required")
+    .regex(/^[a-z][a-z0-9_]*$/, "Subscription code must be lowercase, start with a letter, and contain only letters, numbers, and underscores"),
   images: z.array(imageSchema).optional(),
   metadata: z.array(metadataSchema).optional(),
   prices: z.array(priceSchema).min(1, "At least one price is required"),
@@ -126,13 +131,22 @@ export default function CreateSubscriptionPlanForm({
   const onSubmit = async (data: CreateSubscriptionPlanFormData) => {
     try {
       // Transform the data to match the API expected format
-      const transformedData = {
+      const transformedData: CreateSubscriptionPlanInput = {
         name: data.name,
         subscriptionCode: data.subscriptionCode,
-        images: data.images?.map((img) => img.url) || [],
-        metadata: data.metadata || [],
         prices: data.prices,
       };
+
+      // Only add images if there are any
+      const images = data.images?.map((img) => img.url).filter(Boolean);
+      if (images && images.length > 0) {
+        transformedData.images = images;
+      }
+
+      // Only add metadata if there are any
+      if (data.metadata && data.metadata.length > 0) {
+        transformedData.metadata = data.metadata;
+      }
       
       await createSubscriptionPlanMutation.mutateAsync(transformedData);
       form.reset();
@@ -190,7 +204,7 @@ export default function CreateSubscriptionPlanForm({
                       <FormItem>
                         <FormLabel>Subscription Code</FormLabel>
                         <FormControl>
-                          <Input placeholder="PREMIUM_PLAN" {...field} />
+                          <Input placeholder="premium_plan" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -405,7 +419,7 @@ export default function CreateSubscriptionPlanForm({
                           <FormItem>
                             <FormLabel>Lookup Key</FormLabel>
                             <FormControl>
-                              <Input placeholder="PREMIUM_MONTHLY" {...field} />
+                              <Input placeholder="premium_monthly" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

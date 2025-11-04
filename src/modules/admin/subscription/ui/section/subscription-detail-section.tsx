@@ -4,15 +4,11 @@ import {
   subscriptionDetailQueryOptions, 
   subscriptionPlansQueryOptions 
 } from "@/gql/options/subscription-options";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Edit } from "lucide-react";
-import { SubscriptionPlanTable } from "../component/subscription-plan-table";
-import { SubscriptionActions } from "../component/subscription-actions";
-import { default as CreateSubscriptionPlanForm } from "../component/create-subscription-plan-form";
-import { CustomPagination } from "@/components/ui/custom-pagination";
-import { formatNumber } from "@/utils/format-number";
+import { SubscriptionTier, SubscriptionStatus } from "@/gql/graphql";
+import { SubscriptionHeader } from "../component/subscription/subscription-header";
+import { SubscriptionInfoCard } from "../component/subscription/subscription-info-card";
+import { SubscriptionPlansSection } from "../component/subscription-plan/subscription-plans-section";
+import { default as CreateSubscriptionPlanForm } from "../component/subscription-plan/create-subscription-plan-form";
 import type { SubscriptionPlan } from "@/types";
 
 interface SubscriptionDetailSectionProps {
@@ -49,27 +45,30 @@ export function SubscriptionDetailSection({
     setCurrentPage(1);
   }, []);
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
-  };
+  }, []);
 
   const handleViewPlan = (plan: SubscriptionPlan) => {
-    // TODO: Implement plan detail view
     console.log("View plan:", plan);
   };
 
   const handleEditPlan = (plan: SubscriptionPlan) => {
-    // TODO: Implement edit plan functionality
     console.log("Edit plan:", plan);
   };
 
   const handleDeletePlan = (plan: SubscriptionPlan) => {
-    // TODO: Implement delete plan functionality
     console.log("Delete plan:", plan);
   };
 
   const handleCreatePlanSuccess = () => {
     refetchPlans();
+  };
+
+  // Check if subscription can create plans
+  const canCreateSubscriptionPlans = () => {
+    if (!subscription) return false;
+    return subscription.tier === SubscriptionTier.Premium && subscription.status === SubscriptionStatus.Active;
   };
 
   const getStatusBadgeVariant = (status: string) => {
@@ -114,116 +113,40 @@ export function SubscriptionDetailSection({
 
   return (
     <div className="space-y-6">
-      {/* Header with back button */}
-      <div className="flex items-center gap-4">
-        {onBack && (
-          <Button variant="outline" onClick={onBack}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-        )}
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold">{subscription.name}</h1>
-          <p className="text-muted-foreground">{subscription.description}</p>
-        </div>
-        <Button variant="outline">
-          <Edit className="mr-2 h-4 w-4" />
-          Edit Subscription
-        </Button>
-      </div>
-
-      {/* Subscription details card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Subscription Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Code</div>
-              <code className="text-sm bg-muted px-2 py-1 rounded">
-                {subscription.code}
-              </code>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Tier</div>
-              <Badge variant={getTierBadgeVariant(subscription.tier)}>
-                {subscription.tier}
-              </Badge>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Status</div>
-              <Badge variant={getStatusBadgeVariant(subscription.status)}>
-                {subscription.status}
-              </Badge>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Version</div>
-              <div className="text-sm">{subscription.version}</div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Amount</div>
-              <div className="text-sm font-medium">
-                {formatNumber(subscription.amount)} {subscription.currency}
-              </div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Created</div>
-              <div className="text-sm">
-                {new Date(subscription.createdAt).toLocaleDateString()}
-              </div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Updated</div>
-              <div className="text-sm">
-                {subscription.updatedAt 
-                  ? new Date(subscription.updatedAt).toLocaleDateString()
-                  : "Never"
-                }
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Subscription plans section */}
-      <div className="space-y-4">
-        <SubscriptionActions
-          onCreateSubscriptionPlan={() => setIsCreatePlanFormOpen(true)}
-          onSearch={handleSearch}
-          searchPlaceholder="Search subscription plans..."
-          showCreatePlan={true}
-        />
-
-        <SubscriptionPlanTable
-          subscriptionPlans={plans}
-          onView={handleViewPlan}
-          onEdit={handleEditPlan}
-          onDelete={handleDeletePlan}
-          isLoading={isLoadingPlans}
-          showSubscriptionInfo={false}
-          subscriptionId={subscriptionId}
-        />
-
-        {totalPages > 1 && (
-          <div className="flex justify-center">
-            <CustomPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalCount={totalCount}
-              pageSize={pageSize}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        )}
-      </div>
-
-      <CreateSubscriptionPlanForm
-        open={isCreatePlanFormOpen}
-        onOpenChange={setIsCreatePlanFormOpen}
-        onSuccess={handleCreatePlanSuccess}
-        preselectedSubscriptionCode={subscription?.code}
+      <SubscriptionHeader subscription={subscription} onBack={onBack} />
+      
+      <SubscriptionInfoCard 
+        subscription={subscription}
+        getStatusBadgeVariant={getStatusBadgeVariant}
+        getTierBadgeVariant={getTierBadgeVariant}
       />
+
+      <SubscriptionPlansSection
+        subscription={subscription}
+        plans={plans}
+        isLoadingPlans={isLoadingPlans}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalCount={totalCount}
+        pageSize={pageSize}
+        subscriptionId={subscriptionId}
+        onCreatePlan={() => setIsCreatePlanFormOpen(true)}
+        onSearch={handleSearch}
+        onPageChange={handlePageChange}
+        onViewPlan={handleViewPlan}
+        onEditPlan={handleEditPlan}
+        onDeletePlan={handleDeletePlan}
+      />
+
+      {/* Only show form if subscription can create plans */}
+      {canCreateSubscriptionPlans() && (
+        <CreateSubscriptionPlanForm
+          open={isCreatePlanFormOpen}
+          onOpenChange={setIsCreatePlanFormOpen}
+          onSuccess={handleCreatePlanSuccess}
+          preselectedSubscriptionCode={subscription?.code}
+        />
+      )}
     </div>
   );
 }

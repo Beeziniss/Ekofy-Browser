@@ -98,6 +98,22 @@ export interface CreateSubscriptionPlanInput {
   }>;
 }
 
+// GraphQL type for the actual API call
+export interface CreateSubScriptionPlanRequestInput {
+  name: string;
+  subscriptionCode: string;
+  images?: string[];
+  metadata?: Array<{
+    key: string;
+    value: string;
+  }>;
+  prices: Array<{
+    interval: PeriodTime;
+    intervalCount: number;
+    lookupKey: string;
+  }>;
+}
+
 export interface UpdateSubscriptionPlanInput {
   id: string;
   stripeProductActive?: boolean;

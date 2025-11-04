@@ -35,7 +35,10 @@ import type { CreateSubscriptionInput } from "@/types";
 const createSubscriptionSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
   description: z.string().optional(),
-  code: z.string().min(1, "Code is required").max(50, "Code must be less than 50 characters"),
+  code: z.string()
+    .min(1, "Code is required")
+    .max(50, "Code must be less than 50 characters")
+    .regex(/^[a-z][a-z0-9_]*$/, "Code must be lowercase, start with a letter, and contain only letters, numbers, and underscores"),
   version: z.number().min(1, "Version must be at least 1"),
   tier: z.nativeEnum(SubscriptionTier),
   price: z.number().min(0, "Price must be at least 0"),

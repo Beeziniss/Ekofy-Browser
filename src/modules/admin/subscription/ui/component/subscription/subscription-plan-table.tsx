@@ -34,7 +34,7 @@ interface SubscriptionPlanTableProps {
 
 export function SubscriptionPlanTable({
   subscriptionPlans,
-  onView,
+  // onView,
   onEdit,
   onDelete,
   isLoading = false,
@@ -144,7 +144,7 @@ export function SubscriptionPlanTable({
                 </TableCell>
                 <TableCell>
                   <Badge variant={getStatusBadgeVariant(plan.stripeProductActive)}>
-                    {plan.stripeProductActive ? "Active" : "Inactive"}
+                    {plan.stripeProductActive ? "ACTIVE" : "INACTIVE"}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -158,17 +158,17 @@ export function SubscriptionPlanTable({
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      {onView && (
+                      {/* {onView && (
                         <DropdownMenuItem onClick={() => onView(plan)}>
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
                         </DropdownMenuItem>
-                      )}
+                      )} */}
                       {subscriptionId && (
                         <Link href={`/admin/subscription/${subscriptionId}/subscription-plan/${plan.id}`}>
                           <DropdownMenuItem>
                             <Eye className="mr-2 h-4 w-4" />
-                            View Full Details
+                            View Details
                           </DropdownMenuItem>
                         </Link>
                       )}

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { SubscriptionDetailSection } from "../section/subscription-detail-section";
+import { SubscriptionLayout } from "../layout/subscription-layout";
 
 interface AdminSubscriptionDetailProps {
   subscriptionId: string;
@@ -15,11 +16,11 @@ export function AdminSubscriptionDetail({ subscriptionId }: AdminSubscriptionDet
   };
 
   return (
-    <div className="container mx-auto py-6">
+    <SubscriptionLayout showCard={false}>
       <SubscriptionDetailSection 
         subscriptionId={subscriptionId} 
         onBack={handleBack}
       />
-    </div>
+    </SubscriptionLayout>
   );
 }

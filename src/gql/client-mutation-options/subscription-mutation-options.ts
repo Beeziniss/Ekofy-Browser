@@ -7,6 +7,7 @@ import {
 import type { 
   CreateSubscriptionInput, 
   CreateSubscriptionPlanInput,
+  CreateSubScriptionPlanRequestInput,
   UpdateSubscriptionInput,
   UpdateSubscriptionPlanInput 
 } from "@/types";
@@ -40,8 +41,28 @@ export const useCreateSubscriptionPlanMutation = () => {
 
   return useMutation({
     mutationFn: async (input: CreateSubscriptionPlanInput) => {
+      // Transform input to match GraphQL schema - build required fields first
+      const requestInput: CreateSubScriptionPlanRequestInput = {
+        name: input.name,
+        subscriptionCode: input.subscriptionCode,
+        prices: input.prices.map(price => ({
+          interval: price.interval,
+          intervalCount: price.intervalCount,
+          lookupKey: price.lookupKey,
+        })),
+      };
+      
+      // Only add optional fields if they exist and are not empty
+      if (input.images && input.images.length > 0) {
+        requestInput.images = input.images;
+      }
+      
+      if (input.metadata && input.metadata.length > 0) {
+        requestInput.metadata = input.metadata;
+      }
+      
       const result = await execute(CREATE_SUBSCRIPTION_PLAN, {
-        createSubScriptionPlanRequest: input,
+        createSubScriptionPlanRequest: requestInput,
       });
       return result;
     },
