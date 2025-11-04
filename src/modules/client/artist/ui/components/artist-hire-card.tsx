@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ArtistListQuery } from "@/gql/graphql";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 interface ArtistHireCardProps {
   artist?: NonNullable<
@@ -86,9 +87,11 @@ const ArtistHireCard = ({ artist }: ArtistHireCardProps) => {
         </div>
       </div>
 
-      <Button className="mt-6 w-full" variant="ekofy">
-        View Profile
-      </Button>
+      <Link href={`/artists/${artist.id}`}>
+        <Button className="mt-6 w-full" variant="ekofy">
+          View Profile
+        </Button>
+      </Link>
     </div>
   );
 };

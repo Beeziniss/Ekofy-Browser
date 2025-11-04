@@ -30,6 +30,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { usePathname } from "next/navigation";
 import { useArtistFollow } from "@/hooks/use-artist-follow";
+import { useAuthStore } from "@/store";
 
 const activeItemStyles =
   "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
@@ -51,6 +52,7 @@ const ArtistOptionsSection = ({
   artistId,
 }: ArtistOptionsSectionProps) => {
   const route = usePathname();
+  const { user } = useAuthStore();
 
   const handleCopyLink = () => {
     const url = window.location.href;
@@ -81,32 +83,9 @@ const ArtistOptionsSection = ({
     },
   ];
 
-  const { followUser, unfollowUser } = useArtistFollow({ artistId });
-
-  const handleFollowToggle = () => {
-    if (!artistData.artists?.items?.[0]?.user[0]?.id) return;
-
-    const isCurrentlyFollowing =
-      artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing;
-
-    if (isCurrentlyFollowing) {
-      unfollowUser(artistData.artists?.items?.[0]?.user[0]?.id, {
-        onSuccess: () => {
-          toast.success(
-            `Unfollowed ${artistData.artists?.items?.[0]?.stageName}!`,
-          );
-        },
-      });
-    } else {
-      followUser(artistData.artists?.items?.[0]?.user[0]?.id, {
-        onSuccess: () => {
-          toast.success(
-            `Now following ${artistData.artists?.items?.[0]?.stageName}!`,
-          );
-        },
-      });
-    }
-  };
+  const { handleFollowToggle } = useArtistFollow({
+    artistId,
+  });
 
   return (
     <div className="flex items-center justify-between px-6 py-4">
@@ -139,19 +118,35 @@ const ArtistOptionsSection = ({
       </NavigationMenu>
 
       <div className="flex items-center gap-x-3">
-        <Button
-          variant={
-            artistData.artists?.items?.[0]?.user[0].checkUserFollowing
-              ? "reaction"
-              : "default"
-          }
-          className="px-10 py-2 text-sm font-bold"
-          onClick={handleFollowToggle}
-        >
-          {artistData.artists?.items?.[0]?.user[0].checkUserFollowing
-            ? "Following"
-            : "Follow"}
-        </Button>
+        {user && user.artistId && user.artistId === artistId ? (
+          <Link href={"/artist/studio/profile"}>
+            <Button variant={"ekofy"}>View my profile</Button>
+          </Link>
+        ) : (
+          <Button
+            variant={
+              artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing
+                ? "reaction"
+                : "default"
+            }
+            className="px-10 py-2 text-sm font-bold"
+            onClick={() => {
+              const user = artistData.artists?.items?.[0]?.user[0];
+              const artist = artistData.artists?.items?.[0];
+              if (user?.id && artist?.stageName) {
+                handleFollowToggle(
+                  user.id,
+                  user.checkUserFollowing ?? false,
+                  artist.stageName,
+                );
+              }
+            }}
+          >
+            {artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing
+              ? "Following"
+              : "Follow"}
+          </Button>
+        )}
         <TooltipButton content="Contact Artist" side="top">
           <Link
             href={`mailto:${artistData.artists?.items?.[0].email}`}
