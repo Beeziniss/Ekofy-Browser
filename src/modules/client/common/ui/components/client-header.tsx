@@ -57,7 +57,7 @@ const ClientHeader = () => {
   };
 
   return (
-    <div className="bg-main-dark-bg fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-2">
+    <div className="bg-main-dark-bg fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6">
       {/* Logo */}
       <div className="flex items-center gap-x-8">
         <Link href={"/"}>
@@ -81,7 +81,7 @@ const ClientHeader = () => {
               key={item.href}
               href={item.href}
               className={cn(
-                `text-main-grey-dark-1 hover:text-main-white inline-block py-3`,
+                `text-main-grey-dark-1 hover:text-main-white inline-block py-[19px]`,
                 isNavItemActive(item) ? item.activeStyle : "",
               )}
             >

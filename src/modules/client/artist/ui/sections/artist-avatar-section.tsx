@@ -17,7 +17,7 @@ const ArtistAvatarSection = ({ artistData }: ArtistAvatarSectionProps) => {
             src={artistData?.artists?.items?.[0]?.avatarImage || undefined}
             alt={artistData?.artists?.items?.[0]?.stageName}
           />
-          <AvatarFallback>
+          <AvatarFallback className="text-5xl font-semibold">
             {getUserInitials(artistData?.artists?.items?.[0]?.stageName || "")}
           </AvatarFallback>
         </Avatar>
