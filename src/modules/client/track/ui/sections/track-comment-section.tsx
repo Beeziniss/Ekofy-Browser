@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SendIcon } from "lucide-react";
+import { SendIcon, UserIcon } from "lucide-react";
 import TrackCommentUser from "../components/track-comment-user";
 import {
   useMutation,
@@ -21,6 +21,8 @@ import { createTrackCommentMutationOptions } from "@/gql/options/client-mutation
 import { ArtistQuery, CommentType, ListenerQuery } from "@/gql/graphql";
 import { trackCommentsOptions } from "@/gql/options/client-options";
 import { useState } from "react";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { useAuthAction } from "@/hooks/use-auth-action";
 
 interface TrackCommentSectionProps {
   trackId: string;
@@ -35,6 +37,14 @@ const TrackCommentSection = ({
 }: TrackCommentSectionProps) => {
   const queryClient = useQueryClient();
   const [comment, setComment] = useState("");
+  const {
+    showWarningDialog,
+    setShowWarningDialog,
+    warningAction,
+    trackName,
+    executeWithAuth,
+    isAuthenticated,
+  } = useAuthAction();
 
   const { data: commentsData } = useSuspenseQuery(
     trackCommentsOptions(trackId),
@@ -58,10 +68,22 @@ const TrackCommentSection = ({
   };
 
   const handleSubmitComment = () => {
-    if (comment.trim() && !isPending) {
-      handleCreateComment(comment.trim());
-      setComment("");
-    }
+    executeWithAuth(() => {
+      if (comment.trim() && !isPending) {
+        handleCreateComment(comment.trim());
+        setComment("");
+      }
+    }, "comment");
+  };
+
+  const getTotalCommentCount = () => {
+    if (!commentsData?.threadedComments) return 0;
+
+    const threads = commentsData.threadedComments.threads || [];
+    return threads.reduce((total, thread) => {
+      // Count root comment + all replies
+      return total + 1 + (thread.totalReplies || 0);
+    }, 0);
   };
 
   return (
@@ -70,7 +92,7 @@ const TrackCommentSection = ({
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <span className="text-main-white text-lg font-bold">
-            {commentsData.threadedComments.totalThreads || 0} Threads
+            {getTotalCommentCount() || 0} Comments
           </span>
 
           {/* // TODO: refractor defaultValue and modify this sorting using api */}
@@ -103,14 +125,17 @@ const TrackCommentSection = ({
             />
             <AvatarFallback>
               {listenerData?.listeners?.items?.[0]?.displayName.slice(0, 1) ||
-                artistData?.artists?.items?.[0]?.stageName ||
-                "Unknown"}
+                artistData?.artists?.items?.[0]?.stageName || (
+                  <UserIcon className="size-6" />
+                )}
             </AvatarFallback>
           </Avatar>
 
           <div className="relative flex-1">
             <Input
-              placeholder="Write a comment..."
+              placeholder={
+                isAuthenticated ? "Write a comment..." : "Sign in to comment..."
+              }
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               onKeyDown={(e) => {
@@ -119,12 +144,17 @@ const TrackCommentSection = ({
                   handleSubmitComment();
                 }
               }}
+              onFocus={() => {
+                if (!isAuthenticated) {
+                  setShowWarningDialog(true);
+                }
+              }}
               className="bg-main-card-bg h-10 rounded-full border-white/30 px-3 py-2.5 pr-32"
             />
 
             <Button
               onClick={handleSubmitComment}
-              disabled={!comment.trim() || isPending}
+              disabled={!isAuthenticated || !comment.trim() || isPending}
               className="bg-main-white absolute top-0 right-0 h-10 rounded-tl-none rounded-tr-full rounded-br-full rounded-bl-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
             >
               <SendIcon className="size-4" />
@@ -153,6 +183,13 @@ const TrackCommentSection = ({
           </div>
         )}
       </div>
+
+      <WarningAuthDialog
+        open={showWarningDialog}
+        onOpenChange={setShowWarningDialog}
+        action={warningAction}
+        trackName={trackName}
+      />
     </div>
   );
 };

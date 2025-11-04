@@ -18,18 +18,20 @@ interface TrackDetailViewProps {
 }
 
 const TrackDetailView = ({ trackId }: TrackDetailViewProps) => {
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { data } = useSuspenseQuery(trackDetailOptions(trackId));
 
-  const { data: artistData } = useQuery(
-    artistOptions({
+  const { data: artistData } = useQuery({
+    ...artistOptions({
       userId: user?.userId || "",
       artistId: user?.artistId || "",
     }),
-  );
-  const { data: listenerData } = useQuery(
-    listenerOptions(user?.userId || "", user?.listenerId || ""),
-  );
+    enabled: isAuthenticated && !!user?.userId && !!user?.artistId,
+  });
+  const { data: listenerData } = useQuery({
+    ...listenerOptions(user?.userId || "", user?.listenerId || ""),
+    enabled: isAuthenticated && !!user?.userId && !!user?.listenerId,
+  });
 
   return (
     <div className="w-full">

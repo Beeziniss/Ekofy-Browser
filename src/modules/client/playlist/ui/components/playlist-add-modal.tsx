@@ -41,14 +41,16 @@ const PlaylistAddModal = ({
 }: PlaylistAddModalProps) => {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
 
-  const { data: playlistsData, isLoading } = useQuery(
-    playlistBriefOptions(user!.userId!),
-  );
-  const { data: trackInPlaylistsData } = useQuery(
-    checkTrackInPlaylistOptions(trackId),
-  );
+  const { data: playlistsData, isLoading } = useQuery({
+    ...playlistBriefOptions(user?.userId || ""),
+    enabled: isAuthenticated && !!user?.userId,
+  });
+  const { data: trackInPlaylistsData } = useQuery({
+    ...checkTrackInPlaylistOptions(trackId),
+    enabled: isAuthenticated && !!user?.userId,
+  });
 
   const { mutate: addToPlaylist, isPending: isAddingToPlaylist } = useMutation({
     ...addToPlaylistMutationOptions,

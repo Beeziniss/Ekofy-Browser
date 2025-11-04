@@ -13,13 +13,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Ellipsis, Heart, LinkIcon, ListPlus } from "lucide-react";
-import { useAudioStore } from "@/store";
+import { useAudioStore, useAuthStore } from "@/store";
 import {
   GraphQLTrack,
   convertGraphQLTracksToStore,
 } from "@/utils/track-converter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-options";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
 type ArtistInfo = {
   id: string;
@@ -45,8 +46,11 @@ const TrackCard = React.memo(
     checkTrackInFavorite,
   }: TrackCardProps) => {
     const queryClient = useQueryClient();
+    const { isAuthenticated } = useAuthStore();
     const [isHovered, setIsHovered] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showAuthDialog, setShowAuthDialog] = useState(false);
+    const [authDialogAction, setAuthDialogAction] = useState<"play" | "favorite">("play");
 
     // Selective subscriptions - only subscribe to what affects THIS track
     const isCurrentTrack = useAudioStore(
@@ -78,6 +82,14 @@ const TrackCard = React.memo(
     const handlePlayPauseClick = useCallback(
       (e: React.MouseEvent) => {
         e.preventDefault();
+        
+        // Check if user is authenticated
+        if (!isAuthenticated) {
+          setAuthDialogAction("play");
+          setShowAuthDialog(true);
+          return;
+        }
+
         if (isCurrentTrack) {
           togglePlayPause();
         } else {
@@ -95,6 +107,7 @@ const TrackCard = React.memo(
         }
       },
       [
+        isAuthenticated,
         isCurrentTrack,
         togglePlayPause,
         trackQueue,
@@ -135,6 +148,13 @@ const TrackCard = React.memo(
 
       if (!trackId) return;
 
+      // Check if user is authenticated
+      if (!isAuthenticated) {
+        setAuthDialogAction("favorite");
+        setShowAuthDialog(true);
+        return;
+      }
+
       if (checkTrackInFavorite) {
         favoriteTrack({ trackId, isAdding: false });
         toast.success(`${trackName} removed from favorites!`);
@@ -170,16 +190,10 @@ const TrackCard = React.memo(
             <div
               className={`absolute top-0 left-0 flex size-full items-center justify-center gap-x-2 transition-opacity duration-200 sm:gap-x-4 md:gap-x-6 lg:gap-x-7 ${isHovered || isMenuOpen || (globalIsPlaying && isCurrentTrack) ? "opacity-100" : "opacity-0"}`}
             >
-              <Button
-                variant="ghost"
-                size="iconMd"
+              <Heart
                 onClick={handleFavorite}
-                className="rounded-full duration-0 hover:brightness-90"
-              >
-                <Heart
-                  className={`size-4 sm:size-5 md:size-6 ${checkTrackInFavorite ? "fill-main-purple text-main-purple" : "text-main-white"}`}
-                />
-              </Button>
+                className={`hover:text-main-grey hover:fill-main-grey size-4 sm:size-5 md:size-6 ${checkTrackInFavorite ? "fill-main-purple text-main-purple" : "text-main-white fill-main-white"}`}
+              />
 
               <Button
                 variant="ghost"
@@ -276,6 +290,14 @@ const TrackCard = React.memo(
               ))}
           </div>
         </div>
+
+        {/* Authentication Warning Dialog */}
+        <WarningAuthDialog
+          open={showAuthDialog}
+          onOpenChange={setShowAuthDialog}
+          action={authDialogAction}
+          trackName={trackName}
+        />
       </div>
     );
   },
