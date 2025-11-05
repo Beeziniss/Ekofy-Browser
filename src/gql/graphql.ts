@@ -1036,7 +1036,6 @@ export type CreateSubscriptionRequestInput = {
   price: Scalars['Decimal']['input'];
   status: SubscriptionStatus;
   tier: SubscriptionTier;
-  version: Scalars['Int']['input'];
 };
 
 export type CreateTrackRequestInput = {
@@ -1435,6 +1434,7 @@ export type Invoice = {
   originContext?: Maybe<Scalars['String']['output']>;
   paidAt: Scalars['DateTime']['output'];
   paymentTransactionId: Scalars['String']['output'];
+  stripeInvoiceId: Scalars['String']['output'];
   subscriptionSnapshot?: Maybe<SubscriptionSnapshot>;
   to: Scalars['String']['output'];
   transaction: Array<PaymentTransaction>;
@@ -1468,6 +1468,7 @@ export type InvoiceFilterInput = {
   originContext?: InputMaybe<StringOperationFilterInput>;
   paidAt?: InputMaybe<DateTimeOperationFilterInput>;
   paymentTransactionId?: InputMaybe<StringOperationFilterInput>;
+  stripeInvoiceId?: InputMaybe<StringOperationFilterInput>;
   subscriptionSnapshot?: InputMaybe<SubscriptionSnapshotFilterInput>;
   to?: InputMaybe<StringOperationFilterInput>;
   userId?: InputMaybe<StringOperationFilterInput>;
@@ -1485,6 +1486,7 @@ export type InvoiceSortInput = {
   originContext?: InputMaybe<SortEnumType>;
   paidAt?: InputMaybe<SortEnumType>;
   paymentTransactionId?: InputMaybe<SortEnumType>;
+  stripeInvoiceId?: InputMaybe<SortEnumType>;
   subscriptionSnapshot?: InputMaybe<SubscriptionSnapshotSortInput>;
   to?: InputMaybe<SortEnumType>;
   userId?: InputMaybe<SortEnumType>;
@@ -1987,6 +1989,7 @@ export type MutationInitialization = {
   initialize: Scalars['String']['output'];
   processReport: Scalars['Boolean']['output'];
   reactiveEntitlement: Scalars['Boolean']['output'];
+  refund: Scalars['Boolean']['output'];
   registerArtistManual: Scalars['Boolean']['output'];
   rejectArtistPackage: Scalars['Boolean']['output'];
   rejectArtistRegistration: Scalars['Boolean']['output'];
@@ -2251,6 +2254,13 @@ export type MutationInitializationReactiveEntitlementArgs = {
 };
 
 
+export type MutationInitializationRefundArgs = {
+  amount: Scalars['Decimal']['input'];
+  paymentIntentId: Scalars['String']['input'];
+  refundReasonType: RefundReasonType;
+};
+
+
 export type MutationInitializationRegisterArtistManualArgs = {
   createArtistRequest: CreateArtistRequestInput;
 };
@@ -2512,8 +2522,10 @@ export type PaymentTransaction = {
   paymentStatus: PaymentTransactionStatus;
   status: TransactionStatus;
   stripeCheckoutSessionId: Scalars['String']['output'];
+  stripeInvoiceId?: Maybe<Scalars['String']['output']>;
   stripePaymentId?: Maybe<Scalars['String']['output']>;
   stripePaymentMethod: Array<Scalars['String']['output']>;
+  stripeSubscriptionId?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   user: Array<User>;
   userId: Scalars['String']['output'];
@@ -2535,8 +2547,10 @@ export type PaymentTransactionFilterInput = {
   paymentStatus?: InputMaybe<PaymentTransactionStatusOperationFilterInput>;
   status?: InputMaybe<TransactionStatusOperationFilterInput>;
   stripeCheckoutSessionId?: InputMaybe<StringOperationFilterInput>;
+  stripeInvoiceId?: InputMaybe<StringOperationFilterInput>;
   stripePaymentId?: InputMaybe<StringOperationFilterInput>;
   stripePaymentMethod?: InputMaybe<ListStringOperationFilterInput>;
+  stripeSubscriptionId?: InputMaybe<StringOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
   userId?: InputMaybe<StringOperationFilterInput>;
 };
@@ -2549,7 +2563,9 @@ export type PaymentTransactionSortInput = {
   paymentStatus?: InputMaybe<SortEnumType>;
   status?: InputMaybe<SortEnumType>;
   stripeCheckoutSessionId?: InputMaybe<SortEnumType>;
+  stripeInvoiceId?: InputMaybe<SortEnumType>;
   stripePaymentId?: InputMaybe<SortEnumType>;
+  stripeSubscriptionId?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
   userId?: InputMaybe<SortEnumType>;
 };
@@ -3407,6 +3423,12 @@ export type RecordingsCollectionSegment = {
   pageInfo: CollectionSegmentInfo;
   totalCount: Scalars['Int']['output'];
 };
+
+export enum RefundReasonType {
+  Duplicate = 'DUPLICATE',
+  Fraudulent = 'FRAUDULENT',
+  RequestedByCustomer = 'REQUESTED_BY_CUSTOMER'
+}
 
 export type ReleaseInfo = {
   __typename?: 'ReleaseInfo';
@@ -5066,6 +5088,20 @@ export type SearchPlaylistsQueryVariables = Exact<{
 
 export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', searchPlaylists?: { __typename?: 'SearchPlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
 
+export type CreateSubscriptionMutationVariables = Exact<{
+  createSubscriptionRequest: CreateSubscriptionRequestInput;
+}>;
+
+
+export type CreateSubscriptionMutation = { __typename?: 'MutationInitialization', createSubscription: boolean };
+
+export type CreateSubscriptionPlanMutationVariables = Exact<{
+  createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput;
+}>;
+
+
+export type CreateSubscriptionPlanMutation = { __typename?: 'MutationInitialization', createSubscriptionPlan: boolean };
+
 export type UploadTrackMutationVariables = Exact<{
   file: Scalars['Upload']['input'];
   createTrackRequest: CreateTrackRequestInput;
@@ -5226,6 +5262,31 @@ export type RejectArtistRegistrationMutationVariables = Exact<{
 
 export type RejectArtistRegistrationMutation = { __typename?: 'MutationInitialization', rejectArtistRegistration: boolean };
 
+export type SubscriptionsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where: SubscriptionFilterInput;
+}>;
+
+
+export type SubscriptionsQuery = { __typename?: 'QueryInitialization', subscriptions?: { __typename?: 'SubscriptionsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, status: SubscriptionStatus, createdAt: any, tier: SubscriptionTier, amount: any }> | null } | null };
+
+export type SubscriptionsDetailQueryVariables = Exact<{
+  where?: InputMaybe<SubscriptionFilterInput>;
+}>;
+
+
+export type SubscriptionsDetailQuery = { __typename?: 'QueryInitialization', subscriptions?: { __typename?: 'SubscriptionsCollectionSegment', items?: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, version: number, amount: any, currency: CurrencyType, tier: SubscriptionTier, status: SubscriptionStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type SubscriptionPlansQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<SubscriptionPlanFilterInput>;
+}>;
+
+
+export type SubscriptionPlansQuery = { __typename?: 'QueryInitialization', subscriptionPlans?: { __typename?: 'SubscriptionPlansCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'SubscriptionPlan', id: string, subscriptionId: string, stripeProductId: string, stripeProductActive: boolean, stripeProductName: string, stripeProductImages?: Array<string> | null, stripeProductType: string, stripeProductMetadata?: Array<{ __typename?: 'Metadata', key: string, value: string }> | null, subscriptionPlanPrices: Array<{ __typename?: 'SubscriptionPlanPrice', stripePriceId: string, stripePriceActive: boolean, stripePriceUnitAmount: any, stripePriceCurrency: string, stripePriceLookupKey: string, interval: PeriodTime, intervalCount: any }>, subscription: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, version: number, amount: any, currency: CurrencyType, tier: SubscriptionTier, status: SubscriptionStatus, createdAt: any, updatedAt?: any | null }> }> | null } | null };
+
 export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -5251,6 +5312,20 @@ export type FollowingsQueryVariables = Exact<{
 
 
 export type FollowingsQuery = { __typename?: 'QueryInitialization', followings?: { __typename?: 'FollowingsCollectionSegment', totalCount: number } | null };
+
+export type CouponsQueryVariables = Exact<{
+  where?: InputMaybe<CouponFilterInput>;
+}>;
+
+
+export type CouponsQuery = { __typename?: 'QueryInitialization', coupons?: { __typename?: 'CouponsCollectionSegment', items?: Array<{ __typename?: 'Coupon', percentOff: any, id: string, name: string }> | null } | null };
+
+export type EntitlementsQueryVariables = Exact<{
+  where?: InputMaybe<EntitlementFilterInput>;
+}>;
+
+
+export type EntitlementsQuery = { __typename?: 'QueryInitialization', entitlements?: { __typename?: 'EntitlementsCollectionSegment', items?: Array<{ __typename?: 'Entitlement', id: string, name: string, isActive: boolean, subscriptionOverrides: Array<{ __typename?: 'EntitlementSubscriptionOverride', subscriptionCode: string }> }> | null } | null };
 
 export type PlaylistsQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -5926,6 +6001,18 @@ export const SearchPlaylistsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SearchPlaylistsQuery, SearchPlaylistsQueryVariables>;
+export const CreateSubscriptionDocument = new TypedDocumentString(`
+    mutation CreateSubscription($createSubscriptionRequest: CreateSubscriptionRequestInput!) {
+  createSubscription(createSubscriptionRequest: $createSubscriptionRequest)
+}
+    `) as unknown as TypedDocumentString<CreateSubscriptionMutation, CreateSubscriptionMutationVariables>;
+export const CreateSubscriptionPlanDocument = new TypedDocumentString(`
+    mutation CreateSubscriptionPlan($createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!) {
+  createSubscriptionPlan(
+    createSubScriptionPlanRequest: $createSubScriptionPlanRequest
+  )
+}
+    `) as unknown as TypedDocumentString<CreateSubscriptionPlanMutation, CreateSubscriptionPlanMutationVariables>;
 export const UploadTrackDocument = new TypedDocumentString(`
     mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!) {
   uploadTrack(
@@ -6040,6 +6127,92 @@ export const RejectArtistRegistrationDocument = new TypedDocumentString(`
   rejectArtistRegistration(request: $request)
 }
     `) as unknown as TypedDocumentString<RejectArtistRegistrationMutation, RejectArtistRegistrationMutationVariables>;
+export const SubscriptionsDocument = new TypedDocumentString(`
+    query Subscriptions($skip: Int, $take: Int, $where: SubscriptionFilterInput!) {
+  subscriptions(skip: $skip, take: $take, where: $where) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      name
+      description
+      code
+      status
+      createdAt
+      tier
+      amount
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<SubscriptionsQuery, SubscriptionsQueryVariables>;
+export const SubscriptionsDetailDocument = new TypedDocumentString(`
+    query SubscriptionsDetail($where: SubscriptionFilterInput) {
+  subscriptions(where: $where) {
+    items {
+      id
+      name
+      description
+      code
+      version
+      amount
+      currency
+      tier
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SubscriptionsDetailQuery, SubscriptionsDetailQueryVariables>;
+export const SubscriptionPlansDocument = new TypedDocumentString(`
+    query SubscriptionPlans($skip: Int, $take: Int, $where: SubscriptionPlanFilterInput) {
+  subscriptionPlans(skip: $skip, take: $take, where: $where) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      subscriptionId
+      stripeProductId
+      stripeProductActive
+      stripeProductName
+      stripeProductImages
+      stripeProductType
+      stripeProductMetadata {
+        key
+        value
+      }
+      subscriptionPlanPrices {
+        stripePriceId
+        stripePriceActive
+        stripePriceUnitAmount
+        stripePriceCurrency
+        stripePriceLookupKey
+        interval
+        intervalCount
+      }
+      subscription {
+        id
+        name
+        description
+        code
+        version
+        amount
+        currency
+        tier
+        status
+        createdAt
+        updatedAt
+      }
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<SubscriptionPlansQuery, SubscriptionPlansQueryVariables>;
 export const CategoriesDocument = new TypedDocumentString(`
     query Categories {
   categories {
@@ -6078,6 +6251,31 @@ export const FollowingsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<FollowingsQuery, FollowingsQueryVariables>;
+export const CouponsDocument = new TypedDocumentString(`
+    query Coupons($where: CouponFilterInput) {
+  coupons(where: $where) {
+    items {
+      percentOff
+      id
+      name
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CouponsQuery, CouponsQueryVariables>;
+export const EntitlementsDocument = new TypedDocumentString(`
+    query Entitlements($where: EntitlementFilterInput) {
+  entitlements(where: $where) {
+    items {
+      id
+      name
+      subscriptionOverrides {
+        subscriptionCode
+      }
+      isActive
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<EntitlementsQuery, EntitlementsQueryVariables>;
 export const PlaylistsDocument = new TypedDocumentString(`
     query Playlists($userId: String!, $name: String, $take: Int, $skip: Int) {
   playlists(

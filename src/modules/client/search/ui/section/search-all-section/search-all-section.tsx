@@ -301,7 +301,7 @@ const ArtistCardAll = ({ artist }: ArtistCardAllProps) => {
         )}
         
         {/* Bottom center icons - only show on hover */}
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center items-center gap-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center items-center gap-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <Button
             onClick={(e) => {
               e.stopPropagation();
@@ -329,7 +329,7 @@ const ArtistCardAll = ({ artist }: ArtistCardAllProps) => {
           {artist.stageName}
         </h3>
         <p className="text-gray-500 text-xs mt-1">
-          {artist.followerCount?.toLocaleString() || '0'} fans
+          {artist.followerCount?.toLocaleString() || '0'} followers
         </p>
       </div>
     </div>
