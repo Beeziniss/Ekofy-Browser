@@ -70,3 +70,115 @@ export const UpdateArtistProfileMutation = `
   { updateArtistProfile: boolean },
   { updateArtistRequest: { biography?: string | null; avatarImage?: string | null; bannerImage?: string | null } }
 >;
+
+// Payment Transactions list for an artist (by userId)
+// Note: Artist uses the same PaymentTransaction entity as listener.
+import type {
+  PaymentTransactionFilterInput,
+  PaymentTransactionSortInput,
+  PaymentTransactionStatus,
+  Scalars,
+} from "@/gql/graphql";
+
+export const GetArtistTransactionsQuery = `
+  query GetArtistTransactions($where: PaymentTransactionFilterInput, $order: [PaymentTransactionSortInput!], $skip: Int, $take: Int) {
+    transactions(where: $where, order: $order, skip: $skip, take: $take) {
+      totalCount
+      items {
+        id
+        amount
+        currency
+        createdAt
+        paymentStatus
+        stripePaymentMethod
+        stripePaymentId
+      }
+      pageInfo { hasNextPage hasPreviousPage }
+    }
+  }
+` as unknown as TypedDocumentString<
+  {
+    transactions?: {
+      totalCount: number;
+      pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
+      items?: Array<
+        | {
+            id: string;
+            amount: number;
+            currency: string;
+            createdAt: Scalars['DateTime']['output'];
+            paymentStatus: PaymentTransactionStatus;
+            stripePaymentMethod: string[];
+            stripePaymentId?: string | null;
+          }
+        | null
+      > | null;
+    } | null;
+  },
+  {
+    where?: PaymentTransactionFilterInput;
+    order?: PaymentTransactionSortInput[];
+    skip?: number;
+    take?: number;
+  }
+>;
+
+// Payout Transactions list for an artist (by userId)
+import type {
+  PayoutTransactionFilterInput,
+  PayoutTransactionSortInput,
+  PayoutTransactionStatus,
+} from "@/gql/graphql";
+
+export const GetArtistPayoutsQuery = `
+  query GetArtistPayouts($where: PayoutTransactionFilterInput, $order: [PayoutTransactionSortInput!], $skip: Int, $take: Int) {
+    payoutTransactions(where: $where, order: $order, skip: $skip, take: $take) {
+      totalCount
+      items {
+        id
+        amount
+        currency
+        createdAt
+        status
+        method
+        description
+        destinationAccountId
+        stripePayoutId
+        stripeTransferId
+        royaltyReportId
+        userId
+      }
+      pageInfo { hasNextPage hasPreviousPage }
+    }
+  }
+` as unknown as TypedDocumentString<
+  {
+    payoutTransactions?: {
+      totalCount: number;
+      pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
+      items?: Array<
+        | {
+            id: string;
+            amount: number;
+            currency: string;
+            createdAt: Scalars['DateTime']['output'];
+            status: PayoutTransactionStatus;
+            method?: string | null;
+            description: string;
+            destinationAccountId: string;
+            stripePayoutId: string;
+            stripeTransferId: string;
+            royaltyReportId?: string | null;
+            userId: string;
+          }
+        | null
+      > | null;
+    } | null;
+  },
+  {
+    where?: PayoutTransactionFilterInput;
+    order?: PayoutTransactionSortInput[];
+    skip?: number;
+    take?: number;
+  }
+>;

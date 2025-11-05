@@ -1,7 +1,7 @@
 import ArtistPersonalDetailSection from "./artist-personal-detail-section";
 import ArtistAccountDetailSection from "./artist-account-detail-section";
 import SettingsSection from "@/modules/client/profile/ui/sections/settings-section";
-import ActivitySection from "@/modules/client/profile/ui/sections/activity-section";
+import ActivitySection from "./activity-section";
 import HelpCard from "@/modules/client/profile/ui/components/help-item";
 
 export default function AccountTab() {

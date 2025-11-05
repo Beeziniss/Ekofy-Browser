@@ -4,11 +4,11 @@ import React, { Suspense } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
-import InvoiceDetailSection from "@/modules/client/profile/ui/sections/invoices/invoice-detail-section";
+import TransactionDetailSection from "@/modules/artist/studio/ui/sections/transactions/transaction-detail-section";
 
-export default function InvoiceDetailPage() {
+export default function ArtistTransactionDetailPage() {
   const router = useRouter();
-  const params = useParams<{ invoiceId: string }>();
+  const params = useParams<{ transactionId: string }>();
   const { isAuthenticated, user, clearUserData } = useAuthStore();
 
   React.useEffect(() => {
@@ -16,17 +16,17 @@ export default function InvoiceDetailPage() {
       router.replace("/login");
       return;
     }
-    if (user?.role !== UserRole.LISTENER) {
+    if (user?.role !== UserRole.ARTIST) {
       clearUserData();
       router.replace("/login");
     }
   }, [isAuthenticated, user?.role, router, clearUserData]);
 
-  if (!isAuthenticated || user?.role !== UserRole.LISTENER) return null;
+  if (!isAuthenticated || user?.role !== UserRole.ARTIST) return null;
 
   return (
-    <Suspense fallback={<div className="p-4">Loading invoice…</div>}> 
-      <InvoiceDetailSection referenceId={params.invoiceId} backHref="/profile/invoices" />
+    <Suspense fallback={<div className="p-4">Loading transaction…</div>}>
+      <TransactionDetailSection referenceId={params.transactionId} backHref="/artist/studio/transactions/payment-history" />
     </Suspense>
   );
 }
