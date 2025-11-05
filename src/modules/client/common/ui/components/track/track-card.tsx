@@ -21,6 +21,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-options";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { PauseButtonMedium, PlayButtonMedium } from "@/assets/icons";
 
 type ArtistInfo = {
   id: string;
@@ -50,7 +51,9 @@ const TrackCard = React.memo(
     const [isHovered, setIsHovered] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showAuthDialog, setShowAuthDialog] = useState(false);
-    const [authDialogAction, setAuthDialogAction] = useState<"play" | "favorite">("play");
+    const [authDialogAction, setAuthDialogAction] = useState<
+      "play" | "favorite"
+    >("play");
 
     // Selective subscriptions - only subscribe to what affects THIS track
     const isCurrentTrack = useAudioStore(
@@ -82,7 +85,7 @@ const TrackCard = React.memo(
     const handlePlayPauseClick = useCallback(
       (e: React.MouseEvent) => {
         e.preventDefault();
-        
+
         // Check if user is authenticated
         if (!isAuthenticated) {
           setAuthDialogAction("play");
@@ -203,21 +206,9 @@ const TrackCard = React.memo(
               >
                 {/* Show pause button only when this specific track is playing */}
                 {isCurrentTrack && globalIsPlaying ? (
-                  <Image
-                    src={"/pause-button-medium.svg"}
-                    alt="Ekofy Pause Button"
-                    width={48}
-                    height={48}
-                    className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12"
-                  />
+                  <PauseButtonMedium className="size-8 sm:size-10 md:size-12" />
                 ) : (
-                  <Image
-                    src={"/play-button-medium.svg"}
-                    alt="Ekofy Play Button"
-                    width={48}
-                    height={48}
-                    className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12"
-                  />
+                  <PlayButtonMedium className="size-8 sm:size-10 md:size-12" />
                 )}
               </Button>
 

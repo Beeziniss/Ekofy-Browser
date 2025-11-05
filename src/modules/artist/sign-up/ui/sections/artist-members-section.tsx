@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,14 +11,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowLeft, X, Plus } from "lucide-react";
-import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
-import useArtistSignUp from '../../hooks/use-artist-sign-up';
-import { convertArtistStoreDataToAPIFormat } from '@/utils/signup-utils';
+import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
+import useArtistSignUp from "../../hooks/use-artist-sign-up";
+import { convertArtistStoreDataToAPIFormat } from "@/utils/signup-utils";
 // import { isValidPhoneNumber } from '@/utils/signup-utils';
-import { toast } from 'sonner';
-import { UserGender } from '@/gql/graphql';
-import { useRouter } from 'next/navigation';
-import { ArtistMembersData, ArtistSignUpSectionProps, ArtistMemberData } from '@/types/artist_type';
+import { toast } from "sonner";
+import { UserGender } from "@/gql/graphql";
+import { useRouter } from "next/navigation";
+import {
+  ArtistMembersData,
+  ArtistSignUpSectionProps,
+  ArtistMemberData,
+} from "@/types/artist_type";
+import { EkofyLogo } from "@/assets/icons";
 
 type ArtistMembersSectionProps = ArtistSignUpSectionProps<ArtistMembersData> & {
   onBack: () => void;
@@ -31,30 +35,39 @@ const ArtistMembersSection = ({
   initialData,
 }: ArtistMembersSectionProps) => {
   const router = useRouter();
-  const { formData, sessionData, updateFormData, resetForm, clearSessionData } = useArtistSignUpStore();
-  
+  const { formData, sessionData, updateFormData, resetForm, clearSessionData } =
+    useArtistSignUpStore();
+
   // Handle navigation to login after successful registration
   const handleNavigateToLogin = () => {
     // Clear all global state data after successful registration
     resetForm();
     clearSessionData();
-    router.push('/artist/login');
+    router.push("/artist/login");
   };
-  
+
   const { signUp, isLoading } = useArtistSignUp(handleNavigateToLogin);
-  const initialMembers = Array.isArray(initialData) ? initialData : initialData?.members || formData.members || [];
+  const initialMembers = Array.isArray(initialData)
+    ? initialData
+    : initialData?.members || formData.members || [];
   const [members, setMembers] = useState<ArtistMemberData[]>(
-    initialMembers.map(member => ({
+    initialMembers.map((member) => ({
       ...member,
-      isLeader: false // Add default isLeader property
-    }))
+      isLeader: false, // Add default isLeader property
+    })),
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const addMember = () => {
     setMembers([
       ...members,
-      { fullName: "", email: "", phoneNumber: "", gender: "MALE", isLeader: false },
+      {
+        fullName: "",
+        email: "",
+        phoneNumber: "",
+        gender: "MALE",
+        isLeader: false,
+      },
     ]);
   };
 
@@ -64,7 +77,11 @@ const ArtistMembersSection = ({
     }
   };
 
-  const updateMember = (index: number, field: keyof ArtistMemberData, value: string | boolean) => {
+  const updateMember = (
+    index: number,
+    field: keyof ArtistMemberData,
+    value: string | boolean,
+  ) => {
     const updatedMembers = members.map((member, i) =>
       i === index ? { ...member, [field]: value } : member,
     );
@@ -95,7 +112,8 @@ const ArtistMembersSection = ({
       if (!member.phoneNumber.trim()) {
         newErrors[`member-${index}-phoneNumber`] = "Phone number is required";
       } else if (member.phoneNumber.length !== 10) {
-        newErrors[`member-${index}-phoneNumber`] = "Invalid phone number format. It must contain exactly 10 digits.";
+        newErrors[`member-${index}-phoneNumber`] =
+          "Invalid phone number format. It must contain exactly 10 digits.";
       }
       if (!member.gender) {
         newErrors[`member-${index}-gender`] = "Gender is required";
@@ -109,19 +127,21 @@ const ArtistMembersSection = ({
   const handleSubmit = async () => {
     if (validateForm()) {
       // Convert members to proper format for store
-      const membersData = members.map(member => ({
+      const membersData = members.map((member) => ({
         fullName: member.fullName,
         email: member.email,
         phoneNumber: member.phoneNumber, // Format phone number
         gender: member.gender as UserGender,
       }));
-      
+
       // Update store with members data
       updateFormData({ members: membersData });
-      
+
       // Check if password exists in session data before attempting registration
       if (!sessionData.password || !sessionData.confirmPassword) {
-        toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
+        toast.error(
+          "Password information is missing. Please go back to the first step and re-enter your password.",
+        );
         // Navigate back to form step to re-enter password
         // router.push('/artist/sign-up');
         return;
@@ -132,19 +152,20 @@ const ArtistMembersSection = ({
         const registrationData = convertArtistStoreDataToAPIFormat({
           ...formData,
           ...sessionData, // Include password from session data
-          members: membersData
+          members: membersData,
         });
-        
+
         // Call registration API
         signUp(registrationData);
         // Registration will redirect to login on success via hook
-        
       } catch (error) {
         if (error instanceof Error) {
           // Check if error is related to missing password and redirect accordingly
           if (error.message.includes("password")) {
-            toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
-            router.push('/artist/sign-up');
+            toast.error(
+              "Password information is missing. Please go back to the first step and re-enter your password.",
+            );
+            router.push("/artist/sign-up");
             return;
           }
           toast.error(error.message);
@@ -152,7 +173,7 @@ const ArtistMembersSection = ({
           toast.error("An error occurred. Please try again.");
         }
       }
-      
+
       // Also call the original onNext for backward compatibility
       onNext({ members });
     }
@@ -174,7 +195,7 @@ const ArtistMembersSection = ({
         <div className="mb-8 text-center">
           <div className="mb-6 flex items-center justify-center">
             <div className="mr-3 flex items-center justify-center rounded-full">
-              <Image src="/ekofy-logo.svg" alt="Logo" width={60} height={60} />
+              <EkofyLogo className="size-[60px]" />
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
@@ -338,7 +359,7 @@ const ArtistMembersSection = ({
             size="lg"
             disabled={isLoading}
           >
-            {isLoading ? 'Registering...' : 'Register'}
+            {isLoading ? "Registering..." : "Register"}
           </Button>
         </div>
       </div>

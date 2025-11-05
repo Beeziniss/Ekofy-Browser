@@ -4,8 +4,13 @@ import { useAudioStore } from "@/store";
 import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { useCallback } from "react";
+import {
+  PauseButton,
+  PauseButtonLarge,
+  PlayButton,
+  PlayButtonLarge,
+} from "@/assets/icons";
 
 interface SimplePlayButtonProps {
   trackId: string;
@@ -17,14 +22,14 @@ interface SimplePlayButtonProps {
   size?: "sm" | "md" | "lg" | "full";
 }
 
-export function SimplePlayButton({ 
-  trackId, 
-  trackName, 
-  trackArtist, 
-  trackCoverImage, 
+export function SimplePlayButton({
+  trackId,
+  trackName,
+  trackArtist,
+  trackCoverImage,
   uploadId, // Add this to the destructuring
   className,
-  size = "sm" 
+  size = "sm",
 }: SimplePlayButtonProps) {
   const {
     currentTrack,
@@ -54,20 +59,29 @@ export function SimplePlayButton({
       });
       // Audio player will auto-play when ready
     }
-  }, [isCurrentTrack, togglePlayPause, setCurrentTrack, trackId, trackName, trackArtist, trackCoverImage, uploadId]);
+  }, [
+    isCurrentTrack,
+    togglePlayPause,
+    setCurrentTrack,
+    trackId,
+    trackName,
+    trackArtist,
+    trackCoverImage,
+    uploadId,
+  ]);
 
   const sizeClasses = {
     sm: "h-8 w-8 p-0",
-    md: "h-10 w-10 p-0", 
+    md: "h-10 w-10 p-0",
     lg: "h-12 w-12 p-0",
-    full: "h-full w-full p-0"
+    full: "h-full w-full p-0",
   };
 
   const iconSizes = {
     sm: "h-4 w-4",
     md: "h-5 w-5",
     lg: "h-6 w-6",
-    full: "h-16 w-16"
+    full: "h-16 w-16",
   };
 
   return (
@@ -80,21 +94,22 @@ export function SimplePlayButton({
       title={isCurrentlyPlaying ? "Pause" : "Play"}
     >
       {isLoading && isCurrentTrack ? (
-        <div className={cn("animate-spin rounded-full border-primary border-t-transparent", iconSizes[size])} />
-      ) : isCurrentlyPlaying ? (
-        <Image
-          src={"/pause-button.svg"}
-          alt="Ekofy Pause Button"
-          width={size === "full" ? 64 : 32}
-          height={size === "full" ? 64 : 32}
+        <div
+          className={cn(
+            "border-primary animate-spin rounded-full border-t-transparent",
+            iconSizes[size],
+          )}
         />
+      ) : isCurrentlyPlaying ? (
+        size === "full" ? (
+          <PauseButtonLarge className={iconSizes[size]} />
+        ) : (
+          <PauseButton className={iconSizes[size]} />
+        )
+      ) : size === "full" ? (
+        <PlayButtonLarge className={iconSizes[size]} />
       ) : (
-        <Image
-          src={"/play-button.svg"}
-          alt="Ekofy Play Button"
-          width={size === "full" ? 64 : 32}
-          height={size === "full" ? 64 : 32}
-        />  
+        <PlayButton className={iconSizes[size]} />
       )}
     </Button>
   );

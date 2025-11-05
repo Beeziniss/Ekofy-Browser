@@ -25,6 +25,7 @@ import { authApi } from "@/services/auth-services";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserRole } from "@/types/role";
 import { useRouter } from "next/navigation";
+import { SparklesColorful } from "@/assets/icons";
 
 const AuthButton = () => {
   const { isAuthenticated, user, clearUserData } = useAuthStore();
@@ -65,7 +66,10 @@ const AuthButton = () => {
         profileLinks.push({ label: "Profile", href: "/profile" });
         break;
       case UserRole.ARTIST:
-        profileLinks.push({ label: "Artist Profile", href: "/artist/studio/profile" });
+        profileLinks.push({
+          label: "Artist Profile",
+          href: "/artist/studio/profile",
+        });
         break;
       case UserRole.MODERATOR:
         profileLinks.push({
@@ -130,13 +134,7 @@ const AuthButton = () => {
                   <span className="text-main-white text-base">Track</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Image
-                    src={"/sparkles-colorful.svg"}
-                    alt="Sparkles Colorful Icon"
-                    width={16}
-                    height={16}
-                    className="mr-2"
-                  />
+                  <SparklesColorful className="mr-2 size-4" />
                   <span className="primary_gradient !bg-gradient-to-b bg-clip-text text-base font-semibold text-transparent">
                     Go Premium
                   </span>

@@ -25,6 +25,7 @@ import {
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePlaylistPlayback } from "../../hooks/use-playlist-playback";
+import { PauseButtonMedium, PlayButtonMedium } from "@/assets/icons";
 
 interface PlaylistInfoSectionProps {
   playlistId: string;
@@ -63,12 +64,7 @@ const PlaylistInfoSkeleton = () => {
           size="iconLg"
           className="text-main-white mt-auto duration-0 hover:brightness-90"
         >
-          <Image
-            src={"/play-button-medium.svg"}
-            alt="Ekofy Play Button"
-            width={48}
-            height={48}
-          />
+          <PlayButtonMedium className="size-12" />
         </Button>
 
         <div className="flex size-12 items-center justify-center">
@@ -183,19 +179,9 @@ const PlaylistInfoSectionSuspense = ({
             className="text-main-white mt-auto duration-0 hover:brightness-90"
           >
             {isPlaylistCurrentlyPlaying && isPlaying ? (
-              <Image
-                src={"/pause-button-medium.svg"}
-                alt="Ekofy Pause Button"
-                width={48}
-                height={48}
-              />
+              <PauseButtonMedium className="size-12" />
             ) : (
-              <Image
-                src={"/play-button-medium.svg"}
-                alt="Ekofy Play Button"
-                width={48}
-                height={48}
-              />
+              <PlayButtonMedium className="size-12" />
             )}
           </Button>
         )}

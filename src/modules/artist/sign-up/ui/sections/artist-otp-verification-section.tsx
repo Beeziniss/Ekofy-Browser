@@ -1,26 +1,34 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ArrowLeft } from 'lucide-react';
-import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
-import { toast } from 'sonner';
-import { ArtistOTPData, ArtistSignUpSectionProps } from '@/types/artist_type';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft } from "lucide-react";
+import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
+import { toast } from "sonner";
+import { ArtistOTPData, ArtistSignUpSectionProps } from "@/types/artist_type";
+import { EkofyLogo } from "@/assets/icons";
 
-type ArtistOTPVerificationSectionProps = ArtistSignUpSectionProps<ArtistOTPData> & {
-  onBack: () => void;
-};
+type ArtistOTPVerificationSectionProps =
+  ArtistSignUpSectionProps<ArtistOTPData> & {
+    onBack: () => void;
+  };
 
-const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTPVerificationSectionProps) => {
+const ArtistOTPVerificationSection = ({
+  onNext,
+  onBack,
+  initialData,
+}: ArtistOTPVerificationSectionProps) => {
   const [otp, setOtp] = useState<string[]>(
-    Array.isArray(initialData?.otp) ? initialData.otp : ['', '', '', '', '', '']
+    Array.isArray(initialData?.otp)
+      ? initialData.otp
+      : ["", "", "", "", "", ""],
   );
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   // Store and hooks
-  const { formData, completeOTPVerification, goToPreviousStep } = useArtistSignUpStore();
+  const { formData, completeOTPVerification, goToPreviousStep } =
+    useArtistSignUpStore();
 
   useEffect(() => {
     if (timer > 0) {
@@ -48,7 +56,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       const prevInput = document.getElementById(`otp-${index - 1}`);
       prevInput?.focus();
     }
@@ -56,22 +64,21 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const otpCode = otp.join('');
-    
+    const otpCode = otp.join("");
+
     if (otpCode.length !== 6) {
-      toast.error('Please enter a complete 6-digit OTP code');
+      toast.error("Please enter a complete 6-digit OTP code");
       return;
     }
-    
+
     try {
       // Update OTP in store
       completeOTPVerification({ otp: otpCode });
-      
+
       toast.success("OTP verification successful! Registration completed.");
-      
+
       // Call onNext to trigger final navigation
       onNext({ otp: otpCode });
-      
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -89,40 +96,42 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
   const handleResend = () => {
     setTimer(60);
     setCanResend(false);
-    setOtp(['', '', '', '', '', '']);
+    setOtp(["", "", "", "", "", ""]);
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#121212] px-6 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-[#121212] px-6 py-12">
       <div className="w-full max-w-md">
         {/* Back Button */}
-        <button 
+        <button
           onClick={handleBack}
-          className="flex items-center text-white hover:text-blue-400 transition-colors mb-8"
+          className="mb-8 flex items-center text-white transition-colors hover:text-blue-400"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </button>
 
         {/* Logo and Title */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-6">
-            <div className="rounded-full flex items-center justify-center mr-3">
-              <Image src="/ekofy-logo.svg" alt="Logo" width={60} height={60} />
+        <div className="mb-8 text-center">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="mr-3 flex items-center justify-center rounded-full">
+              <EkofyLogo className="size-[60px]" />
             </div>
-            <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
+            <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Xác thực OTP</h2>
-          <p className="text-gray-300 text-sm mb-2">
+          <h2 className="mb-4 text-3xl font-bold text-white">Xác thực OTP</h2>
+          <p className="mb-2 text-sm text-gray-300">
             Chúng tôi đã gửi mã xác thực tới emaill
           </p>
-          <p className="text-white font-medium">{formData.email || 'của bạn'}</p>
+          <p className="font-medium text-white">
+            {formData.email || "của bạn"}
+          </p>
         </div>
 
         {/* OTP Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-white mb-4 text-center">
+            <label className="mb-4 block text-center text-sm font-medium text-white">
               Nhập mã xác thực
             </label>
             <div className="flex justify-center space-x-3">
@@ -134,7 +143,7 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="w-12 h-12 text-center border-gradient-input text-white text-lg font-medium"
+                  className="border-gradient-input h-12 w-12 text-center text-lg font-medium text-white"
                   maxLength={1}
                 />
               ))}
@@ -143,24 +152,22 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
 
           <Button
             type="submit"
-            className="w-full primary_gradient hover:opacity-90 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
+            className="primary_gradient w-full rounded-md px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-90"
             size="lg"
-            disabled={otp.join('').length !== 6}
+            disabled={otp.join("").length !== 6}
           >
             Xác thực OTP
           </Button>
         </form>
 
         {/* Resend Code */}
-        <div className="text-center mt-6">
+        <div className="mt-6 text-center">
           {!canResend ? (
-            <p className="text-gray-400 text-sm">
-              Gửi lại mã sau {timer}s
-            </p>
+            <p className="text-sm text-gray-400">Gửi lại mã sau {timer}s</p>
           ) : (
             <button
               onClick={handleResend}
-              className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+              className="text-sm font-medium text-blue-400 hover:text-blue-300"
             >
               Gửi lại mã xác thực
             </button>
@@ -168,9 +175,9 @@ const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTP
         </div>
 
         {/* Help Text */}
-        <div className="text-center mt-4">
-          <p className="text-gray-400 text-xs">
-            Did not receive the code? Check your spam folder or{' '}
+        <div className="mt-4 text-center">
+          <p className="text-xs text-gray-400">
+            Did not receive the code? Check your spam folder or{" "}
             <button className="text-blue-400 hover:text-blue-300">
               change email address
             </button>

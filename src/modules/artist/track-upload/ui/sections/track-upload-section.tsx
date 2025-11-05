@@ -1,5 +1,6 @@
 "use client";
 
+import { TrackUploadCloud } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
 import { useTrackUploadStore } from "@/store";
 import Image from "next/image";
@@ -51,14 +52,8 @@ const TrackUploadSection = () => {
     >
       <input {...getInputProps()} />
 
-      <Image
-        src={"/track-upload-cloud.svg"}
-        alt="Track Upload Cloud"
-        width={70}
-        height={70}
-        className={`transition-opacity duration-200 ${
-          isDragActive ? "opacity-70" : "opacity-100"
-        }`}
+      <TrackUploadCloud
+        className={`text-main-purple mt-4 mb-2 size-17.5 transition-opacity duration-200 ${isDragActive ? "opacity-70" : "opacity-100"}`}
       />
 
       <p className="text-main-white my-6 text-center text-xl font-medium">

@@ -1,7 +1,7 @@
 "use client";
 
+import { TrackXls } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 const TrackUploadEmpty = () => {
@@ -13,12 +13,7 @@ const TrackUploadEmpty = () => {
 
   return (
     <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-white/30 py-20">
-      <Image
-        src={"/track-xl.svg"}
-        alt="Track Upload Empty"
-        width={70}
-        height={70}
-      />
+      <TrackXls className="size-17.5" />
 
       <p className="text-main-white my-6 text-center text-lg font-medium">
         You haven&apos;t uploaded any tracks yet. Try uploading to get
