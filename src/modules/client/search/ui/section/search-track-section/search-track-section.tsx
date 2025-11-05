@@ -14,6 +14,8 @@ import { SearchTrackItem } from '@/types/search';
 import { useTrackPlayback } from '@/hooks/use-track-playback';
 import { useAudioStore } from '@/store';
 import { formatDuration } from '@/utils/duration-utils';
+import { AuthDialogProvider } from '../../context/auth-dialog-context';
+import { useSearchAuth } from '../../../hooks/use-search-auth';
 
 interface SearchTrackSectionProps {
   tracks: SearchTrackItem[];
@@ -23,6 +25,25 @@ interface SearchTrackSectionProps {
 }
 
 export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
+  tracks,
+  hasNextPage,
+  isFetchingNextPage,
+  fetchNextPage
+}) => {
+  return (
+    <AuthDialogProvider>
+      <SearchTrackSectionContent
+        tracks={tracks}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+      />
+    </AuthDialogProvider>
+  );
+};
+
+// Main content component
+const SearchTrackSectionContent: React.FC<SearchTrackSectionProps> = ({
   tracks,
   hasNextPage,
   isFetchingNextPage,
@@ -71,7 +92,11 @@ export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
             </TableHeader>
             <TableBody>
               {tracks.map((track, index) => (
-                <TrackRow key={track.id} track={track} index={index} />
+                <TrackRowWithAuth 
+                  key={track.id} 
+                  track={track} 
+                  index={index}
+                />
               ))}
             </TableBody>
           </table>
@@ -108,6 +133,9 @@ interface TrackRowProps {
 }
 
 const TrackRow = ({ track, index }: TrackRowProps) => {
+  // Auth action hooks using context
+  const { executeWithAuth } = useSearchAuth();
+  
   // Use track playback hook for this specific track
   const {
     isTrackCurrentlyPlaying,
@@ -126,7 +154,9 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    await handlePlayPause();
+    executeWithAuth(async () => {
+      await handlePlayPause();
+    }, "play", track.name);
   };
 
     const formatCreatedAt = (createdAt: string) => {
@@ -222,5 +252,12 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
         </div>
       </TableCell>
     </TableRow>
+  );
+};
+
+// Add WarningAuthDialog component outside of TrackRow
+const TrackRowWithAuth = ({ track, index }: TrackRowProps) => {
+  return (
+    <TrackRow track={track} index={index} />
   );
 };

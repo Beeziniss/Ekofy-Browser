@@ -11,6 +11,8 @@ import { RequestsQuery } from "@/gql/graphql";
 import { userForRequestsOptions, requestHubCommentsOptions } from "@/gql/options/client-options";
 import { RequestHubCommentSection } from "./";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store";
+import { useAuthDialog } from "../context/auth-dialog-context";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
 
@@ -33,6 +35,10 @@ export function RequestCard({
   isOwner = false
 }: RequestCardProps) {
   const [showComments, setShowComments] = useState(false);
+  
+  // Get auth state and dialog
+  const { isAuthenticated } = useAuthStore();
+  const { showAuthDialog } = useAuthDialog();
   
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
@@ -86,7 +92,24 @@ export function RequestCard({
   };
   
   const handleToggleComments = () => {
+    // Anyone can view comments, no auth required
     setShowComments(!showComments);
+  };
+
+  const handleApply = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("apply", request.title);
+      return;
+    }
+    onApply?.(request.id);
+  };
+
+  const handleEdit = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("edit", request.title);
+      return;
+    }
+    onEdit?.(request.id);
   };  const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -214,7 +237,7 @@ export function RequestCard({
             {isOwner && onEdit ? (
               <Button 
                 size="sm"
-                onClick={() => onEdit(request.id)}
+                onClick={handleEdit}
                 className="primary_gradient hover:opacity-65 text-white text-sm"
               >
                 <SquarePen className="h-3 w-3 mr-1" />
@@ -223,7 +246,7 @@ export function RequestCard({
             ) : (
               <Button 
                 size="sm"
-                onClick={() => onApply?.(request.id)}
+                onClick={handleApply}
                 className="primary_gradient hover:opacity-65 text-white text-sm"
               >
                 <Send className="h-3 w-3 mr-1" />

@@ -57,6 +57,7 @@ export interface SearchTrackItem {
       artistType: string;
     }[];
   };
+  checkTrackInFavorite: boolean;
   // Add other track properties as needed
 }
 
@@ -91,6 +92,7 @@ export interface SearchPlaylistItem {
     id: string;
     fullName: string;
   }[];
+  checkPlaylistInFavorite: boolean;
   // Add other playlist properties as needed
 }
 

@@ -16,7 +16,6 @@ import { SendIcon, MessageSquare } from "lucide-react";
 import RequestHubCommentUser from "./request-hub-comment-user";
 import {
   useMutation,
-  useSuspenseQuery,
   useQueryClient,
   useQuery,
 } from "@tanstack/react-query";
@@ -25,6 +24,7 @@ import { CommentType } from "@/gql/graphql";
 import { requestHubCommentsOptions, userForRequestsOptions } from "@/gql/options/client-options";
 import { useState } from "react";
 import { useAuthStore } from "@/store";
+import { useAuthDialog } from "../context/auth-dialog-context";
 
 interface RequestHubCommentSectionProps {
   requestId: string;
@@ -35,15 +35,17 @@ const RequestHubCommentSection = ({
 }: RequestHubCommentSectionProps) => {
   const queryClient = useQueryClient();
   const [comment, setComment] = useState("");
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const { showAuthDialog } = useAuthDialog();
 
-  // Fetch current user data for avatar and name
+  // Fetch current user data for avatar and name (only when authenticated)
   const { data: currentUserData } = useQuery({
     ...userForRequestsOptions(user?.userId || ""),
-    enabled: !!user?.userId,
+    enabled: !!user?.userId && isAuthenticated,
   });
 
-  const { data: commentsData } = useSuspenseQuery(
+  // Always fetch comments - no auth required to view
+  const { data: commentsData } = useQuery(
     requestHubCommentsOptions(requestId),
   );
   const { mutate: createComment, isPending } = useMutation({
@@ -65,9 +67,20 @@ const RequestHubCommentSection = ({
   };
 
   const handleSubmitComment = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("comment");
+      return;
+    }
+    
     if (comment.trim() && !isPending) {
       handleCreateComment(comment.trim());
       setComment("");
+    }
+  };
+
+  const handleInputClick = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("comment");
     }
   };
 
@@ -75,7 +88,7 @@ const RequestHubCommentSection = ({
     if (!commentsData?.threadedComments) return 0;
     
     const threads = commentsData.threadedComments.threads || [];
-    return threads.reduce((total, thread) => {
+    return threads.reduce((total: number, thread: { totalReplies?: number }) => {
       // Count root comment + all replies
       return total + 1 + (thread.totalReplies || 0);
     }, 0);
@@ -123,26 +136,42 @@ const RequestHubCommentSection = ({
         <div className="flex-1 space-y-3">
           <div className="relative">
             <Input
-              placeholder="Share your thoughts on this request..."
+              placeholder={isAuthenticated ? "Share your thoughts on this request..." : "Sign in to comment..."}
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={(e) => {
+                if (!isAuthenticated) {
+                  showAuthDialog("comment");
+                  return;
+                }
+                setComment(e.target.value);
+              }}
+              onClick={handleInputClick}
               onKeyDown={(e) => {
+                if (!isAuthenticated) {
+                  showAuthDialog("comment");
+                  return;
+                }
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleSubmitComment();
                 }
               }}
+              readOnly={!isAuthenticated}
               className="bg-gray-700/50 border-gray-600/50 text-gray-100 placeholder-gray-400 rounded-lg px-4 py-3 pr-16 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30"
             />
 
             <Button
-              onClick={handleSubmitComment}
-              disabled={!comment.trim() || isPending}
+              onClick={isAuthenticated ? handleSubmitComment : handleInputClick}
+              disabled={isAuthenticated && (!comment.trim() || isPending)}
               size="sm"
-              className="absolute right-0.5 top-1/2 -translate-y-1/2 primary_gradient hover:opacity-70 text-white border-0 px-3 py-1.5 disabled:cursor-not-allowed"
+              className={`absolute right-0.5 top-1/2 -translate-y-1/2 border-0 px-3 py-1.5 ${
+                isAuthenticated 
+                  ? "primary_gradient hover:opacity-70 text-white disabled:cursor-not-allowed" 
+                  : "bg-gray-600 hover:bg-gray-500 text-gray-300"
+              }`}
             >
               <SendIcon className="w-4 h-4 mr-1" />
-              {isPending ? "Posting..." : "Comment"}
+              {isAuthenticated ? (isPending ? "Posting..." : "Comment") : "Sign In"}
             </Button>
           </div>
         </div>
@@ -150,7 +179,7 @@ const RequestHubCommentSection = ({
 
       {/* Comments List */}
       <div className="space-y-4">
-        {commentsData.threadedComments.threads &&
+        {commentsData?.threadedComments?.threads &&
         commentsData.threadedComments.threads.length > 0 ? (
           commentsData.threadedComments.threads.map((thread, index) => (
             <div key={`${thread.rootComment.id}-${index}`} className="rounded-lg p-4 border border-gray-700/30">

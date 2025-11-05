@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { requestByIdOptions } from "@/gql/options/client-options";
 import { RequestDetailView } from "@/modules/client/request-hub/ui/component";
+import { AuthDialogProvider } from "@/modules/client/request-hub/ui/context";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { RequestStatus } from "@/gql/graphql";
@@ -57,12 +58,14 @@ const RequestDetailPage = () => {
   }
 
   return (
-    <RequestDetailView
-      request={request}
-      onBack={handleBack}
-      onApply={handleApply}
-      onContactClient={handleContactClient}
-    />
+    <AuthDialogProvider>
+      <RequestDetailView
+        request={request}
+        onBack={handleBack}
+        onApply={handleApply}
+        onContactClient={handleContactClient}
+      />
+    </AuthDialogProvider>
   );
 };
 

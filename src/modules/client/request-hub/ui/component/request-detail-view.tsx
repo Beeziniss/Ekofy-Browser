@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 import { RequestsQuery } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store";
+import { useAuthDialog } from "../context/auth-dialog-context";
+import RequestHubCommentSection from "./comment-section";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
 
@@ -35,6 +38,10 @@ export function RequestDetailView({
   onContactClient,
   className 
 }: RequestDetailViewProps) {
+  
+  // Get auth state and dialog
+  const { isAuthenticated } = useAuthStore();
+  const { showAuthDialog } = useAuthDialog();
   
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
@@ -101,6 +108,22 @@ export function RequestDetailView({
   const formatDeadline = (deadline: string | Date) => {
     const date = typeof deadline === 'string' ? new Date(deadline) : deadline;
     return date.toLocaleDateString();
+  };
+
+  const handleApply = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("apply", request.title);
+      return;
+    }
+    onApply();
+  };
+
+  const handleContactClient = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("contact", request.title);
+      return;
+    }
+    onContactClient();
   };
 
   return (
@@ -216,7 +239,7 @@ export function RequestDetailView({
                   <div className="space-y-3">
                     <Button 
                       className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                      onClick={onApply}
+                      onClick={handleApply}
                     >
                       <Send className="h-4 w-4 mr-2" />
                       Apply Now
@@ -225,7 +248,7 @@ export function RequestDetailView({
                     <Button 
                       variant="outline" 
                       className="w-full"
-                      onClick={onContactClient}
+                      onClick={handleContactClient}
                     >
                       <MessageCircle className="h-4 w-4 mr-2" />
                       Contact Client
@@ -235,6 +258,11 @@ export function RequestDetailView({
               </Card>
             </div>
           </div>
+        </div>
+
+        {/* Comments Section */}
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <RequestHubCommentSection requestId={request.id} />
         </div>
       </div>
     </div>

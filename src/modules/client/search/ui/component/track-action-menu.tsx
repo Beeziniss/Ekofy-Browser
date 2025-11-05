@@ -5,8 +5,8 @@ import {
   MoreHorizontal, 
   Plus, 
   Heart, 
-  Album, 
-  Share,
+  // Album, 
+  // Share,
   Search,
   Eye,
   CheckIcon
@@ -25,6 +25,9 @@ import {
 import { useAuthStore } from '@/store';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import { useFavoriteSearch } from '../../hooks/use-favorite-search';
+import { useAuthAction } from '@/hooks/use-auth-action';
+import { WarningAuthDialog } from '@/modules/shared/ui/components/warning-auth-dialog';
 
 interface TrackActionMenuProps {
   track: SearchTrackItem;
@@ -44,7 +47,19 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
   const playlistMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
+  
+  // Auth action hooks
+  const {
+    showWarningDialog,
+    setShowWarningDialog,
+    warningAction,
+    trackName,
+    executeWithAuth,
+  } = useAuthAction();
+  
+  // Favorite hooks
+  const { handleFavoriteTrack } = useFavoriteSearch();
 
   // Real playlist data from GraphQL
   const { data: playlistsData, isLoading: isLoadingPlaylists } = useQuery({
@@ -101,17 +116,31 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
   };
 
   const handleAddToPlaylist = (playlistId: string) => {
-    addToPlaylist({
-      playlistId,
-      trackId: track.id,
-    });
+    executeWithAuth(() => {
+      addToPlaylist({
+        playlistId,
+        trackId: track.id,
+      });
+    }, "playlist", track.name);
   };
 
   const handleRemoveFromPlaylist = (playlistId: string) => {
-    removeFromPlaylist({
-      playlistId,
-      trackId: track.id,
-    });
+    executeWithAuth(() => {
+      removeFromPlaylist({
+        playlistId,
+        trackId: track.id,
+      });
+    }, "playlist", track.name);
+  };
+
+  const handleFavoriteClick = () => {
+    executeWithAuth(() => {
+      handleFavoriteTrack({
+        id: track.id,
+        name: track.name,
+        checkTrackInFavorite: track.checkTrackInFavorite
+      });
+    }, "favorite", track.name);
   };
 
   // Close menu when clicking outside
@@ -231,25 +260,29 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
     {
       icon: Plus,
       label: 'Add to playlist',
-      action: handlePlaylistMenuToggle,
+      action: () => {
+        executeWithAuth(() => {
+          handlePlaylistMenuToggle();
+        }, "playlist", track.name);
+      },
       hasSubmenu: true,
     },
     {
       icon: Heart,
-      label: 'Save to your Liked Songs',
-      action: () => console.log('Save to liked songs'),
+      label: track.checkTrackInFavorite ? 'Remove from Liked Songs' : 'Save to your Liked Songs',
+      action: handleFavoriteClick,
     },
-    {
-      icon: Album,
-      label: 'Go to album',
-      action: () => console.log('Go to album'),
-    },
-    {
-      icon: Share,
-      label: 'Share',
-      action: () => console.log('Share'),
-      hasSubmenu: true,
-    },
+    // {
+    //   icon: Album,
+    //   label: 'Go to album',
+    //   action: () => console.log('Go to album'),
+    // },
+    // {
+    //   icon: Share,
+    //   label: 'Share',
+    //   action: () => console.log('Share'),
+    //   hasSubmenu: true,
+    // },
   ];
 
   return (
@@ -311,7 +344,7 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
               </button>
 
               {/* Playlist submenu */}
-              {item.label === 'Add to playlist' && isPlaylistMenuOpen && (
+              {item.label === 'Add to playlist' && isPlaylistMenuOpen && isAuthenticated && (
                 <div 
                   ref={playlistMenuRef}
                   className={`absolute bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 w-[300px] max-h-[400px] overflow-y-auto z-[70] ${
@@ -404,6 +437,13 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
           ))}
         </div>
       )}
+      
+      <WarningAuthDialog
+        open={showWarningDialog}
+        onOpenChange={setShowWarningDialog}
+        action={warningAction}
+        trackName={trackName}
+      />
     </div>
   );
 };

@@ -39,6 +39,7 @@ import {
 } from "@/gql/options/client-mutation-options";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
+import { useAuthDialog } from "../context/auth-dialog-context";
 
 interface RequestHubCommentUserProps {
   thread: Omit<CommentThread, "hasMoreReplies" | "lastActivity">;
@@ -59,7 +60,8 @@ const RequestHubCommentUser = ({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const { showAuthDialog } = useAuthDialog();
   const comment = thread.rootComment;
 
   // Check if current user is the owner of this comment
@@ -115,6 +117,14 @@ const RequestHubCommentUser = ({
       console.error("Delete comment error:", error);
     },
   });
+
+  const handleShowReplyInput = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("reply");
+      return;
+    }
+    setShowReplyInput(!showReplyInput);
+  };
 
   const handleCreateReply = () => {
     if (replyContent.trim() && !isPending) {
@@ -266,7 +276,7 @@ const RequestHubCommentUser = ({
 
           <Button
             variant={"ghost"}
-            onClick={() => setShowReplyInput(!showReplyInput)}
+            onClick={handleShowReplyInput}
             className="text-gray-400 hover:text-gray-200 cursor-pointer h-6 px-2 text-xs"
           >
             Reply

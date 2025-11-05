@@ -31,6 +31,21 @@ import {
 import { useCreateSubscriptionMutation } from "@/gql/client-mutation-options/subscription-mutation-options";
 import { SubscriptionStatus, SubscriptionTier } from "@/gql/graphql";
 import type { CreateSubscriptionInput } from "@/types";
+import { useState } from "react";
+
+// Helper function to format number with dots
+const formatCurrency = (value: string): string => {
+  // Remove all non-digit characters
+  const numericValue = value.replace(/\D/g, '');
+  
+  // Add dots every 3 digits from right to left
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+// Helper function to parse formatted currency to number
+const parseCurrency = (value: string): number => {
+  return parseFloat(value.replace(/\./g, '')) || 0;
+};
 
 const createSubscriptionSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
@@ -59,6 +74,7 @@ export function CreateSubscriptionForm({
   onSuccess,
 }: CreateSubscriptionFormProps) {
   const createSubscriptionMutation = useCreateSubscriptionMutation();
+  const [formattedPrice, setFormattedPrice] = useState('0');
 
   const form = useForm<CreateSubscriptionFormData>({
     resolver: zodResolver(createSubscriptionSchema),
@@ -77,6 +93,7 @@ export function CreateSubscriptionForm({
     try {
       await createSubscriptionMutation.mutateAsync(data as CreateSubscriptionInput);
       form.reset();
+      setFormattedPrice('0'); // Reset formatted price as well
       onOpenChange(false);
       onSuccess?.();
     } catch (error) {
@@ -215,14 +232,25 @@ export function CreateSubscriptionForm({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price</FormLabel>
+                  <FormLabel>Price (VND)</FormLabel>
                   <FormControl>
                     <Input 
-                      type="number" 
-                      {...field} 
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      type="text"
+                      value={formattedPrice}
+                      onChange={(e) => {
+                        const formatted = formatCurrency(e.target.value);
+                        setFormattedPrice(formatted);
+                        
+                        // Update the form field with the numeric value
+                        const numericValue = parseCurrency(formatted);
+                        field.onChange(numericValue);
+                      }}
+                      placeholder="0"
                     />
                   </FormControl>
+                  <FormDescription>
+                    Enter the subscription price (e.g., 100.000 for 100,000 VND)
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -232,7 +260,11 @@ export function CreateSubscriptionForm({
               <Button 
                 type="button" 
                 variant="outline" 
-                onClick={() => onOpenChange(false)}
+                onClick={() => {
+                  onOpenChange(false);
+                  form.reset();
+                  setFormattedPrice('0');
+                }}
                 disabled={isLoading}
               >
                 Cancel
