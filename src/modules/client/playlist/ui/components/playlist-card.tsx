@@ -20,6 +20,7 @@ import { usePlaylistPlayback } from "../../hooks/use-playlist-playback";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { playlistFavoriteMutationOptions } from "@/gql/options/client-mutation-options";
 import { useAuthStore } from "@/store";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
 interface PlaylistCardProps {
   playlist: {
@@ -35,7 +36,9 @@ interface PlaylistCardProps {
 
 const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useAuthStore();
+  const [showPlayWarning, setShowPlayWarning] = useState(false);
+  const [showFavoriteWarning, setShowFavoriteWarning] = useState(false);
+  const { user, isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
 
   // Use custom hook for playlist playback functionality
@@ -86,6 +89,12 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    if (!isAuthenticated) {
+      setShowPlayWarning(true);
+      return;
+    }
+    
     await handlePlayPause();
   };
 
@@ -93,6 +102,11 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      setShowFavoriteWarning(true);
+      return;
+    }
 
     if (isFavoriting) return; // Prevent multiple clicks
 
@@ -185,6 +199,19 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
       <p className="text-main-grey text-xs">
         {playlist.isPublic ? "Public" : "Private"}
       </p>
+
+      {/* Authentication Warning Dialogs */}
+      <WarningAuthDialog
+        open={showPlayWarning}
+        onOpenChange={setShowPlayWarning}
+        action="play"
+      />
+
+      <WarningAuthDialog
+        open={showFavoriteWarning}
+        onOpenChange={setShowFavoriteWarning}
+        action="favorite"
+      />
     </div>
   );
 };

@@ -5447,7 +5447,7 @@ export type ArtistListQueryVariables = Exact<{
 }>;
 
 
-export type ArtistListQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', userId: string, stageName: string, biography?: string | null, avatarImage?: string | null, identityCard: { __typename?: 'IdentityCard', nationality: string, placeOfResidence: { __typename?: 'Address', province?: string | null } }, user: Array<{ __typename?: 'User', fullName: string }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean } } | null };
+export type ArtistListQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, biography?: string | null, avatarImage?: string | null, identityCard: { __typename?: 'IdentityCard', nationality: string, placeOfResidence: { __typename?: 'Address', province?: string | null } }, user: Array<{ __typename?: 'User', fullName: string }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean } } | null };
 
 export type ArtistDetailQueryVariables = Exact<{
   artistId: Scalars['String']['input'];
@@ -6777,6 +6777,7 @@ export const ArtistListDocument = new TypedDocumentString(`
     order: {popularity: DESC}
   ) {
     items {
+      id
       userId
       stageName
       biography

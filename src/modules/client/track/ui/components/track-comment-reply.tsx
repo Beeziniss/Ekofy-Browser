@@ -39,6 +39,8 @@ import {
 import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
+import { useAuthAction } from "@/hooks/use-auth-action";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
 // Component for handling replies that might have nested replies
 interface ReplyCommentProps {
@@ -63,6 +65,13 @@ const TrackCommentReply = ({
 
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+  const {
+    showWarningDialog,
+    setShowWarningDialog,
+    warningAction,
+    trackName,
+    executeWithAuth,
+  } = useAuthAction();
 
   // Check if current user is the owner of this reply
   const isOwner = user?.userId === reply.commenterId;
@@ -164,11 +173,6 @@ const TrackCommentReply = ({
     }
   };
 
-  // Get user name from commenterId (hardcoded for now)
-  const getUserName = (commenterId: string) => {
-    return `User ${commenterId.substring(0, 8)}`;
-  };
-
   return (
     <div className={`flex gap-x-3 ${level > 0 ? "ml-8" : ""}`}>
       <Avatar className="size-10">
@@ -186,7 +190,8 @@ const TrackCommentReply = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-2">
             <span className="text-main-white text-sm font-semibold">
-              {getUserName(reply.commenterId)}
+              {reply.commenter?.artist?.stageName ||
+                reply.commenter?.listener?.displayName}
             </span>
             <span className="text-main-grey text-xs">
               {formatDistanceToNow(new Date(reply.createdAt), {
@@ -278,7 +283,12 @@ const TrackCommentReply = ({
 
           <Button
             variant={"ghost"}
-            onClick={() => setShowReplyInput(!showReplyInput)}
+            onClick={() =>
+              executeWithAuth(
+                () => setShowReplyInput(!showReplyInput),
+                "comment",
+              )
+            }
             className="text-main-white hover:text-main-grey h-6 cursor-pointer px-2 text-xs"
           >
             Reply
@@ -308,7 +318,7 @@ const TrackCommentReply = ({
         {/* Reply Input */}
         {showReplyInput && (
           <div className="mt-2 flex items-center gap-x-2">
-            <Avatar className="size-6">
+            <Avatar className="size-10">
               <AvatarImage
                 src={
                   reply.commenter?.listener?.avatarImage ||
@@ -332,15 +342,15 @@ const TrackCommentReply = ({
                     handleCreateReply();
                   }
                 }}
-                className="bg-main-card-bg h-6 rounded-full border-white/30 px-2 py-1 pr-16 text-xs"
+                className="bg-main-card-bg h-8 rounded-full border-white/30 px-2 py-1 pr-16 text-xs"
               />
               <Button
                 onClick={handleCreateReply}
                 disabled={!replyContent.trim() || isPending}
                 size="sm"
-                className="bg-main-white absolute top-0 right-0 h-6 rounded-tl-none rounded-tr-full rounded-br-full rounded-bl-none px-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-main-white absolute top-0 right-0 h-8 rounded-tl-none rounded-tr-full rounded-br-full rounded-bl-none px-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <SendIcon className="size-2" />
+                <SendIcon className="size-4" />
                 <span className="text-xs">
                   {isPending ? "Posting..." : "Reply"}
                 </span>
@@ -391,6 +401,13 @@ const TrackCommentReply = ({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <WarningAuthDialog
+          open={showWarningDialog}
+          onOpenChange={setShowWarningDialog}
+          action={warningAction}
+          trackName={trackName}
+        />
       </div>
     </div>
   );

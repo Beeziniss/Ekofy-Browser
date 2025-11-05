@@ -38,9 +38,7 @@ const ArtistDetailLayout = ({ children }: ArtistDetailLayoutProps) => {
           <div className="bg-main-purple/20 sticky top-20 rounded-md p-4 shadow">
             <ArtistInfoSection
               followerCount={followerData?.followers?.totalCount ?? 0}
-              followingCount={
-                followingData?.followingsByUserId?.totalCount ?? 0
-              }
+              followingCount={followingData?.followings?.totalCount ?? 0}
               artistData={data}
             />
           </div>

@@ -24,6 +24,8 @@ import { getUserInitials } from "@/utils/format-shorten-name";
 import Link from "next/link";
 import { useArtistFollow } from "@/hooks/use-artist-follow";
 import { useFavoriteTrack } from "@/modules/client/track/hooks/use-favorite-track";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { useAuthAction } from "@/hooks/use-auth-action";
 
 interface TrackOwnerSectionProps {
   data: TrackDetailQuery;
@@ -49,10 +51,18 @@ const TrackOwnerSectionSuspense = ({
   const trackDetail = data.tracks?.items?.[0];
   const trackDetailArtist = trackDetail?.mainArtists?.items?.[0];
   const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
+  const {
+    showWarningDialog,
+    setShowWarningDialog,
+    warningAction,
+    trackName,
+    executeWithAuth,
+    isAuthenticated,
+  } = useAuthAction();
 
   const { handleFavorite } = useFavoriteTrack();
 
-  const { followUser, unfollowUser } = useArtistFollow({
+  const { handleFollowToggle } = useArtistFollow({
     artistId: trackDetailArtist?.id,
     trackId: trackDetail?.id,
   });
@@ -68,51 +78,54 @@ const TrackOwnerSectionSuspense = ({
   };
 
   const handleFavoriteClick = () => {
-    if (!trackDetail?.id || !trackDetail?.name) return;
+    executeWithAuth(
+      () => {
+        if (!trackDetail?.id || !trackDetail?.name) return;
 
-    handleFavorite({
-      id: trackDetail.id,
-      name: trackDetail.name,
-      checkTrackInFavorite: trackDetail.checkTrackInFavorite,
-    });
+        handleFavorite({
+          id: trackDetail.id,
+          name: trackDetail.name,
+          checkTrackInFavorite: trackDetail.checkTrackInFavorite,
+        });
+      },
+      "favorite",
+      trackDetail?.name,
+    );
   };
 
-  const handleFollowToggle = () => {
-    if (!trackDetailArtist?.userId) return;
+  const handleFollowUserToggle = () => {
+    executeWithAuth(() => {
+      if (!trackDetailArtist?.userId) return;
 
-    const isCurrentlyFollowing = trackDetailArtist?.user[0]?.checkUserFollowing;
+      const isCurrentlyFollowing =
+        trackDetailArtist?.user[0]?.checkUserFollowing;
 
-    if (isCurrentlyFollowing) {
-      unfollowUser(trackDetailArtist.userId, {
-        onSuccess: () => {
-          toast.success(`Unfollowed ${trackDetailArtist.stageName}!`);
-        },
-      });
-    } else {
-      followUser(trackDetailArtist.userId, {
-        onSuccess: () => {
-          toast.success(`Now following ${trackDetailArtist.stageName}!`);
-        },
-      });
-    }
+      handleFollowToggle(
+        trackDetailArtist.userId,
+        isCurrentlyFollowing,
+        trackDetailArtist.stageName,
+      );
+    }, "follow");
   };
 
   return (
     <div className="flex w-full items-center justify-between">
       <div className="flex items-center gap-x-3">
-        <Avatar className="size-16">
-          <AvatarImage
-            src={
-              trackDetail?.mainArtists?.items?.[0].avatarImage ||
-              "https://github.com/shadcn.png"
-            }
-          />
-          <AvatarFallback>
-            {getUserInitials(
-              trackDetail?.mainArtists?.items?.[0]?.stageName || "",
-            )}
-          </AvatarFallback>
-        </Avatar>
+        <Link href={`/artists/${trackData?.mainArtistIds?.[0]}`}>
+          <Avatar className="size-16">
+            <AvatarImage
+              src={
+                trackDetail?.mainArtists?.items?.[0].avatarImage ||
+                "https://github.com/shadcn.png"
+              }
+            />
+            <AvatarFallback>
+              {getUserInitials(
+                trackDetail?.mainArtists?.items?.[0]?.stageName || "",
+              )}
+            </AvatarFallback>
+          </Avatar>
+        </Link>
 
         <div className="flex items-center gap-x-6">
           <div className="flex flex-col gap-y-1">
@@ -139,7 +152,7 @@ const TrackOwnerSectionSuspense = ({
                   : "default"
               }
               className="px-10 py-2 text-sm font-bold"
-              onClick={handleFollowToggle}
+              onClick={handleFollowUserToggle}
             >
               {trackDetailArtist?.user[0]?.checkUserFollowing
                 ? "Following"
@@ -179,7 +192,17 @@ const TrackOwnerSectionSuspense = ({
                 <CopyIcon className="text-main-white mr-2 size-4" />
                 <span className="text-main-white text-base">Copy link</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setAddToPlaylistModalOpen(true)}>
+              <DropdownMenuItem
+                onClick={() => {
+                  executeWithAuth(
+                    () => {
+                      setAddToPlaylistModalOpen(true);
+                    },
+                    "playlist",
+                    trackDetail?.name,
+                  );
+                }}
+              >
                 <ListPlusIcon className="text-main-white mr-2 size-4" />
                 <span className="text-main-white text-base">
                   Add to playlist
@@ -190,13 +213,20 @@ const TrackOwnerSectionSuspense = ({
         </DropdownMenu>
       </div>
 
-      {trackDetail?.id && (
+      {trackDetail?.id && isAuthenticated && (
         <PlaylistAddModal
           open={addToPlaylistModalOpen}
           onOpenChange={setAddToPlaylistModalOpen}
           trackId={trackDetail.id}
         />
       )}
+
+      <WarningAuthDialog
+        open={showWarningDialog}
+        onOpenChange={setShowWarningDialog}
+        action={warningAction}
+        trackName={trackName}
+      />
     </div>
   );
 };

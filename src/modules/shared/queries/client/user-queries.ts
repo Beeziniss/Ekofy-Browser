@@ -41,6 +41,7 @@ export const ArtistListQuery = graphql(`
       order: { popularity: DESC }
     ) {
       items {
+        id
         userId
         stageName
         biography

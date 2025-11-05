@@ -39,6 +39,8 @@ import {
 } from "@/gql/options/client-mutation-options";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
+import { useAuthAction } from "@/hooks/use-auth-action";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
 interface TrackCommentUserProps {
   thread: Omit<CommentThread, "hasMoreReplies" | "lastActivity">;
@@ -60,6 +62,13 @@ const TrackCommentUser = ({
 
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+  const {
+    showWarningDialog,
+    setShowWarningDialog,
+    warningAction,
+    trackName,
+    executeWithAuth,
+  } = useAuthAction();
   const comment = thread.rootComment;
 
   // Check if current user is the owner of this comment
@@ -171,7 +180,8 @@ const TrackCommentUser = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-2">
             <span className="text-main-white text-base font-semibold">
-              {comment.commenter?.fullName}
+              {comment.commenter?.artist?.stageName ||
+                comment.commenter?.listener?.displayName}
             </span>
             <span className="text-main-grey text-sm">
               {formatDistanceToNow(new Date(comment.createdAt), {
@@ -262,7 +272,12 @@ const TrackCommentUser = ({
 
           <Button
             variant={"ghost"}
-            onClick={() => setShowReplyInput(!showReplyInput)}
+            onClick={() =>
+              executeWithAuth(
+                () => setShowReplyInput(!showReplyInput),
+                "comment"
+              )
+            }
             className="text-main-white hover:text-main-grey cursor-pointer"
           >
             Reply
@@ -293,7 +308,7 @@ const TrackCommentUser = ({
         {/* Reply Input */}
         {showReplyInput && (
           <div className="mt-3 flex items-center gap-x-3">
-            <Avatar className="size-8">
+            <Avatar className="size-10">
               <AvatarImage
                 src={
                   comment.commenter?.listener?.avatarImage ||
@@ -325,7 +340,7 @@ const TrackCommentUser = ({
                 size="sm"
                 className="bg-main-white absolute top-0 right-0 h-8 rounded-tl-none rounded-tr-full rounded-br-full rounded-bl-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <SendIcon className="size-3" />
+                <SendIcon className="size-4" />
                 <span className="text-xs">
                   {isPending ? "Posting..." : "Reply"}
                 </span>
@@ -373,6 +388,13 @@ const TrackCommentUser = ({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <WarningAuthDialog
+          open={showWarningDialog}
+          onOpenChange={setShowWarningDialog}
+          action={warningAction}
+          trackName={trackName}
+        />
       </div>
     </div>
   );

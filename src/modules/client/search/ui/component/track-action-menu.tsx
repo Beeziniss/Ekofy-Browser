@@ -47,13 +47,15 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
   const { user } = useAuthStore();
 
   // Real playlist data from GraphQL
-  const { data: playlistsData, isLoading: isLoadingPlaylists } = useQuery(
-    playlistBriefOptions(user?.userId || ""),
-  );
+  const { data: playlistsData, isLoading: isLoadingPlaylists } = useQuery({
+    ...playlistBriefOptions(user?.userId || ""),
+    enabled: !!user?.userId,
+  });
   
-  const { data: trackInPlaylistsData } = useQuery(
-    checkTrackInPlaylistOptions(track.id),
-  );
+  const { data: trackInPlaylistsData } = useQuery({
+    ...checkTrackInPlaylistOptions(track.id),
+    enabled: !!user?.userId,
+  });
 
   // Mutations for playlist operations
   const { mutate: addToPlaylist, isPending: isAddingToPlaylist } = useMutation({

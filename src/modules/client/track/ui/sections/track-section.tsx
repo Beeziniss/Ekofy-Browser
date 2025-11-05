@@ -8,6 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TrackDetailQuery } from "@/gql/graphql";
 import { HeartIcon, PlayIcon } from "lucide-react";
 import { formatPlayCount } from "@/utils/format-number";
+import { PauseButtonLarge, PlayButtonLarge } from "@/assets/icons";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { useAuthAction } from "@/hooks/use-auth-action";
 
 interface TrackSectionProps {
   data: TrackDetailQuery;
@@ -45,6 +48,13 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
     togglePlayPause,
     play,
   } = useAudioStore();
+  const {
+    showWarningDialog,
+    setShowWarningDialog,
+    warningAction,
+    trackName,
+    executeWithAuth,
+  } = useAuthAction();
 
   // Check if this is the currently playing track
   const isCurrentTrack = currentTrack?.id === trackId;
@@ -64,14 +74,21 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
   // Handle play/pause click
   const handlePlayPauseClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (isCurrentTrack) {
-      // If it's the current track, toggle play/pause
-      togglePlayPause();
-    } else {
-      // If it's a different track, set as current track and play
-      setCurrentTrack(trackData);
-      play();
-    }
+
+    executeWithAuth(
+      () => {
+        if (isCurrentTrack) {
+          // If it's the current track, toggle play/pause
+          togglePlayPause();
+        } else {
+          // If it's a different track, set as current track and play
+          setCurrentTrack(trackData);
+          play();
+        }
+      },
+      "play",
+      data?.tracks?.items?.[0]?.name,
+    );
   };
 
   return (
@@ -117,22 +134,19 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
           onClick={handlePlayPauseClick}
         >
           {isCurrentTrack && globalIsPlaying ? (
-            <Image
-              src={"/pause-button-large.svg"}
-              alt="Ekofy Pause Button"
-              width={64}
-              height={64}
-            />
+            <PauseButtonLarge className="size-16" />
           ) : (
-            <Image
-              src={"/play-button-large.svg"}
-              alt="Ekofy Play Button"
-              width={64}
-              height={64}
-            />
+            <PlayButtonLarge className="size-16" />
           )}
         </Button>
       </div>
+
+      <WarningAuthDialog
+        open={showWarningDialog}
+        onOpenChange={setShowWarningDialog}
+        action={warningAction}
+        trackName={trackName}
+      />
     </div>
   );
 };
