@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import EkofyLogo from '../../../../../../../public/ekofy-logo.svg';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -298,7 +297,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ClientProfile
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-6">
             <div className="rounded-full flex items-center justify-center mr-3">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+              <Image src="/ekofy-logo.svg" alt="Logo" width={60} height={60} />
             </div>
             <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
           </div>

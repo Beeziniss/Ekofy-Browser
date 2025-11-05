@@ -2,14 +2,13 @@
 
 import React from "react";
 import Image from "next/image";
-import EkofyLogo from "../../../../../../../public/ekofy-logo.svg";
 
 const VerificationHeader: React.FC = () => {
   return (
     <div className="mb-8 text-center">
       <div className="mb-6 flex items-center justify-center">
         <div className="mr-3 flex items-center justify-center rounded-full">
-          <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+          <Image src="/ekofy-logo.svg" alt="Logo" width={60} height={60} />
         </div>
         <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
       </div>
