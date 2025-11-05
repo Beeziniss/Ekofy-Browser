@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -16,6 +15,7 @@ import { PaymentTransactionStatus } from "@/gql/graphql";
 import { useQuery } from "@tanstack/react-query";
 import { listenerTransactionsOptions } from "@/gql/options/listener-activity-options";
 import { artistTransactionsOptions } from "@/gql/options/artist-activity-options";
+import { paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 
 type Source = "listener" | "artist";
 
@@ -26,26 +26,7 @@ interface SharedPaymentTransactionsTableProps {
   linkPrefix: string; // e.g. "/profile/payment-history" or "/artist/studio/transactions/payment-history"
 }
 
-const statusBadge = (status: PaymentTransactionStatus) => {
-  switch (status) {
-    case PaymentTransactionStatus.Paid:
-      return (
-        <Badge className="bg-green-100 text-green-800 border-green-200">Paid</Badge>
-      );
-    case PaymentTransactionStatus.Pending:
-      return (
-        <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Pending</Badge>
-      );
-    case PaymentTransactionStatus.Unpaid:
-      return (
-        <Badge className="bg-red-100 text-red-800 border-red-200">Unpaid</Badge>
-      );
-    default:
-      return (
-        <Badge className="bg-gray-100 text-gray-800 border-gray-200">Unknown</Badge>
-      );
-  }
-};
+const statusBadge = paymentStatusBadge;
 
 export default function SharedPaymentTransactionsTable({
   userId,

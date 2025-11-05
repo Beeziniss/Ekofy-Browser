@@ -3,8 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { PaymentTransactionStatus } from "@/gql/graphql";
+import { paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 
 export type PaymentTransactionDetail = {
   id: string;
@@ -31,18 +31,7 @@ export default function PaymentTransactionDetailSection({
   tx,
   title = "Transaction Detail",
 }: Props) {
-  const statusBadge = (status: PaymentTransactionStatus) => {
-    switch (status) {
-      case PaymentTransactionStatus.Paid:
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Paid</Badge>;
-      case PaymentTransactionStatus.Pending:
-        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Pending</Badge>;
-      case PaymentTransactionStatus.Unpaid:
-        return <Badge className="bg-red-100 text-red-800 border-red-200">Unpaid</Badge>;
-      default:
-        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">Unknown</Badge>;
-    }
-  };
+  const statusBadge = paymentStatusBadge;
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 md:px-6 py-6">

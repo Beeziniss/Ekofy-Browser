@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useArtistPayouts } from "@/modules/artist/studio/hooks/use-artist-payouts";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -14,28 +13,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PayoutTransactionStatus } from "@/gql/graphql";
+import { payoutStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 
 interface PayoutsTableProps {
   userId: string;
   pageSize?: number;
 }
 
-const statusBadge = (status: PayoutTransactionStatus) => {
-  switch (status) {
-    case PayoutTransactionStatus.Paid:
-      return <Badge className="bg-green-100 text-green-800 border-green-200">Paid</Badge>;
-    case PayoutTransactionStatus.Pending:
-      return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Pending</Badge>;
-    case PayoutTransactionStatus.InTransit:
-      return <Badge className="bg-blue-100 text-blue-800 border-blue-200">In transit</Badge>;
-    case PayoutTransactionStatus.Failed:
-      return <Badge className="bg-red-100 text-red-800 border-red-200">Failed</Badge>;
-    case PayoutTransactionStatus.Canceled:
-      return <Badge className="bg-gray-100 text-gray-800 border-gray-200">Canceled</Badge>;
-    default:
-      return <Badge className="bg-gray-100 text-gray-800 border-gray-200">Unknown</Badge>;
-  }
-};
+const statusBadge = payoutStatusBadge;
 
 export default function PayoutsTable({ userId, pageSize = 10 }: PayoutsTableProps) {
   const [page, setPage] = useState(1);
