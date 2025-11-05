@@ -65,8 +65,8 @@ export function TrackDetailSidebar({
           <CardContent className="space-y-2">
             <div className="text-sm">
               <span className="font-medium">Status: </span>
-              <span className={track.track.releaseInfo.isReleased ? "text-green-600" : "text-muted-foreground"}>
-                {track.track.releaseInfo.isReleased ? "Released" : "Not Released"}
+              <span className={track.track.releaseInfo.isRelease ? "text-green-600" : "text-muted-foreground"}>
+                {track.track.releaseInfo.isRelease ? "Released" : "Not Released"}
               </span>
             </div>
             {track.track.releaseInfo.releaseDate && (

@@ -35,7 +35,7 @@ export interface TrackUploadRequestListItem {
     createdBy: string;
     requestedAt: string;
     releaseInfo?: {
-      isReleased: boolean;
+      isRelease: boolean;
       releaseDate?: string | null;
       releasedAt?: string | null;
       releaseStatus?: string | null;
@@ -110,7 +110,7 @@ export interface TrackUploadRequest {
     createdBy: string;
     requestedAt: string;
     releaseInfo?: {
-      isReleased: boolean;
+      isRelease: boolean;
       releaseDate?: string | null;
       releasedAt?: string | null;
       releaseStatus?: string | null;

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import EkofyLogo from "../../../../../../public/ekofy-logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
@@ -77,7 +76,7 @@ const ArtistLoginFormSection = () => {
         <div className="mb-8 text-center">
           <div className="mb-6 flex items-center justify-center">
             <div className="mr-3 flex items-center justify-center rounded-full">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+              <Image src="/ekofy-logo.svg" alt="Logo" width={60} height={60} />
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>

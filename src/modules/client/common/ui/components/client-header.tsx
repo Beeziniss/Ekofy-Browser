@@ -31,6 +31,12 @@ const navBarItems: ClientNavbarProps[] = [
     requireAuth: true,
   },
   {
+    href: "/subscription",
+    label: "Plans",  
+    activeStyle: "border-b-2 border-b-main-white text-main-white",
+    useStartsWith: false,
+  },
+  {
     href: "/request-hub",
     label: "Request Hub",
     activeStyle: "border-b-2 border-b-main-white text-main-white",
