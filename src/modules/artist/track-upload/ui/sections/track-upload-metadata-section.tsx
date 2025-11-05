@@ -455,7 +455,13 @@ const TrackUploadMetadataSection = () => {
       const recognitionResult = await auddApi.recognizeSong(displayTrack.file);
 
       // Check if the song recognition found a match (potential copyright issue)
-      if (recognitionResult.status !== "success" || recognitionResult.result !== null) {
+      if (
+        recognitionResult.status !== "success" ||
+        recognitionResult.result.apple_music ||
+        recognitionResult.result.spotify ||
+        recognitionResult.result.deezer ||
+        recognitionResult.result.napster
+      ) {
         setIsUploading(false);
         if (recognitionResult.result) {
           setCopyrightError({
