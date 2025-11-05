@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useTrackUploadStore } from "@/store";
+
 import {
   CircleQuestionMarkIcon,
   // Copy,
@@ -13,36 +14,29 @@ import {
   FileChartColumnIcon,
   ImageIcon,
   LockIcon,
+  AlertTriangle,
 } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { auddApi } from "@/services/audd-services";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { MultiSelect } from "@/components/ui/multi-select";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useQuery, useMutation } from "@tanstack/react-query";
 import {
-  categoriesOptions,
-  trackUploadArtistListOptions,
-} from "@/gql/options/artist-options";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { categoriesOptions, trackUploadArtistListOptions } from "@/gql/options/artist-options";
 import { trackUploadMutationOptions } from "@/gql/options/artist-mutation-options";
 import {
   ArtistRole,
@@ -58,20 +52,11 @@ import { uploadImageToCloudinary } from "@/utils/cloudinary-utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import InputTags from "@/components/ui/tags-input";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import TrackUserCombobox from "../components/track-user-combobox";
@@ -81,16 +66,10 @@ const FormSchema = z
   .object({
     title: z.string().min(1, { message: "Title is required." }),
     description: z.string().optional(),
-    mainArtistIds: z
-      .array(z.string())
-      .min(1, { message: "Please select at least one main artist." }),
+    mainArtistIds: z.array(z.string()).min(1, { message: "Please select at least one main artist." }),
     featuredArtistIds: z.array(z.string()),
-    categoryIds: z
-      .array(z.string())
-      .min(1, { message: "Please select at least one category." }),
-    tags: z
-      .array(z.string())
-      .min(1, { message: "Please add at least one tag." }),
+    categoryIds: z.array(z.string()).min(1, { message: "Please select at least one category." }),
+    tags: z.array(z.string()).min(1, { message: "Please add at least one tag." }),
     coverImage: z
       .instanceof(File, {
         message: "A cover image file is required.",
@@ -98,15 +77,9 @@ const FormSchema = z
       .refine((file) => file.size <= 5 * 1024 * 1024, {
         message: "Image size must be less than 5MB.",
       })
-      .refine(
-        (file) =>
-          ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-            file.type,
-          ),
-        {
-          message: "Only JPEG, PNG, and WebP images are allowed.",
-        },
-      ),
+      .refine((file) => ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type), {
+        message: "Only JPEG, PNG, and WebP images are allowed.",
+      }),
     isExplicit: z.boolean(),
     isReleased: z.boolean(),
     releaseDate: z.date().optional(),
@@ -125,12 +98,7 @@ const FormSchema = z
       .min(1, { message: "At least one legal document is required." })
       .refine(
         (documents) =>
-          documents.every(
-            (doc) =>
-              doc.name.trim() !== "" &&
-              doc.documentUrl.trim() !== "" &&
-              doc.note.trim() !== "",
-          ),
+          documents.every((doc) => doc.name.trim() !== "" && doc.documentUrl.trim() !== "" && doc.note.trim() !== ""),
         {
           message: "At least one document must have all fields completed.",
         },
@@ -147,10 +115,7 @@ const FormSchema = z
       .refine(
         (splits) => {
           if (!splits || splits.length === 0) return true;
-          const total = splits.reduce(
-            (sum, split) => sum + split.percentage,
-            0,
-          );
+          const total = splits.reduce((sum, split) => sum + split.percentage, 0);
           return total === 100;
         },
         {
@@ -169,10 +134,7 @@ const FormSchema = z
       .refine(
         (splits) => {
           if (!splits || splits.length === 0) return true;
-          const total = splits.reduce(
-            (sum, split) => sum + split.percentage,
-            0,
-          );
+          const total = splits.reduce((sum, split) => sum + split.percentage, 0);
           return total === 100;
         },
         {
@@ -213,10 +175,7 @@ const redistributePercentages = (
   splits: Array<{ userId: string; artistRole: ArtistRole; percentage: number }>,
   removedIndex?: number,
 ) => {
-  const remainingSplits =
-    removedIndex !== undefined
-      ? splits.filter((_, i) => i !== removedIndex)
-      : splits;
+  const remainingSplits = removedIndex !== undefined ? splits.filter((_, i) => i !== removedIndex) : splits;
 
   if (remainingSplits.length === 0) return [];
 
@@ -230,11 +189,7 @@ const redistributePercentages = (
 };
 
 // Helper function to get user display name
-const getUserDisplayName = (
-  userId: string,
-  users: TrackUploadArtist[],
-  currentUserId?: string,
-) => {
+const getUserDisplayName = (userId: string, users: TrackUploadArtist[], currentUserId?: string) => {
   if (userId === currentUserId) return "You";
   const user = users?.find((u) => u.userId === userId);
 
@@ -242,20 +197,35 @@ const getUserDisplayName = (
 };
 
 const TrackUploadMetadataSection = () => {
-  const { currentUpload, uploadedTracks, clearCurrentUpload } =
-    useTrackUploadStore();
+  // Subscribe to specific properties to avoid re-renders from progress updates
+  const currentUploadId = useTrackUploadStore((state) => state.currentUpload?.id);
+  const currentUploadFile = useTrackUploadStore((state) => state.currentUpload?.file);
+  const currentUploadMetadata = useTrackUploadStore((state) => state.currentUpload?.metadata);
+  const currentUploadDate = useTrackUploadStore((state) => state.currentUpload?.uploadedAt);
+  const uploadedTracks = useTrackUploadStore((state) => state.uploadedTracks);
+  const clearCurrentUpload = useTrackUploadStore((state) => state.clearCurrentUpload);
+
+  // Memoize currentUpload object based on stable properties only
+  const currentUpload = useMemo(() => {
+    if (!currentUploadId || !currentUploadFile || !currentUploadMetadata) return null;
+
+    return {
+      id: currentUploadId,
+      file: currentUploadFile,
+      metadata: currentUploadMetadata,
+      uploadedAt: currentUploadDate,
+    };
+  }, [currentUploadId, currentUploadFile, currentUploadMetadata, currentUploadDate]);
   const router = useRouter();
   const { user } = useAuthStore();
   const [isUploading, setIsUploading] = useState(false);
   const [displayTrack, setDisplayTrack] = useState(currentUpload);
-  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
-    null,
-  );
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
 
   // const [trackUrl, setTrackUrl] = useState<string>("");
-  const [workSplits, setWorkSplits] = useState<
-    Array<{ userId: string; artistRole: ArtistRole; percentage: number }>
-  >([]);
+  const [workSplits, setWorkSplits] = useState<Array<{ userId: string; artistRole: ArtistRole; percentage: number }>>(
+    [],
+  );
   const [recordingSplits, setRecordingSplits] = useState<
     Array<{ userId: string; artistRole: ArtistRole; percentage: number }>
   >([]);
@@ -274,6 +244,13 @@ const TrackUploadMetadataSection = () => {
       note: "",
     },
   ]);
+
+  // Dialog states
+  const [showCopyrightDialog, setShowCopyrightDialog] = useState(false);
+  const [copyrightError, setCopyrightError] = useState<{
+    type: "match" | "verification_failed" | "check_failed";
+    message: string | React.ReactNode;
+  } | null>(null);
 
   // Get minimum date (3 days from today)
   const minDate = new Date();
@@ -308,10 +285,7 @@ const TrackUploadMetadataSection = () => {
     (userId: string, splitType: "work" | "recording") => {
       if (!artistsData?.artists?.items) return true;
 
-      const allSelectedArtistIds = [
-        ...form.watch("mainArtistIds"),
-        ...form.watch("featuredArtistIds"),
-      ];
+      const allSelectedArtistIds = [...form.watch("mainArtistIds"), ...form.watch("featuredArtistIds")];
 
       // Find the artist by userId
       const artist = artistsData.artists.items.find((a) => a.userId === userId);
@@ -320,22 +294,15 @@ const TrackUploadMetadataSection = () => {
       // Get current splits from both work and recording (excluding the one being removed)
       const currentWorkUserIds =
         splitType === "work"
-          ? workSplits
-              .filter((split) => split.userId !== userId)
-              .map((split) => split.userId)
+          ? workSplits.filter((split) => split.userId !== userId).map((split) => split.userId)
           : workSplits.map((split) => split.userId);
 
       const currentRecordingUserIds =
         splitType === "recording"
-          ? recordingSplits
-              .filter((split) => split.userId !== userId)
-              .map((split) => split.userId)
+          ? recordingSplits.filter((split) => split.userId !== userId).map((split) => split.userId)
           : recordingSplits.map((split) => split.userId);
 
-      const allRemainingUserIds = [
-        ...currentWorkUserIds,
-        ...currentRecordingUserIds,
-      ];
+      const allRemainingUserIds = [...currentWorkUserIds, ...currentRecordingUserIds];
 
       // Check if the artist would still appear in at least one split after removal
       return allRemainingUserIds.includes(userId);
@@ -363,21 +330,14 @@ const TrackUploadMetadataSection = () => {
       const remainder = 100 - equalPercentage * artistIds.length;
 
       const newSplits = artistIds.map((artistId, index) => {
-        const artist = artistsData.artists?.items?.find(
-          (a) => a.id === artistId,
-        );
+        const artist = artistsData.artists?.items?.find((a) => a.id === artistId);
         const isMainArtist = mainArtistIds.includes(artistId);
         const isFeaturedArtist = featuredArtistIds.includes(artistId);
 
         return {
           userId: artist?.userId || artistId,
-          artistRole: isMainArtist
-            ? ArtistRole.Main
-            : isFeaturedArtist
-              ? ArtistRole.Featured
-              : ArtistRole.Main,
-          percentage:
-            index === 0 ? equalPercentage + remainder : equalPercentage,
+          artistRole: isMainArtist ? ArtistRole.Main : isFeaturedArtist ? ArtistRole.Featured : ArtistRole.Main,
+          percentage: index === 0 ? equalPercentage + remainder : equalPercentage,
         };
       });
 
@@ -412,11 +372,7 @@ const TrackUploadMetadataSection = () => {
         }
 
         // Additional type validation
-        if (
-          !["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-            file.type,
-          )
-        ) {
+        if (!["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)) {
           toast.error("Only JPEG, PNG, and WebP images are allowed");
           return;
         }
@@ -445,6 +401,12 @@ const TrackUploadMetadataSection = () => {
     maxSize: 5 * 1024 * 1024, // 5MB
   });
 
+  // Handle copyright dialog close
+  const handleCopyrightDialogClose = () => {
+    setShowCopyrightDialog(false);
+    setCopyrightError(null);
+  };
+
   async function onSubmit(data: FormData) {
     if (!displayTrack || !user?.userId) {
       toast.error("No track found or user not authenticated");
@@ -452,10 +414,7 @@ const TrackUploadMetadataSection = () => {
     }
 
     // Validate that all selected artists appear in at least one split
-    const allSelectedArtistIds = [
-      ...data.mainArtistIds,
-      ...data.featuredArtistIds,
-    ];
+    const allSelectedArtistIds = [...data.mainArtistIds, ...data.featuredArtistIds];
 
     if (allSelectedArtistIds.length > 0 && artistsData?.artists?.items) {
       // Get all user IDs from both work and recording splits
@@ -466,24 +425,18 @@ const TrackUploadMetadataSection = () => {
 
       // Check if every selected artist appears in at least one split
       const missingArtists = allSelectedArtistIds.filter((artistId) => {
-        const artist = artistsData.artists?.items?.find(
-          (a) => a.id === artistId,
-        );
+        const artist = artistsData.artists?.items?.find((a) => a.id === artistId);
         return artist && !allSplitUserIds.includes(artist.userId);
       });
 
       if (missingArtists.length > 0) {
         const missingArtistNames = missingArtists.map((artistId) => {
-          const artist = artistsData.artists?.items?.find(
-            (a) => a.id === artistId,
-          );
+          const artist = artistsData.artists?.items?.find((a) => a.id === artistId);
           return artist?.stageName || "Unknown Artist";
         });
 
         if (missingArtistNames.length === 1) {
-          toast.error(
-            `${missingArtistNames[0]} must appear in at least one work or recording split.`,
-          );
+          toast.error(`${missingArtistNames[0]} must appear in at least one work or recording split.`);
         } else {
           toast.error(
             `The following artists must appear in at least one work or recording split: ${missingArtistNames.join(", ")}`,
@@ -502,30 +455,51 @@ const TrackUploadMetadataSection = () => {
       const recognitionResult = await auddApi.recognizeSong(displayTrack.file);
 
       // Check if the song recognition found a match (potential copyright issue)
-      if (
-        recognitionResult.status !== "success" ||
-        recognitionResult.result !== null
-      ) {
+      if (recognitionResult.status !== "success" || recognitionResult.result !== null) {
         setIsUploading(false);
         if (recognitionResult.result) {
-          toast.error(
-            "This track appears to match existing copyrighted content. Please ensure you have the proper rights to upload this track or upload original content only.",
-          );
+          setCopyrightError({
+            type: "match",
+            message: (
+              <>
+                This track appears to match existing copyrighted content:{" "}
+                <span className="font-semibold text-white">&ldquo;{recognitionResult.result.title}&rdquo;</span> by{" "}
+                <span className="font-semibold text-white">{recognitionResult.result.artist}</span>. Please ensure you
+                have the proper rights to upload this track or upload original content only.
+              </>
+            ),
+          });
         } else {
-          toast.error(
-            "Failed to verify track copyright status. Please try again or contact support if the issue persists.",
-          );
+          setCopyrightError({
+            type: "verification_failed",
+            message:
+              "Failed to verify track copyright status. Please try again or contact support if the issue persists.",
+          });
         }
+        setShowCopyrightDialog(true);
         return;
       }
 
       toast.success("Copyright check passed. Proceeding with upload...");
+
+      // If copyright check passes, continue with upload
+      await continueUploadProcess(data);
     } catch (error) {
       setIsUploading(false);
       console.error("Copyright check failed:", error);
-      toast.error(
-        "Unable to verify track copyright status. Please try again or contact support if the issue persists.",
-      );
+      setCopyrightError({
+        type: "check_failed",
+        message: "Unable to verify track copyright status. Please try again or contact support if the issue persists.",
+      });
+      setShowCopyrightDialog(true);
+      return;
+    }
+  }
+
+  const continueUploadProcess = async (data: FormData) => {
+    if (!displayTrack || !user?.userId) {
+      toast.error("No track found or user not authenticated");
+      setIsUploading(false);
       return;
     }
 
@@ -614,7 +588,7 @@ const TrackUploadMetadataSection = () => {
     } finally {
       setIsUploading(false);
     }
-  }
+  };
 
   useEffect(() => {
     // If there's a current upload, show it
@@ -657,14 +631,19 @@ const TrackUploadMetadataSection = () => {
           note: "",
         },
       ]);
-      // Set a placeholder URL based on track name
-      /* if (typeof window !== "undefined") {
-        setTrackUrl(
-          `${window.location.origin}/track/${displayTrack.id || "pending"}`,
-        );
-      } */
+
+      // Initialize current user as main artist after reset (only if Stripe account is set up)
+      if (artistsData?.artists?.items && user?.userId) {
+        const currentUserArtist = artistsData.artists.items.find((artist) => artist.userId === user.userId);
+        if (currentUserArtist && currentUserArtist.user?.[0]?.stripeAccountId) {
+          // Use setTimeout to ensure this runs after the reset has completed
+          setTimeout(() => {
+            form.setValue("mainArtistIds", [currentUserArtist.id]);
+          }, 0);
+        }
+      }
     }
-  }, [displayTrack, form, user]);
+  }, [displayTrack, form, user, artistsData]);
 
   // Sync form with state variables for validation
   useEffect(() => {
@@ -690,35 +669,25 @@ const TrackUploadMetadataSection = () => {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  // Initialize current user as main artist by default
+  // Ensure current user is set as main artist when artistsData becomes available (only if Stripe account is set up)
   useEffect(() => {
-    if (
-      artistsData?.artists?.items &&
-      user?.userId &&
-      form.watch("mainArtistIds").length === 0
-    ) {
-      const currentUserArtist = artistsData.artists.items.find(
-        (artist) => artist.userId === user.userId,
-      );
-      if (currentUserArtist) {
+    if (artistsData?.artists?.items && user?.userId && form.watch("mainArtistIds").length === 0) {
+      const currentUserArtist = artistsData.artists.items.find((artist) => artist.userId === user.userId);
+      if (currentUserArtist && currentUserArtist.user?.[0]?.stripeAccountId) {
         form.setValue("mainArtistIds", [currentUserArtist.id]);
       }
     }
-  }, [artistsData, user, form]);
+  }, [artistsData?.artists?.items, user?.userId, form]);
 
   // Watch for changes in artist selections and automatically update splits
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === "mainArtistIds" || name === "featuredArtistIds") {
         const mainIds: string[] = Array.isArray(value.mainArtistIds)
-          ? value.mainArtistIds.filter(
-              (id): id is string => typeof id === "string",
-            )
+          ? value.mainArtistIds.filter((id): id is string => typeof id === "string")
           : [];
         const featuredIds: string[] = Array.isArray(value.featuredArtistIds)
-          ? value.featuredArtistIds.filter(
-              (id): id is string => typeof id === "string",
-            )
+          ? value.featuredArtistIds.filter((id): id is string => typeof id === "string")
           : [];
         const allSelectedArtists = [...mainIds, ...featuredIds];
 
@@ -751,9 +720,7 @@ const TrackUploadMetadataSection = () => {
         <Card className="border-white/20 bg-gray-900/50">
           <CardContent className="p-8 text-center">
             <FileAudioIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-            <p className="text-white/70">
-              No track found. Please upload a track first.
-            </p>
+            <p className="text-white/70">No track found. Please upload a track first.</p>
           </CardContent>
         </Card>
       </div>
@@ -791,9 +758,7 @@ const TrackUploadMetadataSection = () => {
                     <div
                       className={cn(
                         "bg-main-dark-bg-1 rounded-md border px-3 pt-2 pb-1 transition-colors",
-                        fieldState.error
-                          ? "border-destructive"
-                          : "border-white/30",
+                        fieldState.error ? "border-destructive" : "border-white/30",
                       )}
                     >
                       <FormLabel className="flex items-center gap-x-1.5">
@@ -831,12 +796,7 @@ const TrackUploadMetadataSection = () => {
                       <MultiSelect
                         options={
                           artistsData?.artists?.items
-                            ?.filter(
-                              (artist) =>
-                                !form
-                                  .watch("featuredArtistIds")
-                                  .includes(artist.id),
-                            )
+                            ?.filter((artist) => !form.watch("featuredArtistIds").includes(artist.id))
                             ?.map((artist) => ({
                               value: artist.id,
                               label: artist.user?.[0]?.stripeAccountId
@@ -849,10 +809,7 @@ const TrackUploadMetadataSection = () => {
                         onValueChange={(value) => {
                           field.onChange(value);
                           // Update work and recording splits when main artists change
-                          updateSplitsFromArtists([
-                            ...value,
-                            ...form.watch("featuredArtistIds"),
-                          ]);
+                          updateSplitsFromArtists([...value, ...form.watch("featuredArtistIds")]);
                         }}
                         placeholder="Choose main artists..."
                         maxCount={5}
@@ -861,8 +818,7 @@ const TrackUploadMetadataSection = () => {
                           <div className="p-4 text-center text-gray-400">
                             <p>No eligible main artists found.</p>
                             <p className="mt-1 text-xs">
-                              Artists need to complete their Stripe account
-                              setup to be selectable.
+                              Artists need to complete their Stripe account setup to be selectable.
                             </p>
                           </div>
                         }
@@ -871,8 +827,8 @@ const TrackUploadMetadataSection = () => {
 
                     <FormMessage />
                     <p className="mt-1 text-xs text-gray-400">
-                      💡 Artists without Stripe account setup are disabled and
-                      shown with &ldquo;(Account Setup Required)&rdquo;
+                      💡 Artists without Stripe account setup are disabled and shown with &ldquo;(Account Setup
+                      Required)&rdquo;
                     </p>
                   </FormItem>
                 )}
@@ -883,20 +839,13 @@ const TrackUploadMetadataSection = () => {
                 name="featuredArtistIds"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium">
-                      Featured Artist(s)
-                    </FormLabel>
+                    <FormLabel className="text-sm font-medium">Featured Artist(s)</FormLabel>
 
                     <FormControl>
                       <MultiSelect
                         options={
                           artistsData?.artists?.items
-                            ?.filter(
-                              (artist) =>
-                                !form
-                                  .watch("mainArtistIds")
-                                  .includes(artist.id),
-                            )
+                            ?.filter((artist) => !form.watch("mainArtistIds").includes(artist.id))
                             ?.map((artist) => ({
                               value: artist.id,
                               label: artist.user?.[0]?.stripeAccountId
@@ -909,10 +858,7 @@ const TrackUploadMetadataSection = () => {
                         onValueChange={(value) => {
                           field.onChange(value);
                           // Update work and recording splits when featured artists change
-                          updateSplitsFromArtists([
-                            ...form.watch("mainArtistIds"),
-                            ...value,
-                          ]);
+                          updateSplitsFromArtists([...form.watch("mainArtistIds"), ...value]);
                         }}
                         placeholder="Choose featured artists..."
                         maxCount={5}
@@ -921,8 +867,7 @@ const TrackUploadMetadataSection = () => {
                           <div className="p-4 text-center text-gray-400">
                             <p>No eligible featured artists found.</p>
                             <p className="mt-1 text-xs">
-                              Artists need to complete their Stripe account
-                              setup to be selectable.
+                              Artists need to complete their Stripe account setup to be selectable.
                             </p>
                           </div>
                         }
@@ -931,8 +876,8 @@ const TrackUploadMetadataSection = () => {
 
                     <FormMessage />
                     <p className="mt-1 text-xs text-gray-400">
-                      💡 Artists without Stripe account setup are disabled and
-                      shown with &ldquo;(Account Setup Required)&rdquo;
+                      💡 Artists without Stripe account setup are disabled and shown with &ldquo;(Account Setup
+                      Required)&rdquo;
                     </p>
                   </FormItem>
                 )}
@@ -946,9 +891,7 @@ const TrackUploadMetadataSection = () => {
                     <div
                       className={cn(
                         "bg-main-dark-bg-1 rounded-md border px-3 pt-2 pb-1 transition-colors",
-                        fieldState.error
-                          ? "border-destructive"
-                          : "border-white/30",
+                        fieldState.error ? "border-destructive" : "border-white/30",
                       )}
                     >
                       <div className="flex items-center gap-x-1.5">
@@ -980,12 +923,10 @@ const TrackUploadMetadataSection = () => {
                     <FormControl>
                       <MultiSelect
                         options={
-                          categoriesData?.categories?.items?.map(
-                            (category) => ({
-                              value: category.id,
-                              label: category.name,
-                            }),
-                          ) || []
+                          categoriesData?.categories?.items?.map((category) => ({
+                            value: category.id,
+                            label: category.name,
+                          })) || []
                         }
                         defaultValue={field.value}
                         onValueChange={field.onChange}
@@ -1010,15 +951,9 @@ const TrackUploadMetadataSection = () => {
                     </FormLabel>
 
                     <FormControl>
-                      <InputTags
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Add your desired tags..."
-                      />
+                      <InputTags value={field.value} onChange={field.onChange} placeholder="Add your desired tags..." />
                     </FormControl>
-                    <FormDescription>
-                      Hint: Use , or Enter to add tags
-                    </FormDescription>
+                    <FormDescription>Hint: Use , or Enter to add tags</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -1058,22 +993,16 @@ const TrackUploadMetadataSection = () => {
                               className="rounded-md object-cover"
                             />
                             <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity hover:opacity-100">
-                              <span className="text-sm text-white">
-                                Click to change
-                              </span>
+                              <span className="text-sm text-white">Click to change</span>
                             </div>
                           </div>
                         ) : (
                           <>
                             <ImageIcon className="text-main-white size-25 stroke-1" />
                             <span className="text-main-white text-sm">
-                              {isCoverDragActive
-                                ? "Drop image here..."
-                                : "Add track cover"}
+                              {isCoverDragActive ? "Drop image here..." : "Add track cover"}
                             </span>
-                            <span className="text-main-grey-dark-1 text-center text-xs">
-                              JPEG, PNG, WebP (max 5MB)
-                            </span>
+                            <span className="text-main-grey-dark-1 text-center text-xs">JPEG, PNG, WebP (max 5MB)</span>
                           </>
                         )}
                       </div>
@@ -1089,15 +1018,11 @@ const TrackUploadMetadataSection = () => {
                   name="isReleased"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">
-                        Privacy
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Privacy</FormLabel>
 
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(value === "true")
-                          }
+                          onValueChange={(value) => field.onChange(value === "true")}
                           value={field.value ? "true" : "false"}
                         >
                           <SelectTrigger className="w-full">
@@ -1115,10 +1040,8 @@ const TrackUploadMetadataSection = () => {
                       </FormControl>
 
                       <FormDescription className="text-xs text-gray-400">
-                        Public tracks can optionally set a release date (min. 4
-                        days from today). Without a date, they release
-                        immediately as Official. With a date, they remain as
-                        NotAnnounced until release.
+                        Public tracks can optionally set a release date (min. 4 days from today). Without a date, they
+                        release immediately as Official. With a date, they remain as NotAnnounced until release.
                       </FormDescription>
 
                       <FormMessage />
@@ -1185,9 +1108,7 @@ const TrackUploadMetadataSection = () => {
               disabled={isUploading || uploadTrackMutation.isPending}
               className="primary_gradient text-main-white fixed right-8 bottom-[11px] z-10 h-[42px] rounded-full px-18 py-3 text-sm font-semibold hover:brightness-90 disabled:opacity-50"
             >
-              {isUploading || uploadTrackMutation.isPending
-                ? "Uploading..."
-                : "Upload"}
+              {isUploading || uploadTrackMutation.isPending ? "Uploading..." : "Upload"}
             </Button>
           </div>
 
@@ -1196,8 +1117,7 @@ const TrackUploadMetadataSection = () => {
               <AccordionItem value="advanced-settings">
                 <AccordionTrigger>
                   <div className="flex items-center">
-                    <FileChartColumnIcon className="text-main-white mr-3 size-6" />{" "}
-                    Advanced Settings
+                    <FileChartColumnIcon className="text-main-white mr-3 size-6" /> Advanced Settings
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="pl-9">
@@ -1209,13 +1129,10 @@ const TrackUploadMetadataSection = () => {
                       render={({ field }) => (
                         <FormItem>
                           <div>
-                            <p className="text-main-white text-xs font-bold">
-                              Contain Explicit Content
-                            </p>
+                            <p className="text-main-white text-xs font-bold">Contain Explicit Content</p>
                             <p className="text-main-grey-dark-1 text-xs font-normal">
-                              Please check this if your track contains explicit
-                              content. The badge will be displayed next to your
-                              track title.
+                              Please check this if your track contains explicit content. The badge will be displayed
+                              next to your track title.
                             </p>
 
                             <div className="mt-2 flex items-center gap-x-4">
@@ -1226,10 +1143,7 @@ const TrackUploadMetadataSection = () => {
                                   onCheckedChange={field.onChange}
                                 />
                               </FormControl>
-                              <Label
-                                htmlFor="explicit-content-checkbox"
-                                className="text-sm font-bold"
-                              >
+                              <Label htmlFor="explicit-content-checkbox" className="text-sm font-bold">
                                 Explicit Content
                               </Label>
                               <div className="bg-main-white flex size-4 items-center justify-center rounded-xs text-xs font-bold text-black">
@@ -1250,12 +1164,10 @@ const TrackUploadMetadataSection = () => {
                         <FormItem>
                           <div>
                             <p className="text-main-white mb-2 text-xs font-bold">
-                              Legal Documents{" "}
-                              <span className="text-red-500">*</span>
+                              Legal Documents <span className="text-red-500">*</span>
                             </p>
                             <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
-                              Upload legal documents such as licenses,
-                              contracts, or other relevant files.
+                              Upload legal documents such as licenses, contracts, or other relevant files.
                             </p>
 
                             <div className="space-y-4">
@@ -1275,19 +1187,13 @@ const TrackUploadMetadataSection = () => {
                                 >
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                      <h4 className="text-sm font-medium text-white">
-                                        Document {index + 1}
-                                      </h4>
+                                      <h4 className="text-sm font-medium text-white">Document {index + 1}</h4>
                                       {form.formState.isSubmitted &&
                                         (!doc.name.trim() ||
                                           !doc.documentUrl.trim() ||
                                           !doc.note.trim() ||
-                                          !/^https?:\/\/.+/.test(
-                                            doc.documentUrl,
-                                          )) && (
-                                          <span className="text-destructive text-xs font-medium">
-                                            (Incomplete)
-                                          </span>
+                                          !/^https?:\/\/.+/.test(doc.documentUrl)) && (
+                                          <span className="text-destructive text-xs font-medium">(Incomplete)</span>
                                         )}
                                     </div>
                                     {legalDocuments.length > 1 && (
@@ -1296,14 +1202,9 @@ const TrackUploadMetadataSection = () => {
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => {
-                                          const newDocs = legalDocuments.filter(
-                                            (_, i) => i !== index,
-                                          );
+                                          const newDocs = legalDocuments.filter((_, i) => i !== index);
                                           setLegalDocuments(newDocs);
-                                          form.setValue(
-                                            "legalDocuments",
-                                            newDocs,
-                                          );
+                                          form.setValue("legalDocuments", newDocs);
                                         }}
                                       >
                                         <Trash2 className="size-4" />
@@ -1313,47 +1214,29 @@ const TrackUploadMetadataSection = () => {
 
                                   <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
-                                      <Label className="text-xs">
-                                        Document Type
-                                      </Label>
+                                      <Label className="text-xs">Document Type</Label>
                                       <Select
                                         value={doc.documentType}
                                         onValueChange={(value) => {
                                           const newDocs = [...legalDocuments];
-                                          newDocs[index].documentType =
-                                            value as DocumentType;
+                                          newDocs[index].documentType = value as DocumentType;
                                           setLegalDocuments(newDocs);
-                                          form.setValue(
-                                            "legalDocuments",
-                                            newDocs,
-                                          );
+                                          form.setValue("legalDocuments", newDocs);
                                         }}
                                       >
                                         <SelectTrigger size="sm">
-                                          <SelectValue
-                                            className="h-8"
-                                            placeholder="Select type"
-                                          />
+                                          <SelectValue className="h-8" placeholder="Select type" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem
-                                            value={DocumentType.License}
-                                          >
-                                            License
-                                          </SelectItem>
-                                          <SelectItem
-                                            value={DocumentType.Contract}
-                                          >
-                                            Contract
-                                          </SelectItem>
+                                          <SelectItem value={DocumentType.License}>License</SelectItem>
+                                          <SelectItem value={DocumentType.Contract}>Contract</SelectItem>
                                         </SelectContent>
                                       </Select>
                                     </div>
 
                                     <div className="space-y-1">
                                       <Label className="text-xs">
-                                        Document Name{" "}
-                                        <span className="text-red-500">*</span>
+                                        Document Name <span className="text-red-500">*</span>
                                       </Label>
                                       <Input
                                         placeholder="Enter document name"
@@ -1362,58 +1245,39 @@ const TrackUploadMetadataSection = () => {
                                           const newDocs = [...legalDocuments];
                                           newDocs[index].name = e.target.value;
                                           setLegalDocuments(newDocs);
-                                          form.setValue(
-                                            "legalDocuments",
-                                            newDocs,
-                                          );
+                                          form.setValue("legalDocuments", newDocs);
                                           if (fieldState.error) {
                                             form.clearErrors("legalDocuments");
                                           }
                                         }}
-                                        className={cn(
-                                          "h-8",
-                                          fieldState.error
-                                            ? "border-destructive"
-                                            : "",
-                                        )}
+                                        className={cn("h-8", fieldState.error ? "border-destructive" : "")}
                                       />
                                     </div>
                                   </div>
 
                                   <div className="space-y-1">
                                     <Label className="text-xs">
-                                      Document URL{" "}
-                                      <span className="text-red-500">*</span>
+                                      Document URL <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
                                       placeholder="Enter document URL (https://example.com)"
                                       value={doc.documentUrl}
                                       onChange={(e) => {
                                         const newDocs = [...legalDocuments];
-                                        newDocs[index].documentUrl =
-                                          e.target.value;
+                                        newDocs[index].documentUrl = e.target.value;
                                         setLegalDocuments(newDocs);
-                                        form.setValue(
-                                          "legalDocuments",
-                                          newDocs,
-                                        );
+                                        form.setValue("legalDocuments", newDocs);
                                         if (fieldState.error) {
                                           form.clearErrors("legalDocuments");
                                         }
                                       }}
-                                      className={cn(
-                                        "h-8",
-                                        fieldState.error
-                                          ? "border-destructive"
-                                          : "",
-                                      )}
+                                      className={cn("h-8", fieldState.error ? "border-destructive" : "")}
                                     />
                                   </div>
 
                                   <div className="space-y-1">
                                     <Label className="text-xs">
-                                      Note{" "}
-                                      <span className="text-red-500">*</span>
+                                      Note <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
                                       placeholder="Add a note about this document"
@@ -1422,20 +1286,12 @@ const TrackUploadMetadataSection = () => {
                                         const newDocs = [...legalDocuments];
                                         newDocs[index].note = e.target.value;
                                         setLegalDocuments(newDocs);
-                                        form.setValue(
-                                          "legalDocuments",
-                                          newDocs,
-                                        );
+                                        form.setValue("legalDocuments", newDocs);
                                         if (fieldState.error) {
                                           form.clearErrors("legalDocuments");
                                         }
                                       }}
-                                      className={cn(
-                                        "h-8",
-                                        fieldState.error
-                                          ? "border-destructive"
-                                          : "",
-                                      )}
+                                      className={cn("h-8", fieldState.error ? "border-destructive" : "")}
                                     />
                                   </div>
                                 </div>
@@ -1476,8 +1332,7 @@ const TrackUploadMetadataSection = () => {
               <AccordionItem value="copyright">
                 <AccordionTrigger>
                   <div className="flex items-center">
-                    <CreativeCommonsIcon className="text-main-white mr-3 size-6" />{" "}
-                    Copyright
+                    <CreativeCommonsIcon className="text-main-white mr-3 size-6" /> Copyright
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="pl-9">
@@ -1489,13 +1344,10 @@ const TrackUploadMetadataSection = () => {
                       render={({ field }) => (
                         <FormItem>
                           <div>
-                            <p className="text-main-white text-xs font-bold">
-                              Original Content
-                            </p>
+                            <p className="text-main-white text-xs font-bold">Original Content</p>
                             <p className="text-main-grey-dark-1 text-xs font-normal">
-                              Please check this if this track is your original
-                              content. This helps us protect your rights as the
-                              content creator.
+                              Please check this if this track is your original content. This helps us protect your
+                              rights as the content creator.
                             </p>
 
                             <div className="mt-2 flex items-center gap-x-4">
@@ -1506,10 +1358,7 @@ const TrackUploadMetadataSection = () => {
                                   onCheckedChange={field.onChange}
                                 />
                               </FormControl>
-                              <Label
-                                htmlFor="original-content-checkbox"
-                                className="text-sm font-bold"
-                              >
+                              <Label htmlFor="original-content-checkbox" className="text-sm font-bold">
                                 Original Content
                               </Label>
                             </div>
@@ -1521,15 +1370,11 @@ const TrackUploadMetadataSection = () => {
 
                     {/* Work Splits */}
                     <div>
-                      <p className="text-main-white mb-2 text-xs font-bold">
-                        Work Splits (Songwriting)
-                      </p>
+                      <p className="text-main-white mb-2 text-xs font-bold">Work Splits (Songwriting)</p>
                       <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
-                        Define how songwriting credits are split. Total must
-                        equal 100%.
+                        Define how songwriting credits are split. Total must equal 100%.
                         <span className="text-yellow-400">
-                          All selected artists must appear in at least one work
-                          or recording split.
+                          All selected artists must appear in at least one work or recording split.
                         </span>
                       </p>
 
@@ -1537,71 +1382,44 @@ const TrackUploadMetadataSection = () => {
                         {workSplits.length === 0 ? (
                           <div className="rounded-md border border-white/20 p-4 text-center text-gray-400">
                             <p className="text-sm">
-                              No artists selected yet. Please select main or
-                              featured artists above to see work splits.
+                              No artists selected yet. Please select main or featured artists above to see work splits.
                             </p>
                           </div>
                         ) : (
                           workSplits.map((split, index) => (
-                            <div
-                              key={index}
-                              className="rounded-md border border-white/20 p-3"
-                            >
+                            <div key={index} className="rounded-md border border-white/20 p-3">
                               <div className="mb-2 flex items-center justify-between">
                                 <span className="text-sm font-medium text-white">
-                                  {getUserDisplayName(
-                                    split.userId,
-                                    artistsData?.artists?.items || [],
-                                    user?.userId,
-                                  )}{" "}
-                                  - {split.percentage}%
+                                  {getUserDisplayName(split.userId, artistsData?.artists?.items || [], user?.userId)} -{" "}
+                                  {split.percentage}%
                                 </span>
                                 {workSplits.length === 1 ? (
-                                  <span className="text-xs text-gray-400">
-                                    (Default - Read Only)
-                                  </span>
+                                  <span className="text-xs text-gray-400">(Default - Read Only)</span>
                                 ) : (
                                   <Button
                                     type="button"
                                     variant="ghost"
                                     size="sm"
-                                    disabled={
-                                      !canRemoveArtistFromSplit(
-                                        split.userId,
-                                        "work",
-                                      )
-                                    }
+                                    disabled={!canRemoveArtistFromSplit(split.userId, "work")}
                                     onClick={() => {
-                                      const canRemove =
-                                        canRemoveArtistFromSplit(
-                                          split.userId,
-                                          "work",
-                                        );
+                                      const canRemove = canRemoveArtistFromSplit(split.userId, "work");
 
                                       if (!canRemove) {
-                                        const artist =
-                                          artistsData?.artists?.items?.find(
-                                            (a) => a.userId === split.userId,
-                                          );
-                                        const artistName =
-                                          artist?.stageName || "Artist";
+                                        const artist = artistsData?.artists?.items?.find(
+                                          (a) => a.userId === split.userId,
+                                        );
+                                        const artistName = artist?.stageName || "Artist";
                                         toast.error(
                                           `${artistName} must appear in at least one work or recording split since they are selected as an artist for this track.`,
                                         );
                                         return;
                                       }
 
-                                      const newSplits = redistributePercentages(
-                                        workSplits,
-                                        index,
-                                      );
+                                      const newSplits = redistributePercentages(workSplits, index);
                                       setWorkSplits(newSplits);
                                     }}
                                     title={
-                                      !canRemoveArtistFromSplit(
-                                        split.userId,
-                                        "work",
-                                      )
+                                      !canRemoveArtistFromSplit(split.userId, "work")
                                         ? "This artist must appear in at least one split"
                                         : "Remove from work splits"
                                     }
@@ -1614,47 +1432,35 @@ const TrackUploadMetadataSection = () => {
                                 <div className="grid grid-cols-3 gap-2">
                                   <TrackUserCombobox
                                     users={
-                                      (artistsData?.artists?.items?.filter(
-                                        (artist) => {
-                                          // Only show artists that are selected in main/featured
-                                          const isSelectedArtist = [
-                                            ...form.watch("mainArtistIds"),
-                                            ...form.watch("featuredArtistIds"),
-                                          ].includes(artist.id);
+                                      (artistsData?.artists?.items?.filter((artist) => {
+                                        // Only show artists that are selected in main/featured
+                                        const isSelectedArtist = [
+                                          ...form.watch("mainArtistIds"),
+                                          ...form.watch("featuredArtistIds"),
+                                        ].includes(artist.id);
 
-                                          // Don't show artists that are already used in other splits (except current one)
-                                          const isUsedInOtherSplits =
-                                            workSplits.some(
-                                              (otherSplit, otherIndex) =>
-                                                otherIndex !== index &&
-                                                otherSplit.userId ===
-                                                  artist.userId,
-                                            );
+                                        // Don't show artists that are already used in other splits (except current one)
+                                        const isUsedInOtherSplits = workSplits.some(
+                                          (otherSplit, otherIndex) =>
+                                            otherIndex !== index && otherSplit.userId === artist.userId,
+                                        );
 
-                                          return (
-                                            isSelectedArtist &&
-                                            !isUsedInOtherSplits
-                                          );
-                                        },
-                                      ) as TrackUploadArtist[]) || []
+                                        return isSelectedArtist && !isUsedInOtherSplits;
+                                      }) as TrackUploadArtist[]) || []
                                     }
                                     value={split.userId}
                                     onChange={(value) => {
                                       const newSplits = [...workSplits];
-                                      const selectedArtist =
-                                        artistsData?.artists?.items?.find(
-                                          (a) => a.userId === value,
-                                        );
+                                      const selectedArtist = artistsData?.artists?.items?.find(
+                                        (a) => a.userId === value,
+                                      );
                                       if (selectedArtist) {
                                         newSplits[index].userId = value;
                                         // Auto-assign role based on main/featured selection
-                                        const isMainArtist = form
-                                          .watch("mainArtistIds")
-                                          .includes(selectedArtist.id);
-                                        newSplits[index].artistRole =
-                                          isMainArtist
-                                            ? ArtistRole.Main
-                                            : ArtistRole.Featured;
+                                        const isMainArtist = form.watch("mainArtistIds").includes(selectedArtist.id);
+                                        newSplits[index].artistRole = isMainArtist
+                                          ? ArtistRole.Main
+                                          : ArtistRole.Featured;
                                       }
                                       setWorkSplits(newSplits);
                                     }}
@@ -1665,25 +1471,17 @@ const TrackUploadMetadataSection = () => {
                                     value={split.artistRole}
                                     onValueChange={(value) => {
                                       const newSplits = [...workSplits];
-                                      newSplits[index].artistRole =
-                                        value as ArtistRole;
+                                      newSplits[index].artistRole = value as ArtistRole;
                                       setWorkSplits(newSplits);
                                     }}
                                     disabled={true}
                                   >
-                                    <SelectTrigger
-                                      size="sm"
-                                      className="cursor-not-allowed opacity-50"
-                                    >
+                                    <SelectTrigger size="sm" className="cursor-not-allowed opacity-50">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value={ArtistRole.Main}>
-                                        Main
-                                      </SelectItem>
-                                      <SelectItem value={ArtistRole.Featured}>
-                                        Featured
-                                      </SelectItem>
+                                      <SelectItem value={ArtistRole.Main}>Main</SelectItem>
+                                      <SelectItem value={ArtistRole.Featured}>Featured</SelectItem>
                                     </SelectContent>
                                   </Select>
                                   <Input
@@ -1693,8 +1491,7 @@ const TrackUploadMetadataSection = () => {
                                     value={split.percentage}
                                     onChange={(e) => {
                                       const newSplits = [...workSplits];
-                                      newSplits[index].percentage =
-                                        parseInt(e.target.value) || 0;
+                                      newSplits[index].percentage = parseInt(e.target.value) || 0;
                                       setWorkSplits(newSplits);
                                     }}
                                     className="h-8"
@@ -1708,24 +1505,13 @@ const TrackUploadMetadataSection = () => {
                         <div className="text-right text-xs">
                           <span
                             className={`${
-                              workSplits.reduce(
-                                (sum, split) => sum + split.percentage,
-                                0,
-                              ) === 100
+                              workSplits.reduce((sum, split) => sum + split.percentage, 0) === 100
                                 ? "text-green-400"
                                 : "text-red-400"
                             }`}
                           >
-                            Total:{" "}
-                            {workSplits.reduce(
-                              (sum, split) => sum + split.percentage,
-                              0,
-                            )}
-                            %
-                            {workSplits.reduce(
-                              (sum, split) => sum + split.percentage,
-                              0,
-                            ) !== 100 && " (Must be 100%)"}
+                            Total: {workSplits.reduce((sum, split) => sum + split.percentage, 0)}%
+                            {workSplits.reduce((sum, split) => sum + split.percentage, 0) !== 100 && " (Must be 100%)"}
                           </span>
                         </div>
 
@@ -1750,15 +1536,11 @@ const TrackUploadMetadataSection = () => {
                           ];
                           const usedArtistIds = workSplits
                             .map((split) => {
-                              const artist = artistsData?.artists?.items?.find(
-                                (a) => a.userId === split.userId,
-                              );
+                              const artist = artistsData?.artists?.items?.find((a) => a.userId === split.userId);
                               return artist?.id;
                             })
                             .filter(Boolean);
-                          const availableArtists = allSelectedArtists.filter(
-                            (id) => !usedArtistIds.includes(id),
-                          );
+                          const availableArtists = allSelectedArtists.filter((id) => !usedArtistIds.includes(id));
 
                           return (
                             availableArtists.length > 0 && (
@@ -1768,27 +1550,19 @@ const TrackUploadMetadataSection = () => {
                                 size="sm"
                                 onClick={() => {
                                   const nextArtistId = availableArtists[0];
-                                  const nextArtist =
-                                    artistsData?.artists?.items?.find(
-                                      (a) => a.id === nextArtistId,
-                                    );
+                                  const nextArtist = artistsData?.artists?.items?.find((a) => a.id === nextArtistId);
                                   if (nextArtist) {
-                                    const isMainArtist = form
-                                      .watch("mainArtistIds")
-                                      .includes(nextArtistId);
+                                    const isMainArtist = form.watch("mainArtistIds").includes(nextArtistId);
                                     const newSplits = [
                                       ...workSplits,
                                       {
                                         userId: nextArtist.userId,
-                                        artistRole: isMainArtist
-                                          ? ArtistRole.Main
-                                          : ArtistRole.Featured,
+                                        artistRole: isMainArtist ? ArtistRole.Main : ArtistRole.Featured,
                                         percentage: 0,
                                       },
                                     ];
                                     // Auto-distribute percentages equally
-                                    const redistributed =
-                                      redistributePercentages(newSplits);
+                                    const redistributed = redistributePercentages(newSplits);
                                     setWorkSplits(redistributed);
                                   }
                                 }}
@@ -1805,15 +1579,11 @@ const TrackUploadMetadataSection = () => {
 
                     {/* Recording Splits */}
                     <div>
-                      <p className="text-main-white mb-2 text-xs font-bold">
-                        Recording Splits (Performance)
-                      </p>
+                      <p className="text-main-white mb-2 text-xs font-bold">Recording Splits (Performance)</p>
                       <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
-                        Define how recording performance credits are split.
-                        Total must equal 100%.
+                        Define how recording performance credits are split. Total must equal 100%.
                         <span className="text-yellow-400">
-                          All selected artists must appear in at least one work
-                          or recording split.
+                          All selected artists must appear in at least one work or recording split.
                         </span>
                       </p>
 
@@ -1821,71 +1591,45 @@ const TrackUploadMetadataSection = () => {
                         {recordingSplits.length === 0 ? (
                           <div className="rounded-md border border-white/20 p-4 text-center text-gray-400">
                             <p className="text-sm">
-                              No artists selected yet. Please select main or
-                              featured artists above to see recording splits.
+                              No artists selected yet. Please select main or featured artists above to see recording
+                              splits.
                             </p>
                           </div>
                         ) : (
                           recordingSplits.map((split, index) => (
-                            <div
-                              key={index}
-                              className="rounded-md border border-white/20 p-3"
-                            >
+                            <div key={index} className="rounded-md border border-white/20 p-3">
                               <div className="mb-2 flex items-center justify-between">
                                 <span className="text-sm font-medium text-white">
-                                  {getUserDisplayName(
-                                    split.userId,
-                                    artistsData?.artists?.items || [],
-                                    user?.userId,
-                                  )}{" "}
-                                  - {split.percentage}%
+                                  {getUserDisplayName(split.userId, artistsData?.artists?.items || [], user?.userId)} -{" "}
+                                  {split.percentage}%
                                 </span>
                                 {recordingSplits.length === 1 ? (
-                                  <span className="text-xs text-gray-400">
-                                    (Default - Read Only)
-                                  </span>
+                                  <span className="text-xs text-gray-400">(Default - Read Only)</span>
                                 ) : (
                                   <Button
                                     type="button"
                                     variant="ghost"
                                     size="sm"
-                                    disabled={
-                                      !canRemoveArtistFromSplit(
-                                        split.userId,
-                                        "recording",
-                                      )
-                                    }
+                                    disabled={!canRemoveArtistFromSplit(split.userId, "recording")}
                                     onClick={() => {
-                                      const canRemove =
-                                        canRemoveArtistFromSplit(
-                                          split.userId,
-                                          "recording",
-                                        );
+                                      const canRemove = canRemoveArtistFromSplit(split.userId, "recording");
 
                                       if (!canRemove) {
-                                        const artist =
-                                          artistsData?.artists?.items?.find(
-                                            (a) => a.userId === split.userId,
-                                          );
-                                        const artistName =
-                                          artist?.stageName || "Artist";
+                                        const artist = artistsData?.artists?.items?.find(
+                                          (a) => a.userId === split.userId,
+                                        );
+                                        const artistName = artist?.stageName || "Artist";
                                         toast.error(
                                           `${artistName} must appear in at least one work or recording split since they are selected as an artist for this track.`,
                                         );
                                         return;
                                       }
 
-                                      const newSplits = redistributePercentages(
-                                        recordingSplits,
-                                        index,
-                                      );
+                                      const newSplits = redistributePercentages(recordingSplits, index);
                                       setRecordingSplits(newSplits);
                                     }}
                                     title={
-                                      !canRemoveArtistFromSplit(
-                                        split.userId,
-                                        "recording",
-                                      )
+                                      !canRemoveArtistFromSplit(split.userId, "recording")
                                         ? "This artist must appear in at least one split"
                                         : "Remove from recording splits"
                                     }
@@ -1898,47 +1642,35 @@ const TrackUploadMetadataSection = () => {
                                 <div className="grid grid-cols-3 gap-2">
                                   <TrackUserCombobox
                                     users={
-                                      (artistsData?.artists?.items?.filter(
-                                        (artist) => {
-                                          // Only show artists that are selected in main/featured
-                                          const isSelectedArtist = [
-                                            ...form.watch("mainArtistIds"),
-                                            ...form.watch("featuredArtistIds"),
-                                          ].includes(artist.id);
+                                      (artistsData?.artists?.items?.filter((artist) => {
+                                        // Only show artists that are selected in main/featured
+                                        const isSelectedArtist = [
+                                          ...form.watch("mainArtistIds"),
+                                          ...form.watch("featuredArtistIds"),
+                                        ].includes(artist.id);
 
-                                          // Don't show artists that are already used in other splits (except current one)
-                                          const isUsedInOtherSplits =
-                                            recordingSplits.some(
-                                              (otherSplit, otherIndex) =>
-                                                otherIndex !== index &&
-                                                otherSplit.userId ===
-                                                  artist.userId,
-                                            );
+                                        // Don't show artists that are already used in other splits (except current one)
+                                        const isUsedInOtherSplits = recordingSplits.some(
+                                          (otherSplit, otherIndex) =>
+                                            otherIndex !== index && otherSplit.userId === artist.userId,
+                                        );
 
-                                          return (
-                                            isSelectedArtist &&
-                                            !isUsedInOtherSplits
-                                          );
-                                        },
-                                      ) as TrackUploadArtist[]) || []
+                                        return isSelectedArtist && !isUsedInOtherSplits;
+                                      }) as TrackUploadArtist[]) || []
                                     }
                                     value={split.userId}
                                     onChange={(value) => {
                                       const newSplits = [...recordingSplits];
-                                      const selectedArtist =
-                                        artistsData?.artists?.items?.find(
-                                          (a) => a.userId === value,
-                                        );
+                                      const selectedArtist = artistsData?.artists?.items?.find(
+                                        (a) => a.userId === value,
+                                      );
                                       if (selectedArtist) {
                                         newSplits[index].userId = value;
                                         // Auto-assign role based on main/featured selection
-                                        const isMainArtist = form
-                                          .watch("mainArtistIds")
-                                          .includes(selectedArtist.id);
-                                        newSplits[index].artistRole =
-                                          isMainArtist
-                                            ? ArtistRole.Main
-                                            : ArtistRole.Featured;
+                                        const isMainArtist = form.watch("mainArtistIds").includes(selectedArtist.id);
+                                        newSplits[index].artistRole = isMainArtist
+                                          ? ArtistRole.Main
+                                          : ArtistRole.Featured;
                                       }
                                       setRecordingSplits(newSplits);
                                     }}
@@ -1949,25 +1681,17 @@ const TrackUploadMetadataSection = () => {
                                     value={split.artistRole}
                                     onValueChange={(value) => {
                                       const newSplits = [...recordingSplits];
-                                      newSplits[index].artistRole =
-                                        value as ArtistRole;
+                                      newSplits[index].artistRole = value as ArtistRole;
                                       setRecordingSplits(newSplits);
                                     }}
                                     disabled={true}
                                   >
-                                    <SelectTrigger
-                                      size="sm"
-                                      className="cursor-not-allowed opacity-50"
-                                    >
+                                    <SelectTrigger size="sm" className="cursor-not-allowed opacity-50">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value={ArtistRole.Main}>
-                                        Main
-                                      </SelectItem>
-                                      <SelectItem value={ArtistRole.Featured}>
-                                        Featured
-                                      </SelectItem>
+                                      <SelectItem value={ArtistRole.Main}>Main</SelectItem>
+                                      <SelectItem value={ArtistRole.Featured}>Featured</SelectItem>
                                     </SelectContent>
                                   </Select>
                                   <Input
@@ -1977,8 +1701,7 @@ const TrackUploadMetadataSection = () => {
                                     value={split.percentage}
                                     onChange={(e) => {
                                       const newSplits = [...recordingSplits];
-                                      newSplits[index].percentage =
-                                        parseInt(e.target.value) || 0;
+                                      newSplits[index].percentage = parseInt(e.target.value) || 0;
                                       setRecordingSplits(newSplits);
                                     }}
                                     className="h-8"
@@ -1992,24 +1715,14 @@ const TrackUploadMetadataSection = () => {
                         <div className="text-right text-xs">
                           <span
                             className={`${
-                              recordingSplits.reduce(
-                                (sum, split) => sum + split.percentage,
-                                0,
-                              ) === 100
+                              recordingSplits.reduce((sum, split) => sum + split.percentage, 0) === 100
                                 ? "text-green-400"
                                 : "text-red-400"
                             }`}
                           >
-                            Total:{" "}
-                            {recordingSplits.reduce(
-                              (sum, split) => sum + split.percentage,
-                              0,
-                            )}
-                            %
-                            {recordingSplits.reduce(
-                              (sum, split) => sum + split.percentage,
-                              0,
-                            ) !== 100 && " (Must be 100%)"}
+                            Total: {recordingSplits.reduce((sum, split) => sum + split.percentage, 0)}%
+                            {recordingSplits.reduce((sum, split) => sum + split.percentage, 0) !== 100 &&
+                              " (Must be 100%)"}
                           </span>
                         </div>
 
@@ -2034,15 +1747,11 @@ const TrackUploadMetadataSection = () => {
                           ];
                           const usedArtistIds = recordingSplits
                             .map((split) => {
-                              const artist = artistsData?.artists?.items?.find(
-                                (a) => a.userId === split.userId,
-                              );
+                              const artist = artistsData?.artists?.items?.find((a) => a.userId === split.userId);
                               return artist?.id;
                             })
                             .filter(Boolean);
-                          const availableArtists = allSelectedArtists.filter(
-                            (id) => !usedArtistIds.includes(id),
-                          );
+                          const availableArtists = allSelectedArtists.filter((id) => !usedArtistIds.includes(id));
 
                           return (
                             availableArtists.length > 0 && (
@@ -2052,27 +1761,19 @@ const TrackUploadMetadataSection = () => {
                                 size="sm"
                                 onClick={() => {
                                   const nextArtistId = availableArtists[0];
-                                  const nextArtist =
-                                    artistsData?.artists?.items?.find(
-                                      (a) => a.id === nextArtistId,
-                                    );
+                                  const nextArtist = artistsData?.artists?.items?.find((a) => a.id === nextArtistId);
                                   if (nextArtist) {
-                                    const isMainArtist = form
-                                      .watch("mainArtistIds")
-                                      .includes(nextArtistId);
+                                    const isMainArtist = form.watch("mainArtistIds").includes(nextArtistId);
                                     const newSplits = [
                                       ...recordingSplits,
                                       {
                                         userId: nextArtist.userId,
-                                        artistRole: isMainArtist
-                                          ? ArtistRole.Main
-                                          : ArtistRole.Featured,
+                                        artistRole: isMainArtist ? ArtistRole.Main : ArtistRole.Featured,
                                         percentage: 0,
                                       },
                                     ];
                                     // Auto-distribute percentages equally
-                                    const redistributed =
-                                      redistributePercentages(newSplits);
+                                    const redistributed = redistributePercentages(newSplits);
                                     setRecordingSplits(redistributed);
                                   }
                                 }}
@@ -2093,6 +1794,26 @@ const TrackUploadMetadataSection = () => {
           </div>
         </form>
       </Form>
+
+      {/* Copyright Warning Dialog */}
+      <AlertDialog open={showCopyrightDialog} onOpenChange={setShowCopyrightDialog}>
+        <AlertDialogContent className="bg-main-dark-bg border-2 border-red-500/20 sm:max-w-xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-xl text-white">
+              <AlertTriangle className="h-5 w-5 text-red-500" />
+              Upload Failed
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-main-grey text-base/relaxed">
+              {copyrightError?.message}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleCopyrightDialogClose} className="bg-red-700 text-white hover:bg-red-800">
+              Understand
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
