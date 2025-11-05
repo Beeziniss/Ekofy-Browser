@@ -31,7 +31,7 @@ export const usePlaylistPlayback = (playlistId: string) => {
       id: string;
       name?: string | null;
       coverImage?: string | null;
-      mainArtistsAsync?: {
+      mainArtists?: {
         items?: Array<{
           stageName?: string | null;
         } | null> | null;
@@ -44,7 +44,7 @@ export const usePlaylistPlayback = (playlistId: string) => {
         id: track.id,
         name: track.name || "Unknown Track",
         artist:
-          track.mainArtistsAsync?.items
+          track.mainArtists?.items
             ?.map((a) => a?.stageName)
             .filter(Boolean)
             .join(", ") || "Unknown Artist",

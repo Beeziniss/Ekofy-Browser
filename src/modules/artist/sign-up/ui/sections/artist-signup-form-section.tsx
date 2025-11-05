@@ -1,30 +1,41 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Eye, EyeOff, CircleHelp } from 'lucide-react';
-import Link from 'next/link';
-import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
-import { UserGender } from '@/gql/graphql';
-import { toast } from 'sonner';
-import { ArtistSignUpFormData, ArtistSignUpSectionProps } from '@/types/artist_type';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Eye, EyeOff, CircleHelp } from "lucide-react";
+import Link from "next/link";
+import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
+import { UserGender } from "@/gql/graphql";
+import { toast } from "sonner";
+import {
+  ArtistSignUpFormData,
+  ArtistSignUpSectionProps,
+} from "@/types/artist_type";
+import { EkofyLogo } from "@/assets/icons";
 
-type ArtistSignUpFormSectionProps = ArtistSignUpSectionProps<ArtistSignUpFormData>;
+type ArtistSignUpFormSectionProps =
+  ArtistSignUpSectionProps<ArtistSignUpFormData>;
 
-const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectionProps) => {
-  const { formData, updateFormData, updateSessionData, goToNextStep } = useArtistSignUpStore();
-  
+const ArtistSignUpFormSection = ({
+  onNext,
+  initialData,
+}: ArtistSignUpFormSectionProps) => {
+  const { formData, updateFormData, updateSessionData, goToNextStep } =
+    useArtistSignUpStore();
+
   // Initialize state from global store or initial data
-  const [email, setEmail] = useState(initialData?.email || formData.email || '');
+  const [email, setEmail] = useState(
+    initialData?.email || formData.email || "",
+  );
   // Always reset password fields when component mounts for security
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(initialData?.agreeTerms || false);
+  const [agreeTerms, setAgreeTerms] = useState(
+    initialData?.agreeTerms || false,
+  );
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Password validation state
@@ -35,8 +46,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
     if (formData.email && !initialData?.email) setEmail(formData.email);
     // Do not restore password fields for security reasons - they reset on back navigation
     // Always ensure password fields start empty for security
-    setPassword('');
-    setConfirmPassword('');
+    setPassword("");
+    setConfirmPassword("");
   }, [formData.email, initialData?.email]);
 
   // Save form data to global state on input change (debounced)
@@ -63,7 +74,7 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
       hasLetters: /[a-zA-Z]/.test(password),
       hasNumbers: /\d/.test(password),
       hasSpecialChars: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-      noCommonWords: !/(password|123456|qwerty|abc123)/i.test(password)
+      noCommonWords: !/(password|123456|qwerty|abc123)/i.test(password),
     };
   };
 
@@ -111,8 +122,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
   // Real-time validation
   const validateField = (field: string, value: string | boolean) => {
     const newErrors = { ...errors };
-    
-    if (field === 'email') {
+
+    if (field === "email") {
       const emailValue = value as string;
       if (!emailValue) {
         newErrors.email = "Email is required";
@@ -124,8 +135,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
         delete newErrors.email;
       }
     }
-    
-    if (field === 'password') {
+
+    if (field === "password") {
       const passwordValue = value as string;
       if (!passwordValue) {
         newErrors.password = "Password is required";
@@ -140,7 +151,7 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
           delete newErrors.password;
         }
       }
-      
+
       // Re-validate confirm password if password changes
       if (confirmPassword && passwordValue !== confirmPassword) {
         newErrors.confirmPassword = "Passwords do not match";
@@ -148,8 +159,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
         delete newErrors.confirmPassword;
       }
     }
-    
-    if (field === 'confirmPassword') {
+
+    if (field === "confirmPassword") {
       const confirmValue = value as string;
       if (!confirmValue) {
         newErrors.confirmPassword = "Please confirm your password";
@@ -159,8 +170,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
         delete newErrors.confirmPassword;
       }
     }
-    
-    if (field === 'agreeTerms') {
+
+    if (field === "agreeTerms") {
       const agreeValue = value as boolean;
       if (!agreeValue) {
         newErrors.agreeTerms = "You must agree to the terms and conditions";
@@ -168,13 +179,13 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
         delete newErrors.agreeTerms;
       }
     }
-    
+
     setErrors(newErrors);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast.error("Please fix the validation errors");
       return;
@@ -187,56 +198,60 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
       password, // Only included for immediate API call
       confirmPassword, // Only included for immediate API call
       // Preserve existing values if they exist
-      fullName: formData.fullName || '', 
-      birthDate: formData.birthDate || '', 
-      gender: formData.gender || 'Male' as UserGender, 
-      phoneNumber: formData.phoneNumber || '', 
+      fullName: formData.fullName || "",
+      birthDate: formData.birthDate || "",
+      gender: formData.gender || ("Male" as UserGender),
+      phoneNumber: formData.phoneNumber || "",
     };
-    
+
     // Update store without persisting password fields
     updateFormData({
       email,
       // Do not include password in persistent store data
-      fullName: formData.fullName || '', 
-      birthDate: formData.birthDate || '', 
-      gender: formData.gender || 'Male' as UserGender, 
-      phoneNumber: formData.phoneNumber || '', 
+      fullName: formData.fullName || "",
+      birthDate: formData.birthDate || "",
+      gender: formData.gender || ("Male" as UserGender),
+      phoneNumber: formData.phoneNumber || "",
     });
-    
+
     // Navigate to next step with complete data (including password for API)
     goToNextStep(formDataToStore);
-    
+
     // Also call the original onNext for backward compatibility
     onNext({
       email,
       password,
       confirmPassword,
-      agreeTerms
+      agreeTerms,
     });
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-8 bg-[#121212] min-h-screen">
+    <div className="flex min-h-screen flex-1 items-center justify-center bg-[#121212] px-6 py-12 lg:px-8">
       <div className="w-full max-w-md space-x-6">
         {/* Logo and Title */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-6">
-            <div className="rounded-full flex items-center justify-center mr-3">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+        <div className="mb-8 text-center">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="mr-3 flex items-center justify-center rounded-full">
+              <EkofyLogo className="size-[60px]" />
             </div>
-            <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
+            <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Let’s get started</h2>
-          <p className="text-gray-300 text-sm">
-            Enter your email and password to create a new account.
-            We will send you a verification code through the registered email.
+          <h2 className="mb-4 text-3xl font-bold text-white">
+            Let’s get started
+          </h2>
+          <p className="text-sm text-gray-300">
+            Enter your email and password to create a new account. We will send
+            you a verification code through the registered email.
           </p>
         </div>
 
         {/* Sign Up Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-white mb-2">Email*</label>
+            <label className="mb-2 block text-sm font-medium text-white">
+              Email*
+            </label>
             <Input
               type="email"
               value={email}
@@ -254,25 +269,25 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
                 }
               }}
               placeholder="Enter your email"
-              className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 ${
-                errors.email ? 'border-red-500' : ''
+              className={`border-gradient-input h-12 w-full text-white placeholder-gray-400 ${
+                errors.email ? "border-red-500" : ""
               }`}
             />
             {errors.email && (
-              <p className="text-red-400 text-xs mt-1">{errors.email}</p>
+              <p className="mt-1 text-xs text-red-400">{errors.email}</p>
             )}
           </div>
 
           <div className="relative">
-            <label className="flex items-center gap-1 text-sm font-medium text-white mb-2">
+            <label className="mb-2 flex items-center gap-1 text-sm font-medium text-white">
               Password*
-              <Link href="#" className='ml-2'>
-                <CircleHelp className="w-4 h-4 text-white" />
+              <Link href="#" className="ml-2">
+                <CircleHelp className="h-4 w-4 text-white" />
               </Link>
             </label>
             <div className="relative">
               <Input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={password}
                 maxLength={50}
                 onChange={(e) => {
@@ -283,51 +298,76 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
                   } else {
                     // Show notification that limit is reached
                     const newErrors = { ...errors };
-                    newErrors.password = "Password must be less than 50 characters";
+                    newErrors.password =
+                      "Password must be less than 50 characters";
                     setErrors(newErrors);
                   }
                 }}
                 onFocus={() => setPasswordFocus(true)}
                 onBlur={() => setPasswordFocus(false)}
                 placeholder="Create password"
-                className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10 ${
-                  errors.password ? 'border-red-500' : ''
+                className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 ${
+                  errors.password ? "border-red-500" : ""
                 }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {errors.password && (
-              <p className="text-red-400 text-xs mt-1">{errors.password}</p>
+              <p className="mt-1 text-xs text-red-400">{errors.password}</p>
             )}
 
             {/* Password validation tooltip */}
             {(passwordFocus || (password && !isPasswordValid)) && (
-              <div className="absolute z-10 mt-2 p-3 bg-gray-800 border border-gray-700 rounded-lg shadow-lg w-full">
-                <div className="text-xs space-y-1">
-                  <div className={`flex items-center ${passwordValidation.minLength ? 'text-green-400' : 'text-gray-400'}`}>
-                    <span className="mr-2">{passwordValidation.minLength ? '✓' : '○'}</span>
+              <div className="absolute z-10 mt-2 w-full rounded-lg border border-gray-700 bg-gray-800 p-3 shadow-lg">
+                <div className="space-y-1 text-xs">
+                  <div
+                    className={`flex items-center ${passwordValidation.minLength ? "text-green-400" : "text-gray-400"}`}
+                  >
+                    <span className="mr-2">
+                      {passwordValidation.minLength ? "✓" : "○"}
+                    </span>
                     At least 8 characters
                   </div>
-                  <div className={`flex items-center ${passwordValidation.hasLetters ? 'text-green-400' : 'text-gray-400'}`}>
-                    <span className="mr-2">{passwordValidation.hasLetters ? '✓' : '○'}</span>
+                  <div
+                    className={`flex items-center ${passwordValidation.hasLetters ? "text-green-400" : "text-gray-400"}`}
+                  >
+                    <span className="mr-2">
+                      {passwordValidation.hasLetters ? "✓" : "○"}
+                    </span>
                     Contains letters
                   </div>
-                  <div className={`flex items-center ${passwordValidation.hasNumbers ? 'text-green-400' : 'text-gray-400'}`}>
-                    <span className="mr-2">{passwordValidation.hasNumbers ? '✓' : '○'}</span>
+                  <div
+                    className={`flex items-center ${passwordValidation.hasNumbers ? "text-green-400" : "text-gray-400"}`}
+                  >
+                    <span className="mr-2">
+                      {passwordValidation.hasNumbers ? "✓" : "○"}
+                    </span>
                     Contains numbers
                   </div>
-                  <div className={`flex items-center ${passwordValidation.hasSpecialChars ? 'text-green-400' : 'text-gray-400'}`}>
-                    <span className="mr-2">{passwordValidation.hasSpecialChars ? '✓' : '○'}</span>
+                  <div
+                    className={`flex items-center ${passwordValidation.hasSpecialChars ? "text-green-400" : "text-gray-400"}`}
+                  >
+                    <span className="mr-2">
+                      {passwordValidation.hasSpecialChars ? "✓" : "○"}
+                    </span>
                     Contains special characters
                   </div>
-                  <div className={`flex items-center ${passwordValidation.noCommonWords ? 'text-green-400' : 'text-gray-400'}`}>
-                    <span className="mr-2">{passwordValidation.noCommonWords ? '✓' : '○'}</span>
+                  <div
+                    className={`flex items-center ${passwordValidation.noCommonWords ? "text-green-400" : "text-gray-400"}`}
+                  >
+                    <span className="mr-2">
+                      {passwordValidation.noCommonWords ? "✓" : "○"}
+                    </span>
                     Avoid common passwords
                   </div>
                 </div>
@@ -336,10 +376,12 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-2">Confirm Password*</label>
+            <label className="mb-2 block text-sm font-medium text-white">
+              Confirm Password*
+            </label>
             <div className="relative">
               <Input
-                type={showConfirmPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
                 maxLength={50}
                 onChange={(e) => {
@@ -350,25 +392,32 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
                   } else {
                     // Show notification that limit is reached
                     const newErrors = { ...errors };
-                    newErrors.confirmPassword = "Password must be less than 50 characters";
+                    newErrors.confirmPassword =
+                      "Password must be less than 50 characters";
                     setErrors(newErrors);
                   }
                 }}
                 placeholder="Confirm password"
-                className={`w-full border-gradient-input text-white placeholder-gray-400 h-12 pr-10 ${
-                  errors.confirmPassword ? 'border-red-500' : ''
+                className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 ${
+                  errors.confirmPassword ? "border-red-500" : ""
                 }`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
               >
-                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-red-400 text-xs mt-1">{errors.confirmPassword}</p>
+              <p className="mt-1 text-xs text-red-400">
+                {errors.confirmPassword}
+              </p>
             )}
           </div>
 
@@ -378,42 +427,47 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
               type="checkbox"
               checked={agreeTerms}
               onChange={(e) => setAgreeTerms(e.target.checked)}
-              className={`rounded border-gray-700 bg-gray-800 text-blue-600 focus:ring-blue-500 focus:ring-offset-0 mt-1 ${
-                errors.agreeTerms ? 'border-red-500' : ''
+              className={`mt-1 rounded border-gray-700 bg-gray-800 text-blue-600 focus:ring-blue-500 focus:ring-offset-0 ${
+                errors.agreeTerms ? "border-red-500" : ""
               }`}
               required
             />
             <div>
               <label className="text-sm text-gray-300">
-                I agree to the{' '}
+                I agree to the{" "}
                 <Link href="#" className="text-blue-400 hover:text-blue-300">
                   Terms of Service
-                </Link>{' '}
-                and{' '}
+                </Link>{" "}
+                and{" "}
                 <Link href="#" className="text-blue-400 hover:text-blue-300">
                   Privacy Policy
                 </Link>
               </label>
               {errors.agreeTerms && (
-                <p className="text-red-400 text-xs mt-1">{errors.agreeTerms}</p>
+                <p className="mt-1 text-xs text-red-400">{errors.agreeTerms}</p>
               )}
             </div>
           </div>
 
           <Button
             type="submit"
-            className="w-full primary_gradient hover:opacity-60 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
+            className="primary_gradient w-full rounded-md px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-60"
             size="lg"
           >
             Continue
           </Button>
-        {/* Login Link */}
-        <div className="text-center mt-2">
-          <span className="text-white text-sm">Already have an account? </span>
-          <Link href="/artist/login" className="text-white hover:text-blue-400 transition-colors underline font-medium">
-            Log in to Ekofy.
-          </Link>
-        </div>
+          {/* Login Link */}
+          <div className="mt-2 text-center">
+            <span className="text-sm text-white">
+              Already have an account?{" "}
+            </span>
+            <Link
+              href="/artist/login"
+              className="font-medium text-white underline transition-colors hover:text-blue-400"
+            >
+              Log in to Ekofy.
+            </Link>
+          </div>
         </form>
 
         {/* Divider */}
@@ -423,7 +477,9 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
               <div className="w-full border-t border-gray-700"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-[#121212] text-gray-400">Or continue with</span>
+              <span className="bg-[#121212] px-2 text-gray-400">
+                Or continue with
+              </span>
             </div>
           </div>
         </div>
@@ -432,10 +488,10 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
         <Button
           type="button"
           variant="outline"
-          className="w-full border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700/50 mb-6"
+          className="mb-6 w-full border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700/50"
           size="lg"
         >
-          <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+          <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
             <path
               fill="currentColor"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

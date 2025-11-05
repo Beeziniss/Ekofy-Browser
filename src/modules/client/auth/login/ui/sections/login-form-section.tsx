@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import EkofyLogo from "../../../../../../../public/ekofy-logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -20,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import useSignIn from "../../hook/use-sign-in";
+import { EkofyLogo } from "@/assets/icons";
 
 const loginSchema = z.object({
   email: z
@@ -63,7 +62,7 @@ const LoginFormSection = () => {
         <div className="text-center">
           <div className="mb-6 flex items-center justify-center">
             <div className="mr-3 flex items-center justify-center rounded-full">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+              <EkofyLogo className="size-[60px]" />
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
@@ -119,7 +118,7 @@ const LoginFormSection = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
+                        className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />

@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import EkofyLogo from "../../../../../../../public/ekofy-logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -10,12 +8,18 @@ import { useSignUpStore } from "@/store/stores";
 import { validateEmail, validatePassword } from "@/utils/signup-utils";
 import { Eye, EyeOff } from "lucide-react";
 import { ClientSignUpFormSectionProps } from "@/types/listener-auth";
+import { EkofyLogo } from "@/assets/icons";
 
-const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps) => {
+const SignUpFormSection = ({
+  onNext,
+  initialData,
+}: ClientSignUpFormSectionProps) => {
   const { goToNextStep, updateFormData, formData } = useSignUpStore();
-  
+
   // Initialize state from global store or initial data
-  const [email, setEmail] = useState(initialData?.email || formData.email || "");
+  const [email, setEmail] = useState(
+    initialData?.email || formData.email || "",
+  );
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -71,8 +75,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
   // Real-time validation
   const validateField = (field: string, value: string) => {
     const newErrors = { ...errors };
-    
-    if (field === 'email') {
+
+    if (field === "email") {
       if (!value) {
         newErrors.email = "Email is required";
       } else if (value.length > 50) {
@@ -83,8 +87,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         delete newErrors.email;
       }
     }
-    
-    if (field === 'password') {
+
+    if (field === "password") {
       if (!value) {
         newErrors.password = "Password is required";
       } else if (value.length > 50) {
@@ -97,7 +101,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
           delete newErrors.password;
         }
       }
-      
+
       // Re-validate confirm password if password changes
       if (confirmPassword && value !== confirmPassword) {
         newErrors.confirmPassword = "Passwords do not match";
@@ -105,8 +109,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         delete newErrors.confirmPassword;
       }
     }
-    
-    if (field === 'confirmPassword') {
+
+    if (field === "confirmPassword") {
       if (!value) {
         newErrors.confirmPassword = "Confirm password is required";
       } else if (password !== value) {
@@ -115,7 +119,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         delete newErrors.confirmPassword;
       }
     }
-    
+
     setErrors(newErrors);
   };
 
@@ -147,7 +151,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         <div className="text-center">
           <div className="mb-6 flex items-center justify-center">
             <div className="mr-3 flex items-center justify-center rounded-full">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+              <EkofyLogo className="size-[60px]" />
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
@@ -220,7 +224,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
                   } else {
                     // Show notification that limit is reached
                     const newErrors = { ...errors };
-                    newErrors.password = "Password must be less than 50 characters";
+                    newErrors.password =
+                      "Password must be less than 50 characters";
                     setErrors(newErrors);
                   }
                 }}
@@ -232,7 +237,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
+                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
@@ -268,7 +273,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
                   } else {
                     // Show notification that limit is reached
                     const newErrors = { ...errors };
-                    newErrors.confirmPassword = "Password must be less than 50 characters";
+                    newErrors.confirmPassword =
+                      "Password must be less than 50 characters";
                     setErrors(newErrors);
                   }
                 }}
@@ -280,7 +286,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
+                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
               >
                 {showConfirmPassword ? (
                   <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />

@@ -1,28 +1,29 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import EkofyLogo from "../../../../../../public/ekofy-logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import useArtistSignIn from "../../hook/use-artist-sign-in";
+import { EkofyLogo } from "@/assets/icons";
 
 const ArtistLoginFormSection = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [customErrors, setCustomErrors] = useState<{ [key: string]: string }>({});
+  const [customErrors, setCustomErrors] = useState<{ [key: string]: string }>(
+    {},
+  );
   const { signIn, isLoading } = useArtistSignIn();
 
   // Custom validation function
   const validateField = (field: string, value: string) => {
     const errors = { ...customErrors };
-    
-    if (field === 'email') {
+
+    if (field === "email") {
       if (!value) {
         errors.email = "Email is required";
       } else if (value.length > 50) {
@@ -33,8 +34,8 @@ const ArtistLoginFormSection = () => {
         delete errors.email;
       }
     }
-    
-    if (field === 'password') {
+
+    if (field === "password") {
       if (!value) {
         errors.password = "Password is required";
       } else if (value.length < 6) {
@@ -45,25 +46,25 @@ const ArtistLoginFormSection = () => {
         delete errors.password;
       }
     }
-    
+
     setCustomErrors(errors);
     return !errors[field];
   };
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Clear custom errors
     setCustomErrors({});
-    
+
     // Validate all fields
     const emailValid = validateField("email", email);
     const passwordValid = validateField("password", password);
-    
+
     if (!emailValid || !passwordValid) {
       return;
     }
-    
+
     signIn({
       email,
       password,
@@ -77,7 +78,7 @@ const ArtistLoginFormSection = () => {
         <div className="mb-8 text-center">
           <div className="mb-6 flex items-center justify-center">
             <div className="mr-3 flex items-center justify-center rounded-full">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+              <EkofyLogo className="size-[60px]" />
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
@@ -143,7 +144,8 @@ const ArtistLoginFormSection = () => {
                   } else {
                     // Show notification that limit is reached
                     const errors = { ...customErrors };
-                    errors.password = "Password must be less than 50 characters";
+                    errors.password =
+                      "Password must be less than 50 characters";
                     setCustomErrors(errors);
                   }
                 }}
@@ -155,7 +157,7 @@ const ArtistLoginFormSection = () => {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isLoading}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white"
+                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -165,7 +167,9 @@ const ArtistLoginFormSection = () => {
               </button>
             </div>
             {customErrors.password && (
-              <p className="mt-1 text-sm text-red-400">{customErrors.password}</p>
+              <p className="mt-1 text-sm text-red-400">
+                {customErrors.password}
+              </p>
             )}
           </div>
 

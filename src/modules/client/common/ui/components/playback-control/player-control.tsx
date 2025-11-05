@@ -5,7 +5,7 @@ import { formatMilliseconds } from "@/utils/format-milliseconds";
 import { useAudioStore } from "@/store";
 import { Repeat, Shuffle, SkipBack, SkipForward } from "lucide-react";
 import Image from "next/image";
-import { toast } from "sonner";
+import { PauseButton, PlayButton } from "@/assets/icons";
 
 const PlayerControl = () => {
   const {
@@ -63,26 +63,13 @@ const PlayerControl = () => {
           variant="ghost"
           size="iconMd"
           className="text-main-white duration-0 hover:brightness-90"
-          onClick={() => {
-            togglePlayPause();
-            toast.success(isPlaying ? "Paused" : "Playing");
-          }}
+          onClick={togglePlayPause}
           disabled={!currentTrack}
         >
           {isPlaying ? (
-            <Image
-              src={"/pause-button.svg"}
-              alt="Ekofy Pause Button"
-              width={32}
-              height={32}
-            />
+            <PauseButton className="size-8" />
           ) : (
-            <Image
-              src={"/play-button.svg"}
-              alt="Ekofy Play Button"
-              width={32}
-              height={32}
-            />
+            <PlayButton className="size-8" />
           )}
         </Button>
       </TooltipButton>

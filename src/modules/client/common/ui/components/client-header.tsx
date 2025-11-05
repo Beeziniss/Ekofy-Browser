@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import SearchBar from "./search-bar";
 import AuthButton from "./auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { EkofyLogo } from "@/assets/icons";
+import { useAuthStore } from "@/store";
 
 interface ClientNavbarProps {
   href: string;
@@ -48,6 +49,7 @@ const navBarItems: ClientNavbarProps[] = [
 
 const ClientHeader = () => {
   const pathname = usePathname();
+  const { isAuthenticated } = useAuthStore();
 
   // Helper function to determine if a nav item is active
   const isNavItemActive = (item: ClientNavbarProps) => {
@@ -67,12 +69,7 @@ const ClientHeader = () => {
       <div className="flex items-center gap-x-8">
         <Link href={"/"}>
           <div className="flex items-center gap-x-2">
-            <Image
-              src={"/ekofy-logo.svg"}
-              alt="Ekofy Logo"
-              width={37}
-              height={37}
-            />
+            <EkofyLogo className="size-[37px]" />
             <span className="primary_gradient inline-block bg-clip-text text-2xl font-bold text-transparent uppercase">
               Ekofy
             </span>
@@ -88,7 +85,7 @@ const ClientHeader = () => {
               className={cn(
                 `text-main-grey-dark-1 hover:text-main-white inline-block py-[19px]`,
                 isNavItemActive(item) ? item.activeStyle : "",
-                item.requireAuth ? "hidden" : "",
+                item.requireAuth && !isAuthenticated ? "hidden" : "",
               )}
             >
               <span className="text-sm font-semibold">{item.label}</span>

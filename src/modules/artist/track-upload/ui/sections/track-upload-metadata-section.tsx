@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { auddApi } from "@/services/audd-services";
 import {
   Form,
   FormControl,
@@ -493,6 +494,40 @@ const TrackUploadMetadataSection = () => {
     }
 
     setIsUploading(true);
+
+    try {
+      // Check for copyright violations using song recognition
+      toast.info("Checking track for copyright compliance...");
+
+      const recognitionResult = await auddApi.recognizeSong(displayTrack.file);
+
+      // Check if the song recognition found a match (potential copyright issue)
+      if (
+        recognitionResult.status !== "success" ||
+        recognitionResult.result !== null
+      ) {
+        setIsUploading(false);
+        if (recognitionResult.result) {
+          toast.error(
+            "This track appears to match existing copyrighted content. Please ensure you have the proper rights to upload this track or upload original content only.",
+          );
+        } else {
+          toast.error(
+            "Failed to verify track copyright status. Please try again or contact support if the issue persists.",
+          );
+        }
+        return;
+      }
+
+      toast.success("Copyright check passed. Proceeding with upload...");
+    } catch (error) {
+      setIsUploading(false);
+      console.error("Copyright check failed:", error);
+      toast.error(
+        "Unable to verify track copyright status. Please try again or contact support if the issue persists.",
+      );
+      return;
+    }
 
     try {
       // Upload cover image to Cloudinary first
