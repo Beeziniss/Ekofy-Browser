@@ -43,7 +43,7 @@ query SubscriptionsDetail($where: SubscriptionFilterInput) {
 `);
 
 export const SUBSCRIPTION_PLANS_QUERIES = graphql(`
-    query SubscriptionPlans($skip: Int, $take: Int, $where: SubscriptionPlanFilterInput) {
+query SubscriptionPlans($skip: Int, $take: Int, $where: SubscriptionPlanFilterInput) {
     subscriptionPlans(skip: $skip, take: $take, where: $where) {
         pageInfo {
             hasNextPage

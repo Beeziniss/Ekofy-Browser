@@ -2,7 +2,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SubscriptionActions } from "../subscription/subscription-actions";
 import { SubscriptionPlanTable } from "../subscription/subscription-plan-table";
 import { CustomPagination } from "@/components/ui/custom-pagination";
-import { SubscriptionTier, SubscriptionStatus } from "@/gql/graphql";
 import type { SubscriptionPlan } from "@/types";
 
 interface SubscriptionPlansSectionProps {
@@ -48,13 +47,13 @@ export function SubscriptionPlansSection({
   // Check if subscription can create plans
   const canCreateSubscriptionPlans = () => {
     if (!subscription) return false;
-    return subscription.tier === SubscriptionTier.Premium && subscription.status === SubscriptionStatus.Active;
+    return (subscription.tier === 'PREMIUM' || subscription.tier === 'PRO') && subscription.status === 'ACTIVE';
   };
 
   // Check if subscription plans section should be shown
   const shouldShowSubscriptionPlans = () => {
     if (!subscription) return false;
-    return subscription.tier !== SubscriptionTier.Free;
+    return subscription.tier !== 'FREE';
   };
 
   if (!shouldShowSubscriptionPlans()) {
@@ -83,8 +82,8 @@ export function SubscriptionPlansSection({
         <Card className="border-amber-200 bg-amber-50">
           <CardContent className="p-4">
             <p className="text-sm text-amber-800">
-              {subscription.tier !== SubscriptionTier.Premium 
-                ? "Only Premium subscriptions can create subscription plans."
+              {(subscription.tier !== 'PREMIUM' && subscription.tier !== 'PRO') || subscription.status !== 'ACTIVE'
+                ? "Only Premium and Pro subscriptions can create subscription plans."
                 : "Only Active subscriptions can create subscription plans."
               }
             </p>

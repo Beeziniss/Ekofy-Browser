@@ -65,12 +65,6 @@ export function SubscriptionDetailSection({
     refetchPlans();
   };
 
-  // Check if subscription can create plans
-  const canCreateSubscriptionPlans = () => {
-    if (!subscription) return false;
-    return subscription.tier === SubscriptionTier.Premium && subscription.status === SubscriptionStatus.Active;
-  };
-
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case "ACTIVE":
@@ -88,7 +82,7 @@ export function SubscriptionDetailSection({
         return "outline" as const;
       case "PREMIUM":
         return "default" as const;
-      case "ENTERPRISE":
+      case "PRO":
         return "destructive" as const;
       default:
         return "secondary" as const;
@@ -138,8 +132,8 @@ export function SubscriptionDetailSection({
         onDeletePlan={handleDeletePlan}
       />
 
-      {/* Only show form if subscription can create plans */}
-      {canCreateSubscriptionPlans() && (
+      {/* Show form for Premium and Pro subscriptions */}
+      {(subscription.tier === SubscriptionTier.Premium || subscription.tier === SubscriptionTier.Pro) && subscription.status === SubscriptionStatus.Active && (
         <CreateSubscriptionPlanForm
           open={isCreatePlanFormOpen}
           onOpenChange={setIsCreatePlanFormOpen}

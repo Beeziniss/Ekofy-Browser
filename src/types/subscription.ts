@@ -124,3 +124,36 @@ export interface UpdateSubscriptionPlanInput {
     value: string;
   }>;
 }
+
+export interface GraphQLSubscriptionPlan {
+  id: string;
+  subscriptionId: string;
+  stripeProductId: string;
+  stripeProductActive: boolean;
+  stripeProductName: string;
+  stripeProductImages?: string[] | null;
+  stripeProductType: string;
+  stripeProductMetadata?: Array<{ key: string; value: string }> | null;
+  subscriptionPlanPrices: Array<{
+    stripePriceId: string;
+    stripePriceActive: boolean;
+    stripePriceUnitAmount: number;
+    stripePriceCurrency: string;
+    stripePriceLookupKey: string;
+    interval: PeriodTime;
+    intervalCount: number;
+  }>;
+  subscription: Array<{
+    id: string;
+    name: string;
+    description?: string | null;
+    code: string;
+    version: number;
+    amount: number;
+    currency: string;
+    tier: string;
+    status: string;
+    createdAt: string;
+    updatedAt?: string;
+  }>;
+}

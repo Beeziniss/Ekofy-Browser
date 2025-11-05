@@ -162,6 +162,7 @@ export function CreateSubscriptionForm({
                       <SelectContent>
                         <SelectItem value={SubscriptionTier.Free}>Free</SelectItem>
                         <SelectItem value={SubscriptionTier.Premium}>Premium</SelectItem>
+                        <SelectItem value={SubscriptionTier.Pro}>Pro</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

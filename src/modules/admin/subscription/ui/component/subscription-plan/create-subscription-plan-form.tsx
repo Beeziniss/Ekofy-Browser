@@ -37,8 +37,7 @@ const priceSchema = z.object({
   interval: z.nativeEnum(PeriodTime),
   intervalCount: z.number().min(1, "Interval count must be at least 1"),
   lookupKey: z.string()
-    .min(1, "Lookup key is required")
-    .regex(/^[a-z][a-z0-9_]*$/, "Lookup key must be lowercase, start with a letter, and contain only letters, numbers, and underscores"),
+    .min(1, "Lookup key is required"),
 });
 
 const metadataSchema = z.object({

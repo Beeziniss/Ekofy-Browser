@@ -53,7 +53,7 @@ export function SubscriptionTable({
         return "outline" as const;
       case "PREMIUM":
         return "default" as const;
-      case "ENTERPRISE":
+      case "PRO":
         return "destructive" as const;
       default:
         return "secondary" as const;
