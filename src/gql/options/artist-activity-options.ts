@@ -5,8 +5,10 @@ import {
   PayoutTransactionFilterInput,
   PayoutTransactionSortInput,
   SortEnumType,
+  InvoiceFilterInput,
+  InvoiceSortInput,
 } from "@/gql/graphql";
-import { GetArtistTransactionsQuery, GetArtistPayoutsQuery } from "@/modules/artist/profile/ui/views/queries";
+import { GetArtistTransactionsQuery, GetArtistPayoutsQuery, GetArtistInvoicesQuery } from "@/modules/artist/profile/ui/views/queries";
 
 export function artistTransactionsOptions(params: {
   userId: string;
@@ -80,5 +82,34 @@ export function artistPayoutByIdOptions(params: { id: string }) {
   return {
     queryKey: ["artist-payout", id],
     queryFn: async () => execute(GetArtistPayoutsQuery, { where, skip, take }),
+  };
+}
+
+// Invoices list for artist by userId
+export function artistInvoicesOptions(params: { userId: string; page: number; pageSize: number }) {
+  const { userId, page, pageSize } = params;
+  const skip = (page - 1) * pageSize;
+  const take = pageSize;
+
+  const where: InvoiceFilterInput = {
+    userId: { eq: userId },
+  };
+  const order: InvoiceSortInput[] = [{ paidAt: SortEnumType.Desc }];
+
+  return {
+    queryKey: ["artist-invoices", userId, page, pageSize],
+    queryFn: async () => execute(GetArtistInvoicesQuery, { where, order, skip, take }),
+  };
+}
+
+// Invoice detail by id for artist
+export function artistInvoiceByIdOptions(params: { id: string }) {
+  const { id } = params;
+  const where: InvoiceFilterInput = { id: { eq: id } };
+  const take = 1;
+  const skip = 0;
+  return {
+    queryKey: ["artist-invoice", id],
+    queryFn: async () => execute(GetArtistInvoicesQuery, { where, skip, take }),
   };
 }

@@ -179,3 +179,54 @@ export const GetArtistPayoutsQuery = `
     take?: number;
   }
 >;
+
+// Invoices list for an artist (by userId) – same shape as listener
+import type {
+  InvoiceFilterInput,
+  InvoiceSortInput,
+} from "@/gql/graphql";
+
+export const GetArtistInvoicesQuery = `
+  query GetArtistInvoices($where: InvoiceFilterInput, $order: [InvoiceSortInput!], $skip: Int, $take: Int) {
+    invoices(where: $where, order: $order, skip: $skip, take: $take) {
+      totalCount
+      items {
+        id
+        amount
+        currency
+        email
+        to
+        from
+        paidAt
+        paymentTransactionId
+      }
+      pageInfo { hasNextPage hasPreviousPage }
+    }
+  }
+` as unknown as TypedDocumentString<
+  {
+    invoices?: {
+      totalCount: number;
+      pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
+      items?: Array<
+        | {
+            id: string;
+            amount: number;
+            currency: string;
+            email: string;
+            to: string;
+            from: string;
+            paidAt: string;
+            paymentTransactionId: string;
+          }
+        | null
+      > | null;
+    } | null;
+  },
+  {
+    where?: InvoiceFilterInput;
+    order?: InvoiceSortInput[];
+    skip?: number;
+    take?: number;
+  }
+>;
