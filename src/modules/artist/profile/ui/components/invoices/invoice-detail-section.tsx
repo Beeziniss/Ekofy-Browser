@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { listenerInvoiceByIdOptions } from "@/gql/options/listener-activity-options";
+import { artistInvoiceByIdOptions } from "@/gql/options/artist-activity-options";
 import SharedInvoiceDetailSection from "@/modules/shared/ui/sections/invoices/invoice-detail-section";
 
 type Props = {
@@ -10,8 +10,8 @@ type Props = {
   backHref?: string;
 };
 
-export default function InvoiceDetailSection({ referenceId, backHref = "/profile/invoices" }: Props) {
-  const { data, isLoading, isError } = useQuery(listenerInvoiceByIdOptions({ id: referenceId }));
+export default function ArtistInvoiceDetailSection({ referenceId, backHref = "/artist/studio/profile/invoices" }: Props) {
+  const { data, isLoading, isError } = useQuery(artistInvoiceByIdOptions({ id: referenceId }));
   if (isLoading) return <div className="p-4">Loading invoice…</div>;
   if (isError) return <div className="p-4 text-red-500">Failed to load invoice.</div>;
   const item = data?.invoices?.items?.[0];

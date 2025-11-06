@@ -6,7 +6,7 @@ import { UserRole } from "@/types/role";
 import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import InvoicesTable from "@/modules/client/profile/ui/components/activity/invoices-table";
+import SharedInvoicesTable from "@/modules/shared/ui/components/activity/invoices-table";
 
 export default function InvoicesPage() {
   const router = useRouter();
@@ -35,7 +35,12 @@ export default function InvoicesPage() {
           </Button>
         </div>
         <p className="text-muted-foreground mb-2 text-sm">All invoices associated with your account.</p>
-        <InvoicesTable userId={user!.userId} />
+        <SharedInvoicesTable
+          userId={user!.userId}
+          source="listener"
+          invoiceLinkPrefix="/profile/invoices"
+          txLinkPrefix="/profile/payment-history"
+        />
       </div>
     </Suspense>
   );
