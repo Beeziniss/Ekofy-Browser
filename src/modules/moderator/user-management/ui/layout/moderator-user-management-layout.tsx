@@ -34,7 +34,7 @@ export function ModeratorUserManagementLayout({
             Back
           </Button>
         )}
-        <h1 className="text-3xl font-bold text-white mb-2">{title}</h1>
+        <h1 className="mb-2 text-3xl font-bold text-white">{title}</h1>
         <p className="text-gray-400">{description}</p>
       </div>
       {children}

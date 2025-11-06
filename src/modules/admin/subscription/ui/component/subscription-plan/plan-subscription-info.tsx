@@ -25,22 +25,24 @@ export function PlanSubscriptionInfo({ subscription }: PlanSubscriptionInfoProps
       <CardContent>
         <div className="space-y-4">
           {subscription.map((sub) => (
-            <div key={sub.id} className="border rounded-lg p-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div key={sub.id} className="rounded-lg border p-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="text-sm font-medium text-main-white">Name</label>
-                  <p className="text-sm text-main-grey-dark">{sub.name}</p>
+                  <label className="text-main-white text-sm font-medium">Name</label>
+                  <p className="text-main-grey-dark text-sm">{sub.name}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-main-white">Code</label>
-                  <p className="text-sm text-main-grey-dark font-mono">{sub.code}</p>
+                  <label className="text-main-white text-sm font-medium">Code</label>
+                  <p className="text-main-grey-dark font-mono text-sm">{sub.code}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-main-white">Tier</label>
-                  <Badge variant="outline" className="ml-1">{sub.tier}</Badge>
+                  <label className="text-main-white text-sm font-medium">Tier</label>
+                  <Badge variant="outline" className="ml-1">
+                    {sub.tier}
+                  </Badge>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-main-white">Status</label>
+                  <label className="text-main-white text-sm font-medium">Status</label>
                   <Badge variant={sub.status === "ACTIVE" ? "default" : "secondary"} className="ml-1">
                     {sub.status}
                   </Badge>
@@ -48,8 +50,8 @@ export function PlanSubscriptionInfo({ subscription }: PlanSubscriptionInfoProps
               </div>
               {sub.description && (
                 <div className="mt-4">
-                  <label className="text-sm font-medium text-main-white">Description</label>
-                  <p className="text-sm text-main-grey-dark">{sub.description}</p>
+                  <label className="text-main-white text-sm font-medium">Description</label>
+                  <p className="text-main-grey-dark text-sm">{sub.description}</p>
                 </div>
               )}
             </div>

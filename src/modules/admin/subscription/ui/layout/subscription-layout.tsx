@@ -7,34 +7,30 @@ interface SubscriptionLayoutProps {
   showCard?: boolean;
 }
 
-export function SubscriptionLayout({ 
-  children, 
+export function SubscriptionLayout({
+  children,
   title = "Subscription Management",
   description = "Manage subscriptions and plans for your platform",
-  showCard = true
+  showCard = true,
 }: SubscriptionLayoutProps) {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <div className="flex-1 space-y-4 p-4 md:p-6 lg:p-8 pt-6">
+    <div className="bg-background flex min-h-screen flex-col">
+      <div className="flex-1 space-y-4 p-4 pt-6 md:p-6 lg:p-8">
         {(title || description) && (
           <div className="flex items-center justify-between space-y-2">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{title}</h2>
+              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">{title}</h2>
               <p className="text-muted-foreground">{description}</p>
             </div>
           </div>
         )}
-        
+
         {showCard ? (
-          <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-            <div className="p-4 md:p-6">
-              {children}
-            </div>
+          <div className="bg-card text-card-foreground rounded-lg border shadow-sm">
+            <div className="p-4 md:p-6">{children}</div>
           </div>
         ) : (
-          <div className="space-y-4">
-            {children}
-          </div>
+          <div className="space-y-4">{children}</div>
         )}
       </div>
     </div>

@@ -6,10 +6,7 @@ import {
   PaymentTransactionSortInput,
   SortEnumType,
 } from "@/gql/graphql";
-import {
-  GetListenerInvoicesQuery,
-  GetListenerTransactionsQuery,
-} from "@/modules/client/profile/ui/views/queries";
+import { GetListenerInvoicesQuery, GetListenerTransactionsQuery } from "@/modules/client/profile/ui/views/queries";
 
 export function listenerTransactionsOptions(params: {
   userId: string;
@@ -28,16 +25,11 @@ export function listenerTransactionsOptions(params: {
 
   return {
     queryKey: ["listener-transactions", userId, page, pageSize],
-    queryFn: async () =>
-      execute(GetListenerTransactionsQuery, { where, order, skip, take }),
+    queryFn: async () => execute(GetListenerTransactionsQuery, { where, order, skip, take }),
   };
 }
 
-export function listenerInvoicesOptions(params: {
-  userId: string;
-  page: number;
-  pageSize: number;
-}) {
+export function listenerInvoicesOptions(params: { userId: string; page: number; pageSize: number }) {
   const { userId, page, pageSize } = params;
   const skip = (page - 1) * pageSize;
   const take = pageSize;

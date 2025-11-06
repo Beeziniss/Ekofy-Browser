@@ -66,7 +66,7 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
   play: () => set({ isPlaying: true }),
   pause: () => set({ isPlaying: false }),
   togglePlayPause: () => set((state) => ({ isPlaying: !state.isPlaying })),
-  
+
   // Auto-play when audio is ready (called by audio player)
   autoPlayWhenReady: () => set({ isPlaying: true }),
 
@@ -93,17 +93,12 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
     })),
 
   // Queue management
-  setQueue: (tracks: Track[]) =>
-    set({ queue: tracks, currentIndex: 0, currentPlaylistId: null }),
-  addToQueue: (track: Track) =>
-    set((state) => ({ queue: [...state.queue, track] })),
+  setQueue: (tracks: Track[]) => set({ queue: tracks, currentIndex: 0, currentPlaylistId: null }),
+  addToQueue: (track: Track) => set((state) => ({ queue: [...state.queue, track] })),
   removeFromQueue: (index: number) =>
     set((state) => ({
       queue: state.queue.filter((_, i) => i !== index),
-      currentIndex:
-        state.currentIndex > index
-          ? state.currentIndex - 1
-          : state.currentIndex,
+      currentIndex: state.currentIndex > index ? state.currentIndex - 1 : state.currentIndex,
     })),
 
   skipToNext: () => {
@@ -200,14 +195,15 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
   // State management
   setLoading: (loading: boolean) => set({ isLoading: loading }),
   setError: (error: string | null) => set({ error }),
-  clearAudioState: () => set({ 
-    currentTrack: null, 
-    isPlaying: false, 
-    currentTime: 0, 
-    error: null, 
-    isLoading: false,
-    queue: [],
-    currentIndex: -1,
-  }),
+  clearAudioState: () =>
+    set({
+      currentTrack: null,
+      isPlaying: false,
+      currentTime: 0,
+      error: null,
+      isLoading: false,
+      queue: [],
+      currentIndex: -1,
+    }),
   reset: () => set(initialState),
 }));

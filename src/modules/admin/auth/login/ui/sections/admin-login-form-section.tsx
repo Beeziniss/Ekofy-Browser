@@ -9,22 +9,12 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import useAdminSignIn from "../../hook/use-admin-sign-in";
 import { EkofyLogo } from "@/assets/icons";
 
 const adminLoginSchema = z.object({
-  email: z
-    .string()
-    .email("Please enter a valid email address")
-    .max(50, "Email must be less than 50 characters"),
+  email: z.string().email("Please enter a valid email address").max(50, "Email must be less than 50 characters"),
   password: z
     .string()
     .min(6, "Password must be at least 6 characters")
@@ -65,9 +55,7 @@ const AdminLoginFormSection = () => {
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="mb-8 text-4xl font-bold text-white">
-            Welcome Back, Admin
-          </h2>
+          <h2 className="mb-8 text-4xl font-bold text-white">Welcome Back, Admin</h2>
         </div>
 
         {/* Login Form */}
@@ -122,11 +110,7 @@ const AdminLoginFormSection = () => {
                         onClick={() => setShowPassword(!showPassword)}
                         className="text-main-grey absolute top-1/2 right-2 -translate-y-1/2"
                       >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
                   </FormControl>
@@ -149,20 +133,14 @@ const AdminLoginFormSection = () => {
                         className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
                       />
                     </FormControl>
-                    <FormLabel
-                      htmlFor="remember"
-                      className="cursor-pointer text-sm text-white"
-                    >
+                    <FormLabel htmlFor="remember" className="cursor-pointer text-sm text-white">
                       Remember me
                     </FormLabel>
                   </FormItem>
                 )}
               />
 
-              <Link
-                href="#"
-                className="text-sm text-white underline transition-colors hover:text-blue-400"
-              >
+              <Link href="#" className="text-sm text-white underline transition-colors hover:text-blue-400">
                 Forgot your password?
               </Link>
             </div>

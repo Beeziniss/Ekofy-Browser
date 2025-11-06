@@ -47,58 +47,46 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-start gap-4">
-          <div className="relative group">
+          <div className="group relative">
             <Avatar className="h-32 w-32">
-              <AvatarImage 
-                src={track.track.coverImage || undefined} 
-                alt={track.track.name}
-              />
+              <AvatarImage src={track.track.coverImage || undefined} alt={track.track.name} />
               <AvatarFallback>
                 <Music className="h-12 w-12" />
               </AvatarFallback>
             </Avatar>
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <SimplePlayButton
                 trackId={track.track.id}
                 trackName={track.track.name}
-                trackArtist={track.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
+                trackArtist={track.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
                 trackCoverImage={track.track.coverImage}
                 uploadId={track.id} // Pass uploadId for audio player
                 size="full"
-                className="h-full w-full bg-transparent hover:bg-black/20 text-white border-0 rounded-full"
+                className="h-full w-full rounded-full border-0 bg-transparent text-white hover:bg-black/20"
               />
             </div>
           </div>
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-semibold">{track.track.name}</h2>
-              <Badge 
-                variant="secondary" 
-                className={cn(getTrackTypeColor(track.track.type))}
-              >
+              <Badge variant="secondary" className={cn(getTrackTypeColor(track.track.type))}>
                 {track.track.type}
               </Badge>
-              {track.track.isExplicit && (
-                <Badge variant="destructive">Explicit</Badge>
-              )}
+              {track.track.isExplicit && <Badge variant="destructive">Explicit</Badge>}
             </div>
-            {track.track.description && (
-              <p className="text-muted-foreground">{track.track.description}</p>
-            )}
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            {track.track.description && <p className="text-muted-foreground">{track.track.description}</p>}
+            <div className="text-muted-foreground flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
                 Requested {formatDistanceToNow(new Date(track.requestedAt), { addSuffix: true })}
               </div>
               <div className="flex items-center gap-1">
                 <User className="h-4 w-4" />
-                {isLoadingUser ? (
-                  "Loading user..."
-                ) : createdByUser ? (
-                  `Created by: ${createdByUser.fullName}`
-                ) : (
-                  `Created by: ${track.createdBy}`
-                )}
+                {isLoadingUser
+                  ? "Loading user..."
+                  : createdByUser
+                    ? `Created by: ${createdByUser.fullName}`
+                    : `Created by: ${track.createdBy}`}
               </div>
             </div>
           </div>
@@ -113,7 +101,7 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
           <>
             <Separator />
             <div className="space-y-2">
-              <h3 className="font-medium flex items-center gap-2">
+              <h3 className="flex items-center gap-2 font-medium">
                 <Tag className="h-4 w-4" />
                 Tags
               </h3>
@@ -133,12 +121,12 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
           <>
             <Separator />
             <div className="space-y-2">
-              <h3 className="font-medium flex items-center gap-2">
+              <h3 className="flex items-center gap-2 font-medium">
                 <FileText className="h-4 w-4" />
                 Lyrics
               </h3>
-              <div className="bg-muted p-4 rounded-lg">
-                <pre className="whitespace-pre-wrap text-sm">{track.track.lyrics}</pre>
+              <div className="bg-muted rounded-lg p-4">
+                <pre className="text-sm whitespace-pre-wrap">{track.track.lyrics}</pre>
               </div>
             </div>
           </>
@@ -150,12 +138,7 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
             <Separator />
             <div className="space-y-2">
               <h3 className="font-medium">Preview Video</h3>
-              <video 
-                src={track.track.previewVideo} 
-                controls 
-                className="w-full rounded-lg"
-                preload="metadata"
-              >
+              <video src={track.track.previewVideo} controls className="w-full rounded-lg" preload="metadata">
                 Your browser does not support the video tag.
               </video>
             </div>

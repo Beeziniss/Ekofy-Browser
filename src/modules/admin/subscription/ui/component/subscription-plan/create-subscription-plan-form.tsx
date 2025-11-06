@@ -11,22 +11,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2 } from "lucide-react";
 import { useCreateSubscriptionPlanMutation } from "@/gql/client-mutation-options/subscription-mutation-options";
@@ -36,8 +23,7 @@ import type { CreateSubscriptionPlanInput } from "@/types";
 const priceSchema = z.object({
   interval: z.nativeEnum(PeriodTime),
   intervalCount: z.number().min(1, "Interval count must be at least 1"),
-  lookupKey: z.string()
-    .min(1, "Lookup key is required"),
+  lookupKey: z.string().min(1, "Lookup key is required"),
 });
 
 const metadataSchema = z.object({
@@ -51,9 +37,13 @@ const imageSchema = z.object({
 
 const createSubscriptionPlanSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  subscriptionCode: z.string()
+  subscriptionCode: z
+    .string()
     .min(1, "Subscription code is required")
-    .regex(/^[a-z][a-z0-9_]*$/, "Subscription code must be lowercase, start with a letter, and contain only letters, numbers, and underscores"),
+    .regex(
+      /^[a-z][a-z0-9_]*$/,
+      "Subscription code must be lowercase, start with a letter, and contain only letters, numbers, and underscores",
+    ),
   images: z.array(imageSchema).optional(),
   metadata: z.array(metadataSchema).optional(),
   prices: z.array(priceSchema).min(1, "At least one price is required"),
@@ -146,7 +136,7 @@ export default function CreateSubscriptionPlanForm({
       if (data.metadata && data.metadata.length > 0) {
         transformedData.metadata = data.metadata;
       }
-      
+
       await createSubscriptionPlanMutation.mutateAsync(transformedData);
       form.reset();
       onOpenChange(false);
@@ -158,12 +148,12 @@ export default function CreateSubscriptionPlanForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
-        className="wide-dialog max-h-[90vh] overflow-y-auto" 
-        style={{ 
-          width: '95vw', 
-          maxWidth: 'none', 
-          minWidth: '800px' 
+      <DialogContent
+        className="wide-dialog max-h-[90vh] overflow-y-auto"
+        style={{
+          width: "95vw",
+          maxWidth: "none",
+          minWidth: "800px",
         }}
       >
         <DialogHeader>
@@ -181,7 +171,7 @@ export default function CreateSubscriptionPlanForm({
                 <CardTitle>Basic Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="name"
@@ -214,125 +204,111 @@ export default function CreateSubscriptionPlanForm({
             </Card>
 
             {/* Images and Metadata in 2 columns */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               {/* Images */}
               <Card>
-              <CardHeader>
-                <CardTitle>Images</CardTitle>
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-muted-foreground">Add image URLs for this plan (optional)</p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => appendImage({ url: "" })}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Image
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {imageFields.map((field, index) => (
-                  <div key={field.id} className="flex items-center space-x-2">
-                    <FormField
-                      control={form.control}
-                      name={`images.${index}.url`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormControl>
-                            <Input 
-                              placeholder="https://example.com/image.jpg" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeImage(index)}
-                    >
-                      <Trash2 className="w-4 h-4" />
+                <CardHeader>
+                  <CardTitle>Images</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <p className="text-muted-foreground text-sm">Add image URLs for this plan (optional)</p>
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendImage({ url: "" })}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Image
                     </Button>
                   </div>
-                ))}
-                {imageFields.length === 0 && (
-                  <p className="text-sm text-muted-foreground">No images added yet. Click &quot;Add Image&quot; to add image URLs.</p>
-                )}
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {imageFields.map((field, index) => (
+                    <div key={field.id} className="flex items-center space-x-2">
+                      <FormField
+                        control={form.control}
+                        name={`images.${index}.url`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input placeholder="https://example.com/image.jpg" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="button" variant="outline" size="sm" onClick={() => removeImage(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  {imageFields.length === 0 && (
+                    <p className="text-muted-foreground text-sm">
+                      No images added yet. Click &quot;Add Image&quot; to add image URLs.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
 
-            {/* Metadata */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Metadata</CardTitle>
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-muted-foreground">Add custom metadata key-value pairs (optional)</p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => appendMetadata({ key: "", value: "" })}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Metadata
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {metadataFields.map((field, index) => (
-                  <div key={field.id} className="flex items-center space-x-2">
-                    <FormField
-                      control={form.control}
-                      name={`metadata.${index}.key`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormControl>
-                            <Input placeholder="Key (e.g., category)" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`metadata.${index}.value`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormControl>
-                            <Input placeholder="Value (e.g., premium)" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+              {/* Metadata */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Metadata</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <p className="text-muted-foreground text-sm">Add custom metadata key-value pairs (optional)</p>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => removeMetadata(index)}
+                      onClick={() => appendMetadata({ key: "", value: "" })}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Metadata
                     </Button>
                   </div>
-                ))}
-                {metadataFields.length === 0 && (
-                  <p className="text-sm text-muted-foreground">No metadata added yet. Click &quot;Add Metadata&quot; to add key-value pairs.</p>
-                )}
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {metadataFields.map((field, index) => (
+                    <div key={field.id} className="flex items-center space-x-2">
+                      <FormField
+                        control={form.control}
+                        name={`metadata.${index}.key`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input placeholder="Key (e.g., category)" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`metadata.${index}.value`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input placeholder="Value (e.g., premium)" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="button" variant="outline" size="sm" onClick={() => removeMetadata(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  {metadataFields.length === 0 && (
+                    <p className="text-muted-foreground text-sm">
+                      No metadata added yet. Click &quot;Add Metadata&quot; to add key-value pairs.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
             </div>
 
             {/* Pricing */}
             <Card>
               <CardHeader>
                 <CardTitle>Pricing</CardTitle>
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-muted-foreground">Configure pricing intervals and options</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-muted-foreground text-sm">Configure pricing intervals and options</p>
                   <Button
                     type="button"
                     variant="outline"
@@ -345,7 +321,7 @@ export default function CreateSubscriptionPlanForm({
                       })
                     }
                   >
-                    <Plus className="w-4 h-4 mr-2" />
+                    <Plus className="mr-2 h-4 w-4" />
                     Add Price
                   </Button>
                 </div>
@@ -353,21 +329,16 @@ export default function CreateSubscriptionPlanForm({
               <CardContent className="space-y-4">
                 {priceFields.map((field, index) => (
                   <Card key={field.id} className="p-4">
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="mb-4 flex items-center justify-between">
                       <h4 className="font-medium">Price Option {index + 1}</h4>
                       {priceFields.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removePrice(index)}
-                        >
-                          <Trash2 className="w-4 h-4" />
+                        <Button type="button" variant="outline" size="sm" onClick={() => removePrice(index)}>
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                       <FormField
                         control={form.control}
                         name={`prices.${index}.interval`}
@@ -431,20 +402,11 @@ export default function CreateSubscriptionPlanForm({
             </Card>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={createSubscriptionPlanMutation.isPending}
-              >
-                {createSubscriptionPlanMutation.isPending
-                  ? "Creating..."
-                  : "Create Plan"}
+              <Button type="submit" disabled={createSubscriptionPlanMutation.isPending}>
+                {createSubscriptionPlanMutation.isPending ? "Creating..." : "Create Plan"}
               </Button>
             </DialogFooter>
           </form>

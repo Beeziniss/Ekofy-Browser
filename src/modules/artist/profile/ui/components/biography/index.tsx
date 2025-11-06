@@ -32,14 +32,13 @@ export default function BiographySection() {
       setIsEditing(false);
     } catch (e) {
       const raw = e instanceof Error ? e.message : String(e);
-      const msg =
-        /401|Unauthorized/i.test(raw)
-          ? "You’re not authorized. Please sign in and try again."
-          : /403|AUTH_NOT_AUTHORIZED/i.test(raw)
+      const msg = /401|Unauthorized/i.test(raw)
+        ? "You’re not authorized. Please sign in and try again."
+        : /403|AUTH_NOT_AUTHORIZED/i.test(raw)
           ? "You don’t have permission to update this profile."
           : /Network Error/i.test(raw)
-          ? "Network issue while updating your biography. Please check your connection and retry."
-          : "Couldn’t update your biography right now. Please try again in a moment.";
+            ? "Network issue while updating your biography. Please check your connection and retry."
+            : "Couldn’t update your biography right now. Please try again in a moment.";
       console.error("Biography update failed:", raw);
       toast.error(msg);
     }
@@ -57,7 +56,7 @@ export default function BiographySection() {
       </div>
 
       {!isEditing ? (
-        <p className="mt-3 text-sm leading-6 text-muted-foreground whitespace-pre-wrap">
+        <p className="text-muted-foreground mt-3 text-sm leading-6 whitespace-pre-wrap">
           {biography || "No biography provided yet."}
         </p>
       ) : (

@@ -27,15 +27,7 @@ import { formatDistanceToNow } from "date-fns";
 import { formatNumber } from "@/utils/format-number";
 import { trackCommentRepliesOptions } from "@/gql/options/client-options";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  HeartIcon,
-  SendIcon,
-  MoreVertical,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
@@ -50,12 +42,7 @@ interface ReplyCommentProps {
   rootCommentId?: string;
 }
 
-const TrackCommentReply = ({
-  reply,
-  trackId,
-  level,
-  rootCommentId,
-}: ReplyCommentProps) => {
+const TrackCommentReply = ({ reply, trackId, level, rootCommentId }: ReplyCommentProps) => {
   const [showNestedReplies, setShowNestedReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -65,20 +52,13 @@ const TrackCommentReply = ({
 
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const {
-    showWarningDialog,
-    setShowWarningDialog,
-    warningAction,
-    trackName,
-    executeWithAuth,
-  } = useAuthAction();
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
 
   // Check if current user is the owner of this reply
   const isOwner = user?.userId === reply.commenterId;
 
   // Check if this reply has nested replies
-  const hasNestedReplies =
-    reply.replyCount !== undefined && reply.replyCount > 0;
+  const hasNestedReplies = reply.replyCount !== undefined && reply.replyCount > 0;
 
   // Fetch nested replies if this reply has replyCount > 0
   const { data: nestedReplies } = useQuery({
@@ -177,11 +157,7 @@ const TrackCommentReply = ({
     <div className={`flex gap-x-3 ${level > 0 ? "ml-8" : ""}`}>
       <Avatar className="size-10">
         <AvatarImage
-          src={
-            reply.commenter?.listener?.avatarImage ||
-            reply.commenter?.artist?.avatarImage ||
-            undefined
-          }
+          src={reply.commenter?.listener?.avatarImage || reply.commenter?.artist?.avatarImage || undefined}
         />
         <AvatarFallback>{reply.commenter?.fullName.slice(0, 2)}</AvatarFallback>
       </Avatar>
@@ -190,8 +166,7 @@ const TrackCommentReply = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-2">
             <span className="text-main-white text-sm font-semibold">
-              {reply.commenter?.artist?.stageName ||
-                reply.commenter?.listener?.displayName}
+              {reply.commenter?.artist?.stageName || reply.commenter?.listener?.displayName}
             </span>
             <span className="text-main-grey text-xs">
               {formatDistanceToNow(new Date(reply.createdAt), {
@@ -204,19 +179,12 @@ const TrackCommentReply = ({
           {isOwner && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-main-grey hover:text-main-white h-5 w-5 p-0"
-                >
+                <Button variant="ghost" size="sm" className="text-main-grey hover:text-main-white h-5 w-5 p-0">
                   <MoreVertical className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem
-                  onClick={handleEditReply}
-                  className="cursor-pointer text-xs"
-                >
+                <DropdownMenuItem onClick={handleEditReply} className="cursor-pointer text-xs">
                   <Edit className="mr-2 h-3 w-3" />
                   Edit
                 </DropdownMenuItem>
@@ -283,12 +251,7 @@ const TrackCommentReply = ({
 
           <Button
             variant={"ghost"}
-            onClick={() =>
-              executeWithAuth(
-                () => setShowReplyInput(!showReplyInput),
-                "comment",
-              )
-            }
+            onClick={() => executeWithAuth(() => setShowReplyInput(!showReplyInput), "comment")}
             className="text-main-white hover:text-main-grey h-6 cursor-pointer px-2 text-xs"
           >
             Reply
@@ -302,14 +265,9 @@ const TrackCommentReply = ({
               onClick={() => setShowNestedReplies(!showNestedReplies)}
               className="text-main-purple hover:text-main-purple hover:bg-main-purple/20 flex h-6 cursor-pointer items-center gap-x-1 px-2"
             >
-              {showNestedReplies ? (
-                <ChevronUpIcon className="size-3" />
-              ) : (
-                <ChevronDownIcon className="size-3" />
-              )}
+              {showNestedReplies ? <ChevronUpIcon className="size-3" /> : <ChevronDownIcon className="size-3" />}
               <span className="text-xs">
-                {reply.replyCount}{" "}
-                {reply.replyCount === 1 ? "reply" : "replies"}
+                {reply.replyCount} {reply.replyCount === 1 ? "reply" : "replies"}
               </span>
             </Button>
           )}
@@ -320,15 +278,9 @@ const TrackCommentReply = ({
           <div className="mt-2 flex items-center gap-x-2">
             <Avatar className="size-10">
               <AvatarImage
-                src={
-                  reply.commenter?.listener?.avatarImage ||
-                  reply.commenter?.artist?.avatarImage ||
-                  undefined
-                }
+                src={reply.commenter?.listener?.avatarImage || reply.commenter?.artist?.avatarImage || undefined}
               />
-              <AvatarFallback>
-                {reply.commenter?.fullName.slice(0, 2)}
-              </AvatarFallback>
+              <AvatarFallback>{reply.commenter?.fullName.slice(0, 2)}</AvatarFallback>
             </Avatar>
             <div className="relative flex-1">
               <Input
@@ -351,9 +303,7 @@ const TrackCommentReply = ({
                 className="bg-main-white absolute top-0 right-0 h-8 rounded-tl-none rounded-tr-full rounded-br-full rounded-bl-none px-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <SendIcon className="size-4" />
-                <span className="text-xs">
-                  {isPending ? "Posting..." : "Reply"}
-                </span>
+                <span className="text-xs">{isPending ? "Posting..." : "Reply"}</span>
               </Button>
             </div>
           </div>
@@ -364,16 +314,14 @@ const TrackCommentReply = ({
           nestedReplies?.commentReplies?.replies &&
           nestedReplies.commentReplies.replies.length > 0 && (
             <div className="mt-3 space-y-3">
-              {nestedReplies.commentReplies.replies.map(
-                (nestedReply, index) => (
-                  <TrackCommentReply
-                    key={`${nestedReply.id}-${index}`}
-                    reply={nestedReply}
-                    trackId={trackId}
-                    level={level + 1}
-                  />
-                ),
-              )}
+              {nestedReplies.commentReplies.replies.map((nestedReply, index) => (
+                <TrackCommentReply
+                  key={`${nestedReply.id}-${index}`}
+                  reply={nestedReply}
+                  trackId={trackId}
+                  level={level + 1}
+                />
+              ))}
             </div>
           )}
 
@@ -383,14 +331,11 @@ const TrackCommentReply = ({
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Reply</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this reply? This action cannot
-                be undone.
+                Are you sure you want to delete this reply? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel disabled={isDeleting}>
-                Cancel
-              </AlertDialogCancel>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteReply}
                 disabled={isDeleting}

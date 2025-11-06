@@ -35,12 +35,8 @@ const PlayerListQueue = () => {
               unoptimized
             />
             <div className="flex flex-col items-start">
-              <span className="line-clamp-1 text-sm font-semibold">
-                {currentTrack.name}
-              </span>
-              <span className="text-main-grey text-xs font-medium">
-                {currentTrack.artist}
-              </span>
+              <span className="line-clamp-1 text-sm font-semibold">{currentTrack.name}</span>
+              <span className="text-main-grey text-xs font-medium">{currentTrack.artist}</span>
             </div>
           </div>
         </div>
@@ -68,12 +64,8 @@ const PlayerListQueue = () => {
                     unoptimized
                   />
                   <div className="flex flex-col items-start">
-                    <span className="line-clamp-1 text-sm font-semibold">
-                      {track.name}
-                    </span>
-                    <span className="text-main-grey line-clamp-1 text-xs font-medium">
-                      {track.artist}
-                    </span>
+                    <span className="line-clamp-1 text-sm font-semibold">{track.name}</span>
+                    <span className="text-main-grey line-clamp-1 text-xs font-medium">{track.artist}</span>
                   </div>
                 </button>
               );

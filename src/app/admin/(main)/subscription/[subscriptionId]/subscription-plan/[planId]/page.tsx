@@ -12,9 +12,7 @@ interface SubscriptionPlanDetailPageProps {
   }>;
 }
 
-export default function SubscriptionPlanDetailPage({
-  params,
-}: SubscriptionPlanDetailPageProps) {
+export default function SubscriptionPlanDetailPage({ params }: SubscriptionPlanDetailPageProps) {
   const { subscriptionId, planId } = use(params);
 
   if (!planId || !subscriptionId) {
@@ -28,10 +26,7 @@ export default function SubscriptionPlanDetailPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <AdminSubscriptionPlanDetail 
-        subscriptionId={subscriptionId} 
-        planId={planId} 
-      />
+      <AdminSubscriptionPlanDetail subscriptionId={subscriptionId} planId={planId} />
     </HydrationBoundary>
   );
 }

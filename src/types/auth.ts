@@ -60,7 +60,7 @@ export interface RegisterListenerData {
   gender: string;
   displayName: string;
 }
-    
+
 export interface RegisterArtistData {
   email: string;
   password: string;
@@ -73,7 +73,7 @@ export interface RegisterArtistData {
   // Artist specific
   stageName?: string;
   artistType: ArtistType;
-  
+
   // Members (for groups)
   members: {
     fullName: string;
@@ -81,7 +81,7 @@ export interface RegisterArtistData {
     phoneNumber: string;
     gender: UserGender;
   }[];
-  
+
   // Identity card information
   identityCard: {
     number: string;

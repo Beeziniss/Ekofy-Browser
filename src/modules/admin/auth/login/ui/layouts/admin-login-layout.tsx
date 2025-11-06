@@ -5,11 +5,7 @@ interface AdminLoginLayoutProps {
 }
 
 const AdminLoginLayout = ({ children }: AdminLoginLayoutProps) => {
-  return (
-    <div className="w-full flex min-h-screen">
-      {children}
-    </div>
-  );
+  return <div className="flex min-h-screen w-full">{children}</div>;
 };
 
 export default AdminLoginLayout;

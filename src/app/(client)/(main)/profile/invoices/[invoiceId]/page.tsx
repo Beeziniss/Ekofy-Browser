@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
@@ -11,7 +11,7 @@ export default function InvoiceDetailPage() {
   const params = useParams<{ invoiceId: string }>();
   const { isAuthenticated, user, clearUserData } = useAuthStore();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) {
       router.replace("/login");
       return;

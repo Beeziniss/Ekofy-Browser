@@ -14,10 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Ellipsis, Heart, LinkIcon, ListPlus } from "lucide-react";
 import { useAudioStore, useAuthStore } from "@/store";
-import {
-  GraphQLTrack,
-  convertGraphQLTracksToStore,
-} from "@/utils/track-converter";
+import { GraphQLTrack, convertGraphQLTracksToStore } from "@/utils/track-converter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-options";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
@@ -38,27 +35,16 @@ interface TrackCardProps {
 }
 
 const TrackCard = React.memo(
-  ({
-    trackId,
-    coverImage,
-    trackName,
-    artists,
-    trackQueue,
-    checkTrackInFavorite,
-  }: TrackCardProps) => {
+  ({ trackId, coverImage, trackName, artists, trackQueue, checkTrackInFavorite }: TrackCardProps) => {
     const queryClient = useQueryClient();
     const { isAuthenticated } = useAuthStore();
     const [isHovered, setIsHovered] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showAuthDialog, setShowAuthDialog] = useState(false);
-    const [authDialogAction, setAuthDialogAction] = useState<
-      "play" | "favorite"
-    >("play");
+    const [authDialogAction, setAuthDialogAction] = useState<"play" | "favorite">("play");
 
     // Selective subscriptions - only subscribe to what affects THIS track
-    const isCurrentTrack = useAudioStore(
-      (state) => state.currentTrack?.id === trackId,
-    );
+    const isCurrentTrack = useAudioStore((state) => state.currentTrack?.id === trackId);
     const globalIsPlaying = useAudioStore((state) => state.isPlaying);
     const setCurrentTrack = useAudioStore((state) => state.setCurrentTrack);
     const togglePlayPause = useAudioStore((state) => state.togglePlayPause);
@@ -229,9 +215,7 @@ const TrackCard = React.memo(
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <ListPlus className="text-main-white mr-2 size-4" />
-                    <span className="text-main-white text-sm">
-                      Add to playlist
-                    </span>
+                    <span className="text-main-white text-sm">Add to playlist</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -270,10 +254,7 @@ const TrackCard = React.memo(
               artists.length > 0 &&
               artists.map((artist, index) => (
                 <span key={index}>
-                  <Link
-                    href="#"
-                    className="hover:text-main-purple hover:underline"
-                  >
+                  <Link href="#" className="hover:text-main-purple hover:underline">
                     {artist?.stageName}
                   </Link>
                   {index < artists.length - 1 && ", "}

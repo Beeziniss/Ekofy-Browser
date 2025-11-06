@@ -1,14 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,16 +19,12 @@ import { SimplePlayButton } from "./simple-play-button";
 import { ApproveTrackDialog } from "./approve-track-dialog";
 import { RejectTrackDialog } from "./reject-track-dialog";
 import { formatDistanceToNow } from "date-fns";
-import { 
-  MoreHorizontal, 
-  Eye, 
-  CheckCircle, 
-  XCircle, 
-  Music,
-  User
-} from "lucide-react";
+import { MoreHorizontal, Eye, CheckCircle, XCircle, Music, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useApproveTrackUploadRequest, useRejectTrackUploadRequest } from "@/gql/client-mutation-options/moderator-mutation";
+import {
+  useApproveTrackUploadRequest,
+  useRejectTrackUploadRequest,
+} from "@/gql/client-mutation-options/moderator-mutation";
 
 export function TrackApprovalTable({
   data,
@@ -88,9 +77,9 @@ export function TrackApprovalTable({
 
   const handleRejectConfirm = async (reasonReject: string) => {
     try {
-      await rejectMutation.mutateAsync({ 
-        uploadId: rejectDialog.uploadId, 
-        reasonReject 
+      await rejectMutation.mutateAsync({
+        uploadId: rejectDialog.uploadId,
+        reasonReject,
       });
     } catch (error) {
       console.error("Failed to reject track:", error);
@@ -170,31 +159,31 @@ export function TrackApprovalTable({
                   <Checkbox disabled />
                 </TableCell>
                 <TableCell>
-                  <div className="h-8 w-8 bg-muted animate-pulse rounded" />
+                  <div className="bg-muted h-8 w-8 animate-pulse rounded" />
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 bg-muted animate-pulse rounded" />
+                    <div className="bg-muted h-12 w-12 animate-pulse rounded" />
                     <div className="space-y-2">
-                      <div className="h-4 w-32 bg-muted animate-pulse rounded" />
-                      <div className="h-3 w-24 bg-muted animate-pulse rounded" />
+                      <div className="bg-muted h-4 w-32 animate-pulse rounded" />
+                      <div className="bg-muted h-3 w-24 animate-pulse rounded" />
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+                  <div className="bg-muted h-4 w-24 animate-pulse rounded" />
                 </TableCell>
                 <TableCell>
-                  <div className="h-6 w-16 bg-muted animate-pulse rounded" />
+                  <div className="bg-muted h-6 w-16 animate-pulse rounded" />
                 </TableCell>
                 <TableCell>
-                  <div className="h-4 w-20 bg-muted animate-pulse rounded" />
+                  <div className="bg-muted h-4 w-20 animate-pulse rounded" />
                 </TableCell>
                 <TableCell>
-                  <div className="h-6 w-20 bg-muted animate-pulse rounded" />
+                  <div className="bg-muted h-6 w-20 animate-pulse rounded" />
                 </TableCell>
                 <TableCell>
-                  <div className="h-8 w-8 bg-muted animate-pulse rounded" />
+                  <div className="bg-muted h-8 w-8 animate-pulse rounded" />
                 </TableCell>
               </TableRow>
             ))}
@@ -207,11 +196,9 @@ export function TrackApprovalTable({
   if (data.length === 0) {
     return (
       <div className="rounded-md border border-dashed p-8 text-center">
-        <Music className="mx-auto h-12 w-12 text-muted-foreground" />
+        <Music className="text-muted-foreground mx-auto h-12 w-12" />
         <h3 className="mt-4 text-lg font-semibold">No pending tracks</h3>
-        <p className="text-muted-foreground">
-          There are no track upload requests to review at the moment.
-        </p>
+        <p className="text-muted-foreground">There are no track upload requests to review at the moment.</p>
       </div>
     );
   }
@@ -243,9 +230,7 @@ export function TrackApprovalTable({
                 <TableCell>
                   <Checkbox
                     checked={selectedItems.includes(item.id)}
-                    onCheckedChange={(checked) =>
-                      handleSelectItem(item.id, checked as boolean)
-                    }
+                    onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
                     aria-label={`Select ${item.track.name}`}
                   />
                 </TableCell>
@@ -253,7 +238,9 @@ export function TrackApprovalTable({
                   <SimplePlayButton
                     trackId={item.track.id}
                     trackName={item.track.name}
-                    trackArtist={item.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
+                    trackArtist={
+                      item.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"
+                    }
                     trackCoverImage={item.track.coverImage}
                     uploadId={item.id} // Pass uploadId for audio player
                     size="sm"
@@ -262,10 +249,7 @@ export function TrackApprovalTable({
                 <TableCell>
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage 
-                        src={item.track.coverImage || "/ekofy-logo.svg"} 
-                        alt={item.track.name}
-                      />
+                      <AvatarImage src={item.track.coverImage || "/ekofy-logo.svg"} alt={item.track.name} />
                       <AvatarFallback>
                         <Music className="h-6 w-6" />
                       </AvatarFallback>
@@ -273,7 +257,7 @@ export function TrackApprovalTable({
                     <div>
                       <p className="font-medium">{item.track.name}</p>
                       {item.track.description && (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                           {item.track.description.length > 50
                             ? `${item.track.description.substring(0, 50)}...`
                             : item.track.description}
@@ -285,8 +269,8 @@ export function TrackApprovalTable({
                 <TableCell>
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage 
-                        src={item.mainArtists?.items?.map((artist) => artist.avatarImage).join(", ") || " "} 
+                      <AvatarImage
+                        src={item.mainArtists?.items?.map((artist) => artist.avatarImage).join(", ") || " "}
                         alt={item.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Various Artists"}
                       />
                       <AvatarFallback>
@@ -294,24 +278,21 @@ export function TrackApprovalTable({
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                     {item.mainArtists?.items?.slice(0, 2).map((artist) => (
-                      <div key={artist.id} className="text-sm">
-                        {artist.stageName}
-                      </div>
-                    ))}
+                      {item.mainArtists?.items?.slice(0, 2).map((artist) => (
+                        <div key={artist.id} className="text-sm">
+                          {artist.stageName}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge 
-                    variant="secondary" 
-                    className={cn(getTrackTypeColor(item.track.type))}
-                  >
+                  <Badge variant="secondary" className={cn(getTrackTypeColor(item.track.type))}>
                     {item.track.type}
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <time className="text-sm text-muted-foreground">
+                  <time className="text-muted-foreground text-sm">
                     {formatDistanceToNow(new Date(item.requestedAt), {
                       addSuffix: true,
                     })}
@@ -332,7 +313,7 @@ export function TrackApprovalTable({
                         View Details
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="text-green-600"
                         onClick={() => openApproveDialog(item)}
                         disabled={approveMutation.isPending}
@@ -340,7 +321,7 @@ export function TrackApprovalTable({
                         <CheckCircle className="mr-2 h-4 w-4" />
                         {approveMutation.isPending ? "Approving..." : "Approve"}
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="text-red-600"
                         onClick={() => openRejectDialog(item)}
                         disabled={rejectMutation.isPending}
@@ -358,10 +339,10 @@ export function TrackApprovalTable({
       </div>
 
       {/* Pagination would go here */}
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
+      <div className="text-muted-foreground flex items-center justify-between text-sm">
         <div>
-          Showing {(currentPage - 1) * pageSize + 1} to{" "}
-          {Math.min(currentPage * pageSize, totalCount)} of {totalCount} tracks
+          Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount}{" "}
+          tracks
         </div>
         {/* Add pagination component here */}
       </div>

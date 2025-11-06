@@ -7,12 +7,7 @@ interface PlanQuickStatsProps {
   totalMetadata: number;
 }
 
-export function PlanQuickStats({ 
-  totalPrices, 
-  activePrices, 
-  totalImages, 
-  totalMetadata 
-}: PlanQuickStatsProps) {
+export function PlanQuickStats({ totalPrices, activePrices, totalImages, totalMetadata }: PlanQuickStatsProps) {
   return (
     <Card>
       <CardHeader>
@@ -20,19 +15,19 @@ export function PlanQuickStats({
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex justify-between">
-          <span className="text-sm text-main-white">Total Prices</span>
+          <span className="text-main-white text-sm">Total Prices</span>
           <span className="text-sm font-medium">{totalPrices}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-sm text-main-white">Active Prices</span>
+          <span className="text-main-white text-sm">Active Prices</span>
           <span className="text-sm font-medium">{activePrices}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-sm text-main-white">Images</span>
+          <span className="text-main-white text-sm">Images</span>
           <span className="text-sm font-medium">{totalImages}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-sm text-main-white">Metadata Fields</span>
+          <span className="text-main-white text-sm">Metadata Fields</span>
           <span className="text-sm font-medium">{totalMetadata}</span>
         </div>
       </CardContent>

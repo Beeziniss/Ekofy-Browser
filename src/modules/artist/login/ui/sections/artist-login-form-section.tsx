@@ -14,9 +14,7 @@ const ArtistLoginFormSection = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [customErrors, setCustomErrors] = useState<{ [key: string]: string }>(
-    {},
-  );
+  const [customErrors, setCustomErrors] = useState<{ [key: string]: string }>({});
   const { signIn, isLoading } = useArtistSignIn();
 
   // Custom validation function
@@ -82,12 +80,8 @@ const ArtistLoginFormSection = () => {
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="mb-4 text-3xl font-bold text-white">
-            Welcome Back, Artist
-          </h2>
-          <p className="text-sm text-gray-300">
-            Enter your email and password to access your artist account
-          </p>
+          <h2 className="mb-4 text-3xl font-bold text-white">Welcome Back, Artist</h2>
+          <p className="text-sm text-gray-300">Enter your email and password to access your artist account</p>
         </div>
 
         {/* Login Form */}
@@ -119,9 +113,7 @@ const ArtistLoginFormSection = () => {
                 customErrors.email ? "border-red-500" : ""
               }`}
             />
-            {customErrors.email && (
-              <p className="mt-1 text-sm text-red-400">{customErrors.email}</p>
-            )}
+            {customErrors.email && <p className="mt-1 text-sm text-red-400">{customErrors.email}</p>}
           </div>
 
           {/* Password Field */}
@@ -144,8 +136,7 @@ const ArtistLoginFormSection = () => {
                   } else {
                     // Show notification that limit is reached
                     const errors = { ...customErrors };
-                    errors.password =
-                      "Password must be less than 50 characters";
+                    errors.password = "Password must be less than 50 characters";
                     setCustomErrors(errors);
                   }
                 }}
@@ -159,18 +150,10 @@ const ArtistLoginFormSection = () => {
                 disabled={isLoading}
                 className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {customErrors.password && (
-              <p className="mt-1 text-sm text-red-400">
-                {customErrors.password}
-              </p>
-            )}
+            {customErrors.password && <p className="mt-1 text-sm text-red-400">{customErrors.password}</p>}
           </div>
 
           {/* Remember Me and Forgot Password */}
@@ -181,14 +164,9 @@ const ArtistLoginFormSection = () => {
                 onCheckedChange={(checked) => setRememberMe(!!checked)}
                 className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
               />
-              <label className="cursor-pointer text-sm text-white">
-                Remember me
-              </label>
+              <label className="cursor-pointer text-sm text-white">Remember me</label>
             </div>
-            <Link
-              href="#"
-              className="text-sm text-white underline transition-colors hover:text-blue-400"
-            >
+            <Link href="#" className="text-sm text-white underline transition-colors hover:text-blue-400">
               Forgot your password?
             </Link>
           </div>
@@ -206,9 +184,7 @@ const ArtistLoginFormSection = () => {
 
         {/* Sign Up Link */}
         <div className="mt-6 text-center">
-          <span className="text-sm text-white">
-            Don&apos;t have an artist account?{" "}
-          </span>
+          <span className="text-sm text-white">Don&apos;t have an artist account? </span>
           <Link
             href="/artist/sign-up"
             className="font-medium text-white underline transition-colors hover:text-blue-400"

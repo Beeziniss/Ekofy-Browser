@@ -1,21 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  EllipsisIcon,
-  HeartIcon,
-  LinkIcon,
-  PauseIcon,
-  PlayIcon,
-} from "lucide-react";
-import { SearchPlaylistItem } from '@/types';
-import Image from 'next/image';
-import Link from 'next/link';
+import { EllipsisIcon, HeartIcon, LinkIcon, PauseIcon, PlayIcon } from "lucide-react";
+import { SearchPlaylistItem } from "@/types";
+import Image from "next/image";
+import Link from "next/link";
 import { toast } from "sonner";
 import { usePlaylistPlayback } from "@/modules/client/playlist/hooks/use-playlist-playback";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -33,30 +27,33 @@ export const SearchPlaylistSection: React.FC<SearchPlaylistSectionProps> = ({
   playlists,
   hasNextPage,
   isFetchingNextPage,
-  fetchNextPage
+  fetchNextPage,
 }) => {
   // Auto-load more when scrolling near bottom
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || isFetchingNextPage) {
+      if (
+        window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight ||
+        isFetchingNextPage
+      ) {
         return;
       }
-      
+
       if (hasNextPage && fetchNextPage) {
         fetchNextPage();
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Filter only public playlists
-  const publicPlaylists = playlists.filter(playlist => playlist.isPublic === true);
+  const publicPlaylists = playlists.filter((playlist) => playlist.isPublic === true);
 
   if (publicPlaylists.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <p className="text-muted-foreground">No public playlists found</p>
       </div>
     );
@@ -64,7 +61,7 @@ export const SearchPlaylistSection: React.FC<SearchPlaylistSectionProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-6">
+      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
         {publicPlaylists.map((playlist) => (
           <PlaylistCard key={playlist.id} playlist={playlist} />
         ))}
@@ -72,19 +69,15 @@ export const SearchPlaylistSection: React.FC<SearchPlaylistSectionProps> = ({
 
       {/* Loading more indicator */}
       {isFetchingNextPage && (
-        <div className="text-center py-4">
+        <div className="py-4 text-center">
           <p className="text-gray-400">Loading more playlists...</p>
         </div>
       )}
 
       {/* Load more button */}
       {hasNextPage && !isFetchingNextPage && (
-        <div className="text-center py-4">
-          <Button 
-            variant="outline" 
-            onClick={fetchNextPage}
-            className="text-white border-gray-600 hover:bg-gray-700"
-          >
+        <div className="py-4 text-center">
+          <Button variant="outline" onClick={fetchNextPage} className="border-gray-600 text-white hover:bg-gray-700">
             Load More Playlists
           </Button>
         </div>
@@ -104,11 +97,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const queryClient = useQueryClient();
 
   // Use custom hook for playlist playback functionality
-  const {
-    isPlaylistCurrentlyPlaying,
-    isPlaying,
-    handlePlayPause,
-  } = usePlaylistPlayback(playlist.id);
+  const { isPlaylistCurrentlyPlaying, isPlaying, handlePlayPause } = usePlaylistPlayback(playlist.id);
 
   // Check if current user is the owner of the playlist
   const isOwnPlaylist = user?.userId === playlist.user[0]?.id;
@@ -131,11 +120,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
       queryClient.invalidateQueries({
         queryKey: ["playlist-detail", playlist.id],
       });
-      toast.success(
-        isFavorited
-          ? "Added to your favorites!"
-          : "Removed from your favorites!",
-      );
+      toast.success(isFavorited ? "Added to your favorites!" : "Removed from your favorites!");
     },
     onError: () => {
       // Revert optimistic update on error
@@ -167,9 +152,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const onCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    navigator.clipboard.writeText(
-      `${window.location.origin}/playlists/${playlist.id}`,
-    );
+    navigator.clipboard.writeText(`${window.location.origin}/playlists/${playlist.id}`);
     toast.success("Copied!");
   };
 
@@ -207,11 +190,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
               className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity group-hover:opacity-100 ${isMenuOpen ? "opacity-100" : "opacity-0"}`}
             >
               <HeartIcon
-                className={`size-5 ${
-                  isFavorited
-                    ? "text-main-purple fill-main-purple"
-                    : "text-main-dark-bg"
-                }`}
+                className={`size-5 ${isFavorited ? "text-main-purple fill-main-purple" : "text-main-dark-bg"}`}
               />
             </Button>
           )}
@@ -243,9 +222,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         {playlist.name}
       </Link>
 
-      <p className="text-main-grey text-xs">
-        By {playlist.user[0]?.fullName || 'Unknown'}
-      </p>
+      <p className="text-main-grey text-xs">By {playlist.user[0]?.fullName || "Unknown"}</p>
     </div>
   );
 };

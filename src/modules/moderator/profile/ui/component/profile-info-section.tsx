@@ -88,12 +88,7 @@ const ProfileInfoSection = ({ userProfile }: ProfileInfoSectionProps) => {
           <Label htmlFor="role" className="text-white">
             Role
           </Label>
-          <Input
-            id="role"
-            value={userProfile.role}
-            readOnly
-            className="border-gray-700 bg-gray-800 text-white"
-          />
+          <Input id="role" value={userProfile.role} readOnly className="border-gray-700 bg-gray-800 text-white" />
         </div>
 
         <div className="space-y-2">
@@ -112,12 +107,7 @@ const ProfileInfoSection = ({ userProfile }: ProfileInfoSectionProps) => {
           <Label htmlFor="status" className="text-white">
             Status
           </Label>
-          <Input
-            id="status"
-            value={userProfile.status}
-            readOnly
-            className="border-gray-700 bg-gray-800 text-white"
-          />
+          <Input id="status" value={userProfile.status} readOnly className="border-gray-700 bg-gray-800 text-white" />
         </div>
         {/* Ngày tạo - Full width */}
         <div className="space-y-2">
@@ -138,11 +128,7 @@ const ProfileInfoSection = ({ userProfile }: ProfileInfoSectionProps) => {
           </Label>
           <Input
             id="updatedAt"
-            value={
-              userProfile.updatedAt
-                ? formatDate(userProfile.updatedAt)
-                : "Not updated yet"
-            }
+            value={userProfile.updatedAt ? formatDate(userProfile.updatedAt) : "Not updated yet"}
             readOnly
             className="border-gray-700 bg-gray-800 text-white"
           />

@@ -96,12 +96,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Prevent authenticated users from accessing ANY login pages (regardless of role)
-  const authPagePatterns = [
-    /^\/admin\/login$/,
-    /^\/moderator\/login$/,
-    /^\/artist\/login$/,
-    /^\/artist\/sign-up$/,
-  ];
+  const authPagePatterns = [/^\/admin\/login$/, /^\/moderator\/login$/, /^\/artist\/login$/, /^\/artist\/sign-up$/];
 
   const isAuthPage = authPagePatterns.some((pattern) => pattern.test(pathname));
 

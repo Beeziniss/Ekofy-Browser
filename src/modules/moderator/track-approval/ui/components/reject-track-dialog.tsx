@@ -58,19 +58,19 @@ export function RejectTrackDialog({
             Please provide a reason for rejecting this track upload request.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-muted-foreground">Track:</span>
+              <span className="text-muted-foreground text-sm font-medium">Track:</span>
               <span className="text-sm font-medium">{trackName}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-muted-foreground">Artist:</span>
+              <span className="text-muted-foreground text-sm font-medium">Artist:</span>
               <span className="text-sm font-medium">{artistName}</span>
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="reject-reason">Reason for rejection *</Label>
             <Textarea
@@ -81,16 +81,14 @@ export function RejectTrackDialog({
               className="min-h-[100px] resize-none"
               disabled={isLoading}
             />
-            <p className="text-xs text-muted-foreground">
-              This reason will be sent to the artist.
-            </p>
+            <p className="text-muted-foreground text-xs">This reason will be sent to the artist.</p>
           </div>
-          
-          <div className="rounded-md bg-red-50 p-3 border border-red-200 dark:bg-red-950 dark:border-red-800">
+
+          <div className="rounded-md border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950">
             <p className="text-sm text-red-800 dark:text-red-200">
               <strong>This action will:</strong>
             </p>
-            <ul className="text-sm text-red-700 dark:text-red-300 mt-1 space-y-1">
+            <ul className="mt-1 space-y-1 text-sm text-red-700 dark:text-red-300">
               <li>• Reject the track upload request</li>
               <li>• Notify the artist with the provided reason</li>
               <li>• Remove the track from pending approvals</li>
@@ -99,18 +97,10 @@ export function RejectTrackDialog({
         </div>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
             Cancel
           </Button>
-          <Button
-            onClick={handleConfirm}
-            disabled={isLoading || !reason.trim()}
-            variant="destructive"
-          >
+          <Button onClick={handleConfirm} disabled={isLoading || !reason.trim()} variant="destructive">
             {isLoading ? "Rejecting..." : "Reject Track"}
           </Button>
         </DialogFooter>

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { HeartIcon, PlayIcon } from 'lucide-react';
-import Image from 'next/image';
-import { SearchArtistItem } from '@/types/search';
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { HeartIcon, PlayIcon } from "lucide-react";
+import Image from "next/image";
+import { SearchArtistItem } from "@/types/search";
 import { toast } from "sonner";
 
 interface SearchArtistSectionProps {
@@ -16,27 +16,30 @@ export const SearchArtistSection: React.FC<SearchArtistSectionProps> = ({
   artists,
   hasNextPage,
   isFetchingNextPage,
-  fetchNextPage
+  fetchNextPage,
 }) => {
   // Auto-load more when scrolling near bottom
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || isFetchingNextPage) {
+      if (
+        window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight ||
+        isFetchingNextPage
+      ) {
         return;
       }
-      
+
       if (hasNextPage && fetchNextPage) {
         fetchNextPage();
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (artists.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <p className="text-muted-foreground">No artists found</p>
       </div>
     );
@@ -51,7 +54,7 @@ export const SearchArtistSection: React.FC<SearchArtistSectionProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
         {artists.map((artist) => (
           <ArtistCard key={artist.id} artist={artist} onArtistClick={handleArtistClick} />
         ))}
@@ -59,19 +62,15 @@ export const SearchArtistSection: React.FC<SearchArtistSectionProps> = ({
 
       {/* Loading more indicator */}
       {isFetchingNextPage && (
-        <div className="text-center py-4">
+        <div className="py-4 text-center">
           <p className="text-gray-400">Loading more artists...</p>
         </div>
       )}
 
       {/* Load more button */}
       {hasNextPage && !isFetchingNextPage && (
-        <div className="text-center py-4">
-          <Button 
-            variant="outline" 
-            onClick={fetchNextPage}
-            className="text-white border-gray-600 hover:bg-gray-700"
-          >
+        <div className="py-4 text-center">
+          <Button variant="outline" onClick={fetchNextPage} className="border-gray-600 text-white hover:bg-gray-700">
             Load More Artists
           </Button>
         </div>
@@ -105,52 +104,48 @@ const ArtistCard = ({ artist, onArtistClick }: ArtistCardProps) => {
   };
 
   return (
-    <div 
-      className="flex flex-col items-center space-y-3 p-3 rounded-xl hover:bg-gray-800/50 transition-all duration-200 cursor-pointer group"
+    <div
+      className="group flex cursor-pointer flex-col items-center space-y-3 rounded-xl p-3 transition-all duration-200 hover:bg-gray-800/50"
       onClick={() => onArtistClick(artist.id, artist.stageName)}
     >
-      <div className="relative w-full aspect-square">
+      <div className="relative aspect-square w-full">
         {artist.avatarImage ? (
           <Image
             src={artist.avatarImage}
             alt={artist.stageName}
             width={200}
             height={200}
-            className="w-full h-full rounded-full object-cover shadow-lg group-hover:shadow-xl transition-shadow duration-200"
+            className="h-full w-full rounded-full object-cover shadow-lg transition-shadow duration-200 group-hover:shadow-xl"
           />
         ) : (
-          <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white text-5xl font-bold shadow-lg group-hover:shadow-xl transition-shadow duration-200">
+          <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-600 text-5xl font-bold text-white shadow-lg transition-shadow duration-200 group-hover:shadow-xl">
             {artist.stageName.charAt(0).toUpperCase()}
           </div>
         )}
-        
+
         {/* Bottom left icons - only show on hover */}
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center items-center gap-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 transform items-center justify-center gap-x-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           <Button
             onClick={handlePlayClick}
-            className="bg-white hover:bg-gray-100 text-black size-12 rounded-full shadow-lg"
+            className="size-12 rounded-full bg-white text-black shadow-lg hover:bg-gray-100"
           >
-            <PlayIcon className="w-8 h-8 fill-current" />
+            <PlayIcon className="h-8 w-8 fill-current" />
           </Button>
-          
+
           <Button
             onClick={handleFavoriteClick}
-            className="bg-white hover:bg-gray-100 text-black size-12 rounded-full shadow-lg"
+            className="size-12 rounded-full bg-white text-black shadow-lg hover:bg-gray-100"
           >
-            <HeartIcon
-              className={`w-6 h-6 ${isFavorited ? "fill-red-500 text-red-500" : ""}`}
-            />
+            <HeartIcon className={`h-6 w-6 ${isFavorited ? "fill-red-500 text-red-500" : ""}`} />
           </Button>
         </div>
       </div>
-      
-      <div className="flex flex-col items-center text-center w-full">
-        <h3 className="text-white font-semibold text-sm truncate w-full group-hover:text-purple-300 hover:underline transition-colors duration-200">
+
+      <div className="flex w-full flex-col items-center text-center">
+        <h3 className="w-full truncate text-sm font-semibold text-white transition-colors duration-200 group-hover:text-purple-300 hover:underline">
           {artist.stageName}
         </h3>
-        <p className="text-gray-500 text-xs mt-1">
-          {artist.followerCount?.toLocaleString() || '0'} followers
-        </p>
+        <p className="mt-1 text-xs text-gray-500">{artist.followerCount?.toLocaleString() || "0"} followers</p>
       </div>
     </div>
   );

@@ -20,11 +20,11 @@ export const useFPTAI = () => {
   } = useArtistSignUpStore();
 
   // Cloudinary upload hook
-  const { 
-    uploadCCCD, 
+  const {
+    uploadCCCD,
     isUploading: isUploadingToCloudinary,
     uploadProgress,
-    error: uploadError 
+    error: uploadError,
   } = useCloudinaryUpload();
 
   const analyzeFrontSide = async (imageFile: File): Promise<void> => {
@@ -36,13 +36,13 @@ export const useFPTAI = () => {
     setIsAnalyzing(true);
     setProcessingCCCD(true);
 
-    try {      
+    try {
       // Start both FPT AI analysis and Cloudinary upload in parallel
       const [fptResponse, cloudinaryResult] = await Promise.all([
         fptAIService.analyzeCCCD(imageFile),
-        uploadCCCD(imageFile, "front") // Upload to Cloudinary
+        uploadCCCD(imageFile, "front"), // Upload to Cloudinary
       ]);
-      
+
       if (fptResponse.errorCode !== 0) {
         throw new Error(fptResponse.errorMessage || "Unable to read ID card information");
       }
@@ -53,18 +53,18 @@ export const useFPTAI = () => {
 
       setFrontResponse(fptResponse);
       setCCCDFrontProcessed(true);
-      
+
       // Use Cloudinary URL
       const frontImageUrl = cloudinaryResult.secure_url;
-      
+
       toast.success("Successfully read and uploaded front side of ID card!");
-      
+
       // Parse data immediately from front side (don't wait for back side)
       const parsed = fptAIService.parseCCCDResponse(fptResponse);
       if (parsed) {
         setParsedData(parsed);
       }
-      
+
       // If we have both sides, parse the complete data
       const currentState = useArtistSignUpStore.getState();
       if (currentState.cccdBackProcessed && backResponse) {
@@ -75,7 +75,6 @@ export const useFPTAI = () => {
         // Store just the front image for now
         updateIdentityCard({ frontImage: frontImageUrl });
       }
-      
     } catch (error) {
       console.error("Error analyzing front side:", error);
       toast.error(error instanceof Error ? error.message : "An error occurred while processing ID card");
@@ -96,14 +95,12 @@ export const useFPTAI = () => {
     setProcessingCCCD(true);
 
     try {
-      
       // Start both FPT AI analysis and Cloudinary upload in parallel
       const [fptResponse, cloudinaryResult] = await Promise.all([
         fptAIService.analyzeCCCD(imageFile),
-        uploadCCCD(imageFile, "back") // Upload to Cloudinary
+        uploadCCCD(imageFile, "back"), // Upload to Cloudinary
       ]);
-      
-      
+
       if (fptResponse.errorCode !== 0) {
         throw new Error(fptResponse.errorMessage || "Unable to read ID card information");
       }
@@ -114,12 +111,12 @@ export const useFPTAI = () => {
 
       setBackResponse(fptResponse);
       setCCCDBackProcessed(true);
-      
+
       // Use Cloudinary URL
       const backImageUrl = cloudinaryResult.secure_url;
-      
+
       toast.success("Successfully read and uploaded back side of ID card!");
-      
+
       // If we have both sides, parse the data
       const currentState = useArtistSignUpStore.getState();
       if (currentState.cccdFrontProcessed && frontResponse) {
@@ -130,7 +127,6 @@ export const useFPTAI = () => {
         console.log("📝 Only back side processed, storing back image...");
         updateIdentityCard({ backImage: backImageUrl });
       }
-      
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "An error occurred while processing ID card");
       setCCCDBackProcessed(false);
@@ -144,21 +140,21 @@ export const useFPTAI = () => {
     frontResp: FPTAIResponse,
     backResp: FPTAIResponse,
     frontImageUrl?: string,
-    backImageUrl?: string
+    backImageUrl?: string,
   ): Promise<void> => {
-    try {      
+    try {
       const parsed = fptAIService.parseCCCDResponse(frontResp, backResp);
-      
+
       if (!parsed) {
         throw new Error("Unable to process ID card data");
       }
       setParsedData(parsed);
-      
+
       // Get current stored images to preserve them
       const currentIdentityCard = useArtistSignUpStore.getState().formData.identityCard;
       const preservedFrontImage = frontImageUrl || currentIdentityCard?.frontImage || "";
       const preservedBackImage = backImageUrl || currentIdentityCard?.backImage || "";
-      
+
       // Convert to format expected by API
       const identityCardData = {
         number: parsed.id,
@@ -179,7 +175,7 @@ export const useFPTAI = () => {
       };
 
       updateIdentityCard(identityCardData);
-      
+
       // Also update main form data with CCCD info to ensure required fields are not missing
       const { updateFormData } = useArtistSignUpStore.getState();
       const formDataUpdate = {
@@ -187,10 +183,10 @@ export const useFPTAI = () => {
         birthDate: parsed.dateOfBirth, // Auto-map CCCD dateOfBirth to main form birthDate
         gender: parsed.sex as UserGender, // Auto-map CCCD gender to main form gender
       };
-      
+
       console.log("📝 Updating form data with:", formDataUpdate);
       updateFormData(formDataUpdate);
-      
+
       toast.success("ID card information processing completed!");
     } catch (error) {
       console.error("Error parsing complete CCCD data:", error);
@@ -217,7 +213,7 @@ export const useFPTAI = () => {
     cccdBackProcessed,
     uploadProgress,
     uploadError,
-    
+
     // Actions
     analyzeFrontSide,
     analyzeBackSide,

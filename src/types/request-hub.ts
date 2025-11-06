@@ -47,10 +47,10 @@ export interface UpdateRequestData {
 }
 
 export enum RequestStatus {
-  OPEN = 'OPEN',
-  CLOSED = 'CLOSED',
-  BLOCKED = 'BLOCKED',
-  DELETED = 'DELETED',
+  OPEN = "OPEN",
+  CLOSED = "CLOSED",
+  BLOCKED = "BLOCKED",
+  DELETED = "DELETED",
 }
 
 export interface RequestCreatingRequestInput {
@@ -71,4 +71,4 @@ export interface RequestUpdatingRequestInput {
   status?: RequestStatus;
 }
 
-export type RequestHubMode = 'view' | 'create' | 'edit' | 'detail';
+export type RequestHubMode = "view" | "create" | "edit" | "detail";

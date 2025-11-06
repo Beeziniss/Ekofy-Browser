@@ -8,35 +8,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AudioLines,
-  Bell,
-  Headset,
-  LogOut,
-  Rss,
-  Settings,
-  User,
-} from "lucide-react";
+import { AudioLines, Bell, Headset, LogOut, Rss, Settings, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { authApi } from "@/services/auth-services";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserRole } from "@/types/role";
 import { useRouter } from "next/navigation";
 import { SparklesColorful } from "@/assets/icons";
 
 const AuthButton = () => {
-  const { isAuthenticated, user, clearUserData } = useAuthStore();
-  const [hasNotification] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [hasNotification] = useState(false);
+  const { isAuthenticated, user, clearUserData } = useAuthStore();
 
   // Logout mutation
   const { mutate: logout } = useMutation({
     mutationFn: authApi.general.logout,
     onSuccess: () => {
       clearUserData();
+      queryClient.clear();
       router.replace("/");
     },
     onError: (error) => {
@@ -96,12 +90,7 @@ const AuthButton = () => {
             className="text-main-white rounded-full duration-0 hover:brightness-90"
           >
             {hasNotification ? (
-              <Image
-                src={"/bell-active.svg"}
-                alt="Notification Bell Active"
-                width={24}
-                height={24}
-              />
+              <Image src={"/bell-active.svg"} alt="Notification Bell Active" width={24} height={24} />
             ) : (
               <Bell className="size-6" />
             )}
@@ -110,10 +99,7 @@ const AuthButton = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="size-10 cursor-pointer">
-                <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="@shadcn"
-                />
+                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                 <AvatarFallback>E</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
@@ -123,9 +109,7 @@ const AuthButton = () => {
                   <DropdownMenuItem key={link.href} asChild>
                     <Link href={link.href} className="flex items-center">
                       <User className="text-main-white mr-2 size-4" />
-                      <span className="text-main-white text-base">
-                        {link.label}
-                      </span>
+                      <span className="text-main-white text-base">{link.label}</span>
                     </Link>
                   </DropdownMenuItem>
                 ))}
@@ -171,9 +155,7 @@ const AuthButton = () => {
             <span className="text-sm font-medium">Sign In</span>
           </Link>
           <Link href={"/sign-up"}>
-            <Button className="primary_gradient font-semibold text-white hover:brightness-90">
-              Create Account
-            </Button>
+            <Button className="primary_gradient font-semibold text-white hover:brightness-90">Create Account</Button>
           </Link>
         </div>
       )}

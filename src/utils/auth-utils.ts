@@ -8,9 +8,7 @@ const ACCESS_TOKEN_KEY = "access-token";
 /**
  * Set user information to localStorage
  */
-export const setUserInfoToLocalStorage = (
-  userData: IUserLocalStorage,
-): void => {
+export const setUserInfoToLocalStorage = (userData: IUserLocalStorage): void => {
   try {
     if (typeof window !== "undefined") {
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
@@ -104,9 +102,7 @@ export const clearAuthData = (): void => {
 export const isUserAuthenticated = (): boolean => {
   const userInfo = getUserInfoFromLocalStorage();
   const accessToken = getAccessTokenFromLocalStorage();
-  return (
-    userInfo !== null && userInfo.userId !== undefined && accessToken !== null
-  );
+  return userInfo !== null && userInfo.userId !== undefined && accessToken !== null;
 };
 
 /**

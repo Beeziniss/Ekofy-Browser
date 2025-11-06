@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { 
+import {
   subscriptionsPremiumQueryOptions,
   subscriptionsProQueryOptions,
   premiumSubscriptionPlansQueryOptions,
@@ -10,7 +10,7 @@ import {
   listenerPremiumEntitlementsQueryOptions,
   artistProEntitlementsQueryOptions,
   availableCouponsQueryLISTENER10FOREVEROptions,
-  availableCouponsQueryARTIST20FOREVEROptions 
+  availableCouponsQueryARTIST20FOREVEROptions,
 } from "../../../../../gql/options/subscription-clients-options";
 import { SubscriptionHeroSection } from "../sections/subscription-hero-section";
 import { SubscriptionPlansGridSection } from "../sections/subscription-plans-grid-section";
@@ -21,31 +21,29 @@ import type { SubscriptionPlan, Subscription, SubscriptionPlanPrice, GraphQLSubs
 
 // Transform GraphQL response to match our types
 const transformPlans = (rawPlans: GraphQLSubscriptionPlan[]): SubscriptionPlan[] => {
-  return rawPlans.map(plan => ({
+  return rawPlans.map((plan) => ({
     ...plan,
     stripeProductImages: plan.stripeProductImages || [],
     stripeProductMetadata: plan.stripeProductMetadata || [],
-    subscription: plan.subscription.map(sub => ({
+    subscription: plan.subscription.map((sub) => ({
       ...sub,
-      description: sub.description || undefined
+      description: sub.description || undefined,
     })) as Subscription[],
-    subscriptionPlanPrices: plan.subscriptionPlanPrices as SubscriptionPlanPrice[]
+    subscriptionPlanPrices: plan.subscriptionPlanPrices as SubscriptionPlanPrice[],
   }));
 };
 
 export function SubscriptionPlansPublicView() {
   const plansRef = useRef<HTMLDivElement>(null);
   const { user } = useAuthStore();
-  
+
   // Determine user role (default to guest if not authenticated)
   const userRole = user?.role;
   const isArtist = userRole === UserRole.ARTIST;
 
   // Query for subscriptions based on user role
   const { data: subscriptionsData, isLoading: subscriptionsLoading } = useQuery(
-    isArtist 
-      ? subscriptionsProQueryOptions(0, 1)
-      : subscriptionsPremiumQueryOptions(0, 1)
+    isArtist ? subscriptionsProQueryOptions(0, 1) : subscriptionsPremiumQueryOptions(0, 1),
   );
 
   // Get subscription ID from subscriptions data
@@ -53,43 +51,47 @@ export function SubscriptionPlansPublicView() {
   const subscriptionId = subscription?.id;
 
   // Query for subscription plans based on subscription ID and user role
-  const { data: proPlansData, isLoading: proPlansLoading, error: proPlansError } = useQuery({
+  const {
+    data: proPlansData,
+    isLoading: proPlansLoading,
+    error: proPlansError,
+  } = useQuery({
     ...proSubscriptionPlansQueryOptions(subscriptionId || ""),
-    enabled: isArtist && !!subscriptionId
+    enabled: isArtist && !!subscriptionId,
   });
 
-  const { data: premiumPlansData, isLoading: premiumPlansLoading, error: premiumPlansError } = useQuery({
+  const {
+    data: premiumPlansData,
+    isLoading: premiumPlansLoading,
+    error: premiumPlansError,
+  } = useQuery({
     ...premiumSubscriptionPlansQueryOptions(subscriptionId || ""),
-    enabled: !isArtist && !!subscriptionId
+    enabled: !isArtist && !!subscriptionId,
   });
 
   // Use the appropriate data based on user role
   const plansData = isArtist ? proPlansData : premiumPlansData;
   const plansLoading = isArtist ? proPlansLoading : premiumPlansLoading;
   const plansError = isArtist ? proPlansError : premiumPlansError;
-  
+
   // Query for entitlements based on user role
   const { data: entitlementsData, isLoading: entitlementsLoading } = useQuery(
-    isArtist 
-      ? artistProEntitlementsQueryOptions()
-      : listenerPremiumEntitlementsQueryOptions()
+    isArtist ? artistProEntitlementsQueryOptions() : listenerPremiumEntitlementsQueryOptions(),
   );
-  
+
   // Query for coupons based on user role
   const { data: couponsData, isLoading: couponsLoading } = useQuery(
-    isArtist 
-      ? availableCouponsQueryARTIST20FOREVEROptions()
-      : availableCouponsQueryLISTENER10FOREVEROptions()
+    isArtist ? availableCouponsQueryARTIST20FOREVEROptions() : availableCouponsQueryLISTENER10FOREVEROptions(),
   );
 
   const rawPlans = plansData?.subscriptionPlans?.items || [];
   const plans = transformPlans(rawPlans);
-  
+
   // Extract features from entitlements
-  const features = entitlementsData?.entitlements?.items?.map(item => item.name) || [];
-  
+  const features = entitlementsData?.entitlements?.items?.map((item) => item.name) || [];
+
   // Debug: Log entitlements data
-  console.log('🔍 Debug entitlements:', {
+  console.log("🔍 Debug entitlements:", {
     isArtist,
     userRole,
     user,
@@ -98,9 +100,9 @@ export function SubscriptionPlansPublicView() {
     features,
     subscriptionId,
     subscription,
-    queryEnabled: isArtist ? 'artistProEntitlementsQueryOptions' : 'listenerPremiumEntitlementsQueryOptions'
+    queryEnabled: isArtist ? "artistProEntitlementsQueryOptions" : "listenerPremiumEntitlementsQueryOptions",
   });
-  
+
   // Get coupon discount
   const coupon = couponsData?.coupons?.items?.[0];
   const couponDiscount = coupon?.percentOff || 0;
@@ -108,17 +110,17 @@ export function SubscriptionPlansPublicView() {
   const isLoading = subscriptionsLoading || plansLoading || entitlementsLoading || couponsLoading;
 
   const handleExploreClick = () => {
-    plansRef.current?.scrollIntoView({ behavior: 'smooth' });
+    plansRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSelectPlan = (plan: SubscriptionPlan) => {
     // TODO: Implement plan selection logic
     console.log("Selected plan:", plan);
-    
+
     const planId = plan.id;
     const tier = plan.subscription?.[0]?.tier;
-    
-    if (tier === 'FREE') {
+
+    if (tier === "FREE") {
       console.log("Redirecting to signup for free plan", planId);
     } else {
       console.log("Redirecting to signup for paid plan", planId, tier);
@@ -130,12 +132,11 @@ export function SubscriptionPlansPublicView() {
     return (
       <ClientLayout>
         <div className="container mx-auto px-6 py-16 text-center">
-          <h1 className="text-2xl font-bold text-amber-600 mb-4">No Subscription Available</h1>
+          <h1 className="mb-4 text-2xl font-bold text-amber-600">No Subscription Available</h1>
           <p className="text-muted-foreground">
-            {isArtist 
+            {isArtist
               ? "No Pro subscription plans available for artists at the moment."
-              : "No Premium subscription plans available for listeners at the moment."
-            }
+              : "No Premium subscription plans available for listeners at the moment."}
           </p>
         </div>
       </ClientLayout>
@@ -146,7 +147,7 @@ export function SubscriptionPlansPublicView() {
     return (
       <ClientLayout>
         <div className="container mx-auto px-6 py-16 text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
+          <h1 className="mb-4 text-2xl font-bold text-red-600">Something went wrong</h1>
           <p className="text-muted-foreground">Unable to load subscription plans. Please try again later.</p>
         </div>
       </ClientLayout>
@@ -172,16 +173,15 @@ export function SubscriptionPlansPublicView() {
         </div>
 
         {/* Call to Action Footer */}
-        <section className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-16">
+        <section className="bg-gradient-to-r from-purple-600 to-indigo-600 py-16 text-white">
           <div className="container mx-auto px-6 text-center">
-            <h2 className="text-3xl font-bold mb-4">
+            <h2 className="mb-4 text-3xl font-bold">
               {isArtist ? "Ready to Boost Your Music Career?" : "Ready to Start Your Music Journey?"}
             </h2>
-            <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-              {isArtist 
+            <p className="mx-auto mb-8 max-w-2xl text-xl text-purple-100">
+              {isArtist
                 ? "Join thousands of professional artists. Choose your Pro plan and start sharing your music with the world."
-                : "Join thousands of music lovers. Choose your Premium plan and start exploring unlimited music today."
-              }
+                : "Join thousands of music lovers. Choose your Premium plan and start exploring unlimited music today."}
             </p>
             {couponDiscount > 0 && (
               <div className="mb-6">
@@ -192,7 +192,7 @@ export function SubscriptionPlansPublicView() {
             )}
             <button
               onClick={handleExploreClick}
-              className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-3 rounded-lg text-lg font-semibold transition-colors"
+              className="rounded-lg bg-white px-8 py-3 text-lg font-semibold text-purple-600 transition-colors hover:bg-gray-100"
             >
               View {isArtist ? "Pro" : "Premium"} Plans
             </button>

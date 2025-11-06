@@ -1,34 +1,35 @@
-import React, { useState, useMemo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { CustomPagination } from '@/components/ui/custom-pagination';
-import { RefreshCw, Search, X } from 'lucide-react';
-import ApprovalPackageList from '../component/approval-package-list';
-import ApprovalConfirmDialog from '../component/approval-confirm-dialog';
-import { PendingArtistPackageResponse } from '@/gql/graphql';
-import { moderatorPendingPackagesOptions } from '@/gql/options/moderator-options';
-import { 
-  useApproveArtistPackage,
-  useRejectArtistPackage 
-} from '@/gql/client-mutation-options/moderator-mutation';
+import React, { useState, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { CustomPagination } from "@/components/ui/custom-pagination";
+import { RefreshCw, Search, X } from "lucide-react";
+import ApprovalPackageList from "../component/approval-package-list";
+import ApprovalConfirmDialog from "../component/approval-confirm-dialog";
+import { PendingArtistPackageResponse } from "@/gql/graphql";
+import { moderatorPendingPackagesOptions } from "@/gql/options/moderator-options";
+import { useApproveArtistPackage, useRejectArtistPackage } from "@/gql/client-mutation-options/moderator-mutation";
 
-const ApprovalServicePackageSection= () => {
+const ApprovalServicePackageSection = () => {
   const [confirmAction, setConfirmAction] = useState<{
-    type: 'approve' | 'reject';
+    type: "approve" | "reject";
     packageId: string;
     packageName: string;
   } | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 10;
   const queryClient = useQueryClient();
 
   // Query for pending packages for all artists (moderator view) with search and pagination
-  const { data: pendingData, isLoading: pendingLoading, error: pendingError } = useQuery({
+  const {
+    data: pendingData,
+    isLoading: pendingLoading,
+    error: pendingError,
+  } = useQuery({
     ...moderatorPendingPackagesOptions(currentPage, pageSize, searchTerm),
     refetchInterval: 30 * 1000, // Auto refresh every 30 seconds
   });
@@ -40,42 +41,42 @@ const ApprovalServicePackageSection= () => {
   const handleApprove = (packageId: string) => {
     const pkg = pendingPackages.find((p: PendingArtistPackageResponse) => p.id === packageId);
     setConfirmAction({
-      type: 'approve',
+      type: "approve",
       packageId,
-      packageName: pkg?.packageName || 'Package'
+      packageName: pkg?.packageName || "Package",
     });
   };
 
   const handleReject = (packageId: string) => {
     const pkg = pendingPackages.find((p: PendingArtistPackageResponse) => p.id === packageId);
     setConfirmAction({
-      type: 'reject',
+      type: "reject",
       packageId,
-      packageName: pkg?.packageName || 'Package'
+      packageName: pkg?.packageName || "Package",
     });
   };
 
   const handleConfirmAction = () => {
     if (!confirmAction) return;
-    
-    if (confirmAction.type === 'approve') {
+
+    if (confirmAction.type === "approve") {
       approveMutation.mutate(confirmAction.packageId, {
         onSuccess: () => {
-          toast.success('Package approved successfully');
+          toast.success("Package approved successfully");
         },
         onError: (error) => {
-          toast.error('Failed to approve package');
-          console.error('Approve error:', error);
+          toast.error("Failed to approve package");
+          console.error("Approve error:", error);
         },
       });
     } else {
       rejectMutation.mutate(confirmAction.packageId, {
         onSuccess: () => {
-          toast.success('Package rejected successfully');
+          toast.success("Package rejected successfully");
         },
         onError: (error) => {
-          toast.error('Failed to reject package');
-          console.error('Reject error:', error);
+          toast.error("Failed to reject package");
+          console.error("Reject error:", error);
         },
       });
     }
@@ -92,7 +93,7 @@ const ApprovalServicePackageSection= () => {
   };
 
   const handleClearSearch = () => {
-    setSearchTerm('');
+    setSearchTerm("");
     setCurrentPage(1);
   };
 
@@ -101,8 +102,8 @@ const ApprovalServicePackageSection= () => {
   };
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['moderator-pending-packages', currentPage, pageSize, searchTerm] });
-    toast.info('Refreshing pending packages...');
+    queryClient.invalidateQueries({ queryKey: ["moderator-pending-packages", currentPage, pageSize, searchTerm] });
+    toast.info("Refreshing pending packages...");
   };
 
   const pendingPackages = useMemo(() => pendingData?.pendingArtistPackages?.items || [], [pendingData]);
@@ -112,8 +113,8 @@ const ApprovalServicePackageSection= () => {
   const isLoading = approveMutation.isPending || rejectMutation.isPending;
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <Card className="border-gray-700 mb-6">
+    <div className="mx-auto max-w-7xl p-6">
+      <Card className="mb-6 border-gray-700">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -125,37 +126,33 @@ const ApprovalServicePackageSection= () => {
               )}
             </div>
           </div>
-          <p className="text-gray-400 text-sm mb-4">
+          <p className="mb-4 text-sm text-gray-400">
             Review and approve or reject pending service packages from artists
           </p>
-          
+
           {/* Search Bar */}
           <div className="flex items-center space-x-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <div className="relative max-w-md flex-1">
+              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
               <Input
                 type="text"
                 placeholder="Search packages by name..."
                 value={searchTerm}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="pl-10 pr-10 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-purple-500"
+                className="border-gray-600 bg-gray-700 pr-10 pl-10 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-purple-500"
               />
               {searchTerm && (
                 <button
                   onClick={handleClearSearch}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
                 >
                   <X className="h-4 w-4" />
                 </button>
               )}
             </div>
-            {searchTerm && (
-              <div className="text-sm text-gray-400">
-                Searching for: &ldquo;{searchTerm}&rdquo;
-              </div>
-            )}
-            <Button 
-              variant="outline" 
+            {searchTerm && <div className="text-sm text-gray-400">Searching for: &ldquo;{searchTerm}&rdquo;</div>}
+            <Button
+              variant="outline"
               onClick={handleRefresh}
               className="border-gray-600 text-gray-300 hover:text-white"
               title="Refresh packages"
@@ -164,24 +161,24 @@ const ApprovalServicePackageSection= () => {
             </Button>
           </div>
         </CardHeader>
-        
+
         <CardContent>
           {pendingError ? (
-            <div className="text-center py-8">
-              <p className="text-red-400 mb-4">Error loading pending packages: {pendingError.message}</p>
-              <Button 
-                variant="outline" 
+            <div className="py-8 text-center">
+              <p className="mb-4 text-red-400">Error loading pending packages: {pendingError.message}</p>
+              <Button
+                variant="outline"
                 onClick={handleRefresh}
                 className="border-gray-600 text-gray-300 hover:text-white"
               >
-                <RefreshCw className="h-4 w-4 mr-2" />
+                <RefreshCw className="mr-2 h-4 w-4" />
                 Try Again
               </Button>
             </div>
           ) : pendingLoading ? (
-            <div className="text-center py-12">
-              <div className="mx-auto w-12 h-12 mb-4">
-                <RefreshCw className="h-12 w-12 text-gray-400 animate-spin" />
+            <div className="py-12 text-center">
+              <div className="mx-auto mb-4 h-12 w-12">
+                <RefreshCw className="h-12 w-12 animate-spin text-gray-400" />
               </div>
               <p className="text-gray-400">Loading pending packages...</p>
             </div>
@@ -194,7 +191,7 @@ const ApprovalServicePackageSection= () => {
                 onReject={handleReject}
                 isLoading={isLoading}
               />
-              
+
               {/* Pagination */}
               <CustomPagination
                 currentPage={currentPage}
@@ -215,7 +212,7 @@ const ApprovalServicePackageSection= () => {
         isOpen={!!confirmAction}
         onConfirm={handleConfirmAction}
         onCancel={handleCancelAction}
-        action={confirmAction?.type || 'approve'}
+        action={confirmAction?.type || "approve"}
         packageName={confirmAction?.packageName}
         isLoading={isLoading}
       />

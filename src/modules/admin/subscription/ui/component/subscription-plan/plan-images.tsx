@@ -15,7 +15,7 @@ export function PlanImages({ images }: PlanImagesProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center">
-          <ImageIcon className="w-4 h-4 mr-2" />
+          <ImageIcon className="mr-2 h-4 w-4" />
           Images
         </CardTitle>
       </CardHeader>
@@ -23,7 +23,7 @@ export function PlanImages({ images }: PlanImagesProps) {
         <div className="space-y-3">
           {images.map((imageUrl, index) => (
             <div key={index} className="space-y-2">
-              <div className="relative w-full h-32 rounded-lg border overflow-hidden">
+              <div className="relative h-32 w-full overflow-hidden rounded-lg border">
                 <Image
                   src={imageUrl}
                   alt={`Product image ${index + 1}`}
@@ -34,7 +34,7 @@ export function PlanImages({ images }: PlanImagesProps) {
                   }}
                 />
               </div>
-              <p className="text-xs text-gray-500 break-all">{imageUrl}</p>
+              <p className="text-xs break-all text-gray-500">{imageUrl}</p>
             </div>
           ))}
         </div>

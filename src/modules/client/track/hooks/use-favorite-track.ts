@@ -15,35 +15,29 @@ export const useFavoriteTrack = () => {
       });
 
       // Snapshot the previous value
-      const previousTrackDetail = queryClient.getQueryData([
-        "track-detail",
-        trackId,
-      ]);
+      const previousTrackDetail = queryClient.getQueryData(["track-detail", trackId]);
 
       // Optimistically update the cache
-      queryClient.setQueryData<TrackDetailQuery>(
-        ["track-detail", trackId],
-        (old) => {
-          if (!old?.tracks?.items?.[0]) return old;
+      queryClient.setQueryData<TrackDetailQuery>(["track-detail", trackId], (old) => {
+        if (!old?.tracks?.items?.[0]) return old;
 
-          return {
-            ...old,
-            tracks: {
-              ...old.tracks,
-              items: [
-                {
-                  ...old.tracks.items[0],
-                  checkTrackInFavorite: isAdding,
-                  favoriteCount: isAdding
-                    ? (old.tracks.items[0].favoriteCount || 0) + 1
-                    : Math.max(0, (old.tracks.items[0].favoriteCount || 0) - 1),
-                },
-                ...(old.tracks.items.slice(1) || []),
-              ],
-            },
-          };
-        },
-      );
+        return {
+          ...old,
+          tracks: {
+            ...old.tracks,
+            items: [
+              {
+                ...old.tracks.items[0],
+                checkTrackInFavorite: isAdding,
+                favoriteCount: isAdding
+                  ? (old.tracks.items[0].favoriteCount || 0) + 1
+                  : Math.max(0, (old.tracks.items[0].favoriteCount || 0) - 1),
+              },
+              ...(old.tracks.items.slice(1) || []),
+            ],
+          },
+        };
+      });
 
       // Also update tracks-home cache if it exists
       queryClient.setQueryData(["tracks-home"], (old: unknown) => {
@@ -85,10 +79,7 @@ export const useFavoriteTrack = () => {
     onError: (error, variables, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousTrackDetail) {
-        queryClient.setQueryData(
-          ["track-detail", variables.trackId],
-          context.previousTrackDetail,
-        );
+        queryClient.setQueryData(["track-detail", variables.trackId], context.previousTrackDetail);
       }
       console.error("Failed to update favorites:", error);
       toast.error("Failed to update favorites. Please try again.");
@@ -104,11 +95,7 @@ export const useFavoriteTrack = () => {
     },
   });
 
-  const handleFavorite = (trackDetail: {
-    id: string;
-    name: string;
-    checkTrackInFavorite: boolean;
-  }) => {
+  const handleFavorite = (trackDetail: { id: string; name: string; checkTrackInFavorite: boolean }) => {
     if (!trackDetail?.id) return;
 
     const isAdding = !trackDetail.checkTrackInFavorite;
@@ -118,9 +105,7 @@ export const useFavoriteTrack = () => {
         onSuccess: () => {
           // Show success message after server confirms
           toast.success(
-            isAdding
-              ? `${trackDetail.name} added to favorites!`
-              : `${trackDetail.name} removed from favorites!`,
+            isAdding ? `${trackDetail.name} added to favorites!` : `${trackDetail.name} removed from favorites!`,
           );
         },
       },

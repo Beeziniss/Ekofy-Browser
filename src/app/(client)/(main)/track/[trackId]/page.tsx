@@ -1,7 +1,4 @@
-import {
-  trackCommentsOptions,
-  trackDetailOptions,
-} from "@/gql/options/client-options";
+import { trackCommentsOptions, trackDetailOptions } from "@/gql/options/client-options";
 import TrackDetailView from "@/modules/client/track/ui/views/track-detail-view";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";

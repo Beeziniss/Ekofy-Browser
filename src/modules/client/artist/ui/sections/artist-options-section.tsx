@@ -34,8 +34,7 @@ import { useAuthStore } from "@/store";
 import { useAuthAction } from "@/hooks/use-auth-action";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
-const activeItemStyles =
-  "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
+const activeItemStyles = "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
 
 export interface NavItem {
   title: string;
@@ -49,10 +48,7 @@ interface ArtistOptionsSectionProps {
   artistId: string;
 }
 
-const ArtistOptionsSection = ({
-  artistData,
-  artistId,
-}: ArtistOptionsSectionProps) => {
+const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProps) => {
   const route = usePathname();
   const { user } = useAuthStore();
 
@@ -89,23 +85,14 @@ const ArtistOptionsSection = ({
     artistId,
   });
 
-  const {
-    showWarningDialog,
-    setShowWarningDialog,
-    warningAction,
-    trackName,
-    executeWithAuth,
-  } = useAuthAction();
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
 
   return (
     <div className="flex items-center justify-between px-6 py-4">
       <NavigationMenu className="flex h-full items-stretch">
         <NavigationMenuList className="flex h-full items-stretch space-x-2">
           {mainNavItems.map((item, index) => (
-            <NavigationMenuItem
-              key={index}
-              className="relative flex h-full items-center"
-            >
+            <NavigationMenuItem key={index} className="relative flex h-full items-center">
               <Link
                 href={item.href}
                 className={cn(
@@ -114,9 +101,7 @@ const ArtistOptionsSection = ({
                   "h-full cursor-pointer px-3 text-xl",
                 )}
               >
-                {item.icon && (
-                  <Icon iconNode={item.icon} className="mr-2 size-6" />
-                )}
+                {item.icon && <Icon iconNode={item.icon} className="mr-2 size-6" />}
                 {item.title}
               </Link>
               {route === item.href && (
@@ -134,38 +119,24 @@ const ArtistOptionsSection = ({
           </Link>
         ) : (
           <Button
-            variant={
-              artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing
-                ? "reaction"
-                : "default"
-            }
+            variant={artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing ? "reaction" : "default"}
             className="px-10 py-2 text-sm font-bold"
             onClick={() => {
               const user = artistData.artists?.items?.[0]?.user[0];
               const artist = artistData.artists?.items?.[0];
               if (user?.id && artist?.stageName) {
                 executeWithAuth(
-                  () =>
-                    handleFollowToggle(
-                      user.id,
-                      user.checkUserFollowing ?? false,
-                      artist.stageName,
-                    ),
+                  () => handleFollowToggle(user.id, user.checkUserFollowing ?? false, artist.stageName),
                   "follow",
                 );
               }
             }}
           >
-            {artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing
-              ? "Following"
-              : "Follow"}
+            {artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing ? "Following" : "Follow"}
           </Button>
         )}
         <TooltipButton content="Contact Artist" side="top">
-          <Link
-            href={`mailto:${artistData.artists?.items?.[0].email}`}
-            target="_blank"
-          >
+          <Link href={`mailto:${artistData.artists?.items?.[0].email}`} target="_blank">
             <Button variant="reaction" className="text-sm font-bold">
               <MailIcon className={"inline-block size-4"} />
             </Button>

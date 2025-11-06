@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  artistDetailOptions,
-  followerOptions,
-  followingOptions,
-} from "@/gql/options/client-options";
+import { artistDetailOptions, followerOptions, followingOptions } from "@/gql/options/client-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import ArtistAvatarSection from "../sections/artist-avatar-section";
@@ -20,12 +16,8 @@ const ArtistDetailLayout = ({ children }: ArtistDetailLayoutProps) => {
 
   const { data } = useSuspenseQuery(artistDetailOptions(artistId));
 
-  const { data: followerData } = useSuspenseQuery(
-    followerOptions({ artistId }),
-  );
-  const { data: followingData } = useSuspenseQuery(
-    followingOptions({ artistId }),
-  );
+  const { data: followerData } = useSuspenseQuery(followerOptions({ artistId }));
+  const { data: followingData } = useSuspenseQuery(followingOptions({ artistId }));
 
   return (
     <div className="w-full">

@@ -8,11 +8,11 @@ export function RequestCardSkeleton() {
     <Card className="w-full">
       <CardContent className="p-6">
         {/* Header with Avatar and Save Button */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="mb-4 flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <Skeleton className="h-12 w-12 rounded-full" />
             <div>
-              <Skeleton className="h-4 w-24 mb-1" />
+              <Skeleton className="mb-1 h-4 w-24" />
               <Skeleton className="h-3 w-16" />
             </div>
           </div>
@@ -20,40 +20,40 @@ export function RequestCardSkeleton() {
         </div>
 
         {/* Title */}
-        <Skeleton className="h-6 w-3/4 mb-3" />
+        <Skeleton className="mb-3 h-6 w-3/4" />
 
         {/* Description */}
-        <div className="space-y-2 mb-4">
+        <div className="mb-4 space-y-2">
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-5/6" />
           <Skeleton className="h-4 w-2/3" />
         </div>
 
         {/* Tags */}
-        <div className="flex gap-2 mb-4">
+        <div className="mb-4 flex gap-2">
           <Skeleton className="h-6 w-16" />
           <Skeleton className="h-6 w-20" />
           <Skeleton className="h-6 w-14" />
         </div>
 
         {/* Budget, Category, Deadline */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="mb-4 grid grid-cols-3 gap-4">
           <div>
-            <Skeleton className="h-3 w-12 mb-1" />
+            <Skeleton className="mb-1 h-3 w-12" />
             <Skeleton className="h-4 w-16" />
           </div>
           <div>
-            <Skeleton className="h-3 w-16 mb-1" />
+            <Skeleton className="mb-1 h-3 w-16" />
             <Skeleton className="h-4 w-20" />
           </div>
           <div>
-            <Skeleton className="h-3 w-14 mb-1" />
+            <Skeleton className="mb-1 h-3 w-14" />
             <Skeleton className="h-4 w-12" />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between border-t border-gray-100 pt-4">
           <Skeleton className="h-4 w-24" />
           <div className="flex space-x-2">
             <Skeleton className="h-8 w-20" />

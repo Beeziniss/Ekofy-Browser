@@ -31,9 +31,7 @@ export function ArtistApprovalSection() {
     data: artistsData,
     isLoading,
     error,
-  } = useQuery(
-    moderatorArtistsQueryOptions(currentPage, pageSize, debouncedSearchTerm),
-  );
+  } = useQuery(moderatorArtistsQueryOptions(currentPage, pageSize, debouncedSearchTerm));
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -44,21 +42,15 @@ export function ArtistApprovalSection() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        Loading Data...
-      </div>
-    );
+    return <div className="flex h-64 items-center justify-center">Loading Data...</div>;
   }
   if (error) {
-    return (
-      <div className="text-red-500">Error loading data: {error.message}</div>
-    );
+    return <div className="text-red-500">Error loading data: {error.message}</div>;
   }
-  
+
   const artistsRaw = artistsData?.pendingArtistRegistrations?.items || [];
   const totalCount = artistsData?.pendingArtistRegistrations?.totalCount || 0;
-  
+
   // Transform data to match expected interface
   const artists = artistsRaw.map((artist) => ({
     id: artist.id || "",

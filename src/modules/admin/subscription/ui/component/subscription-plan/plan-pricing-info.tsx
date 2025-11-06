@@ -22,26 +22,26 @@ export function PlanPricingInfo({ prices }: PlanPricingInfoProps) {
       <CardContent>
         <div className="space-y-4">
           {prices.map((price, index) => (
-            <div key={index} className="border rounded-lg p-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div key={index} className="rounded-lg border p-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <div>
-                  <label className="text-sm font-medium text-main-white">Price</label>
-                  <p className="text-lg font-semibold text-main-grey-dark">
+                  <label className="text-main-white text-sm font-medium">Price</label>
+                  <p className="text-main-grey-dark text-lg font-semibold">
                     {formatNumber(price.stripePriceUnitAmount / 100)} {price.stripePriceCurrency}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-main-white">Interval</label>
-                  <p className="text-sm text-main-grey-dark">
+                  <label className="text-main-white text-sm font-medium">Interval</label>
+                  <p className="text-main-grey-dark text-sm">
                     Every {price.intervalCount} {price.interval.toLowerCase()}(s)
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-main-white">Lookup Key</label>
-                  <p className="text-sm text-main-grey-dark font-mono break-words">{price.stripePriceLookupKey}</p>
+                  <label className="text-main-white text-sm font-medium">Lookup Key</label>
+                  <p className="text-main-grey-dark font-mono text-sm break-words">{price.stripePriceLookupKey}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-main-white">Status</label>
+                  <label className="text-main-white text-sm font-medium">Status</label>
                   <Badge variant={price.stripePriceActive ? "default" : "secondary"} className="ml-1">
                     {price.stripePriceActive ? "ACTIVE" : "INACTIVE"}
                   </Badge>

@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemTitle,
-} from "@/components/ui/item";
+import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item";
 import { ChevronRightIcon } from "lucide-react";
 
 const SettingsSection = () => {

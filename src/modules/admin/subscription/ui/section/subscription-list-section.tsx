@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +19,7 @@ export function SubscriptionListSection({ initialData }: SubscriptionListSection
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
-  
+
   const pageSize = 10;
   const skip = (currentPage - 1) * pageSize;
 

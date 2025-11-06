@@ -27,15 +27,7 @@ import { formatDistanceToNow } from "date-fns";
 import { formatNumber } from "@/utils/format-number";
 import { requestHubCommentRepliesOptions } from "@/gql/options/client-options";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  HeartIcon,
-  SendIcon,
-  MoreVertical,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
@@ -48,12 +40,7 @@ interface RequestHubReplyCommentProps {
   rootCommentId?: string;
 }
 
-const RequestHubCommentReply = ({
-  reply,
-  requestId,
-  level,
-  rootCommentId,
-}: RequestHubReplyCommentProps) => {
+const RequestHubCommentReply = ({ reply, requestId, level, rootCommentId }: RequestHubReplyCommentProps) => {
   const [showNestedReplies, setShowNestedReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -68,8 +55,7 @@ const RequestHubCommentReply = ({
   const isOwner = user?.userId === reply.commenterId;
 
   // Check if this reply has nested replies
-  const hasNestedReplies =
-    reply.replyCount !== undefined && reply.replyCount > 0;
+  const hasNestedReplies = reply.replyCount !== undefined && reply.replyCount > 0;
 
   // Fetch nested replies if this reply has replyCount > 0
   const { data: nestedReplies } = useQuery({
@@ -170,17 +156,13 @@ const RequestHubCommentReply = ({
   // };
 
   return (
-    <div className="flex gap-x-3 ml-6 pl-4 border-l-2 border-gray-700/50">
-      <Avatar className="w-8 h-8 border border-gray-600/50">
+    <div className="ml-6 flex gap-x-3 border-l-2 border-gray-700/50 pl-4">
+      <Avatar className="h-8 w-8 border border-gray-600/50">
         <AvatarImage
-          src={
-            reply.commenter?.listener?.avatarImage ||
-            reply.commenter?.artist?.avatarImage ||
-            undefined
-          }
+          src={reply.commenter?.listener?.avatarImage || reply.commenter?.artist?.avatarImage || undefined}
         />
-        <AvatarFallback className="bg-gray-700 text-gray-300 text-xs">
-          {reply.commenter?.listener?.displayName.slice(0, 2)||
+        <AvatarFallback className="bg-gray-700 text-xs text-gray-300">
+          {reply.commenter?.listener?.displayName.slice(0, 2) ||
             reply.commenter?.artist?.stageName.slice(0, 2) ||
             `User ${reply.commenterId.slice(-2)}`}
         </AvatarFallback>
@@ -189,12 +171,12 @@ const RequestHubCommentReply = ({
       <div className="flex flex-1 flex-col gap-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-2">
-            <span className="text-gray-200 text-sm font-medium">
+            <span className="text-sm font-medium text-gray-200">
               {reply.commenter?.listener?.displayName ||
                 reply.commenter?.artist?.stageName ||
                 `User ${reply.commenterId.slice(-4)}`}
             </span>
-            <span className="text-gray-500 text-xs">
+            <span className="text-xs text-gray-500">
               {formatDistanceToNow(new Date(reply.createdAt), {
                 addSuffix: true,
               })}
@@ -205,15 +187,11 @@ const RequestHubCommentReply = ({
           {isOwner && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-500 hover:text-gray-300 h-6 w-6 p-0"
-                >
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-gray-500 hover:text-gray-300">
                   <MoreVertical className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-32 bg-gray-800 border-gray-600">
+              <DropdownMenuContent align="end" className="w-32 border-gray-600 bg-gray-800">
                 <DropdownMenuItem
                   onClick={handleEditReply}
                   className="cursor-pointer text-xs text-gray-200 hover:bg-gray-700"
@@ -223,7 +201,7 @@ const RequestHubCommentReply = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setShowDeleteDialog(true)}
-                  className="cursor-pointer text-xs text-red-400 focus:text-red-400 hover:bg-gray-700"
+                  className="cursor-pointer text-xs text-red-400 hover:bg-gray-700 focus:text-red-400"
                 >
                   <Trash2 className="mr-2 h-3 w-3" />
                   Delete
@@ -248,7 +226,7 @@ const RequestHubCommentReply = ({
                 }
               }}
               autoFocus
-              className="bg-gray-700/50 border-gray-600/50 text-gray-100 text-sm"
+              className="border-gray-600/50 bg-gray-700/50 text-sm text-gray-100"
               placeholder="Edit your reply..."
               disabled={isUpdating}
             />
@@ -257,7 +235,7 @@ const RequestHubCommentReply = ({
                 size="sm"
                 onClick={handleSaveEdit}
                 disabled={!editContent.trim() || isUpdating}
-                className="h-6 text-xs bg-purple-600 hover:bg-purple-700"
+                className="h-6 bg-purple-600 text-xs hover:bg-purple-700"
               >
                 {isUpdating ? "Saving..." : "Save"}
               </Button>
@@ -273,19 +251,19 @@ const RequestHubCommentReply = ({
             </div>
           </div>
         ) : (
-          <p className="text-gray-300 text-sm leading-relaxed">{reply.content}</p>
+          <p className="text-sm leading-relaxed text-gray-300">{reply.content}</p>
         )}
 
         <div className="flex items-center gap-x-4">
           <div className="flex items-center gap-x-1">
-            <HeartIcon className="text-gray-400 hover:text-red-400 hover:fill-red-400/20 w-4 h-4 cursor-pointer transition-colors" />
-            <span className="text-gray-500 text-xs">{formatNumber(0)}</span>
+            <HeartIcon className="h-4 w-4 cursor-pointer text-gray-400 transition-colors hover:fill-red-400/20 hover:text-red-400" />
+            <span className="text-xs text-gray-500">{formatNumber(0)}</span>
           </div>
 
           <Button
             variant={"ghost"}
             onClick={() => setShowReplyInput(!showReplyInput)}
-            className="text-gray-400 hover:text-gray-200 cursor-pointer h-6 px-2 text-xs"
+            className="h-6 cursor-pointer px-2 text-xs text-gray-400 hover:text-gray-200"
           >
             Reply
           </Button>
@@ -296,16 +274,11 @@ const RequestHubCommentReply = ({
               variant={"ghost"}
               size={"sm"}
               onClick={() => setShowNestedReplies(!showNestedReplies)}
-              className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 flex h-6 cursor-pointer items-center gap-x-1 px-2"
+              className="flex h-6 cursor-pointer items-center gap-x-1 px-2 text-purple-400 hover:bg-purple-500/10 hover:text-purple-300"
             >
-              {showNestedReplies ? (
-                <ChevronUpIcon className="w-3 h-3" />
-              ) : (
-                <ChevronDownIcon className="w-3 h-3" />
-              )}
+              {showNestedReplies ? <ChevronUpIcon className="h-3 w-3" /> : <ChevronDownIcon className="h-3 w-3" />}
               <span className="text-xs">
-                {reply.replyCount}{" "}
-                {reply.replyCount === 1 ? "reply" : "replies"}
+                {reply.replyCount} {reply.replyCount === 1 ? "reply" : "replies"}
               </span>
             </Button>
           )}
@@ -314,15 +287,11 @@ const RequestHubCommentReply = ({
         {/* Reply Input */}
         {showReplyInput && (
           <div className="mt-2 flex items-center gap-x-2">
-            <Avatar className="w-7 h-7 border border-gray-600/50">
+            <Avatar className="h-7 w-7 border border-gray-600/50">
               <AvatarImage
-                src={
-                  reply.commenter?.listener?.avatarImage ||
-                  reply.commenter?.artist?.avatarImage ||
-                  undefined
-                }
+                src={reply.commenter?.listener?.avatarImage || reply.commenter?.artist?.avatarImage || undefined}
               />
-              <AvatarFallback className="bg-gray-700 text-gray-300 text-xs">
+              <AvatarFallback className="bg-gray-700 text-xs text-gray-300">
                 {reply.commenter?.fullName.slice(0, 2)}
               </AvatarFallback>
             </Avatar>
@@ -338,18 +307,16 @@ const RequestHubCommentReply = ({
                     handleCreateReply();
                   }
                 }}
-                className="bg-gray-700/50 border-gray-600/50 text-gray-100 h-9 rounded-lg px-3 py-2 pr-16 text-xs"
+                className="h-9 rounded-lg border-gray-600/50 bg-gray-700/50 px-3 py-2 pr-16 text-xs text-gray-100"
               />
               <Button
                 onClick={handleCreateReply}
                 disabled={!replyContent.trim() || isPending}
                 size="sm"
-                className="absolute right-0.5 top-1/2 -translate-y-1/2 primary_gradient hover:opacity-50"
+                className="primary_gradient absolute top-1/2 right-0.5 -translate-y-1/2 hover:opacity-50"
               >
-                <SendIcon className="w-3 h-3 mr-1 text-white" />
-                <span className="text-xs text-white">
-                  {isPending ? "Posting..." : "Reply"}
-                </span>
+                <SendIcon className="mr-1 h-3 w-3 text-white" />
+                <span className="text-xs text-white">{isPending ? "Posting..." : "Reply"}</span>
               </Button>
             </div>
           </div>
@@ -360,37 +327,37 @@ const RequestHubCommentReply = ({
           nestedReplies?.commentReplies?.replies &&
           nestedReplies.commentReplies.replies.length > 0 && (
             <div className="mt-3 space-y-3">
-              {nestedReplies.commentReplies.replies.map(
-                (nestedReply, index) => (
-                  <RequestHubCommentReply
-                    key={`${nestedReply.id}-${index}`}
-                    reply={nestedReply}
-                    requestId={requestId}
-                    level={level + 1}
-                  />
-                ),
-              )}
+              {nestedReplies.commentReplies.replies.map((nestedReply, index) => (
+                <RequestHubCommentReply
+                  key={`${nestedReply.id}-${index}`}
+                  reply={nestedReply}
+                  requestId={requestId}
+                  level={level + 1}
+                />
+              ))}
             </div>
           )}
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <AlertDialogContent className="bg-gray-800 border-gray-600">
+          <AlertDialogContent className="border-gray-600 bg-gray-800">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-gray-100">Delete Reply</AlertDialogTitle>
               <AlertDialogDescription className="text-gray-300">
-                Are you sure you want to delete this reply? This action cannot
-                be undone.
+                Are you sure you want to delete this reply? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel disabled={isDeleting} className="bg-gray-700 text-gray-200 border-gray-600 hover:bg-gray-600">
+              <AlertDialogCancel
+                disabled={isDeleting}
+                className="border-gray-600 bg-gray-700 text-gray-200 hover:bg-gray-600"
+              >
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteReply}
                 disabled={isDeleting}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-red-600 text-white hover:bg-red-700"
               >
                 {isDeleting ? "Deleting..." : "Delete"}
               </AlertDialogAction>

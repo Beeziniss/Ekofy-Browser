@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const DeletePackageServiceSection = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+  return <div></div>;
+};
 
-export default DeletePackageServiceSection
+export default DeletePackageServiceSection;

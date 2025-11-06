@@ -110,9 +110,7 @@ export const AdminGetStatistics = graphql(`
 `);
 
 export const CreateModeratorMutation = graphql(`
-  mutation CreateModerator(
-    $createModeratorRequest: CreateModeratorRequestInput!
-  ) {
+  mutation CreateModerator($createModeratorRequest: CreateModeratorRequestInput!) {
     createModerator(createModeratorRequest: $createModeratorRequest)
   }
 `);

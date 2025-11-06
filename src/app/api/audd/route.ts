@@ -8,10 +8,7 @@ export async function POST(req: NextRequest) {
     const file = form.get("file") as File | null;
 
     if (!file) {
-      return NextResponse.json(
-        { error: "Audio file missing" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Audio file missing" }, { status: 400 });
     }
 
     // Convert Next.js File → Buffer
@@ -34,10 +31,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(auddResponse.data);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
-    return NextResponse.json(
-      { error: err?.message || "Server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: err?.message || "Server error" }, { status: 500 });
   }
 }
 

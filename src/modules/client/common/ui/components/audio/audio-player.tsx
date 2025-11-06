@@ -110,9 +110,7 @@ const AudioPlayer = () => {
               }
             }
           });
-        } else if (
-          audioRef.current.canPlayType("application/vnd.apple.mpegurl")
-        ) {
+        } else if (audioRef.current.canPlayType("application/vnd.apple.mpegurl")) {
           // Native HLS support (Safari)
           audioRef.current.src = streamingUrl;
           setLoading(false);
@@ -127,9 +125,7 @@ const AudioPlayer = () => {
         }
       } catch (error) {
         console.error("Error loading track:", error);
-        setError(
-          error instanceof Error ? error.message : "Failed to load track",
-        );
+        setError(error instanceof Error ? error.message : "Failed to load track");
         setLoading(false);
       }
     },

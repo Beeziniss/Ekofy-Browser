@@ -22,18 +22,18 @@ const RequestDetailPage = () => {
   };
 
   const handleApply = () => {
-    console.log('Apply to request:', requestId);
-    toast.info('Application feature coming soon!');
+    console.log("Apply to request:", requestId);
+    toast.info("Application feature coming soon!");
   };
 
   const handleContactClient = () => {
-    console.log('Contact client');
-    toast.info('Contact feature coming soon!');
+    console.log("Contact client");
+    toast.info("Contact feature coming soon!");
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-white">Loading request details...</div>
       </div>
     );
@@ -41,7 +41,7 @@ const RequestDetailPage = () => {
 
   if (!request) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-white">Request not found</div>
       </div>
     );
@@ -50,7 +50,7 @@ const RequestDetailPage = () => {
   // Only show OPEN requests in detail view
   if (request.status !== RequestStatus.Open) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-white">This request is not available for viewing</div>
       </div>
     );

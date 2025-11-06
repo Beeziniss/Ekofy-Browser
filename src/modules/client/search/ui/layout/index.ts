@@ -1,1 +1,1 @@
-export { SearchLayout } from './search-layout';
+export { SearchLayout } from "./search-layout";

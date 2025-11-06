@@ -1,23 +1,14 @@
 import { execute } from "../execute";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
-import {
-  GetListenerProfileQuery,
-  GetUserActiveSubscriptionQuery,
-} from "@/modules/client/profile/ui/views/queries";
+import { GetListenerProfileQuery, GetUserActiveSubscriptionQuery } from "@/modules/client/profile/ui/views/queries";
 import {
   CheckTrackInPlaylistQuery,
   PlaylistBriefQuery,
   PlaylistDetailQuery,
   PlaylistDetailTrackListQuery,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
-import {
-  TrackDetailViewQuery,
-  TrackListHomeQuery,
-} from "@/modules/shared/queries/client/track-queries";
-import {
-  TrackCommentRepliesQuery,
-  TrackCommentsQuery,
-} from "@/modules/shared/queries/client/track-comment-queries";
+import { TrackDetailViewQuery, TrackListHomeQuery } from "@/modules/shared/queries/client/track-queries";
+import { TrackCommentRepliesQuery, TrackCommentsQuery } from "@/modules/shared/queries/client/track-comment-queries";
 import {
   RequestHubCommentThreadsQuery,
   RequestHubCommentThreadRepliesQuery,
@@ -28,14 +19,8 @@ import {
   ArtistQuery,
   ListenerQuery,
 } from "@/modules/shared/queries/client/user-queries";
-import {
-  PlaylistsHomeQuery,
-  PlaylistsPersonalQuery,
-} from "@/modules/shared/queries/client/playlist-queries";
-import {
-  FollowerQuery,
-  FollowingQuery,
-} from "@/modules/shared/queries/client/follow-queries";
+import { PlaylistsHomeQuery, PlaylistsPersonalQuery } from "@/modules/shared/queries/client/playlist-queries";
+import { FollowerQuery, FollowingQuery } from "@/modules/shared/queries/client/follow-queries";
 import { ArtistPackageQuery } from "@/modules/shared/queries/client/service-package-queries";
 import {
   REQUEST_HUB_QUERY,
@@ -53,10 +38,7 @@ import {
 } from "../graphql";
 
 // PROFILE QUERIES
-export const listenerProfileOptions = (
-  userId: string,
-  enabled: boolean = true,
-) =>
+export const listenerProfileOptions = (userId: string, enabled: boolean = true) =>
   queryOptions({
     queryKey: ["listener-profile", userId],
     queryFn: async () => {
@@ -109,11 +91,7 @@ export const playlistsHomeOptions = queryOptions({
   queryFn: async () => await execute(PlaylistsHomeQuery, { take: 10 }),
 });
 
-export const playlistOptions = (
-  userId: string,
-  name?: string,
-  take: number = 12,
-) =>
+export const playlistOptions = (userId: string, name?: string, take: number = 12) =>
   infiniteQueryOptions({
     queryKey: ["playlists", userId, name],
     queryFn: async ({ pageParam }) => {
@@ -127,9 +105,7 @@ export const playlistOptions = (
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.playlists?.pageInfo.hasNextPage
-        ? allPages.length + 1
-        : undefined;
+      return lastPage.playlists?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
     },
     enabled: !!userId,
   });
@@ -143,8 +119,7 @@ export const playlistDetailOptions = (playlistId: string) =>
 export const playlistDetailTrackListOptions = (playlistId: string) =>
   queryOptions({
     queryKey: ["playlist-detail-tracklist", playlistId],
-    queryFn: async () =>
-      await execute(PlaylistDetailTrackListQuery, { playlistId }),
+    queryFn: async () => await execute(PlaylistDetailTrackListQuery, { playlistId }),
   });
 
 export const playlistBriefOptions = (userId: string) =>
@@ -170,24 +145,21 @@ export const trackCommentsOptions = (targetId: string) =>
 export const trackCommentRepliesOptions = (rootCommentId: string) =>
   queryOptions({
     queryKey: ["track-comment-replies", rootCommentId],
-    queryFn: async () =>
-      await execute(TrackCommentRepliesQuery, { rootCommentId }),
+    queryFn: async () => await execute(TrackCommentRepliesQuery, { rootCommentId }),
   });
 
 // REQUEST HUB COMMENTS QUERIES
 export const requestHubCommentsOptions = (targetId: string) =>
   queryOptions({
     queryKey: ["request-hub-comments", targetId],
-    queryFn: async () =>
-      await execute(RequestHubCommentThreadsQuery, { targetId }),
+    queryFn: async () => await execute(RequestHubCommentThreadsQuery, { targetId }),
     enabled: !!targetId,
   });
 
 export const requestHubCommentRepliesOptions = (rootCommentId: string) =>
   queryOptions({
     queryKey: ["request-hub-comment-replies", rootCommentId],
-    queryFn: async () =>
-      await execute(RequestHubCommentThreadRepliesQuery, { rootCommentId }),
+    queryFn: async () => await execute(RequestHubCommentThreadRepliesQuery, { rootCommentId }),
   });
 
 // USER QUERIES
@@ -198,13 +170,7 @@ export const listenerOptions = (userId: string, listenerId: string) =>
     enabled: !!listenerId,
   });
 
-export const artistOptions = ({
-  userId,
-  artistId,
-}: {
-  userId: string;
-  artistId?: string;
-}) =>
+export const artistOptions = ({ userId, artistId }: { userId: string; artistId?: string }) =>
   queryOptions({
     queryKey: ["artist", userId],
     queryFn: async () => await execute(ArtistQuery, { userId }),
@@ -227,33 +193,19 @@ export const artistListOptions = (take: number = 12) =>
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.artists?.pageInfo.hasNextPage
-        ? allPages.length + 1
-        : undefined;
+      return lastPage.artists?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
     },
   });
 
 // FOLLOW QUERIES
-export const followerOptions = ({
-  artistId,
-  userId,
-}: {
-  artistId?: string;
-  userId?: string;
-}) =>
+export const followerOptions = ({ artistId, userId }: { artistId?: string; userId?: string }) =>
   queryOptions({
     queryKey: ["follower", artistId],
     queryFn: async () => await execute(FollowerQuery, { artistId, userId }),
     enabled: !!artistId,
   });
 
-export const followingOptions = ({
-  artistId,
-  userId,
-}: {
-  artistId?: string;
-  userId?: string;
-}) =>
+export const followingOptions = ({ artistId, userId }: { artistId?: string; userId?: string }) =>
   queryOptions({
     queryKey: ["following", artistId],
     queryFn: async () => await execute(FollowingQuery, { artistId, userId }),
@@ -268,27 +220,17 @@ export const servicePackageOptions = (artistId: string) =>
   });
 
 // Helper function to convert deadline string to Date
-const convertRequestDeadlines = <T extends { deadline?: string | Date }>(
-  items: T[] | null | undefined,
-): T[] => {
+const convertRequestDeadlines = <T extends { deadline?: string | Date }>(items: T[] | null | undefined): T[] => {
   return (
     items?.map((item) => ({
       ...item,
-      deadline: item.deadline
-        ? typeof item.deadline === "string"
-          ? new Date(item.deadline)
-          : item.deadline
-        : null,
+      deadline: item.deadline ? (typeof item.deadline === "string" ? new Date(item.deadline) : item.deadline) : null,
     })) || []
   );
 };
 
 // REQUEST HUB QUERIES
-export const requestHubOptions = (
-  skip: number = 0,
-  take: number = 20,
-  where?: RequestHubFilterInput,
-) =>
+export const requestHubOptions = (skip: number = 0, take: number = 20, where?: RequestHubFilterInput) =>
   queryOptions({
     queryKey: ["requests", skip, take, where],
     queryFn: async () => {
@@ -365,11 +307,7 @@ export const userForRequestsOptions = (userId: string) =>
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-export const myRequestsOptions = (
-  skip: number = 0,
-  take: number = 20,
-  where?: RequestHubFilterInput,
-) =>
+export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: RequestHubFilterInput) =>
   queryOptions({
     queryKey: ["my-requests", skip, take, where],
     queryFn: async () => {

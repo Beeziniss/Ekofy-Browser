@@ -35,7 +35,7 @@ export interface FPTAIData {
   };
   type_new?: string;
   type?: string;
-  
+
   // Back side data
   features?: string;
   features_prob?: string;
@@ -67,7 +67,7 @@ export interface ParsedCCCDData {
   placeOfOrigin: string;
   address: string;
   validUntil: string;
-  
+
   // Address breakdown
   addressEntities: {
     province: string;
@@ -75,7 +75,7 @@ export interface ParsedCCCDData {
     ward: string;
     street: string;
   };
-  
+
   // Back side info
   issueDate?: string;
   issueLocation?: string;
@@ -102,7 +102,7 @@ export const fptAIService = {
     try {
       const response = await axios.post(FPT_AI_URL, formData, {
         headers: {
-          "api_key": API_KEY,
+          api_key: API_KEY,
           "Content-Type": "multipart/form-data",
         },
       });
@@ -120,12 +120,9 @@ export const fptAIService = {
    * @param backResponse - Response from back side analysis (optional)
    * @returns Structured CCCD data
    */
-  parseCCCDResponse: (
-    frontResponse?: FPTAIResponse,
-    backResponse?: FPTAIResponse
-  ): ParsedCCCDData | null => {
+  parseCCCDResponse: (frontResponse?: FPTAIResponse, backResponse?: FPTAIResponse): ParsedCCCDData | null => {
     console.log("🔍 Parsing FPT AI responses:", { frontResponse, backResponse }); // Debug log
-    
+
     if (!frontResponse?.data?.[0]) {
       console.log("❌ No front response data found");
       return null;
@@ -133,7 +130,7 @@ export const fptAIService = {
 
     const frontData = frontResponse.data[0];
     const backData = backResponse?.data?.[0];
-    
+
     console.log("📄 Front data:", frontData);
     console.log("📄 Back data:", backData);
 
@@ -170,7 +167,7 @@ export const fptAIService = {
       issueLocation: backData?.issue_loc || "",
       features: backData?.features || "",
     };
-    
+
     console.log("✅ Parsed result:", result);
     return result;
   },

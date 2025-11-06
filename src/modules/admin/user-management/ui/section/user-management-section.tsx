@@ -2,13 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  UserStatsCards, 
-  UserTable, 
-  CreateModeratorModal,
-  StatusConfirmModal,
-  CreateModeratorData 
-} from "../component";
+import { UserStatsCards, UserTable, CreateModeratorModal, StatusConfirmModal, CreateModeratorData } from "../component";
 import { adminUsersQueryOptions, adminUsersStatsOptions } from "@/gql/options/admin-options";
 import { UserStatus } from "@/gql/graphql";
 import { execute } from "@/gql/execute";
@@ -38,10 +32,7 @@ export function UserManagementSection() {
   }, [searchTerm]);
 
   // Separate query for user stats
-  const {
-    data: statsData,
-    isLoading: isStatsLoading,
-  } = useQuery(adminUsersStatsOptions());
+  const { data: statsData, isLoading: isStatsLoading } = useQuery(adminUsersStatsOptions());
 
   // Query for users list
   const {
@@ -58,7 +49,7 @@ export function UserManagementSection() {
           fullName: data.fullName,
           email: data.email,
           password: data.password,
-        }
+        },
       });
     },
     onSuccess: () => {
@@ -128,7 +119,7 @@ export function UserManagementSection() {
   // Show stats loading error if exists
   if (isStatsLoading && !statsData) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex h-64 items-center justify-center">
         <div className="text-gray-400">Loading statistics...</div>
       </div>
     );
@@ -142,9 +133,10 @@ export function UserManagementSection() {
   const allUsers = statsData?.users?.items || [];
   const stats = {
     totalUsers: statsData?.users?.totalCount || 0,
-    activeUsers: allUsers.filter(user => user.status === UserStatus.Active).length,
-    inactiveUsers: allUsers.filter(user => user.status === UserStatus.Inactive || user.status === UserStatus.Banned).length,
-    newUsers: allUsers.filter(user => {
+    activeUsers: allUsers.filter((user) => user.status === UserStatus.Active).length,
+    inactiveUsers: allUsers.filter((user) => user.status === UserStatus.Inactive || user.status === UserStatus.Banned)
+      .length,
+    newUsers: allUsers.filter((user) => {
       const createdDate = new Date(user.createdAt);
       const today = new Date();
       const diffTime = Math.abs(today.getTime() - createdDate.getTime());

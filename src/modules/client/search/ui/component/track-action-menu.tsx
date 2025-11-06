@@ -1,45 +1,30 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { 
-  MoreHorizontal, 
-  Plus, 
-  Heart, 
-  Album, 
-  Share,
-  Search,
-  Eye,
-  CheckIcon
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { SearchTrackItem } from '@/types/search';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { 
-  playlistBriefOptions,
-  checkTrackInPlaylistOptions 
-} from '@/gql/options/client-options';
-import {
-  addToPlaylistMutationOptions,
-  removeFromPlaylistMutationOptions
-} from '@/gql/options/client-mutation-options';
-import { useAuthStore } from '@/store';
-import { toast } from 'sonner';
-import Image from 'next/image';
+import React, { useState, useRef, useEffect } from "react";
+import { MoreHorizontal, Plus, Heart, Album, Share, Search, Eye, CheckIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { SearchTrackItem } from "@/types/search";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { playlistBriefOptions, checkTrackInPlaylistOptions } from "@/gql/options/client-options";
+import { addToPlaylistMutationOptions, removeFromPlaylistMutationOptions } from "@/gql/options/client-mutation-options";
+import { useAuthStore } from "@/store";
+import { toast } from "sonner";
+import Image from "next/image";
 
 interface TrackActionMenuProps {
   track: SearchTrackItem;
   isVisible?: boolean;
 }
 
-export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({ 
-  track, 
-  // isVisible = false 
+export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
+  track,
+  // isVisible = false
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPlaylistMenuOpen, setIsPlaylistMenuOpen] = useState(false);
-  const [playlistSearch, setPlaylistSearch] = useState('');
-  const [submenuPosition, setSubmenuPosition] = useState<'right' | 'left'>('right');
-  const [mainMenuPosition, setMainMenuPosition] = useState<'right' | 'left'>('right');
+  const [playlistSearch, setPlaylistSearch] = useState("");
+  const [submenuPosition, setSubmenuPosition] = useState<"right" | "left">("right");
+  const [mainMenuPosition, setMainMenuPosition] = useState<"right" | "left">("right");
   const menuRef = useRef<HTMLDivElement>(null);
   const playlistMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -51,7 +36,7 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
     ...playlistBriefOptions(user?.userId || ""),
     enabled: !!user?.userId,
   });
-  
+
   const { data: trackInPlaylistsData } = useQuery({
     ...checkTrackInPlaylistOptions(track.id),
     enabled: !!user?.userId,
@@ -90,8 +75,8 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
   const playlists = playlistsData?.playlists?.items || [];
   const trackInPlaylistsIds = trackInPlaylistsData?.playlists?.items?.map((p) => p.id) || [];
 
-  const filteredPlaylists = playlists.filter(playlist =>
-    playlist.name.toLowerCase().includes(playlistSearch.toLowerCase())
+  const filteredPlaylists = playlists.filter((playlist) =>
+    playlist.name.toLowerCase().includes(playlistSearch.toLowerCase()),
   );
 
   const isPending = isAddingToPlaylist || isRemovingFromPlaylist;
@@ -132,12 +117,12 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('resize', handleResize);
-    
+    document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("resize", handleResize);
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('resize', handleResize);
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("resize", handleResize);
     };
   }, [isMenuOpen, isPlaylistMenuOpen, mainMenuPosition]);
 
@@ -161,19 +146,19 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
       const viewportHeight = window.innerHeight;
       const menuWidth = 280;
       const menuHeight = 250; // Estimated menu height
-      
+
       const spaceRight = viewportWidth - buttonRect.right;
       const spaceLeft = buttonRect.left;
       const spaceBelow = viewportHeight - buttonRect.bottom;
-      
+
       if (spaceRight >= menuWidth + 20) {
-        setMainMenuPosition('right');
+        setMainMenuPosition("right");
       } else if (spaceLeft >= menuWidth + 20) {
-        setMainMenuPosition('left');
+        setMainMenuPosition("left");
       } else {
-        setMainMenuPosition(spaceRight >= spaceLeft ? 'right' : 'left');
+        setMainMenuPosition(spaceRight >= spaceLeft ? "right" : "left");
       }
-      
+
       // Check if menu should appear above when near bottom
       if (spaceBelow < menuHeight + 20) {
         // Will be handled in JSX with dynamic positioning
@@ -199,19 +184,19 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
       const viewportHeight = window.innerHeight;
       const submenuWidth = 300;
       const submenuHeight = 350; // Estimated submenu height
-      
+
       const spaceRight = viewportWidth - buttonRect.right;
       const spaceLeft = buttonRect.left;
       const spaceBelow = viewportHeight - buttonRect.bottom;
-      
+
       if (spaceRight >= submenuWidth + 20) {
-        setSubmenuPosition('right');
+        setSubmenuPosition("right");
       } else if (spaceLeft >= submenuWidth + 20) {
-        setSubmenuPosition('left');
+        setSubmenuPosition("left");
       } else {
-        setSubmenuPosition(spaceRight >= spaceLeft ? 'right' : 'left');
+        setSubmenuPosition(spaceRight >= spaceLeft ? "right" : "left");
       }
-      
+
       // Check if submenu should appear above when near bottom
       if (spaceBelow < submenuHeight + 20) {
         // Will be handled in JSX with dynamic positioning
@@ -222,7 +207,7 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
   const menuItems = [
     {
       icon: Eye,
-      label: 'View detail',
+      label: "View detail",
       action: () => {
         router.push(`/track/${track.id}`);
         setIsMenuOpen(false);
@@ -230,24 +215,24 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
     },
     {
       icon: Plus,
-      label: 'Add to playlist',
+      label: "Add to playlist",
       action: handlePlaylistMenuToggle,
       hasSubmenu: true,
     },
     {
       icon: Heart,
-      label: 'Save to your Liked Songs',
-      action: () => console.log('Save to liked songs'),
+      label: "Save to your Liked Songs",
+      action: () => console.log("Save to liked songs"),
     },
     {
       icon: Album,
-      label: 'Go to album',
-      action: () => console.log('Go to album'),
+      label: "Go to album",
+      action: () => console.log("Go to album"),
     },
     {
       icon: Share,
-      label: 'Share',
-      action: () => console.log('Share'),
+      label: "Share",
+      action: () => console.log("Share"),
       hasSubmenu: true,
     },
   ];
@@ -257,93 +242,88 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
       {/* Three dots button */}
       <button
         onClick={handleMenuToggle}
-        className={`p-1 hover:bg-gray-700 rounded transition-opacity group-hover:opacity-100 ${
-          isMenuOpen ? 'opacity-100' : 'opacity-0'
+        className={`rounded p-1 transition-opacity group-hover:opacity-100 hover:bg-gray-700 ${
+          isMenuOpen ? "opacity-100" : "opacity-0"
         }`}
       >
-        <MoreHorizontal className="w-4 h-4 text-gray-400" />
+        <MoreHorizontal className="h-4 w-4 text-gray-400" />
       </button>
 
       {/* Main context menu */}
       {isMenuOpen && (
-        <div 
-          className={`absolute bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 w-[280px] z-[60] ${
-            mainMenuPosition === 'right' 
-              ? 'right-0' 
-              : 'left-0 -translate-x-full'
+        <div
+          className={`absolute z-[60] w-[280px] rounded-lg border border-gray-700 bg-gray-800 py-2 shadow-xl ${
+            mainMenuPosition === "right" ? "right-0" : "left-0 -translate-x-full"
           }`}
           style={{
-            top: menuRef.current ? (() => {
-              const rect = menuRef.current.getBoundingClientRect();
-              const viewportHeight = window.innerHeight;
-              const menuHeight = 250;
-              const spaceBelow = viewportHeight - rect.bottom;
-              
-              if (spaceBelow < menuHeight + 20) {
-                // Position above the button
-                return `-${menuHeight}px`;
-              }
-              // Position below the button (default)
-              return '32px';
-            })() : '32px'
+            top: menuRef.current
+              ? (() => {
+                  const rect = menuRef.current.getBoundingClientRect();
+                  const viewportHeight = window.innerHeight;
+                  const menuHeight = 250;
+                  const spaceBelow = viewportHeight - rect.bottom;
+
+                  if (spaceBelow < menuHeight + 20) {
+                    // Position above the button
+                    return `-${menuHeight}px`;
+                  }
+                  // Position below the button (default)
+                  return "32px";
+                })()
+              : "32px",
           }}
         >
           {menuItems.map((item, index) => (
             <div key={index} className="relative">
               <button
                 onClick={item.action}
-                className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-white hover:bg-gray-700 transition-colors"
+                className="flex w-full items-center justify-between px-4 py-2.5 text-sm text-white transition-colors hover:bg-gray-700"
               >
                 <div className="flex items-center space-x-3">
-                  <item.icon className="w-4 h-4" />
+                  <item.icon className="h-4 w-4" />
                   <span>{item.label}</span>
                 </div>
                 {item.hasSubmenu && (
-                  <svg 
-                    className="w-4 h-4 text-gray-400" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
+                  <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 )}
               </button>
 
               {/* Playlist submenu */}
-              {item.label === 'Add to playlist' && isPlaylistMenuOpen && (
-                <div 
+              {item.label === "Add to playlist" && isPlaylistMenuOpen && (
+                <div
                   ref={playlistMenuRef}
-                  className={`absolute bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 w-[300px] max-h-[400px] overflow-y-auto z-[70] ${
-                    submenuPosition === 'right' 
-                      ? 'left-full ml-1' 
-                      : 'right-full mr-1'
+                  className={`absolute z-[70] max-h-[400px] w-[300px] overflow-y-auto rounded-lg border border-gray-700 bg-gray-800 py-2 shadow-xl ${
+                    submenuPosition === "right" ? "left-full ml-1" : "right-full mr-1"
                   }`}
                   style={{
-                    top: menuRef.current ? (() => {
-                      const rect = menuRef.current.getBoundingClientRect();
-                      const viewportHeight = window.innerHeight;
-                      const submenuHeight = 350;
-                      const spaceBelow = viewportHeight - rect.bottom;
-                      
-                      if (spaceBelow < submenuHeight + 20) {
-                        // Position to align with bottom of viewport if needed
-                        return `-${Math.max(0, submenuHeight - spaceBelow)}px`;
-                      }
-                      return '0px';
-                    })() : '0px'
+                    top: menuRef.current
+                      ? (() => {
+                          const rect = menuRef.current.getBoundingClientRect();
+                          const viewportHeight = window.innerHeight;
+                          const submenuHeight = 350;
+                          const spaceBelow = viewportHeight - rect.bottom;
+
+                          if (spaceBelow < submenuHeight + 20) {
+                            // Position to align with bottom of viewport if needed
+                            return `-${Math.max(0, submenuHeight - spaceBelow)}px`;
+                          }
+                          return "0px";
+                        })()
+                      : "0px",
                   }}
                 >
                   {/* Search bar */}
                   <div className="px-3 pb-2">
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                       <input
                         type="text"
                         placeholder="Find a playlist"
                         value={playlistSearch}
                         onChange={(e) => setPlaylistSearch(e.target.value)}
-                        className="w-full bg-gray-700 text-white text-sm pl-10 pr-4 py-2 rounded border-0 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        className="w-full rounded border-0 bg-gray-700 py-2 pr-4 pl-10 text-sm text-white focus:ring-2 focus:ring-green-500 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -351,9 +331,7 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
                   {/* Playlist items */}
                   <div className="max-h-60 overflow-y-auto">
                     {isLoadingPlaylists ? (
-                      <div className="px-4 py-2 text-sm text-gray-400">
-                        Loading playlists...
-                      </div>
+                      <div className="px-4 py-2 text-sm text-gray-400">Loading playlists...</div>
                     ) : filteredPlaylists.length === 0 ? (
                       <div className="px-4 py-2 text-sm text-gray-400">
                         {playlistSearch ? "No playlists found" : "No playlists available"}
@@ -372,27 +350,25 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
                               }
                             }}
                             disabled={isPending}
-                            className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-white hover:bg-gray-700 transition-colors"
+                            className="flex w-full items-center justify-between px-4 py-2.5 text-sm text-white transition-colors hover:bg-gray-700"
                           >
                             <div className="flex items-center space-x-3">
-                              <div className="relative w-4 h-4">
+                              <div className="relative h-4 w-4">
                                 {playlist.coverImage ? (
                                   <Image
                                     src={playlist.coverImage}
                                     alt={playlist.name}
                                     width={16}
                                     height={16}
-                                    className="w-4 h-4 rounded flex-shrink-0 object-cover"
+                                    className="h-4 w-4 flex-shrink-0 rounded object-cover"
                                   />
                                 ) : (
-                                  <div className="w-4 h-4 bg-gray-600 rounded flex-shrink-0"></div>
+                                  <div className="h-4 w-4 flex-shrink-0 rounded bg-gray-600"></div>
                                 )}
                               </div>
                               <span className="truncate">{playlist.name}</span>
                             </div>
-                            {inPlaylist && (
-                              <CheckIcon className="w-4 h-4 text-green-500" />
-                            )}
+                            {inPlaylist && <CheckIcon className="h-4 w-4 text-green-500" />}
                           </button>
                         );
                       })

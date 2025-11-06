@@ -2,10 +2,7 @@
 
 import { use } from "react";
 import { notFound } from "next/navigation";
-import { 
-  subscriptionDetailQueryOptions, 
-  subscriptionPlansQueryOptions 
-} from "@/gql/options/subscription-options";
+import { subscriptionDetailQueryOptions, subscriptionPlansQueryOptions } from "@/gql/options/subscription-options";
 import { AdminSubscriptionDetail } from "@/modules/admin/subscription/ui/view";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";

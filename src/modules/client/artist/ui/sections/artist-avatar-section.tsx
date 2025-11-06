@@ -22,9 +22,7 @@ const ArtistAvatarSection = ({ artistData }: ArtistAvatarSectionProps) => {
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col gap-y-1 pb-4">
-          <div className="text-main-white text-base font-normal tracking-wider">
-            Artist
-          </div>
+          <div className="text-main-white text-base font-normal tracking-wider">Artist</div>
           <div className="text-main-white text-4xl font-bold tracking-tight">
             {artistData?.artists?.items?.[0]?.stageName}
           </div>

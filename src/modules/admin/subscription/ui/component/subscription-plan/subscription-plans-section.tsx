@@ -5,14 +5,16 @@ import { CustomPagination } from "@/components/ui/custom-pagination";
 import type { SubscriptionPlan } from "@/types";
 
 interface SubscriptionPlansSectionProps {
-  subscription: {
-    id: string;
-    name: string;
-    description?: string | null;
-    code: string;
-    tier: string;
-    status: string;
-  } | undefined;
+  subscription:
+    | {
+        id: string;
+        name: string;
+        description?: string | null;
+        code: string;
+        tier: string;
+        status: string;
+      }
+    | undefined;
   plans: SubscriptionPlan[];
   isLoadingPlans: boolean;
   currentPage: number;
@@ -47,13 +49,13 @@ export function SubscriptionPlansSection({
   // Check if subscription can create plans
   const canCreateSubscriptionPlans = () => {
     if (!subscription) return false;
-    return (subscription.tier === 'PREMIUM' || subscription.tier === 'PRO') && subscription.status === 'ACTIVE';
+    return (subscription.tier === "PREMIUM" || subscription.tier === "PRO") && subscription.status === "ACTIVE";
   };
 
   // Check if subscription plans section should be shown
   const shouldShowSubscriptionPlans = () => {
     if (!subscription) return false;
-    return subscription.tier !== 'FREE';
+    return subscription.tier !== "FREE";
   };
 
   if (!shouldShowSubscriptionPlans()) {
@@ -82,10 +84,9 @@ export function SubscriptionPlansSection({
         <Card className="border-amber-200 bg-amber-50">
           <CardContent className="p-4">
             <p className="text-sm text-amber-800">
-              {(subscription.tier !== 'PREMIUM' && subscription.tier !== 'PRO') || subscription.status !== 'ACTIVE'
+              {(subscription.tier !== "PREMIUM" && subscription.tier !== "PRO") || subscription.status !== "ACTIVE"
                 ? "Only Premium and Pro subscriptions can create subscription plans."
-                : "Only Active subscriptions can create subscription plans."
-              }
+                : "Only Active subscriptions can create subscription plans."}
             </p>
           </CardContent>
         </Card>

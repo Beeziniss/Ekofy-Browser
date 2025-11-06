@@ -9,14 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Eye, EyeOff } from "lucide-react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import useSignIn from "../../hook/use-sign-in";
 import { EkofyLogo } from "@/assets/icons";
 
@@ -145,16 +138,11 @@ const LoginFormSection = () => {
                       onCheckedChange={field.onChange}
                       className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
                     />
-                    <label className="cursor-pointer text-sm text-white">
-                      Remember me
-                    </label>
+                    <label className="cursor-pointer text-sm text-white">Remember me</label>
                   </div>
                 )}
               />
-              <Link
-                href="#"
-                className="text-sm text-white underline transition-colors hover:text-blue-400"
-              >
+              <Link href="#" className="text-sm text-white underline transition-colors hover:text-blue-400">
                 Forgot your password?
               </Link>
             </div>
@@ -173,13 +161,8 @@ const LoginFormSection = () => {
 
         {/* Sign Up Link */}
         <div className="mt-6 text-center">
-          <span className="text-sm text-white">
-            Don&apos;t have an account?{" "}
-          </span>
-          <Link
-            href="/sign-up"
-            className="font-medium text-white underline transition-colors hover:text-blue-400"
-          >
+          <span className="text-sm text-white">Don&apos;t have an account? </span>
+          <Link href="/sign-up" className="font-medium text-white underline transition-colors hover:text-blue-400">
             Sign up for Ekofy.
           </Link>
         </div>

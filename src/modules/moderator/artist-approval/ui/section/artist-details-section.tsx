@@ -5,12 +5,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ArtistInfoCard, BandMembersCard, ArtistActionsCard } from "../component";
-import { 
-  moderatorArtistDetailsQueryOptions, 
-} from "@/gql/options/moderator-options";
-import {  
-  useApproveArtistRegistration, 
-  useRejectArtistRegistration 
+import { moderatorArtistDetailsQueryOptions } from "@/gql/options/moderator-options";
+import {
+  useApproveArtistRegistration,
+  useRejectArtistRegistration,
 } from "@/gql/client-mutation-options/moderator-mutation";
 import { ArtistType } from "@/gql/graphql";
 import { ArrowLeft } from "lucide-react";
@@ -22,19 +20,15 @@ interface ArtistDetailsSectionProps {
 export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
-  
-  const {
-    data: artist,
-    isLoading,
-    error,
-  } = useQuery(moderatorArtistDetailsQueryOptions(userId));
+
+  const { data: artist, isLoading, error } = useQuery(moderatorArtistDetailsQueryOptions(userId));
 
   const approveArtistMutation = useApproveArtistRegistration();
   const rejectArtistMutation = useRejectArtistRegistration();
 
   const handleApprove = async () => {
     if (!artist || isProcessing) return;
-    
+
     setIsProcessing(true);
     try {
       await approveArtistMutation.mutateAsync({
@@ -42,7 +36,7 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
         email: artist.email,
         fullName: artist.fullName,
       });
-      
+
       toast.success("Artist registration approved successfully!");
       router.push("/moderator/artist-approval");
     } catch (error) {
@@ -55,7 +49,7 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
 
   const handleReject = async (rejectionReason: string) => {
     if (!artist || isProcessing) return;
-    
+
     setIsProcessing(true);
     try {
       await rejectArtistMutation.mutateAsync({
@@ -64,7 +58,7 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
         fullName: artist.fullName,
         rejectionReason,
       });
-      
+
       toast.success("Artist registration rejected successfully!");
       router.push("/moderator/artist-approval");
     } catch (error) {
@@ -81,7 +75,7 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex h-64 items-center justify-center">
         <div className="text-gray-400">Loading artist details...</div>
       </div>
     );
@@ -89,7 +83,7 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex h-64 items-center justify-center">
         <div className="text-red-400">Error loading artist details: {error.message}</div>
       </div>
     );
@@ -97,7 +91,7 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
 
   if (!artist) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex h-64 items-center justify-center">
         <div className="text-gray-400">Artist not found</div>
       </div>
     );
@@ -146,22 +140,21 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
 
   return (
     <div className="space-y-6">
-       <button
-          onClick={handleCancel}
-          className="mb-8 flex items-center text-white transition-colors hover:text-blue-400"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
-        </button>
+      <button
+        onClick={handleCancel}
+        className="mb-8 flex items-center text-white transition-colors hover:text-blue-400"
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back
+      </button>
 
       {/* Artist Information Card */}
       <ArtistInfoCard artist={transformedArtist} />
 
       {/* Band Members Card (only show if artist type is BAND or GROUP) */}
-      {(transformedArtist.artistType === ArtistType.Band || transformedArtist.artistType === ArtistType.Group) && 
-       transformedArtist.members && transformedArtist.members.length > 0 && (
-        <BandMembersCard members={transformedArtist.members} />
-      )}
+      {(transformedArtist.artistType === ArtistType.Band || transformedArtist.artistType === ArtistType.Group) &&
+        transformedArtist.members &&
+        transformedArtist.members.length > 0 && <BandMembersCard members={transformedArtist.members} />}
 
       {/* Action Buttons */}
       <ArtistActionsCard

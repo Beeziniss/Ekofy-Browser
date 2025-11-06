@@ -1,1 +1,1 @@
-export { SearchAllSection } from './search-all-section';
+export { SearchAllSection } from "./search-all-section";

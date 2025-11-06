@@ -1,1 +1,1 @@
-export { SearchPlaylistSection } from './search-playlist-section';
+export { SearchPlaylistSection } from "./search-playlist-section";

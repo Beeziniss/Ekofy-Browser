@@ -8,24 +8,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  EllipsisIcon,
-  HeartIcon,
-  LinkIcon,
-  PauseIcon,
-  PlayIcon,
-} from "lucide-react";
-import {
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/components/ui/table";
+import { EllipsisIcon, HeartIcon, LinkIcon, PauseIcon, PlayIcon } from "lucide-react";
+import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import Image from "next/image";
-import {
-  SearchTrackItem,
-  SearchArtistItem,
-  SearchPlaylistItem,
-} from "@/types/search";
+import { SearchTrackItem, SearchArtistItem, SearchPlaylistItem } from "@/types/search";
 import { useTrackPlayback } from "@/hooks/use-track-playback";
 import { usePlaylistPlayback } from "@/modules/client/playlist/hooks/use-playlist-playback";
 import { toast } from "sonner";
@@ -42,13 +28,7 @@ interface SearchAllSectionProps {
   isLoading?: boolean;
 }
 
-export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
-  query,
-  tracks,
-  artists,
-  playlists,
-  isLoading,
-}) => {
+export const SearchAllSection: React.FC<SearchAllSectionProps> = ({ query, tracks, artists, playlists, isLoading }) => {
   if (isLoading) {
     return (
       <div className="space-y-8">
@@ -70,10 +50,9 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
     );
   }
 
-
   return (
     <div className="space-y-8">
-            {/* Playlists */}
+      {/* Playlists */}
       {playlists.length > 0 ? (
         <div>
           <div className="mb-4 flex items-center justify-between">
@@ -85,7 +64,7 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
               Show all
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {playlists.slice(0, 6).map((playlist) => (
               <PlaylistCardAll key={playlist.id} playlist={playlist} />
             ))}
@@ -110,7 +89,7 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
               Show all
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {artists.slice(0, 6).map((artist) => (
               <ArtistCardAll key={artist.id} artist={artist} />
             ))}
@@ -165,12 +144,8 @@ interface TrackRowAllProps {
 
 const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
   const { duration } = useAudioStore();
-  
-  const {
-    isTrackCurrentlyPlaying,
-    isPlaying,
-    handlePlayPause,
-  } = useTrackPlayback(track.id, {
+
+  const { isTrackCurrentlyPlaying, isPlaying, handlePlayPause } = useTrackPlayback(track.id, {
     id: track.id,
     name: track.name,
     coverImage: track.coverImage,
@@ -202,26 +177,27 @@ const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
   };
 
   // Use real duration if track is currently playing, otherwise fallback
-  const displayDuration = isTrackCurrentlyPlaying && duration > 0
-    ? formatDuration(duration)
-    : formatCreatedAt(track.createdAt);
+  const displayDuration =
+    isTrackCurrentlyPlaying && duration > 0 ? formatDuration(duration) : formatCreatedAt(track.createdAt);
 
   return (
     <TableRow className="group relative border-b border-gray-800/50 hover:bg-gray-800/50">
       <TableCell className="w-12 text-center">
         <div className="flex h-8 w-8 items-center justify-center">
-          <span className={`text-sm text-gray-400 group-hover:hidden ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : ""}`}>
+          <span
+            className={`text-sm text-gray-400 group-hover:hidden ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : ""}`}
+          >
             {isTrackCurrentlyPlaying && isPlaying ? "♪" : index + 1}
           </span>
           <div className="hidden group-hover:block">
             <Button
               onClick={handlePlayPauseClick}
-              className="bg-transparent hover:bg-gray-700 p-0 w-8 h-8 rounded-full"
+              className="h-8 w-8 rounded-full bg-transparent p-0 hover:bg-gray-700"
             >
               {isTrackCurrentlyPlaying && isPlaying ? (
-                <PauseIcon className="text-white w-4 h-4" />
+                <PauseIcon className="h-4 w-4 text-white" />
               ) : (
-                <PlayIcon className="text-white w-4 h-4" />
+                <PlayIcon className="h-4 w-4 text-white" />
               )}
             </Button>
           </div>
@@ -238,7 +214,9 @@ const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
             className="h-10 w-10 flex-shrink-0 rounded object-cover"
           />
           <div className="min-w-0">
-            <p className={`truncate font-medium ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-white"}`}>
+            <p
+              className={`truncate font-medium ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-white"}`}
+            >
               {track.name}
             </p>
             <p className="truncate text-sm text-gray-400">
@@ -281,62 +259,58 @@ const ArtistCardAll = ({ artist }: ArtistCardAllProps) => {
   };
 
   return (
-    <div 
-      className="flex flex-col items-center space-y-3 p-3 rounded-xl hover:bg-gray-800/50 transition-all duration-200 cursor-pointer group"
+    <div
+      className="group flex cursor-pointer flex-col items-center space-y-3 rounded-xl p-3 transition-all duration-200 hover:bg-gray-800/50"
       onClick={handleArtistClick}
     >
-      <div className="relative w-full aspect-square">
+      <div className="relative aspect-square w-full">
         {artist.avatarImage ? (
           <Image
             src={artist.avatarImage}
             alt={artist.stageName}
             width={200}
             height={200}
-            className="w-full h-full rounded-full object-cover shadow-lg group-hover:shadow-xl transition-shadow duration-200"
+            className="h-full w-full rounded-full object-cover shadow-lg transition-shadow duration-200 group-hover:shadow-xl"
           />
         ) : (
-          <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white text-5xl font-bold shadow-lg group-hover:shadow-xl transition-shadow duration-200">
+          <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-600 text-5xl font-bold text-white shadow-lg transition-shadow duration-200 group-hover:shadow-xl">
             {artist.stageName.charAt(0).toUpperCase()}
           </div>
         )}
-        
+
         {/* Bottom center icons - only show on hover */}
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center items-center gap-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 transform items-center justify-center gap-x-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           <Button
             onClick={(e) => {
               e.stopPropagation();
               // TODO: Play artist's top tracks
               console.log(`Play ${artist.stageName}'s music`);
             }}
-            className="bg-white hover:bg-gray-100 text-black size-12 rounded-full shadow-lg"
+            className="size-12 rounded-full bg-white text-black shadow-lg hover:bg-gray-100"
           >
-            <PlayIcon className="w-8 h-8 fill-current" />
+            <PlayIcon className="h-8 w-8 fill-current" />
           </Button>
-          
+
           <Button
             onClick={handleFavoriteClick}
-            className="bg-white hover:bg-gray-100 text-black size-12 rounded-full shadow-lg"
+            className="size-12 rounded-full bg-white text-black shadow-lg hover:bg-gray-100"
           >
-            <HeartIcon
-              className={`w-6 h-6 ${isFavorited ? "fill-red-500 text-red-500" : ""}`}
-            />
+            <HeartIcon className={`h-6 w-6 ${isFavorited ? "fill-red-500 text-red-500" : ""}`} />
           </Button>
         </div>
       </div>
-      
-      <div className="flex flex-col items-center text-center w-full">
-        <h3 className="text-white font-semibold text-sm truncate w-full group-hover:text-purple-300 hover:underline transition-colors duration-200">
+
+      <div className="flex w-full flex-col items-center text-center">
+        <h3 className="w-full truncate text-sm font-semibold text-white transition-colors duration-200 group-hover:text-purple-300 hover:underline">
           {artist.stageName}
         </h3>
-        <p className="text-gray-500 text-xs mt-1">
-          {artist.followerCount?.toLocaleString() || '0'} followers
-        </p>
+        <p className="mt-1 text-xs text-gray-500">{artist.followerCount?.toLocaleString() || "0"} followers</p>
       </div>
     </div>
   );
 };
 
-// Playlist Card Component for All section  
+// Playlist Card Component for All section
 interface PlaylistCardAllProps {
   playlist: SearchPlaylistItem;
 }
@@ -346,11 +320,7 @@ const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 
-  const {
-    isPlaylistCurrentlyPlaying,
-    isPlaying,
-    handlePlayPause,
-  } = usePlaylistPlayback(playlist.id);
+  const { isPlaylistCurrentlyPlaying, isPlaying, handlePlayPause } = usePlaylistPlayback(playlist.id);
 
   const isOwnPlaylist = user?.userId === playlist.user[0]?.id;
   const [isFavorited, setIsFavorited] = useState(false);
@@ -364,9 +334,7 @@ const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
       queryClient.invalidateQueries({
         queryKey: ["playlists-home"],
       });
-      toast.success(
-        isFavorited ? "Added to your favorites!" : "Removed from your favorites!",
-      );
+      toast.success(isFavorited ? "Added to your favorites!" : "Removed from your favorites!");
     },
     onError: () => {
       setIsFavorited(isFavorited);
@@ -394,9 +362,7 @@ const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
 
   const onCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(
-      `${window.location.origin}/playlists/${playlist.id}`,
-    );
+    navigator.clipboard.writeText(`${window.location.origin}/playlists/${playlist.id}`);
     toast.success("Copied!");
   };
 
@@ -433,11 +399,7 @@ const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
               className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity group-hover:opacity-100 ${isMenuOpen ? "opacity-100" : "opacity-0"}`}
             >
               <HeartIcon
-                className={`size-5 ${
-                  isFavorited
-                    ? "text-main-purple fill-main-purple"
-                    : "text-main-dark-bg"
-                }`}
+                className={`size-5 ${isFavorited ? "text-main-purple fill-main-purple" : "text-main-dark-bg"}`}
               />
             </Button>
           )}
@@ -469,9 +431,7 @@ const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
         {playlist.name}
       </Link>
 
-      <p className="text-main-grey text-xs">
-        By {playlist.user[0]?.fullName || 'Unknown'}
-      </p>
+      <p className="text-main-grey text-xs">By {playlist.user[0]?.fullName || "Unknown"}</p>
     </div>
   );
 };

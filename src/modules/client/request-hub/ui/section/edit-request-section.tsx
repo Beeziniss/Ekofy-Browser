@@ -31,14 +31,14 @@ export function EditRequestSection({ initialData, onSubmit, onCancel, onDelete }
   // Convert deadline to Date if it's a string
   const processedInitialData = {
     ...initialData,
-    deadline: typeof initialData.deadline === 'string' ? new Date(initialData.deadline) : initialData.deadline
+    deadline: typeof initialData.deadline === "string" ? new Date(initialData.deadline) : initialData.deadline,
   };
 
   return (
-    <RequestForm 
-      mode="edit" 
+    <RequestForm
+      mode="edit"
       initialData={processedInitialData}
-      onSubmit={handleSubmit} 
+      onSubmit={handleSubmit}
       onCancel={onCancel}
       onDelete={handleDelete}
     />

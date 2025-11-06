@@ -17,10 +17,7 @@ export function AdminSubscriptionDetail({ subscriptionId }: AdminSubscriptionDet
 
   return (
     <SubscriptionLayout showCard={false}>
-      <SubscriptionDetailSection 
-        subscriptionId={subscriptionId} 
-        onBack={handleBack}
-      />
+      <SubscriptionDetailSection subscriptionId={subscriptionId} onBack={handleBack} />
     </SubscriptionLayout>
   );
 }

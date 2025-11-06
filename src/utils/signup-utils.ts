@@ -11,22 +11,22 @@ export const formatDate = (date: Date | undefined | null): string => {
   if (!date) {
     throw new Error("Date is required");
   }
-  
+
   // Handle string dates that might be passed accidentally
-  if (typeof date === 'string') {
+  if (typeof date === "string") {
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
       throw new Error("Invalid date string provided");
     }
-    return parsedDate.toISOString().split('T')[0];
+    return parsedDate.toISOString().split("T")[0];
   }
-  
+
   // Handle Date objects
   if (!(date instanceof Date) || isNaN(date.getTime())) {
     throw new Error("Invalid date object");
   }
-  
-  return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+
+  return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
 };
 
 export const validateEmail = (email: string): boolean => {
@@ -36,23 +36,23 @@ export const validateEmail = (email: string): boolean => {
 
 export const validatePassword = (password: string): string[] => {
   const errors: string[] = [];
-  
+
   if (password.length < 6) {
     errors.push("Password must be at least 6 characters long");
   }
-  
+
   if (!/(?=.*[a-z])/.test(password)) {
     errors.push("Password must contain at least 1 lowercase letter");
   }
-  
+
   if (!/(?=.*[A-Z])/.test(password)) {
     errors.push("Password must contain at least 1 uppercase letter");
   }
-  
+
   if (!/(?=.*\d)/.test(password)) {
     errors.push("Password must contain at least 1 number");
   }
-  
+
   return errors;
 };
 
@@ -62,11 +62,11 @@ export const handleAPIError = (error: unknown): string => {
     // Just return detail if available, otherwise generic message
     return data?.detail || "An error occurred. Please try again.";
   }
-  
+
   if (error instanceof Error && error.message) {
     return error.message;
   }
-  
+
   return "An unknown error occurred";
 };
 
@@ -91,30 +91,29 @@ export const formatSimpleAPIError = (error: unknown): string => {
   if (isAxiosError(error)) {
     const response = error.response;
     const data = response?.data;
-    
+
     // Use detail if available, otherwise fallback to generic message
     if (data?.detail) {
       return data.detail;
     }
-    
+
     // Fallback based on status
     if (response?.status === 409) {
       return "The data already exists in the system.";
     }
-    
+
     return error.message || "An error occurred. Please try again.";
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }
-  
+
   return "An error occurred. Please try again.";
 };
 
 // Convert artist signup store data to API format
 export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUpFormData>): RegisterArtistData => {
-    
   // Check basic info
   const missingBasicFields = [];
   if (!formData.email) missingBasicFields.push("email");
@@ -126,7 +125,7 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
   if (!formData.phoneNumber) missingBasicFields.push("phoneNumber (should be from ID card section)");
   if (!formData.artistType) missingBasicFields.push("artistType");
   if (!formData.identityCard) missingBasicFields.push("identityCard");
-  
+
   if (missingBasicFields.length > 0) {
     console.error("❌ Missing required fields:", missingBasicFields);
     throw new Error(`Missing required information: ${missingBasicFields.join(", ")}`);
@@ -146,7 +145,7 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
     if (!formData.identityCard.backImage) missingIdFields.push("backImage");
     if (!formData.identityCard.validUntil) missingIdFields.push("validUntil");
   }
-  
+
   if (missingIdFields.length > 0) {
     console.error("❌ Missing ID card fields:", missingIdFields);
     throw new Error(`Missing ID card information: ${missingIdFields.join(", ")}`);
@@ -154,7 +153,7 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
 
   // For Individual artists, use fullName as stageName if not provided
   const finalStageName = formData.stageName || formData.fullName || formData.identityCard!.fullName;
-  
+
   if (!finalStageName) {
     throw new Error("Missing stageName: neither stageName nor fullName is available");
   }
@@ -180,10 +179,10 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
     // Artist specific - stageName is required by API
     stageName: finalStageName,
     artistType: formData.artistType!,
-    
+
     // Members (for groups)
     members: formData.members || [],
-    
+
     // Identity card information
     identityCard: {
       number: formData.identityCard!.number!,
@@ -203,7 +202,7 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
       validUntil: convertDateToISO(formData.identityCard!.validUntil!), // Convert DD/MM/YYYY to ISO
     },
   };
-  
+
   return result;
 };
 
@@ -230,19 +229,19 @@ export const mapGraphQLUserRoleToLocal = (graphqlRole: GraphQLUserRole): UserRol
  */
 export const convertDateToISO = (dateString: string): string => {
   if (!dateString) return "";
-  
+
   // If already ISO format, return as is
-  if (dateString.includes('T') && dateString.includes('Z')) {
+  if (dateString.includes("T") && dateString.includes("Z")) {
     return dateString;
   }
-  
+
   // If DD/MM/YYYY format, convert to ISO
-  if (dateString.includes('/')) {
-    const [day, month, year] = dateString.split('/');
+  if (dateString.includes("/")) {
+    const [day, month, year] = dateString.split("/");
     const date = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
     return formatDate(date);
   }
-  
+
   return dateString;
 };
 
@@ -253,20 +252,20 @@ export const convertDateToISO = (dateString: string): string => {
  */
 export const convertISOToDisplayDate = (isoString: string): string => {
   if (!isoString) return "";
-  
+
   // If already DD/MM/YYYY format, return as is
-  if (isoString.includes('/')) {
+  if (isoString.includes("/")) {
     return isoString;
   }
-  
+
   // If ISO format, convert to DD/MM/YYYY
-  if (isoString.includes('T') && isoString.includes('Z')) {
+  if (isoString.includes("T") && isoString.includes("Z")) {
     const date = new Date(isoString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   }
-  
+
   return isoString;
 };

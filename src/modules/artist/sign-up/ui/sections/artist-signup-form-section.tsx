@@ -8,34 +8,22 @@ import Link from "next/link";
 import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import { UserGender } from "@/gql/graphql";
 import { toast } from "sonner";
-import {
-  ArtistSignUpFormData,
-  ArtistSignUpSectionProps,
-} from "@/types/artist_type";
+import { ArtistSignUpFormData, ArtistSignUpSectionProps } from "@/types/artist_type";
 import { EkofyLogo } from "@/assets/icons";
 
-type ArtistSignUpFormSectionProps =
-  ArtistSignUpSectionProps<ArtistSignUpFormData>;
+type ArtistSignUpFormSectionProps = ArtistSignUpSectionProps<ArtistSignUpFormData>;
 
-const ArtistSignUpFormSection = ({
-  onNext,
-  initialData,
-}: ArtistSignUpFormSectionProps) => {
-  const { formData, updateFormData, updateSessionData, goToNextStep } =
-    useArtistSignUpStore();
+const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectionProps) => {
+  const { formData, updateFormData, updateSessionData, goToNextStep } = useArtistSignUpStore();
 
   // Initialize state from global store or initial data
-  const [email, setEmail] = useState(
-    initialData?.email || formData.email || "",
-  );
+  const [email, setEmail] = useState(initialData?.email || formData.email || "");
   // Always reset password fields when component mounts for security
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(
-    initialData?.agreeTerms || false,
-  );
+  const [agreeTerms, setAgreeTerms] = useState(initialData?.agreeTerms || false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Password validation state
@@ -237,21 +225,17 @@ const ArtistSignUpFormSection = ({
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="mb-4 text-3xl font-bold text-white">
-            Let’s get started
-          </h2>
+          <h2 className="mb-4 text-3xl font-bold text-white">Let’s get started</h2>
           <p className="text-sm text-gray-300">
-            Enter your email and password to create a new account. We will send
-            you a verification code through the registered email.
+            Enter your email and password to create a new account. We will send you a verification code through the
+            registered email.
           </p>
         </div>
 
         {/* Sign Up Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="mb-2 block text-sm font-medium text-white">
-              Email*
-            </label>
+            <label className="mb-2 block text-sm font-medium text-white">Email*</label>
             <Input
               type="email"
               value={email}
@@ -273,9 +257,7 @@ const ArtistSignUpFormSection = ({
                 errors.email ? "border-red-500" : ""
               }`}
             />
-            {errors.email && (
-              <p className="mt-1 text-xs text-red-400">{errors.email}</p>
-            )}
+            {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email}</p>}
           </div>
 
           <div className="relative">
@@ -298,8 +280,7 @@ const ArtistSignUpFormSection = ({
                   } else {
                     // Show notification that limit is reached
                     const newErrors = { ...errors };
-                    newErrors.password =
-                      "Password must be less than 50 characters";
+                    newErrors.password = "Password must be less than 50 characters";
                     setErrors(newErrors);
                   }
                 }}
@@ -315,16 +296,10 @@ const ArtistSignUpFormSection = ({
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-400">{errors.password}</p>
-            )}
+            {errors.password && <p className="mt-1 text-xs text-red-400">{errors.password}</p>}
 
             {/* Password validation tooltip */}
             {(passwordFocus || (password && !isPasswordValid)) && (
@@ -333,41 +308,31 @@ const ArtistSignUpFormSection = ({
                   <div
                     className={`flex items-center ${passwordValidation.minLength ? "text-green-400" : "text-gray-400"}`}
                   >
-                    <span className="mr-2">
-                      {passwordValidation.minLength ? "✓" : "○"}
-                    </span>
+                    <span className="mr-2">{passwordValidation.minLength ? "✓" : "○"}</span>
                     At least 8 characters
                   </div>
                   <div
                     className={`flex items-center ${passwordValidation.hasLetters ? "text-green-400" : "text-gray-400"}`}
                   >
-                    <span className="mr-2">
-                      {passwordValidation.hasLetters ? "✓" : "○"}
-                    </span>
+                    <span className="mr-2">{passwordValidation.hasLetters ? "✓" : "○"}</span>
                     Contains letters
                   </div>
                   <div
                     className={`flex items-center ${passwordValidation.hasNumbers ? "text-green-400" : "text-gray-400"}`}
                   >
-                    <span className="mr-2">
-                      {passwordValidation.hasNumbers ? "✓" : "○"}
-                    </span>
+                    <span className="mr-2">{passwordValidation.hasNumbers ? "✓" : "○"}</span>
                     Contains numbers
                   </div>
                   <div
                     className={`flex items-center ${passwordValidation.hasSpecialChars ? "text-green-400" : "text-gray-400"}`}
                   >
-                    <span className="mr-2">
-                      {passwordValidation.hasSpecialChars ? "✓" : "○"}
-                    </span>
+                    <span className="mr-2">{passwordValidation.hasSpecialChars ? "✓" : "○"}</span>
                     Contains special characters
                   </div>
                   <div
                     className={`flex items-center ${passwordValidation.noCommonWords ? "text-green-400" : "text-gray-400"}`}
                   >
-                    <span className="mr-2">
-                      {passwordValidation.noCommonWords ? "✓" : "○"}
-                    </span>
+                    <span className="mr-2">{passwordValidation.noCommonWords ? "✓" : "○"}</span>
                     Avoid common passwords
                   </div>
                 </div>
@@ -376,9 +341,7 @@ const ArtistSignUpFormSection = ({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-white">
-              Confirm Password*
-            </label>
+            <label className="mb-2 block text-sm font-medium text-white">Confirm Password*</label>
             <div className="relative">
               <Input
                 type={showConfirmPassword ? "text" : "password"}
@@ -392,8 +355,7 @@ const ArtistSignUpFormSection = ({
                   } else {
                     // Show notification that limit is reached
                     const newErrors = { ...errors };
-                    newErrors.confirmPassword =
-                      "Password must be less than 50 characters";
+                    newErrors.confirmPassword = "Password must be less than 50 characters";
                     setErrors(newErrors);
                   }
                 }}
@@ -407,18 +369,10 @@ const ArtistSignUpFormSection = ({
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
               >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {errors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-400">
-                {errors.confirmPassword}
-              </p>
-            )}
+            {errors.confirmPassword && <p className="mt-1 text-xs text-red-400">{errors.confirmPassword}</p>}
           </div>
 
           {/* Terms and Conditions */}
@@ -443,9 +397,7 @@ const ArtistSignUpFormSection = ({
                   Privacy Policy
                 </Link>
               </label>
-              {errors.agreeTerms && (
-                <p className="mt-1 text-xs text-red-400">{errors.agreeTerms}</p>
-              )}
+              {errors.agreeTerms && <p className="mt-1 text-xs text-red-400">{errors.agreeTerms}</p>}
             </div>
           </div>
 
@@ -458,9 +410,7 @@ const ArtistSignUpFormSection = ({
           </Button>
           {/* Login Link */}
           <div className="mt-2 text-center">
-            <span className="text-sm text-white">
-              Already have an account?{" "}
-            </span>
+            <span className="text-sm text-white">Already have an account? </span>
             <Link
               href="/artist/login"
               className="font-medium text-white underline transition-colors hover:text-blue-400"
@@ -477,9 +427,7 @@ const ArtistSignUpFormSection = ({
               <div className="w-full border-t border-gray-700"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-[#121212] px-2 text-gray-400">
-                Or continue with
-              </span>
+              <span className="bg-[#121212] px-2 text-gray-400">Or continue with</span>
             </div>
           </div>
         </div>
