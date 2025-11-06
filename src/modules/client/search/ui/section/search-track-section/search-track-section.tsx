@@ -52,22 +52,25 @@ const SearchTrackSectionContent: React.FC<SearchTrackSectionProps> = ({
   // Auto-load more when scrolling near bottom
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || isFetchingNextPage) {
+      if (
+        window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight ||
+        isFetchingNextPage
+      ) {
         return;
       }
-      
+
       if (hasNextPage && fetchNextPage) {
         fetchNextPage();
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (tracks.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <p className="text-muted-foreground">No tracks found</p>
       </div>
     );
@@ -80,12 +83,12 @@ const SearchTrackSectionContent: React.FC<SearchTrackSectionProps> = ({
         <div className="relative w-full">
           <table className="w-full caption-bottom text-sm">
             <TableHeader>
-              <TableRow className="hover:bg-transparent border-b border-gray-700">
+              <TableRow className="border-b border-gray-700 hover:bg-transparent">
                 <TableHead className="w-12 text-center text-gray-400">#</TableHead>
                 <TableHead className="text-gray-400">Title</TableHead>
                 <TableHead className="text-gray-400">Album</TableHead>
                 <TableHead className="w-20 text-center text-gray-400">
-                  <Clock className="w-4 h-4 mx-auto" />
+                  <Clock className="mx-auto h-4 w-4" />
                 </TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
@@ -105,19 +108,15 @@ const SearchTrackSectionContent: React.FC<SearchTrackSectionProps> = ({
 
       {/* Loading more indicator */}
       {isFetchingNextPage && (
-        <div className="text-center py-4">
+        <div className="py-4 text-center">
           <p className="text-gray-400">Loading more tracks...</p>
         </div>
       )}
 
       {/* Load more button (backup for auto-scroll) */}
       {hasNextPage && !isFetchingNextPage && (
-        <div className="text-center py-4">
-          <Button 
-            variant="outline" 
-            onClick={fetchNextPage}
-            className="text-white border-gray-600 hover:bg-gray-700"
-          >
+        <div className="py-4 text-center">
+          <Button variant="outline" onClick={fetchNextPage} className="border-gray-600 text-white hover:bg-gray-700">
             Load More Tracks
           </Button>
         </div>
@@ -137,11 +136,7 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
   const { executeWithAuth } = useSearchAuth();
   
   // Use track playback hook for this specific track
-  const {
-    isTrackCurrentlyPlaying,
-    isPlaying,
-    handlePlayPause,
-  } = useTrackPlayback(track.id, {
+  const { isTrackCurrentlyPlaying, isPlaying, handlePlayPause } = useTrackPlayback(track.id, {
     id: track.id,
     name: track.name,
     coverImage: track.coverImage,
@@ -159,7 +154,7 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
     }, "play", track.name);
   };
 
-    const formatCreatedAt = (createdAt: string) => {
+  const formatCreatedAt = (createdAt: string) => {
     /* const date = new Date(addedTime);
     const now = new Date();
     const diffInDays = Math.floor(
@@ -188,29 +183,29 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
   };
 
   return (
-    <TableRow 
-      className="group hover:bg-gray-800/50 border-b border-gray-800/50 relative"
-    >
+    <TableRow className="group relative border-b border-gray-800/50 hover:bg-gray-800/50">
       <TableCell className="text-center">
-        <div className="flex items-center justify-center w-8 h-8">
-          <span className={`group-hover:hidden text-gray-400 text-sm ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : ""}`}>
+        <div className="flex h-8 w-8 items-center justify-center">
+          <span
+            className={`text-sm text-gray-400 group-hover:hidden ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : ""}`}
+          >
             {isTrackCurrentlyPlaying && isPlaying ? "♪" : index + 1}
           </span>
           <div className="hidden group-hover:block">
             <Button
               onClick={handlePlayPauseClick}
-              className="bg-transparent hover:bg-gray-700 p-0 w-8 h-8 rounded-full"
+              className="h-8 w-8 rounded-full bg-transparent p-0 hover:bg-gray-700"
             >
               {isTrackCurrentlyPlaying && isPlaying ? (
-                <PauseIcon className="text-white w-4 h-4" />
+                <PauseIcon className="h-4 w-4 text-white" />
               ) : (
-                <PlayIcon className="text-white w-4 h-4" />
+                <PlayIcon className="h-4 w-4 text-white" />
               )}
             </Button>
           </div>
         </div>
       </TableCell>
-      
+
       <TableCell>
         <div className="flex items-center space-x-3">
           <Image
@@ -218,37 +213,34 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
             alt={track.name}
             width={40}
             height={40}
-            className="w-10 h-10 rounded object-cover flex-shrink-0"
+            className="h-10 w-10 flex-shrink-0 rounded object-cover"
           />
           <div className="min-w-0">
-            <p className={`font-medium truncate ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-white"}`}>
+            <p
+              className={`truncate font-medium ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-white"}`}
+            >
               {track.name}
             </p>
-            <p className="text-gray-400 text-sm truncate">
+            <p className="truncate text-sm text-gray-400">
               {track.mainArtists?.items?.[0]?.stageName || "Unknown Artist"}
             </p>
           </div>
         </div>
       </TableCell>
-      
+
       <TableCell>
-        <p className="text-gray-400 text-sm truncate">
+        <p className="truncate text-sm text-gray-400">
           {track.name} {/* Album name could be added to GraphQL query */}
         </p>
       </TableCell>
-      
+
       <TableCell className="text-center">
-        <span className="text-gray-400 text-sm">
-          {getDuration()}
-        </span>
+        <span className="text-sm text-gray-400">{getDuration()}</span>
       </TableCell>
-      
+
       <TableCell className="relative">
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
-          <TrackActionMenu 
-            track={track} 
-            isVisible={true}
-          />
+        <div className="relative z-10 opacity-0 transition-opacity group-hover:opacity-100">
+          <TrackActionMenu track={track} isVisible={true} />
         </div>
       </TableCell>
     </TableRow>

@@ -16,14 +16,10 @@ const TrackUploadEmpty = () => {
       <TrackXls className="size-17.5" />
 
       <p className="text-main-white my-6 text-center text-lg font-medium">
-        You haven&apos;t uploaded any tracks yet. Try uploading to get
-        discovered and start building your audience.
+        You haven&apos;t uploaded any tracks yet. Try uploading to get discovered and start building your audience.
       </p>
 
-      <Button
-        onClick={handleNavigateToUpload}
-        className="primary_gradient text-main-white hover:brightness-90"
-      >
+      <Button onClick={handleNavigateToUpload} className="primary_gradient text-main-white hover:brightness-90">
         Upload Now
       </Button>
     </div>

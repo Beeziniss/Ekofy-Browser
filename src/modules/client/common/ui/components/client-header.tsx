@@ -33,7 +33,7 @@ const navBarItems: ClientNavbarProps[] = [
   },
   {
     href: "/subscription",
-    label: "Plans",  
+    label: "Plans",
     activeStyle: "border-b-2 border-b-main-white text-main-white",
     useStartsWith: false,
   },

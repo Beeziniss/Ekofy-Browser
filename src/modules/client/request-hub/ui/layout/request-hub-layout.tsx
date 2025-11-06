@@ -3,12 +3,12 @@
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Search, 
-  // Filter, 
-  Plus, 
+import {
+  Search,
+  // Filter,
+  Plus,
   Users,
-  FileText
+  FileText,
 } from "lucide-react";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
@@ -24,15 +24,15 @@ interface RequestHubLayoutProps {
   myRequestsButtonText?: string;
 }
 
-export function RequestHubLayout({ 
-  children, 
+export function RequestHubLayout({
+  children,
   onPostRequest,
   onBrowseArtists,
   onMyRequests,
   showFilters = true,
   searchValue = "",
   onSearchChange,
-  myRequestsButtonText = "My Requests"
+  myRequestsButtonText = "My Requests",
 }: RequestHubLayoutProps) {
   // Get user role from auth store
   const { user } = useAuthStore();
@@ -45,11 +45,11 @@ export function RequestHubLayout({
     <div className="min-h-screen">
       {/* Header */}
       <div>
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="mx-auto max-w-7xl px-6 py-8">
           {/* Title and Actions */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="mb-8 flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-primary-gradient mb-2">Request Hub</h1>
+              <h1 className="text-primary-gradient mb-2 text-3xl font-bold">Request Hub</h1>
               <p className="text-gray-600">Find the perfect artist for your project</p>
             </div>
             <div className="flex space-x-3">
@@ -88,13 +88,13 @@ export function RequestHubLayout({
           {/* Search and Filters */}
           {showFilters && (
             <div className="flex items-center space-x-4">
-              <div className="relative flex-1 max-w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <div className="relative max-w-full flex-1">
+                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                 <Input
                   placeholder="Search requests..."
                   value={searchValue}
                   onChange={(e) => onSearchChange?.(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full"
+                  className="w-full py-2 pr-4 pl-10"
                 />
               </div>
               {/* <Button variant="outline" className="flex items-center gap-2">
@@ -107,9 +107,7 @@ export function RequestHubLayout({
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {children}
-      </div>
+      <div className="mx-auto max-w-7xl px-6 py-8">{children}</div>
     </div>
   );
 }

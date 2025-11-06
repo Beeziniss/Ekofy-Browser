@@ -1,27 +1,18 @@
 import { queryOptions } from "@tanstack/react-query";
 import { execute } from "@/gql/execute";
-import { 
-  SUBSCRIPTION_QUERIES, 
+import {
+  SUBSCRIPTION_QUERIES,
   SUBSCRIPTION_DETAIL_QUERIES,
-  SUBSCRIPTION_PLANS_QUERIES 
+  SUBSCRIPTION_PLANS_QUERIES,
 } from "@/modules/shared/queries/admin/subcription-queries";
-import type { 
-  SubscriptionsResponse, 
-  SubscriptionPlansResponse 
-} from "@/types";
+import type { SubscriptionsResponse, SubscriptionPlansResponse } from "@/types";
 
 // Query options for fetching subscriptions list
-export const subscriptionsQueryOptions = (
-  skip: number = 0,
-  take: number = 10,
-  searchTerm: string = ""
-) => {
+export const subscriptionsQueryOptions = (skip: number = 0, take: number = 10, searchTerm: string = "") => {
   return queryOptions({
     queryKey: ["subscriptions", { skip, take, searchTerm }],
     queryFn: async () => {
-      const where = searchTerm 
-        ? { name: { contains: searchTerm } }
-        : {};
+      const where = searchTerm ? { name: { contains: searchTerm } } : {};
 
       const result = await execute(SUBSCRIPTION_QUERIES, {
         skip,
@@ -58,7 +49,7 @@ export const subscriptionPlansQueryOptions = (
   skip: number = 0,
   take: number = 10,
   subscriptionId?: string,
-  searchTerm: string = ""
+  searchTerm: string = "",
 ) => {
   return queryOptions({
     queryKey: ["subscriptionPlans", { skip, take, subscriptionId, searchTerm }],

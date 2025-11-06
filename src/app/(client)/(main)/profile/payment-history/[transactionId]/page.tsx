@@ -1,20 +1,20 @@
 "use client";
 
-import React, { Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Suspense, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
+import { useRouter, useParams } from "next/navigation";
 import { PaymentTransactionStatus } from "@/gql/graphql";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function TransactionDetailPage() {
   const router = useRouter();
   const params = useParams<{ transactionId: string }>();
   const { isAuthenticated, user, clearUserData } = useAuthStore();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) {
       router.replace("/login");
       return;
@@ -41,25 +41,27 @@ export default function TransactionDetailPage() {
   const statusBadge = (status: PaymentTransactionStatus) => {
     switch (status) {
       case PaymentTransactionStatus.Paid:
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Paid</Badge>;
+        return <Badge className="border-green-200 bg-green-100 text-green-800">Paid</Badge>;
       case PaymentTransactionStatus.Pending:
-        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Pending</Badge>;
+        return <Badge className="border-yellow-200 bg-yellow-100 text-yellow-800">Pending</Badge>;
       case PaymentTransactionStatus.Unpaid:
-        return <Badge className="bg-red-100 text-red-800 border-red-200">Unpaid</Badge>;
+        return <Badge className="border-red-200 bg-red-100 text-red-800">Unpaid</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">Unknown</Badge>;
+        return <Badge className="border-gray-200 bg-gray-100 text-gray-800">Unknown</Badge>;
     }
   };
 
   return (
     <Suspense fallback={<div className="p-4">Loading transaction…</div>}>
-      <div className="mx-auto w-full max-w-4xl px-4 md:px-6 py-6">
+      <div className="mx-auto w-full max-w-4xl px-4 py-6 md:px-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Transaction Detail</h1>
-            <p className="text-sm text-muted-foreground">Reference: {params.transactionId}</p>
+            <p className="text-muted-foreground text-sm">Reference: {params.transactionId}</p>
           </div>
-          <Link href="/profile/payment-history" className="text-sm text-primary hover:underline">&larr; Back to Payment History</Link>
+          <Link href="/profile/payment-history" className="text-primary text-sm hover:underline">
+            &larr; Back to Payment History
+          </Link>
         </div>
 
         <Card>
@@ -70,21 +72,23 @@ export default function TransactionDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <dt className="text-sm text-muted-foreground">Created at</dt>
+                <dt className="text-muted-foreground text-sm">Created at</dt>
                 <dd className="text-sm">{new Date(tx.createdAt).toLocaleString()}</dd>
               </div>
               <div>
-                <dt className="text-sm text-muted-foreground">Amount</dt>
-                <dd className="text-sm">{tx.amount.toLocaleString()} {tx.currency}</dd>
+                <dt className="text-muted-foreground text-sm">Amount</dt>
+                <dd className="text-sm">
+                  {tx.amount.toLocaleString()} {tx.currency}
+                </dd>
               </div>
               <div>
-                <dt className="text-sm text-muted-foreground">Payment methods</dt>
+                <dt className="text-muted-foreground text-sm">Payment methods</dt>
                 <dd className="text-sm">{tx.stripePaymentMethod.join(", ")}</dd>
               </div>
               <div>
-                <dt className="text-sm text-muted-foreground">Stripe Payment ID</dt>
+                <dt className="text-muted-foreground text-sm">Stripe Payment ID</dt>
                 <dd className="text-sm">{tx.stripePaymentId}</dd>
               </div>
             </dl>

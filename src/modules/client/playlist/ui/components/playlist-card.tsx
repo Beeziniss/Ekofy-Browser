@@ -5,13 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  EllipsisIcon,
-  HeartIcon,
-  LinkIcon,
-  PauseIcon,
-  PlayIcon,
-} from "lucide-react";
+import { EllipsisIcon, HeartIcon, LinkIcon, PauseIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -42,20 +36,13 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const queryClient = useQueryClient();
 
   // Use custom hook for playlist playback functionality
-  const {
-    isPlaylistCurrentlyPlaying,
-    isPlaying,
-    handlePlayPause,
-    playlistTracks,
-  } = usePlaylistPlayback(playlist.id);
+  const { isPlaylistCurrentlyPlaying, isPlaying, handlePlayPause, playlistTracks } = usePlaylistPlayback(playlist.id);
 
   // Check if current user is the owner of the playlist
   const isOwnPlaylist = user?.userId === playlist.userId;
 
   // State for favorite status with optimistic updates
-  const [isFavorited, setIsFavorited] = useState(
-    playlist.checkPlaylistInFavorite || false,
-  );
+  const [isFavorited, setIsFavorited] = useState(playlist.checkPlaylistInFavorite || false);
 
   // Favorite playlist mutation
   const { mutate: favoritePlaylist, isPending: isFavoriting } = useMutation({
@@ -72,11 +59,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
       queryClient.invalidateQueries({
         queryKey: ["playlist-detail", playlist.id],
       });
-      toast.success(
-        isFavorited
-          ? "Added to your favorites!"
-          : "Removed from your favorites!",
-      );
+      toast.success(isFavorited ? "Added to your favorites!" : "Removed from your favorites!");
     },
     onError: () => {
       // Revert optimistic update on error
@@ -89,12 +72,12 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!isAuthenticated) {
       setShowPlayWarning(true);
       return;
     }
-    
+
     await handlePlayPause();
   };
 
@@ -119,9 +102,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const onCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    navigator.clipboard.writeText(
-      `${window.location.origin}/playlists/${playlist.id}`,
-    );
+    navigator.clipboard.writeText(`${window.location.origin}/playlists/${playlist.id}`);
     toast.success("Copied!");
   };
 
@@ -160,11 +141,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
               className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity group-hover:opacity-100 ${isMenuOpen ? "opacity-100" : "opacity-0"}`}
             >
               <HeartIcon
-                className={`size-5 ${
-                  isFavorited
-                    ? "text-main-purple fill-main-purple"
-                    : "text-main-dark-bg"
-                }`}
+                className={`size-5 ${isFavorited ? "text-main-purple fill-main-purple" : "text-main-dark-bg"}`}
               />
             </Button>
           )}
@@ -189,29 +166,21 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         </div>
       </Link>
 
-      <Link
-        href={`/playlists/${playlist.id}`}
-        className={`hover:text-main-purple cursor-pointer text-sm hover:underline ${isPlaylistCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-main-white"}`}
-      >
-        {playlist.name}
-      </Link>
+      <div className="flex flex-col gap-y-1">
+        <Link
+          href={`/playlists/${playlist.id}`}
+          className={`hover:text-main-purple cursor-pointer text-sm hover:underline ${isPlaylistCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-main-white"}`}
+        >
+          {playlist.name}
+        </Link>
 
-      <p className="text-main-grey text-xs">
-        {playlist.isPublic ? "Public" : "Private"}
-      </p>
+        <p className="text-main-grey text-xs">{playlist.isPublic ? "Public" : "Private"}</p>
+      </div>
 
       {/* Authentication Warning Dialogs */}
-      <WarningAuthDialog
-        open={showPlayWarning}
-        onOpenChange={setShowPlayWarning}
-        action="play"
-      />
+      <WarningAuthDialog open={showPlayWarning} onOpenChange={setShowPlayWarning} action="play" />
 
-      <WarningAuthDialog
-        open={showFavoriteWarning}
-        onOpenChange={setShowFavoriteWarning}
-        action="favorite"
-      />
+      <WarningAuthDialog open={showFavoriteWarning} onOpenChange={setShowFavoriteWarning} action="favorite" />
     </div>
   );
 };

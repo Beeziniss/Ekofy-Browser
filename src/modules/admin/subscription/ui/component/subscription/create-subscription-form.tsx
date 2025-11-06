@@ -10,24 +10,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateSubscriptionMutation } from "@/gql/client-mutation-options/subscription-mutation-options";
 import { SubscriptionStatus, SubscriptionTier } from "@/gql/graphql";
 import type { CreateSubscriptionInput } from "@/types";
@@ -50,10 +36,14 @@ const parseCurrency = (value: string): number => {
 const createSubscriptionSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
   description: z.string().optional(),
-  code: z.string()
+  code: z
+    .string()
     .min(1, "Code is required")
     .max(50, "Code must be less than 50 characters")
-    .regex(/^[a-z][a-z0-9_]*$/, "Code must be lowercase, start with a letter, and contain only letters, numbers, and underscores"),
+    .regex(
+      /^[a-z][a-z0-9_]*$/,
+      "Code must be lowercase, start with a letter, and contain only letters, numbers, and underscores",
+    ),
   version: z.number().min(1, "Version must be at least 1"),
   tier: z.nativeEnum(SubscriptionTier),
   price: z.number().min(0, "Price must be at least 0"),
@@ -68,11 +58,7 @@ interface CreateSubscriptionFormProps {
   onSuccess?: () => void;
 }
 
-export function CreateSubscriptionForm({
-  open,
-  onOpenChange,
-  onSuccess,
-}: CreateSubscriptionFormProps) {
+export function CreateSubscriptionForm({ open, onOpenChange, onSuccess }: CreateSubscriptionFormProps) {
   const createSubscriptionMutation = useCreateSubscriptionMutation();
   const [formattedPrice, setFormattedPrice] = useState('0');
 
@@ -108,9 +94,7 @@ export function CreateSubscriptionForm({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Create New Subscription</DialogTitle>
-          <DialogDescription>
-            Create a new subscription plan for your platform.
-          </DialogDescription>
+          <DialogDescription>Create a new subscription plan for your platform.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -137,9 +121,7 @@ export function CreateSubscriptionForm({
                     <FormControl>
                       <Input placeholder="premium_plan" {...field} />
                     </FormControl>
-                    <FormDescription>
-                      Unique identifier for the subscription
-                    </FormDescription>
+                    <FormDescription>Unique identifier for the subscription</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -153,10 +135,7 @@ export function CreateSubscriptionForm({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Describe the subscription benefits..." 
-                      {...field} 
-                    />
+                    <Textarea placeholder="Describe the subscription benefits..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -215,11 +194,7 @@ export function CreateSubscriptionForm({
                   <FormItem>
                     <FormLabel>Version</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
+                      <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -11,12 +11,7 @@ interface SearchBarProps {
   className?: string;
 }
 
-export function SearchBar({
-  placeholder = "Search...",
-  onSearch,
-  initialValue = "",
-  className = "",
-}: SearchBarProps) {
+export function SearchBar({ placeholder = "Search...", onSearch, initialValue = "", className = "" }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState(initialValue);
   const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
   const onSearchRef = useRef(onSearch);
@@ -36,18 +31,18 @@ export function SearchBar({
 
   return (
     <div className={`relative ${className}`}>
-      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
       <Input
         placeholder={placeholder}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="pl-9 pr-9"
+        className="pr-9 pl-9"
       />
       {searchTerm && (
         <Button
           variant="ghost"
           size="sm"
-          className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 p-0"
+          className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2 p-0"
           onClick={handleClear}
         >
           <X className="h-4 w-4" />

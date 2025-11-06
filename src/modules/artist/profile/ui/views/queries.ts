@@ -31,32 +31,29 @@ export const GetArtistProfileQuery = `
 ` as unknown as TypedDocumentString<
   {
     artists?: {
-      items?: Array<
-        | {
-            id: string;
-            userId: string;
-            stageName: string;
-            email: string;
-            artistType: string;
-            avatarImage?: string | null;
-            bannerImage?: string | null;
-            biography?: string | null;
-            members: Array<{ fullName: string; email: string; gender: UserGender; isLeader: boolean; phoneNumber: string }>;
-            isVerified: boolean;
-            createdAt: string;
-            user?: { status: UserStatus } | null;
-            identityCard?: {
-              number?: string | null;
-              fullName?: string | null;
-              dateOfBirth?: string | null;
-              gender?: UserGender | null;
-              placeOfOrigin?: string | null;
-              validUntil?: string | null;
-              placeOfResidence?: { addressLine?: string | null } | null;
-            } | null;
-          }
-        | null
-      > | null;
+      items?: Array<{
+        id: string;
+        userId: string;
+        stageName: string;
+        email: string;
+        artistType: string;
+        avatarImage?: string | null;
+        bannerImage?: string | null;
+        biography?: string | null;
+        members: Array<{ fullName: string; email: string; gender: UserGender; isLeader: boolean; phoneNumber: string }>;
+        isVerified: boolean;
+        createdAt: string;
+        user?: { status: UserStatus } | null;
+        identityCard?: {
+          number?: string | null;
+          fullName?: string | null;
+          dateOfBirth?: string | null;
+          gender?: UserGender | null;
+          placeOfOrigin?: string | null;
+          validUntil?: string | null;
+          placeOfResidence?: { addressLine?: string | null } | null;
+        } | null;
+      } | null> | null;
     } | null;
   },
   { where?: ArtistFilterInput; take?: number; skip?: number }

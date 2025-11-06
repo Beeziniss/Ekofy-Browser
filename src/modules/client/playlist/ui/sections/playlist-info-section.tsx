@@ -4,13 +4,7 @@ import { Button } from "@/components/ui/button";
 import { playlistDetailOptions } from "@/gql/options/client-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import {
-  EllipsisIcon,
-  LinkIcon,
-  PenLineIcon,
-  Trash2Icon,
-  UserIcon,
-} from "lucide-react";
+import { EllipsisIcon, LinkIcon, PenLineIcon, Trash2Icon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import { Suspense, useState } from "react";
 import PlaylistManagementModal from "../components/playlist-management-modal";
@@ -59,11 +53,7 @@ const PlaylistInfoSkeleton = () => {
         </div>
       </div>
       <div className="flex items-center gap-x-4">
-        <Button
-          variant="ghost"
-          size="iconLg"
-          className="text-main-white mt-auto duration-0 hover:brightness-90"
-        >
+        <Button variant="ghost" size="iconLg" className="text-main-white mt-auto duration-0 hover:brightness-90">
           <PlayButtonMedium className="size-12" />
         </Button>
 
@@ -79,20 +69,13 @@ const PlaylistInfoSkeleton = () => {
   );
 };
 
-const PlaylistInfoSectionSuspense = ({
-  playlistId,
-}: PlaylistInfoSectionProps) => {
+const PlaylistInfoSectionSuspense = ({ playlistId }: PlaylistInfoSectionProps) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const { data } = useSuspenseQuery(playlistDetailOptions(playlistId));
 
   // Use custom hook for playlist playback functionality
-  const {
-    isPlaylistCurrentlyPlaying,
-    isPlaying,
-    playlistTracks,
-    handlePlayPause,
-  } = usePlaylistPlayback(playlistId);
+  const { isPlaylistCurrentlyPlaying, isPlaying, playlistTracks, handlePlayPause } = usePlaylistPlayback(playlistId);
 
   const playlistData = data?.playlists?.items?.[0];
 
@@ -124,9 +107,7 @@ const PlaylistInfoSectionSuspense = ({
   const onCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    navigator.clipboard.writeText(
-      `${window.location.origin}/playlists/${playlistData?.id}`,
-    );
+    navigator.clipboard.writeText(`${window.location.origin}/playlists/${playlistData?.id}`);
     toast.success("Copied!");
   };
 
@@ -143,9 +124,7 @@ const PlaylistInfoSectionSuspense = ({
         />
 
         <div className="flex flex-col gap-y-6">
-          <h1 className="text-main-white text-6xl font-bold">
-            {playlistData?.name || "Untitled Playlist"}
-          </h1>
+          <h1 className="text-main-white text-6xl font-bold">{playlistData?.name || "Untitled Playlist"}</h1>
 
           <div className="flex flex-col gap-y-1">
             <div className="flex items-center gap-x-3">
@@ -156,15 +135,10 @@ const PlaylistInfoSectionSuspense = ({
                 {playlistData?.user[0]?.fullName || "Anonymous"}
               </span>
             </div>
-            <div className="text-main-grey mt-2 text-base">
-              {playlistData?.tracks?.totalCount || 0} tracks
-            </div>
+            <div className="text-main-grey mt-2 text-base">{playlistData?.tracks?.totalCount || 0} tracks</div>
             <div className="text-main-grey text-base">
               {playlistData?.isPublic ? "Public" : "Private"} | Updated:{" "}
-              {formatDistanceToNow(
-                playlistData?.updatedAt || playlistData?.createdAt,
-                { addSuffix: true },
-              )}
+              {formatDistanceToNow(playlistData?.updatedAt || playlistData?.createdAt, { addSuffix: true })}
             </div>
           </div>
         </div>
@@ -186,12 +160,7 @@ const PlaylistInfoSectionSuspense = ({
           </Button>
         )}
 
-        <Button
-          size={"iconLg"}
-          variant={"ghost"}
-          className="rounded-full"
-          onClick={handleEditClick}
-        >
+        <Button size={"iconLg"} variant={"ghost"} className="rounded-full" onClick={handleEditClick}>
           <PenLineIcon className="text-main-white size-6" />
         </Button>
 
@@ -208,9 +177,7 @@ const PlaylistInfoSectionSuspense = ({
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleDeleteClick}>
               <Trash2Icon className="text-main-white mr-2 size-4" />
-              <span className="text-main-white text-sm">
-                Delete this playlist
-              </span>
+              <span className="text-main-white text-sm">Delete this playlist</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

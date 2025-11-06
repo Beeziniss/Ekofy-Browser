@@ -17,7 +17,7 @@ export function PlanMetadata({ metadata }: PlanMetadataProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center">
-          <Tag className="w-4 h-4 mr-2" />
+          <Tag className="mr-2 h-4 w-4" />
           Metadata
         </CardTitle>
       </CardHeader>
@@ -26,11 +26,9 @@ export function PlanMetadata({ metadata }: PlanMetadataProps) {
           {metadata.map((meta, index) => (
             <div key={index} className="space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-main-white">{meta.key}</span>
+                <span className="text-main-white text-sm font-medium">{meta.key}</span>
               </div>
-              <p className="text-sm text-main-grey-dark border-2 border-white p-2 rounded">
-                {meta.value}
-              </p>
+              <p className="text-main-grey-dark rounded border-2 border-white p-2 text-sm">{meta.value}</p>
             </div>
           ))}
         </div>

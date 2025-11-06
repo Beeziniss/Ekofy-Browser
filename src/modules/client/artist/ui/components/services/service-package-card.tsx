@@ -1,18 +1,8 @@
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ServicePackage } from "../../sections/services/artist-service-section";
 
-const ServicePackageCard = ({
-  servicePackage,
-}: {
-  servicePackage: ServicePackage;
-}) => {
+const ServicePackageCard = ({ servicePackage }: { servicePackage: ServicePackage }) => {
   const formatPrice = (amount: number, currency: string) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -36,8 +26,7 @@ const ServicePackageCard = ({
           </div>
         </div>
         <CardDescription className="line-clamp-2 leading-relaxed">
-          {servicePackage.description ||
-            "No description available for this service package."}
+          {servicePackage.description || "No description available for this service package."}
         </CardDescription>
       </CardHeader>
 

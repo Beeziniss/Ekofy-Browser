@@ -1,11 +1,4 @@
-export type SearchType =
-  | "all"
-  | "songs"
-  | "artists"
-  | "playlists"
-  | "albums"
-  | "profiles"
-  | "genres";
+export type SearchType = "all" | "songs" | "artists" | "playlists" | "albums" | "profiles" | "genres";
 
 export interface SearchParams {
   query: string;
@@ -141,7 +134,4 @@ export interface SearchListenersResponse {
 }
 
 // Union types for components
-export type SearchableItem =
-  | SearchArtistItem
-  | SearchPlaylistItem
-  | SearchTrackItem;
+export type SearchableItem = SearchArtistItem | SearchPlaylistItem | SearchTrackItem;

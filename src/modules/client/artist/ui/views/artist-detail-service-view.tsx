@@ -4,9 +4,7 @@ interface ArtistDetailServiceViewProps {
   artistId: string;
 }
 
-const ArtistDetailServiceView = ({
-  artistId,
-}: ArtistDetailServiceViewProps) => {
+const ArtistDetailServiceView = ({ artistId }: ArtistDetailServiceViewProps) => {
   return (
     <div className="w-full">
       <ArtistServiceSection artistId={artistId} />

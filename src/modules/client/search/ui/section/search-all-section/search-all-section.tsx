@@ -68,7 +68,7 @@ const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({
 
   return (
     <div className="space-y-8">
-            {/* Playlists */}
+      {/* Playlists */}
       {playlists.length > 0 ? (
         <div>
           <div className="mb-4 flex items-center justify-between">
@@ -80,7 +80,7 @@ const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({
               Show all
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {playlists.slice(0, 6).map((playlist) => (
               <PlaylistCardAll 
                 key={playlist.id} 
@@ -108,7 +108,7 @@ const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({
               Show all
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {artists.slice(0, 6).map((artist) => (
               <ArtistCardAll 
                 key={artist.id} 

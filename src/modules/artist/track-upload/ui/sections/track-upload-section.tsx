@@ -1,17 +1,15 @@
 "use client";
 
-import { TrackUploadCloud } from "@/assets/icons";
-import { Button } from "@/components/ui/button";
-import { useTrackUploadStore } from "@/store";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
+import { useTrackUploadStore } from "@/store";
+import { Button } from "@/components/ui/button";
+import { TrackUploadCloud } from "@/assets/icons";
 
 const TrackUploadSection = () => {
   const router = useRouter();
-  const { startUpload, isUploading, currentUpload, clearAllTracks } =
-    useTrackUploadStore();
+  const { startUpload, isUploading, currentUpload, clearAllTracks } = useTrackUploadStore();
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {

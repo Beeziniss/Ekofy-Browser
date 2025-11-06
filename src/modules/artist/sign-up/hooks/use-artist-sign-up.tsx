@@ -14,12 +14,12 @@ const formatArtistSignUpError = (error: unknown): string => {
   if (isAxiosError(error)) {
     const response = error.response;
     const data = response?.data;
-    
+
     // Use detail if available, otherwise fallback to generic message
     if (data?.detail) {
       return data.detail;
     }
-    
+
     // Fallback based on status
     if (response?.status === 409) {
       return "An account with this email already exists.";
@@ -27,7 +27,7 @@ const formatArtistSignUpError = (error: unknown): string => {
 
     return error.message || "An error occurred. Please try again.";
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }
@@ -60,7 +60,6 @@ const useArtistSignUp = (onNavigate?: () => void) => {
     mutationFn: async (registerData: RegisterArtistData) => {
       setLoading(true);
       try {
-        
         const response = await authApi.artist.register(registerData); // Cast to avoid type mismatch
         return response;
       } catch (error) {
@@ -74,7 +73,7 @@ const useArtistSignUp = (onNavigate?: () => void) => {
         // Show success message immediately
         const message = data?.message || "Artist registration successful! We will contact you within 48 hours.";
         toast.success(message);
-        
+
         // If user data is returned, store it (some APIs return user data immediately)
         if (data?.user) {
           // Map GraphQL User to IUserLocalStorage format
@@ -84,23 +83,22 @@ const useArtistSignUp = (onNavigate?: () => void) => {
             artistId: undefined, // Will be set by auth system
             listenerId: undefined, // Will be set by auth system
           };
-          
+
           await setUserInfoToLocalStorage(userData);
           setUserData(userData);
           setAuthenticated(true);
-        }        
-        
+        }
+
         // Always redirect to login after successful registration (no OTP needed)
         setTimeout(() => {
           // Clear state before navigation
           resetForm();
           clearSessionData();
-          
+
           if (onNavigate) {
             onNavigate();
           }
         }, 2000); // Give user time to read the success message
-        
       } catch (error) {
         console.error("Failed to process artist sign-up success:", error);
       }

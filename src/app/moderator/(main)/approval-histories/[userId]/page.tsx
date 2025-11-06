@@ -18,9 +18,7 @@ const ApprovalHistoryDetailsPage = ({ params }: ApprovalHistoryDetailsPageProps)
   const queryClient = getQueryClient();
 
   // Prefetch approval history detail data
-  void queryClient.prefetchQuery(
-    moderatorApprovalHistoryDetailOptions(resolvedParams.userId)
-  );
+  void queryClient.prefetchQuery(moderatorApprovalHistoryDetailOptions(resolvedParams.userId));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

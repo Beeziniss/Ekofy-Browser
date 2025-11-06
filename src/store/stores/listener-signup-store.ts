@@ -41,7 +41,7 @@ const initialState = {
 const normalizeBirthDate = (birthDate: Date | string | undefined): Date | undefined => {
   if (!birthDate) return undefined;
   if (birthDate instanceof Date) return birthDate;
-  if (typeof birthDate === 'string') {
+  if (typeof birthDate === "string") {
     const date = new Date(birthDate);
     return isNaN(date.getTime()) ? undefined : date;
   }
@@ -93,13 +93,13 @@ export const useSignUpStore = create<SignUpState>()(
           if (data.birthDate !== undefined) {
             normalizedData.birthDate = normalizeBirthDate(data.birthDate);
           }
-          
+
           set(
             (state) => ({
               formData: { ...state.formData, ...normalizedData },
             }),
             false,
-            "signup/updateFormData"
+            "signup/updateFormData",
           );
         },
 
@@ -113,7 +113,7 @@ export const useSignUpStore = create<SignUpState>()(
               formData: stepData ? { ...state.formData, ...stepData } : state.formData,
             }),
             false,
-            "signup/goToNextStep"
+            "signup/goToNextStep",
           );
         },
 
@@ -121,7 +121,7 @@ export const useSignUpStore = create<SignUpState>()(
         goToPreviousStep: () => {
           const currentStep = get().currentStep;
           const prevStep = getPreviousStep(currentStep);
-          
+
           set({ currentStep: prevStep }, false, "signup/goToPreviousStep");
         },
 
@@ -133,17 +133,17 @@ export const useSignUpStore = create<SignUpState>()(
               formData: { ...state.formData, otp: undefined }, // Clear OTP data
             }),
             false,
-            "signup/goToPreviousStepFromOTP"
+            "signup/goToPreviousStepFromOTP",
           );
         },
 
         // Complete OTP verification
         completeOTPVerification: (otpData: { otp: string }) => {
           const { updateFormData } = get();
-          
+
           // Update form data with OTP
           updateFormData(otpData);
-          
+
           // Navigation or completion logic can be handled by the component
         },
 
@@ -154,7 +154,7 @@ export const useSignUpStore = create<SignUpState>()(
               formData: { ...state.formData, otp: undefined },
             }),
             false,
-            "signup/clearOTPData"
+            "signup/clearOTPData",
           );
         },
 
@@ -165,25 +165,25 @@ export const useSignUpStore = create<SignUpState>()(
       }),
       {
         name: "listener-signup-store", // localStorage key for global state persistence
-        partialize: (state) => ({ 
+        partialize: (state) => ({
           currentStep: state.currentStep,
-          formData: state.formData 
+          formData: state.formData,
         }), // Only persist essential data
         // Custom storage to handle Date serialization/deserialization
         storage: {
           getItem: (name: string) => {
             const item = localStorage.getItem(name);
             if (!item) return null;
-            
+
             try {
               const parsed = JSON.parse(item);
               // Convert birthDate string back to Date if it exists
-              if (parsed.state?.formData?.birthDate && typeof parsed.state.formData.birthDate === 'string') {
+              if (parsed.state?.formData?.birthDate && typeof parsed.state.formData.birthDate === "string") {
                 parsed.state.formData.birthDate = new Date(parsed.state.formData.birthDate);
               }
               return parsed;
             } catch (error) {
-              console.error('Error parsing stored data:', error);
+              console.error("Error parsing stored data:", error);
               return null;
             }
           },
@@ -192,17 +192,17 @@ export const useSignUpStore = create<SignUpState>()(
               const stringified = JSON.stringify(value);
               localStorage.setItem(name, stringified);
             } catch (error) {
-              console.error('Error storing data:', error);
+              console.error("Error storing data:", error);
             }
           },
           removeItem: (name: string) => {
             localStorage.removeItem(name);
-          }
-        }
-      }
+          },
+        },
+      },
     ),
     {
       name: "signup-store", // devtools name
-    }
-  )
+    },
+  ),
 );

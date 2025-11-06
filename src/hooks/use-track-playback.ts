@@ -3,23 +3,20 @@
 import { useAudioStore, Track } from "@/store";
 import { toast } from "sonner";
 
-export const useTrackPlayback = (trackId: string, trackData?: {
-  id: string;
-  name?: string | null;
-  coverImage?: string | null;
-  mainArtists?: {
-    items?: Array<{
-      stageName?: string | null;
-    } | null> | null;
-  } | null;
-}) => {
-  const {
-    isPlaying: globalIsPlaying,
-    currentTrack,
-    togglePlayPause,
-    setCurrentTrack,
-    play,
-  } = useAudioStore();
+export const useTrackPlayback = (
+  trackId: string,
+  trackData?: {
+    id: string;
+    name?: string | null;
+    coverImage?: string | null;
+    mainArtists?: {
+      items?: Array<{
+        stageName?: string | null;
+      } | null> | null;
+    } | null;
+  },
+) => {
+  const { isPlaying: globalIsPlaying, currentTrack, togglePlayPause, setCurrentTrack, play } = useAudioStore();
 
   // Check if THIS specific track is currently playing
   const isTrackCurrentlyPlaying = currentTrack?.id === trackId;

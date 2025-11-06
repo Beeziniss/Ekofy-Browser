@@ -1,1 +1,1 @@
-export { default as ModeratorLayout } from './admin-layout';
+export { default as ModeratorLayout } from "./admin-layout";

@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
 
-type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
+type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
 interface RequestCardProps {
   request: RequestItem;
@@ -26,14 +26,7 @@ interface RequestCardProps {
   isOwner?: boolean;
 }
 
-export function RequestCard({ 
-  request, 
-  onViewDetails, 
-  onApply,
-  onEdit,
-  className,
-  isOwner = false
-}: RequestCardProps) {
+export function RequestCard({ request, onViewDetails, onApply, onEdit, className, isOwner = false }: RequestCardProps) {
   const [showComments, setShowComments] = useState(false);
   
   // Get auth state and dialog
@@ -42,14 +35,14 @@ export function RequestCard({
   
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
-  
+
   // Fetch comment count for this request
   const { data: commentsData } = useQuery(requestHubCommentsOptions(request.id));
-  
+
   // Calculate total comment count (including replies)
   const getTotalCommentCount = () => {
     if (!commentsData?.threadedComments) return 0;
-    
+
     const threads = commentsData.threadedComments.threads || [];
     return threads.reduce((total, thread) => {
       // Count root comment + all replies
@@ -58,18 +51,18 @@ export function RequestCard({
   };
 
   const totalComments = getTotalCommentCount();
-  
+
   // Format status from GraphQL enum to display text
   const formatStatus = (status: string) => {
     switch (status) {
-      case 'Open':
-        return 'Open';
-      case 'Closed':
-        return 'Closed';
-      case 'Blocked':
-        return 'Blocked';
-      case 'Deleted':
-        return 'Deleted';
+      case "Open":
+        return "Open";
+      case "Closed":
+        return "Closed";
+      case "Blocked":
+        return "Blocked";
+      case "Deleted":
+        return "Deleted";
       default:
         return status;
     }
@@ -78,19 +71,19 @@ export function RequestCard({
   // Get status color variant
   const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
-      case 'Open':
-        return 'default';
-      case 'Closed':
-        return 'secondary';
-      case 'Blocked':
-        return 'destructive';
-      case 'Deleted':
-        return 'outline';
+      case "Open":
+        return "default";
+      case "Closed":
+        return "secondary";
+      case "Blocked":
+        return "destructive";
+      case "Deleted":
+        return "outline";
       default:
-        return 'secondary';
+        return "secondary";
     }
   };
-  
+
   const handleToggleComments = () => {
     // Anyone can view comments, no auth required
     setShowComments(!showComments);
@@ -115,23 +108,23 @@ export function RequestCard({
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-    
+
     if (diffHours < 24) {
       return `${diffHours} hours ago`;
     } else {
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+      return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
     }
   };
 
   const formatBudget = (budget: { min: number; max: number }, currency: string) => {
     const formatCurrency = (amount: number) => {
       switch (currency.toUpperCase()) {
-        case 'VND':
+        case "VND":
           return `${amount.toLocaleString()} VND`;
-        case 'USD':
+        case "USD":
           return `$${amount.toLocaleString()}`;
-        case 'EUR':
+        case "EUR":
           return `€${amount.toLocaleString()}`;
         default:
           return `${amount.toLocaleString()} ${currency.toUpperCase()}`;
@@ -145,111 +138,92 @@ export function RequestCard({
   };
 
   const formatDeadline = (deadline: string | Date) => {
-    const date = typeof deadline === 'string' ? new Date(deadline) : deadline;
+    const date = typeof deadline === "string" ? new Date(deadline) : deadline;
     return date.toLocaleDateString();
   };
 
   return (
-    <Card className={cn("w-full hover:shadow-md transition-shadow", className)}>
+    <Card className={cn("w-full transition-shadow hover:shadow-md", className)}>
       <CardContent className="p-6">
         {/* Header with Avatar and Save Button */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="mb-4 flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="h-12 w-12">
               <AvatarFallback className="bg-gray-200 text-gray-600">
-                {requestUser?.fullName?.charAt(0).toUpperCase() || 'U'}
+                {requestUser?.fullName?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             <div>
               <h4 className="font-medium text-white">
                 {requestUser?.fullName || `User ${request.requestUserId.slice(-4)}`}
               </h4>
-              <p className="text-sm text-white">
-                {formatTimeAgo(request.createdAt)}
-              </p>
+              <p className="text-sm text-white">{formatTimeAgo(request.createdAt)}</p>
             </div>
           </div>
         </div>
 
         {/* Title */}
-        <h3 className="text-lg font-semibold text-white mb-3 line-clamp-2 cursor-pointer hover:text-gray-300" 
-            onClick={() => onViewDetails?.(request.id)}>
+        <h3
+          className="mb-3 line-clamp-2 cursor-pointer text-lg font-semibold text-white hover:text-gray-300"
+          onClick={() => onViewDetails?.(request.id)}
+        >
           {request.title}
         </h3>
 
         {/* Summary */}
-        <p className="text-white mb-4 line-clamp-3 text-sm leading-relaxed">
-          {request.summary}
-        </p>
+        <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-white">{request.summary}</p>
 
         {/* Status Badge */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <Badge 
-            variant={getStatusVariant(request.status)}
-            className="text-xs"
-          >
+        <div className="mb-4 flex flex-wrap gap-2">
+          <Badge variant={getStatusVariant(request.status)} className="text-xs">
             {formatStatus(request.status)}
           </Badge>
         </div>
 
         {/* Budget and Deadline */}
-        <div className="flex items-center justify-between mb-4 text-sm">
+        <div className="mb-4 flex items-center justify-between text-sm">
           <div className="flex items-center">
-            <p className="text-white mr-1">Budget:</p>
-            <p className="font-medium text-main-purple">
-              {formatBudget(request.budget, request.currency)}
-            </p>
+            <p className="mr-1 text-white">Budget:</p>
+            <p className="text-main-purple font-medium">{formatBudget(request.budget, request.currency)}</p>
           </div>
           <div className="flex items-center">
-            <Clock className="h-4 w-4 text-white mr-2" />
-            <p className="text-white mr-1">Deadline:</p>
-            <p className="font-medium text-main-purple">
-              {formatDeadline(request.deadline)}
-            </p>
+            <Clock className="mr-2 h-4 w-4 text-white" />
+            <p className="mr-1 text-white">Deadline:</p>
+            <p className="text-main-purple font-medium">{formatDeadline(request.deadline)}</p>
           </div>
         </div>
         {/* Footer with Action Buttons */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between border-t border-gray-100 pt-4">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleToggleComments}
-            className="flex items-center text-sm text-gray-500 hover:text-primary p-0"
+            className="hover:text-primary flex items-center p-0 text-sm text-gray-500"
           >
-            <MessageCircle className="h-4 w-4 mr-1" />
+            <MessageCircle className="mr-1 h-4 w-4" />
             View Comments {totalComments > 0 && `(${totalComments})`}
-
-            {showComments ? (
-              <ChevronUp className="h-4 w-4 ml-1" />
-            ) : (
-              <ChevronDown className="h-4 w-4 ml-1" />
-            )}
+            {showComments ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
           </Button>
           <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => onViewDetails?.(request.id)}
-              className="text-sm"
-            >
+            <Button variant="outline" size="sm" onClick={() => onViewDetails?.(request.id)} className="text-sm">
               View Details
             </Button>
             {isOwner && onEdit ? (
-              <Button 
+              <Button
                 size="sm"
                 onClick={handleEdit}
                 className="primary_gradient hover:opacity-65 text-white text-sm"
               >
-                <SquarePen className="h-3 w-3 mr-1" />
+                <SquarePen className="mr-1 h-3 w-3" />
                 Edit
               </Button>
             ) : (
-              <Button 
+              <Button
                 size="sm"
                 onClick={handleApply}
                 className="primary_gradient hover:opacity-65 text-white text-sm"
               >
-                <Send className="h-3 w-3 mr-1" />
+                <Send className="mr-1 h-3 w-3" />
                 Apply Now
               </Button>
             )}
@@ -260,9 +234,7 @@ export function RequestCard({
       {/* Comments Section */}
       {showComments && (
         <div className="border-t border-gray-100">
-          <RequestHubCommentSection
-            requestId={request.id}
-          />
+          <RequestHubCommentSection requestId={request.id} />
         </div>
       )}
     </Card>

@@ -1,9 +1,6 @@
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { 
-  subscriptionDetailQueryOptions, 
-  subscriptionPlansQueryOptions 
-} from "@/gql/options/subscription-options";
+import { subscriptionDetailQueryOptions, subscriptionPlansQueryOptions } from "@/gql/options/subscription-options";
 import { SubscriptionTier, SubscriptionStatus } from "@/gql/graphql";
 import { SubscriptionHeader } from "../component/subscription/subscription-header";
 import { SubscriptionInfoCard } from "../component/subscription/subscription-info-card";
@@ -16,24 +13,23 @@ interface SubscriptionDetailSectionProps {
   onBack?: () => void;
 }
 
-export function SubscriptionDetailSection({ 
-  subscriptionId, 
-  onBack 
-}: SubscriptionDetailSectionProps) {
+export function SubscriptionDetailSection({ subscriptionId, onBack }: SubscriptionDetailSectionProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreatePlanFormOpen, setIsCreatePlanFormOpen] = useState(false);
-  
+
   const pageSize = 10;
   const skip = (currentPage - 1) * pageSize;
 
   const { data: subscriptionData, isLoading: isLoadingSubscription } = useQuery(
-    subscriptionDetailQueryOptions(subscriptionId)
+    subscriptionDetailQueryOptions(subscriptionId),
   );
 
-  const { data: plansData, isLoading: isLoadingPlans, refetch: refetchPlans } = useQuery(
-    subscriptionPlansQueryOptions(skip, pageSize, subscriptionId, searchTerm)
-  );
+  const {
+    data: plansData,
+    isLoading: isLoadingPlans,
+    refetch: refetchPlans,
+  } = useQuery(subscriptionPlansQueryOptions(skip, pageSize, subscriptionId, searchTerm));
 
   const subscription = subscriptionData?.subscriptions?.items?.[0];
   const plans = plansData?.subscriptionPlans.items || [];
@@ -91,7 +87,7 @@ export function SubscriptionDetailSection({
 
   if (isLoadingSubscription) {
     return (
-      <div className="flex items-center justify-center h-32">
+      <div className="flex h-32 items-center justify-center">
         <div className="text-muted-foreground">Loading subscription details...</div>
       </div>
     );
@@ -99,7 +95,7 @@ export function SubscriptionDetailSection({
 
   if (!subscription) {
     return (
-      <div className="flex items-center justify-center h-32">
+      <div className="flex h-32 items-center justify-center">
         <div className="text-muted-foreground">Subscription not found</div>
       </div>
     );
@@ -108,8 +104,8 @@ export function SubscriptionDetailSection({
   return (
     <div className="space-y-6">
       <SubscriptionHeader subscription={subscription} onBack={onBack} />
-      
-      <SubscriptionInfoCard 
+
+      <SubscriptionInfoCard
         subscription={subscription}
         getStatusBadgeVariant={getStatusBadgeVariant}
         getTierBadgeVariant={getTierBadgeVariant}
@@ -133,14 +129,15 @@ export function SubscriptionDetailSection({
       />
 
       {/* Show form for Premium and Pro subscriptions */}
-      {(subscription.tier === SubscriptionTier.Premium || subscription.tier === SubscriptionTier.Pro) && subscription.status === SubscriptionStatus.Active && (
-        <CreateSubscriptionPlanForm
-          open={isCreatePlanFormOpen}
-          onOpenChange={setIsCreatePlanFormOpen}
-          onSuccess={handleCreatePlanSuccess}
-          preselectedSubscriptionCode={subscription?.code}
-        />
-      )}
+      {(subscription.tier === SubscriptionTier.Premium || subscription.tier === SubscriptionTier.Pro) &&
+        subscription.status === SubscriptionStatus.Active && (
+          <CreateSubscriptionPlanForm
+            open={isCreatePlanFormOpen}
+            onOpenChange={setIsCreatePlanFormOpen}
+            onSuccess={handleCreatePlanSuccess}
+            preselectedSubscriptionCode={subscription?.code}
+          />
+        )}
     </div>
   );
 }

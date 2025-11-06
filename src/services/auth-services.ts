@@ -7,21 +7,15 @@ import {
   RegisterArtistData, // Import raw data type instead of wrapped response
   ModeratorLoginResponse,
   AdminLoginResponse,
-  RegisterListenerData
+  RegisterListenerData,
 } from "@/types/auth";
 import { formatServiceError } from "@/utils/signup-utils";
 
 export const authApi = {
   listener: {
-    login: async (
-      email: string,
-      password: string,
-    ): Promise<ListenerLoginResponse> => {
+    login: async (email: string, password: string): Promise<ListenerLoginResponse> => {
       try {
-        const response = await axiosInstance.post(
-          "/api/authentication/login/listener",
-          { email, password },
-        );
+        const response = await axiosInstance.post("/api/authentication/login/listener", { email, password });
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
@@ -32,20 +26,17 @@ export const authApi = {
     },
     register: async (data: RegisterListenerData) => {
       try {
-        const response = await axiosInstance.post(
-          "/api/authentication/register/listener",
-          data,
-        );
-        
+        const response = await axiosInstance.post("/api/authentication/register/listener", data);
+
         // Handle 204 No Content response
         if (response.status === 204) {
           return {
             success: true,
             message: "Registration successful! We have sent a verification code to your email.",
-            user: null
+            user: null,
           };
         }
-        
+
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
@@ -56,15 +47,9 @@ export const authApi = {
     },
   },
   artist: {
-    login: async (
-      email: string,
-      password: string,
-    ): Promise<ArtistLoginResponse> => {
+    login: async (email: string, password: string): Promise<ArtistLoginResponse> => {
       try {
-        const response = await axiosInstance.post(
-          "/api/authentication/login/artist",
-          { email, password },
-        );
+        const response = await axiosInstance.post("/api/authentication/login/artist", { email, password });
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
@@ -74,11 +59,11 @@ export const authApi = {
       }
     },
     register: async (data: RegisterArtistData) => {
-      try {        
+      try {
         // Try mapping to PascalCase field names if API expects them
         const apiData = {
           Email: data.email,
-          Password: data.password, 
+          Password: data.password,
           ConfirmPassword: data.confirmPassword,
           FullName: data.fullName,
           BirthDate: data.birthDate,
@@ -105,21 +90,19 @@ export const authApi = {
             BackImage: data.identityCard.backImage,
             ValidUntil: data.identityCard.validUntil,
           },
-        };        
-        const response = await axiosInstance.post(
-          "/api/authentication/register/artist",
-          apiData,
-        );
-        
+        };
+        const response = await axiosInstance.post("/api/authentication/register/artist", apiData);
+
         // Handle 204 No Content response
         if (response.status === 204) {
           return {
             success: true,
-            message: "Artist registration successful! We have received the information and will respond to you within 48 hours..",
-            user: null
+            message:
+              "Artist registration successful! We have received the information and will respond to you within 48 hours..",
+            user: null,
           };
         }
-        
+
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
@@ -128,20 +111,15 @@ export const authApi = {
         throw error;
       }
     },
-
   },
   general: {
     getCurrentProfile: async (): Promise<IUserCurrent> => {
       try {
-        const response = await axiosInstance.post(
-          "/api/authentication/users/me",
-        );
+        const response = await axiosInstance.post("/api/authentication/users/me");
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
-          throw new Error(
-            error.response?.data?.message || "Failed to get user",
-          );
+          throw new Error(error.response?.data?.message || "Failed to get user");
         }
         throw error;
       }
@@ -152,9 +130,7 @@ export const authApi = {
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
-          throw new Error(
-            error.response?.data?.message || "Failed to get user",
-          );
+          throw new Error(error.response?.data?.message || "Failed to get user");
         }
         throw error;
       }
@@ -162,44 +138,32 @@ export const authApi = {
     verifyOPT: async (email: string, providedOtp: string) => {
       try {
         const response = await axiosInstance.post(
-          `/api/authentication/verify-otp?email=${encodeURIComponent(email)}&providedOtp=${encodeURIComponent(providedOtp)}`
+          `/api/authentication/verify-otp?email=${encodeURIComponent(email)}&providedOtp=${encodeURIComponent(providedOtp)}`,
         );
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
-          throw new Error(
-            error.response?.data?.message || "Failed to verify OTP",
-          );
+          throw new Error(error.response?.data?.message || "Failed to verify OTP");
         }
         throw error;
       }
     },
     resendOTP: async (email: string) => {
       try {
-        const response = await axiosInstance.post(
-          `/api/authentication/resend-otp?email=${encodeURIComponent(email)}`
-        );
+        const response = await axiosInstance.post(`/api/authentication/resend-otp?email=${encodeURIComponent(email)}`);
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
-          throw new Error(
-            error.response?.data?.message || "Failed to resend OTP",
-          );
+          throw new Error(error.response?.data?.message || "Failed to resend OTP");
         }
         throw error;
       }
     },
   },
   moderator: {
-    login: async (
-      email: string,
-      password: string,
-    ): Promise<ModeratorLoginResponse> => {
+    login: async (email: string, password: string): Promise<ModeratorLoginResponse> => {
       try {
-        const response = await axiosInstance.post(
-          "/api/authentication/login/moderator",
-          { email, password },
-        );
+        const response = await axiosInstance.post("/api/authentication/login/moderator", { email, password });
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
@@ -210,22 +174,16 @@ export const authApi = {
     },
   },
   admin: {
-    login: async (
-      email: string,
-      password: string,
-    ): Promise<AdminLoginResponse> => {
+    login: async (email: string, password: string): Promise<AdminLoginResponse> => {
       try {
-        const response = await axiosInstance.post(
-          "/api/authentication/login/admin",
-          { email, password },
-        );
+        const response = await axiosInstance.post("/api/authentication/login/admin", { email, password });
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
           throw new Error(error.response?.data?.message || error.message);
         }
         throw error;
-      } 
+      }
     },
   },
 };

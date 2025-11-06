@@ -7,10 +7,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import {
-  followerOptions,
-  followingOptions,
-} from "@/gql/options/client-options";
+import { followerOptions, followingOptions } from "@/gql/options/client-options";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -70,22 +67,15 @@ const mainNavItems: NavItem[] = [
   },
 ];
 
-const activeItemStyles =
-  "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
+const activeItemStyles = "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
 
-const AuthenticatedLibraryLayout = ({
-  children,
-}: AuthenticatedLibraryLayoutProps) => {
+const AuthenticatedLibraryLayout = ({ children }: AuthenticatedLibraryLayoutProps) => {
   const route = usePathname();
   const { user } = useAuthStore();
 
   // These queries will only run when this component is rendered (i.e., when user is authenticated)
-  const { data: followers } = useSuspenseQuery(
-    followerOptions({ userId: user!.userId }),
-  );
-  const { data: following } = useSuspenseQuery(
-    followingOptions({ userId: user!.userId }),
-  );
+  const { data: followers } = useSuspenseQuery(followerOptions({ userId: user!.userId }));
+  const { data: following } = useSuspenseQuery(followingOptions({ userId: user!.userId }));
 
   const followerCount = followers?.followers?.totalCount || 0;
   const followingCount = following?.followings?.totalCount || 0;
@@ -103,10 +93,7 @@ const AuthenticatedLibraryLayout = ({
         <NavigationMenu className="flex h-full items-stretch">
           <NavigationMenuList className="flex h-full items-stretch space-x-2">
             {mainNavItems.map((item, index) => (
-              <NavigationMenuItem
-                key={index}
-                className="relative flex h-full items-center"
-              >
+              <NavigationMenuItem key={index} className="relative flex h-full items-center">
                 <Link
                   href={item.href}
                   className={cn(
@@ -115,9 +102,7 @@ const AuthenticatedLibraryLayout = ({
                     "h-full cursor-pointer px-3 text-xl",
                   )}
                 >
-                  {item.icon && (
-                    <Icon iconNode={item.icon} className="mr-2 size-6" />
-                  )}
+                  {item.icon && <Icon iconNode={item.icon} className="mr-2 size-6" />}
                   {item.title}
                 </Link>
                 {route === item.href && (

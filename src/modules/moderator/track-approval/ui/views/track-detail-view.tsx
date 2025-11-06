@@ -12,19 +12,15 @@ import { TrackDetailSection } from "../section";
 export function TrackDetailView({ uploadId }: TrackDetailViewProps) {
   const router = useRouter();
 
-  const { data: track, isLoading, error } = useQuery(
-    moderatorTrackDetailOptions(uploadId)
-  );
+  const { data: track, isLoading, error } = useQuery(moderatorTrackDetailOptions(uploadId));
 
-  const { data: originalFileUrl } = useQuery(
-    moderatorTrackOriginalFileOptions(uploadId)
-  );
+  const { data: originalFileUrl } = useQuery(moderatorTrackOriginalFileOptions(uploadId));
 
   const handleDownloadOriginal = () => {
     if (originalFileUrl) {
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = originalFileUrl;
-      link.download = `${track?.track.name || 'track'}_original.mp3`;
+      link.download = `${track?.track.name || "track"}_original.mp3`;
       link.click();
     }
   };
@@ -32,19 +28,19 @@ export function TrackDetailView({ uploadId }: TrackDetailViewProps) {
   if (isLoading) {
     return (
       <TrackDetailLayout>
-        <div className="container mx-auto p-6 space-y-6">
+        <div className="container mx-auto space-y-6 p-6">
           <div className="flex items-center gap-4">
-            <div className="h-8 w-8 bg-muted animate-pulse rounded" />
-            <div className="h-8 w-48 bg-muted animate-pulse rounded" />
+            <div className="bg-muted h-8 w-8 animate-pulse rounded" />
+            <div className="bg-muted h-8 w-48 animate-pulse rounded" />
           </div>
           <div className="grid gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="h-96 bg-muted animate-pulse rounded-lg" />
-              <div className="h-64 bg-muted animate-pulse rounded-lg" />
+            <div className="space-y-6 lg:col-span-2">
+              <div className="bg-muted h-96 animate-pulse rounded-lg" />
+              <div className="bg-muted h-64 animate-pulse rounded-lg" />
             </div>
             <div className="space-y-4">
-              <div className="h-32 bg-muted animate-pulse rounded-lg" />
-              <div className="h-48 bg-muted animate-pulse rounded-lg" />
+              <div className="bg-muted h-32 animate-pulse rounded-lg" />
+              <div className="bg-muted h-48 animate-pulse rounded-lg" />
             </div>
           </div>
         </div>
@@ -56,15 +52,9 @@ export function TrackDetailView({ uploadId }: TrackDetailViewProps) {
     return (
       <TrackDetailLayout>
         <div className="container mx-auto p-6">
-          <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
-            <p className="text-destructive">
-              Failed to load track details. Please try again.
-            </p>
-            <Button 
-              variant="outline" 
-              onClick={() => router.push("/moderator/track-approval")}
-              className="mt-4"
-            >
+          <div className="border-destructive/20 bg-destructive/10 rounded-lg border p-4">
+            <p className="text-destructive">Failed to load track details. Please try again.</p>
+            <Button variant="outline" onClick={() => router.push("/moderator/track-approval")} className="mt-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Track Approval
             </Button>
@@ -76,10 +66,7 @@ export function TrackDetailView({ uploadId }: TrackDetailViewProps) {
 
   return (
     <TrackDetailLayout>
-      <TrackDetailSection 
-        track={track}
-        onDownloadOriginal={handleDownloadOriginal}
-      />
+      <TrackDetailSection track={track} onDownloadOriginal={handleDownloadOriginal} />
     </TrackDetailLayout>
   );
 }

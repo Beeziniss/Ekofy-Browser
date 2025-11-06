@@ -6,15 +6,15 @@ import { artistListOptions } from "@/gql/options/client-options";
 import InfiniteScroll from "@/modules/shared/ui/components/infinite-scroll";
 
 const ArtistHireSection = () => {
-  const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } =
-    useSuspenseInfiniteQuery(artistListOptions(9));
+  const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } = useSuspenseInfiniteQuery(
+    artistListOptions(9),
+  );
 
   return (
     <div className="space-y-8 px-6 py-8">
       <div className="flex items-center justify-between">
         <span className="text-xl font-bold">
-          {data?.pages[0].artists?.totalCount || 0}{" "}
-          {data?.pages[0].artists?.totalCount === 1 ? "artist" : "artists"}{" "}
+          {data?.pages[0].artists?.totalCount || 0} {data?.pages[0].artists?.totalCount === 1 ? "artist" : "artists"}{" "}
           available for hire
         </span>
       </div>

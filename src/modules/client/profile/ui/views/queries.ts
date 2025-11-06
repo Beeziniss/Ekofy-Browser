@@ -39,22 +39,19 @@ export const GetListenerProfileQuery = `
 ` as unknown as TypedDocumentString<
   {
     listeners?: {
-      items?: Array<
-        | {
-            id: string;
-            userId: string;
-            displayName: string;
-            email: string;
-            avatarImage?: string | null;
-            bannerImage?: string | null;
-            createdAt: Scalars['DateTime']['output'];
-            followerCount: number;
-            followingCount: number;
-            isVerified: boolean;
-            user?: { birthDate: Scalars['DateTime']['output']; gender: UserGender } | null;
-          }
-        | null
-      > | null;
+      items?: Array<{
+        id: string;
+        userId: string;
+        displayName: string;
+        email: string;
+        avatarImage?: string | null;
+        bannerImage?: string | null;
+        createdAt: Scalars["DateTime"]["output"];
+        followerCount: number;
+        followingCount: number;
+        isVerified: boolean;
+        user?: { birthDate: Scalars["DateTime"]["output"]; gender: UserGender } | null;
+      } | null> | null;
     } | null;
   },
   { where?: ListenerFilterInput; take?: number; skip?: number }
@@ -78,18 +75,15 @@ export const GetUserActiveSubscriptionQuery = `
 ` as unknown as TypedDocumentString<
   {
     userSubscriptions?: {
-      items?: Array<
-        | {
-            id: string;
-            isActive: boolean;
-            subscription?: {
-              tier: SubscriptionTier;
-              status: SubscriptionStatus;
-              name: string;
-            } | null;
-          }
-        | null
-      > | null;
+      items?: Array<{
+        id: string;
+        isActive: boolean;
+        subscription?: {
+          tier: SubscriptionTier;
+          status: SubscriptionStatus;
+          name: string;
+        } | null;
+      } | null> | null;
     } | null;
   },
   { where?: UserSubscriptionFilterInput; take?: number; skip?: number }
@@ -127,18 +121,15 @@ export const GetListenerTransactionsQuery = `
     transactions?: {
       totalCount: number;
       pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
-      items?: Array<
-        | {
-            id: string;
-            amount: number;
-            currency: string;
-            createdAt: Scalars['DateTime']['output'];
-            paymentStatus: PaymentTransactionStatus;
-            stripePaymentMethod: string[];
-            stripePaymentId?: string | null;
-          }
-        | null
-      > | null;
+      items?: Array<{
+        id: string;
+        amount: number;
+        currency: string;
+        createdAt: Scalars["DateTime"]["output"];
+        paymentStatus: PaymentTransactionStatus;
+        stripePaymentMethod: string[];
+        stripePaymentId?: string | null;
+      } | null> | null;
     } | null;
   },
   {
@@ -172,19 +163,16 @@ export const GetListenerInvoicesQuery = `
     invoices?: {
       totalCount: number;
       pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
-      items?: Array<
-        | {
-            id: string;
-            amount: number;
-            currency: string;
-            email: string;
-            to: string;
-            from: string;
-            paidAt: Scalars['DateTime']['output'];
-            paymentTransactionId: string;
-          }
-        | null
-      > | null;
+      items?: Array<{
+        id: string;
+        amount: number;
+        currency: string;
+        email: string;
+        to: string;
+        from: string;
+        paidAt: Scalars["DateTime"]["output"];
+        paymentTransactionId: string;
+      } | null> | null;
     } | null;
   },
   {

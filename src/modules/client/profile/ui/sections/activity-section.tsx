@@ -7,7 +7,7 @@ import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item"
 
 const ActivitySection = () => {
   return (
-    <div className="pt-0 ">
+    <div className="pt-0">
       <div className="flex items-end justify-between gap-x-3">
         <h2 className="text-xl font-bold">My Activity</h2>
       </div>

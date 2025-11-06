@@ -18,7 +18,7 @@ export function ApprovalHistoriesSection() {
     if (searchTerm !== debouncedSearchTerm) {
       setIsSearching(true);
     }
-    
+
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
       setCurrentPage(1); // Reset to first page when search term changes
@@ -43,17 +43,17 @@ export function ApprovalHistoriesSection() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-64">Loading Data...</div>;
+    return <div className="flex h-64 items-center justify-center">Loading Data...</div>;
   }
   if (error) {
     return <div className="text-red-500">Error loading data: {error.message}</div>;
   }
-  
+
   // Handle mock data structure from moderator-options
   const responseData = approvalHistoriesData as ApprovalHistoriesResponse;
   const approvalHistories = responseData?.approvalHistories?.items || [];
   const totalCount = responseData?.approvalHistories?.totalCount || 0;
-  
+
   // Calculate pagination info
   const totalPages = Math.ceil(totalCount / pageSize);
   const hasNextPage = currentPage < totalPages;

@@ -40,20 +40,18 @@ export default function ProfileHeader({
     <div className="w-full">
       {/* Background banner */}
       <div className="relative h-48 w-full overflow-hidden rounded-md md:h-60">
-       
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ background:
-                "linear-gradient(180deg, rgba(115, 81, 231, 0.67) 0%, rgba(127, 127, 127, 0) 100%)", backgroundImage: `url(${backgroundUrl})` }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/40 to-background/10" />
-         
-       
-        
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            background: "linear-gradient(180deg, rgba(115, 81, 231, 0.67) 0%, rgba(127, 127, 127, 0) 100%)",
+            backgroundImage: `url(${backgroundUrl})`,
+          }}
+        />
+        <div className="from-background/80 via-background/40 to-background/10 absolute inset-0 bg-gradient-to-t" />
 
         {/* Edit background button */}
         {onChangeBackground ? (
-          <div className="absolute right-3 top-3 z-20">
+          <div className="absolute top-3 right-3 z-20">
             <input
               id="profile-bg-upload"
               type="file"
@@ -75,11 +73,11 @@ export default function ProfileHeader({
           </div>
         ) : null}
 
-  {/* Avatar and basic info overlay */}
-  <div className="absolute left-4 top-1/2 z-20 -translate-y-1/2 px-2 md:left-6 md:px-0">
+        {/* Avatar and basic info overlay */}
+        <div className="absolute top-1/2 left-4 z-20 -translate-y-1/2 px-2 md:left-6 md:px-0">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <Avatar className="h-25 w-25  md:h-24 md:w-24">
+              <Avatar className="h-25 w-25 md:h-24 md:w-24">
                 {avatarUrl ? <AvatarImage src={avatarUrl} alt={name} /> : null}
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
@@ -97,7 +95,7 @@ export default function ProfileHeader({
                 type="button"
                 size="iconSm"
                 variant="secondary"
-                className="absolute -bottom-2 -right-2 rounded-full shadow-md"
+                className="absolute -right-2 -bottom-2 rounded-full shadow-md"
               >
                 <label htmlFor="profile-avatar-upload" className="cursor-pointer">
                   <Camera className="size-4" />
@@ -105,15 +103,13 @@ export default function ProfileHeader({
               </Button>
             </div>
 
-            <div className=" pb-2 md:block">
-              <h1 className="text-2xl font-bold leading-tight md:text-3xl">{name}</h1>
-              <p className="text-sm text-muted-foreground">ID: 12345678</p>
+            <div className="pb-2 md:block">
+              <h1 className="text-2xl leading-tight font-bold md:text-3xl">{name}</h1>
+              <p className="text-muted-foreground text-sm">ID: 12345678</p>
             </div>
           </div>
         </div>
       </div>
-
-      
     </div>
   );
 }

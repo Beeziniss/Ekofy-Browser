@@ -9,26 +9,18 @@ import { toast } from "sonner";
 import { ArtistOTPData, ArtistSignUpSectionProps } from "@/types/artist_type";
 import { EkofyLogo } from "@/assets/icons";
 
-type ArtistOTPVerificationSectionProps =
-  ArtistSignUpSectionProps<ArtistOTPData> & {
-    onBack: () => void;
-  };
+type ArtistOTPVerificationSectionProps = ArtistSignUpSectionProps<ArtistOTPData> & {
+  onBack: () => void;
+};
 
-const ArtistOTPVerificationSection = ({
-  onNext,
-  onBack,
-  initialData,
-}: ArtistOTPVerificationSectionProps) => {
+const ArtistOTPVerificationSection = ({ onNext, onBack, initialData }: ArtistOTPVerificationSectionProps) => {
   const [otp, setOtp] = useState<string[]>(
-    Array.isArray(initialData?.otp)
-      ? initialData.otp
-      : ["", "", "", "", "", ""],
+    Array.isArray(initialData?.otp) ? initialData.otp : ["", "", "", "", "", ""],
   );
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   // Store and hooks
-  const { formData, completeOTPVerification, goToPreviousStep } =
-    useArtistSignUpStore();
+  const { formData, completeOTPVerification, goToPreviousStep } = useArtistSignUpStore();
 
   useEffect(() => {
     if (timer > 0) {
@@ -120,20 +112,14 @@ const ArtistOTPVerificationSection = ({
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
           <h2 className="mb-4 text-3xl font-bold text-white">Xác thực OTP</h2>
-          <p className="mb-2 text-sm text-gray-300">
-            Chúng tôi đã gửi mã xác thực tới emaill
-          </p>
-          <p className="font-medium text-white">
-            {formData.email || "của bạn"}
-          </p>
+          <p className="mb-2 text-sm text-gray-300">Chúng tôi đã gửi mã xác thực tới emaill</p>
+          <p className="font-medium text-white">{formData.email || "của bạn"}</p>
         </div>
 
         {/* OTP Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="mb-4 block text-center text-sm font-medium text-white">
-              Nhập mã xác thực
-            </label>
+            <label className="mb-4 block text-center text-sm font-medium text-white">Nhập mã xác thực</label>
             <div className="flex justify-center space-x-3">
               {otp.map((digit, index) => (
                 <Input
@@ -165,10 +151,7 @@ const ArtistOTPVerificationSection = ({
           {!canResend ? (
             <p className="text-sm text-gray-400">Gửi lại mã sau {timer}s</p>
           ) : (
-            <button
-              onClick={handleResend}
-              className="text-sm font-medium text-blue-400 hover:text-blue-300"
-            >
+            <button onClick={handleResend} className="text-sm font-medium text-blue-400 hover:text-blue-300">
               Gửi lại mã xác thực
             </button>
           )}
@@ -178,9 +161,7 @@ const ArtistOTPVerificationSection = ({
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-400">
             Did not receive the code? Check your spam folder or{" "}
-            <button className="text-blue-400 hover:text-blue-300">
-              change email address
-            </button>
+            <button className="text-blue-400 hover:text-blue-300">change email address</button>
           </p>
         </div>
       </div>

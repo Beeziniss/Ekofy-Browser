@@ -12,21 +12,14 @@ import {
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -80,52 +73,24 @@ export function ModeratorUserTable({
   const getStatusBadge = (status: UserStatus) => {
     switch (status) {
       case UserStatus.Active:
-        return (
-          <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100">
-            ACTIVE
-          </Badge>
-        );
+        return <Badge className="border-green-200 bg-green-100 text-green-800 hover:bg-green-100">ACTIVE</Badge>;
       case UserStatus.Inactive:
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-100">
-            INACTIVE
-          </Badge>
-        );
+        return <Badge className="border-yellow-200 bg-yellow-100 text-yellow-800 hover:bg-yellow-100">INACTIVE</Badge>;
       case UserStatus.Banned:
-        return (
-          <Badge className="bg-red-100 text-red-800 border-red-200 hover:bg-red-100">
-            BANNED
-          </Badge>
-        );
+        return <Badge className="border-red-200 bg-red-100 text-red-800 hover:bg-red-100">BANNED</Badge>;
       default:
-        return (
-          <Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-100">
-            UNKNOWN
-          </Badge>
-        );
+        return <Badge className="border-gray-200 bg-gray-100 text-gray-800 hover:bg-gray-100">UNKNOWN</Badge>;
     }
   };
 
   const getRoleBadge = (role: UserRole) => {
     switch (role) {
       case UserRole.Artist:
-        return (
-          <Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-100">
-            ARTIST
-          </Badge>
-        );
+        return <Badge className="border-purple-200 bg-purple-100 text-purple-800 hover:bg-purple-100">ARTIST</Badge>;
       case UserRole.Listener:
-        return (
-          <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100">
-            LISTENER
-          </Badge>
-        );
+        return <Badge className="border-blue-200 bg-blue-100 text-blue-800 hover:bg-blue-100">LISTENER</Badge>;
       default:
-        return (
-          <Badge className="bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-100">
-            {role}
-          </Badge>
-        );
+        return <Badge className="border-gray-200 bg-gray-100 text-gray-800 hover:bg-gray-100">{role}</Badge>;
     }
   };
 
@@ -137,7 +102,7 @@ export function ModeratorUserTable({
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
-          className="border-gray-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+          className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
         />
       ),
       cell: ({ row }) => (
@@ -145,7 +110,7 @@ export function ModeratorUserTable({
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
-          className="border-gray-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+          className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
         />
       ),
       enableSorting: false,
@@ -156,23 +121,19 @@ export function ModeratorUserTable({
       header: "User",
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-            <span className="text-white text-sm font-medium">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-purple-500">
+            <span className="text-sm font-medium text-white">
               {row.original.fullName?.charAt(0)?.toUpperCase() || "U"}
             </span>
           </div>
-          <span className="text-gray-300 font-medium">
-            {row.original.fullName || "Unknown User"}
-          </span>
+          <span className="font-medium text-gray-300">{row.original.fullName || "Unknown User"}</span>
         </div>
       ),
     },
     {
       accessorKey: "email",
       header: "Email",
-      cell: ({ row }) => (
-        <span className="text-gray-300">{row.original.email}</span>
-      ),
+      cell: ({ row }) => <span className="text-gray-300">{row.original.email}</span>,
     },
     {
       accessorKey: "role",
@@ -183,9 +144,7 @@ export function ModeratorUserTable({
       accessorKey: "gender",
       header: "Gender",
       cell: ({ row }) => (
-        <span className="text-gray-300 capitalize">
-          {row.original.gender?.toLowerCase() || "N/A"}
-        </span>
+        <span className="text-gray-300 capitalize">{row.original.gender?.toLowerCase() || "N/A"}</span>
       ),
     },
     {
@@ -216,22 +175,22 @@ export function ModeratorUserTable({
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+          <DropdownMenuContent align="end" className="border-gray-700 bg-gray-800">
             <DropdownMenuItem
               onClick={() => {
                 const role = row.original.role;
                 router.push(`/moderator/user-management/${row.original.id}?role=${role}`);
               }}
-              className="text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer"
+              className="cursor-pointer text-gray-300 hover:bg-gray-700 hover:text-white"
             >
               <Eye className="mr-2 h-4 w-4" />
               View Details
             </DropdownMenuItem>
-            
+
             {row.original.status === UserStatus.Active ? (
               <DropdownMenuItem
                 onClick={() => onStatusChange(row.original.id, UserStatus.Banned)}
-                className="text-red-300 hover:text-red-200 hover:bg-gray-700 cursor-pointer"
+                className="cursor-pointer text-red-300 hover:bg-gray-700 hover:text-red-200"
               >
                 <UserX className="mr-2 h-4 w-4" />
                 Ban User
@@ -239,7 +198,7 @@ export function ModeratorUserTable({
             ) : (
               <DropdownMenuItem
                 onClick={() => onStatusChange(row.original.id, UserStatus.Active)}
-                className="text-green-300 hover:text-green-200 hover:bg-gray-700 cursor-pointer"
+                className="cursor-pointer text-green-300 hover:bg-gray-700 hover:text-green-200"
               >
                 <UserCheck className="mr-2 h-4 w-4" />
                 Reactivate User
@@ -276,13 +235,13 @@ export function ModeratorUserTable({
     <div className="space-y-4">
       {/* Search */}
       <div className="flex items-center space-x-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
           <Input
             placeholder="Search name..."
             value={searchTerm}
             onChange={(e) => handleSearchInput(e.target.value)}
-            className="pl-10 bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+            className="border-gray-700 bg-gray-800 pl-10 text-white placeholder-gray-400"
           />
         </div>
       </div>
@@ -295,9 +254,7 @@ export function ModeratorUserTable({
               <TableRow key={headerGroup.id} className="border-gray-700 hover:bg-gray-700/50">
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id} className="text-gray-300">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -332,7 +289,8 @@ export function ModeratorUserTable({
       {/* Pagination */}
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="text-sm text-gray-400">
-          Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} users
+          Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount}{" "}
+          users
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -340,7 +298,7 @@ export function ModeratorUserTable({
             size="sm"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={!hasPreviousPage}
-            className="bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700"
+            className="border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700"
           >
             <ChevronLeft className="h-4 w-4" />
             Previous
@@ -349,16 +307,17 @@ export function ModeratorUserTable({
             {Array.from({ length: Math.min(5, Math.ceil(totalCount / pageSize)) }, (_, i) => {
               const pageNumber = Math.max(1, currentPage - 2) + i;
               if (pageNumber > Math.ceil(totalCount / pageSize)) return null;
-              
+
               return (
                 <Button
                   key={pageNumber}
                   variant={pageNumber === currentPage ? "default" : "outline"}
                   size="sm"
                   onClick={() => handlePageChange(pageNumber)}
-                  className={pageNumber === currentPage 
-                    ? "bg-blue-600 text-white" 
-                    : "bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700"
+                  className={
+                    pageNumber === currentPage
+                      ? "bg-blue-600 text-white"
+                      : "border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700"
                   }
                 >
                   {pageNumber}
@@ -371,7 +330,7 @@ export function ModeratorUserTable({
             size="sm"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={!hasNextPage}
-            className="bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700"
+            className="border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700"
           >
             Next
             <ChevronRight className="h-4 w-4" />

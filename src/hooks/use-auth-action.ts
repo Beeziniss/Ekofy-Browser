@@ -3,20 +3,13 @@ import { useAuthStore } from "@/store";
 
 export const useAuthAction = () => {
   const [showWarningDialog, setShowWarningDialog] = useState(false);
-  const [warningAction, setWarningAction] = useState<
-    "play" | "favorite" | "comment" | "follow" | "playlist"
-  >("play");
+  const [warningAction, setWarningAction] = useState<"play" | "favorite" | "comment" | "follow" | "playlist">("play");
   const [trackName, setTrackName] = useState<string | undefined>();
   const { isAuthenticated } = useAuthStore();
 
   const executeWithAuth = (
     action: () => void,
-    warningType:
-      | "play"
-      | "favorite"
-      | "comment"
-      | "follow"
-      | "playlist" = "play",
+    warningType: "play" | "favorite" | "comment" | "follow" | "playlist" = "play",
     trackName?: string,
   ) => {
     if (!isAuthenticated) {

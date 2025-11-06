@@ -24,8 +24,8 @@ export function DeleteConfirmModal({ isOpen, onClose, onConfirm }: DeleteConfirm
           <DialogTitle className="text-center">Delete confirm modal</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col items-center py-6">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <span className="text-blue-600 text-2xl">?</span>
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+            <span className="text-2xl text-blue-600">?</span>
           </div>
           <DialogDescription className="text-center text-base">
             Do you really want to delete

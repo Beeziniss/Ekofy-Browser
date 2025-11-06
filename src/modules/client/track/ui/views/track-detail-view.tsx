@@ -2,11 +2,7 @@
 
 import TrackSection from "../sections/track-section";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import {
-  artistOptions,
-  listenerOptions,
-  trackDetailOptions,
-} from "@/gql/options/client-options";
+import { artistOptions, listenerOptions, trackDetailOptions } from "@/gql/options/client-options";
 import { useAuthStore } from "@/store";
 import TrackLikeSection from "../sections/track-like-section";
 import TrackOwnerSection from "../sections/track-owner-section";
@@ -41,11 +37,7 @@ const TrackDetailView = ({ trackId }: TrackDetailViewProps) => {
         <div className="grid w-full grid-cols-12 gap-8 px-8">
           <div className="col-span-9 space-y-8">
             <TrackOwnerSection data={data} artistData={artistData} />
-            <TrackCommentSection
-              trackId={trackId}
-              listenerData={listenerData}
-              artistData={artistData}
-            />
+            <TrackCommentSection trackId={trackId} listenerData={listenerData} artistData={artistData} />
           </div>
           <div className="col-span-3 space-y-8">
             <TrackRelatedSection />

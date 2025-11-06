@@ -9,36 +9,18 @@ import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import useArtistSignUp from "../../hooks/use-artist-sign-up";
 import { convertArtistStoreDataToAPIFormat } from "@/utils/signup-utils";
 import { toast } from "sonner";
-import {
-  uploadImageToCloudinary,
-  validateImageFile,
-} from "@/utils/cloudinary-utils";
+import { uploadImageToCloudinary, validateImageFile } from "@/utils/cloudinary-utils";
 import { useRouter } from "next/navigation";
-import {
-  ArtistIdentityData,
-  ArtistSignUpSectionProps,
-} from "@/types/artist_type";
+import { ArtistIdentityData, ArtistSignUpSectionProps } from "@/types/artist_type";
 import { EkofyLogo } from "@/assets/icons";
 
-type ArtistIdentitySectionProps =
-  ArtistSignUpSectionProps<ArtistIdentityData> & {
-    onBack: () => void;
-  };
+type ArtistIdentitySectionProps = ArtistSignUpSectionProps<ArtistIdentityData> & {
+  onBack: () => void;
+};
 
-const ArtistIdentitySection = ({
-  onNext,
-  onBack,
-  initialData,
-}: ArtistIdentitySectionProps) => {
+const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySectionProps) => {
   const router = useRouter();
-  const {
-    formData,
-    sessionData,
-    updateFormData,
-    goToNextStep,
-    resetForm,
-    clearSessionData,
-  } = useArtistSignUpStore();
+  const { formData, sessionData, updateFormData, goToNextStep, resetForm, clearSessionData } = useArtistSignUpStore();
 
   // Handle navigation to login after successful registration
   const handleNavigateToLogin = () => {
@@ -52,21 +34,13 @@ const ArtistIdentitySection = ({
 
   // Initialize state from global store or initial data
   // const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
-  const [avatarImage, setAvatarImage] = useState<File | null>(
-    initialData?.avatarImage || null,
-  );
-  const [avatarImagePreview, setAvatarImagePreview] = useState<string | null>(
-    null,
-  );
-  const [stageName, setStageName] = useState(
-    initialData?.stageName || formData.stageName || "",
-  );
+  const [avatarImage, setAvatarImage] = useState<File | null>(initialData?.avatarImage || null);
+  const [avatarImagePreview, setAvatarImagePreview] = useState<string | null>(null);
+  const [stageName, setStageName] = useState(initialData?.stageName || formData.stageName || "");
   // const [coverUploading, setCoverUploading] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   // const [coverImageUrl, setCoverImageUrl] = useState<string | null>(formData.avatarImage || null);
-  const [avatarImageUrl, setAvatarImageUrl] = useState<string | null>(
-    formData.avatarImage || null,
-  );
+  const [avatarImageUrl, setAvatarImageUrl] = useState<string | null>(formData.avatarImage || null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Load data from global state when component mounts or store updates
@@ -129,9 +103,7 @@ const ArtistIdentitySection = ({
       if (formData.artistType === "INDIVIDUAL") {
         // Check if password exists in session data before attempting registration
         if (!sessionData.password || !sessionData.confirmPassword) {
-          toast.error(
-            "Password information is missing. Please go back to the first step and re-enter your password.",
-          );
+          toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
           // Navigate back to form step to re-enter password
           // router.push('/artist/sign-up');
           return;
@@ -214,9 +186,7 @@ const ArtistIdentitySection = ({
   //   }
   // };
 
-  const handleAvatarImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleAvatarImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -254,10 +224,7 @@ const ArtistIdentitySection = ({
     <div className="flex min-h-screen items-center justify-center bg-[#121212] px-6 py-12">
       <div className="w-full max-w-6xl">
         {/* Back Button */}
-        <button
-          onClick={onBack}
-          className="mb-8 flex items-center text-white transition-colors hover:text-blue-400"
-        >
+        <button onClick={onBack} className="mb-8 flex items-center text-white transition-colors hover:text-blue-400">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </button>
@@ -270,20 +237,14 @@ const ArtistIdentitySection = ({
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="mb-4 text-3xl font-bold text-white">
-            Define Your Identity
-          </h2>
-          <p className="mb-8 text-sm text-gray-300">
-            Choose a stage name that represents you or your band.
-          </p>
+          <h2 className="mb-4 text-3xl font-bold text-white">Define Your Identity</h2>
+          <p className="mb-8 text-sm text-gray-300">Choose a stage name that represents you or your band.</p>
         </div>
 
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
           {/* Left Side - Avatar Image Upload */}
           <div>
-            <label className="mb-4 block text-sm font-medium text-white">
-              Add avatar image
-            </label>
+            <label className="mb-4 block text-sm font-medium text-white">Add avatar image</label>
             <div className="relative w-full">
               <div
                 className={`h-64 w-full border-2 border-dashed ${errors.avatarImage ? "border-red-500" : "border-gray-600"} flex cursor-pointer flex-col items-center justify-center rounded-lg bg-gray-800/30 transition-colors hover:border-gray-500`}
@@ -319,12 +280,7 @@ const ArtistIdentitySection = ({
                 ) : (
                   <>
                     <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-700">
-                      <svg
-                        className="h-6 w-6 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
+                      <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -333,9 +289,7 @@ const ArtistIdentitySection = ({
                         />
                       </svg>
                     </div>
-                    <p className="mb-2 text-sm font-medium text-white">
-                      Add avatar image
-                    </p>
+                    <p className="mb-2 text-sm font-medium text-white">Add avatar image</p>
                   </>
                 )}
               </div>
@@ -347,12 +301,9 @@ const ArtistIdentitySection = ({
                 className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
               />
             </div>
-            {errors.avatarImage && (
-              <p className="mt-2 text-sm text-red-400">{errors.avatarImage}</p>
-            )}
+            {errors.avatarImage && <p className="mt-2 text-sm text-red-400">{errors.avatarImage}</p>}
             <p className="mt-3 text-xs text-gray-400">
-              Upload your profile picture. Recommended size 500×500px, JPG or
-              PNG, under 5MB
+              Upload your profile picture. Recommended size 500×500px, JPG or PNG, under 5MB
             </p>
           </div>
 
@@ -406,21 +357,16 @@ const ArtistIdentitySection = ({
           {/* Right Side - Stage Name */}
           <div className="flex h-64 flex-col justify-center">
             <div>
-              <label className="mb-2 block text-sm font-medium text-white">
-                Stage Name*
-              </label>
+              <label className="mb-2 block text-sm font-medium text-white">Stage Name*</label>
               <Input
                 value={stageName}
                 onChange={(e) => setStageName(e.target.value)}
                 placeholder="Enter stage name"
                 className={`w-full ${errors.stageName ? "border-gradient-input-error" : "border-gradient-input"} h-12 text-white placeholder-gray-400`}
               />
-              {errors.stageName && (
-                <p className="mt-2 text-sm text-red-400">{errors.stageName}</p>
-              )}
+              {errors.stageName && <p className="mt-2 text-sm text-red-400">{errors.stageName}</p>}
               <p className="mt-2 text-xs text-gray-400">
-                Your stage name will appear on your profile and tracks. Make
-                sure it is unique and easy to recognize.
+                Your stage name will appear on your profile and tracks. Make sure it is unique and easy to recognize.
               </p>
             </div>
           </div>

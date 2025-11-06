@@ -1,7 +1,7 @@
-import { servicePackageOptions } from "@/gql/options/client-options";
-import ArtistDetailServiceView from "@/modules/client/artist/ui/views/artist-detail-service-view";
 import { getQueryClient } from "@/providers/get-query-client";
+import { servicePackageOptions } from "@/gql/options/client-options";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import ArtistDetailServiceView from "@/modules/client/artist/ui/views/artist-detail-service-view";
 
 interface PageProps {
   params: Promise<{ artistId: string }>;

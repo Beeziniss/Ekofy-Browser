@@ -1,15 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { execute } from "@/gql/execute";
-import { 
-  CREATE_SUBSCRIPTION, 
-  CREATE_SUBSCRIPTION_PLAN 
-} from "@/modules/shared/mutations/admin/subcription-mutation";
-import type { 
-  CreateSubscriptionInput, 
+import { CREATE_SUBSCRIPTION, CREATE_SUBSCRIPTION_PLAN } from "@/modules/shared/mutations/admin/subcription-mutation";
+import type {
+  CreateSubscriptionInput,
   CreateSubscriptionPlanInput,
   CreateSubScriptionPlanRequestInput,
   UpdateSubscriptionInput,
-  UpdateSubscriptionPlanInput 
+  UpdateSubscriptionPlanInput,
 } from "@/types";
 import { toast } from "sonner";
 
@@ -45,22 +42,22 @@ export const useCreateSubscriptionPlanMutation = () => {
       const requestInput: CreateSubScriptionPlanRequestInput = {
         name: input.name,
         subscriptionCode: input.subscriptionCode,
-        prices: input.prices.map(price => ({
+        prices: input.prices.map((price) => ({
           interval: price.interval,
           intervalCount: price.intervalCount,
           lookupKey: price.lookupKey,
         })),
       };
-      
+
       // Only add optional fields if they exist and are not empty
       if (input.images && input.images.length > 0) {
         requestInput.images = input.images;
       }
-      
+
       if (input.metadata && input.metadata.length > 0) {
         requestInput.metadata = input.metadata;
       }
-      
+
       const result = await execute(CREATE_SUBSCRIPTION_PLAN, {
         createSubScriptionPlanRequest: requestInput,
       });

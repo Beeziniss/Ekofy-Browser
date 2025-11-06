@@ -27,19 +27,14 @@ const TrackTableWrapper = ({
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const currentPage = parseInt(searchParams.get("page") || "1");
-  const pageSize =
-    propPageSize || parseInt(searchParams.get("pageSize") || "10");
+  const pageSize = propPageSize || parseInt(searchParams.get("pageSize") || "10");
 
   const updateURLParams = useCallback(
     (params: { [key: string]: string | number }) => {
       const current = new URLSearchParams(Array.from(searchParams.entries()));
 
       Object.entries(params).forEach(([key, value]) => {
-        if (
-          value === "" ||
-          value === "all" ||
-          (key === "page" && value === 1)
-        ) {
+        if (value === "" || value === "all" || (key === "page" && value === 1)) {
           current.delete(key);
         } else {
           current.set(key, value.toString());
@@ -104,10 +99,7 @@ const TrackTableWrapper = ({
 
   const handleSortingChange = useCallback(
     (updaterOrValue: Updater<SortingState>) => {
-      const newSorting =
-        typeof updaterOrValue === "function"
-          ? updaterOrValue(sorting)
-          : updaterOrValue;
+      const newSorting = typeof updaterOrValue === "function" ? updaterOrValue(sorting) : updaterOrValue;
 
       setSorting(newSorting);
       if (newSorting.length > 0) {

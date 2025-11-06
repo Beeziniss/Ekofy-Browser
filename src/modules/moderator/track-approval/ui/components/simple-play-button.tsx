@@ -26,13 +26,7 @@ export function SimplePlayButton({
   className,
   size = "sm",
 }: SimplePlayButtonProps) {
-  const {
-    currentTrack,
-    isPlaying,
-    setCurrentTrack,
-    togglePlayPause,
-    isLoading,
-  } = useAudioStore();
+  const { currentTrack, isPlaying, setCurrentTrack, togglePlayPause, isLoading } = useAudioStore();
 
   // Use uploadId if available, otherwise fall back to trackId
   const audioTrackId = uploadId || trackId;
@@ -54,16 +48,7 @@ export function SimplePlayButton({
       });
       // Audio player will auto-play when ready
     }
-  }, [
-    isCurrentTrack,
-    togglePlayPause,
-    setCurrentTrack,
-    trackId,
-    trackName,
-    trackArtist,
-    trackCoverImage,
-    uploadId,
-  ]);
+  }, [isCurrentTrack, togglePlayPause, setCurrentTrack, trackId, trackName, trackArtist, trackCoverImage, uploadId]);
 
   const sizeClasses = {
     sm: "h-8 w-8 p-0",
@@ -102,12 +87,7 @@ export function SimplePlayButton({
       title={isCurrentlyPlaying ? "Pause" : "Play"}
     >
       {isLoading && isCurrentTrack ? (
-        <div
-          className={cn(
-            "border-primary animate-spin rounded-full border-t-transparent",
-            iconSizes[size],
-          )}
-        />
+        <div className={cn("border-primary animate-spin rounded-full border-t-transparent", iconSizes[size])} />
       ) : isCurrentlyPlaying ? (
         <Pause className={cn(iconSizes[size], "text-black")} />
       ) : (

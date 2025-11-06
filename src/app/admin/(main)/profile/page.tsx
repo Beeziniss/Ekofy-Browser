@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -16,14 +16,14 @@ const ProfilePage = () => {
   if (isAuthenticated && userId) {
     void queryClient.prefetchQuery(adminProfileOptions(userId));
   }
-  
+
   return (
     <div>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <AdminProfileView />
       </HydrationBoundary>
     </div>
-  )
-}
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;

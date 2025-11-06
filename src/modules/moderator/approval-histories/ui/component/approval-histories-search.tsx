@@ -11,8 +11,8 @@ interface ApprovalHistoriesSearchProps {
 export const ApprovalHistoriesSearch = ({ searchTerm, onSearch }: ApprovalHistoriesSearchProps) => {
   return (
     <div className="flex items-center space-x-2">
-      <div className="relative flex-1 max-w-sm">
-        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+      <div className="relative max-w-sm flex-1">
+        <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
         <Input
           placeholder="Search histories..."
           value={searchTerm}

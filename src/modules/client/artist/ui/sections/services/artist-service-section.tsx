@@ -3,12 +3,7 @@
 import { Suspense } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { servicePackageOptions } from "@/gql/options/client-options";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ServicePackageCard from "../../components/services/service-package-card";
 import { PackageXIcon } from "lucide-react";
@@ -32,9 +27,7 @@ const ArtistServiceSection = ({ artistId }: ArtistServiceSectionProps) => {
     <div className="w-full space-y-6">
       <div className="space-y-2">
         <h2 className="text-2xl font-bold tracking-tight">Service Packages</h2>
-        <p className="text-muted-foreground">
-          Choose from available service packages offered by this artist
-        </p>
+        <p className="text-muted-foreground">Choose from available service packages offered by this artist</p>
       </div>
       <Suspense fallback={<ArtistServiceSectionSkeleton />}>
         <ArtistServiceSectionSuspense artistId={artistId} />
@@ -65,9 +58,7 @@ const ArtistServiceSectionSkeleton = () => {
   );
 };
 
-const ArtistServiceSectionSuspense = ({
-  artistId,
-}: ArtistServiceSectionProps) => {
+const ArtistServiceSectionSuspense = ({ artistId }: ArtistServiceSectionProps) => {
   const { data } = useSuspenseQuery(servicePackageOptions(artistId));
 
   const servicePackages = data?.artistPackages?.items || [];
@@ -79,12 +70,9 @@ const ArtistServiceSectionSuspense = ({
           <div className="bg-muted mx-auto flex size-16 items-center justify-center rounded-full">
             <PackageXIcon className="text-muted-foreground size-8" />
           </div>
-          <h3 className="text-lg font-semibold">
-            No Service Packages Available
-          </h3>
+          <h3 className="text-lg font-semibold">No Service Packages Available</h3>
           <p className="text-muted-foreground max-w-md text-sm">
-            This artist hasn&apos;t created any service packages yet. Check back
-            later for available services.
+            This artist hasn&apos;t created any service packages yet. Check back later for available services.
           </p>
         </div>
       </div>
@@ -94,10 +82,7 @@ const ArtistServiceSectionSuspense = ({
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
       {servicePackages.map((servicePackage: ServicePackage) => (
-        <ServicePackageCard
-          key={servicePackage.id}
-          servicePackage={servicePackage}
-        />
+        <ServicePackageCard key={servicePackage.id} servicePackage={servicePackage} />
       ))}
     </div>
   );

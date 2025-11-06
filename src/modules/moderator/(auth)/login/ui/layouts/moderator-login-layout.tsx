@@ -5,11 +5,7 @@ interface ModeratorLoginLayout {
 }
 
 const ModeratorLoginLayout = ({ children }: ModeratorLoginLayout) => {
-  return (
-    <div className="w-full flex min-h-screen">
-      {children}
-    </div>
-  );
+  return <div className="flex min-h-screen w-full">{children}</div>;
 };
 
 export default ModeratorLoginLayout;

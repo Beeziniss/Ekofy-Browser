@@ -3,16 +3,8 @@
 import { playlistDetailTrackListOptions } from "@/gql/options/client-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
-import PlaylistTrackTable, {
-  PlaylistTrack,
-} from "../components/playlist-track-table";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import PlaylistTrackTable, { PlaylistTrack } from "../components/playlist-track-table";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -73,9 +65,7 @@ const PlaylistTrackListSuspense = ({ playlistId }: PlaylistTrackListProps) => {
       ?.filter((track): track is NonNullable<typeof track> => track !== null)
       .map((track) => {
         // Find the corresponding tracksInfo for this track
-        const trackInfo = playlist.tracksInfo.find(
-          (info) => info.trackId === track.id,
-        );
+        const trackInfo = playlist.tracksInfo.find((info) => info.trackId === track.id);
 
         return {
           id: track.id,

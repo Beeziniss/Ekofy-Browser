@@ -1,10 +1,10 @@
 "use client";
-import React from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import ServicePackageDetailSection from '@/modules/artist/service-package/ui/section/service-package-detail-section';
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { getQueryClient } from '@/providers/get-query-client';
-import { packageDetailOptions } from '@/gql/options/artist-options';
+import React from "react";
+import { useParams, useRouter } from "next/navigation";
+import ServicePackageDetailSection from "@/modules/artist/service-package/ui/section/service-package-detail-section";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { getQueryClient } from "@/providers/get-query-client";
+import { packageDetailOptions } from "@/gql/options/artist-options";
 
 export default function ServicePackageDetailPage() {
   const params = useParams();
@@ -13,7 +13,7 @@ export default function ServicePackageDetailPage() {
   const queryClient = getQueryClient();
   queryClient.prefetchQuery(packageDetailOptions(packageId));
   const handleBack = () => {
-    router.push('/artist/studio/service-package');
+    router.push("/artist/studio/service-package");
   };
 
   const handleEdit = () => {
@@ -28,15 +28,14 @@ export default function ServicePackageDetailPage() {
   };
 
   return (
-
     <div className="min-h-screen">
       <HydrationBoundary state={dehydrate(queryClient)}>
-      <ServicePackageDetailSection
-        packageId={packageId}
-        onBack={handleBack}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+        <ServicePackageDetailSection
+          packageId={packageId}
+          onBack={handleBack}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       </HydrationBoundary>
     </div>
   );

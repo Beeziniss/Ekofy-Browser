@@ -20,12 +20,7 @@ interface WarningAuthDialogProps {
   trackName?: string;
 }
 
-export function WarningAuthDialog({
-  open,
-  onOpenChange,
-  action,
-  trackName,
-}: WarningAuthDialogProps) {
+export function WarningAuthDialog({ open, onOpenChange, action, trackName }: WarningAuthDialogProps) {
   const getActionText = () => {
     switch (action) {
       case "play":
@@ -90,22 +85,17 @@ export function WarningAuthDialog({
             </div>
           </div>
 
-          <DialogTitle className="mb-2 text-xl font-bold text-white">
-            {getTitle()}
-          </DialogTitle>
+          <DialogTitle className="mb-2 text-xl font-bold text-white">{getTitle()}</DialogTitle>
 
           <DialogDescription className="text-gray-300">
             {trackName ? (
               <>
                 To {getActionText()}
-                <strong>{action === "play" ? ` "${trackName}"` : ""}</strong>,
-                you&apos;ll need to create a free Ekofy account first.
-              </>
-            ) : (
-              <>
-                To {getActionText()}, you&apos;ll need to create a free Ekofy
+                <strong>{action === "play" ? ` "${trackName}"` : ""}</strong>, you&apos;ll need to create a free Ekofy
                 account first.
               </>
+            ) : (
+              <>To {getActionText()}, you&apos;ll need to create a free Ekofy account first.</>
             )}
           </DialogDescription>
         </DialogHeader>
@@ -113,13 +103,7 @@ export function WarningAuthDialog({
         <div className="space-y-6 py-6">
           <div className="rounded-lg border border-purple-500/20 bg-gradient-to-r from-purple-900/30 to-pink-900/30 p-4">
             <h4 className="mb-2 flex items-center gap-2 font-semibold text-white">
-              <Image
-                src="/ekofy-logo-xs.svg"
-                alt="Ekofy"
-                width={20}
-                height={20}
-                className="h-5 w-5"
-              />
+              <Image src="/ekofy-logo-xs.svg" alt="Ekofy" width={20} height={20} className="h-5 w-5" />
               Join Ekofy for free and get:
             </h4>
             <ul className="space-y-1 text-sm text-gray-300">
@@ -143,20 +127,14 @@ export function WarningAuthDialog({
           </div>
 
           <div className="flex flex-col gap-y-4">
-            <Link
-              href="/sign-up"
-              className="w-full"
-              onClick={() => onOpenChange(false)}
-            >
+            <Link href="/sign-up" className="w-full" onClick={() => onOpenChange(false)}>
               <Button className="h-11 w-full rounded-full bg-gradient-to-r from-blue-600 to-purple-600 font-semibold text-white hover:from-blue-700 hover:to-purple-700">
                 Create free account
               </Button>
             </Link>
 
             <div className="text-center">
-              <span className="text-sm text-gray-400">
-                Already have an account?{" "}
-              </span>
+              <span className="text-sm text-gray-400">Already have an account? </span>
               <Link
                 href="/login"
                 className="text-sm font-medium text-purple-400 underline hover:text-purple-300"

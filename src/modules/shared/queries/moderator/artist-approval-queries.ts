@@ -19,7 +19,7 @@ export const PendingArtistRegistrationsQuery = graphql(`
       }
     }
   }
-`)
+`);
 
 export const PendingArtistRegistrationsDetailQuery = graphql(`
   query PendingArtistRegistrationById($artistRegistrationId: String!) {
@@ -51,4 +51,4 @@ export const PendingArtistRegistrationsDetailQuery = graphql(`
       backImageUrl
     }
   }
-`)
+`);

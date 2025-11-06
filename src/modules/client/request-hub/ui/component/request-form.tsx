@@ -32,10 +32,10 @@ const parseCurrency = (value: string): number => {
 };
 
 // const UploadIcon = () => (
-//   <svg 
-//     className="mx-auto h-12 w-12 mb-4" 
-//     viewBox="0 0 24 24" 
-//     fill="none" 
+//   <svg
+//     className="mx-auto h-12 w-12 mb-4"
+//     viewBox="0 0 24 24"
+//     fill="none"
 //     xmlns="http://www.w3.org/2000/svg"
 //   >
 //     <defs>
@@ -44,18 +44,18 @@ const parseCurrency = (value: string): number => {
 //         <stop offset="100%" stopColor="#AB4EE5" />
 //       </linearGradient>
 //     </defs>
-//     <path 
-//       d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" 
-//       stroke="url(#uploadGradient)" 
-//       strokeWidth="2" 
-//       strokeLinecap="round" 
+//     <path
+//       d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+//       stroke="url(#uploadGradient)"
+//       strokeWidth="2"
+//       strokeLinecap="round"
 //       strokeLinejoin="round"
 //     />
 //   </svg>
 // );
 
 interface RequestFormProps {
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   initialData?: Partial<CreateRequestData> & { id?: string; budget?: RequestBudget | number; deadline?: Date | string };
   onSubmit: (data: CreateRequestData | UpdateRequestData) => void;
   onCancel?: () => void;
@@ -63,24 +63,22 @@ interface RequestFormProps {
 }
 
 export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }: RequestFormProps) {
-  const [title, setTitle] = useState(initialData?.title || '');
-  const [summary, setSummary] = useState(initialData?.summary || '');
-  const [detailDescription, setDetailDescription] = useState(initialData?.detailDescription || '');
-  
-  // Format initial budget values with dots
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [summary, setSummary] = useState(initialData?.summary || "");
+  const [detailDescription, setDetailDescription] = useState(initialData?.detailDescription || "");
   const [budgetMin, setBudgetMin] = useState(
-    initialData?.budget ? 
-      formatCurrency((typeof initialData.budget === 'object' ? initialData.budget.min.toString() : initialData.budget.toString())) : 
-      ''
+    initialData?.budget ? (typeof initialData.budget === 'object' ? initialData.budget.min.toString() : initialData.budget.toString()) : ''
   );
   const [budgetMax, setBudgetMax] = useState(
-    initialData?.budget ? 
-      formatCurrency((typeof initialData.budget === 'object' ? initialData.budget.max.toString() : initialData.budget.toString())) : 
-      ''
+    initialData?.budget
+      ? typeof initialData.budget === "object"
+        ? initialData.budget.max.toString()
+        : initialData.budget.toString()
+      : "",
   );
   
   const [deadline, setDeadline] = useState<Date | undefined>(
-    initialData?.deadline ? new Date(initialData.deadline) : undefined
+    initialData?.deadline ? new Date(initialData.deadline) : undefined,
   );
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [budgetError, setBudgetError] = useState('');
@@ -124,10 +122,10 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
       setBudgetError('Maximum budget must be greater than or equal to minimum budget');
       return;
     }
-    
+
     // Validation: deadline is required
     if (!deadline) {
-      alert('Please select a deadline');
+      alert("Please select a deadline");
       return;
     }
     
@@ -135,15 +133,15 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
     setBudgetError('');
     
     const budget = { min: budgetMinNumber, max: budgetMaxNumber };
-    
-    if (mode === 'edit' && initialData?.id) {
+
+    if (mode === "edit" && initialData?.id) {
       const updateData: UpdateRequestData = {
         id: initialData.id,
         title,
         summary,
         detailDescription,
         budget,
-        deadline
+        deadline,
       };
       onSubmit(updateData);
     } else {
@@ -152,7 +150,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         summary,
         detailDescription,
         budget,
-        deadline
+        deadline,
       };
       onSubmit(createData);
     }
@@ -175,17 +173,12 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
   // };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="mx-auto max-w-6xl p-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-center mb-2">Request Hub</h1>
-        {mode === 'edit' && initialData?.id && onDelete && (
+        <h1 className="mb-2 text-center text-2xl font-bold">Request Hub</h1>
+        {mode === "edit" && initialData?.id && onDelete && (
           <div className="flex justify-end">
-            <Button 
-              type="button"
-              variant="destructive" 
-              size="sm"
-              onClick={() => setShowDeleteModal(true)}
-            >
+            <Button type="button" variant="destructive" size="sm" onClick={() => setShowDeleteModal(true)}>
               Delete
             </Button>
           </div>
@@ -194,7 +187,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-2">Title</label>
+          <label className="mb-2 block text-sm font-medium">Title</label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -205,18 +198,18 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Summary</label>
+          <label className="mb-2 block text-sm font-medium">Summary</label>
           <Textarea
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
             placeholder="Brief summary of your request..."
-            className="w-full min-h-[100px]"
+            className="min-h-[100px] w-full"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Detailed Description</label>
+          <label className="mb-2 block text-sm font-medium">Detailed Description</label>
           <Editor
             value={detailDescription}
             onChange={setDetailDescription}
@@ -234,7 +227,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
           )}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Minimum Budget</label>
+              <label className="mb-1 block text-xs text-gray-500">Minimum Budget</label>
               <Input
                 type="text"
                 value={budgetMin}
@@ -258,7 +251,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Maximum Budget</label>
+              <label className="mb-1 block text-xs text-gray-500">Maximum Budget</label>
               <Input
                 type="text"
                 value={budgetMax}
@@ -282,21 +275,18 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
               />
             </div>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="mt-1 text-xs text-gray-500">
             Set your budget range. If you have a fixed budget, use the same value for both minimum and maximum.
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Deadline</label>
+          <label className="mb-2 block text-sm font-medium">Deadline</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !deadline && "text-muted-foreground"
-                )}
+                className={cn("w-full justify-start text-left font-normal", !deadline && "text-muted-foreground")}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {deadline ? format(deadline, "dd/MM/yyyy") : "Select deadline"}
@@ -313,9 +303,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
               />
             </PopoverContent>
           </Popover>
-          <p className="text-xs text-gray-500 mt-1">
-            Deadline must be at least 5 days from today
-          </p>
+          <p className="mt-1 text-xs text-gray-500">Deadline must be at least 5 days from today</p>
         </div>
 
         {/* <div>
@@ -384,7 +372,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
             </Button>
           )}
           <Button type="submit" variant="ekofy">
-            {mode === 'create' ? 'Submit' : 'Update'}
+            {mode === "create" ? "Submit" : "Update"}
           </Button>
         </div>
       </form>

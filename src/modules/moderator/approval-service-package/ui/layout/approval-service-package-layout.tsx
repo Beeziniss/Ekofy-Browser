@@ -1,17 +1,13 @@
-import React from 'react';
+import React from "react";
 
 interface ApprovalServicePackageLayoutProps {
   children: React.ReactNode;
 }
 
-const ApprovalServicePackageLayout: React.FC<ApprovalServicePackageLayoutProps> = ({ 
-  children 
-}) => {
+const ApprovalServicePackageLayout: React.FC<ApprovalServicePackageLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto">
-        {children}
-      </div>
+      <div className="container mx-auto">{children}</div>
     </div>
   );
 };

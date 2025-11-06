@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { moderatorUserCreatedByOptions } from "@/gql/options/moderator-options";
-import { useApproveTrackWithFeedback, useRejectTrackWithFeedback } from "@/gql/client-mutation-options/moderator-mutation";
+import {
+  useApproveTrackWithFeedback,
+  useRejectTrackWithFeedback,
+} from "@/gql/client-mutation-options/moderator-mutation";
 import { TrackUploadRequest } from "@/types/approval-track";
 import {
   TrackInfoCard,
@@ -16,7 +19,7 @@ import {
   LegalDocumentsCard,
   TrackDetailSidebar,
   ApproveTrackDialog,
-  RejectTrackDialog
+  RejectTrackDialog,
 } from "../components";
 import { toast } from "sonner";
 
@@ -27,14 +30,12 @@ interface TrackDetailSectionProps {
 
 export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSectionProps) {
   const router = useRouter();
-  
+
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
 
   // Fetch user information by createdBy ID using query options
-  const { data: createdByUser, isLoading: isLoadingUser } = useQuery(
-    moderatorUserCreatedByOptions(track.createdBy)
-  );
+  const { data: createdByUser, isLoading: isLoadingUser } = useQuery(moderatorUserCreatedByOptions(track.createdBy));
 
   // Use mutation hooks with built-in success/error handling
   const approveMutation = useApproveTrackWithFeedback();
@@ -53,9 +54,9 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
 
   const handleRejectConfirm = async (reasonReject: string) => {
     try {
-      await rejectMutation.mutateAsync({ 
-        uploadId: track.id, 
-        reasonReject 
+      await rejectMutation.mutateAsync({
+        uploadId: track.id,
+        reasonReject,
       });
       toast.success("Track rejected successfully");
       router.push("/moderator/track-approval");
@@ -66,34 +67,25 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => router.push("/moderator/track-approval")}
-          >
+          <Button variant="ghost" size="sm" onClick={() => router.push("/moderator/track-approval")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to List
           </Button>
         </div>
-
       </div>
       <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Track Review</h1>
+        <h1 className="text-2xl font-bold">Track Review</h1>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6 lg:col-span-2">
           {/* Track Information */}
-          <TrackInfoCard 
-            track={track} 
-            createdByUser={createdByUser}
-            isLoadingUser={isLoadingUser}
-          />
+          <TrackInfoCard track={track} createdByUser={createdByUser} isLoadingUser={isLoadingUser} />
 
           {/* Track Categories */}
           <TrackCategoriesCard 
@@ -112,19 +104,19 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
           </div>
 
           {/* Action Buttons */}
-          <div className="bg-black/90 backdrop-blur-sm border border-gray-700/50 rounded-lg p-4">
+          <div className="rounded-lg border border-gray-700/50 bg-black/90 p-4 backdrop-blur-sm">
             <div className="flex items-center justify-center gap-3">
-              <Button 
+              <Button
                 variant="outline"
-                className="px-8 py-3 h-12 text-red-400 border-red-400 hover:bg-red-400/10 bg-transparent"
+                className="h-12 border-red-400 bg-transparent px-8 py-3 text-red-400 hover:bg-red-400/10"
                 onClick={() => setRejectDialogOpen(true)}
                 disabled={approveMutation.isPending || rejectMutation.isPending}
               >
                 <XCircle className="mr-2 h-5 w-5" />
                 {rejectMutation.isPending ? "Rejecting..." : "Reject Track"}
               </Button>
-              <Button 
-                className="px-8 py-3 h-12 bg-green-600 hover:bg-green-700 text-white"
+              <Button
+                className="h-12 bg-green-600 px-8 py-3 text-white hover:bg-green-700"
                 onClick={() => setApproveDialogOpen(true)}
                 disabled={approveMutation.isPending || rejectMutation.isPending}
               >
@@ -137,8 +129,8 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
 
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <TrackDetailSidebar 
-            track={track} 
+          <TrackDetailSidebar
+            track={track}
             onDownloadOriginal={onDownloadOriginal}
             createdByUser={createdByUser}
             isLoadingUser={isLoadingUser}
@@ -151,7 +143,7 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
         open={approveDialogOpen}
         onOpenChange={setApproveDialogOpen}
         trackName={track.track.name}
-        artistName={track.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
+        artistName={track.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
         onConfirm={handleApproveConfirm}
         isLoading={approveMutation.isPending}
       />
@@ -161,7 +153,7 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
         open={rejectDialogOpen}
         onOpenChange={setRejectDialogOpen}
         trackName={track.track.name}
-        artistName={track.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
+        artistName={track.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
         onConfirm={handleRejectConfirm}
         isLoading={rejectMutation.isPending}
       />

@@ -13,12 +13,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AuthDialogProvider } from "../context/auth-dialog-context";
 
-type RequestHubMode = 'view' | 'create' | 'edit' | 'detail';
+type RequestHubMode = "view" | "create" | "edit" | "detail";
 
-type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
+type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
 export function RequestHubView() {
-  const [mode, setMode] = useState<RequestHubMode>('view');
+  const [mode, setMode] = useState<RequestHubMode>("view");
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
   const [editingRequest, setEditingRequest] = useState<RequestItem | null>(null);
   const [searchValue, setSearchValue] = useState("");
@@ -28,9 +28,9 @@ export function RequestHubView() {
 
   // Fetch requests with pagination
   const { data: requestsData, isLoading } = useQuery(
-    requestHubOptions((currentPage - 1) * pageSize, pageSize, { 
-      status: { eq: GqlRequestStatus.Open } 
-    })
+    requestHubOptions((currentPage - 1) * pageSize, pageSize, {
+      status: { eq: GqlRequestStatus.Open },
+    }),
   );
   const requests = requestsData?.items || [];
   const totalCount = requestsData?.totalCount || 0;
@@ -41,22 +41,22 @@ export function RequestHubView() {
   const updateRequestMutation = useUpdateRequest();
 
   // Filter requests based on search (already filtered to OPEN by query)
-  const filteredRequests = requests
-    .filter((request: RequestItem) =>
+  const filteredRequests = requests.filter(
+    (request: RequestItem) =>
       request.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-      request.summary.toLowerCase().includes(searchValue.toLowerCase())
-    );
+      request.summary.toLowerCase().includes(searchValue.toLowerCase()),
+  );
 
   const handlePostRequest = () => {
-    setMode('create');
+    setMode("create");
   };
 
   const handleBrowseArtists = () => {
-    router.push('/hire-artists');
+    router.push("/hire-artists");
   };
 
   const handleMyRequests = () => {
-    router.push('/request-hub/my-requests');
+    router.push("/request-hub/my-requests");
   };
 
   const handleViewDetails = (id: string) => {
@@ -68,39 +68,39 @@ export function RequestHubView() {
     const request = requests.find((r: RequestItem) => r.id === id);
     if (request) {
       setEditingRequest(request);
-      setMode('edit');
+      setMode("edit");
     }
   };
 
   const handleApply = (id: string) => {
-    console.log('Apply to request:', id);
-    toast.info('Application feature coming soon!');
+    console.log("Apply to request:", id);
+    toast.info("Application feature coming soon!");
   };
 
   const handleSave = (id: string) => {
-    console.log('Save request:', id);
-    toast.info('Bookmark feature coming soon!');
+    console.log("Save request:", id);
+    toast.info("Bookmark feature coming soon!");
   };
 
   const handleBackToList = () => {
-    setMode('view');
+    setMode("view");
     setSelectedRequest(null);
     setEditingRequest(null);
   };
 
   const handleContactClient = () => {
-    console.log('Contact client');
-    toast.info('Contact feature coming soon!');
+    console.log("Contact client");
+    toast.info("Contact feature coming soon!");
   };
 
   const handleCreateSubmit = async (data: CreateRequestData) => {
     try {
       await createRequestMutation.mutateAsync(data);
-      toast.success('Request created successfully!');
-      setMode('view');
+      toast.success("Request created successfully!");
+      setMode("view");
     } catch (error) {
-      toast.error('Failed to create request');
-      console.error('Create request error:', error);
+      toast.error("Failed to create request");
+      console.error("Create request error:", error);
     }
   };
 
@@ -115,40 +115,40 @@ export function RequestHubView() {
         budget: data.budget,
         deadline: data.deadline instanceof Date ? data.deadline.toISOString() : data.deadline,
         // Convert local enum to GraphQL enum if status exists
-        ...(data.status && { 
-          status: data.status === 'OPEN' ? GqlRequestStatus.Open :
-                  data.status === 'CLOSED' ? GqlRequestStatus.Closed :
-                  data.status === 'BLOCKED' ? GqlRequestStatus.Blocked :
-                  data.status === 'DELETED' ? GqlRequestStatus.Deleted :
-                  undefined
+        ...(data.status && {
+          status:
+            data.status === "OPEN"
+              ? GqlRequestStatus.Open
+              : data.status === "CLOSED"
+                ? GqlRequestStatus.Closed
+                : data.status === "BLOCKED"
+                  ? GqlRequestStatus.Blocked
+                  : data.status === "DELETED"
+                    ? GqlRequestStatus.Deleted
+                    : undefined,
         }),
       };
-      
+
       await updateRequestMutation.mutateAsync(updateInput);
-      toast.success('Request updated successfully!');
-      setMode('view');
+      toast.success("Request updated successfully!");
+      setMode("view");
       setEditingRequest(null);
     } catch (error) {
-      toast.error('Failed to update request');
-      console.error('Update request error:', error);
+      toast.error("Failed to update request");
+      console.error("Update request error:", error);
     }
   };
 
   const handleCancel = () => {
-    setMode('view');
+    setMode("view");
     setEditingRequest(null);
   };
 
   const renderContent = () => {
     switch (mode) {
-      case 'create':
-        return (
-          <CreateRequestSection 
-            onSubmit={handleCreateSubmit}
-            onCancel={handleCancel}
-          />
-        );
-      case 'edit':
+      case "create":
+        return <CreateRequestSection onSubmit={handleCreateSubmit} onCancel={handleCancel} />;
+      case "edit":
         return editingRequest ? (
           <EditRequestSection
             initialData={{
@@ -157,13 +157,13 @@ export function RequestHubView() {
               summary: editingRequest.summary,
               detailDescription: editingRequest.detailDescription,
               budget: editingRequest.budget,
-              deadline: editingRequest.deadline
+              deadline: editingRequest.deadline,
             }}
             onSubmit={handleUpdateSubmit}
             onCancel={handleCancel}
           />
         ) : null;
-      case 'detail':
+      case "detail":
         return selectedRequest ? (
           <RequestDetailView
             request={selectedRequest}
@@ -172,7 +172,7 @@ export function RequestHubView() {
             onContactClient={handleContactClient}
           />
         ) : null;
-      case 'view':
+      case "view":
       default:
         return (
           <AuthDialogProvider>

@@ -1,26 +1,26 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import PackageServiceLayout from '../layout/package-service-layout';
-import ServicePackageListSection from '../section/service-package-list-section';
-import CreatePackageServiceSection from '../section/create-package-service-section';
-import UpdatePackageServiceSection from '../section/update-package-service-section';
-import ServicePackageDetailSection from '../section/service-package-detail-section';
-import DeleteConfirmModal from '../component/delete-package-service/delete-confirm-modal';
-import type { 
-  TypedDocumentString, 
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import PackageServiceLayout from "../layout/package-service-layout";
+import ServicePackageListSection from "../section/service-package-list-section";
+import CreatePackageServiceSection from "../section/create-package-service-section";
+import UpdatePackageServiceSection from "../section/update-package-service-section";
+import ServicePackageDetailSection from "../section/service-package-detail-section";
+import DeleteConfirmModal from "../component/delete-package-service/delete-confirm-modal";
+import type {
+  TypedDocumentString,
   CreateArtistPackageRequestInput,
   UpdateStatusArtistPackageRequestInput,
   UpdateArtistPackageRequestInput,
-  ArtistPackageFilterInput, 
+  ArtistPackageFilterInput,
   PaginatedDataOfPendingArtistPackageResponseFilterInput,
   PendingArtistPackageResponse,
   ArtistPackagesCollectionSegment,
-  ArtistFilterInput
-} from '@/gql/graphql';
+  ArtistFilterInput,
+} from "@/gql/graphql";
 
-type ViewMode = 'list' | 'create' | 'edit' | 'detail';
+type ViewMode = "list" | "create" | "edit" | "detail";
 
 // Query for listing artist packages
 export const ServicePackageServiceViewQuery = `
@@ -114,14 +114,19 @@ export const PendingArtistPackagesQuery = `
     }
   }
 ` as unknown as TypedDocumentString<
-  { 
+  {
     pendingArtistPackages?: {
       totalCount: number;
       items: Array<PendingArtistPackageResponse>;
-    } | null,
-    artists?: { items: Array<{ stageName: string; userId: string; id: string }> } | null
+    } | null;
+    artists?: { items: Array<{ stageName: string; userId: string; id: string }> } | null;
   },
-  { pageNumber: number; pageSize: number; where?: PaginatedDataOfPendingArtistPackageResponseFilterInput; artistWhere?: ArtistFilterInput }
+  {
+    pageNumber: number;
+    pageSize: number;
+    where?: PaginatedDataOfPendingArtistPackageResponseFilterInput;
+    artistWhere?: ArtistFilterInput;
+  }
 >;
 
 // Mutation for creating artist package
@@ -149,22 +154,16 @@ export const approveArtistPackageMutation = `
   mutation ApproveArtistPackage($id: String!) {
     approveArtistPackage(id: $id)
   }
-` as unknown as TypedDocumentString<
-  { approveArtistPackage?: boolean | null },
-  { id: string }
->;
+` as unknown as TypedDocumentString<{ approveArtistPackage?: boolean | null }, { id: string }>;
 
 // Mutation for rejecting artist package
 export const rejectArtistPackageMutation = `
   mutation RejectArtistPackage($id: String!) {
     rejectArtistPackage(id: $id)
   }
-` as unknown as TypedDocumentString<
-  { rejectArtistPackage?: boolean | null },
-  { id: string }
->;
+` as unknown as TypedDocumentString<{ rejectArtistPackage?: boolean | null }, { id: string }>;
 
-export const  updateArtistPackageMutation = `
+export const updateArtistPackageMutation = `
   mutation UpdateArtistPackage($updateRequest: UpdateArtistPackageRequestInput!) {
     updateArtistPackage(updateRequest: $updateRequest)
   }
@@ -177,24 +176,21 @@ export const deleteArtistPackageMutation = `
   mutation DeleteArtistPackage($artistPackageId: String!) {
     deleteArtistPackage(artistPackageId: $artistPackageId)
   }
-` as unknown as TypedDocumentString<
-  { deleteArtistPackage?: boolean | null },
-  { artistPackageId: string }
->;
+` as unknown as TypedDocumentString<{ deleteArtistPackage?: boolean | null }, { artistPackageId: string }>;
 
 const ServicePackageServiceView = () => {
   const router = useRouter();
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const [selectedPackageId, setSelectedPackageId] = useState<string>('');
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const handleCreatePackage = () => {
-    setViewMode('create');
+    setViewMode("create");
   };
 
   const handleEditPackage = (packageId: string) => {
     setSelectedPackageId(packageId);
-    setViewMode('edit');
+    setViewMode("edit");
   };
 
   const handleViewDetail = (packageId: string) => {
@@ -209,8 +205,8 @@ const ServicePackageServiceView = () => {
   const handleConfirmDelete = () => {
     // Delete logic will be handled in section
     setDeleteModalOpen(false);
-    if (viewMode !== 'list') {
-      setViewMode('list');
+    if (viewMode !== "list") {
+      setViewMode("list");
     }
   };
 
@@ -219,25 +215,20 @@ const ServicePackageServiceView = () => {
   };
 
   const handleBackToList = () => {
-    setViewMode('list');
-    setSelectedPackageId('');
+    setViewMode("list");
+    setSelectedPackageId("");
   };
 
   const handleSuccess = () => {
-    setViewMode('list');
-    setSelectedPackageId('');
+    setViewMode("list");
+    setSelectedPackageId("");
   };
 
   const renderCurrentView = () => {
     switch (viewMode) {
-      case 'create':
-        return (
-          <CreatePackageServiceSection
-            onCancel={handleBackToList}
-            onSuccess={handleSuccess}
-          />
-        );
-      case 'edit':
+      case "create":
+        return <CreatePackageServiceSection onCancel={handleBackToList} onSuccess={handleSuccess} />;
+      case "edit":
         return (
           <UpdatePackageServiceSection
             packageId={selectedPackageId}
@@ -246,7 +237,7 @@ const ServicePackageServiceView = () => {
             onDelete={handleDeletePackage}
           />
         );
-      case 'detail':
+      case "detail":
         return (
           <ServicePackageDetailSection
             packageId={selectedPackageId}
@@ -255,7 +246,7 @@ const ServicePackageServiceView = () => {
             onDelete={handleDeletePackage}
           />
         );
-      case 'list':
+      case "list":
       default:
         return (
           <ServicePackageListSection
@@ -270,7 +261,7 @@ const ServicePackageServiceView = () => {
   return (
     <PackageServiceLayout>
       {renderCurrentView()}
-      
+
       <DeleteConfirmModal
         isOpen={deleteModalOpen}
         onConfirm={handleConfirmDelete}

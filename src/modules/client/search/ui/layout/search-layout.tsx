@@ -1,6 +1,6 @@
-import React from 'react';
-import { SearchType, SEARCH_TABS } from '@/types/search';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { SearchType, SEARCH_TABS } from "@/types/search";
+import { cn } from "@/lib/utils";
 
 interface SearchLayoutProps {
   children: React.ReactNode;
@@ -26,10 +26,8 @@ export const SearchLayout: React.FC<SearchLayoutProps> = ({
               key={tab.id}
               onClick={() => onTypeChange(tab.id)}
               className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium transition-colors",
-                currentType === tab.id
-                  ? "bg-white text-black"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                currentType === tab.id ? "bg-white text-black" : "bg-gray-800 text-gray-300 hover:bg-gray-700",
               )}
             >
               {tab.label}
@@ -39,9 +37,7 @@ export const SearchLayout: React.FC<SearchLayoutProps> = ({
       </div>
 
       {/* Search Content */}
-      <div className="flex-1">
-        {children}
-      </div>
+      <div className="flex-1">{children}</div>
     </div>
   );
 };

@@ -30,9 +30,7 @@ interface RequestHubCommentSectionProps {
   requestId: string;
 }
 
-const RequestHubCommentSection = ({
-  requestId,
-}: RequestHubCommentSectionProps) => {
+const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) => {
   const queryClient = useQueryClient();
   const [comment, setComment] = useState("");
   const { user, isAuthenticated } = useAuthStore();
@@ -86,49 +84,48 @@ const RequestHubCommentSection = ({
 
   const getTotalCommentCount = () => {
     if (!commentsData?.threadedComments) return 0;
-    
+
     const threads = commentsData.threadedComments.threads || [];
     return threads.reduce((total: number, thread: { totalReplies?: number }) => {
       // Count root comment + all replies
       return total + 1 + (thread.totalReplies || 0);
     }, 0);
   };
-  
+
   const totalComments = getTotalCommentCount();
 
   return (
-    <div className="w-full space-y-6 p-4 rounded-lg border border-gray-700/50">
+    <div className="w-full space-y-6 rounded-lg border border-gray-700/50 p-4">
       {/* Comments Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <MessageSquare className="w-5 h-5 text-purple-400" />
-          <span className="text-white text-lg font-semibold">
-            {totalComments > 0 && `(${totalComments})`} Comments
-          </span>
+          <MessageSquare className="h-5 w-5 text-purple-400" />
+          <span className="text-lg font-semibold text-white">{totalComments > 0 && `(${totalComments})`} Comments</span>
         </div>
 
         <Select defaultValue="sort-newest">
-          <SelectTrigger className="w-[140px] bg-gray-800 border-gray-600 text-gray-200">
+          <SelectTrigger className="w-[140px] border-gray-600 bg-gray-800 text-gray-200">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent side="bottom" align="end" className="bg-gray-800 border-gray-600">
+          <SelectContent side="bottom" align="end" className="border-gray-600 bg-gray-800">
             <SelectGroup>
               <SelectLabel className="text-gray-400">Sort Options</SelectLabel>
-              <SelectItem value="sort-newest" className="text-gray-200 focus:bg-gray-700">Newest First</SelectItem>
-              <SelectItem value="sort-most-liked" className="text-gray-200 focus:bg-gray-700">Most Liked</SelectItem>
+              <SelectItem value="sort-newest" className="text-gray-200 focus:bg-gray-700">
+                Newest First
+              </SelectItem>
+              <SelectItem value="sort-most-liked" className="text-gray-200 focus:bg-gray-700">
+                Most Liked
+              </SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
 
       {/* Comment Input */}
-      <div className="flex items-start gap-3 p-4 rounded-lg border border-gray-700/30">
-        <Avatar className="w-10 h-10 border-2 border-purple-500/30">
-          <AvatarImage
-            src={undefined}
-            alt={currentUserData?.fullName || "User"}
-          />
-          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-sm font-medium">
+      <div className="flex items-start gap-3 rounded-lg border border-gray-700/30 p-4">
+        <Avatar className="h-10 w-10 border-2 border-purple-500/30">
+          <AvatarImage src={undefined} alt={currentUserData?.fullName || "User"} />
+          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-sm font-medium text-white">
             {currentUserData?.fullName?.slice(0, 2).toUpperCase() || "U"}
           </AvatarFallback>
         </Avatar>
@@ -182,18 +179,15 @@ const RequestHubCommentSection = ({
         {commentsData?.threadedComments?.threads &&
         commentsData.threadedComments.threads.length > 0 ? (
           commentsData.threadedComments.threads.map((thread, index) => (
-            <div key={`${thread.rootComment.id}-${index}`} className="rounded-lg p-4 border border-gray-700/30">
-              <RequestHubCommentUser
-                thread={thread}
-                requestId={requestId}
-              />
+            <div key={`${thread.rootComment.id}-${index}`} className="rounded-lg border border-gray-700/30 p-4">
+              <RequestHubCommentUser thread={thread} requestId={requestId} />
             </div>
           ))
         ) : (
-          <div className="text-center py-12">
-            <MessageSquare className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-            <p className="text-gray-400 text-lg font-medium mb-2">No comments yet</p>
-            <p className="text-gray-500 text-sm">Be the first to share your thoughts on this request!</p>
+          <div className="py-12 text-center">
+            <MessageSquare className="mx-auto mb-4 h-12 w-12 text-gray-500" />
+            <p className="mb-2 text-lg font-medium text-gray-400">No comments yet</p>
+            <p className="text-sm text-gray-500">Be the first to share your thoughts on this request!</p>
           </div>
         )}
       </div>

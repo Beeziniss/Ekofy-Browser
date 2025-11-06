@@ -16,11 +16,7 @@ interface TrackDetailSidebarProps {
   isLoadingUser?: boolean;
 }
 
-export function TrackDetailSidebar({ 
-  track, 
-  createdByUser,
-  isLoadingUser
-}: TrackDetailSidebarProps) {
+export function TrackDetailSidebar({ track, createdByUser, isLoadingUser }: TrackDetailSidebarProps) {
   return (
     <div className="space-y-4">
       {/* Track Details */}
@@ -35,21 +31,15 @@ export function TrackDetailSidebar({
           </div>
           <div className="text-sm">
             <span className="font-medium">Explicit: </span>
-            <span>
-              {track.track.isExplicit ? "Yes" : "No"}
-            </span>
+            <span>{track.track.isExplicit ? "Yes" : "No"}</span>
           </div>
           <div className="text-sm">
             <span className="font-medium">Categories: </span>
-            <span className="text-muted-foreground">
-              {track.track.categoryIds?.length || 0} categories
-            </span>
+            <span className="text-muted-foreground">{track.track.categoryIds?.length || 0} categories</span>
           </div>
           <div className="text-sm">
             <span className="font-medium">Main Artists: </span>
-            <span className="text-muted-foreground">
-              {track.track.mainArtistIds?.length || 0} artists
-            </span>
+            <span className="text-muted-foreground">{track.track.mainArtistIds?.length || 0} artists</span>
           </div>
           <div className="text-sm">
             <span className="font-medium">Featured Artists: </span>
@@ -64,9 +54,7 @@ export function TrackDetailSidebar({
       {track.track.releaseInfo && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              Release Information
-            </CardTitle>
+            <CardTitle className="flex items-center gap-2 text-lg">Release Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="text-sm">
@@ -104,16 +92,12 @@ export function TrackDetailSidebar({
       {/* Request Info */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            Request Information
-          </CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg">Request Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="text-sm">
             <span className="font-medium">Requested: </span>
-            <span className="text-muted-foreground">
-              {new Date(track.requestedAt).toLocaleString()}
-            </span>
+            <span className="text-muted-foreground">{new Date(track.requestedAt).toLocaleString()}</span>
           </div>
           <div className="text-sm">
             <span className="font-medium">Created by: </span>
@@ -122,7 +106,7 @@ export function TrackDetailSidebar({
             ) : createdByUser ? (
               <div className="text-muted-foreground">
                 <div>{createdByUser.fullName}</div>
-                <Badge variant="outline" className="text-xs mt-1">
+                <Badge variant="outline" className="mt-1 text-xs">
                   {createdByUser.role}
                 </Badge>
               </div>

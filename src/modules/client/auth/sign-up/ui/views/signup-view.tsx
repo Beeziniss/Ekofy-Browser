@@ -1,14 +1,9 @@
 "use client";
 
-import React from 'react';
-import SignUpLayout from '../layouts/signup-layout';
-import { 
-  SignUpImageSection, 
-  SignUpFormSection, 
-  OTPVerificationSection, 
-  ProfileCompletionSection 
-} from '../sections';
-import { useSignUpStore } from '@/store/stores/listener-signup-store';
+import React from "react";
+import SignUpLayout from "../layouts/signup-layout";
+import { SignUpImageSection, SignUpFormSection, OTPVerificationSection, ProfileCompletionSection } from "../sections";
+import { useSignUpStore } from "@/store/stores/listener-signup-store";
 // import { ClientSignUpStep } from '@/types/client-auth';
 
 const SignUpView = () => {
@@ -18,7 +13,7 @@ const SignUpView = () => {
   const normalizeDateFromStore = (dateValue: Date | string | undefined): Date | undefined => {
     if (!dateValue) return undefined;
     if (dateValue instanceof Date) return dateValue;
-    if (typeof dateValue === 'string') {
+    if (typeof dateValue === "string") {
       const date = new Date(dateValue);
       return isNaN(date.getTime()) ? undefined : date;
     }
@@ -27,49 +22,49 @@ const SignUpView = () => {
 
   const renderCurrentStep = () => {
     switch (currentStep) {
-      case 'form':
+      case "form":
         return (
           <SignUpLayout>
-            <SignUpFormSection 
+            <SignUpFormSection
               onNext={() => {}}
               initialData={{
-                email: formData.email || ''
+                email: formData.email || "",
               }}
             />
             <SignUpImageSection />
           </SignUpLayout>
         );
-      case 'profile':
+      case "profile":
         return (
-          <ProfileCompletionSection 
+          <ProfileCompletionSection
             onNext={() => {}}
             onBack={() => {}}
             initialData={{
-              displayName: formData.displayName || '',
-              fullName: formData.fullName || '',
+              displayName: formData.displayName || "",
+              fullName: formData.fullName || "",
               dateOfBirth: normalizeDateFromStore(formData.birthDate),
-              gender: (formData.gender as 'Male' | 'Female' | 'Other') || 'Male',
-              avatar: null
+              gender: (formData.gender as "Male" | "Female" | "Other") || "Male",
+              avatar: null,
             }}
           />
         );
-      case 'otp':
+      case "otp":
         return (
-          <OTPVerificationSection 
+          <OTPVerificationSection
             onNext={() => {}}
             onBack={() => {}}
             initialData={{
-              otp: formData.otp || ''
+              otp: formData.otp || "",
             }}
           />
         );
       default:
         return (
           <SignUpLayout>
-            <SignUpFormSection 
+            <SignUpFormSection
               onNext={() => {}}
               initialData={{
-                email: formData.email || ''
+                email: formData.email || "",
               }}
             />
             <SignUpImageSection />

@@ -5,7 +5,7 @@ import { RequestCard } from "../component/request-card";
 import { RequestListSkeleton } from "../component/request-card-skeleton";
 import { RequestsQuery } from "@/gql/graphql";
 
-type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
+type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
 interface ViewRequestSectionProps {
   requests: RequestItem[];
@@ -16,13 +16,13 @@ interface ViewRequestSectionProps {
   onSave?: (id: string) => void;
 }
 
-export function ViewRequestSection({ 
-  requests, 
+export function ViewRequestSection({
+  requests,
   isLoading = false,
   onViewDetails,
   onApply,
   onEdit,
-  onSave
+  onSave,
 }: ViewRequestSectionProps) {
   const { user } = useAuthStore();
 
@@ -32,8 +32,8 @@ export function ViewRequestSection({
 
   if (requests.length === 0) {
     return (
-      <div className="text-center py-12">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No requests found</h3>
+      <div className="py-12 text-center">
+        <h3 className="mb-2 text-lg font-medium text-gray-900">No requests found</h3>
         <p className="text-gray-500">Try adjusting your search criteria or check back later for new requests.</p>
       </div>
     );
@@ -43,7 +43,7 @@ export function ViewRequestSection({
     <div className="space-y-6">
       {requests.map((request) => {
         const isOwner = user?.userId === request.requestUserId;
-        
+
         return (
           <RequestCard
             key={request.id}

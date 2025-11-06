@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import {
   // Command,
   AlbumIcon,
@@ -53,7 +47,7 @@ const data = {
       name: "Service Packages",
       url: "/artist/studio/service-package",
       icon: LayoutPanelLeftIcon,
-    }
+    },
   ],
 };
 

@@ -34,12 +34,7 @@ export const ArtistQuery = graphql(`
 
 export const ArtistListQuery = graphql(`
   query ArtistList($take: Int, $skip: Int) {
-    artists(
-      where: { isVisible: { eq: true } }
-      take: $take
-      skip: $skip
-      order: { popularity: DESC }
-    ) {
+    artists(where: { isVisible: { eq: true } }, take: $take, skip: $skip, order: { popularity: DESC }) {
       items {
         id
         userId

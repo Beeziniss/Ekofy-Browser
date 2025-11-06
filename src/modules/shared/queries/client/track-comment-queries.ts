@@ -3,13 +3,7 @@ import { graphql } from "@/gql";
 export const TrackCommentsQuery = graphql(`
   query TrackThreadComments($targetId: String!) {
     threadedComments(
-      request: {
-        targetId: $targetId
-        commentType: TRACK
-        page: 1
-        pageSize: 10
-        sortOrder: THREAD_ACTIVITY
-      }
+      request: { targetId: $targetId, commentType: TRACK, page: 1, pageSize: 10, sortOrder: THREAD_ACTIVITY }
     ) {
       threads {
         rootComment {
@@ -95,14 +89,7 @@ export const TrackCommentsQuery = graphql(`
 
 export const TrackCommentRepliesQuery = graphql(`
   query TrackCommentReplies($rootCommentId: String!) {
-    commentReplies(
-      request: {
-        commentId: $rootCommentId
-        page: 1
-        pageSize: 10
-        sortOrder: CHRONOLOGICAL
-      }
-    ) {
+    commentReplies(request: { commentId: $rootCommentId, page: 1, pageSize: 10, sortOrder: CHRONOLOGICAL }) {
       replies {
         id
         content

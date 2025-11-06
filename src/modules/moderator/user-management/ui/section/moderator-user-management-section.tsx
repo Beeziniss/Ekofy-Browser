@@ -3,11 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { 
-  ModeratorUserStatsCards, 
-  ModeratorUserTableWrapper, 
-  ModeratorStatusConfirmModal
-} from "../component";
+import { ModeratorUserStatsCards, ModeratorUserTableWrapper, ModeratorStatusConfirmModal } from "../component";
 import { moderatorUsersQueryOptions } from "@/gql/options/moderator-options";
 import { useDeActiveUser, useReActiveUser } from "@/gql/client-mutation-options/moderator-mutation";
 import { UserStatus } from "@/gql/graphql";
@@ -71,9 +67,9 @@ export function ModeratorUserManagementSection() {
       <div className="space-y-6">
         {/* Stats Cards load independently */}
         <ModeratorUserStatsCards />
-        
+
         {/* Show skeleton for table */}
-        <div className="flex items-center justify-center h-64 bg-gray-800/50 border border-gray-700 rounded-lg">
+        <div className="flex h-64 items-center justify-center rounded-lg border border-gray-700 bg-gray-800/50">
           <div className="text-gray-400">Loading users...</div>
         </div>
       </div>
@@ -85,9 +81,9 @@ export function ModeratorUserManagementSection() {
       <div className="space-y-6">
         {/* Stats Cards still load independently */}
         <ModeratorUserStatsCards />
-        
+
         {/* Show error for table only */}
-        <div className="flex items-center justify-center h-64 bg-gray-800/50 border border-gray-700 rounded-lg">
+        <div className="flex h-64 items-center justify-center rounded-lg border border-gray-700 bg-gray-800/50">
           <div className="text-red-400">Error loading users: {error.message}</div>
         </div>
       </div>
@@ -105,7 +101,6 @@ export function ModeratorUserManagementSection() {
 
       {/* User Table - Only this reloads on search */}
       <div className="relative">
-        
         <ModeratorUserTableWrapper
           data={users}
           totalCount={totalCount}

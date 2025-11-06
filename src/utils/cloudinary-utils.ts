@@ -155,13 +155,8 @@ export const uploadArtistImage = async (
  * @param playlistId - Playlist ID (optional for new playlists)
  * @returns Promise<CloudinaryUploadResponse>
  */
-export const uploadPlaylistCoverImage = async (
-  file: File,
-  playlistId?: string,
-): Promise<CloudinaryUploadResponse> => {
-  const folder = playlistId
-    ? `playlist-covers/${playlistId}`
-    : "playlist-covers/temp";
+export const uploadPlaylistCoverImage = async (file: File, playlistId?: string): Promise<CloudinaryUploadResponse> => {
+  const folder = playlistId ? `playlist-covers/${playlistId}` : "playlist-covers/temp";
   const tags = ["playlist", "cover", "music"];
 
   return uploadImageToCloudinary(file, {
@@ -177,10 +172,7 @@ export const uploadPlaylistCoverImage = async (
  * @param transformations - Transformation string
  * @returns Transformed image URL
  */
-export const getCloudinaryUrl = (
-  publicId: string,
-  transformations?: string,
-): string => {
+export const getCloudinaryUrl = (publicId: string, transformations?: string): string => {
   const baseUrl = `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/image/upload`;
 
   if (transformations) {
@@ -196,10 +188,7 @@ export const getCloudinaryUrl = (
  * @param maxSize - Maximum file size in MB (default: 10MB)
  * @returns boolean
  */
-export const validateImageFile = (
-  file: File,
-  maxSize: number = 10,
-): boolean => {
+export const validateImageFile = (file: File, maxSize: number = 10): boolean => {
   // Check file type
   if (!file.type.startsWith("image/")) {
     toast.error("File phải là hình ảnh");
@@ -214,12 +203,7 @@ export const validateImageFile = (
   }
 
   // Check supported formats
-  const supportedFormats = [
-    "image/jpeg",
-    "image/png",
-    "image/jpg",
-    "image/webp",
-  ];
+  const supportedFormats = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
   if (!supportedFormats.includes(file.type)) {
     toast.error("Chỉ hỗ trợ định dạng: JPG, PNG, WEBP");
     return false;

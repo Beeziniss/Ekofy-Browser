@@ -8,9 +8,7 @@ export const useIntersectionObserver = (options?: IntersectionObserverInit) => {
   const optionsString = JSON.stringify(options);
 
   useEffect(() => {
-    const parsedOptions = JSON.parse(optionsString) as
-      | IntersectionObserverInit
-      | undefined;
+    const parsedOptions = JSON.parse(optionsString) as IntersectionObserverInit | undefined;
 
     const observer = new IntersectionObserver(([entry]) => {
       setIsIntersecting(entry.isIntersecting);

@@ -8,24 +8,20 @@ import { UserStatus } from "@/gql/graphql";
 import { ModeratorUserTableData } from "@/types";
 
 export function ModeratorUserStatsCards() {
-  const {
-    data: analyticsData,
-    isLoading,
-    error,
-  } = useQuery(moderatorUserAnalyticsOptions());
+  const { data: analyticsData, isLoading, error } = useQuery(moderatorUserAnalyticsOptions());
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="bg-gray-800/50 border-gray-700">
+          <Card key={i} className="border-gray-700 bg-gray-800/50">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="h-4 bg-gray-600 rounded animate-pulse mb-2"></div>
-                  <div className="h-8 bg-gray-600 rounded animate-pulse"></div>
+                  <div className="mb-2 h-4 animate-pulse rounded bg-gray-600"></div>
+                  <div className="h-8 animate-pulse rounded bg-gray-600"></div>
                 </div>
-                <div className="p-3 bg-gray-600 rounded-full animate-pulse">
+                <div className="animate-pulse rounded-full bg-gray-600 p-3">
                   <div className="h-6 w-6"></div>
                 </div>
               </div>
@@ -38,10 +34,10 @@ export function ModeratorUserStatsCards() {
 
   if (error) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gray-800/50 border-gray-700 col-span-full">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="col-span-full border-gray-700 bg-gray-800/50">
           <CardContent className="p-6">
-            <div className="text-red-400 text-center">Error loading analytics: {error.message}</div>
+            <div className="text-center text-red-400">Error loading analytics: {error.message}</div>
           </CardContent>
         </Card>
       </div>
@@ -64,18 +60,16 @@ export function ModeratorUserStatsCards() {
     }).length,
   };
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       {/* Total Users */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="border-gray-700 bg-gray-800/50">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-400 font-medium">Total User</p>
-              <p className="text-3xl font-bold text-blue-400">
-                {statsData.totalUsers.toLocaleString()}
-              </p>
+              <p className="text-sm font-medium text-gray-400">Total User</p>
+              <p className="text-3xl font-bold text-blue-400">{statsData.totalUsers.toLocaleString()}</p>
             </div>
-            <div className="p-3 bg-blue-500/20 rounded-full">
+            <div className="rounded-full bg-blue-500/20 p-3">
               <Users className="h-6 w-6 text-blue-400" />
             </div>
           </div>
@@ -83,16 +77,14 @@ export function ModeratorUserStatsCards() {
       </Card>
 
       {/* Active Users */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="border-gray-700 bg-gray-800/50">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-400 font-medium">Active User</p>
-              <p className="text-3xl font-bold text-green-400">
-                {statsData.activeUsers.toLocaleString()}
-              </p>
+              <p className="text-sm font-medium text-gray-400">Active User</p>
+              <p className="text-3xl font-bold text-green-400">{statsData.activeUsers.toLocaleString()}</p>
             </div>
-            <div className="p-3 bg-green-500/20 rounded-full">
+            <div className="rounded-full bg-green-500/20 p-3">
               <UserCheck className="h-6 w-6 text-green-400" />
             </div>
           </div>
@@ -100,16 +92,14 @@ export function ModeratorUserStatsCards() {
       </Card>
 
       {/* Inactive Users */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="border-gray-700 bg-gray-800/50">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-400 font-medium">Inactive User</p>
-              <p className="text-3xl font-bold text-red-400">
-                {statsData.inactiveUsers.toLocaleString()}
-              </p>
+              <p className="text-sm font-medium text-gray-400">Inactive User</p>
+              <p className="text-3xl font-bold text-red-400">{statsData.inactiveUsers.toLocaleString()}</p>
             </div>
-            <div className="p-3 bg-red-500/20 rounded-full">
+            <div className="rounded-full bg-red-500/20 p-3">
               <UserX className="h-6 w-6 text-red-400" />
             </div>
           </div>
@@ -117,16 +107,14 @@ export function ModeratorUserStatsCards() {
       </Card>
 
       {/* New Users */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="border-gray-700 bg-gray-800/50">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-400 font-medium">New User</p>
-              <p className="text-3xl font-bold text-purple-400">
-                {statsData.newUsers.toLocaleString()}
-              </p>
+              <p className="text-sm font-medium text-gray-400">New User</p>
+              <p className="text-3xl font-bold text-purple-400">{statsData.newUsers.toLocaleString()}</p>
             </div>
-            <div className="p-3 bg-purple-500/20 rounded-full">
+            <div className="rounded-full bg-purple-500/20 p-3">
               <UserPlus className="h-6 w-6 text-purple-400" />
             </div>
           </div>

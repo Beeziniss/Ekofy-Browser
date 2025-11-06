@@ -160,16 +160,12 @@ export const useRouteSearch = () => {
       if (bPath === searchTerm) return 1;
 
       // Label starts with search term
-      if (aLabel.startsWith(searchTerm) && !bLabel.startsWith(searchTerm))
-        return -1;
-      if (bLabel.startsWith(searchTerm) && !aLabel.startsWith(searchTerm))
-        return 1;
+      if (aLabel.startsWith(searchTerm) && !bLabel.startsWith(searchTerm)) return -1;
+      if (bLabel.startsWith(searchTerm) && !aLabel.startsWith(searchTerm)) return 1;
 
       // Path starts with search term
-      if (aPath.startsWith(searchTerm) && !bPath.startsWith(searchTerm))
-        return -1;
-      if (bPath.startsWith(searchTerm) && !aPath.startsWith(searchTerm))
-        return 1;
+      if (aPath.startsWith(searchTerm) && !bPath.startsWith(searchTerm)) return -1;
+      if (bPath.startsWith(searchTerm) && !aPath.startsWith(searchTerm)) return 1;
 
       return 0;
     });
@@ -184,8 +180,7 @@ export const useRouteSearch = () => {
 
   const handleKeyPress = (event: KeyboardEvent, selectedIndex?: number) => {
     if (event.key === "Enter" && results.length > 0) {
-      const targetResult =
-        selectedIndex !== undefined ? results[selectedIndex] : results[0];
+      const targetResult = selectedIndex !== undefined ? results[selectedIndex] : results[0];
       if (targetResult) {
         navigateToRoute(targetResult.path);
       }

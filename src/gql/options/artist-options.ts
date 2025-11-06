@@ -5,10 +5,7 @@ import {
   ServicePackageDetailQuery,
   PendingArtistPackagesQuery,
 } from "@/modules/artist/service-package/ui/view/service-package-service-view";
-import {
-  ArtistPackageFilterInput,
-  PaginatedDataOfPendingArtistPackageResponseFilterInput,
-} from "@/gql/graphql";
+import { ArtistPackageFilterInput, PaginatedDataOfPendingArtistPackageResponseFilterInput } from "@/gql/graphql";
 import { GetArtistProfileQuery } from "@/modules/artist/profile/ui/views/queries";
 import { CategoriesQuery } from "@/modules/shared/queries/artist/category-queries";
 import { TrackListWithFiltersQuery } from "@/modules/artist/studio/ui/sections/tracks/track-table-section";

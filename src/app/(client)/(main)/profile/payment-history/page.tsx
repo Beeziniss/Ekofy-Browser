@@ -1,18 +1,18 @@
 "use client";
 
-import React, { Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
-import PaymentTransactionsTable from "@/modules/client/profile/ui/components/activity/payment-transactions-table";
+import { useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import PaymentTransactionsTable from "@/modules/client/profile/ui/components/activity/payment-transactions-table";
 
 export default function PaymentHistoryPage() {
   const router = useRouter();
   const { isAuthenticated, user, clearUserData } = useAuthStore();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) {
       router.replace("/login");
       return;
@@ -28,14 +28,14 @@ export default function PaymentHistoryPage() {
 
   return (
     <Suspense fallback={<div className="p-4">Loading payment history…</div>}>
-      <div className="mx-auto w-full max-w-6xl px-4 md:px-6 py-6">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6">
         <div className="mb-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Payment History</h1>
           <Button variant="ghost" asChild>
             <Link href="/profile">&larr; Back to Profile</Link>
           </Button>
         </div>
-        <p className="text-sm text-muted-foreground mb-2">All payments you made on Ekofy.</p>
+        <p className="text-muted-foreground mb-2 text-sm">All payments you made on Ekofy.</p>
         <PaymentTransactionsTable userId={user!.userId} />
       </div>
     </Suspense>

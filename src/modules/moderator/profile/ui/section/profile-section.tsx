@@ -12,11 +12,11 @@ import EditProfileModal from "../component/edit-profile-modal";
 const ProfileSection = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { user, isAuthenticated } = useAuthStore();
-  
+
   // Fetch user profile data
   const { data: userProfile } = useQuery({
     ...moderatorProfileOptions(user?.userId || ""),
-    enabled: isAuthenticated && !!user?.userId
+    enabled: isAuthenticated && !!user?.userId,
   });
 
   const handleEditClick = () => {
@@ -43,16 +43,13 @@ const ProfileSection = () => {
 
   return (
     <div className="max-w-8xl mx-auto px-4">
-      <div className="bg-[#121212] rounded-xl border border-gradient-input p-8 space-y-8">
-        <ProfileHeader 
-          userProfile={userProfile}
-          onEditClick={handleEditClick} 
-        />
-        
+      <div className="border-gradient-input space-y-8 rounded-xl border bg-[#121212] p-8">
+        <ProfileHeader userProfile={userProfile} onEditClick={handleEditClick} />
+
         <div className="border-t border-gray-700 pt-6">
           <ProfileInfoSection userProfile={userProfile} />
         </div>
-        
+
         <div className="border-t border-gray-700 pt-6">
           <ChangePasswordSection />
         </div>

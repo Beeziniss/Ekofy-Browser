@@ -1,17 +1,6 @@
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { TrackUploadArtist } from "../../types";
@@ -38,16 +27,8 @@ const TrackUserCombobox = ({
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="h-8 w-full justify-between"
-          >
-            {value
-              ? users?.find((user) => user.id === value)?.stageName ||
-                "Unknown User"
-              : placeholder}
+          <Button variant="outline" role="combobox" aria-expanded={open} className="h-8 w-full justify-between">
+            {value ? users?.find((user) => user.id === value)?.stageName || "Unknown User" : placeholder}
             <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -67,12 +48,7 @@ const TrackUserCombobox = ({
                     }}
                   >
                     {user.stageName}
-                    <CheckIcon
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        value === user.id ? "opacity-100" : "opacity-0",
-                      )}
-                    />
+                    <CheckIcon className={cn("ml-auto h-4 w-4", value === user.id ? "opacity-100" : "opacity-0")} />
                   </CommandItem>
                 ))}
               </CommandGroup>
@@ -86,16 +62,8 @@ const TrackUserCombobox = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="h-8 w-full justify-between"
-        >
-          {value
-            ? users?.find((user) => user.userId === value)?.stageName ||
-              "Unknown User"
-            : placeholder}
+        <Button variant="outline" role="combobox" aria-expanded={open} className="h-8 w-full justify-between">
+          {value ? users?.find((user) => user.userId === value)?.stageName || "Unknown User" : placeholder}
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -115,12 +83,7 @@ const TrackUserCombobox = ({
                   }}
                 >
                   {user.stageName}
-                  <CheckIcon
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      value === user.userId ? "opacity-100" : "opacity-0",
-                    )}
-                  />
+                  <CheckIcon className={cn("ml-auto h-4 w-4", value === user.userId ? "opacity-100" : "opacity-0")} />
                 </CommandItem>
               ))}
             </CommandGroup>
