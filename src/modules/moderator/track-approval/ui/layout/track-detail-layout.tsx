@@ -9,11 +9,9 @@ interface TrackDetailLayoutProps {
 
 export function TrackDetailLayout({ children }: TrackDetailLayoutProps) {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <main className="flex-1">
-        {children}
-      </main>
-      
+    <div className="bg-background flex min-h-screen flex-col">
+      <main className="flex-1">{children}</main>
+
       {/* Audio Controls Footer - sticky at bottom */}
       <ModeratorGlobalAudioControls />
     </div>

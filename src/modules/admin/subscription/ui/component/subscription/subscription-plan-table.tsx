@@ -1,11 +1,4 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,7 +42,7 @@ export function SubscriptionPlanTable({
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center justify-center h-32">
+          <div className="flex h-32 items-center justify-center">
             <div className="text-muted-foreground">Loading subscription plans...</div>
           </div>
         </CardContent>
@@ -61,7 +54,7 @@ export function SubscriptionPlanTable({
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center justify-center h-32">
+          <div className="flex h-32 items-center justify-center">
             <div className="text-muted-foreground">No subscription plans found</div>
           </div>
         </CardContent>
@@ -93,9 +86,9 @@ export function SubscriptionPlanTable({
                   <div>
                     <div className="font-semibold">
                       {subscriptionId ? (
-                        <Link 
+                        <Link
                           href={`/admin/subscription/${subscriptionId}/subscription-plan/${plan.id}`}
-                          className="hover:underline text-blue-600 hover:text-blue-800"
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
                         >
                           {plan.stripeProductName}
                         </Link>
@@ -103,9 +96,7 @@ export function SubscriptionPlanTable({
                         plan.stripeProductName
                       )}
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      Type: {plan.stripeProductType}
-                    </div>
+                    <div className="text-muted-foreground text-sm">Type: {plan.stripeProductType}</div>
                   </div>
                 </TableCell>
                 {showSubscriptionInfo && (
@@ -113,19 +104,15 @@ export function SubscriptionPlanTable({
                     {plan.subscription && plan.subscription.length > 0 && (
                       <div>
                         <div className="font-medium">{plan.subscription[0].name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {plan.subscription[0].tier}
-                        </div>
+                        <div className="text-muted-foreground text-sm">{plan.subscription[0].tier}</div>
                       </div>
                     )}
                   </TableCell>
                 )}
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <code className="text-xs bg-muted px-2 py-1 rounded">
-                      {plan.stripeProductId}
-                    </code>
-                    <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                    <code className="bg-muted rounded px-2 py-1 text-xs">{plan.stripeProductId}</code>
+                    <ExternalLink className="text-muted-foreground h-3 w-3" />
                   </div>
                 </TableCell>
                 <TableCell>
@@ -179,7 +166,7 @@ export function SubscriptionPlanTable({
                         </DropdownMenuItem>
                       )}
                       {onDelete && (
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => onDelete(plan)}
                           className="text-destructive focus:text-destructive"
                         >

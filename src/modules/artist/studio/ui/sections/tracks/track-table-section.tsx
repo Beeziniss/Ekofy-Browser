@@ -9,12 +9,7 @@ import { graphql } from "@/gql";
 import { TrackFilterInput, TrackSortInput, SortEnumType } from "@/gql/graphql";
 
 export const TrackListWithFiltersQuery = graphql(`
-  query TracksWithFilters(
-    $skip: Int!
-    $take: Int!
-    $where: TrackFilterInput
-    $order: [TrackSortInput!]
-  ) {
+  query TracksWithFilters($skip: Int!, $take: Int!, $where: TrackFilterInput, $order: [TrackSortInput!]) {
     tracks(skip: $skip, take: $take, where: $where, order: $order) {
       totalCount
       items {
@@ -67,36 +62,25 @@ const TrackTableSection = () => {
       case "releaseDate":
         order.push({
           releaseInfo: {
-            releaseDate:
-              sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
+            releaseDate: sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
           },
         });
         break;
       case "streamCount":
         order.push({
-          streamCount:
-            sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
+          streamCount: sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
         });
         break;
       case "favoriteCount":
         order.push({
-          favoriteCount:
-            sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
+          favoriteCount: sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
         });
         break;
     }
   }
 
   const { data } = useSuspenseQuery({
-    queryKey: [
-      "tracks",
-      skip,
-      pageSize,
-      searchQuery,
-      privacyFilter,
-      sortBy,
-      sortOrder,
-    ],
+    queryKey: ["tracks", skip, pageSize, searchQuery, privacyFilter, sortBy, sortOrder],
     queryFn: () =>
       execute(TrackListWithFiltersQuery, {
         skip,

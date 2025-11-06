@@ -1,8 +1,4 @@
-import {
-  artistDetailOptions,
-  followerOptions,
-  followingOptions,
-} from "@/gql/options/client-options";
+import { artistDetailOptions, followerOptions, followingOptions } from "@/gql/options/client-options";
 import ArtistDetailView from "@/modules/client/artist/ui/views/artist-detail-view";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";

@@ -10,17 +10,8 @@ import { toast } from "sonner";
 import { ClientOTPVerificationSectionProps } from "@/types/listener-auth";
 import { EkofyLogo } from "@/assets/icons";
 
-const OTPVerificationSection = ({
-  onNext,
-  onBack,
-  initialData,
-}: ClientOTPVerificationSectionProps) => {
-  const {
-    completeOTPVerification,
-    goToPreviousStepFromOTP,
-    formData,
-    clearOTPData,
-  } = useSignUpStore();
+const OTPVerificationSection = ({ onNext, onBack, initialData }: ClientOTPVerificationSectionProps) => {
+  const { completeOTPVerification, goToPreviousStepFromOTP, formData, clearOTPData } = useSignUpStore();
 
   // Initialize state from global store or initial data
   const [otp, setOtp] = useState(initialData?.otp || formData.otp || "");
@@ -141,12 +132,9 @@ const OTPVerificationSection = ({
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="mb-4 text-3xl font-bold text-white">
-            Account Verification
-          </h2>
+          <h2 className="mb-4 text-3xl font-bold text-white">Account Verification</h2>
           <p className="mb-8 text-sm text-gray-300">
-            Please check your email and enter the verification code sent to your
-            email.
+            Please check your email and enter the verification code sent to your email.
           </p>
         </div>
 
@@ -154,10 +142,7 @@ const OTPVerificationSection = ({
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* OTP Field */}
           <div>
-            <label
-              htmlFor="otp"
-              className="mb-2 block text-sm font-medium text-white"
-            >
+            <label htmlFor="otp" className="mb-2 block text-sm font-medium text-white">
               OTP*
             </label>
             <Input
@@ -174,24 +159,16 @@ const OTPVerificationSection = ({
 
           {/* Resend Code Link */}
           <div className="text-center">
-            <span className="text-sm text-gray-400">
-              Have not received the code?{" "}
-            </span>
+            <span className="text-sm text-gray-400">Have not received the code? </span>
             <button
               type="button"
               onClick={handleResendCode}
               disabled={isResendingOTP || !canResend}
               className={`text-sm underline transition-colors ${
-                isResendingOTP || !canResend
-                  ? "cursor-not-allowed text-gray-500"
-                  : "text-white hover:text-blue-400"
+                isResendingOTP || !canResend ? "cursor-not-allowed text-gray-500" : "text-white hover:text-blue-400"
               }`}
             >
-              {isResendingOTP
-                ? "Sending..."
-                : !canResend
-                  ? `Resend later ${countdown}s`
-                  : "Resend verification code"}
+              {isResendingOTP ? "Sending..." : !canResend ? `Resend later ${countdown}s` : "Resend verification code"}
             </button>
           </div>
 

@@ -18,19 +18,15 @@ const AuthenticatedPlaylistSection = () => {
   const { user } = useAuthStore();
 
   // This will only run when the component is rendered (i.e., when user is authenticated)
-  const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } =
-    useSuspenseInfiniteQuery(
-      playlistOptions(user!.userId, debouncedSearchQuery, 11),
-    );
+  const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } = useSuspenseInfiniteQuery(
+    playlistOptions(user!.userId, debouncedSearchQuery, 11),
+  );
 
   return (
     <div className="w-full space-y-6">
       <div className="flex items-center justify-between">
         <span className="text-xl font-bold">
-          {data?.pages[0].playlists?.totalCount}{" "}
-          {data?.pages[0].playlists?.totalCount === 1
-            ? "playlist"
-            : "playlists"}
+          {data?.pages[0].playlists?.totalCount} {data?.pages[0].playlists?.totalCount === 1 ? "playlist" : "playlists"}
         </span>
 
         <div className="relative">

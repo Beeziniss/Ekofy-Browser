@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +10,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 
 interface ProgressModalProps {
   isOpen: boolean;
@@ -24,34 +24,29 @@ const ProgressModal: React.FC<ProgressModalProps> = ({
   isOpen,
   onIgnore,
   onCancel,
-  title = 'This package is in confirmation progress!',
-  description = 'The package is currently being processed. Please wait for completion.',
+  title = "This package is in confirmation progress!",
+  description = "The package is currently being processed. Please wait for completion.",
 }) => {
   return (
     <AlertDialog open={isOpen}>
-      <AlertDialogContent className="bg-gray-800 border-gray-700 text-white">
+      <AlertDialogContent className="border-gray-700 bg-gray-800 text-white">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-              <span className="text-white font-bold">!</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600">
+              <span className="font-bold text-white">!</span>
             </div>
             <span>{title}</span>
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-gray-300">
-            {description}
-          </AlertDialogDescription>
+          <AlertDialogDescription className="text-gray-300">{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel 
+          <AlertDialogCancel
             onClick={onIgnore}
-            className="bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+            className="border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
           >
             Ignore
           </AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={onCancel}
-            className="bg-red-600 hover:bg-red-700 text-white border-0"
-          >
+          <AlertDialogAction onClick={onCancel} className="border-0 bg-red-600 text-white hover:bg-red-700">
             Cancel
           </AlertDialogAction>
         </AlertDialogFooter>

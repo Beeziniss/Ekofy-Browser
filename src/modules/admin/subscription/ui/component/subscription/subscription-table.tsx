@@ -1,11 +1,4 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,7 +57,7 @@ export function SubscriptionTable({
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center justify-center h-32">
+          <div className="flex h-32 items-center justify-center">
             <div className="text-muted-foreground">Loading subscriptions...</div>
           </div>
         </CardContent>
@@ -76,7 +69,7 @@ export function SubscriptionTable({
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center justify-center h-32">
+          <div className="flex h-32 items-center justify-center">
             <div className="text-muted-foreground">No subscriptions found</div>
           </div>
         </CardContent>
@@ -108,20 +101,16 @@ export function SubscriptionTable({
                 <TableCell className="font-medium">
                   <div>
                     <div className="font-semibold">{subscription.name}</div>
-                    <div className="text-sm text-muted-foreground truncate max-w-[200px]">
+                    <div className="text-muted-foreground max-w-[200px] truncate text-sm">
                       {subscription.description}
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <code className="text-sm bg-muted px-2 py-1 rounded">
-                    {subscription.code}
-                  </code>
+                  <code className="bg-muted rounded px-2 py-1 text-sm">{subscription.code}</code>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getTierBadgeVariant(subscription.tier)}>
-                    {subscription.tier}
-                  </Badge>
+                  <Badge variant={getTierBadgeVariant(subscription.tier)}>{subscription.tier}</Badge>
                 </TableCell>
                 <TableCell>
                   <div className="text-right">
@@ -129,13 +118,9 @@ export function SubscriptionTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getStatusBadgeVariant(subscription.status)}>
-                    {subscription.status}
-                  </Badge>
+                  <Badge variant={getStatusBadgeVariant(subscription.status)}>{subscription.status}</Badge>
                 </TableCell>
-                <TableCell>
-                  {new Date(subscription.createdAt).toLocaleDateString()}
-                </TableCell>
+                <TableCell>{new Date(subscription.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -160,7 +145,7 @@ export function SubscriptionTable({
                         </DropdownMenuItem>
                       )}
                       {onDelete && (
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => onDelete(subscription)}
                           className="text-destructive focus:text-destructive"
                         >

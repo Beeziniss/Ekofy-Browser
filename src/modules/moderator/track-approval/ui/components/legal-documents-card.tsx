@@ -40,42 +40,33 @@ export function LegalDocumentsCard({ track }: LegalDocumentsCardProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         {track.track.legalDocuments.map((doc, index) => (
-          <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
-            <FileText className="h-6 w-6 text-muted-foreground" />
+          <div key={index} className="flex items-center gap-3 rounded-lg border p-3">
+            <FileText className="text-muted-foreground h-6 w-6" />
             <div className="flex-1">
               <p className="font-medium">{doc.name}</p>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge 
-                  variant="secondary" 
-                  className={getDocumentTypeColor(doc.documentType)}
-                >
+              <div className="mt-1 flex items-center gap-2">
+                <Badge variant="secondary" className={getDocumentTypeColor(doc.documentType)}>
                   {doc.documentType}
                 </Badge>
               </div>
-              {doc.note && (
-                <p className="text-sm text-muted-foreground mt-1">{doc.note}</p>
-              )}
+              {doc.note && <p className="text-muted-foreground mt-1 text-sm">{doc.note}</p>}
             </div>
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => window.open(doc.documentUrl, '_blank')}
-              >
-                <ExternalLink className="h-4 w-4 mr-1" />
+              <Button variant="outline" size="sm" onClick={() => window.open(doc.documentUrl, "_blank")}>
+                <ExternalLink className="mr-1 h-4 w-4" />
                 View
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => {
-                  const link = document.createElement('a');
+                  const link = document.createElement("a");
                   link.href = doc.documentUrl;
                   link.download = doc.name;
                   link.click();
                 }}
               >
-                <Download className="h-4 w-4 mr-1" />
+                <Download className="mr-1 h-4 w-4" />
                 Download
               </Button>
             </div>

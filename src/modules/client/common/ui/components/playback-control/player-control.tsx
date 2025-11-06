@@ -1,11 +1,10 @@
+import { useAudioStore } from "@/store";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
-import { formatMilliseconds } from "@/utils/format-milliseconds";
-import { useAudioStore } from "@/store";
-import { Repeat, Shuffle, SkipBack, SkipForward } from "lucide-react";
-import Image from "next/image";
 import { PauseButton, PlayButton } from "@/assets/icons";
+import { formatMilliseconds } from "@/utils/format-milliseconds";
+import { Repeat, Shuffle, SkipBack, SkipForward } from "lucide-react";
+import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
 
 const PlayerControl = () => {
   const {
@@ -36,9 +35,7 @@ const PlayerControl = () => {
         <Button
           variant="ghost"
           size="iconXs"
-          className={`text-main-white hover:text-main-grey ${
-            isShuffling ? "text-main-purple" : ""
-          }`}
+          className={`text-main-white hover:text-main-grey ${isShuffling ? "text-main-purple" : ""}`}
           disabled={!currentTrack}
           onClick={toggleShuffle}
         >
@@ -66,11 +63,7 @@ const PlayerControl = () => {
           onClick={togglePlayPause}
           disabled={!currentTrack}
         >
-          {isPlaying ? (
-            <PauseButton className="size-8" />
-          ) : (
-            <PlayButton className="size-8" />
-          )}
+          {isPlaying ? <PauseButton className="size-8" /> : <PlayButton className="size-8" />}
         </Button>
       </TooltipButton>
 
@@ -90,9 +83,7 @@ const PlayerControl = () => {
         <Button
           variant="ghost"
           size="iconXs"
-          className={`text-main-white hover:text-main-grey ${
-            isRepeating ? "text-main-purple" : ""
-          }`}
+          className={`text-main-white hover:text-main-grey ${isRepeating ? "text-main-purple" : ""}`}
           onClick={toggleRepeat}
           disabled={!currentTrack}
         >

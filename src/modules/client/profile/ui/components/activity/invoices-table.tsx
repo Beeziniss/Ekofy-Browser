@@ -4,14 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useListenerInvoices } from "@/modules/client/profile/hooks/use-listener-invoices";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface InvoicesTableProps {
   userId: string;
@@ -51,7 +44,9 @@ export default function InvoicesTable({ userId, pageSize = 10 }: InvoicesTablePr
               </TableRow>
             ) : isError ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-red-500">Failed to load invoices.</TableCell>
+                <TableCell colSpan={7} className="text-red-500">
+                  Failed to load invoices.
+                </TableCell>
               </TableRow>
             ) : items && items.length > 0 ? (
               items.map((inv, idx) => (
@@ -75,7 +70,10 @@ export default function InvoicesTable({ userId, pageSize = 10 }: InvoicesTablePr
                   </TableCell>
                   <TableCell>
                     {inv?.paymentTransactionId ? (
-                      <Link href={`/profile/payment-history/${inv.paymentTransactionId}`} className="text-primary hover:underline">
+                      <Link
+                        href={`/profile/payment-history/${inv.paymentTransactionId}`}
+                        className="text-primary hover:underline"
+                      >
                         #{inv.paymentTransactionId.slice(-8)}
                       </Link>
                     ) : (
@@ -103,7 +101,9 @@ export default function InvoicesTable({ userId, pageSize = 10 }: InvoicesTablePr
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">Page {page} of {totalPages}</div>
+        <div className="text-muted-foreground text-sm">
+          Page {page} of {totalPages}
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={!hasPrev}>
             Previous

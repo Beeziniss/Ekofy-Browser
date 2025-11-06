@@ -1,12 +1,12 @@
 "use client";
 
-import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import UpdatePackageService from '../component/update-package-service/update-package-service';
-import { packageDetailOptions } from '@/gql/options/artist-options';
-import { execute } from '@/gql/execute';
-import { updateArtistPackageMutation } from '@/modules/artist/service-package/ui/view/service-package-service-view';
+import React from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import UpdatePackageService from "../component/update-package-service/update-package-service";
+import { packageDetailOptions } from "@/gql/options/artist-options";
+import { execute } from "@/gql/execute";
+import { updateArtistPackageMutation } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 
 interface UpdatePackageFormData {
   id: string;
@@ -30,13 +30,11 @@ const UpdatePackageServiceSection = ({
   const queryClient = useQueryClient();
 
   // Query for package detail using options
-  const { data: packageData, isLoading } = useQuery(
-    packageDetailOptions(packageId)
-  );
+  const { data: packageData, isLoading } = useQuery(packageDetailOptions(packageId));
 
   // Note: Update mutation would be implemented here when available in GraphQL schema
   const updatePackageMutation = useMutation({
-    mutationFn: (data: UpdatePackageFormData) => 
+    mutationFn: (data: UpdatePackageFormData) =>
       execute(updateArtistPackageMutation, {
         updateRequest: {
           id: data.id,
@@ -45,16 +43,16 @@ const UpdatePackageServiceSection = ({
         },
       }),
     onSuccess: () => {
-      toast.success('Package updated successfully');
-      queryClient.invalidateQueries({ queryKey: ['package-detail', packageId] });
-      queryClient.invalidateQueries({ queryKey: ['artist-packages'] });
-      queryClient.invalidateQueries({ queryKey: ['pending-packages'] });
-      queryClient.invalidateQueries({ queryKey: ['moderator-pending-packages'] });
+      toast.success("Package updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["package-detail", packageId] });
+      queryClient.invalidateQueries({ queryKey: ["artist-packages"] });
+      queryClient.invalidateQueries({ queryKey: ["pending-packages"] });
+      queryClient.invalidateQueries({ queryKey: ["moderator-pending-packages"] });
       onSuccess();
     },
     onError: (error) => {
-      toast.error('Failed to update package');
-      console.error('Update package error:', error);
+      toast.error("Failed to update package");
+      console.error("Update package error:", error);
     },
   });
 
@@ -71,8 +69,8 @@ const UpdatePackageServiceSection = ({
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="text-center py-8">
+      <div className="mx-auto max-w-4xl p-6">
+        <div className="py-8 text-center">
           <p className="text-gray-400">Loading package details...</p>
         </div>
       </div>
@@ -81,8 +79,8 @@ const UpdatePackageServiceSection = ({
 
   if (!packageItem) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="text-center py-8">
+      <div className="mx-auto max-w-4xl p-6">
+        <div className="py-8 text-center">
           <p className="text-gray-400">Package not found.</p>
         </div>
       </div>

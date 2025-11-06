@@ -3,7 +3,11 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { myRequestsOptions } from "@/gql/options/client-options";
-import { useCreateRequest, useUpdateRequest, useDeleteRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
+import {
+  useCreateRequest,
+  useUpdateRequest,
+  useDeleteRequest,
+} from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { RequestHubLayout } from "../layout";
 import { CreateRequestSection, ViewRequestSection, EditRequestSection } from "../section";
 import { Pagination } from "../component";
@@ -14,15 +18,15 @@ import { toast } from "sonner";
 import { useAuthStore } from "@/store";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type RequestHubMode = 'view' | 'create' | 'edit' | 'detail';
+type RequestHubMode = "view" | "create" | "edit" | "detail";
 
-type RequestItem = NonNullable<NonNullable<RequestsQuery['requests']>['items']>[0];
+type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
 export function MyRequestsView() {
-  const [mode, setMode] = useState<RequestHubMode>('view');
+  const [mode, setMode] = useState<RequestHubMode>("view");
   const [editingRequest, setEditingRequest] = useState<RequestItem | null>(null);
   const [searchValue, setSearchValue] = useState("");
-  const [statusFilter, setStatusFilter] = useState<GqlRequestStatus | 'ALL'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<GqlRequestStatus | "ALL">("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const router = useRouter();
@@ -32,11 +36,11 @@ export function MyRequestsView() {
   const skip = (currentPage - 1) * pageSize;
   const where = {
     ...(searchValue && { title: { contains: searchValue } }),
-    ...(statusFilter !== 'ALL' && { status: { eq: statusFilter } }),
+    ...(statusFilter !== "ALL" && { status: { eq: statusFilter } }),
     // Filter by current user's requests only
     ...(user?.userId && { requestUserId: { eq: user.userId } }),
   };
-  
+
   const { data: requestsData, isLoading } = useQuery(myRequestsOptions(skip, pageSize, where));
   const requests = requestsData?.items || [];
   const totalItems = requestsData?.totalCount || 0;
@@ -56,15 +60,15 @@ export function MyRequestsView() {
   }, [searchValue, statusFilter]);
 
   const handlePostRequest = () => {
-    setMode('create');
+    setMode("create");
   };
 
   const handleBrowseArtists = () => {
-    router.push('/hire-artists');
+    router.push("/hire-artists");
   };
 
   const handleBackToHub = () => {
-    router.push('/request-hub');
+    router.push("/request-hub");
   };
 
   const handleViewDetails = (id: string) => {
@@ -76,33 +80,33 @@ export function MyRequestsView() {
     const request = requests.find((r: RequestItem) => r.id === id);
     if (request) {
       setEditingRequest(request);
-      setMode('edit');
+      setMode("edit");
     }
   };
 
   const handleApply = (id: string) => {
-    console.log('Apply to request:', id);
-    toast.info('Application feature coming soon!');
+    console.log("Apply to request:", id);
+    toast.info("Application feature coming soon!");
   };
 
   const handleSave = (id: string) => {
-    console.log('Save request:', id);
-    toast.info('Bookmark feature coming soon!');
+    console.log("Save request:", id);
+    toast.info("Bookmark feature coming soon!");
   };
 
   const handleCancel = () => {
-    setMode('view');
+    setMode("view");
     setEditingRequest(null);
   };
 
   const handleCreateSubmit = async (data: CreateRequestData) => {
     try {
       await createRequestMutation.mutateAsync(data);
-      toast.success('Request created successfully!');
-      setMode('view');
+      toast.success("Request created successfully!");
+      setMode("view");
     } catch (error) {
-      toast.error('Failed to create request');
-      console.error('Create request error:', error);
+      toast.error("Failed to create request");
+      console.error("Create request error:", error);
     }
   };
 
@@ -117,51 +121,57 @@ export function MyRequestsView() {
         budget: data.budget,
         deadline: data.deadline instanceof Date ? data.deadline.toISOString() : data.deadline,
         // Convert local enum to GraphQL enum if status exists
-        ...(data.status && { 
-          status: data.status === 'OPEN' ? GqlRequestStatus.Open :
-                  data.status === 'CLOSED' ? GqlRequestStatus.Closed :
-                  data.status === 'BLOCKED' ? GqlRequestStatus.Blocked :
-                  data.status === 'DELETED' ? GqlRequestStatus.Deleted :
-                  undefined
+        ...(data.status && {
+          status:
+            data.status === "OPEN"
+              ? GqlRequestStatus.Open
+              : data.status === "CLOSED"
+                ? GqlRequestStatus.Closed
+                : data.status === "BLOCKED"
+                  ? GqlRequestStatus.Blocked
+                  : data.status === "DELETED"
+                    ? GqlRequestStatus.Deleted
+                    : undefined,
         }),
       };
-      
+
       await updateRequestMutation.mutateAsync(updateInput);
-      toast.success('Request updated successfully!');
-      setMode('view');
+      toast.success("Request updated successfully!");
+      setMode("view");
       setEditingRequest(null);
     } catch (error) {
-      toast.error('Failed to update request');
-      console.error('Update request error:', error);
+      toast.error("Failed to update request");
+      console.error("Update request error:", error);
     }
   };
 
   const handleDelete = async () => {
     try {
       if (!editingRequest) return;
-      
+
       const deleteInput = {
         id: editingRequest.id,
         title: editingRequest.title,
         summary: editingRequest.summary,
         detailDescription: editingRequest.detailDescription,
         budget: editingRequest.budget,
-        deadline: editingRequest.deadline instanceof Date ? editingRequest.deadline.toISOString() : editingRequest.deadline,
+        deadline:
+          editingRequest.deadline instanceof Date ? editingRequest.deadline.toISOString() : editingRequest.deadline,
       };
-      
+
       await deleteRequestMutation.mutateAsync(deleteInput);
-      toast.success('Request deleted successfully!');
-      setMode('view');
+      toast.success("Request deleted successfully!");
+      setMode("view");
       setEditingRequest(null);
     } catch (error) {
-      toast.error('Failed to delete request');
-      console.error('Delete request error:', error);
+      toast.error("Failed to delete request");
+      console.error("Delete request error:", error);
     }
   };
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-white">Please login to view your requests</div>
       </div>
     );
@@ -169,14 +179,9 @@ export function MyRequestsView() {
 
   const renderContent = () => {
     switch (mode) {
-      case 'create':
-        return (
-          <CreateRequestSection 
-            onSubmit={handleCreateSubmit}
-            onCancel={handleCancel}
-          />
-        );
-      case 'edit':
+      case "create":
+        return <CreateRequestSection onSubmit={handleCreateSubmit} onCancel={handleCancel} />;
+      case "edit":
         return editingRequest ? (
           <EditRequestSection
             initialData={{
@@ -185,14 +190,14 @@ export function MyRequestsView() {
               summary: editingRequest.summary,
               detailDescription: editingRequest.detailDescription,
               budget: editingRequest.budget,
-              deadline: editingRequest.deadline
+              deadline: editingRequest.deadline,
             }}
             onSubmit={handleUpdateSubmit}
             onCancel={handleCancel}
             onDelete={handleDelete}
           />
         ) : null;
-      case 'view':
+      case "view":
       default:
         return (
           <RequestHubLayout
@@ -206,7 +211,10 @@ export function MyRequestsView() {
             <div className="mb-6">
               <div className="flex items-center gap-4">
                 <span className="text-sm text-white">Filter by status:</span>
-                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as GqlRequestStatus | 'ALL')}>
+                <Select
+                  value={statusFilter}
+                  onValueChange={(value) => setStatusFilter(value as GqlRequestStatus | "ALL")}
+                >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -228,7 +236,7 @@ export function MyRequestsView() {
               onEdit={handleEdit}
               onSave={handleSave}
             />
-            
+
             {totalPages > 1 && (
               <Pagination
                 currentPage={currentPage}

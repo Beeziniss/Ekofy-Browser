@@ -15,13 +15,13 @@ interface ApprovalHistoryApproverInfoProps {
 
 export const ApprovalHistoryApproverInfo = ({ approvedBy }: ApprovalHistoryApproverInfoProps) => {
   const approver = approvedBy[0];
-  
+
   if (!approver) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <User className="h-5 w-5 mr-2" />
+            <User className="mr-2 h-5 w-5" />
             Approved By
           </CardTitle>
         </CardHeader>
@@ -36,7 +36,7 @@ export const ApprovalHistoryApproverInfo = ({ approvedBy }: ApprovalHistoryAppro
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center">
-          <User className="h-5 w-5 mr-2" />
+          <User className="mr-2 h-5 w-5" />
           Approved By
         </CardTitle>
       </CardHeader>

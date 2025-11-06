@@ -20,12 +20,7 @@ export const TrackCommentCreateMutation = graphql(`
     $parentCommentId: String
   ) {
     createComment(
-      request: {
-        targetId: $targetId
-        commentType: $commentType
-        content: $content
-        parentCommentId: $parentCommentId
-      }
+      request: { targetId: $targetId, commentType: $commentType, content: $content, parentCommentId: $parentCommentId }
     )
   }
 `);

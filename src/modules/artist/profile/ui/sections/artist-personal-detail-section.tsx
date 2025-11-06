@@ -40,11 +40,11 @@ export default function ArtistPersonalDetailSection() {
   ];
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <div className="flex items-end justify-between gap-x-3">
         <h2 className="text-xl font-bold">Personal Details</h2>
       </div>
-      <div className="w-full mt-6 md:mt-12 md:mb-12">
+      <div className="mt-6 w-full md:mt-12 md:mb-12">
         {personalFields.map((item) => (
           <DetailItem key={item.title} {...item} />
         ))}

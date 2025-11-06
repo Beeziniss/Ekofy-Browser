@@ -9,11 +9,11 @@
  */
 export const formatDuration = (milliseconds?: number): string => {
   if (!milliseconds || milliseconds <= 0) return "0:00";
-  
+
   const minutes = Math.floor(milliseconds / 60000);
   const seconds = Math.floor((milliseconds % 60000) / 1000);
-  
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
 /**
@@ -23,11 +23,11 @@ export const formatDuration = (milliseconds?: number): string => {
  */
 export const formatDurationFromSeconds = (seconds?: number): string => {
   if (!seconds || seconds <= 0) return "0:00";
-  
+
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds % 60);
-  
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
 /**
@@ -42,18 +42,18 @@ export const getTrackDurationDisplay = (
   trackId: string,
   trackDuration?: number,
   currentTrackId?: string | null,
-  audioDuration?: number
+  audioDuration?: number,
 ): string => {
   // If this track is currently playing and we have audio duration, use it
   if (trackId === currentTrackId && audioDuration && audioDuration > 0) {
     return formatDurationFromSeconds(audioDuration);
   }
-  
+
   // Otherwise use track duration if available
   if (trackDuration) {
     return formatDuration(trackDuration);
   }
-  
+
   // Default fallback
   return "3:45";
 };

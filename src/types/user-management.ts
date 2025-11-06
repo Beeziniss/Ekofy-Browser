@@ -147,7 +147,7 @@ export interface ModeratorArtistMember {
   email?: string;
   phoneNumber?: string;
   isLeader?: boolean;
-  gender?: 'MALE' | 'FEMALE' | 'OTHER' | string;
+  gender?: "MALE" | "FEMALE" | "OTHER" | string;
   role?: string;
 }
 

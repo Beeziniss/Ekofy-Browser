@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { moderatorProfileOptions } from "@/gql/options/moderator-options";
 import ModeratorProfileView from "@/modules/moderator/profile/ui/views/moderator-profile-view";
@@ -25,4 +25,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-

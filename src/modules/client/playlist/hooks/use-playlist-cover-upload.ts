@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-  uploadPlaylistCoverImage,
-  validateImageFile,
-  CloudinaryUploadResponse,
-} from "@/utils/cloudinary-utils";
+import { uploadPlaylistCoverImage, validateImageFile, CloudinaryUploadResponse } from "@/utils/cloudinary-utils";
 
 interface UsePlaylistCoverUploadState {
   isUploading: boolean;
@@ -15,18 +11,14 @@ interface UsePlaylistCoverUploadState {
 }
 
 interface UsePlaylistCoverUploadActions {
-  uploadCover: (
-    file: File,
-    playlistId?: string,
-  ) => Promise<CloudinaryUploadResponse | null>;
+  uploadCover: (file: File, playlistId?: string) => Promise<CloudinaryUploadResponse | null>;
   setPreviewFromFile: (file: File) => void;
   clearPreview: () => void;
   clearError: () => void;
   resetUpload: () => void;
 }
 
-export const usePlaylistCoverUpload = (): UsePlaylistCoverUploadState &
-  UsePlaylistCoverUploadActions => {
+export const usePlaylistCoverUpload = (): UsePlaylistCoverUploadState & UsePlaylistCoverUploadActions => {
   const [state, setState] = useState<UsePlaylistCoverUploadState>({
     isUploading: false,
     uploadProgress: 0,
@@ -35,10 +27,7 @@ export const usePlaylistCoverUpload = (): UsePlaylistCoverUploadState &
     error: null,
   });
 
-  const uploadCover = async (
-    file: File,
-    playlistId?: string,
-  ): Promise<CloudinaryUploadResponse | null> => {
+  const uploadCover = async (file: File, playlistId?: string): Promise<CloudinaryUploadResponse | null> => {
     // Validate file first
     if (!validateImageFile(file, 5)) {
       // 5MB limit for playlist covers
@@ -73,8 +62,7 @@ export const usePlaylistCoverUpload = (): UsePlaylistCoverUploadState &
 
       return result;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Upload failed";
+      const errorMessage = error instanceof Error ? error.message : "Upload failed";
 
       setState((prev) => ({
         ...prev,

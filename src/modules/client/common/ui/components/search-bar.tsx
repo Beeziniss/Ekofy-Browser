@@ -14,14 +14,14 @@ const SearchBar = () => {
   // Initialize search value from URL params or localStorage on mount
   useEffect(() => {
     // First check URL params
-    const queryFromUrl = searchParams.get('q');
+    const queryFromUrl = searchParams.get("q");
     if (queryFromUrl) {
       setSearchValue(queryFromUrl);
       // Save to localStorage
-      localStorage.setItem('search-query', queryFromUrl);
+      localStorage.setItem("search-query", queryFromUrl);
     } else {
       // Then check localStorage
-      const savedQuery = localStorage.getItem('search-query');
+      const savedQuery = localStorage.getItem("search-query");
       if (savedQuery) {
         setSearchValue(savedQuery);
       }
@@ -32,12 +32,12 @@ const SearchBar = () => {
   useEffect(() => {
     if (debouncedSearchValue.trim()) {
       // Save to localStorage
-      localStorage.setItem('search-query', debouncedSearchValue.trim());
+      localStorage.setItem("search-query", debouncedSearchValue.trim());
       // Navigate to search page
       router.push(`/search?q=${encodeURIComponent(debouncedSearchValue.trim())}`);
     } else {
       // Clear localStorage if search is empty
-      localStorage.removeItem('search-query');
+      localStorage.removeItem("search-query");
     }
   }, [debouncedSearchValue, router]);
 
@@ -46,7 +46,7 @@ const SearchBar = () => {
     setSearchValue(value);
     // Save to localStorage immediately for better UX
     if (value.trim()) {
-      localStorage.setItem('search-query', value);
+      localStorage.setItem("search-query", value);
     }
   };
 
@@ -54,10 +54,7 @@ const SearchBar = () => {
     <div className="relative appearance-none">
       <Search className="absolute top-1/2 left-4 size-6 -translate-y-1/2 text-[#f2f2f2]" />
 
-      <Separator
-        orientation="vertical"
-        className="absolute top-1/2 left-14 !h-6 -translate-y-1/2 bg-[#f2f2f2]"
-      />
+      <Separator orientation="vertical" className="absolute top-1/2 left-14 !h-6 -translate-y-1/2 bg-[#f2f2f2]" />
 
       <Input
         type="text"

@@ -17,11 +17,13 @@ interface ModeratorUserTableWrapperProps {
 
 export function ModeratorUserTableWrapper(props: ModeratorUserTableWrapperProps) {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading table...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex h-64 items-center justify-center">
+          <div className="text-gray-400">Loading table...</div>
+        </div>
+      }
+    >
       <ModeratorUserTable {...props} />
     </Suspense>
   );

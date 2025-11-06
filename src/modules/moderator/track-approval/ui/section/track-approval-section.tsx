@@ -13,9 +13,7 @@ export function TrackApprovalSection() {
   const pageSize = 10;
   const router = useRouter();
 
-  const { data, isLoading, error } = useQuery(
-    moderatorPendingTracksOptions(currentPage, pageSize, searchTerm)
-  );
+  const { data, isLoading, error } = useQuery(moderatorPendingTracksOptions(currentPage, pageSize, searchTerm));
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -29,10 +27,8 @@ export function TrackApprovalSection() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
-        <p className="text-destructive">
-          Failed to load track approval data. Please try again.
-        </p>
+      <div className="border-destructive/20 bg-destructive/10 rounded-lg border p-4">
+        <p className="text-destructive">Failed to load track approval data. Please try again.</p>
       </div>
     );
   }
@@ -44,10 +40,7 @@ export function TrackApprovalSection() {
 
       {/* Filters and Actions */}
       <div className="flex items-center justify-between">
-        <TrackApprovalFilters
-          searchTerm={searchTerm}
-          onSearchChange={handleSearch}
-        />
+        <TrackApprovalFilters searchTerm={searchTerm} onSearchChange={handleSearch} />
       </div>
 
       {/* Table */}

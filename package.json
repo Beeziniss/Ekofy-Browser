@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "codegen": "graphql-codegen --config codegen.ts --watch",
+    "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,css,md}'",
     "dev:all": "concurrently \"npm run dev\" \"npm run codegen\""
   },
   "dependencies": {

@@ -6,7 +6,12 @@ export default function ArtistAccountDetailSection() {
   const { data, createdAt, userStatus, artistType, membershipStatus } = useArtistProfile();
 
   const humanize = (value?: string | null) =>
-    value ? value.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()) : "-";
+    value
+      ? value
+          .replaceAll("_", " ")
+          .toLowerCase()
+          .replace(/\b\w/g, (c) => c.toUpperCase())
+      : "-";
 
   const accountFields = [
     { title: "Stage name", value: data?.stageName || "-" },
@@ -17,7 +22,7 @@ export default function ArtistAccountDetailSection() {
   ];
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <div className="flex items-end justify-between gap-x-3">
         <h2 className="text-xl font-bold">Account Details</h2>
       </div>

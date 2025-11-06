@@ -1,9 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
 import { useAudioStore } from "@/store";
@@ -13,8 +9,7 @@ import PlayerListQueue from "./player-list-queue";
 
 const PlayerOptions = () => {
   const [isLiked, setIsLiked] = useState(false);
-  const { volume, isMuted, setVolume, toggleMute, currentTrack } =
-    useAudioStore();
+  const { volume, isMuted, setVolume, toggleMute, currentTrack } = useAudioStore();
 
   return (
     <div className="flex items-center gap-x-7">
@@ -26,9 +21,7 @@ const PlayerOptions = () => {
           className="text-main-white hover:text-main-grey"
           disabled={!currentTrack}
         >
-          <Heart
-            className={`size-[18px] ${isLiked ? "fill-main-purple text-main-purple" : ""}`}
-          />
+          <Heart className={`size-[18px] ${isLiked ? "fill-main-purple text-main-purple" : ""}`} />
         </Button>
       </TooltipButton>
 
@@ -55,11 +48,7 @@ const PlayerOptions = () => {
             </Button>
           </PopoverTrigger>
         </TooltipButton>
-        <PopoverContent
-          className="bg-main-dark-bg w-[360px] p-0"
-          align="end"
-          sideOffset={20}
-        >
+        <PopoverContent className="bg-main-dark-bg w-[360px] p-0" align="end" sideOffset={20}>
           <PlayerListQueue />
         </PopoverContent>
       </Popover>
@@ -73,11 +62,7 @@ const PlayerOptions = () => {
             onClick={toggleMute}
             disabled={!currentTrack}
           >
-            {isMuted ? (
-              <VolumeOff className="size-[18px]" />
-            ) : (
-              <Volume1 className="size-[18px]" />
-            )}
+            {isMuted ? <VolumeOff className="size-[18px]" /> : <Volume1 className="size-[18px]" />}
           </Button>
         </TooltipButton>
 

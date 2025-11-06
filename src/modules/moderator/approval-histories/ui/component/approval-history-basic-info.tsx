@@ -34,16 +34,14 @@ export const ApprovalHistoryBasicInfo = ({ history }: ApprovalHistoryBasicInfoPr
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center">
-          <FileText className="h-5 w-5 mr-2" />
+          <FileText className="mr-2 h-5 w-5" />
           Basic Information
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-between">
           <span className="font-medium">Type:</span>
-          <Badge variant="outline">
-            {history.approvalType.replace("_", " ")}
-          </Badge>
+          <Badge variant="outline">{history.approvalType.replace("_", " ")}</Badge>
         </div>
         <div className="flex justify-between">
           <span className="font-medium">Action:</span>
@@ -56,7 +54,7 @@ export const ApprovalHistoryBasicInfo = ({ history }: ApprovalHistoryBasicInfoPr
         {history.notes && (
           <div>
             <span className="font-medium text-red-500">Reason Reject:</span>
-            <p className="mt-1 text-sm text-muted-foreground">{history.notes}</p>
+            <p className="text-muted-foreground mt-1 text-sm">{history.notes}</p>
           </div>
         )}
       </CardContent>

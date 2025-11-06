@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,10 +52,7 @@ interface PlaylistTrackTableProps {
   playlistId: string;
 }
 
-const PlaylistTrackTable = ({
-  tracks,
-  playlistId,
-}: PlaylistTrackTableProps) => {
+const PlaylistTrackTable = ({ tracks, playlistId }: PlaylistTrackTableProps) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -116,13 +106,10 @@ const PlaylistTrackTable = ({
           // Check if this is the currently playing track AND this playlist is active
           const isCurrentTrack = currentTrack?.id === track.id;
           const isPlaylistActive = currentPlaylistId === playlistId;
-          const isCurrentlyPlaying =
-            isCurrentTrack && isPlaylistActive && globalIsPlaying;
+          const isCurrentlyPlaying = isCurrentTrack && isPlaylistActive && globalIsPlaying;
 
           // Convert playlist tracks to Track format for the store
-          const convertToTrackFormat = (
-            playlistTracks: PlaylistTrack[],
-          ): Track[] => {
+          const convertToTrackFormat = (playlistTracks: PlaylistTrack[]): Track[] => {
             return playlistTracks.map((track) => ({
               id: track.id,
               name: track.name || "Unknown Track",
@@ -143,9 +130,7 @@ const PlaylistTrackTable = ({
               const tracksForQueue = convertToTrackFormat(tracks);
 
               // Find the index of the clicked track
-              const trackIndex = tracksForQueue.findIndex(
-                (t) => t.id === track.id,
-              );
+              const trackIndex = tracksForQueue.findIndex((t) => t.id === track.id);
 
               if (trackIndex !== -1) {
                 if (isPlaylistActive) {
@@ -193,16 +178,10 @@ const PlaylistTrackTable = ({
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span
-                    className={`truncate font-medium ${isCurrentlyPlaying ? "text-main-purple" : "text-white"}`}
-                  >
+                  <span className={`truncate font-medium ${isCurrentlyPlaying ? "text-main-purple" : "text-white"}`}>
                     {track.name}
                   </span>
-                  {track.isExplicit && (
-                    <span className="rounded bg-gray-600 px-1.5 py-0.5 text-xs text-white">
-                      E
-                    </span>
-                  )}
+                  {track.isExplicit && <span className="rounded bg-gray-600 px-1.5 py-0.5 text-xs text-white">E</span>}
                 </div>
               </div>
             </div>
@@ -225,11 +204,7 @@ const PlaylistTrackTable = ({
       {
         accessorKey: "addedTime",
         header: "ADDED",
-        cell: ({ row }) => (
-          <span className="text-sm text-gray-400">
-            {formatAddedTime(row.original.addedTime)}
-          </span>
-        ),
+        cell: ({ row }) => <span className="text-sm text-gray-400">{formatAddedTime(row.original.addedTime)}</span>,
         enableSorting: true,
         sortingFn: (rowA, rowB) => {
           const dateA = new Date(rowA.original.addedTime);
@@ -267,9 +242,7 @@ const PlaylistTrackTable = ({
               coverImage: t.coverImage,
             }));
 
-            const trackIndex = tracksForQueue.findIndex(
-              (t) => t.id === track.id,
-            );
+            const trackIndex = tracksForQueue.findIndex((t) => t.id === track.id);
 
             if (trackIndex !== -1) {
               if (currentPlaylistId === playlistId) {
@@ -300,10 +273,7 @@ const PlaylistTrackTable = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={handlePlayNow}
-                >
+                <DropdownMenuItem className="cursor-pointer" onClick={handlePlayNow}>
                   <PlayIcon className="mr-2 h-4 w-4" />
                   Play Now
                 </DropdownMenuItem>
@@ -311,17 +281,11 @@ const PlaylistTrackTable = ({
                   <HeartIcon className="mr-2 h-4 w-4" />
                   Add to Favorites
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={handleCopyLink}
-                >
+                <DropdownMenuItem className="cursor-pointer" onClick={handleCopyLink}>
                   <ShareIcon className="mr-2 h-4 w-4" />
                   Share Track
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer text-red-400"
-                  onClick={handleRemoveFromPlaylist}
-                >
+                <DropdownMenuItem className="cursor-pointer text-red-400" onClick={handleRemoveFromPlaylist}>
                   <Trash2Icon className="mr-2 h-4 w-4" />
                   Remove from Playlist
                 </DropdownMenuItem>
@@ -395,17 +359,10 @@ const PlaylistTrackTable = ({
                       }
                       onClick={header.column.getToggleSortingHandler()}
                     >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      {flexRender(header.column.columnDef.header, header.getContext())}
                       {{
-                        asc: (
-                          <ChevronUpIcon className="text-main-white size-5" />
-                        ),
-                        desc: (
-                          <ChevronDownIcon className="text-main-white size-5" />
-                        ),
+                        asc: <ChevronUpIcon className="text-main-white size-5" />,
+                        desc: <ChevronDownIcon className="text-main-white size-5" />,
                       }[header.column.getIsSorted() as string] ?? null}
                     </div>
                   )}
@@ -427,13 +384,9 @@ const PlaylistTrackTable = ({
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    className={`py-3 ${
-                      cell.column.id === "name" ? "flex-1" : ""
-                    } ${
+                    className={`py-3 ${cell.column.id === "name" ? "flex-1" : ""} ${
                       cell.column.id === "stageName" ? "w-[15%]" : ""
-                    } ${cell.column.id === "addedTime" ? "w-25" : ""} ${
-                      cell.column.id === "actions" ? "w-14" : ""
-                    }`}
+                    } ${cell.column.id === "addedTime" ? "w-25" : ""} ${cell.column.id === "actions" ? "w-14" : ""}`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -442,10 +395,7 @@ const PlaylistTrackTable = ({
             ))
           ) : (
             <TableRow className="hover:!bg-transparent">
-              <TableCell
-                colSpan={columns.length}
-                className="w-full py-4 text-center"
-              >
+              <TableCell colSpan={columns.length} className="w-full py-4 text-center">
                 <div className="text-main-white flex flex-col items-center gap-y-3 font-normal">
                   <div className="text-lg">
                     {globalFilter
@@ -462,15 +412,11 @@ const PlaylistTrackTable = ({
 
       <PlaylistRemoveTrackModal
         open={removeTrackModal.open}
-        onOpenChange={(open) =>
-          setRemoveTrackModal((prev) => ({ ...prev, open }))
-        }
+        onOpenChange={(open) => setRemoveTrackModal((prev) => ({ ...prev, open }))}
         playlistId={playlistId}
         trackId={removeTrackModal.trackId}
         trackName={removeTrackModal.trackName}
-        onSuccess={() =>
-          setRemoveTrackModal({ open: false, trackId: "", trackName: "" })
-        }
+        onSuccess={() => setRemoveTrackModal({ open: false, trackId: "", trackName: "" })}
       />
     </div>
   );

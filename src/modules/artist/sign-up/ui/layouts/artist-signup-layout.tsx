@@ -1,15 +1,11 @@
-import React from 'react';
+import React from "react";
 
 interface ArtistSignUpLayoutProps {
   children: React.ReactNode;
 }
 
 const ArtistSignUpLayout = ({ children }: ArtistSignUpLayoutProps) => {
-  return (
-    <div className="w-full flex min-h-screen">
-      {children}
-    </div>
-  );
+  return <div className="flex min-h-screen w-full">{children}</div>;
 };
 
 export default ArtistSignUpLayout;

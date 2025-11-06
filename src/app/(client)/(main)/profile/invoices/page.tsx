@@ -27,14 +27,14 @@ export default function InvoicesPage() {
 
   return (
     <Suspense fallback={<div className="p-4">Loading invoices…</div>}>
-      <div className="mx-auto w-full max-w-6xl px-4 md:px-6 py-6">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6">
         <div className="mb-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Invoices</h1>
           <Button variant="ghost" asChild>
             <Link href="/profile">&larr; Back to Profile</Link>
           </Button>
         </div>
-        <p className="text-sm text-muted-foreground mb-2">All invoices associated with your account.</p>
+        <p className="text-muted-foreground mb-2 text-sm">All invoices associated with your account.</p>
         <InvoicesTable userId={user!.userId} />
       </div>
     </Suspense>

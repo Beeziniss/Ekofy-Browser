@@ -309,10 +309,7 @@ export const ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY = graphql(`
 
 // Mutations for track approval actions
 export const RejectTrackUploadRequestMutation = graphql(`
-  mutation RejectTrackUploadRequest(
-    $uploadId: String!
-    $reasonReject: String!
-  ) {
+  mutation RejectTrackUploadRequest($uploadId: String!, $reasonReject: String!) {
     rejectTrackUploadRequest(uploadId: $uploadId, reasonReject: $reasonReject)
   }
 `);

@@ -4,15 +4,11 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { ArtistDetailCard, ArtistTeamMembers, ListenerDetailCard } from "../component";
 import {
-  ArtistDetailCard,
-  ArtistTeamMembers,
-  ListenerDetailCard,
-} from "../component";
-import { 
-  adminUserDetailOptions, 
-  adminArtistDetailOptions, 
-  adminListenerDetailOptions 
+  adminUserDetailOptions,
+  adminArtistDetailOptions,
+  adminListenerDetailOptions,
 } from "@/gql/options/admin-options";
 import { UserRole, ArtistType } from "@/gql/graphql";
 import { UserManagementArtist, UserManagementUser, UserManagementListener } from "@/types/user-management";
@@ -28,14 +24,22 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
 
   // Fetch user basic info
   const { data: user, isLoading: userLoading, error: userError } = useQuery(adminUserDetailOptions(userId));
-  
+
   // Conditionally fetch role-specific data
-  const { data: artist, isLoading: artistLoading, error: artistError } = useQuery({
+  const {
+    data: artist,
+    isLoading: artistLoading,
+    error: artistError,
+  } = useQuery({
     ...adminArtistDetailOptions(userId),
     enabled: role === UserRole.Artist,
   });
-  
-  const { data: listener, isLoading: listenerLoading, error: listenerError } = useQuery({
+
+  const {
+    data: listener,
+    isLoading: listenerLoading,
+    error: listenerError,
+  } = useQuery({
     ...adminListenerDetailOptions(userId),
     enabled: role === UserRole.Listener,
   });
@@ -54,9 +58,7 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
   if (error) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="text-red-400">
-          Error loading user details: {error.message}
-        </div>
+        <div className="text-red-400">Error loading user details: {error.message}</div>
       </div>
     );
   }
@@ -71,9 +73,7 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
 
   // Render Artist Detail
   if (role === UserRole.Artist && artist) {
-    const showTeamTab =
-      artist.artistType === ArtistType.Band ||
-      artist.artistType === ArtistType.Group;
+    const showTeamTab = artist.artistType === ArtistType.Band || artist.artistType === ArtistType.Group;
 
     // Transform artist data to match UserManagementArtist interface
     const transformedArtist: UserManagementArtist = {
@@ -93,24 +93,26 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
       createdAt: artist.createdAt,
       updatedAt: artist.createdAt, // Use createdAt as updatedAt fallback
       members: artist.members,
-      identityCard: artist.identityCard ? {
-        number: artist.identityCard.number,
-        fullName: artist.identityCard.fullName,
-        dateOfBirth: artist.identityCard.dateOfBirth,
-        gender: artist.identityCard.gender,
-        placeOfOrigin: artist.identityCard.placeOfOrigin,
-        nationality: artist.identityCard.nationality,
-        validUntil: artist.identityCard.validUntil || "",
-        placeOfResidence: {
-          street: artist.identityCard.placeOfResidence?.street || "",
-          ward: artist.identityCard.placeOfResidence?.ward || "",
-          province: artist.identityCard.placeOfResidence?.province || "",
-          oldDistrict: artist.identityCard.placeOfResidence?.oldDistrict || "",
-          oldWard: artist.identityCard.placeOfResidence?.oldWard || "",
-          oldProvince: artist.identityCard.placeOfResidence?.oldProvince || "",
-          addressLine: artist.identityCard.placeOfResidence?.addressLine || "",
-        },
-      } : undefined,
+      identityCard: artist.identityCard
+        ? {
+            number: artist.identityCard.number,
+            fullName: artist.identityCard.fullName,
+            dateOfBirth: artist.identityCard.dateOfBirth,
+            gender: artist.identityCard.gender,
+            placeOfOrigin: artist.identityCard.placeOfOrigin,
+            nationality: artist.identityCard.nationality,
+            validUntil: artist.identityCard.validUntil || "",
+            placeOfResidence: {
+              street: artist.identityCard.placeOfResidence?.street || "",
+              ward: artist.identityCard.placeOfResidence?.ward || "",
+              province: artist.identityCard.placeOfResidence?.province || "",
+              oldDistrict: artist.identityCard.placeOfResidence?.oldDistrict || "",
+              oldWard: artist.identityCard.placeOfResidence?.oldWard || "",
+              oldProvince: artist.identityCard.placeOfResidence?.oldProvince || "",
+              addressLine: artist.identityCard.placeOfResidence?.addressLine || "",
+            },
+          }
+        : undefined,
     };
 
     // Transform user data to match UserManagementUser interface
@@ -175,12 +177,10 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
           {/* Artist Info */}
           <div>
             <h2 className="mb-1 text-3xl font-bold text-white">
-              {artist.stageName || "Artist Name"} •{" "}
-              <span className="text-white">Artist</span>
+              {artist.stageName || "Artist Name"} • <span className="text-white">Artist</span>
             </h2>
             <p className="text-lg text-gray-300">
-              <span className="font-medium">{artist.followerCount || 100}</span>{" "}
-              followers
+              <span className="font-medium">{artist.followerCount || 100}</span> followers
             </p>
           </div>
         </div>
@@ -289,9 +289,7 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-4xl font-bold text-white">
-                  {listener.displayName?.charAt(0).toUpperCase() ||
-                    user.fullName?.charAt(0).toUpperCase() ||
-                    "L"}
+                  {listener.displayName?.charAt(0).toUpperCase() || user.fullName?.charAt(0).toUpperCase() || "L"}
                 </div>
               )}
             </div>
@@ -306,18 +304,11 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
           {/* Listener Info */}
           <div>
             <h2 className="mb-1 text-3xl font-bold text-white">
-              {listener.displayName || user.fullName || "Display Name"} •{" "}
-              <span className="text-white">Listener</span>
+              {listener.displayName || user.fullName || "Display Name"} • <span className="text-white">Listener</span>
             </h2>
             <p className="text-lg text-gray-300">
-              <span className="font-medium">
-                {listener.followerCount || 100}
-              </span>{" "}
-              followers •{" "}
-              <span className="font-medium">
-                {listener.followingCount || 100}
-              </span>{" "}
-              following
+              <span className="font-medium">{listener.followerCount || 100}</span> followers •{" "}
+              <span className="font-medium">{listener.followingCount || 100}</span> following
             </p>
           </div>
         </div>
@@ -355,8 +346,7 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
         {/* User Info */}
         <div>
           <h2 className="mb-1 text-3xl font-bold text-white">
-            {user.fullName || "User Name"} •{" "}
-            <span className="text-white">{role || "User"}</span>
+            {user.fullName || "User Name"} • <span className="text-white">{role || "User"}</span>
           </h2>
           <p className="text-lg text-gray-300">General user information</p>
         </div>
@@ -365,33 +355,25 @@ export function UserDetailSection({ userId }: UserDetailSectionProps) {
       {/* User Details Content */}
       <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
         <div className="flex items-center gap-4">
-          <label className="w-48 flex-shrink-0 text-base text-gray-300">
-            Full Name:
-          </label>
+          <label className="w-48 flex-shrink-0 text-base text-gray-300">Full Name:</label>
           <p className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
             {user.fullName || "N/A"}
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <label className="w-48 flex-shrink-0 text-base text-gray-300">
-            Email:
-          </label>
+          <label className="w-48 flex-shrink-0 text-base text-gray-300">Email:</label>
           <p className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
             {user.email || "N/A"}
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <label className="w-48 flex-shrink-0 text-base text-gray-300">
-            Role:
-          </label>
+          <label className="w-48 flex-shrink-0 text-base text-gray-300">Role:</label>
           <p className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
             {user.role || "N/A"}
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <label className="w-48 flex-shrink-0 text-base text-gray-300">
-            Status:
-          </label>
+          <label className="w-48 flex-shrink-0 text-base text-gray-300">Status:</label>
           <p className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
             {user.status || "N/A"}
           </p>

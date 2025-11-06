@@ -12,8 +12,8 @@ export default function TeamTab() {
   }));
 
   return (
-    <div className="py-4 space-y-4">
-  <h2 className="text-lg font-semibold">Team&#39;s member(s)</h2>
+    <div className="space-y-4 py-4">
+      <h2 className="text-lg font-semibold">Team&#39;s member(s)</h2>
       <div className="space-y-3">
         {members.map((m) => (
           <TeamMemberCard key={m.id} member={m} />

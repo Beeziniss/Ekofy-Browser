@@ -11,10 +11,7 @@ import {
   RequestHubCommentDeleteMutation,
   RequestHubCommentUpdateMutation,
 } from "@/modules/shared/mutations/client/request-hub-comment-mutation";
-import {
-  UserFollowMutation,
-  UserUnfollowMutation,
-} from "@/modules/shared/mutations/client/user-mutations";
+import { UserFollowMutation, UserUnfollowMutation } from "@/modules/shared/mutations/client/user-mutations";
 import { FavoriteTrackMutation } from "@/modules/shared/mutations/client/track-queries";
 import { UpdateListenerProfileMutation } from "@/modules/client/profile/ui/views/queries";
 import {
@@ -28,12 +25,7 @@ import {
 
 export const createPlaylistMutationOptions = mutationOptions({
   mutationKey: ["create-playlist"],
-  mutationFn: async (newPlaylist: {
-    name: string;
-    isPublic: boolean;
-    coverImage?: string;
-    description: string;
-  }) =>
+  mutationFn: async (newPlaylist: { name: string; isPublic: boolean; coverImage?: string; description: string }) =>
     await execute(CreatePlaylistMutation, {
       createPlaylistRequest: newPlaylist,
     }),
@@ -52,17 +44,12 @@ export const updatePlaylistMutationOptions = mutationOptions({
 
 export const deletePlaylistMutationOptions = mutationOptions({
   mutationKey: ["delete-playlist"],
-  mutationFn: async (playlistId: string) =>
-    await execute(DeletePlaylistMutation, { playlistId }),
+  mutationFn: async (playlistId: string) => await execute(DeletePlaylistMutation, { playlistId }),
 });
 
 export const addToPlaylistMutationOptions = mutationOptions({
   mutationKey: ["add-to-playlist"],
-  mutationFn: async (addToPlaylistRequest: {
-    playlistId?: string;
-    playlistName?: string;
-    trackId: string;
-  }) =>
+  mutationFn: async (addToPlaylistRequest: { playlistId?: string; playlistName?: string; trackId: string }) =>
     await execute(AddToPlaylistMutation, {
       addToPlaylistRequest,
     }),
@@ -70,11 +57,7 @@ export const addToPlaylistMutationOptions = mutationOptions({
 
 export const removeFromPlaylistMutationOptions = mutationOptions({
   mutationKey: ["remove-from-playlist"],
-  mutationFn: async (removeFromPlaylistRequest: {
-    playlistId?: string;
-    playlistName?: string;
-    trackId: string;
-  }) =>
+  mutationFn: async (removeFromPlaylistRequest: { playlistId?: string; playlistName?: string; trackId: string }) =>
     await execute(RemoveFromPlaylistMutation, {
       removeFromPlaylistRequest,
     }),
@@ -82,10 +65,7 @@ export const removeFromPlaylistMutationOptions = mutationOptions({
 
 export const favoriteTrackMutationOptions = mutationOptions({
   mutationKey: ["favorite-track"],
-  mutationFn: async (favoriteTrackRequest: {
-    trackId: string;
-    isAdding: boolean;
-  }) =>
+  mutationFn: async (favoriteTrackRequest: { trackId: string; isAdding: boolean }) =>
     await execute(FavoriteTrackMutation, {
       trackId: favoriteTrackRequest.trackId,
       isAdding: favoriteTrackRequest.isAdding,
@@ -122,14 +102,12 @@ export const createTrackCommentMutationOptions = mutationOptions({
 
 export const updateTrackCommentMutationOptions = mutationOptions({
   mutationKey: ["update-track-comment"],
-  mutationFn: async (input: { commentId: string; content: string }) =>
-    await execute(TrackCommentUpdateMutation, input),
+  mutationFn: async (input: { commentId: string; content: string }) => await execute(TrackCommentUpdateMutation, input),
 });
 
 export const deleteTrackCommentMutationOptions = mutationOptions({
   mutationKey: ["delete-track-comment"],
-  mutationFn: async (commentId: string) =>
-    await execute(TrackCommentDeleteMutation, { commentId }),
+  mutationFn: async (commentId: string) => await execute(TrackCommentDeleteMutation, { commentId }),
 });
 
 export const createRequestHubCommentMutationOptions = mutationOptions({
@@ -150,20 +128,17 @@ export const updateRequestHubCommentMutationOptions = mutationOptions({
 
 export const deleteRequestHubCommentMutationOptions = mutationOptions({
   mutationKey: ["delete-request-hub-comment"],
-  mutationFn: async (commentId: string) =>
-    await execute(RequestHubCommentDeleteMutation, { commentId }),
+  mutationFn: async (commentId: string) => await execute(RequestHubCommentDeleteMutation, { commentId }),
 });
 
 export const userFollowMutationOptions = mutationOptions({
   mutationKey: ["user-follow"],
-  mutationFn: async (targetId: string) =>
-    await execute(UserFollowMutation, { targetId }),
+  mutationFn: async (targetId: string) => await execute(UserFollowMutation, { targetId }),
 });
 
 export const userUnfollowMutationOptions = mutationOptions({
   mutationKey: ["user-unfollow"],
-  mutationFn: async (targetId: string) =>
-    await execute(UserUnfollowMutation, { targetId }),
+  mutationFn: async (targetId: string) => await execute(UserUnfollowMutation, { targetId }),
 });
 
 export const playlistFavoriteMutationOptions = mutationOptions({

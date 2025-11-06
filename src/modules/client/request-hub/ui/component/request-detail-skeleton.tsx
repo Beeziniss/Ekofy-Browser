@@ -13,8 +13,8 @@ export function RequestDetailSkeleton({ onBack }: RequestDetailSkeletonProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
+      <div className="border-b border-gray-200 bg-white px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Button
             variant="ghost"
             onClick={onBack}
@@ -26,10 +26,10 @@ export function RequestDetailSkeleton({ onBack }: RequestDetailSkeletonProps) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="mx-auto max-w-7xl px-6 py-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             {/* Title and Bookmark */}
             <div className="flex items-start justify-between">
               <Skeleton className="h-8 w-3/4" />
@@ -40,7 +40,7 @@ export function RequestDetailSkeleton({ onBack }: RequestDetailSkeletonProps) {
             <div className="flex items-center space-x-3">
               <Skeleton className="h-10 w-10 rounded-full" />
               <div>
-                <Skeleton className="h-4 w-32 mb-1" />
+                <Skeleton className="mb-1 h-4 w-32" />
                 <Skeleton className="h-3 w-48" />
               </div>
             </div>
@@ -48,7 +48,7 @@ export function RequestDetailSkeleton({ onBack }: RequestDetailSkeletonProps) {
             {/* Description Card */}
             <Card>
               <CardContent className="p-6">
-                <Skeleton className="h-6 w-24 mb-4" />
+                <Skeleton className="mb-4 h-6 w-24" />
                 <div className="space-y-3">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-5/6" />
@@ -61,11 +61,11 @@ export function RequestDetailSkeleton({ onBack }: RequestDetailSkeletonProps) {
             {/* Requirements Card */}
             <Card>
               <CardContent className="p-6">
-                <Skeleton className="h-6 w-32 mb-4" />
+                <Skeleton className="mb-4 h-6 w-32" />
                 <div className="space-y-3">
                   {Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className="flex items-start">
-                      <Skeleton className="w-2 h-2 rounded-full mt-2 mr-3" />
+                      <Skeleton className="mt-2 mr-3 h-2 w-2 rounded-full" />
                       <Skeleton className="h-4 flex-1" />
                     </div>
                   ))}
@@ -76,7 +76,7 @@ export function RequestDetailSkeleton({ onBack }: RequestDetailSkeletonProps) {
             {/* Skills Card */}
             <Card>
               <CardContent className="p-6">
-                <Skeleton className="h-6 w-28 mb-4" />
+                <Skeleton className="mb-4 h-6 w-28" />
                 <div className="flex flex-wrap gap-2">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Skeleton key={i} className="h-6 w-16" />
@@ -88,11 +88,11 @@ export function RequestDetailSkeleton({ onBack }: RequestDetailSkeletonProps) {
             {/* About Client Card */}
             <Card>
               <CardContent className="p-6">
-                <Skeleton className="h-6 w-36 mb-4" />
+                <Skeleton className="mb-4 h-6 w-36" />
                 <div className="grid grid-cols-2 gap-6">
                   {Array.from({ length: 3 }).map((_, i) => (
                     <div key={i}>
-                      <Skeleton className="h-3 w-16 mb-1" />
+                      <Skeleton className="mb-1 h-3 w-16" />
                       <Skeleton className="h-4 w-24" />
                     </div>
                   ))}
@@ -105,10 +105,10 @@ export function RequestDetailSkeleton({ onBack }: RequestDetailSkeletonProps) {
           <div className="space-y-6">
             <Card>
               <CardContent className="p-6">
-                <Skeleton className="h-4 w-16 mb-2" />
-                <Skeleton className="h-8 w-32 mb-4" />
+                <Skeleton className="mb-2 h-4 w-16" />
+                <Skeleton className="mb-4 h-8 w-32" />
 
-                <div className="space-y-3 mb-6">
+                <div className="mb-6 space-y-3">
                   {Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="flex items-center justify-between">
                       <Skeleton className="h-4 w-16" />

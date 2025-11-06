@@ -17,21 +17,21 @@ export function PlanBasicInfo({ plan }: PlanBasicInfoProps) {
         <CardTitle>Basic Information</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label className="text-sm font-medium text-main-white">Product Name</label>
-            <p className="text-sm text-main-grey-dark">{plan.stripeProductName}</p>
+            <label className="text-main-white text-sm font-medium">Product Name</label>
+            <p className="text-main-grey-dark text-sm">{plan.stripeProductName}</p>
           </div>
           <div>
-            <label className="text-sm font-medium text-main-white">Product ID</label>
-            <p className="text-sm text-main-grey-dark font-mono">{plan.stripeProductId}</p>
+            <label className="text-main-white text-sm font-medium">Product ID</label>
+            <p className="text-main-grey-dark font-mono text-sm">{plan.stripeProductId}</p>
           </div>
           <div>
-            <label className="text-sm font-medium text-main-white">Product Type</label>
-            <p className="text-sm text-main-grey-dark">{plan.stripeProductType}</p>
+            <label className="text-main-white text-sm font-medium">Product Type</label>
+            <p className="text-main-grey-dark text-sm">{plan.stripeProductType}</p>
           </div>
           <div>
-            <label className="text-sm font-medium text-main-white">Status</label>
+            <label className="text-main-white text-sm font-medium">Status</label>
             <Badge variant={plan.stripeProductActive ? "default" : "secondary"} className="ml-1">
               {plan.stripeProductActive ? "ACTIVE" : "INACTIVE"}
             </Badge>

@@ -12,9 +12,7 @@ import { formatMilliseconds } from "@/utils/format-milliseconds";
 import { useEffect } from "react";
 
 export function AudioPlayer({ uploadId, className }: AudioPlayerProps) {
-  const { data: audioUrl, isLoading: isLoadingUrl } = useQuery(
-    moderatorTrackOriginalFileOptions(uploadId)
-  );
+  const { data: audioUrl, isLoading: isLoadingUrl } = useQuery(moderatorTrackOriginalFileOptions(uploadId));
 
   const {
     currentTrack,
@@ -51,7 +49,7 @@ export function AudioPlayer({ uploadId, className }: AudioPlayerProps) {
       setCurrentTrack({
         id: uploadId,
         name: `Upload ${uploadId}`,
-        artist: "Unknown Artist"
+        artist: "Unknown Artist",
       });
       if (!isPlaying) {
         togglePlayPause();
@@ -80,7 +78,7 @@ export function AudioPlayer({ uploadId, className }: AudioPlayerProps) {
         <Button variant="ghost" size="sm" disabled>
           <Loader2 className="h-4 w-4 animate-spin" />
         </Button>
-        <span className="text-sm text-muted-foreground">Loading...</span>
+        <span className="text-muted-foreground text-sm">Loading...</span>
       </div>
     );
   }
@@ -89,53 +87,43 @@ export function AudioPlayer({ uploadId, className }: AudioPlayerProps) {
     return (
       <div className={cn("flex items-center space-x-2", className)}>
         <Button variant="ghost" size="sm" disabled>
-          <Play className="h-4 w-4 text-muted-foreground" />
+          <Play className="text-muted-foreground h-4 w-4" />
         </Button>
-        <span className="text-sm text-muted-foreground">Audio not available</span>
+        <span className="text-muted-foreground text-sm">Audio not available</span>
       </div>
     );
   }
 
   return (
-    <div className={cn("flex items-center space-x-4 p-4 bg-muted/30 rounded-lg", className)}>
+    <div className={cn("bg-muted/30 flex items-center space-x-4 rounded-lg p-4", className)}>
       {/* Playback Controls */}
       <div className="flex items-center space-x-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled
-          className="h-8 w-8 p-0 opacity-50"
-        >
+        <Button variant="ghost" size="sm" disabled className="h-8 w-8 p-0 opacity-50">
           <SkipBack className="h-4 w-4" />
         </Button>
-        
+
         <Button
           variant="ghost"
           size="sm"
           onClick={handlePlayPause}
           disabled={isLoading}
           className={cn(
-            "h-10 w-10 p-0 rounded-full",
+            "h-10 w-10 rounded-full p-0",
             isCurrentTrack && isPlaying && "bg-primary text-primary-foreground hover:bg-primary/90",
-            error && "text-destructive"
+            error && "text-destructive",
           )}
           title={error || "Play/Pause"}
         >
           {isLoading && isCurrentTrack ? (
             <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (isCurrentTrack && isPlaying) ? (
+          ) : isCurrentTrack && isPlaying ? (
             <Pause className="h-5 w-5" />
           ) : (
             <Play className="h-5 w-5" />
           )}
         </Button>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled
-          className="h-8 w-8 p-0 opacity-50"
-        >
+        <Button variant="ghost" size="sm" disabled className="h-8 w-8 p-0 opacity-50">
           <SkipForward className="h-4 w-4" />
         </Button>
       </div>
@@ -147,49 +135,25 @@ export function AudioPlayer({ uploadId, className }: AudioPlayerProps) {
           onValueChange={handleSeek}
           max={100}
           step={0.1}
-          className={cn(
-            "w-full",
-            !isCurrentTrack && "opacity-50 cursor-not-allowed"
-          )}
+          className={cn("w-full", !isCurrentTrack && "cursor-not-allowed opacity-50")}
           disabled={!isCurrentTrack || duration === 0}
         />
-        <div className="flex justify-between text-xs text-muted-foreground">
+        <div className="text-muted-foreground flex justify-between text-xs">
           <span>{formatMilliseconds(displayCurrentTime)}</span>
           <span>{formatMilliseconds(displayDuration)}</span>
         </div>
       </div>
 
       {/* Volume Control */}
-      <div className="flex items-center space-x-2 min-w-[120px]">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleMute}
-          className="h-8 w-8 p-0"
-        >
-          {isMuted || volume === 0 ? (
-            <VolumeX className="h-4 w-4" />
-          ) : (
-            <Volume2 className="h-4 w-4" />
-          )}
+      <div className="flex min-w-[120px] items-center space-x-2">
+        <Button variant="ghost" size="sm" onClick={toggleMute} className="h-8 w-8 p-0">
+          {isMuted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
         </Button>
-        <Slider
-          value={[isMuted ? 0 : volume]}
-          onValueChange={handleVolumeChange}
-          max={100}
-          step={1}
-          className="w-20"
-        />
-        <span className="text-xs text-muted-foreground w-8 text-right">
-          {Math.round(isMuted ? 0 : volume)}%
-        </span>
+        <Slider value={[isMuted ? 0 : volume]} onValueChange={handleVolumeChange} max={100} step={1} className="w-20" />
+        <span className="text-muted-foreground w-8 text-right text-xs">{Math.round(isMuted ? 0 : volume)}%</span>
       </div>
 
-      {error && (
-        <div className="text-xs text-destructive max-w-[100px] truncate">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-destructive max-w-[100px] truncate text-xs">{error}</div>}
     </div>
   );
 }

@@ -1,13 +1,11 @@
 "use client";
 
-
 import { ArtistDetailsLayout } from "../layout";
 import { ArtistDetailsSection } from "../section";
 
 interface ArtistDetailsViewProps {
   userId: string;
 }
-
 
 export function ArtistDetailsView({ userId }: ArtistDetailsViewProps) {
   return (

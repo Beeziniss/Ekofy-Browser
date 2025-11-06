@@ -10,16 +10,11 @@ import { Eye, EyeOff } from "lucide-react";
 import { ClientSignUpFormSectionProps } from "@/types/listener-auth";
 import { EkofyLogo } from "@/assets/icons";
 
-const SignUpFormSection = ({
-  onNext,
-  initialData,
-}: ClientSignUpFormSectionProps) => {
+const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps) => {
   const { goToNextStep, updateFormData, formData } = useSignUpStore();
 
   // Initialize state from global store or initial data
-  const [email, setEmail] = useState(
-    initialData?.email || formData.email || "",
-  );
+  const [email, setEmail] = useState(initialData?.email || formData.email || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -155,9 +150,7 @@ const SignUpFormSection = ({
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="mb-4 text-4xl font-bold text-white">
-            Let`s get started
-          </h2>
+          <h2 className="mb-4 text-4xl font-bold text-white">Let`s get started</h2>
           <p className="mb-8 text-sm text-gray-300">
             Enter your email and password to create a new account.
             <br />
@@ -169,10 +162,7 @@ const SignUpFormSection = ({
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email Field */}
           <div>
-            <label
-              htmlFor="email"
-              className="mb-2 block text-sm font-medium text-white"
-            >
+            <label htmlFor="email" className="mb-2 block text-sm font-medium text-white">
               Email*
             </label>
             <Input
@@ -197,17 +187,12 @@ const SignUpFormSection = ({
                 errors.email ? "border-red-500" : ""
               }`}
             />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-            )}
+            {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
           </div>
 
           {/* Password Field */}
           <div>
-            <label
-              htmlFor="password"
-              className="mb-2 block text-sm font-medium text-white"
-            >
+            <label htmlFor="password" className="mb-2 block text-sm font-medium text-white">
               Password*
             </label>
             <div className="relative">
@@ -224,8 +209,7 @@ const SignUpFormSection = ({
                   } else {
                     // Show notification that limit is reached
                     const newErrors = { ...errors };
-                    newErrors.password =
-                      "Password must be less than 50 characters";
+                    newErrors.password = "Password must be less than 50 characters";
                     setErrors(newErrors);
                   }
                 }}
@@ -246,17 +230,12 @@ const SignUpFormSection = ({
                 )}
               </button>
             </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-            )}
+            {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
           </div>
 
           {/* Confirm Password Field */}
           <div>
-            <label
-              htmlFor="confirmPassword"
-              className="mb-2 block text-sm font-medium text-white"
-            >
+            <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-white">
               Confirm Password*
             </label>
             <div className="relative">
@@ -273,8 +252,7 @@ const SignUpFormSection = ({
                   } else {
                     // Show notification that limit is reached
                     const newErrors = { ...errors };
-                    newErrors.confirmPassword =
-                      "Password must be less than 50 characters";
+                    newErrors.confirmPassword = "Password must be less than 50 characters";
                     setErrors(newErrors);
                   }
                 }}
@@ -295,11 +273,7 @@ const SignUpFormSection = ({
                 )}
               </button>
             </div>
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.confirmPassword}
-              </p>
-            )}
+            {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
           </div>
 
           {/* Continue Button */}
@@ -315,10 +289,7 @@ const SignUpFormSection = ({
         {/* Login Link */}
         <div className="mt-6 text-center">
           <span className="text-sm text-white">Already have an account? </span>
-          <Link
-            href="/login"
-            className="font-medium text-white underline transition-colors hover:text-blue-400"
-          >
+          <Link href="/login" className="font-medium text-white underline transition-colors hover:text-blue-400">
             Log in to Ekofy.
           </Link>
         </div>

@@ -758,6 +758,71 @@ export type CommenterInfo = {
   userId: Scalars['String']['output'];
 };
 
+export type Conversation = {
+  __typename?: 'Conversation';
+  createdAt: Scalars['DateTime']['output'];
+  deletedFor: Array<DeletedForEntry>;
+  id: Scalars['String']['output'];
+  lastMessage?: Maybe<LastMessage>;
+  status: ConversationStatus;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userIds: Array<Scalars['String']['output']>;
+};
+
+export type ConversationFilterInput = {
+  and?: InputMaybe<Array<ConversationFilterInput>>;
+  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  deletedFor?: InputMaybe<ListFilterInputTypeOfDeletedForEntryFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  lastMessage?: InputMaybe<LastMessageFilterInput>;
+  or?: InputMaybe<Array<ConversationFilterInput>>;
+  status?: InputMaybe<ConversationStatusOperationFilterInput>;
+  updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
+  userIds?: InputMaybe<ListStringOperationFilterInput>;
+};
+
+export type ConversationSortInput = {
+  createdAt?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  lastMessage?: InputMaybe<LastMessageSortInput>;
+  status?: InputMaybe<SortEnumType>;
+  updatedAt?: InputMaybe<SortEnumType>;
+};
+
+export enum ConversationStatus {
+  Cancelled = 'CANCELLED',
+  Completed = 'COMPLETED',
+  InProgress = 'IN_PROGRESS',
+  Pending = 'PENDING'
+}
+
+export type ConversationStatusOperationFilterInput = {
+  eq?: InputMaybe<ConversationStatus>;
+  in?: InputMaybe<Array<ConversationStatus>>;
+  neq?: InputMaybe<ConversationStatus>;
+  nin?: InputMaybe<Array<ConversationStatus>>;
+};
+
+/** A segment of a collection. */
+export type ConversationsByUserIdCollectionSegment = {
+  __typename?: 'ConversationsByUserIdCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Conversation>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
+export type ConversationsCollectionSegment = {
+  __typename?: 'ConversationsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Conversation>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
 export type Coupon = {
   __typename?: 'Coupon';
   code: Scalars['String']['output'];
@@ -1139,6 +1204,19 @@ export type DeleteCommentRequestInput = {
   commentId: Scalars['String']['input'];
 };
 
+export type DeletedForEntry = {
+  __typename?: 'DeletedForEntry';
+  isDeleted: Scalars['Boolean']['output'];
+  userId: Scalars['String']['output'];
+};
+
+export type DeletedForEntryFilterInput = {
+  and?: InputMaybe<Array<DeletedForEntryFilterInput>>;
+  isDeleted?: InputMaybe<BooleanOperationFilterInput>;
+  or?: InputMaybe<Array<DeletedForEntryFilterInput>>;
+  userId?: InputMaybe<StringOperationFilterInput>;
+};
+
 export enum DocumentType {
   Certificate = 'CERTIFICATE',
   Contract = 'CONTRACT',
@@ -1493,6 +1571,16 @@ export type InvoiceSortInput = {
 };
 
 /** A segment of a collection. */
+export type InvoicesByUserIdCollectionSegment = {
+  __typename?: 'InvoicesByUserIdCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Invoice>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
 export type InvoicesCollectionSegment = {
   __typename?: 'InvoicesCollectionSegment';
   /** A flattened list of the items. */
@@ -1509,6 +1597,29 @@ export enum KeyTag {
 export type KeyValuePairOfStringAndStringInput = {
   key: Scalars['String']['input'];
   value: Scalars['String']['input'];
+};
+
+export type LastMessage = {
+  __typename?: 'LastMessage';
+  isReadBy: Array<Scalars['String']['output']>;
+  senderId: Scalars['String']['output'];
+  sentAt: Scalars['DateTime']['output'];
+  text: Scalars['String']['output'];
+};
+
+export type LastMessageFilterInput = {
+  and?: InputMaybe<Array<LastMessageFilterInput>>;
+  isReadBy?: InputMaybe<ListStringOperationFilterInput>;
+  or?: InputMaybe<Array<LastMessageFilterInput>>;
+  senderId?: InputMaybe<StringOperationFilterInput>;
+  sentAt?: InputMaybe<DateTimeOperationFilterInput>;
+  text?: InputMaybe<StringOperationFilterInput>;
+};
+
+export type LastMessageSortInput = {
+  senderId?: InputMaybe<SortEnumType>;
+  sentAt?: InputMaybe<SortEnumType>;
+  text?: InputMaybe<SortEnumType>;
 };
 
 export type LegalDocument = {
@@ -1593,6 +1704,13 @@ export type ListFilterInputTypeOfArtistMemberFilterInput = {
   any?: InputMaybe<Scalars['Boolean']['input']>;
   none?: InputMaybe<ArtistMemberFilterInput>;
   some?: InputMaybe<ArtistMemberFilterInput>;
+};
+
+export type ListFilterInputTypeOfDeletedForEntryFilterInput = {
+  all?: InputMaybe<DeletedForEntryFilterInput>;
+  any?: InputMaybe<Scalars['Boolean']['input']>;
+  none?: InputMaybe<DeletedForEntryFilterInput>;
+  some?: InputMaybe<DeletedForEntryFilterInput>;
 };
 
 export type ListFilterInputTypeOfEntitlementRoleDefaultFilterInput = {
@@ -1846,6 +1964,39 @@ export type Message = {
   text: Scalars['String']['output'];
 };
 
+export type MessageFilterInput = {
+  and?: InputMaybe<Array<MessageFilterInput>>;
+  conversationId?: InputMaybe<StringOperationFilterInput>;
+  deletedForIds?: InputMaybe<ListStringOperationFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  isRead?: InputMaybe<BooleanOperationFilterInput>;
+  or?: InputMaybe<Array<MessageFilterInput>>;
+  receiverId?: InputMaybe<StringOperationFilterInput>;
+  senderId?: InputMaybe<StringOperationFilterInput>;
+  sentAt?: InputMaybe<DateTimeOperationFilterInput>;
+  text?: InputMaybe<StringOperationFilterInput>;
+};
+
+export type MessageSortInput = {
+  conversationId?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  isRead?: InputMaybe<SortEnumType>;
+  receiverId?: InputMaybe<SortEnumType>;
+  senderId?: InputMaybe<SortEnumType>;
+  sentAt?: InputMaybe<SortEnumType>;
+  text?: InputMaybe<SortEnumType>;
+};
+
+/** A segment of a collection. */
+export type MessagesCollectionSegment = {
+  __typename?: 'MessagesCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Message>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
 export type Metadata = {
   __typename?: 'Metadata';
   key: Scalars['String']['output'];
@@ -2007,6 +2158,7 @@ export type MutationInitialization = {
   updateArtistPackage: Scalars['Boolean']['output'];
   updateArtistProfile: Scalars['Boolean']['output'];
   updateComment: Scalars['Boolean']['output'];
+  updateConversationStatus: Scalars['Boolean']['output'];
   updateEscrowCommissionPolicy: Scalars['Boolean']['output'];
   updateListenerProfile: Scalars['Boolean']['output'];
   updatePlaylist: Scalars['Boolean']['output'];
@@ -2347,6 +2499,12 @@ export type MutationInitializationUpdateCommentArgs = {
 };
 
 
+export type MutationInitializationUpdateConversationStatusArgs = {
+  conversationId: Scalars['String']['input'];
+  status: ConversationStatus;
+};
+
+
 export type MutationInitializationUpdateEscrowCommissionPolicyArgs = {
   updateRequest: UpdateEscrowCommissionPolicyRequestInput;
 };
@@ -2581,6 +2739,16 @@ export type PaymentTransactionStatusOperationFilterInput = {
   in?: InputMaybe<Array<PaymentTransactionStatus>>;
   neq?: InputMaybe<PaymentTransactionStatus>;
   nin?: InputMaybe<Array<PaymentTransactionStatus>>;
+};
+
+/** A segment of a collection. */
+export type PaymentTransactionsByUserIdCollectionSegment = {
+  __typename?: 'PaymentTransactionsByUserIdCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<PaymentTransaction>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type PayoutTransaction = {
@@ -2886,6 +3054,8 @@ export type QueryInitialization = {
   commentDepth: Scalars['Int']['output'];
   commentReplies: CommentRepliesResponse;
   commentThread: Array<CommentResponse>;
+  conversations?: Maybe<ConversationsCollectionSegment>;
+  conversationsByUserId?: Maybe<ConversationsByUserIdCollectionSegment>;
   coupons?: Maybe<CouponsCollectionSegment>;
   entitlements?: Maybe<EntitlementsCollectionSegment>;
   favoritePlaylists?: Maybe<FavoritePlaylistsCollectionSegment>;
@@ -2894,16 +3064,18 @@ export type QueryInitialization = {
   followings?: Maybe<FollowingsCollectionSegment>;
   initialize: Scalars['String']['output'];
   invoices?: Maybe<InvoicesCollectionSegment>;
+  invoicesByUserId?: Maybe<InvoicesByUserIdCollectionSegment>;
   isCommentInThread: Scalars['Boolean']['output'];
   legalPolicies?: Maybe<LegalPoliciesCollectionSegment>;
   listeners?: Maybe<ListenersCollectionSegment>;
-  messagesExecutable: Array<Message>;
+  messages?: Maybe<MessagesCollectionSegment>;
   metadataRecordingUploadRequest: RecordingTempRequest;
   metadataTrackUploadRequest: TrackTempRequest;
   metadataWorkUploadRequest: WorkTempRequest;
   monthlyStreamCounts?: Maybe<MonthlyStreamCountsCollectionSegment>;
   originalFileTrackUploadRequest: Scalars['String']['output'];
   ownRequests?: Maybe<OwnRequestsCollectionSegment>;
+  paymentTransactionsByUserId?: Maybe<PaymentTransactionsByUserIdCollectionSegment>;
   payoutTransactions?: Maybe<PayoutTransactionsCollectionSegment>;
   pendingArtistPackages: PaginatedDataOfPendingArtistPackageResponse;
   pendingArtistRegistrationById: PendingArtistRegistrationResponse;
@@ -2985,6 +3157,23 @@ export type QueryInitializationCommentThreadArgs = {
 };
 
 
+export type QueryInitializationConversationsArgs = {
+  order?: InputMaybe<Array<ConversationSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ConversationFilterInput>;
+};
+
+
+export type QueryInitializationConversationsByUserIdArgs = {
+  order?: InputMaybe<Array<ConversationSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  userId: Scalars['String']['input'];
+  where?: InputMaybe<ConversationFilterInput>;
+};
+
+
 export type QueryInitializationCouponsArgs = {
   order?: InputMaybe<Array<CouponSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -3045,6 +3234,15 @@ export type QueryInitializationInvoicesArgs = {
 };
 
 
+export type QueryInitializationInvoicesByUserIdArgs = {
+  order?: InputMaybe<Array<InvoiceSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  userId: Scalars['String']['input'];
+  where?: InputMaybe<InvoiceFilterInput>;
+};
+
+
 export type QueryInitializationIsCommentInThreadArgs = {
   commentId: Scalars['String']['input'];
   threadRootId: Scalars['String']['input'];
@@ -3064,6 +3262,14 @@ export type QueryInitializationListenersArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ListenerFilterInput>;
+};
+
+
+export type QueryInitializationMessagesArgs = {
+  order?: InputMaybe<Array<MessageSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<MessageFilterInput>;
 };
 
 
@@ -3099,6 +3305,15 @@ export type QueryInitializationOwnRequestsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<RequestHubFilterInput>;
+};
+
+
+export type QueryInitializationPaymentTransactionsByUserIdArgs = {
+  order?: InputMaybe<Array<UserSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  userId: Scalars['String']['input'];
+  where?: InputMaybe<PaymentTransactionFilterInput>;
 };
 
 

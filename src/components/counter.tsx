@@ -22,30 +22,15 @@ export function Counter() {
         </div>
 
         <div className="flex justify-center gap-3">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => decrement(1)}
-            className="h-12 w-12"
-          >
+          <Button variant="outline" size="icon" onClick={() => decrement(1)} className="h-12 w-12">
             <Minus className="h-6 w-6" />
           </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => reset()}
-            className="h-12 w-12"
-          >
+          <Button variant="outline" size="icon" onClick={() => reset()} className="h-12 w-12">
             <RotateCcw className="h-6 w-6" />
           </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => increment(1)}
-            className="h-12 w-12"
-          >
+          <Button variant="outline" size="icon" onClick={() => increment(1)} className="h-12 w-12">
             <Plus className="h-6 w-6" />
           </Button>
         </div>

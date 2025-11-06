@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import {
   LayoutDashboardIcon,
   ShieldCheck,
@@ -16,7 +10,7 @@ import {
   // Settings,
   // LayoutPanelLeft,
   AudioLines,
-  PackageCheck
+  PackageCheck,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
@@ -64,7 +58,7 @@ const data = {
       name: "Approval Service Packages",
       url: "/moderator/approval-service-packages",
       icon: PackageCheck,
-    }
+    },
   ],
 };
 

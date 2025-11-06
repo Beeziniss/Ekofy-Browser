@@ -1,7 +1,4 @@
-import {
-  playlistDetailOptions,
-  playlistDetailTrackListOptions,
-} from "@/gql/options/client-options";
+import { playlistDetailOptions, playlistDetailTrackListOptions } from "@/gql/options/client-options";
 import PlaylistDetailView from "@/modules/client/playlist/ui/views/playlist-detail-view";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";

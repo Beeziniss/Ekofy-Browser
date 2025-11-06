@@ -17,9 +17,7 @@ const ExampleUsage: React.FC = () => {
 
   return (
     <div className="space-y-4 p-8">
-      <h2 className="mb-4 text-2xl font-bold">
-        Playlist Management Modal with Cover Upload
-      </h2>
+      <h2 className="mb-4 text-2xl font-bold">Playlist Management Modal with Cover Upload</h2>
 
       <div className="space-x-4">
         <button

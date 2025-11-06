@@ -41,20 +41,8 @@ const TrackSectionSkeleton = () => {
 
 // TODO: Check for track-card.tsx for code and fix to apply approriate changes in future
 const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
-  const {
-    currentTrack,
-    isPlaying: globalIsPlaying,
-    setCurrentTrack,
-    togglePlayPause,
-    play,
-  } = useAudioStore();
-  const {
-    showWarningDialog,
-    setShowWarningDialog,
-    warningAction,
-    trackName,
-    executeWithAuth,
-  } = useAuthAction();
+  const { currentTrack, isPlaying: globalIsPlaying, setCurrentTrack, togglePlayPause, play } = useAudioStore();
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
 
   // Check if this is the currently playing track
   const isCurrentTrack = currentTrack?.id === trackId;
@@ -103,12 +91,8 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
 
       <div className="flex flex-col">
         <div className="flex flex-col gap-y-2">
-          <h1 className="text-main-white text-4xl font-bold">
-            {data.tracks?.items?.[0]?.name}
-          </h1>
-          <p className="text-lg font-semibold">
-            {data.tracks?.items?.[0].mainArtists?.items?.[0]?.stageName}
-          </p>
+          <h1 className="text-main-white text-4xl font-bold">{data.tracks?.items?.[0]?.name}</h1>
+          <p className="text-lg font-semibold">{data.tracks?.items?.[0].mainArtists?.items?.[0]?.stageName}</p>
 
           <div className="bg-main-dark-bg-1 flex w-fit items-center gap-x-3 rounded-sm border-white/30 px-2 py-1">
             <div className="flex items-center gap-x-1.5">

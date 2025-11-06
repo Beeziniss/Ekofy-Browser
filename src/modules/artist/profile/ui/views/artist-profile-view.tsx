@@ -20,8 +20,7 @@ const ArtistProfileView = () => {
   const queryClient = useQueryClient();
   const { uploadProfile } = useCloudinaryUpload();
   const CLOUDINARY_READY =
-    !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
-    !!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+    !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME && !!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
   if (isLoading || isFetching) {
     return <MainLoader />;
@@ -53,18 +52,17 @@ const ArtistProfileView = () => {
       });
 
       toast.success("Your avatar has been updated.");
-  queryClient.invalidateQueries({ queryKey: artistProfileOptions(userId).queryKey });
+      queryClient.invalidateQueries({ queryKey: artistProfileOptions(userId).queryKey });
     } catch (e) {
       const raw = e instanceof Error ? e.message : String(e);
       // Friendly error for common cases
-      const msg =
-        /401|Unauthorized/i.test(raw)
-          ? "You’re not authorized. Please sign in and try again."
-          : /403|AUTH_NOT_AUTHORIZED/i.test(raw)
+      const msg = /401|Unauthorized/i.test(raw)
+        ? "You’re not authorized. Please sign in and try again."
+        : /403|AUTH_NOT_AUTHORIZED/i.test(raw)
           ? "You don’t have permission to update this profile."
           : /Network Error/i.test(raw)
-          ? "Network issue while updating your avatar. Please check your connection and retry."
-          : "Couldn’t update your avatar right now. Please try again in a moment.";
+            ? "Network issue while updating your avatar. Please check your connection and retry."
+            : "Couldn’t update your avatar right now. Please try again in a moment.";
       console.error("Avatar update failed:", raw);
       toast.error(msg);
     }
@@ -88,17 +86,16 @@ const ArtistProfileView = () => {
       });
 
       toast.success("Your banner has been updated.");
-  queryClient.invalidateQueries({ queryKey: artistProfileOptions(userId).queryKey });
+      queryClient.invalidateQueries({ queryKey: artistProfileOptions(userId).queryKey });
     } catch (e) {
       const raw = e instanceof Error ? e.message : String(e);
-      const msg =
-        /401|Unauthorized/i.test(raw)
-          ? "You’re not authorized. Please sign in and try again."
-          : /403|AUTH_NOT_AUTHORIZED/i.test(raw)
+      const msg = /401|Unauthorized/i.test(raw)
+        ? "You’re not authorized. Please sign in and try again."
+        : /403|AUTH_NOT_AUTHORIZED/i.test(raw)
           ? "You don’t have permission to update this profile."
           : /Network Error/i.test(raw)
-          ? "Network issue while updating your banner. Please check your connection and retry."
-          : "Couldn’t update your banner right now. Please try again in a moment.";
+            ? "Network issue while updating your banner. Please check your connection and retry."
+            : "Couldn’t update your banner right now. Please try again in a moment.";
       console.error("Banner update failed:", raw);
       toast.error(msg);
     }

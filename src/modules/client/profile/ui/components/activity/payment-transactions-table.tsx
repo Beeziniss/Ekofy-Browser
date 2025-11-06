@@ -5,14 +5,7 @@ import Link from "next/link";
 import { useListenerTransactions } from "@/modules/client/profile/hooks/use-listener-transactions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaymentTransactionStatus } from "@/gql/graphql";
 
 interface PaymentTransactionsTableProps {
@@ -23,13 +16,13 @@ interface PaymentTransactionsTableProps {
 const statusBadge = (status: PaymentTransactionStatus) => {
   switch (status) {
     case PaymentTransactionStatus.Paid:
-      return <Badge className="bg-green-100 text-green-800 border-green-200">Paid</Badge>;
+      return <Badge className="border-green-200 bg-green-100 text-green-800">Paid</Badge>;
     case PaymentTransactionStatus.Pending:
-      return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Pending</Badge>;
+      return <Badge className="border-yellow-200 bg-yellow-100 text-yellow-800">Pending</Badge>;
     case PaymentTransactionStatus.Unpaid:
-      return <Badge className="bg-red-100 text-red-800 border-red-200">Unpaid</Badge>;
+      return <Badge className="border-red-200 bg-red-100 text-red-800">Unpaid</Badge>;
     default:
-      return <Badge className="bg-gray-100 text-gray-800 border-gray-200">Unknown</Badge>;
+      return <Badge className="border-gray-200 bg-gray-100 text-gray-800">Unknown</Badge>;
   }
 };
 
@@ -65,7 +58,9 @@ export default function PaymentTransactionsTable({ userId, pageSize = 10 }: Paym
               </TableRow>
             ) : isError ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-red-500">Failed to load transactions.</TableCell>
+                <TableCell colSpan={6} className="text-red-500">
+                  Failed to load transactions.
+                </TableCell>
               </TableRow>
             ) : items && items.length > 0 ? (
               items.map((tx, idx) => (
@@ -84,7 +79,10 @@ export default function PaymentTransactionsTable({ userId, pageSize = 10 }: Paym
                   <TableCell>{tx?.paymentStatus ? statusBadge(tx.paymentStatus) : "-"}</TableCell>
                   <TableCell>
                     {tx?.stripePaymentId || tx?.id ? (
-                      <Link href={`/profile/payment-history/${tx?.stripePaymentId || tx?.id}`} className="text-primary hover:underline">
+                      <Link
+                        href={`/profile/payment-history/${tx?.stripePaymentId || tx?.id}`}
+                        className="text-primary hover:underline"
+                      >
                         #{(tx?.stripePaymentId || tx?.id)!.slice(-8)}
                       </Link>
                     ) : (
@@ -93,7 +91,10 @@ export default function PaymentTransactionsTable({ userId, pageSize = 10 }: Paym
                   </TableCell>
                   <TableCell>
                     {tx?.stripePaymentId || tx?.id ? (
-                      <Link href={`/profile/payment-history/${tx?.stripePaymentId || tx?.id}`} className="text-primary hover:underline">
+                      <Link
+                        href={`/profile/payment-history/${tx?.stripePaymentId || tx?.id}`}
+                        className="text-primary hover:underline"
+                      >
                         View
                       </Link>
                     ) : (
@@ -112,7 +113,9 @@ export default function PaymentTransactionsTable({ userId, pageSize = 10 }: Paym
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">Page {page} of {totalPages}</div>
+        <div className="text-muted-foreground text-sm">
+          Page {page} of {totalPages}
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={!hasPrev}>
             Previous

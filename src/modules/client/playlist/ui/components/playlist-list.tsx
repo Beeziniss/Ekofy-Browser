@@ -14,9 +14,7 @@ const PlaylistList = ({ data, isPending }: PlaylistListProps) => {
       {!isPending &&
         data?.pages
           .flatMap((page) => page.playlists?.items || [])
-          .map((playlist) => (
-            <PlaylistCard key={playlist.id} playlist={playlist} />
-          ))}
+          .map((playlist) => <PlaylistCard key={playlist.id} playlist={playlist} />)}
     </>
   );
 };

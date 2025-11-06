@@ -29,9 +29,7 @@ export async function execute<TResult, TVariables>(
     // GraphQL responses have a "data" field that contains the actual query result
     // and optionally an "errors" field
     if (result.errors) {
-      throw new Error(
-        `GraphQL Error: ${result.errors.map((e: { message: string }) => e.message).join(", ")}`,
-      );
+      throw new Error(`GraphQL Error: ${result.errors.map((e: { message: string }) => e.message).join(", ")}`);
     }
 
     return result.data as TResult;
@@ -56,9 +54,7 @@ export async function execute<TResult, TVariables>(
       }
     } else {
       // Handle non-Axios errors
-      throw new Error(
-        `Unknown Error: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      throw new Error(`Unknown Error: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 }
@@ -112,9 +108,7 @@ export async function executeWithFileUpload<TResult, TVariables>(
     // GraphQL responses have a "data" field that contains the actual query result
     // and optionally an "errors" field
     if (result.errors) {
-      throw new Error(
-        `GraphQL Error: ${result.errors.map((e: { message: string }) => e.message).join(", ")}`,
-      );
+      throw new Error(`GraphQL Error: ${result.errors.map((e: { message: string }) => e.message).join(", ")}`);
     }
 
     return result.data as TResult;
@@ -139,9 +133,7 @@ export async function executeWithFileUpload<TResult, TVariables>(
       }
     } else {
       // Handle non-Axios errors
-      throw new Error(
-        `Unknown Error: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      throw new Error(`Unknown Error: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 }
@@ -162,16 +154,13 @@ function extractFiles(
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item, index) =>
-      extractFiles(item, `${path}.${index}`, map, files, fileIndex),
-    );
+    return obj.map((item, index) => extractFiles(item, `${path}.${index}`, map, files, fileIndex));
   }
 
   if (obj && typeof obj === "object") {
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
-      const newPath =
-        path === "variables" ? `${path}.${key}` : path ? `${path}.${key}` : key;
+      const newPath = path === "variables" ? `${path}.${key}` : path ? `${path}.${key}` : key;
       result[key] = extractFiles(value, newPath, map, files, fileIndex);
     }
     return result;

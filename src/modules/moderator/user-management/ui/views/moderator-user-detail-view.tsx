@@ -1,6 +1,5 @@
 "use client";
 
-
 import { ModeratorUserManagementLayout } from "../layout";
 import { ModeratorUserDetailSection } from "../section";
 

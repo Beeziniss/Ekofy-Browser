@@ -4,37 +4,20 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ArrowLeft, Upload, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useSignUpStore } from "@/store/stores";
 import useSignUp from "../../hook/use-sign-up";
 import { formatDate } from "@/utils/signup-utils";
 import { toast } from "sonner";
-import {
-  uploadImageToCloudinary,
-  validateImageFile,
-} from "@/utils/cloudinary-utils";
+import { uploadImageToCloudinary, validateImageFile } from "@/utils/cloudinary-utils";
 import { ClientProfileCompletionSectionProps } from "@/types/listener-auth";
 import { EkofyLogo } from "@/assets/icons";
 
-const ProfileCompletionSection = ({
-  onNext,
-  onBack,
-  initialData,
-}: ClientProfileCompletionSectionProps) => {
+const ProfileCompletionSection = ({ onNext, onBack, initialData }: ClientProfileCompletionSectionProps) => {
   const {
     goToPreviousStep,
     // goToNextStep,
@@ -43,9 +26,7 @@ const ProfileCompletionSection = ({
   } = useSignUpStore();
 
   // Helper function to normalize date from store
-  const normalizeDateFromStore = (
-    dateValue: Date | string | undefined,
-  ): Date | undefined => {
+  const normalizeDateFromStore = (dateValue: Date | string | undefined): Date | undefined => {
     if (!dateValue) return undefined;
     if (dateValue instanceof Date) return dateValue;
     if (typeof dateValue === "string") {
@@ -56,28 +37,18 @@ const ProfileCompletionSection = ({
   };
 
   // Initialize state from global store or initial data
-  const [displayName, setDisplayName] = useState(
-    initialData?.displayName || formData.displayName || "",
-  );
-  const [fullName, setFullName] = useState(
-    initialData?.fullName || formData.fullName || "",
-  );
+  const [displayName, setDisplayName] = useState(initialData?.displayName || formData.displayName || "");
+  const [fullName, setFullName] = useState(initialData?.fullName || formData.fullName || "");
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(
     initialData?.dateOfBirth || normalizeDateFromStore(formData.birthDate),
   );
   const [gender, setGender] = useState<"Male" | "Female" | "Other">(
-    (initialData?.gender as "Male" | "Female" | "Other") ||
-      (formData.gender as "Male" | "Female" | "Other") ||
-      "Male",
+    (initialData?.gender as "Male" | "Female" | "Other") || (formData.gender as "Male" | "Female" | "Other") || "Male",
   );
-  const [avatar, setAvatar] = useState<File | null>(
-    initialData?.avatar || null,
-  );
+  const [avatar, setAvatar] = useState<File | null>(initialData?.avatar || null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(
-    formData.avatarImage || null,
-  );
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(formData.avatarImage || null);
   const [dateError, setDateError] = useState("");
 
   // Use the signup hook for API calls with auto-navigation to OTP step
@@ -99,8 +70,7 @@ const ProfileCompletionSection = ({
         setDateOfBirth(dateValue);
       }
     }
-    if (formData.gender)
-      setGender(formData.gender as "Male" | "Female" | "Other");
+    if (formData.gender) setGender(formData.gender as "Male" | "Female" | "Other");
     // Set avatar URL if exists in store
     if (formData.avatarImage) {
       setAvatarUrl(formData.avatarImage);
@@ -185,11 +155,7 @@ const ProfileCompletionSection = ({
     const completeData = { ...formData, ...profileData };
 
     // Validate required fields
-    if (
-      !completeData.email ||
-      !completeData.password ||
-      !completeData.confirmPassword
-    ) {
+    if (!completeData.email || !completeData.password || !completeData.confirmPassword) {
       toast.error("Email and password are required");
       return;
     }
@@ -208,10 +174,7 @@ const ProfileCompletionSection = ({
     }
 
     // Additional validation for birthDate to ensure it's a valid Date object
-    if (
-      !(completeData.birthDate instanceof Date) ||
-      isNaN(completeData.birthDate.getTime())
-    ) {
+    if (!(completeData.birthDate instanceof Date) || isNaN(completeData.birthDate.getTime())) {
       toast.error("Please select a valid date of birth");
       return;
     }
@@ -336,9 +299,7 @@ const ProfileCompletionSection = ({
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
           <h2 className="mb-4 text-3xl font-bold text-white">Welcome</h2>
-          <p className="text-sm text-gray-300">
-            We need further information to complete the registration process.
-          </p>
+          <p className="text-sm text-gray-300">We need further information to complete the registration process.</p>
         </div>
 
         <div className="flex items-start justify-center gap-16">
@@ -379,9 +340,7 @@ const ProfileCompletionSection = ({
                     <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-700">
                       <Upload className="h-6 w-6 text-gray-400" />
                     </div>
-                    <p className="text-sm font-medium text-white">
-                      Add avatar image
-                    </p>
+                    <p className="text-sm font-medium text-white">Add avatar image</p>
                   </>
                 )}
               </div>
@@ -406,10 +365,7 @@ const ProfileCompletionSection = ({
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Full Name Field */}
               <div>
-                <label
-                  htmlFor="fullName"
-                  className="mb-2 block text-sm font-medium text-white"
-                >
+                <label htmlFor="fullName" className="mb-2 block text-sm font-medium text-white">
                   Full name*
                 </label>
                 <Input
@@ -431,10 +387,7 @@ const ProfileCompletionSection = ({
 
               {/* Display Name Field */}
               <div>
-                <label
-                  htmlFor="displayName"
-                  className="mb-2 block text-sm font-medium text-white"
-                >
+                <label htmlFor="displayName" className="mb-2 block text-sm font-medium text-white">
                   Display name*
                 </label>
                 <Input
@@ -456,10 +409,7 @@ const ProfileCompletionSection = ({
 
               {/* Date of Birth Field */}
               <div>
-                <label
-                  htmlFor="dateOfBirth"
-                  className="mb-2 block text-sm font-medium text-white"
-                >
+                <label htmlFor="dateOfBirth" className="mb-2 block text-sm font-medium text-white">
                   Date of Birth*
                 </label>
                 <Popover>
@@ -471,15 +421,10 @@ const ProfileCompletionSection = ({
                       } ${dateError && "border-red-500"}`}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateOfBirth
-                        ? format(dateOfBirth, "dd/MM/yyyy")
-                        : "DD/MM/YYYY"}
+                      {dateOfBirth ? format(dateOfBirth, "dd/MM/yyyy") : "DD/MM/YYYY"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent
-                    className="border-gradient-input w-auto p-0"
-                    align="start"
-                  >
+                  <PopoverContent className="border-gradient-input w-auto p-0" align="start">
                     <Calendar
                       mode="single"
                       selected={dateOfBirth}
@@ -492,8 +437,7 @@ const ProfileCompletionSection = ({
                       classNames={{
                         months: "text-white",
                         month: "space-y-4",
-                        caption:
-                          "text-white flex justify-center pt-1 relative items-center",
+                        caption: "text-white flex justify-center pt-1 relative items-center",
                         caption_label: "text-sm font-medium text-white hidden",
                         caption_dropdowns: "flex justify-center gap-2",
                         vhidden: "hidden",
@@ -510,68 +454,45 @@ const ProfileCompletionSection = ({
                         nav_button_next: "absolute right-1",
                         table: "w-full border-collapse space-y-1 mt-4",
                         head_row: "flex",
-                        head_cell:
-                          "text-gray-400 rounded-md w-9 font-normal text-[0.8rem]",
+                        head_cell: "text-gray-400 rounded-md w-9 font-normal text-[0.8rem]",
                         row: "flex w-full mt-1",
                         cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
                         day: "h-9 w-9 p-0 font-normal text-white hover:bg-gray-700 rounded-md transition-colors cursor-pointer flex items-center justify-center",
                         day_range_end: "day-range-end",
-                        day_selected:
-                          "bg-blue-600 text-white hover:bg-blue-500",
+                        day_selected: "bg-blue-600 text-white hover:bg-blue-500",
                         day_today: "bg-gray-700 text-white font-semibold",
                         day_outside: "text-gray-500 opacity-50",
-                        day_disabled:
-                          "text-gray-500 opacity-30 cursor-not-allowed hover:bg-transparent",
-                        day_range_middle:
-                          "aria-selected:bg-gray-700 aria-selected:text-white",
+                        day_disabled: "text-gray-500 opacity-30 cursor-not-allowed hover:bg-transparent",
+                        day_range_middle: "aria-selected:bg-gray-700 aria-selected:text-white",
                         day_hidden: "invisible",
                       }}
                     />
                   </PopoverContent>
                 </Popover>
-                {dateError && (
-                  <p className="mt-1 text-xs text-red-400">{dateError}</p>
-                )}
+                {dateError && <p className="mt-1 text-xs text-red-400">{dateError}</p>}
               </div>
 
               {/* Gender Field */}
               <div>
-                <label
-                  htmlFor="gender"
-                  className="mb-2 block text-sm font-medium text-white"
-                >
+                <label htmlFor="gender" className="mb-2 block text-sm font-medium text-white">
                   Gender*
                 </label>
                 <Select
                   value={gender}
-                  onValueChange={(value) =>
-                    setGender(value as "Male" | "Female" | "Other")
-                  }
+                  onValueChange={(value) => setGender(value as "Male" | "Female" | "Other")}
                   required
                 >
                   <SelectTrigger className="border-gradient-input h-12 w-full text-white">
-                    <SelectValue
-                      placeholder="Gender"
-                      className="text-gray-400"
-                    />
+                    <SelectValue placeholder="Gender" className="text-gray-400" />
                   </SelectTrigger>
                   <SelectContent className="border-gray-700 bg-gray-800">
-                    <SelectItem
-                      value="Male"
-                      className="text-white hover:bg-gray-700"
-                    >
+                    <SelectItem value="Male" className="text-white hover:bg-gray-700">
                       Male
                     </SelectItem>
-                    <SelectItem
-                      value="Female"
-                      className="text-white hover:bg-gray-700"
-                    >
+                    <SelectItem value="Female" className="text-white hover:bg-gray-700">
                       Female
                     </SelectItem>
-                    <SelectItem
-                      value="Other"
-                      className="text-white hover:bg-gray-700"
-                    >
+                    <SelectItem value="Other" className="text-white hover:bg-gray-700">
                       Other
                     </SelectItem>
                   </SelectContent>
@@ -586,11 +507,7 @@ const ProfileCompletionSection = ({
                   className="primary_gradient w-full rounded-md px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-90 disabled:opacity-50"
                   size="lg"
                 >
-                  {avatarUploading
-                    ? "Uploading avatar..."
-                    : isRegistering
-                      ? "Creating Account..."
-                      : "Create Account"}
+                  {avatarUploading ? "Uploading avatar..." : isRegistering ? "Creating Account..." : "Create Account"}
                 </Button>
               </div>
             </form>

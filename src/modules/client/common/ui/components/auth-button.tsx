@@ -8,15 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AudioLines,
-  Bell,
-  Headset,
-  LogOut,
-  Rss,
-  Settings,
-  User,
-} from "lucide-react";
+import { AudioLines, Bell, Headset, LogOut, Rss, Settings, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -96,12 +88,7 @@ const AuthButton = () => {
             className="text-main-white rounded-full duration-0 hover:brightness-90"
           >
             {hasNotification ? (
-              <Image
-                src={"/bell-active.svg"}
-                alt="Notification Bell Active"
-                width={24}
-                height={24}
-              />
+              <Image src={"/bell-active.svg"} alt="Notification Bell Active" width={24} height={24} />
             ) : (
               <Bell className="size-6" />
             )}
@@ -110,10 +97,7 @@ const AuthButton = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="size-10 cursor-pointer">
-                <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="@shadcn"
-                />
+                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                 <AvatarFallback>E</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
@@ -123,9 +107,7 @@ const AuthButton = () => {
                   <DropdownMenuItem key={link.href} asChild>
                     <Link href={link.href} className="flex items-center">
                       <User className="text-main-white mr-2 size-4" />
-                      <span className="text-main-white text-base">
-                        {link.label}
-                      </span>
+                      <span className="text-main-white text-base">{link.label}</span>
                     </Link>
                   </DropdownMenuItem>
                 ))}
@@ -171,9 +153,7 @@ const AuthButton = () => {
             <span className="text-sm font-medium">Sign In</span>
           </Link>
           <Link href={"/sign-up"}>
-            <Button className="primary_gradient font-semibold text-white hover:brightness-90">
-              Create Account
-            </Button>
+            <Button className="primary_gradient font-semibold text-white hover:brightness-90">Create Account</Button>
           </Link>
         </div>
       )}

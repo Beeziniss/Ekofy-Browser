@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, X } from "lucide-react";
 
 interface TrackApprovalFiltersProps {
@@ -17,10 +11,7 @@ interface TrackApprovalFiltersProps {
   onSearchChange: (term: string) => void;
 }
 
-export function TrackApprovalFilters({
-  searchTerm,
-  onSearchChange,
-}: TrackApprovalFiltersProps) {
+export function TrackApprovalFilters({ searchTerm, onSearchChange }: TrackApprovalFiltersProps) {
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const [trackTypeFilter, setTrackTypeFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("pending");
@@ -45,14 +36,14 @@ export function TrackApprovalFilters({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
       {/* Search */}
-      <form onSubmit={handleSearchSubmit} className="flex-1 max-w-sm">
+      <form onSubmit={handleSearchSubmit} className="max-w-sm flex-1">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             placeholder="Search tracks..."
             value={localSearchTerm}
             onChange={(e) => setLocalSearchTerm(e.target.value)}
-            className="pl-9 pr-9"
+            className="pr-9 pl-9"
           />
           {localSearchTerm && (
             <Button
@@ -60,7 +51,7 @@ export function TrackApprovalFilters({
               variant="ghost"
               size="sm"
               onClick={clearSearch}
-              className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 p-0"
+              className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2 p-0"
             >
               <X className="h-4 w-4" />
             </Button>

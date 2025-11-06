@@ -20,9 +20,7 @@ export type GraphQLTrack = {
 /**
  * Converts GraphQL Track to Store Track format
  */
-export const convertGraphQLTrackToStore = (
-  gqlTrack: GraphQLTrack,
-): StoreTrack => {
+export const convertGraphQLTrackToStore = (gqlTrack: GraphQLTrack): StoreTrack => {
   return {
     id: gqlTrack.id,
     name: gqlTrack.name,
@@ -38,8 +36,6 @@ export const convertGraphQLTrackToStore = (
 /**
  * Converts array of GraphQL Tracks to Store Track format
  */
-export const convertGraphQLTracksToStore = (
-  gqlTracks: GraphQLTrack[],
-): StoreTrack[] => {
+export const convertGraphQLTracksToStore = (gqlTracks: GraphQLTrack[]): StoreTrack[] => {
   return gqlTracks.map(convertGraphQLTrackToStore);
 };

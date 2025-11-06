@@ -1,26 +1,14 @@
 "use client";
 
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, Search } from "lucide-react";
@@ -77,20 +65,12 @@ export function ApprovalHistoriesTable({
     {
       accessorKey: "email",
       header: "Email",
-      cell: ({ row }) => (
-        <span className="font-mono text-xs">
-          {row.original.snapshot.Email}
-        </span>
-      ),
+      cell: ({ row }) => <span className="font-mono text-xs">{row.original.snapshot.Email}</span>,
     },
     {
       accessorKey: "approvalType",
       header: "Type",
-      cell: ({ row }) => (
-        <Badge variant="outline">
-          {row.original.approvalType.replace("_", " ")}
-        </Badge>
-      ),
+      cell: ({ row }) => <Badge variant="outline">{row.original.approvalType.replace("_", " ")}</Badge>,
     },
     {
       accessorKey: "action",
@@ -103,18 +83,14 @@ export function ApprovalHistoriesTable({
       cell: ({ row }) => (
         <div>
           <div className="font-medium">{row.original.approvedBy[0]?.fullName || "Unknown"}</div>
-          <div className="text-sm text-muted-foreground">
-            {row.original.approvedBy[0]?.email || "Unknown"}
-          </div>
+          <div className="text-muted-foreground text-sm">{row.original.approvedBy[0]?.email || "Unknown"}</div>
         </div>
       ),
     },
     {
       accessorKey: "actionAt",
       header: "Action Date",
-      cell: ({ row }) => (
-        <span>{format(new Date(row.original.actionAt), "MMM dd, yyyy HH:mm")}</span>
-      ),
+      cell: ({ row }) => <span>{format(new Date(row.original.actionAt), "MMM dd, yyyy HH:mm")}</span>,
     },
     {
       id: "actions",
@@ -148,8 +124,8 @@ export function ApprovalHistoriesTable({
     <div className="space-y-4">
       {/* Search */}
       <div className="flex items-center space-x-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+        <div className="relative max-w-sm flex-1">
+          <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
           <Input
             placeholder="Search histories..."
             value={searchTerm}
@@ -167,12 +143,7 @@ export function ApprovalHistoriesTable({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -187,14 +158,9 @@ export function ApprovalHistoriesTable({
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
@@ -211,7 +177,7 @@ export function ApprovalHistoriesTable({
 
       {/* Pagination */}
       <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-muted-foreground text-sm">
           Page {currentPage} of {totalPages} ({totalCount} total)
         </div>
         <div className="flex items-center space-x-2">

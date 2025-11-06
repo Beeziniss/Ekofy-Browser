@@ -1,15 +1,11 @@
-import React from 'react';
+import React from "react";
 
 interface SignUpLayoutProps {
   children: React.ReactNode;
 }
 
 const SignUpLayout = ({ children }: SignUpLayoutProps) => {
-  return (
-    <div className="w-full flex">
-      {children}
-    </div>
-  );
+  return <div className="flex w-full">{children}</div>;
 };
 
 export default SignUpLayout;

@@ -6,13 +6,7 @@ import { useAudioStore, Track } from "@/store";
 import { toast } from "sonner";
 
 export const usePlaylistPlayback = (playlistId: string) => {
-  const {
-    isPlaying: globalIsPlaying,
-    currentPlaylistId,
-    togglePlayPause,
-    play,
-    setPlaylist,
-  } = useAudioStore();
+  const { isPlaying: globalIsPlaying, currentPlaylistId, togglePlayPause, play, setPlaylist } = useAudioStore();
 
   // Only fetch track data when we need it (lazy loading for performance)
   const { data: trackListData, refetch: fetchTracks } = useQuery({

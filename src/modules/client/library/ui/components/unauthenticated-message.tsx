@@ -1,13 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogInIcon, UserPlusIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -30,10 +24,7 @@ const UnauthenticatedMessage = () => {
               </Link>
             </Button>
             <Button asChild variant="outline" className="w-full">
-              <Link
-                href="/sign-up"
-                className="flex items-center justify-center"
-              >
+              <Link href="/sign-up" className="flex items-center justify-center">
                 <UserPlusIcon className="mr-2 h-4 w-4" />
                 Sign Up
               </Link>

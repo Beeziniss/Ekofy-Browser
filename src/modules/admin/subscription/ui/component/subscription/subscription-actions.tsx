@@ -19,11 +19,7 @@ export function SubscriptionActions({
 }: SubscriptionActionsProps) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <SearchBar
-        placeholder={searchPlaceholder}
-        onSearch={onSearch}
-        className="flex-1 max-w-md"
-      />
+      <SearchBar placeholder={searchPlaceholder} onSearch={onSearch} className="max-w-md flex-1" />
       <div className="flex items-center gap-2">
         {showCreatePlan && onCreateSubscriptionPlan && (
           <Button onClick={onCreateSubscriptionPlan} variant="outline">

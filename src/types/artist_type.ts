@@ -1,7 +1,7 @@
 export enum ArtistType {
-  Band = 'BAND',
-  Group = 'GROUP',
-  Individual = 'INDIVIDUAL'
+  Band = "BAND",
+  Group = "GROUP",
+  Individual = "INDIVIDUAL",
 }
 
 // Artist Sign-Up Form Data Types
@@ -23,7 +23,7 @@ export interface ArtistMemberData {
   email: string;
   phoneNumber: string;
   isLeader: boolean;
-  gender: 'MALE' | 'FEMALE' | 'OTHER';
+  gender: "MALE" | "FEMALE" | "OTHER";
 }
 
 export interface ArtistMembersData {
@@ -66,15 +66,15 @@ export interface ArtistOTPData {
 }
 
 // Union type for different step data
-export type ArtistSignUpStepData = 
-  | ArtistSignUpFormData 
-  | ArtistIdentityData 
-  | ArtistMembersData 
-  | ArtistCCCDData 
+export type ArtistSignUpStepData =
+  | ArtistSignUpFormData
+  | ArtistIdentityData
+  | ArtistMembersData
+  | ArtistCCCDData
   | ArtistOTPData
   | undefined;
 
-// Props for section components  
+// Props for section components
 export interface ArtistSignUpSectionProps<T = ArtistSignUpStepData> {
   onNext: (data?: T) => void;
   onBack?: () => void;
