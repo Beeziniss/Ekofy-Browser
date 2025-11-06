@@ -14,21 +14,23 @@ import Link from "next/link";
 import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { authApi } from "@/services/auth-services";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserRole } from "@/types/role";
 import { useRouter } from "next/navigation";
 import { SparklesColorful } from "@/assets/icons";
 
 const AuthButton = () => {
-  const { isAuthenticated, user, clearUserData } = useAuthStore();
-  const [hasNotification] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [hasNotification] = useState(false);
+  const { isAuthenticated, user, clearUserData } = useAuthStore();
 
   // Logout mutation
   const { mutate: logout } = useMutation({
     mutationFn: authApi.general.logout,
     onSuccess: () => {
       clearUserData();
+      queryClient.clear();
       router.replace("/");
     },
     onError: (error) => {

@@ -1,4 +1,3 @@
-import React from "react";
 import LoginView from "@/modules/client/auth/login/ui/views/login-vỉew";
 
 const Page = () => {

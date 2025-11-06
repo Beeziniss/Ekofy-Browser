@@ -1,18 +1,18 @@
 "use client";
 
-import React, { Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
-import InvoicesTable from "@/modules/client/profile/ui/components/activity/invoices-table";
+import { Suspense, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import InvoicesTable from "@/modules/client/profile/ui/components/activity/invoices-table";
 
 export default function InvoicesPage() {
   const router = useRouter();
   const { isAuthenticated, user, clearUserData } = useAuthStore();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) {
       router.replace("/login");
       return;

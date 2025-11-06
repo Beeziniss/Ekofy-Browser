@@ -1,20 +1,20 @@
 "use client";
 
-import React, { Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Suspense, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
+import { useRouter, useParams } from "next/navigation";
 import { PaymentTransactionStatus } from "@/gql/graphql";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function TransactionDetailPage() {
   const router = useRouter();
   const params = useParams<{ transactionId: string }>();
   const { isAuthenticated, user, clearUserData } = useAuthStore();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) {
       router.replace("/login");
       return;

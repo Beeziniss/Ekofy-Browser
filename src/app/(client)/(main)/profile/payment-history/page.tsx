@@ -1,18 +1,18 @@
 "use client";
 
-import React, { Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
-import PaymentTransactionsTable from "@/modules/client/profile/ui/components/activity/payment-transactions-table";
+import { useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import PaymentTransactionsTable from "@/modules/client/profile/ui/components/activity/payment-transactions-table";
 
 export default function PaymentHistoryPage() {
   const router = useRouter();
   const { isAuthenticated, user, clearUserData } = useAuthStore();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) {
       router.replace("/login");
       return;

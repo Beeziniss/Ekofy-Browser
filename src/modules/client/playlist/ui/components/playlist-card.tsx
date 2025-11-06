@@ -166,14 +166,16 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         </div>
       </Link>
 
-      <Link
-        href={`/playlists/${playlist.id}`}
-        className={`hover:text-main-purple cursor-pointer text-sm hover:underline ${isPlaylistCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-main-white"}`}
-      >
-        {playlist.name}
-      </Link>
+      <div className="flex flex-col gap-y-1">
+        <Link
+          href={`/playlists/${playlist.id}`}
+          className={`hover:text-main-purple cursor-pointer text-sm hover:underline ${isPlaylistCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-main-white"}`}
+        >
+          {playlist.name}
+        </Link>
 
-      <p className="text-main-grey text-xs">{playlist.isPublic ? "Public" : "Private"}</p>
+        <p className="text-main-grey text-xs">{playlist.isPublic ? "Public" : "Private"}</p>
+      </div>
 
       {/* Authentication Warning Dialogs */}
       <WarningAuthDialog open={showPlayWarning} onOpenChange={setShowPlayWarning} action="play" />
