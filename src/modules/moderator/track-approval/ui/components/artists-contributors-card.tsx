@@ -11,6 +11,7 @@ interface ArtistsContributorsCardProps {
 }
 
 export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps) {
+  console.log("ArtistsContributorsCard track data:", track);
   return (
     <Card>
       <CardHeader>
@@ -57,8 +58,9 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
             </h3>
             <div className="grid gap-3">
               {track.featuredArtists.items.map((artist) => (
-                <div key={artist.id} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                <div key={artist.id} className="flex items-center border-2 border-white gap-3 p-3 rounded-lg">
                   <Avatar className="h-10 w-10">
+                    <AvatarImage src={artist.avatarImage || undefined} alt={artist.stageName} />
                     <AvatarFallback>
                       <User className="h-5 w-5" />
                     </AvatarFallback>
@@ -68,6 +70,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
                     <p className="text-sm text-muted-foreground">{artist.email}</p>
                     <p className="text-xs text-muted-foreground">User ID: {artist.userId}</p>
                   </div>
+                  <Badge variant="outline">{artist.artistType}</Badge>
                 </div>
               ))}
             </div>

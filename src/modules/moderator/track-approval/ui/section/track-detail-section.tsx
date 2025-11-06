@@ -10,6 +10,7 @@ import { useApproveTrackWithFeedback, useRejectTrackWithFeedback } from "@/gql/c
 import { TrackUploadRequest } from "@/types/approval-track";
 import {
   TrackInfoCard,
+  TrackCategoriesCard,
   ArtistsContributorsCard,
   WorkRecordingDetailsCard,
   LegalDocumentsCard,
@@ -92,6 +93,11 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
             track={track} 
             createdByUser={createdByUser}
             isLoadingUser={isLoadingUser}
+          />
+
+          {/* Track Categories */}
+          <TrackCategoriesCard 
+            categoryIds={track.track.categoryIds || []}
           />
 
           {/* Artists & Contributors */}

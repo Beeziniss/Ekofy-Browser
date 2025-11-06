@@ -5,12 +5,7 @@ import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 import { useCallback } from "react";
-import {
-  PauseButton,
-  PauseButtonLarge,
-  PlayButton,
-  PlayButtonLarge,
-} from "@/assets/icons";
+import { Play, Pause } from "lucide-react";
 
 interface SimplePlayButtonProps {
   trackId: string;
@@ -72,25 +67,38 @@ export function SimplePlayButton({
 
   const sizeClasses = {
     sm: "h-8 w-8 p-0",
-    md: "h-10 w-10 p-0",
-    lg: "h-12 w-12 p-0",
+    md: "h-10 w-10 p-0", 
+    lg: "h-14 w-14 p-0",
     full: "h-full w-full p-0",
   };
 
   const iconSizes = {
-    sm: "h-4 w-4",
-    md: "h-5 w-5",
-    lg: "h-6 w-6",
-    full: "h-16 w-16",
+    sm: "h-5 w-5",
+    md: "h-6 w-6",
+    lg: "h-10 w-10",
+    full: "h-12 w-12",
+  };
+
+  const backgroundClasses = {
+    sm: "bg-white/50 hover:bg-white/70 backdrop-blur-sm border border-black/20",
+    md: "bg-white/50 hover:bg-white/70 backdrop-blur-sm border border-black/20",
+    lg: "bg-white/60 hover:bg-white/80 backdrop-blur-md border border-black/30 shadow-lg",
+    full: "bg-white/60 hover:bg-white/80 backdrop-blur-md border border-black/30 shadow-lg",
   };
 
   return (
     <Button
-      variant={isCurrentTrack ? "default" : "ghost"}
+      variant="ghost"
       size="sm"
       onClick={handleClick}
       disabled={isLoading && isCurrentTrack}
-      className={cn(sizeClasses[size], className)}
+      className={cn(
+        sizeClasses[size], 
+        backgroundClasses[size],
+        "text-white hover:text-white rounded-full transition-all duration-200",
+        isCurrentTrack && "ring-2 ring-white/50",
+        className
+      )}
       title={isCurrentlyPlaying ? "Pause" : "Play"}
     >
       {isLoading && isCurrentTrack ? (
@@ -101,15 +109,9 @@ export function SimplePlayButton({
           )}
         />
       ) : isCurrentlyPlaying ? (
-        size === "full" ? (
-          <PauseButtonLarge className={iconSizes[size]} />
-        ) : (
-          <PauseButton className={iconSizes[size]} />
-        )
-      ) : size === "full" ? (
-        <PlayButtonLarge className={iconSizes[size]} />
+        <Pause className={cn(iconSizes[size], "text-black")} />
       ) : (
-        <PlayButton className={iconSizes[size]} />
+        <Play className={cn(iconSizes[size], "text-black")} />
       )}
     </Button>
   );

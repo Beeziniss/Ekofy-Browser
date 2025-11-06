@@ -3,6 +3,8 @@ export { TrackApprovalFilters } from "./track-approval-filters";
 export { TrackApprovalStats } from "./track-approval-stats";
 export { AudioPlayer } from "./audio-player";
 export { TrackInfoCard } from "./track-info-card";
+export { TrackCategoriesCard } from "./track-categories-card";
+export { TrackCategoriesBadge } from "./track-categories-badge";
 export { ArtistsContributorsCard } from "./artists-contributors-card";
 export { WorkRecordingDetailsCard } from "./work-recording-details-card";
 export { LegalDocumentsCard } from "./legal-documents-card";

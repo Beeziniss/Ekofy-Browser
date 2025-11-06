@@ -57,15 +57,15 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
                 <Music className="h-12 w-12" />
               </AvatarFallback>
             </Avatar>
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <SimplePlayButton
                 trackId={track.track.id}
                 trackName={track.track.name}
                 trackArtist={track.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
                 trackCoverImage={track.track.coverImage}
                 uploadId={track.id} // Pass uploadId for audio player
-                size="full"
-                className="h-full w-full bg-transparent hover:bg-black/20 text-white border-0 rounded-full"
+                size="lg"
+                className="h-14 w-14"
               />
             </div>
           </div>
@@ -119,7 +119,7 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
               </h3>
               <div className="flex flex-wrap gap-2">
                 {track.track.tags.map((tag, index) => (
-                  <Badge key={index} variant="outline">
+                  <Badge key={index} variant="outline" className="w-14 h-10 text-[14px]">
                     {tag}
                   </Badge>
                 ))}

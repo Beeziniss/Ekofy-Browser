@@ -20,7 +20,8 @@ import { MODERATOR_ARTIST_DETAIL_QUERY, MODERATOR_LISTENER_DETAIL_QUERY } from "
 import { 
   PENDING_TRACK_UPLOAD_REQUESTS_QUERY,
   PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY,
-  ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY
+  ORIGINAL_FILE_TRACK_UPLOAD_REQUEST_QUERY,
+  GetCategory
 } from "@/modules/shared/queries/moderator/track-approval-queries";
 import { QUERY_USER_CREATED_BY } from "@/modules/shared/queries/moderator/track-approval-queries";
 
@@ -336,4 +337,25 @@ export const moderatorUserCreatedByOptions = (userId: string) => queryOptions({
   },
   enabled: !!userId,
   staleTime: 5 * 60 * 1000, // 5 minutes
+});
+
+// Categories query options for moderator
+export const moderatorCategoriesOptions = (categoryIds: string[]) => queryOptions({
+  queryKey: ["moderator-categories", categoryIds],
+  queryFn: async () => {
+    if (!categoryIds || categoryIds.length === 0) {
+      return { categories: { items: [] } };
+    }
+    
+    const result = await execute(GetCategory, {
+      where: {
+        id: {
+          in: categoryIds
+        }
+      }
+    });
+    return result;
+  },
+  enabled: !!categoryIds && categoryIds.length > 0,
+  staleTime: 10 * 60 * 1000, // 10 minutes - categories don't change often
 });
