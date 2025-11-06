@@ -9,13 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArtistQuery, TrackDetailQuery } from "@/gql/graphql";
 import { formatNumber } from "@/utils/format-number";
-import {
-  CopyIcon,
-  EllipsisIcon,
-  HeartIcon,
-  ListPlusIcon,
-  UserIcon,
-} from "lucide-react";
+import { CopyIcon, EllipsisIcon, HeartIcon, ListPlusIcon, UserIcon } from "lucide-react";
 import { Suspense, useState } from "react";
 import PlaylistAddModal from "@/modules/client/playlist/ui/components/playlist-add-modal";
 import { toast } from "sonner";
@@ -44,21 +38,12 @@ const TrackOwnerSectionSkeleton = () => {
   return <div>Loading...</div>;
 };
 
-const TrackOwnerSectionSuspense = ({
-  data,
-  artistData,
-}: TrackOwnerSectionProps) => {
+const TrackOwnerSectionSuspense = ({ data, artistData }: TrackOwnerSectionProps) => {
   const trackDetail = data.tracks?.items?.[0];
   const trackDetailArtist = trackDetail?.mainArtists?.items?.[0];
   const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
-  const {
-    showWarningDialog,
-    setShowWarningDialog,
-    warningAction,
-    trackName,
-    executeWithAuth,
-    isAuthenticated,
-  } = useAuthAction();
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth, isAuthenticated } =
+    useAuthAction();
 
   const { handleFavorite } = useFavoriteTrack();
 
@@ -97,14 +82,9 @@ const TrackOwnerSectionSuspense = ({
     executeWithAuth(() => {
       if (!trackDetailArtist?.userId) return;
 
-      const isCurrentlyFollowing =
-        trackDetailArtist?.user[0]?.checkUserFollowing;
+      const isCurrentlyFollowing = trackDetailArtist?.user[0]?.checkUserFollowing;
 
-      handleFollowToggle(
-        trackDetailArtist.userId,
-        isCurrentlyFollowing,
-        trackDetailArtist.stageName,
-      );
+      handleFollowToggle(trackDetailArtist.userId, isCurrentlyFollowing, trackDetailArtist.stageName);
     }, "follow");
   };
 
@@ -113,17 +93,8 @@ const TrackOwnerSectionSuspense = ({
       <div className="flex items-center gap-x-3">
         <Link href={`/artists/${trackData?.mainArtistIds?.[0]}`}>
           <Avatar className="size-16">
-            <AvatarImage
-              src={
-                trackDetail?.mainArtists?.items?.[0].avatarImage ||
-                "https://github.com/shadcn.png"
-              }
-            />
-            <AvatarFallback>
-              {getUserInitials(
-                trackDetail?.mainArtists?.items?.[0]?.stageName || "",
-              )}
-            </AvatarFallback>
+            <AvatarImage src={trackDetail?.mainArtists?.items?.[0].avatarImage || "https://github.com/shadcn.png"} />
+            <AvatarFallback>{getUserInitials(trackDetail?.mainArtists?.items?.[0]?.stageName || "")}</AvatarFallback>
           </Avatar>
         </Link>
 
@@ -133,41 +104,28 @@ const TrackOwnerSectionSuspense = ({
               href={`/artists/${trackData?.mainArtistIds?.[0]}`}
               className="text-main-white hover:text-main-purple text-sm font-bold transition-colors"
             >
-              {data.tracks?.items?.[0]?.mainArtists?.items?.[0]?.stageName ||
-                "Unknown Artist"}
+              {data.tracks?.items?.[0]?.mainArtists?.items?.[0]?.stageName || "Unknown Artist"}
             </Link>
             <span className="text-main-grey-dark-1 flex items-center gap-x-1 text-sm">
-              <UserIcon className="inline-block size-5" />{" "}
-              {trackData?.mainArtists?.items?.[0]?.followerCount || 0} followers
+              <UserIcon className="inline-block size-5" /> {trackData?.mainArtists?.items?.[0]?.followerCount || 0}{" "}
+              followers
             </span>
           </div>
           {/* // TODO: Implement feature for artist here later */}
-          {artistData &&
-          artistData.artists?.items?.[0]?.userId ===
-            trackDetailArtist?.userId ? null : (
+          {artistData && artistData.artists?.items?.[0]?.userId === trackDetailArtist?.userId ? null : (
             <Button
-              variant={
-                trackDetailArtist?.user[0]?.checkUserFollowing
-                  ? "reaction"
-                  : "default"
-              }
+              variant={trackDetailArtist?.user[0]?.checkUserFollowing ? "reaction" : "default"}
               className="px-10 py-2 text-sm font-bold"
               onClick={handleFollowUserToggle}
             >
-              {trackDetailArtist?.user[0]?.checkUserFollowing
-                ? "Following"
-                : "Follow"}
+              {trackDetailArtist?.user[0]?.checkUserFollowing ? "Following" : "Follow"}
             </Button>
           )}
         </div>
       </div>
 
       <div className="flex items-center gap-x-4">
-        <Button
-          variant="reaction"
-          className="group text-sm font-bold"
-          onClick={handleFavoriteClick}
-        >
+        <Button variant="reaction" className="group text-sm font-bold" onClick={handleFavoriteClick}>
           <HeartIcon
             className={cn(
               `group-hover:text-main-grey group-hover:fill-main-grey inline-block size-4`,
@@ -176,9 +134,7 @@ const TrackOwnerSectionSuspense = ({
                 : "text-main-white fill-main-white",
             )}
           />
-          <span className="text-main-grey">
-            {formatNumber(trackData?.favoriteCount || 0)}
-          </span>
+          <span className="text-main-grey">{formatNumber(trackData?.favoriteCount || 0)}</span>
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -204,9 +160,7 @@ const TrackOwnerSectionSuspense = ({
                 }}
               >
                 <ListPlusIcon className="text-main-white mr-2 size-4" />
-                <span className="text-main-white text-base">
-                  Add to playlist
-                </span>
+                <span className="text-main-white text-base">Add to playlist</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
