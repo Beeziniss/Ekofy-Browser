@@ -31,18 +31,11 @@ interface RequestDetailViewProps {
   className?: string;
 }
 
-export function RequestDetailView({ 
-  request, 
-  onBack, 
-  onApply, 
-  onContactClient,
-  className 
-}: RequestDetailViewProps) {
-  
+export function RequestDetailView({ request, onBack, onApply, onContactClient, className }: RequestDetailViewProps) {
   // Get auth state and dialog
   const { isAuthenticated } = useAuthStore();
   const { showAuthDialog } = useAuthDialog();
-  
+
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
 
@@ -231,20 +224,13 @@ export function RequestDetailView({
                   </div>
 
                   <div className="space-y-3">
-                    <Button 
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                      onClick={handleApply}
-                    >
-                      <Send className="h-4 w-4 mr-2" />
+                    <Button className="w-full bg-purple-600 text-white hover:bg-purple-700" onClick={handleApply}>
+                      <Send className="mr-2 h-4 w-4" />
                       Apply Now
                     </Button>
-                    
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={handleContactClient}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
+
+                    <Button variant="outline" className="w-full" onClick={handleContactClient}>
+                      <MessageCircle className="mr-2 h-4 w-4" />
                       Contact Client
                     </Button>
                   </div>
@@ -255,7 +241,7 @@ export function RequestDetailView({
         </div>
 
         {/* Comments Section */}
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="mx-auto max-w-7xl px-6 py-8">
           <RequestHubCommentSection requestId={request.id} />
         </div>
       </div>

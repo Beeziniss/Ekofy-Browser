@@ -1,1 +1,1 @@
-export { AuthDialogProvider, useAuthDialog } from './auth-dialog-context';
+export { AuthDialogProvider, useAuthDialog } from "./auth-dialog-context";

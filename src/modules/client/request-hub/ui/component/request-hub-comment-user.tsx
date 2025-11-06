@@ -257,7 +257,7 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubComme
           <Button
             variant={"ghost"}
             onClick={handleShowReplyInput}
-            className="text-gray-400 hover:text-gray-200 cursor-pointer h-6 px-2 text-xs"
+            className="h-6 cursor-pointer px-2 text-xs text-gray-400 hover:text-gray-200"
           >
             Reply
           </Button>

@@ -54,7 +54,7 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
                 <Music className="h-12 w-12" />
               </AvatarFallback>
             </Avatar>
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <SimplePlayButton
                 trackId={track.track.id}
                 trackName={track.track.name}
@@ -107,7 +107,7 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
               </h3>
               <div className="flex flex-wrap gap-2">
                 {track.track.tags.map((tag, index) => (
-                  <Badge key={index} variant="outline" className="w-14 h-10 text-[14px]">
+                  <Badge key={index} variant="outline" className="h-10 w-14 text-[14px]">
                     {tag}
                   </Badge>
                 ))}

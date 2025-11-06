@@ -43,9 +43,7 @@ export function TrackDetailSidebar({ track, createdByUser, isLoadingUser }: Trac
           </div>
           <div className="text-sm">
             <span className="font-medium">Featured Artists: </span>
-            <span className="text-muted-foreground">
-              {track.track.featuredArtistIds?.length || 0} artists
-            </span>
+            <span className="text-muted-foreground">{track.track.featuredArtistIds?.length || 0} artists</span>
           </div>
         </CardContent>
       </Card>

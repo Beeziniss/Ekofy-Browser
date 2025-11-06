@@ -14,11 +14,7 @@ import {
 } from "@/components/ui/select";
 import { SendIcon, MessageSquare } from "lucide-react";
 import RequestHubCommentUser from "./request-hub-comment-user";
-import {
-  useMutation,
-  useQueryClient,
-  useQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createRequestHubCommentMutationOptions } from "@/gql/options/client-mutation-options";
 import { CommentType } from "@/gql/graphql";
 import { requestHubCommentsOptions, userForRequestsOptions } from "@/gql/options/client-options";
@@ -43,9 +39,7 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
   });
 
   // Always fetch comments - no auth required to view
-  const { data: commentsData } = useQuery(
-    requestHubCommentsOptions(requestId),
-  );
+  const { data: commentsData } = useQuery(requestHubCommentsOptions(requestId));
   const { mutate: createComment, isPending } = useMutation({
     ...createRequestHubCommentMutationOptions,
     onSuccess: () => {
@@ -69,7 +63,7 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
       showAuthDialog("comment");
       return;
     }
-    
+
     if (comment.trim() && !isPending) {
       handleCreateComment(comment.trim());
       setComment("");
@@ -154,20 +148,20 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
                 }
               }}
               readOnly={!isAuthenticated}
-              className="bg-gray-700/50 border-gray-600/50 text-gray-100 placeholder-gray-400 rounded-lg px-4 py-3 pr-16 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30"
+              className="rounded-lg border-gray-600/50 bg-gray-700/50 px-4 py-3 pr-16 text-gray-100 placeholder-gray-400 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30"
             />
 
             <Button
               onClick={isAuthenticated ? handleSubmitComment : handleInputClick}
               disabled={isAuthenticated && (!comment.trim() || isPending)}
               size="sm"
-              className={`absolute right-0.5 top-1/2 -translate-y-1/2 border-0 px-3 py-1.5 ${
-                isAuthenticated 
-                  ? "primary_gradient hover:opacity-70 text-white disabled:cursor-not-allowed" 
-                  : "bg-gray-600 hover:bg-gray-500 text-gray-300"
+              className={`absolute top-1/2 right-0.5 -translate-y-1/2 border-0 px-3 py-1.5 ${
+                isAuthenticated
+                  ? "primary_gradient text-white hover:opacity-70 disabled:cursor-not-allowed"
+                  : "bg-gray-600 text-gray-300 hover:bg-gray-500"
               }`}
             >
-              <SendIcon className="w-4 h-4 mr-1" />
+              <SendIcon className="mr-1 h-4 w-4" />
               {isAuthenticated ? (isPending ? "Posting..." : "Comment") : "Sign In"}
             </Button>
           </div>
@@ -176,8 +170,7 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
 
       {/* Comments List */}
       <div className="space-y-4">
-        {commentsData?.threadedComments?.threads &&
-        commentsData.threadedComments.threads.length > 0 ? (
+        {commentsData?.threadedComments?.threads && commentsData.threadedComments.threads.length > 0 ? (
           commentsData.threadedComments.threads.map((thread, index) => (
             <div key={`${thread.rootComment.id}-${index}`} className="rounded-lg border border-gray-700/30 p-4">
               <RequestHubCommentUser thread={thread} requestId={requestId} />

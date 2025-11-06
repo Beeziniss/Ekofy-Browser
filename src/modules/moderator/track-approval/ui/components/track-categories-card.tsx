@@ -11,9 +11,7 @@ interface TrackCategoriesCardProps {
 }
 
 export function TrackCategoriesCard({ categoryIds }: TrackCategoriesCardProps) {
-  const { data: categoriesData, isLoading, error } = useQuery(
-    moderatorCategoriesOptions(categoryIds)
-  );
+  const { data: categoriesData, isLoading, error } = useQuery(moderatorCategoriesOptions(categoryIds));
 
   const categories = categoriesData?.categories?.items || [];
 
@@ -29,10 +27,7 @@ export function TrackCategoriesCard({ categoryIds }: TrackCategoriesCardProps) {
         <CardContent>
           <div className="flex flex-wrap gap-2">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div
-                key={index}
-                className="h-6 w-20 bg-muted animate-pulse rounded-full"
-              />
+              <div key={index} className="bg-muted h-6 w-20 animate-pulse rounded-full" />
             ))}
           </div>
         </CardContent>
@@ -50,9 +45,7 @@ export function TrackCategoriesCard({ categoryIds }: TrackCategoriesCardProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Failed to load categories
-          </p>
+          <p className="text-muted-foreground text-sm">Failed to load categories</p>
         </CardContent>
       </Card>
     );
@@ -68,7 +61,7 @@ export function TrackCategoriesCard({ categoryIds }: TrackCategoriesCardProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
+          <p className="text-muted-foreground flex items-center gap-2 text-sm">
             <Tag className="h-4 w-4" />
             No categories assigned
           </p>
@@ -88,11 +81,7 @@ export function TrackCategoriesCard({ categoryIds }: TrackCategoriesCardProps) {
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
-            <Badge 
-              key={category.id} 
-              variant="outline"
-              className="w-16 h-10 text-[14px]"
-            >
+            <Badge key={category.id} variant="outline" className="h-10 w-16 text-[14px]">
               {category.name}
             </Badge>
           ))}

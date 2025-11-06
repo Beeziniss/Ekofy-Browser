@@ -13,9 +13,9 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { usePlaylistPlayback } from "@/modules/client/playlist/hooks/use-playlist-playback";
 // import { useAuthStore } from "@/store";
-import { useAuthAction } from '@/hooks/use-auth-action';
-import { WarningAuthDialog } from '@/modules/shared/ui/components/warning-auth-dialog';
-import { useFavoriteSearch } from '../../../hooks/use-favorite-search';
+import { useAuthAction } from "@/hooks/use-auth-action";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { useFavoriteSearch } from "../../../hooks/use-favorite-search";
 
 interface SearchPlaylistSectionProps {
   playlists: SearchPlaylistItem[];
@@ -95,16 +95,10 @@ interface PlaylistCardProps {
 const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   // const { user } = useAuthStore(); // Temporarily not used
-  
+
   // Auth action hooks
-  const {
-    showWarningDialog,
-    setShowWarningDialog,
-    warningAction,
-    trackName,
-    executeWithAuth,
-  } = useAuthAction();
-  
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
+
   // Favorite hooks
   const { handleFavoritePlaylist } = useFavoriteSearch();
 
@@ -118,23 +112,31 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    executeWithAuth(async () => {
-      await handlePlayPause();
-    }, "play", playlist.name);
+    executeWithAuth(
+      async () => {
+        await handlePlayPause();
+      },
+      "play",
+      playlist.name,
+    );
   };
 
   // Handle favorite button click
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    executeWithAuth(() => {
-      handleFavoritePlaylist({
-        id: playlist.id,
-        name: playlist.name,
-        checkPlaylistInFavorite: playlist.checkPlaylistInFavorite
-      });
-    }, "favorite", playlist.name);
+
+    executeWithAuth(
+      () => {
+        handleFavoritePlaylist({
+          id: playlist.id,
+          name: playlist.name,
+          checkPlaylistInFavorite: playlist.checkPlaylistInFavorite,
+        });
+      },
+      "favorite",
+      playlist.name,
+    );
   };
 
   const onCopy = (e: React.MouseEvent) => {
@@ -181,8 +183,8 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
               <HeartIcon
                 className={`size-5`}
                 style={{
-                  color: playlist.checkPlaylistInFavorite ? 'var(--color-main-purple)' : '#2a2a2a',
-                  fill: playlist.checkPlaylistInFavorite ? 'var(--color-main-purple)' : 'none'
+                  color: playlist.checkPlaylistInFavorite ? "var(--color-main-purple)" : "#2a2a2a",
+                  fill: playlist.checkPlaylistInFavorite ? "var(--color-main-purple)" : "none",
                 }}
               />
             </Button>
@@ -215,10 +217,8 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         {playlist.name}
       </Link>
 
-      <p className="text-main-grey text-xs">
-        By {playlist.user[0]?.fullName || 'Unknown'}
-      </p>
-      
+      <p className="text-main-grey text-xs">By {playlist.user[0]?.fullName || "Unknown"}</p>
+
       <WarningAuthDialog
         open={showWarningDialog}
         onOpenChange={setShowWarningDialog}

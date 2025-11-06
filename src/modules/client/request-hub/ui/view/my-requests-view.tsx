@@ -182,15 +182,12 @@ export function MyRequestsView() {
   // Check if user is listener - only listeners can access my requests
   if (user.role !== UserRole.LISTENER) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center text-white">
-          <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+          <h2 className="mb-2 text-2xl font-bold">Access Denied</h2>
           <p>Only listeners can access request management features.</p>
           <p className="mt-4">
-            <button 
-              onClick={() => router.push('/request-hub')} 
-              className="text-blue-400 hover:text-blue-300 underline"
-            >
+            <button onClick={() => router.push("/request-hub")} className="text-blue-400 underline hover:text-blue-300">
               Go back to Request Hub
             </button>
           </p>
@@ -234,7 +231,10 @@ export function MyRequestsView() {
               <div className="mb-6">
                 <div className="flex items-center gap-4">
                   <span className="text-sm text-white">Filter by status:</span>
-                  <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as GqlRequestStatus | 'ALL')}>
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(value) => setStatusFilter(value as GqlRequestStatus | "ALL")}
+                  >
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
@@ -256,7 +256,7 @@ export function MyRequestsView() {
                 onEdit={handleEdit}
                 onSave={handleSave}
               />
-              
+
               {totalPages > 1 && (
                 <Pagination
                   currentPage={currentPage}

@@ -1,33 +1,27 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { 
-  MoreHorizontal, 
-  Plus, 
-  Heart, 
-  // Album, 
+import React, { useState, useRef, useEffect } from "react";
+import {
+  MoreHorizontal,
+  Plus,
+  Heart,
+  // Album,
   // Share,
   Search,
   Eye,
-  CheckIcon
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { SearchTrackItem } from '@/types/search';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { 
-  playlistBriefOptions,
-  checkTrackInPlaylistOptions 
-} from '@/gql/options/client-options';
-import {
-  addToPlaylistMutationOptions,
-  removeFromPlaylistMutationOptions
-} from '@/gql/options/client-mutation-options';
-import { useAuthStore } from '@/store';
-import { toast } from 'sonner';
-import Image from 'next/image';
-import { useFavoriteSearch } from '../../hooks/use-favorite-search';
-import { useAuthAction } from '@/hooks/use-auth-action';
-import { WarningAuthDialog } from '@/modules/shared/ui/components/warning-auth-dialog';
+  CheckIcon,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { SearchTrackItem } from "@/types/search";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { playlistBriefOptions, checkTrackInPlaylistOptions } from "@/gql/options/client-options";
+import { addToPlaylistMutationOptions, removeFromPlaylistMutationOptions } from "@/gql/options/client-mutation-options";
+import { useAuthStore } from "@/store";
+import { toast } from "sonner";
+import Image from "next/image";
+import { useFavoriteSearch } from "../../hooks/use-favorite-search";
+import { useAuthAction } from "@/hooks/use-auth-action";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
 interface TrackActionMenuProps {
   track: SearchTrackItem;
@@ -48,16 +42,10 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user, isAuthenticated } = useAuthStore();
-  
+
   // Auth action hooks
-  const {
-    showWarningDialog,
-    setShowWarningDialog,
-    warningAction,
-    trackName,
-    executeWithAuth,
-  } = useAuthAction();
-  
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
+
   // Favorite hooks
   const { handleFavoriteTrack } = useFavoriteSearch();
 
@@ -116,31 +104,43 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
   };
 
   const handleAddToPlaylist = (playlistId: string) => {
-    executeWithAuth(() => {
-      addToPlaylist({
-        playlistId,
-        trackId: track.id,
-      });
-    }, "playlist", track.name);
+    executeWithAuth(
+      () => {
+        addToPlaylist({
+          playlistId,
+          trackId: track.id,
+        });
+      },
+      "playlist",
+      track.name,
+    );
   };
 
   const handleRemoveFromPlaylist = (playlistId: string) => {
-    executeWithAuth(() => {
-      removeFromPlaylist({
-        playlistId,
-        trackId: track.id,
-      });
-    }, "playlist", track.name);
+    executeWithAuth(
+      () => {
+        removeFromPlaylist({
+          playlistId,
+          trackId: track.id,
+        });
+      },
+      "playlist",
+      track.name,
+    );
   };
 
   const handleFavoriteClick = () => {
-    executeWithAuth(() => {
-      handleFavoriteTrack({
-        id: track.id,
-        name: track.name,
-        checkTrackInFavorite: track.checkTrackInFavorite
-      });
-    }, "favorite", track.name);
+    executeWithAuth(
+      () => {
+        handleFavoriteTrack({
+          id: track.id,
+          name: track.name,
+          checkTrackInFavorite: track.checkTrackInFavorite,
+        });
+      },
+      "favorite",
+      track.name,
+    );
   };
 
   // Close menu when clicking outside
@@ -259,17 +259,21 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
     },
     {
       icon: Plus,
-      label: 'Add to playlist',
+      label: "Add to playlist",
       action: () => {
-        executeWithAuth(() => {
-          handlePlaylistMenuToggle();
-        }, "playlist", track.name);
+        executeWithAuth(
+          () => {
+            handlePlaylistMenuToggle();
+          },
+          "playlist",
+          track.name,
+        );
       },
       hasSubmenu: true,
     },
     {
       icon: Heart,
-      label: track.checkTrackInFavorite ? 'Remove from Liked Songs' : 'Save to your Liked Songs',
+      label: track.checkTrackInFavorite ? "Remove from Liked Songs" : "Save to your Liked Songs",
       action: handleFavoriteClick,
     },
     // {
@@ -339,8 +343,8 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
               </button>
 
               {/* Playlist submenu */}
-              {item.label === 'Add to playlist' && isPlaylistMenuOpen && isAuthenticated && (
-                <div 
+              {item.label === "Add to playlist" && isPlaylistMenuOpen && isAuthenticated && (
+                <div
                   ref={playlistMenuRef}
                   className={`absolute z-[70] max-h-[400px] w-[300px] overflow-y-auto rounded-lg border border-gray-700 bg-gray-800 py-2 shadow-xl ${
                     submenuPosition === "right" ? "left-full ml-1" : "right-full mr-1"
@@ -428,7 +432,7 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
           ))}
         </div>
       )}
-      
+
       <WarningAuthDialog
         open={showWarningDialog}
         onOpenChange={setShowWarningDialog}

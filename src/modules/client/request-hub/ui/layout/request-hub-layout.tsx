@@ -37,7 +37,7 @@ export function RequestHubLayout({
   // Get user role from auth store
   const { user } = useAuthStore();
   const userRole = user?.role;
-  
+
   // Check if user is listener (only listeners can see Post Request and My Requests buttons)
   const isListener = userRole === UserRole.LISTENER;
 
@@ -55,28 +55,20 @@ export function RequestHubLayout({
             <div className="flex space-x-3">
               {/* Only show My Requests button for listeners */}
               {isListener && (
-                <Button 
-                  variant="outline" 
-                  onClick={onMyRequests}
-                  className="flex items-center gap-2"
-                >
+                <Button variant="outline" onClick={onMyRequests} className="flex items-center gap-2">
                   <FileText className="h-4 w-4" />
                   {myRequestsButtonText}
                 </Button>
               )}
-              <Button 
-                variant="outline" 
-                onClick={onBrowseArtists}
-                className="flex items-center gap-2"
-              >
+              <Button variant="outline" onClick={onBrowseArtists} className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 Browse Artists
               </Button>
               {/* Only show Post Request button for listeners */}
               {isListener && (
-                <Button 
+                <Button
                   onClick={onPostRequest}
-                  className="primary_gradient hover:opacity-65 text-white flex items-center gap-2 transition-smooth"
+                  className="primary_gradient transition-smooth flex items-center gap-2 text-white hover:opacity-65"
                 >
                   <Plus className="h-4 w-4" />
                   Post Request

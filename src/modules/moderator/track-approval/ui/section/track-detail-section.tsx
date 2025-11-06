@@ -88,9 +88,7 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
           <TrackInfoCard track={track} createdByUser={createdByUser} isLoadingUser={isLoadingUser} />
 
           {/* Track Categories */}
-          <TrackCategoriesCard 
-            categoryIds={track.track.categoryIds || []}
-          />
+          <TrackCategoriesCard categoryIds={track.track.categoryIds || []} />
 
           {/* Artists & Contributors */}
           <ArtistsContributorsCard track={track} />

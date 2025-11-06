@@ -20,15 +20,15 @@ import { CreateRequestData, UpdateRequestData, RequestBudget } from "@/types/req
 // Helper function to format number with dots
 const formatCurrency = (value: string): string => {
   // Remove all non-digit characters
-  const numericValue = value.replace(/\D/g, '');
-  
+  const numericValue = value.replace(/\D/g, "");
+
   // Add dots every 3 digits from right to left
-  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
 // Helper function to parse formatted currency to number
 const parseCurrency = (value: string): number => {
-  return parseFloat(value.replace(/\./g, '')) || 0;
+  return parseFloat(value.replace(/\./g, "")) || 0;
 };
 
 // const UploadIcon = () => (
@@ -67,7 +67,11 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
   const [summary, setSummary] = useState(initialData?.summary || "");
   const [detailDescription, setDetailDescription] = useState(initialData?.detailDescription || "");
   const [budgetMin, setBudgetMin] = useState(
-    initialData?.budget ? (typeof initialData.budget === 'object' ? initialData.budget.min.toString() : initialData.budget.toString()) : ''
+    initialData?.budget
+      ? typeof initialData.budget === "object"
+        ? initialData.budget.min.toString()
+        : initialData.budget.toString()
+      : "",
   );
   const [budgetMax, setBudgetMax] = useState(
     initialData?.budget
@@ -76,29 +80,26 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         : initialData.budget.toString()
       : "",
   );
-  
+
   const [deadline, setDeadline] = useState<Date | undefined>(
     initialData?.deadline ? new Date(initialData.deadline) : undefined,
   );
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [budgetError, setBudgetError] = useState('');
+  const [budgetError, setBudgetError] = useState("");
   // const [attachments, setAttachments] = useState<File[]>([]);
   // const [isDragOver, setIsDragOver] = useState(false);
 
   // Check user role - only listeners can create/edit requests
   const { user } = useAuthStore();
-  
+
   if (!user || user.role !== UserRole.LISTENER) {
     return (
-      <div className="max-w-6xl mx-auto p-6">
+      <div className="mx-auto max-w-6xl p-6">
         <div className="text-center text-white">
-          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+          <h2 className="mb-4 text-2xl font-bold">Access Denied</h2>
           <p className="mb-4">Only listeners can create or edit requests.</p>
           {onCancel && (
-            <button 
-              onClick={onCancel}
-              className="text-blue-400 hover:text-blue-300 underline"
-            >
+            <button onClick={onCancel} className="text-blue-400 underline hover:text-blue-300">
               Go back
             </button>
           )}
@@ -113,13 +114,13 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const budgetMinNumber = parseCurrency(budgetMin);
     const budgetMaxNumber = parseCurrency(budgetMax) || budgetMinNumber;
-    
+
     // Validation: max should be >= min
     if (budgetMaxNumber < budgetMinNumber) {
-      setBudgetError('Maximum budget must be greater than or equal to minimum budget');
+      setBudgetError("Maximum budget must be greater than or equal to minimum budget");
       return;
     }
 
@@ -128,10 +129,10 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
       alert("Please select a deadline");
       return;
     }
-    
+
     // Clear error if validation passes
-    setBudgetError('');
-    
+    setBudgetError("");
+
     const budget = { min: budgetMinNumber, max: budgetMaxNumber };
 
     if (mode === "edit" && initialData?.id) {
@@ -219,11 +220,9 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Budget (VND)</label>
+          <label className="mb-2 block text-sm font-medium">Budget (VND)</label>
           {budgetError && (
-            <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-              {budgetError}
-            </div>
+            <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{budgetError}</div>
           )}
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -234,10 +233,10 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
                 onChange={(e) => {
                   const formattedValue = formatCurrency(e.target.value);
                   setBudgetMin(formattedValue);
-                  
+
                   // Clear error when user types
-                  if (budgetError) setBudgetError('');
-                  
+                  if (budgetError) setBudgetError("");
+
                   // Auto-update max if it's less than min
                   const minValue = parseCurrency(formattedValue);
                   const maxValue = parseCurrency(budgetMax);
@@ -258,15 +257,15 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
                 onChange={(e) => {
                   const formattedValue = formatCurrency(e.target.value);
                   setBudgetMax(formattedValue);
-                  
+
                   // Clear error when user types
-                  if (budgetError) setBudgetError('');
-                  
+                  if (budgetError) setBudgetError("");
+
                   // Real-time validation
                   const minValue = parseCurrency(budgetMin);
                   const maxValue = parseCurrency(formattedValue);
                   if (maxValue > 0 && maxValue < minValue) {
-                    setBudgetError('Maximum budget must be greater than or equal to minimum budget');
+                    setBudgetError("Maximum budget must be greater than or equal to minimum budget");
                   }
                 }}
                 placeholder="0"

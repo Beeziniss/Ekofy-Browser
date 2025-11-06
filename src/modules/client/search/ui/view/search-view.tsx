@@ -131,7 +131,7 @@ export const SEARCH_PLAYLISTS = graphql(`
           id
           fullName
         }
-          checkPlaylistInFavorite
+        checkPlaylistInFavorite
       }
     }
   }

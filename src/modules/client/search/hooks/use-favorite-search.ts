@@ -10,12 +10,8 @@ export const useFavoriteSearch = () => {
     ...favoriteTrackMutationOptions,
     onSuccess: (data, variables) => {
       const { isAdding } = variables;
-      toast.success(
-        isAdding
-          ? "Track added to favorites!"
-          : "Track removed from favorites!"
-      );
-      
+      toast.success(isAdding ? "Track added to favorites!" : "Track removed from favorites!");
+
       // Invalidate search queries to refresh favorite status
       queryClient.invalidateQueries({
         queryKey: ["search"],
@@ -32,12 +28,8 @@ export const useFavoriteSearch = () => {
     ...playlistFavoriteMutationOptions,
     onSuccess: (data, variables) => {
       const { isAdding } = variables;
-      toast.success(
-        isAdding
-          ? "Playlist added to favorites!"
-          : "Playlist removed from favorites!"
-      );
-      
+      toast.success(isAdding ? "Playlist added to favorites!" : "Playlist removed from favorites!");
+
       // Invalidate search queries to refresh favorite status
       queryClient.invalidateQueries({
         queryKey: ["search"],
@@ -49,22 +41,14 @@ export const useFavoriteSearch = () => {
     },
   });
 
-  const handleFavoriteTrack = (track: {
-    id: string;
-    name: string;
-    checkTrackInFavorite: boolean;
-  }) => {
+  const handleFavoriteTrack = (track: { id: string; name: string; checkTrackInFavorite: boolean }) => {
     if (!track?.id) return;
 
     const isAdding = !track.checkTrackInFavorite;
     favoriteTrack({ trackId: track.id, isAdding });
   };
 
-  const handleFavoritePlaylist = (playlist: {
-    id: string;
-    name: string;
-    checkPlaylistInFavorite: boolean;
-  }) => {
+  const handleFavoritePlaylist = (playlist: { id: string; name: string; checkPlaylistInFavorite: boolean }) => {
     if (!playlist?.id) return;
 
     const isAdding = !playlist.checkPlaylistInFavorite;

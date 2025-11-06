@@ -17,13 +17,13 @@ const SearchPage = () => {
 
   const handleTypeChange = (newType: string) => {
     const params = new URLSearchParams(searchParams);
-    params.set('type', newType);
-    
+    params.set("type", newType);
+
     // Ensure query parameter is preserved
     if (query) {
-      params.set('q', query);
+      params.set("q", query);
     }
-    
+
     router.push(`/search?${params.toString()}`);
   };
 

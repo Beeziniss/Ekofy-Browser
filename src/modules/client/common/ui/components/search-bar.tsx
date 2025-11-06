@@ -15,15 +15,15 @@ const SearchBar = () => {
 
   // Initialize search value from URL params only (no localStorage)
   useEffect(() => {
-    const queryFromUrl = searchParams.get('q');
-    if (queryFromUrl && pathname.startsWith('/search')) {
+    const queryFromUrl = searchParams.get("q");
+    if (queryFromUrl && pathname.startsWith("/search")) {
       setSearchValue(queryFromUrl);
     }
   }, [searchParams, pathname]);
 
   // Clear search when navigating away from search page
   useEffect(() => {
-    if (!pathname.startsWith('/search')) {
+    if (!pathname.startsWith("/search")) {
       setSearchValue("");
       setIsUserTyping(false); // Reset typing state
     }
@@ -32,9 +32,9 @@ const SearchBar = () => {
   // Auto navigate when user types (debounced) - only when user is actively typing
   useEffect(() => {
     if (debouncedSearchValue.trim() && isUserTyping) {
-      const currentType = searchParams.get('type') || 'all';
+      const currentType = searchParams.get("type") || "all";
       const newUrl = `/search?q=${encodeURIComponent(debouncedSearchValue.trim())}&type=${currentType}`;
-      
+
       // Navigate to search page
       router.push(newUrl);
       setIsUserTyping(false); // Reset after navigation

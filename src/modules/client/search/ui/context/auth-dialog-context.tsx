@@ -1,7 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState } from 'react';
-import { WarningAuthDialog } from '@/modules/shared/ui/components/warning-auth-dialog';
+import React, { createContext, useContext, useState } from "react";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
 interface AuthDialogContextType {
   showAuthDialog: (action: "play" | "favorite" | "comment" | "follow" | "playlist", trackName?: string) => void;
@@ -12,7 +12,7 @@ const AuthDialogContext = createContext<AuthDialogContextType | null>(null);
 export const useAuthDialog = () => {
   const context = useContext(AuthDialogContext);
   if (!context) {
-    throw new Error('useAuthDialog must be used within AuthDialogProvider');
+    throw new Error("useAuthDialog must be used within AuthDialogProvider");
   }
   return context;
 };

@@ -2540,6 +2540,7 @@ export type MutationInitializationUploadTrackArgs = {
   createTrackRequest: CreateTrackRequestInput;
   createWorkRequest: CreateWorkRequestInput;
   file: Scalars['Upload']['input'];
+  isTesting?: Scalars['Boolean']['input'];
 };
 
 

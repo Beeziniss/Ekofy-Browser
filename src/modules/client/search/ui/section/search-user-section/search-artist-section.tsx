@@ -4,8 +4,8 @@ import { HeartIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
 import { SearchArtistItem } from "@/types/search";
 import { toast } from "sonner";
-import { useAuthAction } from '@/hooks/use-auth-action';
-import { WarningAuthDialog } from '@/modules/shared/ui/components/warning-auth-dialog';
+import { useAuthAction } from "@/hooks/use-auth-action";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
 interface SearchArtistSectionProps {
   artists: SearchArtistItem[];
@@ -81,94 +81,96 @@ interface ArtistCardProps {
 
 const ArtistCard = ({ artist }: ArtistCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
-  
+
   // Auth action hooks
-  const {
-    showWarningDialog,
-    setShowWarningDialog,
-    warningAction,
-    trackName,
-    executeWithAuth,
-  } = useAuthAction();
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
 
   const handleArtistClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    executeWithAuth(() => {
-      // Navigate to artist detail page
-      window.location.href = `/artist/${artist.id}`;
-    }, "follow", artist.stageName);
+    executeWithAuth(
+      () => {
+        // Navigate to artist detail page
+        window.location.href = `/artist/${artist.id}`;
+      },
+      "follow",
+      artist.stageName,
+    );
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    executeWithAuth(() => {
-      setIsFavorited(!isFavorited);
-      toast.success(isFavorited ? "Removed from favorites" : "Added to favorites");
-    }, "follow", artist.stageName);
+    executeWithAuth(
+      () => {
+        setIsFavorited(!isFavorited);
+        toast.success(isFavorited ? "Removed from favorites" : "Added to favorites");
+      },
+      "follow",
+      artist.stageName,
+    );
   };
 
   const handlePlayClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    executeWithAuth(() => {
-      // TODO: Play artist's top tracks
-      console.log(`Play ${artist.stageName}'s music`);
-      toast.success(`Playing ${artist.stageName}'s music`);
-    }, "play", artist.stageName);
+    executeWithAuth(
+      () => {
+        // TODO: Play artist's top tracks
+        console.log(`Play ${artist.stageName}'s music`);
+        toast.success(`Playing ${artist.stageName}'s music`);
+      },
+      "play",
+      artist.stageName,
+    );
   };
 
   return (
     <>
-      <div 
-        className="flex flex-col items-center space-y-3 p-3 rounded-xl hover:bg-gray-800/50 transition-all duration-200 cursor-pointer group"
+      <div
+        className="group flex cursor-pointer flex-col items-center space-y-3 rounded-xl p-3 transition-all duration-200 hover:bg-gray-800/50"
         onClick={handleArtistClick}
       >
-          <div className="relative w-full aspect-square">
-            {artist.avatarImage ? (
-              <Image
-                src={artist.avatarImage}
-                alt={artist.stageName}
-                width={200}
-                height={200}
-                className="w-full h-full rounded-full object-cover shadow-lg group-hover:shadow-xl transition-shadow duration-200"
-              />
-            ) : (
-              <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white text-5xl font-bold shadow-lg group-hover:shadow-xl transition-shadow duration-200">
-                {artist.stageName.charAt(0).toUpperCase()}
-              </div>
-            )}
-            
-            {/* Bottom left icons - only show on hover */}
-            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center items-center gap-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <Button
-                onClick={handlePlayClick}
-                className="bg-white hover:bg-gray-100 text-black size-12 rounded-full shadow-lg"
-              >
-                <PlayIcon className="w-8 h-8 fill-current" />
-              </Button>
-              
-              <Button
-                onClick={handleFavoriteClick}
-                className="bg-white hover:bg-gray-100 text-black size-12 rounded-full shadow-lg"
-              >
-                <HeartIcon
-                  className={`w-6 h-6 ${isFavorited ? "fill-red-500 text-red-500" : ""}`}
-                />
-              </Button>
+        <div className="relative aspect-square w-full">
+          {artist.avatarImage ? (
+            <Image
+              src={artist.avatarImage}
+              alt={artist.stageName}
+              width={200}
+              height={200}
+              className="h-full w-full rounded-full object-cover shadow-lg transition-shadow duration-200 group-hover:shadow-xl"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-600 text-5xl font-bold text-white shadow-lg transition-shadow duration-200 group-hover:shadow-xl">
+              {artist.stageName.charAt(0).toUpperCase()}
             </div>
+          )}
+
+          {/* Bottom left icons - only show on hover */}
+          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 transform items-center justify-center gap-x-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <Button
+              onClick={handlePlayClick}
+              className="size-12 rounded-full bg-white text-black shadow-lg hover:bg-gray-100"
+            >
+              <PlayIcon className="h-8 w-8 fill-current" />
+            </Button>
+
+            <Button
+              onClick={handleFavoriteClick}
+              className="size-12 rounded-full bg-white text-black shadow-lg hover:bg-gray-100"
+            >
+              <HeartIcon className={`h-6 w-6 ${isFavorited ? "fill-red-500 text-red-500" : ""}`} />
+            </Button>
           </div>
-          
-          <div className="flex flex-col items-center text-center w-full">
-            <h3 className="text-white font-semibold text-sm truncate w-full group-hover:text-purple-300 hover:underline transition-colors duration-200">
-              {artist.stageName}
-            </h3>
-            <p className="text-gray-500 text-xs mt-1">
-              {artist.followerCount?.toLocaleString() || '0'} followers
-            </p>
+        </div>
+
+        <div className="flex w-full flex-col items-center text-center">
+          <h3 className="w-full truncate text-sm font-semibold text-white transition-colors duration-200 group-hover:text-purple-300 hover:underline">
+            {artist.stageName}
+          </h3>
+          <p className="mt-1 text-xs text-gray-500">{artist.followerCount?.toLocaleString() || "0"} followers</p>
         </div>
       </div>
-      
+
       <WarningAuthDialog
         open={showWarningDialog}
         onOpenChange={setShowWarningDialog}

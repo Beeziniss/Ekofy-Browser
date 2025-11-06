@@ -7,13 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  EllipsisIcon,
-  HeartIcon,
-  LinkIcon,
-  PauseIcon,
-  PlayIcon,
-} from "lucide-react";
+import { EllipsisIcon, HeartIcon, LinkIcon, PauseIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
 import { SearchPlaylistItem } from "@/types/search";
 import { usePlaylistPlayback } from "@/modules/client/playlist/hooks/use-playlist-playback";
@@ -21,7 +15,7 @@ import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { playlistFavoriteMutationOptions } from "@/gql/options/client-mutation-options";
 import { useAuthStore } from "@/store";
-import { useSearchAuth } from '../../hooks/use-search-auth';
+import { useSearchAuth } from "../../hooks/use-search-auth";
 
 interface PlaylistCardAllProps {
   playlist: SearchPlaylistItem;
@@ -33,11 +27,7 @@ export const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
   const queryClient = useQueryClient();
   const { executeWithAuth } = useSearchAuth();
 
-  const {
-    isPlaylistCurrentlyPlaying,
-    isPlaying,
-    handlePlayPause,
-  } = usePlaylistPlayback(playlist.id);
+  const { isPlaylistCurrentlyPlaying, isPlaying, handlePlayPause } = usePlaylistPlayback(playlist.id);
 
   const isOwnPlaylist = user?.userId === playlist.user[0]?.id;
   const [isFavorited, setIsFavorited] = useState(false);
@@ -51,9 +41,7 @@ export const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
       queryClient.invalidateQueries({
         queryKey: ["playlists-home"],
       });
-      toast.success(
-        isFavorited ? "Added to your favorites!" : "Removed from your favorites!",
-      );
+      toast.success(isFavorited ? "Added to your favorites!" : "Removed from your favorites!");
     },
     onError: () => {
       setIsFavorited(isFavorited);
@@ -64,9 +52,13 @@ export const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    executeWithAuth(async () => {
-      await handlePlayPause();
-    }, "play", playlist.name);
+    executeWithAuth(
+      async () => {
+        await handlePlayPause();
+      },
+      "play",
+      playlist.name,
+    );
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -75,19 +67,21 @@ export const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
 
     if (isFavoriting) return;
 
-    executeWithAuth(() => {
-      favoritePlaylist({
-        playlistId: playlist.id,
-        isAdding: !isFavorited,
-      });
-    }, "favorite", playlist.name);
+    executeWithAuth(
+      () => {
+        favoritePlaylist({
+          playlistId: playlist.id,
+          isAdding: !isFavorited,
+        });
+      },
+      "favorite",
+      playlist.name,
+    );
   };
 
   const onCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(
-      `${window.location.origin}/playlists/${playlist.id}`,
-    );
+    navigator.clipboard.writeText(`${window.location.origin}/playlists/${playlist.id}`);
     toast.success("Copied!");
   };
 
@@ -126,8 +120,8 @@ export const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
               <HeartIcon
                 className={`size-5`}
                 style={{
-                  color: playlist.checkPlaylistInFavorite ? 'var(--color-main-purple)' : '#2a2a2a',
-                  fill: playlist.checkPlaylistInFavorite ? 'var(--color-main-purple)' : 'none'
+                  color: playlist.checkPlaylistInFavorite ? "var(--color-main-purple)" : "#2a2a2a",
+                  fill: playlist.checkPlaylistInFavorite ? "var(--color-main-purple)" : "none",
                 }}
               />
             </Button>
@@ -160,9 +154,7 @@ export const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
         {playlist.name}
       </Link>
 
-      <p className="text-main-grey text-xs">
-        By {playlist.user[0]?.fullName || 'Unknown'}
-      </p>
+      <p className="text-main-grey text-xs">By {playlist.user[0]?.fullName || "Unknown"}</p>
     </div>
   );
 };

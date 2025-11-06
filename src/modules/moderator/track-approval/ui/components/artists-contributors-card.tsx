@@ -58,7 +58,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
             </h3>
             <div className="grid gap-3">
               {track.featuredArtists.items.map((artist) => (
-                <div key={artist.id} className="flex items-center border-2 border-white gap-3 p-3 rounded-lg">
+                <div key={artist.id} className="flex items-center gap-3 rounded-lg border-2 border-white p-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={artist.avatarImage || undefined} alt={artist.stageName} />
                     <AvatarFallback>

@@ -1,13 +1,9 @@
 import React from "react";
 import Link from "next/link";
 import { TableBody } from "@/components/ui/table";
-import {
-  SearchTrackItem,
-  SearchArtistItem,
-  SearchPlaylistItem,
-} from "@/types/search";
-import { AuthDialogProvider } from '../../context/auth-dialog-context';
-import { TrackRowAll, ArtistCardAll, PlaylistCardAll } from '../../component';
+import { SearchTrackItem, SearchArtistItem, SearchPlaylistItem } from "@/types/search";
+import { AuthDialogProvider } from "../../context/auth-dialog-context";
+import { TrackRowAll, ArtistCardAll, PlaylistCardAll } from "../../component";
 
 interface SearchAllSectionProps {
   query: string;
@@ -17,13 +13,7 @@ interface SearchAllSectionProps {
   isLoading?: boolean;
 }
 
-export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
-  query,
-  tracks,
-  artists,
-  playlists,
-  isLoading,
-}) => {
+export const SearchAllSection: React.FC<SearchAllSectionProps> = ({ query, tracks, artists, playlists, isLoading }) => {
   return (
     <AuthDialogProvider>
       <SearchAllSectionContent
@@ -38,13 +28,7 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({
 };
 
 // Main content component
-const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({
-  query,
-  tracks,
-  artists,
-  playlists,
-  isLoading,
-}) => {
+const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({ query, tracks, artists, playlists, isLoading }) => {
   if (isLoading) {
     return (
       <div className="space-y-8">
@@ -82,10 +66,7 @@ const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {playlists.slice(0, 6).map((playlist) => (
-              <PlaylistCardAll 
-                key={playlist.id} 
-                playlist={playlist}
-              />
+              <PlaylistCardAll key={playlist.id} playlist={playlist} />
             ))}
           </div>
         </div>
@@ -110,10 +91,7 @@ const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {artists.slice(0, 6).map((artist) => (
-              <ArtistCardAll 
-                key={artist.id} 
-                artist={artist}
-              />
+              <ArtistCardAll key={artist.id} artist={artist} />
             ))}
           </div>
         </div>
@@ -141,11 +119,7 @@ const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({
               <table className="w-full caption-bottom text-sm">
                 <TableBody>
                   {tracks.slice(0, 4).map((track, index) => (
-                    <TrackRowAll 
-                      key={track.id} 
-                      track={track} 
-                      index={index}
-                    />
+                    <TrackRowAll key={track.id} track={track} index={index} />
                   ))}
                 </TableBody>
               </table>

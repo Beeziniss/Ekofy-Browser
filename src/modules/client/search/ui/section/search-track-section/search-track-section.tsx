@@ -1,21 +1,15 @@
-import React, { useEffect } from 'react';
-import { Clock, PauseIcon, PlayIcon } from 'lucide-react';
-import { TrackActionMenu } from '../../component/track-action-menu';
-import { Button } from '@/components/ui/button';
-import {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import Image from 'next/image';
-import { SearchTrackItem } from '@/types/search';
-import { useTrackPlayback } from '@/hooks/use-track-playback';
-import { useAudioStore } from '@/store';
-import { formatDuration } from '@/utils/duration-utils';
-import { AuthDialogProvider } from '../../context/auth-dialog-context';
-import { useSearchAuth } from '../../../hooks/use-search-auth';
+import React, { useEffect } from "react";
+import { Clock, PauseIcon, PlayIcon } from "lucide-react";
+import { TrackActionMenu } from "../../component/track-action-menu";
+import { Button } from "@/components/ui/button";
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import Image from "next/image";
+import { SearchTrackItem } from "@/types/search";
+import { useTrackPlayback } from "@/hooks/use-track-playback";
+import { useAudioStore } from "@/store";
+import { formatDuration } from "@/utils/duration-utils";
+import { AuthDialogProvider } from "../../context/auth-dialog-context";
+import { useSearchAuth } from "../../../hooks/use-search-auth";
 
 interface SearchTrackSectionProps {
   tracks: SearchTrackItem[];
@@ -28,7 +22,7 @@ export const SearchTrackSection: React.FC<SearchTrackSectionProps> = ({
   tracks,
   hasNextPage,
   isFetchingNextPage,
-  fetchNextPage
+  fetchNextPage,
 }) => {
   return (
     <AuthDialogProvider>
@@ -47,7 +41,7 @@ const SearchTrackSectionContent: React.FC<SearchTrackSectionProps> = ({
   tracks,
   hasNextPage,
   isFetchingNextPage,
-  fetchNextPage
+  fetchNextPage,
 }) => {
   // Auto-load more when scrolling near bottom
   useEffect(() => {
@@ -95,11 +89,7 @@ const SearchTrackSectionContent: React.FC<SearchTrackSectionProps> = ({
             </TableHeader>
             <TableBody>
               {tracks.map((track, index) => (
-                <TrackRowWithAuth 
-                  key={track.id} 
-                  track={track} 
-                  index={index}
-                />
+                <TrackRowWithAuth key={track.id} track={track} index={index} />
               ))}
             </TableBody>
           </table>
@@ -134,7 +124,7 @@ interface TrackRowProps {
 const TrackRow = ({ track, index }: TrackRowProps) => {
   // Auth action hooks using context
   const { executeWithAuth } = useSearchAuth();
-  
+
   // Use track playback hook for this specific track
   const { isTrackCurrentlyPlaying, isPlaying, handlePlayPause } = useTrackPlayback(track.id, {
     id: track.id,
@@ -149,9 +139,13 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    executeWithAuth(async () => {
-      await handlePlayPause();
-    }, "play", track.name);
+    executeWithAuth(
+      async () => {
+        await handlePlayPause();
+      },
+      "play",
+      track.name,
+    );
   };
 
   const formatCreatedAt = (createdAt: string) => {
@@ -249,7 +243,5 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
 
 // Add WarningAuthDialog component outside of TrackRow
 const TrackRowWithAuth = ({ track, index }: TrackRowProps) => {
-  return (
-    <TrackRow track={track} index={index} />
-  );
+  return <TrackRow track={track} index={index} />;
 };

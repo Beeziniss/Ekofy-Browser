@@ -28,11 +28,11 @@ interface RequestCardProps {
 
 export function RequestCard({ request, onViewDetails, onApply, onEdit, className, isOwner = false }: RequestCardProps) {
   const [showComments, setShowComments] = useState(false);
-  
+
   // Get auth state and dialog
   const { isAuthenticated } = useAuthStore();
   const { showAuthDialog } = useAuthDialog();
-  
+
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
 
@@ -103,7 +103,8 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
       return;
     }
     onEdit?.(request.id);
-  };  const formatTimeAgo = (dateString: string) => {
+  };
+  const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
@@ -209,20 +210,12 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
               View Details
             </Button>
             {isOwner && onEdit ? (
-              <Button
-                size="sm"
-                onClick={handleEdit}
-                className="primary_gradient hover:opacity-65 text-white text-sm"
-              >
+              <Button size="sm" onClick={handleEdit} className="primary_gradient text-sm text-white hover:opacity-65">
                 <SquarePen className="mr-1 h-3 w-3" />
                 Edit
               </Button>
             ) : (
-              <Button
-                size="sm"
-                onClick={handleApply}
-                className="primary_gradient hover:opacity-65 text-white text-sm"
-              >
+              <Button size="sm" onClick={handleApply} className="primary_gradient text-sm text-white hover:opacity-65">
                 <Send className="mr-1 h-3 w-3" />
                 Apply Now
               </Button>

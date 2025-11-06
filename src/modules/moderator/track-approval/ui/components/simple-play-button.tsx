@@ -52,7 +52,7 @@ export function SimplePlayButton({
 
   const sizeClasses = {
     sm: "h-8 w-8 p-0",
-    md: "h-10 w-10 p-0", 
+    md: "h-10 w-10 p-0",
     lg: "h-14 w-14 p-0",
     full: "h-full w-full p-0",
   };
@@ -78,11 +78,11 @@ export function SimplePlayButton({
       onClick={handleClick}
       disabled={isLoading && isCurrentTrack}
       className={cn(
-        sizeClasses[size], 
+        sizeClasses[size],
         backgroundClasses[size],
-        "text-white hover:text-white rounded-full transition-all duration-200",
+        "rounded-full text-white transition-all duration-200 hover:text-white",
         isCurrentTrack && "ring-2 ring-white/50",
-        className
+        className,
       )}
       title={isCurrentlyPlaying ? "Pause" : "Play"}
     >

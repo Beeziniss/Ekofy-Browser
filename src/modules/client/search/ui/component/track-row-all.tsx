@@ -7,7 +7,7 @@ import { SearchTrackItem } from "@/types/search";
 import { useTrackPlayback } from "@/hooks/use-track-playback";
 import { useAudioStore } from "@/store";
 import { formatDuration } from "@/utils/duration-utils";
-import { useSearchAuth } from '../../hooks/use-search-auth';
+import { useSearchAuth } from "../../hooks/use-search-auth";
 import { TrackActionMenu } from "./track-action-menu";
 
 interface TrackRowAllProps {
@@ -18,12 +18,8 @@ interface TrackRowAllProps {
 export const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
   const { duration } = useAudioStore();
   const { executeWithAuth } = useSearchAuth();
-  
-  const {
-    isTrackCurrentlyPlaying,
-    isPlaying,
-    handlePlayPause,
-  } = useTrackPlayback(track.id, {
+
+  const { isTrackCurrentlyPlaying, isPlaying, handlePlayPause } = useTrackPlayback(track.id, {
     id: track.id,
     name: track.name,
     coverImage: track.coverImage,
@@ -41,32 +37,37 @@ export const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    executeWithAuth(async () => {
-      await handlePlayPause();
-    }, "play", track.name);
+    executeWithAuth(
+      async () => {
+        await handlePlayPause();
+      },
+      "play",
+      track.name,
+    );
   };
 
   // Use real duration if track is currently playing, otherwise fallback
-  const displayDuration = isTrackCurrentlyPlaying && duration > 0
-    ? formatDuration(duration)
-    : formatCreatedAt(track.createdAt);
+  const displayDuration =
+    isTrackCurrentlyPlaying && duration > 0 ? formatDuration(duration) : formatCreatedAt(track.createdAt);
 
   return (
     <TableRow className="group relative border-b border-gray-800/50 hover:bg-gray-800/50">
       <TableCell className="w-12 text-center">
         <div className="flex h-8 w-8 items-center justify-center">
-          <span className={`text-sm text-gray-400 group-hover:hidden ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : ""}`}>
+          <span
+            className={`text-sm text-gray-400 group-hover:hidden ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : ""}`}
+          >
             {isTrackCurrentlyPlaying && isPlaying ? "♪" : index + 1}
           </span>
           <div className="hidden group-hover:block">
             <Button
               onClick={handlePlayPauseClick}
-              className="bg-transparent hover:bg-gray-700 p-0 w-8 h-8 rounded-full"
+              className="h-8 w-8 rounded-full bg-transparent p-0 hover:bg-gray-700"
             >
               {isTrackCurrentlyPlaying && isPlaying ? (
-                <PauseIcon className="text-white w-4 h-4" />
+                <PauseIcon className="h-4 w-4 text-white" />
               ) : (
-                <PlayIcon className="text-white w-4 h-4" />
+                <PlayIcon className="h-4 w-4 text-white" />
               )}
             </Button>
           </div>
@@ -83,7 +84,9 @@ export const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
             className="h-10 w-10 flex-shrink-0 rounded object-cover"
           />
           <div className="min-w-0">
-            <p className={`truncate font-medium ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-white"}`}>
+            <p
+              className={`truncate font-medium ${isTrackCurrentlyPlaying && isPlaying ? "text-main-purple" : "text-white"}`}
+            >
               {track.name}
             </p>
             <p className="truncate text-sm text-gray-400">
