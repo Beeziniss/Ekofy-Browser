@@ -272,6 +272,7 @@ export const PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY = graphql(`
           stageNameUnsigned
           email
           artistType
+          avatarImage
         }
       }
       featuredArtists {
@@ -282,6 +283,7 @@ export const PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY = graphql(`
           stageNameUnsigned
           email
           artistType
+          avatarImage
         }
       }
     }
@@ -317,5 +319,16 @@ export const RejectTrackUploadRequestMutation = graphql(`
 export const ApproveTrackUploadRequestMutation = graphql(`
   mutation ApproveTrackUploadRequest($uploadId: String!) {
     approveTrackUploadRequest(uploadId: $uploadId)
+  }
+`);
+
+export const GetCategory = graphql(`
+  query GetCategory($where: CategoryFilterInput!) {
+    categories(where: $where) {
+      items {
+        id
+        name
+      }
+    }
   }
 `);

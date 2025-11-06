@@ -13,6 +13,7 @@ import {
 import { TrackUploadRequest } from "@/types/approval-track";
 import {
   TrackInfoCard,
+  TrackCategoriesCard,
   ArtistsContributorsCard,
   WorkRecordingDetailsCard,
   LegalDocumentsCard,
@@ -85,6 +86,9 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
         <div className="space-y-6 lg:col-span-2">
           {/* Track Information */}
           <TrackInfoCard track={track} createdByUser={createdByUser} isLoadingUser={isLoadingUser} />
+
+          {/* Track Categories */}
+          <TrackCategoriesCard categoryIds={track.track.categoryIds || []} />
 
           {/* Artists & Contributors */}
           <ArtistsContributorsCard track={track} />

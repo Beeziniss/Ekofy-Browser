@@ -11,9 +11,25 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Editor } from "@/modules/shared/ui/components/editor";
 import { DeleteConfirmModal } from "./delete-confirm-modal";
+import { useAuthStore } from "@/store";
+import { UserRole } from "@/types/role";
 // import { Card, CardContent } from "@/components/ui/card";
 // import { X } from "lucide-react";
 import { CreateRequestData, UpdateRequestData, RequestBudget } from "@/types/request-hub";
+
+// Helper function to format number with dots
+const formatCurrency = (value: string): string => {
+  // Remove all non-digit characters
+  const numericValue = value.replace(/\D/g, "");
+
+  // Add dots every 3 digits from right to left
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
+// Helper function to parse formatted currency to number
+const parseCurrency = (value: string): number => {
+  return parseFloat(value.replace(/\./g, "")) || 0;
+};
 
 // const UploadIcon = () => (
 //   <svg
@@ -64,12 +80,33 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         : initialData.budget.toString()
       : "",
   );
+
   const [deadline, setDeadline] = useState<Date | undefined>(
     initialData?.deadline ? new Date(initialData.deadline) : undefined,
   );
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [budgetError, setBudgetError] = useState("");
   // const [attachments, setAttachments] = useState<File[]>([]);
   // const [isDragOver, setIsDragOver] = useState(false);
+
+  // Check user role - only listeners can create/edit requests
+  const { user } = useAuthStore();
+
+  if (!user || user.role !== UserRole.LISTENER) {
+    return (
+      <div className="mx-auto max-w-6xl p-6">
+        <div className="text-center text-white">
+          <h2 className="mb-4 text-2xl font-bold">Access Denied</h2>
+          <p className="mb-4">Only listeners can create or edit requests.</p>
+          {onCancel && (
+            <button onClick={onCancel} className="text-blue-400 underline hover:text-blue-300">
+              Go back
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // Calculate minimum date (5 days from now)
   const minDate = new Date();
@@ -78,12 +115,12 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const budgetMinNumber = parseFloat(budgetMin) || 0;
-    const budgetMaxNumber = parseFloat(budgetMax) || budgetMinNumber;
+    const budgetMinNumber = parseCurrency(budgetMin);
+    const budgetMaxNumber = parseCurrency(budgetMax) || budgetMinNumber;
 
     // Validation: max should be >= min
     if (budgetMaxNumber < budgetMinNumber) {
-      alert("Maximum budget must be greater than or equal to minimum budget");
+      setBudgetError("Maximum budget must be greater than or equal to minimum budget");
       return;
     }
 
@@ -92,6 +129,9 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
       alert("Please select a deadline");
       return;
     }
+
+    // Clear error if validation passes
+    setBudgetError("");
 
     const budget = { min: budgetMinNumber, max: budgetMaxNumber };
 
@@ -181,39 +221,56 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
 
         <div>
           <label className="mb-2 block text-sm font-medium">Budget (VND)</label>
+          {budgetError && (
+            <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{budgetError}</div>
+          )}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="mb-1 block text-xs text-gray-500">Minimum Budget</label>
               <Input
-                type="number"
+                type="text"
                 value={budgetMin}
                 onChange={(e) => {
-                  setBudgetMin(e.target.value);
+                  const formattedValue = formatCurrency(e.target.value);
+                  setBudgetMin(formattedValue);
+
+                  // Clear error when user types
+                  if (budgetError) setBudgetError("");
+
                   // Auto-update max if it's less than min
-                  const minValue = parseFloat(e.target.value) || 0;
-                  const maxValue = parseFloat(budgetMax) || 0;
-                  if (maxValue < minValue) {
-                    setBudgetMax(e.target.value);
+                  const minValue = parseCurrency(formattedValue);
+                  const maxValue = parseCurrency(budgetMax);
+                  if (maxValue > 0 && maxValue < minValue) {
+                    setBudgetMax(formattedValue);
                   }
                 }}
                 placeholder="0"
                 className="w-full"
                 required
-                min="0"
-                step="0.01"
               />
             </div>
             <div>
               <label className="mb-1 block text-xs text-gray-500">Maximum Budget</label>
               <Input
-                type="number"
+                type="text"
                 value={budgetMax}
-                onChange={(e) => setBudgetMax(e.target.value)}
+                onChange={(e) => {
+                  const formattedValue = formatCurrency(e.target.value);
+                  setBudgetMax(formattedValue);
+
+                  // Clear error when user types
+                  if (budgetError) setBudgetError("");
+
+                  // Real-time validation
+                  const minValue = parseCurrency(budgetMin);
+                  const maxValue = parseCurrency(formattedValue);
+                  if (maxValue > 0 && maxValue < minValue) {
+                    setBudgetError("Maximum budget must be greater than or equal to minimum budget");
+                  }
+                }}
                 placeholder="0"
                 className="w-full"
                 required
-                min={budgetMin || "0"}
-                step="0.01"
               />
             </div>
           </div>

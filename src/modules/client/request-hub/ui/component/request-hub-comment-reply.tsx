@@ -31,6 +31,7 @@ import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit
 import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
+import { useAuthDialog } from "../context/auth-dialog-context";
 
 // Component for handling replies that might have nested replies
 interface RequestHubReplyCommentProps {
@@ -49,7 +50,8 @@ const RequestHubCommentReply = ({ reply, requestId, level, rootCommentId }: Requ
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const { showAuthDialog } = useAuthDialog();
 
   // Check if current user is the owner of this reply
   const isOwner = user?.userId === reply.commenterId;
@@ -76,6 +78,14 @@ const RequestHubCommentReply = ({ reply, requestId, level, rootCommentId }: Requ
       setShowReplyInput(false);
     },
   });
+
+  const handleShowReplyInput = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("reply");
+      return;
+    }
+    setShowReplyInput(!showReplyInput);
+  };
 
   const { mutate: updateReply, isPending: isUpdating } = useMutation({
     ...updateRequestHubCommentMutationOptions,
@@ -262,7 +272,7 @@ const RequestHubCommentReply = ({ reply, requestId, level, rootCommentId }: Requ
 
           <Button
             variant={"ghost"}
-            onClick={() => setShowReplyInput(!showReplyInput)}
+            onClick={handleShowReplyInput}
             className="h-6 cursor-pointer px-2 text-xs text-gray-400 hover:text-gray-200"
           >
             Reply

@@ -144,11 +144,11 @@ export function TrackApprovalTable({
               <TableHead className="w-12">
                 <Checkbox disabled />
               </TableHead>
+              <TableHead className="w-12"></TableHead>
               <TableHead>Track</TableHead>
               <TableHead>Artists</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Requested</TableHead>
-              <TableHead>Preview</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
@@ -243,7 +243,7 @@ export function TrackApprovalTable({
                     }
                     trackCoverImage={item.track.coverImage}
                     uploadId={item.id} // Pass uploadId for audio player
-                    size="sm"
+                    size="md"
                   />
                 </TableCell>
                 <TableCell>

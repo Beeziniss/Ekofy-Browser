@@ -106,6 +106,7 @@ export const SEARCH_TRACKS = graphql(`
         restriction {
           type
         }
+        checkTrackInFavorite
       }
     }
   }
@@ -130,6 +131,7 @@ export const SEARCH_PLAYLISTS = graphql(`
           id
           fullName
         }
+        checkPlaylistInFavorite
       }
     }
   }

@@ -102,19 +102,18 @@ export function SubscriptionPlanCard({
     if (isPro) {
       return {
         cardClass: "bg-gradient-to-br from-gray-900 to-gray-800 border border-purple-500",
-        borderGradient: "bg-gradient-to-r from-purple-500 via-blue-500 to-purple-600",
-        bgClass: "bg-gray-900",
+        borderGradient: "primary_gradient",
+        bgClass: "bg-[#121212]",
         textColor: "text-white",
         badgeText: "PRO",
-        badgeClass: "bg-gradient-to-r from-purple-400 to-blue-400 text-black border-none",
-        iconBg: "bg-gradient-to-r from-purple-500 to-blue-500",
-        toggleBg: "bg-gray-800 border border-gray-700",
-        toggleActiveClass: "bg-gray-700 text-white",
+        badgeClass: "primary_gradient text-white border-none",
+        iconBg: "primary_gradient",
+        toggleBg: "bg-[#262626] border",
+        toggleActiveClass: "bg-[#303030] text-white",
         toggleInactiveClass: "text-gray-400 hover:text-white",
-        priceGradient: "bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent",
+        priceGradient: "primary_gradient bg-clip-text text-transparent",
         subTextColor: "text-gray-400",
-        buttonClass:
-          "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg border-none",
+        buttonClass: "primary_gradient hover:opacity-80 text-white shadow-lg border-none",
         featureIconBg: "bg-green-500/20",
         featureIconColor: "text-green-400",
         featureTextColor: "text-gray-300",
@@ -123,19 +122,18 @@ export function SubscriptionPlanCard({
     } else if (isPremium) {
       return {
         cardClass: "bg-gradient-to-br from-gray-900 to-gray-800 border border-purple-500",
-        borderGradient: "bg-gradient-to-r from-purple-500 via-blue-500 to-purple-600",
+        borderGradient: "primary_gradient",
         bgClass: "bg-[#121212]",
         textColor: "text-white",
         badgeText: "PREMIUM",
-        badgeClass: "bg-gradient-to-r from-purple-400 to-blue-400 text-white border-none",
-        iconBg: "bg-gradient-to-r from-purple-500 to-blue-500",
-        toggleBg: "bg-gray-800 border border-gray-700",
-        toggleActiveClass: "bg-gray-700 text-white",
+        badgeClass: "primary_gradient text-white border-none",
+        iconBg: "primary_gradient",
+        toggleBg: "bg-[#262626] border",
+        toggleActiveClass: "bg-[#303030] text-white",
         toggleInactiveClass: "text-gray-400 hover:text-white",
-        priceGradient: "bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent",
+        priceGradient: "primary_gradient bg-clip-text text-transparent",
         subTextColor: "text-gray-400",
-        buttonClass:
-          "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg border-none",
+        buttonClass: "primary_gradient hover:opacity-80 text-white shadow-lg border-none",
         featureIconBg: "bg-green-500/20",
         featureIconColor: "text-green-400",
         featureTextColor: "text-gray-300",
@@ -177,12 +175,14 @@ export function SubscriptionPlanCard({
         </div>
       )}
 
-      <CardHeader className="relative z-10 space-y-4 pb-3 text-center">
+      <CardHeader className="relative z-10 space-y-4 pb-3 text-start">
         {/* Title and Icon */}
-        <div className="flex items-center justify-center space-x-3">
+        <div className="flex items-start justify-start space-x-3">
           <div>
             <CardTitle className={`text-2xl font-bold ${styling.textColor}`}>{plan.stripeProductName}</CardTitle>
-            {(isPremium || isPro) && <Badge className={`mt-1 ${styling.badgeClass}`}>{styling.badgeText}</Badge>}
+            {(isPremium || isPro) && (
+              <Badge className={`mt-1 flex justify-start ${styling.badgeClass}`}>{styling.badgeText}</Badge>
+            )}
           </div>
         </div>
 
@@ -191,11 +191,11 @@ export function SubscriptionPlanCard({
 
       <CardContent className="relative z-10 space-y-3">
         {/* Billing Toggle */}
-        <div className="flex justify-center">
-          <div className={`flex rounded-[999px] p-1 ${styling.toggleBg}`}>
+        <div className="flex w-full justify-start">
+          <div className={`flex w-full max-w-sm rounded-[999px] p-1 ${styling.toggleBg}`}>
             <button
               onClick={() => setSelectedInterval("monthly")}
-              className={`rounded-[999px] px-4 py-2 text-sm font-medium transition-all ${
+              className={`flex-1 rounded-[999px] px-6 py-3 text-sm font-medium transition-all ${
                 selectedInterval === "monthly" ? styling.toggleActiveClass : styling.toggleInactiveClass
               }`}
             >
@@ -203,7 +203,7 @@ export function SubscriptionPlanCard({
             </button>
             <button
               onClick={() => setSelectedInterval("yearly")}
-              className={`rounded-[999px] px-4 py-2 text-sm font-medium transition-all ${
+              className={`flex-1 rounded-[999px] px-6 py-3 text-sm font-medium transition-all ${
                 selectedInterval === "yearly" ? styling.toggleActiveClass : styling.toggleInactiveClass
               }`}
             >
@@ -214,7 +214,7 @@ export function SubscriptionPlanCard({
 
         {/* Pricing */}
         <div className="text-center">
-          <div className="flex items-baseline justify-center space-x-1">
+          <div className="flex items-baseline justify-start space-x-1">
             <span className={`text-4xl font-bold ${styling.priceGradient}`}>
               {formatNumber(pricePerMonth)} {mainPrice.stripePriceCurrency.toUpperCase()}
             </span>
@@ -225,7 +225,7 @@ export function SubscriptionPlanCard({
 
           {/* Show original price if discounted (yearly + coupon) */}
           {shouldApplyCoupon && (
-            <div className="mt-2 flex items-center justify-center space-x-2">
+            <div className="mt-2 flex items-center justify-start space-x-2">
               <span className={`text-sm line-through ${styling.subTextColor}`}>
                 {formatNumber(originalPrice)} {mainPrice.stripePriceCurrency.toUpperCase()}
               </span>
@@ -241,7 +241,7 @@ export function SubscriptionPlanCard({
 
         {/* Key Features */}
         <div className="space-y-4">
-          <h4 className={`font-semibold ${styling.textColor}`}>Key features:</h4>
+          <h4 className={`flex justify-start font-semibold ${styling.textColor}`}>Key features:</h4>
           <ul className="space-y-3">
             {features.slice(0, 4).map((feature, index) => (
               <li key={index} className="flex items-start space-x-3">

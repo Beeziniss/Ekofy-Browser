@@ -16,7 +16,9 @@ import { RequestsQuery, RequestStatus as GqlRequestStatus } from "@/gql/graphql"
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store";
+import { UserRole } from "@/types/role";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AuthDialogProvider } from "../context/auth-dialog-context";
 
 type RequestHubMode = "view" | "create" | "edit" | "detail";
 
@@ -177,6 +179,23 @@ export function MyRequestsView() {
     );
   }
 
+  // Check if user is listener - only listeners can access my requests
+  if (user.role !== UserRole.LISTENER) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center text-white">
+          <h2 className="mb-2 text-2xl font-bold">Access Denied</h2>
+          <p>Only listeners can access request management features.</p>
+          <p className="mt-4">
+            <button onClick={() => router.push("/request-hub")} className="text-blue-400 underline hover:text-blue-300">
+              Go back to Request Hub
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const renderContent = () => {
     switch (mode) {
       case "create":
@@ -200,54 +219,56 @@ export function MyRequestsView() {
       case "view":
       default:
         return (
-          <RequestHubLayout
-            onPostRequest={handlePostRequest}
-            onBrowseArtists={handleBrowseArtists}
-            onMyRequests={handleBackToHub}
-            myRequestsButtonText="Back to Hub"
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
-          >
-            <div className="mb-6">
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-white">Filter by status:</span>
-                <Select
-                  value={statusFilter}
-                  onValueChange={(value) => setStatusFilter(value as GqlRequestStatus | "ALL")}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ALL">All Statuses</SelectItem>
-                    <SelectItem value={GqlRequestStatus.Open}>Open</SelectItem>
-                    <SelectItem value={GqlRequestStatus.Closed}>Closed</SelectItem>
-                    <SelectItem value={GqlRequestStatus.Blocked}>Blocked</SelectItem>
-                    <SelectItem value={GqlRequestStatus.Deleted}>Deleted</SelectItem>
-                  </SelectContent>
-                </Select>
+          <AuthDialogProvider>
+            <RequestHubLayout
+              onPostRequest={handlePostRequest}
+              onBrowseArtists={handleBrowseArtists}
+              onMyRequests={handleBackToHub}
+              myRequestsButtonText="Back to Hub"
+              searchValue={searchValue}
+              onSearchChange={setSearchValue}
+            >
+              <div className="mb-6">
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-white">Filter by status:</span>
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(value) => setStatusFilter(value as GqlRequestStatus | "ALL")}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL">All Statuses</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Open}>Open</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Closed}>Closed</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Blocked}>Blocked</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Deleted}>Deleted</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            </div>
-            <ViewRequestSection
-              requests={displayRequests}
-              isLoading={isLoading}
-              onViewDetails={handleViewDetails}
-              onApply={handleApply}
-              onEdit={handleEdit}
-              onSave={handleSave}
-            />
-
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
+              <ViewRequestSection
+                requests={displayRequests}
                 isLoading={isLoading}
-                totalItems={totalItems}
-                itemsPerPage={pageSize}
+                onViewDetails={handleViewDetails}
+                onApply={handleApply}
+                onEdit={handleEdit}
+                onSave={handleSave}
               />
-            )}
-          </RequestHubLayout>
+
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  isLoading={isLoading}
+                  totalItems={totalItems}
+                  itemsPerPage={pageSize}
+                />
+              )}
+            </RequestHubLayout>
+          </AuthDialogProvider>
         );
     }
   };
