@@ -11,6 +11,7 @@ import { CreateRequestData, UpdateRequestData } from "@/types/request-hub";
 import { RequestsQuery, RequestStatus as GqlRequestStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { AuthDialogProvider } from "../context/auth-dialog-context";
 
 type RequestHubMode = "view" | "create" | "edit" | "detail";
 
@@ -174,31 +175,33 @@ export function RequestHubView() {
       case "view":
       default:
         return (
-          <RequestHubLayout
-            onPostRequest={handlePostRequest}
-            onBrowseArtists={handleBrowseArtists}
-            onMyRequests={handleMyRequests}
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
-          >
-            <ViewRequestSection
-              requests={filteredRequests}
-              isLoading={isLoading}
-              onViewDetails={handleViewDetails}
-              onApply={handleApply}
-              onEdit={handleEdit}
-              onSave={handleSave}
-            />
+          <AuthDialogProvider>
+            <RequestHubLayout
+              onPostRequest={handlePostRequest}
+              onBrowseArtists={handleBrowseArtists}
+              onMyRequests={handleMyRequests}
+              searchValue={searchValue}
+              onSearchChange={setSearchValue}
+            >
+              <ViewRequestSection
+                requests={filteredRequests}
+                isLoading={isLoading}
+                onViewDetails={handleViewDetails}
+                onApply={handleApply}
+                onEdit={handleEdit}
+                onSave={handleSave}
+              />
 
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalCount}
-              itemsPerPage={pageSize}
-              onPageChange={setCurrentPage}
-              isLoading={isLoading}
-            />
-          </RequestHubLayout>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalCount}
+                itemsPerPage={pageSize}
+                onPageChange={setCurrentPage}
+                isLoading={isLoading}
+              />
+            </RequestHubLayout>
+          </AuthDialogProvider>
         );
     }
   };

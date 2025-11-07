@@ -12,9 +12,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import { usePlaylistPlayback } from "@/modules/client/playlist/hooks/use-playlist-playback";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { playlistFavoriteMutationOptions } from "@/gql/options/client-mutation-options";
-import { useAuthStore } from "@/store";
+// import { useAuthStore } from "@/store";
+import { useAuthAction } from "@/hooks/use-auth-action";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { useFavoriteSearch } from "../../../hooks/use-favorite-search";
 
 interface SearchPlaylistSectionProps {
   playlists: SearchPlaylistItem[];
@@ -93,47 +94,31 @@ interface PlaylistCardProps {
 
 const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useAuthStore();
-  const queryClient = useQueryClient();
+  // const { user } = useAuthStore(); // Temporarily not used
+
+  // Auth action hooks
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
+
+  // Favorite hooks
+  const { handleFavoritePlaylist } = useFavoriteSearch();
 
   // Use custom hook for playlist playback functionality
   const { isPlaylistCurrentlyPlaying, isPlaying, handlePlayPause } = usePlaylistPlayback(playlist.id);
 
-  // Check if current user is the owner of the playlist
-  const isOwnPlaylist = user?.userId === playlist.user[0]?.id;
-
-  // State for favorite status with optimistic updates
-  const [isFavorited, setIsFavorited] = useState(false);
-
-  // Favorite playlist mutation
-  const { mutate: favoritePlaylist, isPending: isFavoriting } = useMutation({
-    ...playlistFavoriteMutationOptions,
-    onMutate: async () => {
-      // Optimistic update
-      setIsFavorited(!isFavorited);
-    },
-    onSuccess: () => {
-      // Invalidate queries to refetch updated data
-      queryClient.invalidateQueries({
-        queryKey: ["playlists-home"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["playlist-detail", playlist.id],
-      });
-      toast.success(isFavorited ? "Added to your favorites!" : "Removed from your favorites!");
-    },
-    onError: () => {
-      // Revert optimistic update on error
-      setIsFavorited(isFavorited);
-      toast.error("Failed to update favorite status. Please try again.");
-    },
-  });
+  // Check if current user is the owner of the playlist (for future use)
+  // const isOwnPlaylist = user?.userId === playlist.user[0]?.id;
 
   // Handle play/pause click for playlist
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    await handlePlayPause();
+    executeWithAuth(
+      async () => {
+        await handlePlayPause();
+      },
+      "play",
+      playlist.name,
+    );
   };
 
   // Handle favorite button click
@@ -141,12 +126,17 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (isFavoriting) return; // Prevent multiple clicks
-
-    favoritePlaylist({
-      playlistId: playlist.id,
-      isAdding: !isFavorited,
-    });
+    executeWithAuth(
+      () => {
+        handleFavoritePlaylist({
+          id: playlist.id,
+          name: playlist.name,
+          checkPlaylistInFavorite: playlist.checkPlaylistInFavorite,
+        });
+      },
+      "favorite",
+      playlist.name,
+    );
   };
 
   const onCopy = (e: React.MouseEvent) => {
@@ -184,13 +174,18 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
             )}
           </Button>
 
-          {playlist.isPublic && !isOwnPlaylist && (
+          {/* Show favorite button for public playlists (always show for testing) */}
+          {playlist.isPublic && (
             <Button
               onClick={handleFavoriteClick}
               className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity group-hover:opacity-100 ${isMenuOpen ? "opacity-100" : "opacity-0"}`}
             >
               <HeartIcon
-                className={`size-5 ${isFavorited ? "text-main-purple fill-main-purple" : "text-main-dark-bg"}`}
+                className={`size-5`}
+                style={{
+                  color: playlist.checkPlaylistInFavorite ? "var(--color-main-purple)" : "#2a2a2a",
+                  fill: playlist.checkPlaylistInFavorite ? "var(--color-main-purple)" : "none",
+                }}
               />
             </Button>
           )}
@@ -223,6 +218,13 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
       </Link>
 
       <p className="text-main-grey text-xs">By {playlist.user[0]?.fullName || "Unknown"}</p>
+
+      <WarningAuthDialog
+        open={showWarningDialog}
+        onOpenChange={setShowWarningDialog}
+        action={warningAction}
+        trackName={trackName}
+      />
     </div>
   );
 };

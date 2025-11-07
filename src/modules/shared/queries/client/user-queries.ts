@@ -2,7 +2,7 @@ import { graphql } from "@/gql";
 
 export const ListenerQuery = graphql(`
   query Listener($userId: String!) {
-    listeners(where: { userId: { eq: $userId } }) {
+    listeners(where: { userId: { eq: $userId }, isVisible: { eq: true } }) {
       items {
         userId
         displayName

@@ -191,21 +191,21 @@ export const getCloudinaryUrl = (publicId: string, transformations?: string): st
 export const validateImageFile = (file: File, maxSize: number = 10): boolean => {
   // Check file type
   if (!file.type.startsWith("image/")) {
-    toast.error("File phải là hình ảnh");
+    toast.error("File must be an image");
     return false;
   }
 
   // Check file size (convert MB to bytes)
   const maxBytes = maxSize * 1024 * 1024;
   if (file.size > maxBytes) {
-    toast.error(`Kích thước file không được vượt quá ${maxSize}MB`);
+    toast.error(`File size must not exceed ${maxSize}MB`);
     return false;
   }
 
   // Check supported formats
   const supportedFormats = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
   if (!supportedFormats.includes(file.type)) {
-    toast.error("Chỉ hỗ trợ định dạng: JPG, PNG, WEBP");
+    toast.error("Only supports formats: JPG, PNG, WEBP");
     return false;
   }
 

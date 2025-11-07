@@ -13,14 +13,7 @@ export const TrackCommentDeleteMutation = graphql(`
 `);
 
 export const TrackCommentCreateMutation = graphql(`
-  mutation CreateTrackComment(
-    $targetId: String!
-    $commentType: CommentType!
-    $content: String!
-    $parentCommentId: String
-  ) {
-    createComment(
-      request: { targetId: $targetId, commentType: $commentType, content: $content, parentCommentId: $parentCommentId }
-    )
+  mutation CreateTrackComment($request: CreateCommentRequestInput!) {
+    createComment(request: $request)
   }
 `);

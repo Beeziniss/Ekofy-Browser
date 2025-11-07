@@ -16,7 +16,7 @@ import { EkofyLogoTextLg } from "@/assets/icons";
 interface WarningAuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  action: "play" | "favorite" | "comment" | "follow" | "playlist";
+  action: "play" | "favorite" | "comment" | "follow" | "playlist" | "apply" | "contact" | "reply" | "post" | "edit";
   trackName?: string;
 }
 
@@ -33,6 +33,16 @@ export function WarningAuthDialog({ open, onOpenChange, action, trackName }: War
         return "follow artists";
       case "playlist":
         return "add track to your playlist";
+      case "apply":
+        return "apply for requests";
+      case "contact":
+        return "contact clients";
+      case "reply":
+        return "reply to comments";
+      case "post":
+        return "post requests";
+      case "edit":
+        return "edit your content";
       default:
         return "use this feature";
     }
@@ -50,6 +60,16 @@ export function WarningAuthDialog({ open, onOpenChange, action, trackName }: War
         return "Sign up to follow artists";
       case "playlist":
         return "Sign up to add track to your playlist";
+      case "apply":
+        return "Sign up to apply for requests";
+      case "contact":
+        return "Sign up to contact clients";
+      case "reply":
+        return "Sign up to reply to comments";
+      case "post":
+        return "Sign up to post requests";
+      case "edit":
+        return "Sign up to edit your content";
       default:
         return "Sign up to continue";
     }

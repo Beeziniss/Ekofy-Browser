@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
 import { useAuthStore } from "@/store";
 import { useRouter } from "next/navigation";
@@ -32,7 +32,7 @@ export function NavUser({
   const { clearUserData } = useAuthStore();
   const router = useRouter();
   const { header, data } = useArtistProfile();
-
+  const queryClient = useQueryClient();
   const displayName = header?.name || user.name;
   const displayEmail = data?.email || user.email;
   const avatarSrc = data?.avatarImage || user.avatar;
@@ -42,6 +42,7 @@ export function NavUser({
     mutationFn: authApi.general.logout,
     onSuccess: () => {
       clearUserData();
+      queryClient.clear();
       router.push("/artist/login");
     },
     onError: (error) => {

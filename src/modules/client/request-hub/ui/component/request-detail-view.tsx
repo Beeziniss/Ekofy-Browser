@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 import { RequestsQuery } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store";
+import { useAuthDialog } from "../context/auth-dialog-context";
+import RequestHubCommentSection from "./comment-section";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
@@ -29,6 +32,10 @@ interface RequestDetailViewProps {
 }
 
 export function RequestDetailView({ request, onBack, onApply, onContactClient, className }: RequestDetailViewProps) {
+  // Get auth state and dialog
+  const { isAuthenticated } = useAuthStore();
+  const { showAuthDialog } = useAuthDialog();
+
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
 
@@ -94,6 +101,22 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
   const formatDeadline = (deadline: string | Date) => {
     const date = typeof deadline === "string" ? new Date(deadline) : deadline;
     return date.toLocaleDateString();
+  };
+
+  const handleApply = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("apply", request.title);
+      return;
+    }
+    onApply();
+  };
+
+  const handleContactClient = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("contact", request.title);
+      return;
+    }
+    onContactClient();
   };
 
   return (
@@ -201,12 +224,12 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
                   </div>
 
                   <div className="space-y-3">
-                    <Button className="w-full bg-purple-600 text-white hover:bg-purple-700" onClick={onApply}>
+                    <Button className="w-full bg-purple-600 text-white hover:bg-purple-700" onClick={handleApply}>
                       <Send className="mr-2 h-4 w-4" />
                       Apply Now
                     </Button>
 
-                    <Button variant="outline" className="w-full" onClick={onContactClient}>
+                    <Button variant="outline" className="w-full" onClick={handleContactClient}>
                       <MessageCircle className="mr-2 h-4 w-4" />
                       Contact Client
                     </Button>
@@ -215,6 +238,11 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
               </Card>
             </div>
           </div>
+        </div>
+
+        {/* Comments Section */}
+        <div className="mx-auto max-w-7xl px-6 py-8">
+          <RequestHubCommentSection requestId={request.id} />
         </div>
       </div>
     </div>

@@ -1,10 +1,23 @@
 import React from "react";
 import DetailItem from "@/modules/client/profile/ui/components/detail-item";
-import { useArtistProfile } from "../../hooks/use-artist-profile";
 
-export default function ArtistAccountDetailSection() {
-  const { data, createdAt, userStatus, artistType, membershipStatus } = useArtistProfile();
+interface ArtistAccountDetailSectionProps {
+  data?: {
+    stageName?: string;
+  };
+  createdAt?: string;
+  userStatus?: string;
+  artistType?: string;
+  membershipStatus?: string;
+}
 
+export default function ArtistAccountDetailSection({
+  data,
+  createdAt,
+  userStatus,
+  artistType,
+  membershipStatus,
+}: ArtistAccountDetailSectionProps) {
   const humanize = (value?: string | null) =>
     value
       ? value
@@ -16,9 +29,9 @@ export default function ArtistAccountDetailSection() {
   const accountFields = [
     { title: "Stage name", value: data?.stageName || "-" },
     { title: "Created date", value: createdAt || "-" },
-    { title: "Artist type", value: humanize(artistType as unknown as string) },
+    { title: "Artist type", value: humanize(artistType) },
     { title: "Membership status", value: membershipStatus || "-" },
-    { title: "Account status", value: humanize(userStatus as unknown as string) },
+    { title: "Account status", value: humanize(userStatus) },
   ];
 
   return (

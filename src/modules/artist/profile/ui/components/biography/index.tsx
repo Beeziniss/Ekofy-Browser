@@ -1,14 +1,13 @@
 "use client";
-import { useArtistProfile } from "../../../hooks/use-artist-profile";
+
+import { toast } from "sonner";
+import { useAuthStore } from "@/store";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { execute } from "@/gql/execute";
-import { UpdateArtistProfileMutation } from "../../views/queries";
-import { useAuthStore } from "@/store";
-import { useQueryClient } from "@tanstack/react-query";
-import { artistProfileOptions } from "@/gql/options/artist-options";
-import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateArtistProfileMutationOptions } from "@/gql/options/artist-mutation-options";
+import { useArtistProfile } from "../../../hooks/use-artist-profile";
 
 export default function BiographySection() {
   const { biography } = useArtistProfile();
@@ -18,29 +17,41 @@ export default function BiographySection() {
   const userId = user?.userId || "";
   const qc = useQueryClient();
 
+  const updateProfileMutation = useMutation({
+    ...updateArtistProfileMutationOptions,
+    onSuccess: () => {
+      // Invalidate and refetch profile data
+      qc.invalidateQueries({ queryKey: ["artist-profile", userId] });
+      qc.invalidateQueries({ queryKey: ["artist", userId] });
+      toast.success("Your biography has been updated.");
+      setIsEditing(false);
+    },
+    onError: (error) => {
+      const raw = error instanceof Error ? error.message : String(error);
+      const msg = /401|Unauthorized/i.test(raw)
+        ? "You're not authorized. Please sign in and try again."
+        : /403|AUTH_NOT_AUTHORIZED/i.test(raw)
+          ? "You don't have permission to update this profile."
+          : /Network Error/i.test(raw)
+            ? "Network issue while updating your biography. Please check your connection and retry."
+            : "Couldn't update your biography right now. Please try again in a moment.";
+      console.error("Biography update failed:", raw);
+      toast.error(msg);
+    },
+  });
+
   useEffect(() => {
     setValue(biography || "");
   }, [biography]);
 
   const onSave = async () => {
     try {
-      await execute(UpdateArtistProfileMutation, {
-        updateArtistRequest: { biography: value.trim() || null },
+      await updateProfileMutation.mutateAsync({
+        biography: value.trim() || null,
       });
-      toast.success("Your biography has been updated.");
-      await qc.invalidateQueries({ queryKey: artistProfileOptions(userId).queryKey });
-      setIsEditing(false);
-    } catch (e) {
-      const raw = e instanceof Error ? e.message : String(e);
-      const msg = /401|Unauthorized/i.test(raw)
-        ? "You’re not authorized. Please sign in and try again."
-        : /403|AUTH_NOT_AUTHORIZED/i.test(raw)
-          ? "You don’t have permission to update this profile."
-          : /Network Error/i.test(raw)
-            ? "Network issue while updating your biography. Please check your connection and retry."
-            : "Couldn’t update your biography right now. Please try again in a moment.";
-      console.error("Biography update failed:", raw);
-      toast.error(msg);
+    } catch (error) {
+      // Error handling is done in the mutation's onError callback
+      console.error("Biography save error:", error);
     }
   };
 

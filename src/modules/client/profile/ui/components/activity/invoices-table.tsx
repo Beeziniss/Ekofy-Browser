@@ -5,16 +5,17 @@ import Link from "next/link";
 import { useListenerInvoices } from "@/modules/client/profile/hooks/use-listener-invoices";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useAuthStore } from "@/store";
 
 interface InvoicesTableProps {
-  userId: string;
   pageSize?: number;
 }
 
-export default function InvoicesTable({ userId, pageSize = 10 }: InvoicesTableProps) {
+export default function InvoicesTable({ pageSize = 10 }: InvoicesTableProps) {
+  const { user } = useAuthStore();
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isError } = useListenerInvoices({ userId, page, pageSize });
+  const { data, isLoading, isError } = useListenerInvoices({ userId: user!.userId, page, pageSize });
 
   const items = data?.invoices?.items ?? [];
   const totalCount = data?.invoices?.totalCount ?? 0;

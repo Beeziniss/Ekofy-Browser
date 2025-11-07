@@ -11,6 +11,8 @@ import { RequestsQuery } from "@/gql/graphql";
 import { userForRequestsOptions, requestHubCommentsOptions } from "@/gql/options/client-options";
 import { RequestHubCommentSection } from "./";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store";
+import { useAuthDialog } from "../context/auth-dialog-context";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
@@ -26,6 +28,10 @@ interface RequestCardProps {
 
 export function RequestCard({ request, onViewDetails, onApply, onEdit, className, isOwner = false }: RequestCardProps) {
   const [showComments, setShowComments] = useState(false);
+
+  // Get auth state and dialog
+  const { isAuthenticated } = useAuthStore();
+  const { showAuthDialog } = useAuthDialog();
 
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
@@ -79,7 +85,24 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
   };
 
   const handleToggleComments = () => {
+    // Anyone can view comments, no auth required
     setShowComments(!showComments);
+  };
+
+  const handleApply = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("apply", request.title);
+      return;
+    }
+    onApply?.(request.id);
+  };
+
+  const handleEdit = () => {
+    if (!isAuthenticated) {
+      showAuthDialog("edit", request.title);
+      return;
+    }
+    onEdit?.(request.id);
   };
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -187,20 +210,12 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
               View Details
             </Button>
             {isOwner && onEdit ? (
-              <Button
-                size="sm"
-                onClick={() => onEdit(request.id)}
-                className="primary_gradient text-sm text-white hover:opacity-65"
-              >
+              <Button size="sm" onClick={handleEdit} className="primary_gradient text-sm text-white hover:opacity-65">
                 <SquarePen className="mr-1 h-3 w-3" />
                 Edit
               </Button>
             ) : (
-              <Button
-                size="sm"
-                onClick={() => onApply?.(request.id)}
-                className="primary_gradient text-sm text-white hover:opacity-65"
-              >
+              <Button size="sm" onClick={handleApply} className="primary_gradient text-sm text-white hover:opacity-65">
                 <Send className="mr-1 h-3 w-3" />
                 Apply Now
               </Button>

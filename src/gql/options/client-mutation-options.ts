@@ -1,5 +1,5 @@
 import { execute } from "../execute";
-import { CommentType, UserGender } from "../graphql";
+import { CommentType, CreateCommentRequestInput, UpdateListenerRequestInput } from "../graphql";
 import { mutationOptions } from "@tanstack/react-query";
 import {
   TrackCommentCreateMutation,
@@ -11,9 +11,12 @@ import {
   RequestHubCommentDeleteMutation,
   RequestHubCommentUpdateMutation,
 } from "@/modules/shared/mutations/client/request-hub-comment-mutation";
-import { UserFollowMutation, UserUnfollowMutation } from "@/modules/shared/mutations/client/user-mutations";
+import {
+  UpdateListenerProfileMutation,
+  UserFollowMutation,
+  UserUnfollowMutation,
+} from "@/modules/shared/mutations/client/user-mutations";
 import { FavoriteTrackMutation } from "@/modules/shared/mutations/client/track-queries";
-import { UpdateListenerProfileMutation } from "@/modules/client/profile/ui/views/queries";
 import {
   AddToPlaylistMutation,
   CreatePlaylistMutation,
@@ -74,17 +77,7 @@ export const favoriteTrackMutationOptions = mutationOptions({
 
 export const updateListenerProfileMutationOptions = mutationOptions({
   mutationKey: ["update-listener-profile"],
-  mutationFn: async (updateListenerRequest: {
-    displayName?: string;
-    email?: string;
-    avatarImage?: string;
-    bannerImage?: string;
-    fullName?: string;
-    phoneNumber?: string;
-    // Newly supported fields
-    birthDate?: string; // ISO 8601 string e.g. 1990-01-01T00:00:00.000Z
-    gender?: UserGender;
-  }) =>
+  mutationFn: async (updateListenerRequest: UpdateListenerRequestInput) =>
     await execute(UpdateListenerProfileMutation, {
       updateListenerRequest,
     }),
@@ -92,12 +85,7 @@ export const updateListenerProfileMutationOptions = mutationOptions({
 
 export const createTrackCommentMutationOptions = mutationOptions({
   mutationKey: ["create-track-comment"],
-  mutationFn: async (input: {
-    targetId: string;
-    commentType: CommentType;
-    content: string;
-    parentCommentId?: string;
-  }) => await execute(TrackCommentCreateMutation, input),
+  mutationFn: async (request: CreateCommentRequestInput) => await execute(TrackCommentCreateMutation, { request }),
 });
 
 export const updateTrackCommentMutationOptions = mutationOptions({

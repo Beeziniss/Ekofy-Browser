@@ -8,7 +8,11 @@ import {
   InvoiceFilterInput,
   InvoiceSortInput,
 } from "@/gql/graphql";
-import { GetArtistTransactionsQuery, GetArtistPayoutsQuery, GetArtistInvoicesQuery } from "@/modules/artist/profile/ui/views/queries";
+import {
+  GetArtistTransactionsQuery,
+  GetArtistPayoutsQuery,
+  GetArtistInvoicesQuery,
+} from "@/modules/artist/profile/ui/views/queries";
 
 export function artistTransactionsOptions(params: {
   userId: string;
@@ -31,12 +35,7 @@ export function artistTransactionsOptions(params: {
   };
 }
 
-export function artistPayoutsOptions(params: {
-  userId: string;
-  page: number;
-  pageSize: number;
-  status?: string;
-}) {
+export function artistPayoutsOptions(params: { userId: string; page: number; pageSize: number; status?: string }) {
   const { userId, page, pageSize } = params;
   const skip = (page - 1) * pageSize;
   const take = pageSize;
@@ -56,10 +55,7 @@ export function artistPayoutsOptions(params: {
 export function artistTransactionByIdOptions(params: { id: string }) {
   const { id } = params;
   const where: PaymentTransactionFilterInput = {
-    or: [
-      { id: { eq: id } },
-      { stripePaymentId: { eq: id } },
-    ],
+    or: [{ id: { eq: id } }, { stripePaymentId: { eq: id } }],
   };
   const take = 1;
   const skip = 0;
@@ -76,12 +72,10 @@ export function artistPayoutByIdOptions(params: { id: string }) {
   const where: PayoutTransactionFilterInput = {
     id: { eq: id },
   };
-  const take = 1;
-  const skip = 0;
 
   return {
     queryKey: ["artist-payout", id],
-    queryFn: async () => execute(GetArtistPayoutsQuery, { where, skip, take }),
+    queryFn: async () => execute(GetArtistPayoutsQuery, { where }),
   };
 }
 
