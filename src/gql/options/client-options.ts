@@ -45,8 +45,6 @@ export const listenerProfileOptions = (userId: string, enabled: boolean = true) 
       if (!userId) return null;
       const result = await execute(GetListenerProfileQuery, {
         where: { userId: { eq: userId } },
-        take: 1,
-        skip: 0,
       });
       return result.listeners?.items?.[0] || null;
     },
@@ -74,6 +72,7 @@ export const userActiveSubscriptionOptions = (userId: string) =>
     enabled: !!userId,
   });
 
+// TRACK QUERIES
 export const trackListHomeOptions = queryOptions({
   queryKey: ["tracks-home"],
   queryFn: async () => await execute(TrackListHomeQuery, { take: 10 }),
@@ -86,6 +85,7 @@ export const trackDetailOptions = (trackId: string) =>
     enabled: !!trackId,
   });
 
+// PLAYLIST QUERIES
 export const playlistsHomeOptions = queryOptions({
   queryKey: ["playlists-home"],
   queryFn: async () => await execute(PlaylistsHomeQuery, { take: 10 }),
@@ -163,7 +163,7 @@ export const requestHubCommentRepliesOptions = (rootCommentId: string) =>
   });
 
 // USER QUERIES
-export const listenerOptions = (userId: string, listenerId: string) =>
+export const listenerOptions = (userId: string, listenerId?: string) =>
   queryOptions({
     queryKey: ["listener", userId],
     queryFn: async () => await execute(ListenerQuery, { userId }),

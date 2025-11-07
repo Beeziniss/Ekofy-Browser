@@ -1,31 +1,14 @@
-"use client";
-
 import Link from "next/link";
-import { useAuthStore } from "@/store";
-import { UserRole } from "@/types/role";
-import { Suspense, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
-import { useRouter, useParams } from "next/navigation";
 import { PaymentTransactionStatus } from "@/gql/graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function TransactionDetailPage() {
-  const router = useRouter();
-  const params = useParams<{ transactionId: string }>();
-  const { isAuthenticated, user, clearUserData } = useAuthStore();
+interface PageProps {
+  params: Promise<{ transactionId: string }>;
+}
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/login");
-      return;
-    }
-    if (user?.role !== UserRole.LISTENER) {
-      clearUserData();
-      router.replace("/login");
-    }
-  }, [isAuthenticated, user?.role, router, clearUserData]);
-
-  if (!isAuthenticated || user?.role !== UserRole.LISTENER) return null;
+const TransactionDetailPage = async ({ params }: PageProps) => {
+  const { transactionId } = await params;
 
   // Mock one transaction. We ignore params.transactionId for now and show a fixed example.
   const tx = {
@@ -52,49 +35,49 @@ export default function TransactionDetailPage() {
   };
 
   return (
-    <Suspense fallback={<div className="p-4">Loading transaction…</div>}>
-      <div className="mx-auto w-full max-w-4xl px-4 py-6 md:px-6">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Transaction Detail</h1>
-            <p className="text-muted-foreground text-sm">Reference: {params.transactionId}</p>
-          </div>
-          <Link href="/profile/payment-history" className="text-primary text-sm hover:underline">
-            &larr; Back to Payment History
-          </Link>
+    <div className="mx-auto w-full max-w-4xl px-4 py-6 md:px-6">
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Transaction Detail</h1>
+          <p className="text-muted-foreground text-sm">Reference: {transactionId}</p>
         </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3">
-              <span>#{tx.id.slice(-8)}</span>
-              {statusBadge(tx.paymentStatus)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <dt className="text-muted-foreground text-sm">Created at</dt>
-                <dd className="text-sm">{new Date(tx.createdAt).toLocaleString()}</dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground text-sm">Amount</dt>
-                <dd className="text-sm">
-                  {tx.amount.toLocaleString()} {tx.currency}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground text-sm">Payment methods</dt>
-                <dd className="text-sm">{tx.stripePaymentMethod.join(", ")}</dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground text-sm">Stripe Payment ID</dt>
-                <dd className="text-sm">{tx.stripePaymentId}</dd>
-              </div>
-            </dl>
-          </CardContent>
-        </Card>
+        <Link href="/profile/payment-history" className="text-primary text-sm hover:underline">
+          &larr; Back to Payment History
+        </Link>
       </div>
-    </Suspense>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3">
+            <span>#{tx.id.slice(-8)}</span>
+            {statusBadge(tx.paymentStatus)}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <dt className="text-muted-foreground text-sm">Created at</dt>
+              <dd className="text-sm">{new Date(tx.createdAt).toLocaleString()}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground text-sm">Amount</dt>
+              <dd className="text-sm">
+                {tx.amount.toLocaleString()} {tx.currency}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground text-sm">Payment methods</dt>
+              <dd className="text-sm">{tx.stripePaymentMethod.join(", ")}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground text-sm">Stripe Payment ID</dt>
+              <dd className="text-sm">{tx.stripePaymentId}</dd>
+            </div>
+          </dl>
+        </CardContent>
+      </Card>
+    </div>
   );
-}
+};
+
+export default TransactionDetailPage;
