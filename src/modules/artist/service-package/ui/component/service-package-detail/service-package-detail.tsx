@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft } from "lucide-react";
-import { ArtistPackage, ArtistPackageStatus, Metadata } from "@/gql/graphql";
+import { ArrowLeft, Clock, RotateCcw } from "lucide-react";
+import { ArtistPackage, Metadata } from "@/gql/graphql";
+import { usePackageUtils } from "../../../hooks";
 
 interface ServicePackageDetailProps {
   package: ArtistPackage;
@@ -14,24 +15,7 @@ interface ServicePackageDetailProps {
 }
 
 const ServicePackageDetail: React.FC<ServicePackageDetailProps> = ({ package: pkg, onBack }) => {
-  const getStatusColor = (status: ArtistPackageStatus) => {
-    switch (status) {
-      case ArtistPackageStatus.Enabled:
-        return "bg-green-500 hover:bg-green-600";
-      case ArtistPackageStatus.Disabled:
-        return "bg-red-500 hover:bg-red-600";
-      case ArtistPackageStatus.Pending:
-        return "bg-yellow-500 hover:bg-yellow-600";
-      case ArtistPackageStatus.Rejected:
-        return "bg-gray-500 hover:bg-gray-600";
-      default:
-        return "bg-gray-500 hover:bg-gray-600";
-    }
-  };
-
-  const formatCurrency = (amount: number, currency: string) => {
-    return `${amount.toLocaleString()} ${currency}`;
-  };
+  const { formatCurrency, formatRevisionText, getStatusColor, getStatusText } = usePackageUtils();
 
   return (
     <div className="mx-auto max-w-7xl p-6">
@@ -51,13 +35,20 @@ const ServicePackageDetail: React.FC<ServicePackageDetailProps> = ({ package: pk
                 <CardDescription className="text-lg font-semibold text-green-400">
                   {formatCurrency(pkg.amount, pkg.currency)}
                 </CardDescription>
-                <Badge className={getStatusColor(pkg.status)}>{pkg.status}</Badge>
+                <Badge className={getStatusColor(pkg.status)}>{getStatusText(pkg.status)}</Badge>
+              </div>
+              <div className="flex items-center space-x-6 text-gray-400">
+                <CardDescription className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Delivery: {pkg.estimateDeliveryDays} days
+                </CardDescription>
+                <CardDescription className="flex items-center gap-2">
+                  <RotateCcw className="h-4 w-4" />
+                  {formatRevisionText(pkg.maxRevisions || 0)}
+                </CardDescription>
               </div>
               <CardDescription className="text-gray-400">
-                Delivery time: {pkg.estimateDeliveryDays} days
-              </CardDescription>
-              <CardDescription className="text-gray-400">
-                Create At: {new Date(pkg.createdAt).toLocaleDateString()}
+                Created: {new Date(pkg.createdAt).toLocaleDateString()}
               </CardDescription>
             </div>
           </div>

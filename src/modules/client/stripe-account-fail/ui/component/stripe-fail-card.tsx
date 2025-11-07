@@ -1,23 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { XCircle, ArrowLeft, RefreshCw, AlertTriangle } from "lucide-react";
+import { XCircle, RefreshCw } from "lucide-react";
 import { useCreateExpressConnectedAccount, getStripeAccountUrls } from "@/gql/client-mutation-options/stripe-mutation";
-import { toast } from "sonner";
+import { EkofyLogoTextLg } from "@/assets/icons";
 
 export function StripeFailCard() {
   const router = useRouter();
   const [isRetrying, setIsRetrying] = useState(false);
-  
+  const [isVisible, setIsVisible] = useState(false);
   const createAccountMutation = useCreateExpressConnectedAccount();
 
-  const handleBackToStudio = () => {
-    toast.info("Returning to studio...");
-    router.push("artist/studio/tracks");
-  };
+    useEffect(() => {
+    // Trigger animation after mount
+    setTimeout(() => setIsVisible(true), 100);
+  }, []);
 
   const handleRetryStripeSetup = async () => {
     try {
@@ -34,77 +34,78 @@ export function StripeFailCard() {
     }
   };
 
+  const handleBackToHome = () => {
+    router.push("/");
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-100 p-4">
-      <Card className="w-full max-w-md mx-auto bg-white shadow-2xl border-0">
-        <CardContent className="p-8 text-center space-y-6">
-          {/* Fail Icon */}
-          <div className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
-            <XCircle className="w-12 h-12 text-red-600" />
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-md mx-auto shadow-lg border border-gray-200 rounded-2xl overflow-hidden">
+        <CardContent className="p-8 text-center space-y-8">
+          {/* Ekofy Logo */}
+          <div className="flex justify-center">
+            <EkofyLogoTextLg className="w-32 h-auto" />
           </div>
 
-          {/* Fail Message */}
-          <div className="space-y-3">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Account Setup Failed
-            </h1>
-            <p className="text-gray-600 leading-relaxed">
-              Something went wrong during the Stripe account setup process. Please try again or contact support if the issue persists.
-            </p>
-          </div>
-
-          {/* Warning Info */}
-          <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-              <div className="text-left">
-                <p className="text-sm text-amber-800 font-medium">
-                  Payment setup required
-                </p>
-                <p className="text-sm text-amber-700 mt-1">
-                  You need a connected Stripe account to receive payments for your music.
-                </p>
+          {/* Animated Fail Icon */}
+          <div className="mb-6 flex justify-center">
+            <div
+              className={`transform transition-all duration-500 delay-200 ${
+                isVisible ? "scale-100 opacity-100" : "scale-50 opacity-0"
+              }`}
+            >
+              <div className="relative">
+                <div className="absolute inset-0 animate-ping rounded-full bg-destructive/20" />
+                <XCircle className="relative h-20 w-20 text-destructive" />
               </div>
             </div>
           </div>
 
+          {/* Fail Message */}
+          <div className="space-y-4">
+            <h1 className="text-2xl font-bold text-main-white">
+              Kết nối thất bại!
+            </h1>
+            <p className="text-main-white leading-relaxed text-sm">
+              Đã có lỗi xảy ra khi kết nối tài khoản Stripe của bạn. Vui lòng thử lại hoặc liên hệ với đội hỗ trợ nếu vấn đề vẫn tiếp tục.
+            </p>
+          </div>
+
           {/* Action Buttons */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             {/* Retry Button */}
             <Button
               onClick={handleRetryStripeSetup}
               disabled={isRetrying || createAccountMutation.isPending}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 h-12 transition-all duration-200"
+              className="w-full primary_gradient hover:opacity-80 text-white font-semibold py-3 h-12 rounded-xl transition-all duration-200 shadow-lg"
             >
               {isRetrying || createAccountMutation.isPending ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Setting up account...
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Đang kết nối...
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
                   <RefreshCw className="w-4 h-4" />
-                  Try Again
+                  Thử lại kết nối
                 </div>
               )}
             </Button>
 
-            {/* Back to Studio Button */}
+            {/* Back Button */}
             <Button
-              onClick={handleBackToStudio}
-              variant="outline"
-              className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold py-3 h-12 transition-all duration-200"
+              onClick={handleBackToHome}
+              variant="ghost"
+              className="w-full primary_gradient hover:opacity-80 font-medium py-3 h-12 transition-all duration-200"
             >
-              <div className="flex items-center gap-2">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Studio
-              </div>
+              Quay về trang chủ
             </Button>
           </div>
 
-          {/* Additional Info */}
-          <div className="text-sm text-gray-500 bg-gray-50 rounded-lg p-3">
-            <p>💡 You can continue using the studio, but payment features will be limited until account setup is complete.</p>
+          {/* Support Info */}
+          <div className="text-sm text-main-white">
+            <p>Cần hỗ trợ? Liên hệ với chúng tôi qua email:</p>
+            <p className="font-medium text-main-white mt-1">support@ekofy.com</p>
           </div>
         </CardContent>
       </Card>

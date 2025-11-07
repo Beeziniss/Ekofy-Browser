@@ -34,6 +34,7 @@ export const ServicePackageServiceViewQuery = `
         currency
         estimateDeliveryDays
         description
+        maxRevisions
         serviceDetails {
           key
           value
@@ -66,6 +67,7 @@ export const ServicePackageDetailQuery = `
         currency
         estimateDeliveryDays
         description
+        maxRevisions
         serviceDetails {
           key
           value

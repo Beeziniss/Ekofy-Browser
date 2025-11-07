@@ -22,7 +22,7 @@ import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
 import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 import RequestHubCommentSection from "./comment-section";
-import { StripeAccountRequiredModal } from "./";
+import { StripeAccountRequiredModal } from "@/modules/shared/ui/components/stripe-account-required-modal";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
