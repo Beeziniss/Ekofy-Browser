@@ -42,7 +42,7 @@ export default function RootLayout({
             bottom: 60,
             right: 12,
           }}
-          duration={1500}
+          duration={3500}
         />
       </body>
     </html>

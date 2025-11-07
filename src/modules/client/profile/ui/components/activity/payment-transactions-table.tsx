@@ -7,9 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaymentTransactionStatus } from "@/gql/graphql";
+import { useAuthStore } from "@/store";
 
 interface PaymentTransactionsTableProps {
-  userId: string;
   pageSize?: number;
 }
 
@@ -26,10 +26,11 @@ const statusBadge = (status: PaymentTransactionStatus) => {
   }
 };
 
-export default function PaymentTransactionsTable({ userId, pageSize = 10 }: PaymentTransactionsTableProps) {
+export default function PaymentTransactionsTable({ pageSize = 10 }: PaymentTransactionsTableProps) {
   const [page, setPage] = useState(1);
+  const { user } = useAuthStore();
 
-  const { data, isLoading, isError } = useListenerTransactions({ userId, page, pageSize });
+  const { data, isLoading, isError } = useListenerTransactions({ userId: user!.userId, page, pageSize });
 
   const items = data?.transactions?.items ?? [];
   const totalCount = data?.transactions?.totalCount ?? 0;

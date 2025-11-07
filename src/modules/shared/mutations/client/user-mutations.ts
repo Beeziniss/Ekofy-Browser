@@ -11,3 +11,9 @@ export const UserUnfollowMutation = graphql(`
     unfollowUser(request: { targetId: $targetId })
   }
 `);
+
+export const UpdateListenerProfileMutation = graphql(`
+  mutation UpdateListenerProfile($updateListenerRequest: UpdateListenerRequestInput!) {
+    updateListenerProfile(updateListenerRequest: $updateListenerRequest)
+  }
+`);

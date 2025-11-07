@@ -1,12 +1,23 @@
 import React from "react";
 import DetailItem from "@/modules/client/profile/ui/components/detail-item";
-import { useArtistProfile } from "../../hooks/use-artist-profile";
 import { format } from "date-fns";
 import type { UserGender } from "@/gql/graphql";
 
-export default function ArtistPersonalDetailSection() {
-  const { identityCard } = useArtistProfile();
+interface ArtistPersonalDetailSectionProps {
+  identityCard?: {
+    number?: string;
+    fullName?: string;
+    dateOfBirth?: string;
+    gender?: UserGender;
+    placeOfOrigin?: string;
+    placeOfResidence?: {
+      addressLine?: string;
+    };
+    validUntil?: string;
+  };
+}
 
+export default function ArtistPersonalDetailSection({ identityCard }: ArtistPersonalDetailSectionProps) {
   const genderLabel = (g?: UserGender | null): string => {
     switch (g) {
       case "MALE":

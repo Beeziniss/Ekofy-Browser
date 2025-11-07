@@ -29,6 +29,39 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Restrict access to /profile routes for artist, moderator, and admin roles
+  if (pathname.startsWith("/profile")) {
+    if (isAuthenticated && user && [UserRole.ARTIST, UserRole.MODERATOR, UserRole.ADMIN].includes(user.role)) {
+      url.pathname = "/unauthorized";
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Restrict moderators and admins from accessing ANY listener-related pages
+  const listenerRoutes = [
+    "/", // homepage
+    "/library",
+    "/playlists",
+    "/search",
+    "/subscription",
+    "/track",
+    "/request-hub",
+    "/artists-for-hire",
+    "/login", // listener login
+    "/sign-up", // listener sign-up
+  ];
+
+  const isListenerRoute = listenerRoutes.some(
+    (route) => pathname === route || (route !== "/" && pathname.startsWith(route)),
+  );
+
+  if (isListenerRoute && isAuthenticated && user && [UserRole.MODERATOR, UserRole.ADMIN].includes(user.role)) {
+    // Redirect to their appropriate dashboard
+    const dashboardPath = user.role === UserRole.ADMIN ? "/admin/user-management" : "/moderator/track-approval";
+    url.pathname = dashboardPath;
+    return NextResponse.redirect(url);
+  }
+
   // Define protected routes and their required roles (excluding login pages)
   // IMPORTANT: the artist regex is written so it only matches the singular "/artist"
   // segment (e.g. /artist/studio, /artist, etc.) and will NOT match "/artists/..."
@@ -78,11 +111,11 @@ export function middleware(request: NextRequest) {
       // Redirect to appropriate dashboard or unauthorized page
       const redirectPath =
         user.role === UserRole.ADMIN
-          ? "/admin"
+          ? "/admin/user-management"
           : user.role === UserRole.MODERATOR
-            ? "/moderator"
+            ? "/moderator/track-approval"
             : user.role === UserRole.ARTIST
-              ? "/artist"
+              ? "/artist/studio"
               : "/";
 
       url.pathname = redirectPath;

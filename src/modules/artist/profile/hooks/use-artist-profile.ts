@@ -60,7 +60,7 @@ export function useArtistProfile() {
     artistType: query.data?.artistType,
     identityCard: query.data?.identityCard,
     isSolo,
-    userStatus: query.data?.user?.status,
+    userStatus: query.data?.user[0].status,
     membershipStatus,
   };
 }
