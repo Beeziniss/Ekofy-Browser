@@ -2540,7 +2540,6 @@ export type MutationInitializationUploadTrackArgs = {
   createTrackRequest: CreateTrackRequestInput;
   createWorkRequest: CreateWorkRequestInput;
   file: Scalars['Upload']['input'];
-  isTesting?: Scalars['Boolean']['input'];
 };
 
 
@@ -5417,6 +5416,14 @@ export type BlockRequestMutationVariables = Exact<{
 
 export type BlockRequestMutation = { __typename?: 'MutationInitialization', blockRequest: boolean };
 
+export type CreateExpressConnectedAccountMutationVariables = Exact<{
+  returnUrl: Scalars['String']['input'];
+  refreshUrl: Scalars['String']['input'];
+}>;
+
+
+export type CreateExpressConnectedAccountMutation = { __typename?: 'MutationInitialization', createExpressConnectedAccount: { __typename?: 'AccountLinkResponse', url: string } };
+
 export type UpdateTrackCommentMutationVariables = Exact<{
   commentId: Scalars['String']['input'];
   content: Scalars['String']['input'];
@@ -6310,6 +6317,13 @@ export const BlockRequestDocument = new TypedDocumentString(`
   blockRequest(requestId: $requestId)
 }
     `) as unknown as TypedDocumentString<BlockRequestMutation, BlockRequestMutationVariables>;
+export const CreateExpressConnectedAccountDocument = new TypedDocumentString(`
+    mutation CreateExpressConnectedAccount($returnUrl: String!, $refreshUrl: String!) {
+  createExpressConnectedAccount(returnUrl: $returnUrl, refreshUrl: $refreshUrl) {
+    url
+  }
+}
+    `) as unknown as TypedDocumentString<CreateExpressConnectedAccountMutation, CreateExpressConnectedAccountMutationVariables>;
 export const UpdateTrackCommentDocument = new TypedDocumentString(`
     mutation UpdateTrackComment($commentId: String!, $content: String!) {
   updateComment(request: {commentId: $commentId, content: $content})

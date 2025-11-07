@@ -47,6 +47,7 @@ type Documents = {
     "\n  mutation CreateRequest($request: RequestCreatingRequestInput!) {\n    createRequest(request: $request)\n  }\n": typeof types.CreateRequestDocument,
     "\n  mutation UpdateRequest($request: RequestUpdatingRequestInput!) {\n    updateRequest(request: $request)\n  }\n": typeof types.UpdateRequestDocument,
     "\n  mutation BlockRequest($requestId: String!) {\n    blockRequest(requestId: $requestId)\n  }\n": typeof types.BlockRequestDocument,
+    "\n    mutation CreateExpressConnectedAccount ($returnUrl: String!, $refreshUrl: String!) {\n        createExpressConnectedAccount (returnUrl: $returnUrl, refreshUrl: $refreshUrl) {\n            url\n        }\n    }\n": typeof types.CreateExpressConnectedAccountDocument,
     "\n  mutation UpdateTrackComment($commentId: String!, $content: String!) {\n    updateComment(request: { commentId: $commentId, content: $content })\n  }\n": typeof types.UpdateTrackCommentDocument,
     "\n  mutation DeleteTrackComment($commentId: String!) {\n    deleteComment(request: { commentId: $commentId })\n  }\n": typeof types.DeleteTrackCommentDocument,
     "\n  mutation CreateTrackComment(\n    $targetId: String!\n    $commentType: CommentType!\n    $content: String!\n    $parentCommentId: String\n  ) {\n    createComment(\n      request: { targetId: $targetId, commentType: $commentType, content: $content, parentCommentId: $parentCommentId }\n    )\n  }\n": typeof types.CreateTrackCommentDocument,
@@ -130,6 +131,7 @@ const documents: Documents = {
     "\n  mutation CreateRequest($request: RequestCreatingRequestInput!) {\n    createRequest(request: $request)\n  }\n": types.CreateRequestDocument,
     "\n  mutation UpdateRequest($request: RequestUpdatingRequestInput!) {\n    updateRequest(request: $request)\n  }\n": types.UpdateRequestDocument,
     "\n  mutation BlockRequest($requestId: String!) {\n    blockRequest(requestId: $requestId)\n  }\n": types.BlockRequestDocument,
+    "\n    mutation CreateExpressConnectedAccount ($returnUrl: String!, $refreshUrl: String!) {\n        createExpressConnectedAccount (returnUrl: $returnUrl, refreshUrl: $refreshUrl) {\n            url\n        }\n    }\n": types.CreateExpressConnectedAccountDocument,
     "\n  mutation UpdateTrackComment($commentId: String!, $content: String!) {\n    updateComment(request: { commentId: $commentId, content: $content })\n  }\n": types.UpdateTrackCommentDocument,
     "\n  mutation DeleteTrackComment($commentId: String!) {\n    deleteComment(request: { commentId: $commentId })\n  }\n": types.DeleteTrackCommentDocument,
     "\n  mutation CreateTrackComment(\n    $targetId: String!\n    $commentType: CommentType!\n    $content: String!\n    $parentCommentId: String\n  ) {\n    createComment(\n      request: { targetId: $targetId, commentType: $commentType, content: $content, parentCommentId: $parentCommentId }\n    )\n  }\n": types.CreateTrackCommentDocument,
@@ -309,6 +311,10 @@ export function graphql(source: "\n  mutation UpdateRequest($request: RequestUpd
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation BlockRequest($requestId: String!) {\n    blockRequest(requestId: $requestId)\n  }\n"): typeof import('./graphql').BlockRequestDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation CreateExpressConnectedAccount ($returnUrl: String!, $refreshUrl: String!) {\n        createExpressConnectedAccount (returnUrl: $returnUrl, refreshUrl: $refreshUrl) {\n            url\n        }\n    }\n"): typeof import('./graphql').CreateExpressConnectedAccountDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
