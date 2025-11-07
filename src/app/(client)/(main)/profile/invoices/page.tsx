@@ -12,7 +12,11 @@ export default function InvoicesPage() {
         </Link>
       </div>
       <p className="text-muted-foreground mb-2 text-sm">All invoices associated with your account.</p>
-      <InvoicesTable />
+      <SharedInvoicesTable
+        source="listener"
+        invoiceLinkPrefix="/profile/invoices"
+        txLinkPrefix="/profile/payment-history"
+      />
     </div>
   );
 }

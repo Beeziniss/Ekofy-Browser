@@ -10,7 +10,10 @@ type Props = {
   backHref?: string;
 };
 
-export default function ArtistInvoiceDetailSection({ referenceId, backHref = "/artist/studio/profile/invoices" }: Props) {
+export default function ArtistInvoiceDetailSection({
+  referenceId,
+  backHref = "/artist/studio/profile/invoices",
+}: Props) {
   const { data, isLoading, isError } = useQuery(artistInvoiceByIdOptions({ id: referenceId }));
   if (isLoading) return <div className="p-4">Loading invoice…</div>;
   if (isError) return <div className="p-4 text-red-500">Failed to load invoice.</div>;

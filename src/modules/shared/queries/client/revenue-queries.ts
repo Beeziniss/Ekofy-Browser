@@ -1,45 +1,5 @@
 import { graphql } from "@/gql";
 
-export const GetListenerProfileQuery = graphql(`
-  query GetListenerProfile($where: ListenerFilterInput) {
-    listeners(where: $where, take: 1) {
-      items {
-        id
-        userId
-        displayName
-        email
-        avatarImage
-        bannerImage
-        createdAt
-        followerCount
-        followingCount
-        isVerified
-        user {
-          birthDate
-          gender
-        }
-      }
-    }
-  }
-`);
-
-// Active subscription for a user to derive membership status
-export const GetUserActiveSubscriptionQuery = graphql(`
-  query GetUserActiveSubscription($where: UserSubscriptionFilterInput, $take: Int, $skip: Int) {
-    userSubscriptions(where: $where, take: $take, skip: $skip) {
-      items {
-        id
-        isActive
-        subscription {
-          tier
-          status
-          name
-        }
-      }
-    }
-  }
-`);
-
 // Payment Transactions list for a listener (by userId)
 export const GetListenerTransactionsQuery = graphql(`
   query GetListenerTransactions(

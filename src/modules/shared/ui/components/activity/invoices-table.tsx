@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { listenerInvoicesOptions } from "@/gql/options/listener-activity-options";
 import { artistInvoicesOptions } from "@/gql/options/artist-activity-options";
+import { useAuthStore } from "@/store";
 
 type Source = "listener" | "artist";
 
 interface SharedInvoicesTableProps {
-  userId: string;
   pageSize?: number;
   source: Source;
   invoiceLinkPrefix: string; // e.g. /profile/invoices or /artist/studio/profile/invoices
@@ -19,51 +19,45 @@ interface SharedInvoicesTableProps {
 }
 
 export default function SharedInvoicesTable({
-  userId,
   pageSize = 10,
   source,
   invoiceLinkPrefix,
   txLinkPrefix,
 }: SharedInvoicesTableProps) {
+  const { user } = useAuthStore();
   const [page, setPage] = useState(1);
 
-  const queryOptions =
-    source === "listener"
-      ? listenerInvoicesOptions({ userId, page, pageSize })
-      : artistInvoicesOptions({ userId, page, pageSize });
+  const {
+    data: listenerData,
+    isPending: isListenerPending,
+    isError: isListenerError,
+  } = useQuery({
+    ...listenerInvoicesOptions({ userId: user!.userId, page, pageSize }),
+    enabled: source === "listener",
+  });
 
-  const { data, isLoading, isError } = useQuery(queryOptions) as {
-    data?: {
-      invoices?: {
-        items?: Array<
-          | {
-              id?: string | null;
-              amount?: number | null;
-              currency?: string | null;
-              to?: string | null;
-              from?: string | null;
-              email?: string | null;
-              paidAt?: unknown;
-              paymentTransactionId?: string | null;
-            }
-          | null
-        > | null;
-        totalCount?: number;
-        pageInfo?: { hasNextPage?: boolean; hasPreviousPage?: boolean };
-      };
-    };
-    isLoading: boolean;
-    isError: boolean;
-  };
+  const {
+    data: artistData,
+    isPending: isArtistPending,
+    isError: isArtistError,
+  } = useQuery({
+    ...artistInvoicesOptions({ userId: user!.userId, page, pageSize }),
+    enabled: source === "artist",
+  });
 
-  const items = data?.invoices?.items ?? [];
-  const totalCount = data?.invoices?.totalCount ?? 0;
-  const hasNext = !!data?.invoices?.pageInfo?.hasNextPage;
-  const hasPrev = !!data?.invoices?.pageInfo?.hasPreviousPage;
+  const items = listenerData?.invoices?.items || artistData?.invoices?.items || [];
+  const totalCount = listenerData?.invoices?.totalCount ?? artistData?.invoices?.totalCount ?? 0;
+  const hasNext = !!listenerData?.invoices?.pageInfo?.hasNextPage || !!artistData?.invoices?.pageInfo?.hasNextPage;
+  const hasPrev =
+    !!listenerData?.invoices?.pageInfo?.hasPreviousPage || !!artistData?.invoices?.pageInfo?.hasPreviousPage;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
+  const isLoading = source === "listener" ? isListenerPending : isArtistPending;
+  const isError = source === "listener" ? isListenerError : isArtistError;
+
   const resolvedTxLinkPrefix =
-    txLinkPrefix ?? (source === "listener" ? "/profile/payment-history" : "/artist/studio/transactions/payment-history");
+    txLinkPrefix ??
+    (source === "listener" ? "/profile/payment-history" : "/artist/studio/transactions/payment-history");
 
   return (
     <div className="space-y-4">
@@ -113,7 +107,10 @@ export default function SharedInvoicesTable({
                   </TableCell>
                   <TableCell>
                     {inv?.paymentTransactionId ? (
-                      <Link href={`${resolvedTxLinkPrefix}/${inv.paymentTransactionId}`} className="text-primary hover:underline">
+                      <Link
+                        href={`${resolvedTxLinkPrefix}/${inv.paymentTransactionId}`}
+                        className="text-primary hover:underline"
+                      >
                         #{inv.paymentTransactionId.slice(-8)}
                       </Link>
                     ) : (

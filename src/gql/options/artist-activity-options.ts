@@ -9,10 +9,10 @@ import {
   InvoiceSortInput,
 } from "@/gql/graphql";
 import {
-  GetArtistTransactionsQuery,
-  GetArtistPayoutsQuery,
   GetArtistInvoicesQuery,
-} from "@/modules/artist/profile/ui/views/queries";
+  GetArtistPayoutsQuery,
+  GetArtistTransactionsQuery,
+} from "@/modules/shared/queries/artist/revenue-queries";
 
 export function artistTransactionsOptions(params: {
   userId: string;

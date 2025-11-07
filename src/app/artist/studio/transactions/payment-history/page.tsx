@@ -25,16 +25,12 @@ export default function TransactionsPaymentHistoryPage() {
 
   return (
     <Suspense fallback={<div className="p-4">Loading transactions…</div>}>
-      <div className="mx-auto w-full max-w-6xl px-4 md:px-6 py-6">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6">
         <div className="mb-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Payment History</h1>
         </div>
-        <p className="text-sm text-muted-foreground mb-2">All payments associated with your artist account.</p>
-        <SharedPaymentTransactionsTable
-          userId={user!.userId}
-          source="artist"
-          linkPrefix="/artist/studio/transactions/payment-history"
-        />
+        <p className="text-muted-foreground mb-2 text-sm">All payments associated with your artist account.</p>
+        <SharedPaymentTransactionsTable source="artist" linkPrefix="/artist/studio/transactions/payment-history" />
       </div>
     </Suspense>
   );

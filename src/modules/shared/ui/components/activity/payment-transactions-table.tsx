@@ -1,26 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useState } from "react";
+import { useAuthStore } from "@/store";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { PaymentTransactionStatus } from "@/gql/graphql";
 import { useQuery } from "@tanstack/react-query";
-import { listenerTransactionsOptions } from "@/gql/options/listener-activity-options";
 import { artistTransactionsOptions } from "@/gql/options/artist-activity-options";
+import { listenerTransactionsOptions } from "@/gql/options/listener-activity-options";
 import { paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type Source = "listener" | "artist";
 
 interface SharedPaymentTransactionsTableProps {
-  userId: string;
   pageSize?: number;
   source: Source;
   linkPrefix: string; // e.g. "/profile/payment-history" or "/artist/studio/transactions/payment-history"
@@ -29,48 +21,41 @@ interface SharedPaymentTransactionsTableProps {
 const statusBadge = paymentStatusBadge;
 
 export default function SharedPaymentTransactionsTable({
-  userId,
   pageSize = 10,
   source,
   linkPrefix,
 }: SharedPaymentTransactionsTableProps) {
+  const { user } = useAuthStore();
   const [page, setPage] = useState(1);
 
-  const queryOptions =
-    source === "listener"
-      ? listenerTransactionsOptions({ userId, page, pageSize })
-      : artistTransactionsOptions({ userId, page, pageSize });
+  const {
+    data: listenerData,
+    isPending: isListenerPending,
+    isError: isListenerError,
+  } = useQuery({
+    ...listenerTransactionsOptions({ userId: user!.userId, page, pageSize }),
+    enabled: source === "listener",
+  });
 
-  const { data, isLoading, isError } = useQuery({
-    ...queryOptions,
-  }) as {
-    data?: {
-      transactions?: {
-        items?: Array<
-          | {
-              id?: string | null;
-              amount?: number | null;
-              currency?: string | null;
-              createdAt?: unknown;
-              paymentStatus?: PaymentTransactionStatus | null;
-              stripePaymentMethod?: string[] | null;
-              stripePaymentId?: string | null;
-            }
-          | null
-        > | null;
-        totalCount?: number;
-        pageInfo?: { hasNextPage?: boolean; hasPreviousPage?: boolean };
-      };
-    };
-    isLoading: boolean;
-    isError: boolean;
-  };
+  const {
+    data: artistData,
+    isPending: isArtistPending,
+    isError: isArtistError,
+  } = useQuery({
+    ...artistTransactionsOptions({ userId: user!.userId, page, pageSize }),
+    enabled: source === "artist",
+  });
 
-  const items = data?.transactions?.items ?? [];
-  const totalCount = data?.transactions?.totalCount ?? 0;
-  const hasNext = !!data?.transactions?.pageInfo?.hasNextPage;
-  const hasPrev = !!data?.transactions?.pageInfo?.hasPreviousPage;
+  const items = listenerData?.transactions?.items || artistData?.transactions?.items || [];
+  const totalCount = listenerData?.transactions?.totalCount ?? artistData?.transactions?.totalCount ?? 0;
+  const hasNext =
+    !!listenerData?.transactions?.pageInfo?.hasNextPage || !!artistData?.transactions?.pageInfo?.hasNextPage;
+  const hasPrev =
+    !!listenerData?.transactions?.pageInfo?.hasPreviousPage || !!artistData?.transactions?.pageInfo?.hasPreviousPage;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  const isLoading = source === "listener" ? isListenerPending : isArtistPending;
+  const isError = source === "listener" ? isListenerError : isArtistError;
 
   return (
     <div className="space-y-4">
@@ -101,24 +86,17 @@ export default function SharedPaymentTransactionsTable({
               items.map((tx, idx) => (
                 <TableRow key={tx?.id ?? idx}>
                   <TableCell>
-                    {tx?.createdAt
-                      ? new Date(tx.createdAt as unknown as string).toLocaleString()
-                      : "-"}
+                    {tx?.createdAt ? new Date(tx.createdAt as unknown as string).toLocaleString() : "-"}
                   </TableCell>
                   <TableCell>
-                    {typeof tx?.amount === "number"
-                      ? tx.amount.toLocaleString()
-                      : tx?.amount}{" "}
-                    {tx?.currency}
+                    {typeof tx?.amount === "number" ? tx.amount.toLocaleString() : tx?.amount} {tx?.currency}
                   </TableCell>
                   <TableCell>
                     {Array.isArray(tx?.stripePaymentMethod) && tx!.stripePaymentMethod.length > 0
                       ? tx!.stripePaymentMethod.join(", ")
                       : "-"}
                   </TableCell>
-                  <TableCell>
-                    {tx?.paymentStatus ? statusBadge(tx.paymentStatus) : "-"}
-                  </TableCell>
+                  <TableCell>{tx?.paymentStatus ? statusBadge(tx.paymentStatus) : "-"}</TableCell>
                   <TableCell>
                     {tx?.stripePaymentId || tx?.id ? (
                       <Link
@@ -155,24 +133,14 @@ export default function SharedPaymentTransactionsTable({
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-muted-foreground text-sm">
           Page {page} of {totalPages}
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={!hasPrev}
-          >
+          <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={!hasPrev}>
             Previous
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage((p) => (hasNext ? p + 1 : p))}
-            disabled={!hasNext}
-          >
+          <Button variant="outline" size="sm" onClick={() => setPage((p) => (hasNext ? p + 1 : p))} disabled={!hasNext}>
             Next
           </Button>
         </div>

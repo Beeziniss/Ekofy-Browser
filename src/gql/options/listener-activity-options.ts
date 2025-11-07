@@ -6,7 +6,10 @@ import {
   PaymentTransactionSortInput,
   SortEnumType,
 } from "@/gql/graphql";
-import { GetListenerInvoicesQuery, GetListenerTransactionsQuery } from "@/modules/client/profile/ui/views/queries";
+import {
+  GetListenerInvoicesQuery,
+  GetListenerTransactionsQuery,
+} from "@/modules/shared/queries/client/revenue-queries";
 
 export function listenerTransactionsOptions(params: {
   userId: string;
@@ -50,10 +53,7 @@ export function listenerTransactionByIdOptions(params: { id: string }) {
   const { id } = params;
   // Support both internal id and stripePaymentId lookups
   const where: PaymentTransactionFilterInput = {
-    or: [
-      { id: { eq: id } },
-      { stripePaymentId: { eq: id } },
-    ],
+    or: [{ id: { eq: id } }, { stripePaymentId: { eq: id } }],
   };
 
   const take = 1;
