@@ -2540,6 +2540,7 @@ export type MutationInitializationUploadTrackArgs = {
   createTrackRequest: CreateTrackRequestInput;
   createWorkRequest: CreateWorkRequestInput;
   file: Scalars['Upload']['input'];
+  isTesting?: Scalars['Boolean']['input'];
 };
 
 
@@ -5679,6 +5680,13 @@ export type ArtistDetailQueryVariables = Exact<{
 
 export type ArtistDetailQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', userId: string, stageName: string, avatarImage?: string | null, bannerImage?: string | null, biography?: string | null, email: string, followerCount: any, categoryIds: Array<string>, user: Array<{ __typename?: 'User', id: string, fullName: string, checkUserFollowing: boolean }>, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', name: string }> | null } | null }> | null } | null };
 
+export type GetUserStripeAccountIdQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetUserStripeAccountIdQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', role: UserRole, stripeAccountId?: string | null }> | null } | null };
+
 export type ApprovalHistoriesListQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -7064,6 +7072,16 @@ export const ArtistDetailDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<ArtistDetailQuery, ArtistDetailQueryVariables>;
+export const GetUserStripeAccountIdDocument = new TypedDocumentString(`
+    query GetUserStripeAccountId($userId: String!) {
+  users(where: {id: {eq: $userId}}) {
+    items {
+      role
+      stripeAccountId
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetUserStripeAccountIdQuery, GetUserStripeAccountIdQueryVariables>;
 export const ApprovalHistoriesListDocument = new TypedDocumentString(`
     query ApprovalHistoriesList($skip: Int, $take: Int, $where: ApprovalHistoryFilterInput) {
   approvalHistories(skip: $skip, take: $take, where: $where) {

@@ -10,7 +10,7 @@ import {
 } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { RequestHubLayout } from "../layout";
 import { CreateRequestSection, ViewRequestSection, EditRequestSection } from "../section";
-import { Pagination } from "../component";
+import { Pagination, StripeAccountRequiredModal } from "../component";
 import { CreateRequestData, UpdateRequestData } from "@/types/request-hub";
 import { RequestsQuery, RequestStatus as GqlRequestStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AuthDialogProvider } from "../context/auth-dialog-context";
+import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 
 type RequestHubMode = "view" | "create" | "edit" | "detail";
 
@@ -31,8 +32,12 @@ export function MyRequestsView() {
   const [statusFilter, setStatusFilter] = useState<GqlRequestStatus | "ALL">("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
+  const [showStripeModal, setShowStripeModal] = useState(false);
   const router = useRouter();
   const { user } = useAuthStore();
+
+  // Stripe account status
+  const { isArtist, hasStripeAccount } = useStripeAccountStatus();
 
   // Fetch requests with pagination
   const skip = (currentPage - 1) * pageSize;
@@ -87,8 +92,19 @@ export function MyRequestsView() {
   };
 
   const handleApply = (id: string) => {
-    console.log("Apply to request:", id);
-    toast.info("Application feature coming soon!");
+    // Check if user is artist and has stripe account
+    if (isArtist && !hasStripeAccount) {
+      setShowStripeModal(true);
+      return;
+    }
+
+    // Only allow artists to apply
+    if (isArtist) {
+      console.log("Apply to request:", id);
+      toast.info("Application feature coming soon!");
+    } else {
+      toast.info("Only artists can apply to requests");
+    }
   };
 
   const handleSave = (id: string) => {
@@ -273,5 +289,16 @@ export function MyRequestsView() {
     }
   };
 
-  return <>{renderContent()}</>;
+  return (
+    <>
+      {renderContent()}
+      
+      {/* Stripe Account Required Modal */}
+      <StripeAccountRequiredModal
+        open={showStripeModal}
+        onOpenChange={setShowStripeModal}
+        onCancel={() => setShowStripeModal(false)}
+      />
+    </>
+  );
 }

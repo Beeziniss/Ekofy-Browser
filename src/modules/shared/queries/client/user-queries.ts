@@ -85,3 +85,14 @@ export const ArtistDetailQuery = graphql(`
     }
   }
 `);
+
+export const GetUserstripeAccountIdQuery = graphql(`
+  query GetUserStripeAccountId($userId: String!) {
+    users(where: { id: { eq: $userId } }) {
+      items {
+        role
+        stripeAccountId
+      }
+    }
+  }
+`);
