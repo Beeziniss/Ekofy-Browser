@@ -5545,12 +5545,35 @@ export type GetArtistProfileQueryVariables = Exact<{
 
 export type GetArtistProfileQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, avatarImage?: string | null, bannerImage?: string | null, biography?: string | null, isVerified: boolean, createdAt: any, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, gender: UserGender, isLeader: boolean, phoneNumber: string }>, user: Array<{ __typename?: 'User', status: UserStatus }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', addressLine?: string | null } } }> | null } | null };
 
-export type UpdateArtistProfileMutationVariables = Exact<{
-  updateArtistRequest: UpdateArtistRequestInput;
+export type GetArtistTransactionsQueryVariables = Exact<{
+  where?: InputMaybe<PaymentTransactionFilterInput>;
+  order?: InputMaybe<Array<PaymentTransactionSortInput> | PaymentTransactionSortInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type UpdateArtistProfileMutation = { __typename?: 'MutationInitialization', updateArtistProfile: boolean };
+export type GetArtistTransactionsQuery = { __typename?: 'QueryInitialization', transactions?: { __typename?: 'TransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, paymentStatus: PaymentTransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type GetArtistPayoutsQueryVariables = Exact<{
+  where?: InputMaybe<PayoutTransactionFilterInput>;
+  order?: InputMaybe<Array<PayoutTransactionSortInput> | PayoutTransactionSortInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetArtistPayoutsQuery = { __typename?: 'QueryInitialization', payoutTransactions?: { __typename?: 'PayoutTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PayoutTransaction', id: string, amount: any, currency: string, createdAt: any, status: PayoutTransactionStatus, method?: string | null, description: string, destinationAccountId: string, stripePayoutId: string, stripeTransferId: string, royaltyReportId?: string | null, userId: string }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type GetArtistInvoicesQueryVariables = Exact<{
+  where?: InputMaybe<InvoiceFilterInput>;
+  order?: InputMaybe<Array<InvoiceSortInput> | InvoiceSortInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetArtistInvoicesQuery = { __typename?: 'QueryInitialization', invoices?: { __typename?: 'InvoicesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Invoice', id: string, amount: any, currency: string, email: string, to: string, from: string, paidAt: any, paymentTransactionId: string }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type TracksWithFiltersQueryVariables = Exact<{
   skip: Scalars['Int']['input'];
@@ -5685,6 +5708,13 @@ export type UploadTrackMutationVariables = Exact<{
 
 
 export type UploadTrackMutation = { __typename?: 'MutationInitialization', uploadTrack: boolean };
+
+export type UpdateArtistProfileMutationVariables = Exact<{
+  updateArtistRequest: UpdateArtistRequestInput;
+}>;
+
+
+export type UpdateArtistProfileMutation = { __typename?: 'MutationInitialization', updateArtistProfile: boolean };
 
 export type PlaylistFavoriteMutationVariables = Exact<{
   playlistId: Scalars['String']['input'];
@@ -6430,11 +6460,72 @@ export const GetArtistProfileDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetArtistProfileQuery, GetArtistProfileQueryVariables>;
-export const UpdateArtistProfileDocument = new TypedDocumentString(`
-    mutation UpdateArtistProfile($updateArtistRequest: UpdateArtistRequestInput!) {
-  updateArtistProfile(updateArtistRequest: $updateArtistRequest)
+export const GetArtistTransactionsDocument = new TypedDocumentString(`
+    query GetArtistTransactions($where: PaymentTransactionFilterInput, $order: [PaymentTransactionSortInput!], $skip: Int, $take: Int) {
+  transactions(where: $where, order: $order, skip: $skip, take: $take) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      paymentStatus
+      stripePaymentMethod
+      stripePaymentId
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
 }
-    `) as unknown as TypedDocumentString<UpdateArtistProfileMutation, UpdateArtistProfileMutationVariables>;
+    `) as unknown as TypedDocumentString<GetArtistTransactionsQuery, GetArtistTransactionsQueryVariables>;
+export const GetArtistPayoutsDocument = new TypedDocumentString(`
+    query GetArtistPayouts($where: PayoutTransactionFilterInput, $order: [PayoutTransactionSortInput!], $skip: Int, $take: Int) {
+  payoutTransactions(where: $where, order: $order, skip: $skip, take: $take) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      status
+      method
+      description
+      destinationAccountId
+      stripePayoutId
+      stripeTransferId
+      royaltyReportId
+      userId
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetArtistPayoutsQuery, GetArtistPayoutsQueryVariables>;
+export const GetArtistInvoicesDocument = new TypedDocumentString(`
+    query GetArtistInvoices($where: InvoiceFilterInput, $order: [InvoiceSortInput!], $skip: Int, $take: Int) {
+  invoices(where: $where, order: $order, skip: $skip, take: $take) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      email
+      to
+      from
+      paidAt
+      paymentTransactionId
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetArtistInvoicesQuery, GetArtistInvoicesQueryVariables>;
 export const TracksWithFiltersDocument = new TypedDocumentString(`
     query TracksWithFilters($skip: Int!, $take: Int!, $where: TrackFilterInput, $order: [TrackSortInput!]) {
   tracks(skip: $skip, take: $take, where: $where, order: $order) {
@@ -6732,6 +6823,11 @@ export const UploadTrackDocument = new TypedDocumentString(`
   )
 }
     `) as unknown as TypedDocumentString<UploadTrackMutation, UploadTrackMutationVariables>;
+export const UpdateArtistProfileDocument = new TypedDocumentString(`
+    mutation UpdateArtistProfile($updateArtistRequest: UpdateArtistRequestInput!) {
+  updateArtistProfile(updateArtistRequest: $updateArtistRequest)
+}
+    `) as unknown as TypedDocumentString<UpdateArtistProfileMutation, UpdateArtistProfileMutationVariables>;
 export const PlaylistFavoriteDocument = new TypedDocumentString(`
     mutation PlaylistFavorite($playlistId: String!, $isAdding: Boolean!) {
   addToFavoritePlaylist(playlistId: $playlistId, isAdding: $isAdding)

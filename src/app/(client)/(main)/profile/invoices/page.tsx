@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import InvoicesTable from "@/modules/client/profile/ui/components/activity/invoices-table";
+import SharedInvoicesTable from "@/modules/shared/ui/components/activity/invoices-table";
 
 export default function InvoicesPage() {
   return (
@@ -12,7 +12,11 @@ export default function InvoicesPage() {
         </Link>
       </div>
       <p className="text-muted-foreground mb-2 text-sm">All invoices associated with your account.</p>
-      <InvoicesTable />
+      <SharedInvoicesTable
+        source="listener"
+        invoiceLinkPrefix="/profile/invoices"
+        txLinkPrefix="/profile/payment-history"
+      />
     </div>
   );
 }
