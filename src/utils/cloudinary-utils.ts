@@ -167,6 +167,104 @@ export const uploadPlaylistCoverImage = async (file: File, playlistId?: string):
 };
 
 /**
+ * Upload document to Cloudinary (for legal documents, contracts, etc.)
+ * @param file - Document file to upload
+ * @param options - Upload options
+ * @returns Promise<CloudinaryUploadResponse>
+ */
+export const uploadDocumentToCloudinary = async (
+  file: File,
+  options?: {
+    folder?: string;
+    tags?: string[];
+  },
+): Promise<CloudinaryUploadResponse> => {
+  try {
+    // Validate file
+    if (!file) {
+      throw new Error("No file provided for upload");
+    }
+
+    // Check if file is a valid document type
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain",
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      throw new Error("File must be a valid document type (PDF, DOC, DOCX, TXT, or image)");
+    }
+
+    // Create FormData for upload
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_CONFIG.uploadPreset);
+
+    // Add optional parameters
+    if (options?.folder) {
+      formData.append("folder", options.folder);
+    }
+
+    if (options?.tags && options.tags.length > 0) {
+      formData.append("tags", options.tags.join(","));
+    }
+
+    // Determine resource type based on file type
+    const resourceType = file.type.startsWith("image/") ? "image" : "raw";
+
+    // Upload to Cloudinary using axios
+    const response = await axios.post<CloudinaryUploadResponse>(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/${resourceType}/upload`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    const uploadResult: CloudinaryUploadResponse = response.data;
+
+    return uploadResult;
+  } catch (error) {
+    console.error("❌ Cloudinary document upload failed:", error);
+
+    if (error instanceof Error) {
+      throw new Error(`Cloudinary document upload failed: ${error.message}`);
+    } else {
+      throw new Error("Unknown error occurred during document upload");
+    }
+  }
+};
+
+/**
+ * Upload legal document with specific settings
+ * @param file - Legal document file
+ * @param userId - User ID for folder organization
+ * @param documentType - Type of document (license, contract, etc.)
+ * @returns Promise<CloudinaryUploadResponse>
+ */
+export const uploadLegalDocument = async (
+  file: File,
+  userId: string,
+  documentType?: string,
+): Promise<CloudinaryUploadResponse> => {
+  const folder = `legal-documents/${userId}`;
+  const tags = ["legal", "document", documentType || "misc"].filter(Boolean);
+
+  return uploadDocumentToCloudinary(file, {
+    folder,
+    tags,
+  });
+};
+
+/**
  * Generate Cloudinary URL with transformations
  * @param publicId - Cloudinary public ID
  * @param transformations - Transformation string
@@ -191,21 +289,55 @@ export const getCloudinaryUrl = (publicId: string, transformations?: string): st
 export const validateImageFile = (file: File, maxSize: number = 10): boolean => {
   // Check file type
   if (!file.type.startsWith("image/")) {
-    toast.error("File phải là hình ảnh");
+    toast.error("File must be an image");
     return false;
   }
 
   // Check file size (convert MB to bytes)
   const maxBytes = maxSize * 1024 * 1024;
   if (file.size > maxBytes) {
-    toast.error(`Kích thước file không được vượt quá ${maxSize}MB`);
+    toast.error(`File size must not exceed ${maxSize}MB`);
     return false;
   }
 
   // Check supported formats
   const supportedFormats = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
   if (!supportedFormats.includes(file.type)) {
-    toast.error("Chỉ hỗ trợ định dạng: JPG, PNG, WEBP");
+    toast.error("Only supports formats: JPG, PNG, WEBP");
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * Validate document file before upload
+ * @param file - File to validate
+ * @param maxSize - Maximum file size in MB (default: 20MB)
+ * @returns boolean
+ */
+export const validateDocumentFile = (file: File, maxSize: number = 20): boolean => {
+  // Check file size (convert MB to bytes)
+  const maxBytes = maxSize * 1024 * 1024;
+  if (file.size > maxBytes) {
+    toast.error(`File size must not exceed ${maxSize}MB`);
+    return false;
+  }
+
+  // Check supported formats
+  const supportedFormats = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "text/plain",
+    "image/jpeg",
+    "image/png", 
+    "image/jpg",
+    "image/webp"
+  ];
+  
+  if (!supportedFormats.includes(file.type)) {
+    toast.error("Only supports formats: PDF, DOC, DOCX, TXT, JPG, PNG, WEBP");
     return false;
   }
 

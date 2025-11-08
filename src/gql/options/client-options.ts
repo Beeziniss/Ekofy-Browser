@@ -1,34 +1,11 @@
 import { execute } from "../execute";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
-import { GetListenerProfileQuery, GetUserActiveSubscriptionQuery } from "@/modules/client/profile/ui/views/queries";
 import {
   CheckTrackInPlaylistQuery,
   PlaylistBriefQuery,
   PlaylistDetailQuery,
   PlaylistDetailTrackListQuery,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
-import { TrackDetailViewQuery, TrackListHomeQuery } from "@/modules/shared/queries/client/track-queries";
-import { TrackCommentRepliesQuery, TrackCommentsQuery } from "@/modules/shared/queries/client/track-comment-queries";
-import {
-  RequestHubCommentThreadsQuery,
-  RequestHubCommentThreadRepliesQuery,
-} from "@/modules/shared/queries/client/request-hub-comment-queries";
-import {
-  ArtistDetailQuery,
-  ArtistListQuery,
-  ArtistQuery,
-  ListenerQuery,
-} from "@/modules/shared/queries/client/user-queries";
-import { PlaylistsHomeQuery, PlaylistsPersonalQuery } from "@/modules/shared/queries/client/playlist-queries";
-import { FollowerQuery, FollowingQuery } from "@/modules/shared/queries/client/follow-queries";
-import { ArtistPackageQuery } from "@/modules/shared/queries/client/service-package-queries";
-import {
-  REQUEST_HUB_QUERY,
-  REQUEST_BY_ID_QUERY,
-  SEARCH_REQUESTS_QUERY,
-  USER_QUERY_FOR_REQUESTS,
-  MY_REQUESTS_QUERY,
-} from "@/modules/shared/queries/client/request-hub-queries";
 import {
   RequestHubFilterInput,
   QueryInitializationRequestsArgs,
@@ -36,6 +13,30 @@ import {
   QueryInitializationSearchRequestsArgs,
   QueryInitializationOwnRequestsArgs,
 } from "../graphql";
+import {
+  ArtistDetailQuery,
+  ArtistListQuery,
+  ArtistPackageQuery,
+  ArtistQuery,
+  FollowerQuery,
+  FollowingQuery,
+  GetListenerProfileQuery,
+  GetUserActiveSubscriptionQuery,
+  ListenerQuery,
+  MY_REQUESTS_QUERY,
+  PlaylistsHomeQuery,
+  PlaylistsPersonalQuery,
+  REQUEST_BY_ID_QUERY,
+  REQUEST_HUB_QUERY,
+  RequestHubCommentThreadRepliesQuery,
+  RequestHubCommentThreadsQuery,
+  SEARCH_REQUESTS_QUERY,
+  TrackCommentRepliesQuery,
+  TrackCommentsQuery,
+  TrackDetailViewQuery,
+  TrackListHomeQuery,
+  USER_QUERY_FOR_REQUESTS,
+} from "@/modules/shared/queries/client";
 
 // PROFILE QUERIES
 export const listenerProfileOptions = (userId: string, enabled: boolean = true) =>
@@ -45,8 +46,6 @@ export const listenerProfileOptions = (userId: string, enabled: boolean = true) 
       if (!userId) return null;
       const result = await execute(GetListenerProfileQuery, {
         where: { userId: { eq: userId } },
-        take: 1,
-        skip: 0,
       });
       return result.listeners?.items?.[0] || null;
     },
@@ -74,6 +73,7 @@ export const userActiveSubscriptionOptions = (userId: string) =>
     enabled: !!userId,
   });
 
+// TRACK QUERIES
 export const trackListHomeOptions = queryOptions({
   queryKey: ["tracks-home"],
   queryFn: async () => await execute(TrackListHomeQuery, { take: 10 }),
@@ -86,6 +86,7 @@ export const trackDetailOptions = (trackId: string) =>
     enabled: !!trackId,
   });
 
+// PLAYLIST QUERIES
 export const playlistsHomeOptions = queryOptions({
   queryKey: ["playlists-home"],
   queryFn: async () => await execute(PlaylistsHomeQuery, { take: 10 }),
@@ -163,7 +164,7 @@ export const requestHubCommentRepliesOptions = (rootCommentId: string) =>
   });
 
 // USER QUERIES
-export const listenerOptions = (userId: string, listenerId: string) =>
+export const listenerOptions = (userId: string, listenerId?: string) =>
   queryOptions({
     queryKey: ["listener", userId],
     queryFn: async () => await execute(ListenerQuery, { userId }),

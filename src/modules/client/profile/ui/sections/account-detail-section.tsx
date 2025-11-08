@@ -1,9 +1,13 @@
-import React from "react";
 import DetailItem from "../components/detail-item";
-import { useClientProfile } from "../../hooks/use-client-profile";
 
-const AccountDetailSection = () => {
-  const { account } = useClientProfile();
+interface AccountDetailSectionProps {
+  account: {
+    readonly createdAt: string | undefined;
+    readonly membershipStatus: string;
+  };
+}
+
+const AccountDetailSection = ({ account }: AccountDetailSectionProps) => {
   const detailField = [
     { title: "Created date", value: account.createdAt || "-" },
     { title: "Membership status", value: account.membershipStatus || "-" },

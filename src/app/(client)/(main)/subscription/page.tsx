@@ -1,52 +1,51 @@
-"use client";
-
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "@/store/stores/auth-store";
-import { UserRole } from "@/types/role";
 import {
-  subscriptionsPremiumQueryOptions,
   subscriptionsProQueryOptions,
-  listenerPremiumEntitlementsQueryOptions,
+  subscriptionsPremiumQueryOptions,
   artistProEntitlementsQueryOptions,
-  availableCouponsQueryLISTENER10FOREVEROptions,
+  listenerPremiumEntitlementsQueryOptions,
   availableCouponsQueryARTIST20FOREVEROptions,
+  availableCouponsQueryLISTENER10FOREVEROptions,
 } from "@/gql/options/subscription-clients-options";
+import { cookies } from "next/headers";
+import { UserRole } from "@/types/role";
+import { getQueryClient } from "@/providers/get-query-client";
 import { SubscriptionPlansPublicView } from "@/modules/client/subscription/ui/views/subscription-plans-public-view";
 
-export default function SubscriptionPage() {
-  const queryClient = useQueryClient();
-  const { user } = useAuthStore();
+const SubscriptionPage = async () => {
+  const queryClient = getQueryClient();
 
-  const userRole = user?.role;
-  const isArtist = userRole === UserRole.ARTIST;
+  // Get user ID from cookies for server-side prefetching
+  const cookieStore = await cookies();
+  const authStorage = cookieStore.get("auth-storage")?.value;
+  let userRole: UserRole = UserRole.LISTENER;
 
-  useEffect(() => {
-    // Prefetch data based on user role
-    const prefetchData = async () => {
-      try {
-        if (isArtist) {
-          // Prefetch Artist Pro data
-          await Promise.all([
-            queryClient.prefetchQuery(subscriptionsProQueryOptions(0, 1)),
-            queryClient.prefetchQuery(artistProEntitlementsQueryOptions()),
-            queryClient.prefetchQuery(availableCouponsQueryARTIST20FOREVEROptions()),
-          ]);
-        } else {
-          // Prefetch Listener/Guest Premium data
-          await Promise.all([
-            queryClient.prefetchQuery(subscriptionsPremiumQueryOptions(0, 1)),
-            queryClient.prefetchQuery(listenerPremiumEntitlementsQueryOptions()),
-            queryClient.prefetchQuery(availableCouponsQueryLISTENER10FOREVEROptions()),
-          ]);
-        }
-      } catch (error) {
-        console.error("Failed to prefetch subscription data:", error);
-      }
-    };
+  if (authStorage) {
+    try {
+      const decodedValue = decodeURIComponent(authStorage);
+      const authData = JSON.parse(decodedValue);
+      userRole = authData.state?.user?.role || UserRole.LISTENER;
+    } catch (error) {
+      console.error("Failed to parse auth storage:", error);
+    }
+  }
 
-    prefetchData();
-  }, [queryClient, isArtist]);
+  if (userRole === UserRole.ARTIST) {
+    // Prefetch Artist Pro data
+    await Promise.all([
+      queryClient.prefetchQuery(subscriptionsProQueryOptions(0, 1)),
+      queryClient.prefetchQuery(artistProEntitlementsQueryOptions()),
+      queryClient.prefetchQuery(availableCouponsQueryARTIST20FOREVEROptions()),
+    ]);
+  } else {
+    // Prefetch Listener/Guest Premium data
+    await Promise.all([
+      queryClient.prefetchQuery(subscriptionsPremiumQueryOptions(0, 1)),
+      queryClient.prefetchQuery(listenerPremiumEntitlementsQueryOptions()),
+      queryClient.prefetchQuery(availableCouponsQueryLISTENER10FOREVEROptions()),
+    ]);
+  }
 
   return <SubscriptionPlansPublicView />;
-}
+};
+
+export default SubscriptionPage;

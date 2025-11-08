@@ -10,6 +10,8 @@ import {
   LayoutDashboardIcon,
   // Music4Icon,
   LayoutPanelLeftIcon,
+  CreditCardIcon,
+  BanknoteIcon,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
@@ -47,6 +49,16 @@ const data = {
       name: "Service Packages",
       url: "/artist/studio/service-package",
       icon: LayoutPanelLeftIcon,
+    },
+    {
+      name: "Payment History",
+      url: "/artist/studio/transactions/payment-history",
+      icon: CreditCardIcon,
+    },
+    {
+      name: "Payouts",
+      url: "/artist/studio/transactions/payouts",
+      icon: BanknoteIcon,
     },
   ],
 };

@@ -6,7 +6,10 @@ import {
   PaymentTransactionSortInput,
   SortEnumType,
 } from "@/gql/graphql";
-import { GetListenerInvoicesQuery, GetListenerTransactionsQuery } from "@/modules/client/profile/ui/views/queries";
+import {
+  GetListenerInvoicesQuery,
+  GetListenerTransactionsQuery,
+} from "@/modules/shared/queries/client/revenue-queries";
 
 export function listenerTransactionsOptions(params: {
   userId: string;
@@ -42,5 +45,37 @@ export function listenerInvoicesOptions(params: { userId: string; page: number; 
   return {
     queryKey: ["listener-invoices", userId, page, pageSize],
     queryFn: async () => execute(GetListenerInvoicesQuery, { where, order, skip, take }),
+  };
+}
+
+// Detail by ID: Payment Transaction (listener)
+export function listenerTransactionByIdOptions(params: { id: string }) {
+  const { id } = params;
+  // Support both internal id and stripePaymentId lookups
+  const where: PaymentTransactionFilterInput = {
+    or: [{ id: { eq: id } }, { stripePaymentId: { eq: id } }],
+  };
+
+  const take = 1;
+  const skip = 0;
+
+  return {
+    queryKey: ["listener-transaction", id],
+    queryFn: async () => execute(GetListenerTransactionsQuery, { where, skip, take }),
+  };
+}
+
+// Detail by ID: Invoice (listener)
+export function listenerInvoiceByIdOptions(params: { id: string }) {
+  const { id } = params;
+  const where: InvoiceFilterInput = {
+    id: { eq: id },
+  };
+  const take = 1;
+  const skip = 0;
+
+  return {
+    queryKey: ["listener-invoice", id],
+    queryFn: async () => execute(GetListenerInvoicesQuery, { where, skip, take }),
   };
 }

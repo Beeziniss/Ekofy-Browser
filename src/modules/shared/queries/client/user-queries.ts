@@ -2,7 +2,7 @@ import { graphql } from "@/gql";
 
 export const ListenerQuery = graphql(`
   query Listener($userId: String!) {
-    listeners(where: { userId: { eq: $userId } }) {
+    listeners(where: { userId: { eq: $userId }, isVisible: { eq: true } }) {
       items {
         userId
         displayName
@@ -80,6 +80,46 @@ export const ArtistDetailQuery = graphql(`
           items {
             name
           }
+        }
+      }
+    }
+  }
+`);
+
+export const GetListenerProfileQuery = graphql(`
+  query GetListenerProfile($where: ListenerFilterInput) {
+    listeners(where: $where, take: 1) {
+      items {
+        id
+        userId
+        displayName
+        email
+        avatarImage
+        bannerImage
+        createdAt
+        followerCount
+        followingCount
+        isVerified
+        user {
+          birthDate
+          gender
+        }
+      }
+    }
+  }
+`);
+
+// Active subscription for a user to derive membership status
+export const GetUserActiveSubscriptionQuery = graphql(`
+  query GetUserActiveSubscription($where: UserSubscriptionFilterInput, $take: Int, $skip: Int) {
+    userSubscriptions(where: $where, take: $take, skip: $skip) {
+      items {
+        id
+        isActive
+        subscription {
+          tier
+          status
+          name
         }
       }
     }

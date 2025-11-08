@@ -1,53 +1,36 @@
 "use client";
 
-import ProfileHeader from "../components/profile-header";
 import DetailView from "./detail-view";
-import HelpCard from "../components/help-item";
+import HelpCard from "../components/help-card";
 import { useClientProfile } from "../../hooks/use-client-profile";
-import * as React from "react";
+import ProfileHeader from "../components/profile-header";
 import { useAuthStore } from "@/store";
-import { useRouter } from "next/navigation";
 
 export default function ProfileView() {
-  const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
-  const { personal, ...rest } = useClientProfile();
+  const profileData = useClientProfile();
+  const { personal, data, account } = profileData;
+  const { user } = useAuthStore();
 
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/");
-    }
-  }, [isAuthenticated, router]);
-
-  if (!isAuthenticated) return null;
-  const header = {
+  const profileHeader = {
     name: personal.displayName || personal.email || "User",
-    avatarUrl: rest.data?.avatarImage || "",
-    backgroundUrl: rest.data?.bannerImage || "/image-login.png",
-  };
-
-  const handleAvatar = (file: File) => {
-    console.log("Avatar chọn:", file.name);
-  };
-
-  const handleBackground = (file: File) => {
-    console.log("Background chọn:", file.name);
+    avatarUrl: data?.avatarImage || "",
+    backgroundUrl: data?.bannerImage || "/image- login.png",
+    userId: user?.userId || "",
   };
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
       <ProfileHeader
-        name={header.name}
-        avatarUrl={header.avatarUrl}
-        backgroundUrl={header.backgroundUrl}
-        onChangeAvatar={handleAvatar}
-        onChangeBackground={handleBackground}
+        name={profileHeader.name}
+        avatarUrl={profileHeader.avatarUrl}
+        backgroundUrl={profileHeader.backgroundUrl}
+        userId={profileHeader.userId}
       />
 
       <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:pt-4">
           <div className="md:col-span-9">
-            <DetailView />
+            <DetailView personal={personal} account={account} userId={user?.userId} />
           </div>
           <div className="md:col-span-3">
             <HelpCard className="md:sticky md:top-18" />
