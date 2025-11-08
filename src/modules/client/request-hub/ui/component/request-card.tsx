@@ -160,7 +160,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
 
   return (
     <Card className={cn("w-full transition-shadow hover:shadow-md", className)}>
-      <CardContent className="p-6">
+      <CardContent className="py-0 px-6">
         {/* Header with Avatar and Save Button */}
         <div className="mb-4 flex items-start justify-between">
           <div className="flex items-center space-x-3">
@@ -241,7 +241,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
 
       {/* Comments Section */}
       {showComments && (
-        <div className="border-t border-gray-100">
+        <div className="border-t border-gray-100 px-6">
           <RequestHubCommentSection requestId={request.id} />
         </div>
       )}

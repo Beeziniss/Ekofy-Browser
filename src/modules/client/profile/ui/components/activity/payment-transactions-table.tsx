@@ -2,34 +2,59 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useListenerTransactions } from "@/modules/client/profile/hooks/use-listener-transactions";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaymentTransactionStatus } from "@/gql/graphql";
+import { useQuery } from "@tanstack/react-query";
+import { listenerTransactionsOptions } from "@/gql/options/listener-activity-options";
+import { artistTransactionsOptions } from "@/gql/options/artist-activity-options";
+import { paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 
-interface PaymentTransactionsTableProps {
+type Source = "listener" | "artist";
+
+interface SharedPaymentTransactionsTableProps {
   userId: string;
   pageSize?: number;
+  source: Source;
+  linkPrefix: string; // e.g. "/profile/payment-history" or "/artist/studio/transactions/payment-history"
 }
 
-const statusBadge = (status: PaymentTransactionStatus) => {
-  switch (status) {
-    case PaymentTransactionStatus.Paid:
-      return <Badge className="border-green-200 bg-green-100 text-green-800">Paid</Badge>;
-    case PaymentTransactionStatus.Pending:
-      return <Badge className="border-yellow-200 bg-yellow-100 text-yellow-800">Pending</Badge>;
-    case PaymentTransactionStatus.Unpaid:
-      return <Badge className="border-red-200 bg-red-100 text-red-800">Unpaid</Badge>;
-    default:
-      return <Badge className="border-gray-200 bg-gray-100 text-gray-800">Unknown</Badge>;
-  }
-};
+const statusBadge = paymentStatusBadge;
 
-export default function PaymentTransactionsTable({ userId, pageSize = 10 }: PaymentTransactionsTableProps) {
+export default function SharedPaymentTransactionsTable({
+  userId,
+  pageSize = 10,
+  source,
+  linkPrefix,
+}: SharedPaymentTransactionsTableProps) {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isError } = useListenerTransactions({ userId, page, pageSize });
+  const queryOptions =
+    source === "listener"
+      ? listenerTransactionsOptions({ userId, page, pageSize })
+      : artistTransactionsOptions({ userId, page, pageSize });
+
+  const { data, isLoading, isError } = useQuery({
+    ...queryOptions,
+  }) as {
+    data?: {
+      transactions?: {
+        items?: Array<{
+          id?: string | null;
+          amount?: number | null;
+          currency?: string | null;
+          createdAt?: unknown;
+          paymentStatus?: PaymentTransactionStatus | null;
+          stripePaymentMethod?: string[] | null;
+          stripePaymentId?: string | null;
+        } | null> | null;
+        totalCount?: number;
+        pageInfo?: { hasNextPage?: boolean; hasPreviousPage?: boolean };
+      };
+    };
+    isLoading: boolean;
+    isError: boolean;
+  };
 
   const items = data?.transactions?.items ?? [];
   const totalCount = data?.transactions?.totalCount ?? 0;
@@ -80,7 +105,7 @@ export default function PaymentTransactionsTable({ userId, pageSize = 10 }: Paym
                   <TableCell>
                     {tx?.stripePaymentId || tx?.id ? (
                       <Link
-                        href={`/profile/payment-history/${tx?.stripePaymentId || tx?.id}`}
+                        href={`${linkPrefix}/${tx?.stripePaymentId || tx?.id}`}
                         className="text-primary hover:underline"
                       >
                         #{(tx?.stripePaymentId || tx?.id)!.slice(-8)}
@@ -92,7 +117,7 @@ export default function PaymentTransactionsTable({ userId, pageSize = 10 }: Paym
                   <TableCell>
                     {tx?.stripePaymentId || tx?.id ? (
                       <Link
-                        href={`/profile/payment-history/${tx?.stripePaymentId || tx?.id}`}
+                        href={`${linkPrefix}/${tx?.stripePaymentId || tx?.id}`}
                         className="text-primary hover:underline"
                       >
                         View

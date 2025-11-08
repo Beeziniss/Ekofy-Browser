@@ -185,17 +185,13 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span>Posted {formatTimeAgo(request.createdAt)}</span>
-                  <div className="flex items-center">
-                    <MessageCircle className="mr-1 h-4 w-4" />
-                    View Comments
-                  </div>
                 </div>
               </div>
             </div>
 
             {/* Summary */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="py-0 px-6">
                 <h2 className="mb-4 text-lg font-semibold">Summary</h2>
                 <p className="mb-4 leading-relaxed text-white">{request.summary}</p>
               </CardContent>
@@ -203,7 +199,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
 
             {/* Detail Description */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="py-0 px-6">
                 <h2 className="mb-4 text-lg font-semibold">Detailed Description</h2>
                 <div
                   className="prose prose-invert max-w-none leading-relaxed text-white"
@@ -214,13 +210,18 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
 
             {/* Status */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="py-0 px-6">
                 <h2 className="mb-4 text-lg font-semibold">Request Status</h2>
                 <Badge variant={getStatusVariant(request.status)} className="px-3 py-1 text-sm">
                   {formatStatus(request.status)}
                 </Badge>
               </CardContent>
             </Card>
+
+            {/* Comments Section */}
+            <div className="mt-8">
+              <RequestHubCommentSection requestId={request.id} />
+            </div>
           </div>
 
           {/* Sidebar */}
@@ -228,7 +229,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
             <div className="sticky top-20">
               {/* Budget */}
               <Card>
-                <CardContent className="p-6">
+                <CardContent className="py-0 px-6">
                   <div className="mb-2 flex items-center text-gray-500">
                     <DollarSign className="mr-1 h-4 w-4" />
                     <span className="text-sm">Budget</span>
@@ -266,11 +267,6 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
               </Card>
             </div>
           </div>
-        </div>
-
-        {/* Comments Section */}
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <RequestHubCommentSection requestId={request.id} />
         </div>
       </div>
 

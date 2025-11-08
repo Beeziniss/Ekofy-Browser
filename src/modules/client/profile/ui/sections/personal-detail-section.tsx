@@ -1,10 +1,8 @@
 "use client";
 
 import React from "react";
-import DetailItem from "../components/detail-item";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
-import { useClientProfile } from "../../hooks/use-client-profile";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,14 +28,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateListenerProfileMutationOptions } from "@/gql/options/client-mutation-options";
 import { toast } from "sonner";
-import { useAuthStore } from "@/store";
 import type { UserGender } from "@/gql/graphql";
+import DetailItem from "../components/detail-item";
 
-const PersonalDetailSection = () => {
+interface PersonalDetailSectionProps {
+  personal: {
+    readonly displayName: string;
+    readonly email: string;
+    readonly birthDate: string | undefined;
+    readonly gender: UserGender | undefined;
+  };
+  userId?: string;
+}
+
+const PersonalDetailSection = ({ personal, userId }: PersonalDetailSectionProps) => {
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
-  const userId = user?.userId;
-  const { personal } = useClientProfile();
   const [isEditing, setIsEditing] = React.useState(false);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -300,9 +305,9 @@ const PersonalDetailSection = () => {
                             onSelect={field.onChange}
                             disabled={(date) => date > new Date()}
                             captionLayout="dropdown"
-                            fromYear={1700}
-                            toYear={new Date().getFullYear()}
-                            initialFocus
+                            startMonth={new Date(1900, 0)}
+                            endMonth={new Date(new Date().getFullYear(), 0)}
+                            autoFocus
                           />
                         </PopoverContent>
                       </Popover>

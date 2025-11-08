@@ -1,5 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,16 +6,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AudioLines, Bell, Headset, LogOut, Rss, Settings, User } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useAuthStore } from "@/store";
-import { authApi } from "@/services/auth-services";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserRole } from "@/types/role";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { SparklesColorful } from "@/assets/icons";
+import { authApi } from "@/services/auth-services";
+import { getUserInitials } from "@/utils/format-shorten-name";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { artistOptions, listenerOptions } from "@/gql/options/client-options";
+import { AudioLines, Bell, LogOut, MicVocalIcon, Settings, User } from "lucide-react";
 
 const AuthButton = () => {
   const router = useRouter();
@@ -40,14 +42,8 @@ const AuthButton = () => {
     },
   });
 
-  // TODO: Might use later
-  // Get current profile query - only runs when authenticated
-  useQuery({
-    queryKey: ["currentProfile"],
-    queryFn: authApi.general.getCurrentProfile,
-    enabled: isAuthenticated && !!user,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+  const { data: listenerData } = useQuery(listenerOptions(user?.userId || "", user?.listenerId));
+  const { data: artistData } = useQuery(artistOptions({ userId: user?.userId || "", artistId: user?.artistId }));
 
   const handleLogout = () => {
     logout();
@@ -65,19 +61,67 @@ const AuthButton = () => {
           href: "/artist/studio/profile",
         });
         break;
-      case UserRole.MODERATOR:
-        profileLinks.push({
-          label: "Moderator Profile",
-          href: "/moderator/profile",
-        });
-        break;
-      case UserRole.ADMIN:
-        profileLinks.push({ label: "Admin Profile", href: "/admin/profile" });
-        break;
       default:
         profileLinks.push({ label: "Profile", href: "/profile" });
     }
   }
+
+  // Define dropdown menu items
+  const dropdownMenuItems = [
+    // Profile links (dynamic based on role)
+    ...profileLinks.map((link) => ({
+      type: "link" as const,
+      icon: User,
+      label: link.label,
+      href: link.href,
+      className: "text-main-white",
+      showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
+    })),
+    // Artist-specific items
+    {
+      type: "link" as const,
+      icon: AudioLines,
+      label: "Track",
+      href: "/artist/studio/tracks",
+      className: "text-main-white",
+      showForRoles: [UserRole.ARTIST],
+    },
+    {
+      type: "link" as const,
+      icon: MicVocalIcon,
+      label: "Studio",
+      href: "/artist/studio",
+      className: "text-main-white",
+      showForRoles: [UserRole.ARTIST],
+    },
+    // Premium option (available for all)
+    {
+      type: "button" as const,
+      icon: SparklesColorful,
+      label: "Go Premium",
+      className: "primary_gradient !bg-gradient-to-b bg-clip-text text-base font-semibold text-transparent",
+      showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
+    },
+  ];
+
+  const settingsMenuItems = [
+    {
+      type: "button" as const,
+      icon: Settings,
+      label: "Settings",
+      className: "text-main-white",
+      showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
+    },
+    {
+      type: "button" as const,
+      icon: LogOut,
+      label: "Logout",
+      className: "text-main-white",
+      iconClassName: "text-red-500",
+      onClick: handleLogout,
+      showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
+    },
+  ];
 
   return (
     <>
@@ -99,51 +143,61 @@ const AuthButton = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="size-10 cursor-pointer">
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>E</AvatarFallback>
+                <AvatarImage
+                  src={
+                    listenerData?.listeners?.items?.[0].avatarImage ||
+                    artistData?.artists?.items?.[0].avatarImage ||
+                    undefined
+                  }
+                  alt={
+                    listenerData?.listeners?.items?.[0].displayName ||
+                    artistData?.artists?.items?.[0].stageName ||
+                    "User Avatar"
+                  }
+                />
+                <AvatarFallback>
+                  {getUserInitials(
+                    listenerData?.listeners?.items?.[0].displayName || artistData?.artists?.items?.[0].stageName || "E",
+                  )}
+                </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="start">
               <DropdownMenuGroup>
-                {profileLinks.map((link) => (
-                  <DropdownMenuItem key={link.href} asChild>
-                    <Link href={link.href} className="flex items-center">
-                      <User className="text-main-white mr-2 size-4" />
-                      <span className="text-main-white text-base">{link.label}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuItem>
-                  <AudioLines className="text-main-white mr-2 size-4" />
-                  <span className="text-main-white text-base">Track</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <SparklesColorful className="mr-2 size-4" />
-                  <span className="primary_gradient !bg-gradient-to-b bg-clip-text text-base font-semibold text-transparent">
-                    Go Premium
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Rss className="text-main-white mr-2 size-4" />
-                  <span className="text-main-white text-base">Blog</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Headset className="text-main-white mr-2 size-4" />
-                  <span className="text-main-white text-base">Support</span>
-                </DropdownMenuItem>
+                {dropdownMenuItems
+                  .filter((item) => user && item.showForRoles.includes(user.role))
+                  .map((item, index) => (
+                    <DropdownMenuItem key={index} asChild={item.type === "link"}>
+                      {item.type === "link" ? (
+                        <Link href={item.href!} className="flex items-center">
+                          <item.icon className={`mr-2 size-4 ${item.className}`} />
+                          <span className={`text-base ${item.className}`}>{item.label}</span>
+                        </Link>
+                      ) : (
+                        <>
+                          <item.icon
+                            className={`mr-2 size-4 ${"iconClassName" in item ? item.iconClassName : item.className}`}
+                          />
+                          <span className={`text-base ${item.className}`}>{item.label}</span>
+                        </>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
               </DropdownMenuGroup>
 
               <DropdownMenuSeparator />
 
               <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <Settings className="text-main-white mr-2 size-4" />
-                  <span className="text-main-white text-base">Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 size-4 text-red-500" />
-                  <span className="text-main-white text-base">Logout</span>
-                </DropdownMenuItem>
+                {settingsMenuItems
+                  .filter((item) => user && item.showForRoles.includes(user.role))
+                  .map((item, index) => (
+                    <DropdownMenuItem key={index} onClick={"onClick" in item ? item.onClick : undefined}>
+                      <item.icon
+                        className={`mr-2 size-4 ${"iconClassName" in item ? item.iconClassName : item.className}`}
+                      />
+                      <span className={`text-base ${item.className}`}>{item.label}</span>
+                    </DropdownMenuItem>
+                  ))}
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>

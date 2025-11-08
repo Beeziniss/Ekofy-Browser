@@ -41,10 +41,9 @@ export function LegalDocumentsCard({ track }: LegalDocumentsCardProps) {
       <CardContent className="space-y-4">
         {track.track.legalDocuments.map((doc, index) => (
           <div key={index} className="flex items-center gap-3 rounded-lg border p-3">
-            <FileText className="text-muted-foreground h-6 w-6" />
             <div className="flex-1">
-              <p className="font-medium">{doc.name}</p>
-              <div className="mt-1 flex items-center gap-2">
+              <div className="flex items-center gap-2">
+                <p className="font-medium">{doc.name}</p>
                 <Badge variant="secondary" className={getDocumentTypeColor(doc.documentType)}>
                   {doc.documentType}
                 </Badge>

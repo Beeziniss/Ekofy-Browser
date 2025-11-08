@@ -11,7 +11,7 @@ const DetailItem = ({ title, value }: DetailItemProps) => {
           <label className="text-main-white text-base font-semibold">{title}</label>
         </div>
         <div className="w-full md:flex-1">
-          <p className="text-main-white relative w-full rounded-md border border-white/30 bg-[#1A1A1A] p-4 text-base text-sm shadow-md">
+          <p className="text-main-white relative w-full rounded-md border border-white/30 bg-[#1A1A1A] px-4 py-3 text-sm shadow-md">
             {value}
           </p>
         </div>

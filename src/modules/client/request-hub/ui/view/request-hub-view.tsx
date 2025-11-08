@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "use-debounce";
 import { requestHubOptions } from "@/gql/options/client-options";
 import { useCreateRequest, useUpdateRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { RequestHubLayout } from "../layout";
@@ -24,6 +25,7 @@ export function RequestHubView() {
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
   const [editingRequest, setEditingRequest] = useState<RequestItem | null>(null);
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearchValue] = useDebounce(searchValue, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [showStripeModal, setShowStripeModal] = useState(false);
@@ -50,8 +52,8 @@ export function RequestHubView() {
   // Filter requests based on search (already filtered to OPEN by query)
   const filteredRequests = requests.filter(
     (request: RequestItem) =>
-      request.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-      request.summary.toLowerCase().includes(searchValue.toLowerCase()),
+      request.title.toLowerCase().includes(debouncedSearchValue.toLowerCase()) ||
+      request.summary.toLowerCase().includes(debouncedSearchValue.toLowerCase()),
   );
 
   const handlePostRequest = () => {
@@ -59,7 +61,7 @@ export function RequestHubView() {
   };
 
   const handleBrowseArtists = () => {
-    router.push("/hire-artists");
+    router.push("/artists-for-hire");
   };
 
   const handleMyRequests = () => {

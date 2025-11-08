@@ -1,0 +1,80 @@
+import { graphql } from "@/gql";
+
+export const GetArtistTransactionsQuery = graphql(`
+  query GetArtistTransactions(
+    $where: PaymentTransactionFilterInput
+    $order: [PaymentTransactionSortInput!]
+    $skip: Int
+    $take: Int
+  ) {
+    transactions(where: $where, order: $order, skip: $skip, take: $take) {
+      totalCount
+      items {
+        id
+        amount
+        currency
+        createdAt
+        paymentStatus
+        stripePaymentMethod
+        stripePaymentId
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`);
+
+export const GetArtistPayoutsQuery = graphql(`
+  query GetArtistPayouts(
+    $where: PayoutTransactionFilterInput
+    $order: [PayoutTransactionSortInput!]
+    $skip: Int
+    $take: Int
+  ) {
+    payoutTransactions(where: $where, order: $order, skip: $skip, take: $take) {
+      totalCount
+      items {
+        id
+        amount
+        currency
+        createdAt
+        status
+        method
+        description
+        destinationAccountId
+        stripePayoutId
+        stripeTransferId
+        royaltyReportId
+        userId
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`);
+
+export const GetArtistInvoicesQuery = graphql(`
+  query GetArtistInvoices($where: InvoiceFilterInput, $order: [InvoiceSortInput!], $skip: Int, $take: Int) {
+    invoices(where: $where, order: $order, skip: $skip, take: $take) {
+      totalCount
+      items {
+        id
+        amount
+        currency
+        email
+        to
+        from
+        paidAt
+        paymentTransactionId
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`);

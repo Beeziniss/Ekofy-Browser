@@ -1,9 +1,22 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import { ChevronRightIcon } from "lucide-react";
 import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item";
+
+const activityItems = [
+  {
+    title: "Payment History",
+    href: "/profile/payment-history",
+  },
+  {
+    title: "Invoices",
+    href: "/profile/invoices",
+  },
+  {
+    title: "Order History",
+    href: "/profile/order-history",
+  },
+];
 
 const ActivitySection = () => {
   return (
@@ -12,36 +25,18 @@ const ActivitySection = () => {
         <h2 className="text-xl font-bold">My Activity</h2>
       </div>
       <div className="flex flex-col gap-6 pt-8">
-        <Item asChild variant="muted">
-          <Link href="/profile/payment-history" className="no-underline">
-            <ItemContent>
-              <ItemTitle>Payment History</ItemTitle>
-            </ItemContent>
-            <ItemActions>
-              <ChevronRightIcon className="size-8" />
-            </ItemActions>
-          </Link>
-        </Item>
-
-        <Item asChild variant="muted">
-          <Link href="/profile/invoices" className="no-underline">
-            <ItemContent>
-              <ItemTitle>Invoices</ItemTitle>
-            </ItemContent>
-            <ItemActions>
-              <ChevronRightIcon className="size-8" />
-            </ItemActions>
-          </Link>
-        </Item>
-
-        <Item variant="muted">
-          <ItemContent>
-            <ItemTitle>Order History</ItemTitle>
-          </ItemContent>
-          <ItemActions>
-            <ChevronRightIcon className="size-8" />
-          </ItemActions>
-        </Item>
+        {activityItems.map((item) => (
+          <Item asChild variant="muted" key={item.title} size={"sm"}>
+            <Link href={item.href} className="no-underline">
+              <ItemContent>
+                <ItemTitle>{item.title}</ItemTitle>
+              </ItemContent>
+              <ItemActions>
+                <ChevronRightIcon className="size-5" />
+              </ItemActions>
+            </Link>
+          </Item>
+        ))}
       </div>
     </div>
   );
