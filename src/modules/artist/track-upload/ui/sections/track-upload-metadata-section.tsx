@@ -403,7 +403,7 @@ const TrackUploadMetadataSection = () => {
   });
 
   async function onSubmit(data: FormData) {
-    /* if (!displayTrack || !user?.userId) {
+    if (!displayTrack || !user?.userId) {
       toast.error("No track found or user not authenticated");
       return;
     }
@@ -462,8 +462,7 @@ const TrackUploadMetadataSection = () => {
       setUploading(false);
       console.error("Upload failed:", error);
       toast.error("Failed to upload track. Please try again.");
-    } */
-    console.log(data);
+    }
   }
 
   const continueUploadProcess = async (data: FormData) => {
