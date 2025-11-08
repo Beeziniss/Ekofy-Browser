@@ -14,27 +14,16 @@ import {
   FileChartColumnIcon,
   ImageIcon,
   LockIcon,
-  AlertTriangle,
 } from "lucide-react";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { auddApi } from "@/services/audd-services";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { categoriesOptions, trackUploadArtistListOptions } from "@/gql/options/artist-options";
 import { trackUploadMutationOptions } from "@/gql/options/artist-mutation-options";
@@ -204,6 +193,8 @@ const TrackUploadMetadataSection = () => {
   const currentUploadDate = useTrackUploadStore((state) => state.currentUpload?.uploadedAt);
   const uploadedTracks = useTrackUploadStore((state) => state.uploadedTracks);
   const clearCurrentUpload = useTrackUploadStore((state) => state.clearCurrentUpload);
+  const isUploading = useTrackUploadStore((state) => state.isUploading);
+  const setUploading = useTrackUploadStore((state) => state.setUploading);
 
   // Memoize currentUpload object based on stable properties only
   const currentUpload = useMemo(() => {
@@ -218,7 +209,6 @@ const TrackUploadMetadataSection = () => {
   }, [currentUploadId, currentUploadFile, currentUploadMetadata, currentUploadDate]);
   const router = useRouter();
   const { user } = useAuthStore();
-  const [isUploading, setIsUploading] = useState(false);
   const [displayTrack, setDisplayTrack] = useState(currentUpload);
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
 
@@ -244,13 +234,6 @@ const TrackUploadMetadataSection = () => {
       note: "",
     },
   ]);
-
-  // Dialog states
-  const [showCopyrightDialog, setShowCopyrightDialog] = useState(false);
-  const [copyrightError, setCopyrightError] = useState<{
-    type: "match" | "verification_failed" | "check_failed";
-    message: string | React.ReactNode;
-  } | null>(null);
 
   // Get minimum date (3 days from today)
   const minDate = new Date();
@@ -401,12 +384,6 @@ const TrackUploadMetadataSection = () => {
     maxSize: 5 * 1024 * 1024, // 5MB
   });
 
-  // Handle copyright dialog close
-  const handleCopyrightDialogClose = () => {
-    setShowCopyrightDialog(false);
-    setCopyrightError(null);
-  };
-
   async function onSubmit(data: FormData) {
     if (!displayTrack || !user?.userId) {
       toast.error("No track found or user not authenticated");
@@ -446,66 +423,23 @@ const TrackUploadMetadataSection = () => {
       }
     }
 
-    setIsUploading(true);
+    // Start loading state for upload
+    setUploading(true);
 
     try {
-      // Check for copyright violations using song recognition
-      toast.info("Checking track for copyright compliance...");
-
-      const recognitionResult = await auddApi.recognizeSong(displayTrack.file);
-
-      // Check if the song recognition found a match (potential copyright issue)
-      if (
-        recognitionResult.status !== "success" ||
-        recognitionResult.result.apple_music ||
-        recognitionResult.result.spotify ||
-        recognitionResult.result.deezer ||
-        recognitionResult.result.napster
-      ) {
-        setIsUploading(false);
-        if (recognitionResult.result) {
-          setCopyrightError({
-            type: "match",
-            message: (
-              <>
-                This track appears to match existing copyrighted content:{" "}
-                <span className="font-semibold text-white">&ldquo;{recognitionResult.result.title}&rdquo;</span> by{" "}
-                <span className="font-semibold text-white">{recognitionResult.result.artist}</span>. Please ensure you
-                have the proper rights to upload this track or upload original content only.
-              </>
-            ),
-          });
-        } else {
-          setCopyrightError({
-            type: "verification_failed",
-            message:
-              "Failed to verify track copyright status. Please try again or contact support if the issue persists.",
-          });
-        }
-        setShowCopyrightDialog(true);
-        return;
-      }
-
-      toast.success("Copyright check passed. Proceeding with upload...");
-
-      // If copyright check passes, continue with upload
+      // Proceed directly with upload since copyright check was done earlier
       await continueUploadProcess(data);
     } catch (error) {
-      setIsUploading(false);
-      console.error("Copyright check failed:", error);
-      setCopyrightError({
-        type: "check_failed",
-        message: "Unable to verify track copyright status. Please try again or contact support if the issue persists.",
-      });
-      setShowCopyrightDialog(true);
-      return;
+      // Stop loading state on error
+      setUploading(false);
+      console.error("Upload failed:", error);
+      toast.error("Failed to upload track. Please try again.");
     }
   }
 
   const continueUploadProcess = async (data: FormData) => {
     if (!displayTrack || !user?.userId) {
       toast.error("No track found or user not authenticated");
-      setIsUploading(false);
       return;
     }
 
@@ -585,14 +519,15 @@ const TrackUploadMetadataSection = () => {
 
       toast.success("Track uploaded successfully!");
 
-      // Clear the current upload and navigate back to tracks
+      // Clear the loading state and current upload, then navigate back to tracks
+      setUploading(false);
       clearCurrentUpload();
       router.push("/artist/studio/tracks");
     } catch (error) {
+      // Clear loading state on upload error
+      setUploading(false);
       console.error("Upload failed:", error);
       toast.error("Failed to upload track. Please try again.");
-    } finally {
-      setIsUploading(false);
     }
   };
 
@@ -1800,26 +1735,6 @@ const TrackUploadMetadataSection = () => {
           </div>
         </form>
       </Form>
-
-      {/* Copyright Warning Dialog */}
-      <AlertDialog open={showCopyrightDialog} onOpenChange={setShowCopyrightDialog}>
-        <AlertDialogContent className="bg-main-dark-bg border-2 border-red-500/20 sm:max-w-xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-xl text-white">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
-              Upload Failed
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-main-grey text-base/relaxed">
-              {copyrightError?.message}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={handleCopyrightDialogClose} className="bg-red-700 text-white hover:bg-red-800">
-              Understand
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };

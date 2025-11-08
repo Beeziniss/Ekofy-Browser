@@ -37,6 +37,7 @@ export interface TrackUploadActions {
   clearCurrentUpload: () => void;
   removeTrack: (trackId: string) => void;
   clearAllTracks: () => void;
+  setUploading: (isUploading: boolean) => void;
 }
 
 export type TrackUploadStore = TrackUploadState & TrackUploadActions;
