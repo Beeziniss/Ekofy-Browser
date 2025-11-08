@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "use-debounce";
 import { myRequestsOptions } from "@/gql/options/client-options";
 import {
   useCreateRequest,
@@ -28,6 +29,7 @@ export function MyRequestsView() {
   const [mode, setMode] = useState<RequestHubMode>("view");
   const [editingRequest, setEditingRequest] = useState<RequestItem | null>(null);
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearchValue] = useDebounce(searchValue, 300);
   const [statusFilter, setStatusFilter] = useState<GqlRequestStatus | "ALL">("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
@@ -37,7 +39,7 @@ export function MyRequestsView() {
   // Fetch requests with pagination
   const skip = (currentPage - 1) * pageSize;
   const where = {
-    ...(searchValue && { title: { contains: searchValue } }),
+    ...(debouncedSearchValue && { title: { contains: debouncedSearchValue } }),
     ...(statusFilter !== "ALL" && { status: { eq: statusFilter } }),
     // Filter by current user's requests only
     ...(user?.userId && { requestUserId: { eq: user.userId } }),
@@ -257,16 +259,14 @@ export function MyRequestsView() {
                 onSave={handleSave}
               />
 
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  isLoading={isLoading}
-                  totalItems={totalItems}
-                  itemsPerPage={pageSize}
-                />
-              )}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                isLoading={isLoading}
+                totalItems={totalItems}
+                itemsPerPage={pageSize}
+              />
             </RequestHubLayout>
           </AuthDialogProvider>
         );
