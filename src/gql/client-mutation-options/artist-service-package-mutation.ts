@@ -58,6 +58,7 @@ export const useCreateArtistPackage = () => {
       estimateDeliveryDays: number;
       description: string;
       serviceDetails: Array<{ key: string; value: string }>;
+      maxRevisions: number;
     }) => {
       const result = await execute(createArtistPackageMutation, { createRequest });
       return result;

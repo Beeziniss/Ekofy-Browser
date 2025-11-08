@@ -1,0 +1,1 @@
+export { StripeSuccessCard } from "./stripe-success-card";

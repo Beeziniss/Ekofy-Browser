@@ -8,3 +8,4 @@ export { default as RequestHubCommentSection } from "./comment-section";
 export { Pagination } from "./pagination";
 export { default as RequestHubCommentUser } from "./request-hub-comment-user";
 export { default as RequestHubCommentReply } from "./request-hub-comment-reply";
+export { StripeAccountRequiredModal } from "@/modules/shared/ui/components/stripe-account-required-modal";

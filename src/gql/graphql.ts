@@ -5730,6 +5730,14 @@ export type BlockRequestMutationVariables = Exact<{
 
 export type BlockRequestMutation = { __typename?: 'MutationInitialization', blockRequest: boolean };
 
+export type CreateExpressConnectedAccountMutationVariables = Exact<{
+  returnUrl: Scalars['String']['input'];
+  refreshUrl: Scalars['String']['input'];
+}>;
+
+
+export type CreateExpressConnectedAccountMutation = { __typename?: 'MutationInitialization', createExpressConnectedAccount: { __typename?: 'AccountLinkResponse', url: string } };
+
 export type UpdateTrackCommentMutationVariables = Exact<{
   commentId: Scalars['String']['input'];
   content: Scalars['String']['input'];
@@ -6063,6 +6071,13 @@ export type GetUserActiveSubscriptionQueryVariables = Exact<{
 
 
 export type GetUserActiveSubscriptionQuery = { __typename?: 'QueryInitialization', userSubscriptions?: { __typename?: 'UserSubscriptionsCollectionSegment', items?: Array<{ __typename?: 'UserSubscription', id: string, isActive: boolean, subscription: Array<{ __typename?: 'Subscription', tier: SubscriptionTier, status: SubscriptionStatus, name: string }> }> | null } | null };
+
+export type GetUserStripeAccountIdQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetUserStripeAccountIdQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', role: UserRole, stripeAccountId?: string | null }> | null } | null };
 
 export type ApprovalHistoriesListQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -6707,6 +6722,13 @@ export const BlockRequestDocument = new TypedDocumentString(`
   blockRequest(requestId: $requestId)
 }
     `) as unknown as TypedDocumentString<BlockRequestMutation, BlockRequestMutationVariables>;
+export const CreateExpressConnectedAccountDocument = new TypedDocumentString(`
+    mutation CreateExpressConnectedAccount($returnUrl: String!, $refreshUrl: String!) {
+  createExpressConnectedAccount(returnUrl: $returnUrl, refreshUrl: $refreshUrl) {
+    url
+  }
+}
+    `) as unknown as TypedDocumentString<CreateExpressConnectedAccountMutation, CreateExpressConnectedAccountMutationVariables>;
 export const UpdateTrackCommentDocument = new TypedDocumentString(`
     mutation UpdateTrackComment($commentId: String!, $content: String!) {
   updateComment(request: {commentId: $commentId, content: $content})
@@ -7633,6 +7655,16 @@ export const GetUserActiveSubscriptionDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetUserActiveSubscriptionQuery, GetUserActiveSubscriptionQueryVariables>;
+export const GetUserStripeAccountIdDocument = new TypedDocumentString(`
+    query GetUserStripeAccountId($userId: String!) {
+  users(where: {id: {eq: $userId}}) {
+    items {
+      role
+      stripeAccountId
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetUserStripeAccountIdQuery, GetUserStripeAccountIdQueryVariables>;
 export const ApprovalHistoriesListDocument = new TypedDocumentString(`
     query ApprovalHistoriesList($skip: Int, $take: Int, $where: ApprovalHistoryFilterInput) {
   approvalHistories(skip: $skip, take: $take, where: $where) {

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,9 @@ import { RequestsQuery } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
+import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 import RequestHubCommentSection from "./comment-section";
+import { StripeAccountRequiredModal } from "@/modules/shared/ui/components/stripe-account-required-modal";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
@@ -32,9 +35,14 @@ interface RequestDetailViewProps {
 }
 
 export function RequestDetailView({ request, onBack, onApply, onContactClient, className }: RequestDetailViewProps) {
+  const [showStripeModal, setShowStripeModal] = useState(false);
+  
   // Get auth state and dialog
   const { isAuthenticated } = useAuthStore();
   const { showAuthDialog } = useAuthDialog();
+
+  // Get Stripe account status
+  const { isArtist, hasStripeAccount } = useStripeAccountStatus();
 
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
@@ -108,7 +116,17 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
       showAuthDialog("apply", request.title);
       return;
     }
-    onApply();
+
+    // Check if user is artist and has stripe account
+    if (isArtist && !hasStripeAccount) {
+      setShowStripeModal(true);
+      return;
+    }
+
+    // Only allow artists to apply
+    if (isArtist) {
+      onApply();
+    }
   };
 
   const handleContactClient = () => {
@@ -116,7 +134,17 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
       showAuthDialog("contact", request.title);
       return;
     }
-    onContactClient();
+
+    // Check if user is artist and has stripe account for contact
+    if (isArtist && !hasStripeAccount) {
+      setShowStripeModal(true);
+      return;
+    }
+
+    // Only allow artists to contact client
+    if (isArtist) {
+      onContactClient();
+    }
   };
 
   return (
@@ -241,6 +269,13 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
           </div>
         </div>
       </div>
+
+      {/* Stripe Account Required Modal */}
+      <StripeAccountRequiredModal
+        open={showStripeModal}
+        onOpenChange={setShowStripeModal}
+        onCancel={() => setShowStripeModal(false)}
+      />
     </div>
   );
 }

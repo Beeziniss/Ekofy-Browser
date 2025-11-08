@@ -7,12 +7,14 @@ import { requestHubOptions } from "@/gql/options/client-options";
 import { useCreateRequest, useUpdateRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { RequestHubLayout } from "../layout";
 import { CreateRequestSection, ViewRequestSection, EditRequestSection } from "../section";
-import { RequestDetailView, Pagination } from "../component";
+import { RequestDetailView, Pagination, StripeAccountRequiredModal } from "../component";
 import { CreateRequestData, UpdateRequestData } from "@/types/request-hub";
 import { RequestsQuery, RequestStatus as GqlRequestStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AuthDialogProvider } from "../context/auth-dialog-context";
+import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
+import { useAuthStore } from "@/store";
 
 type RequestHubMode = "view" | "create" | "edit" | "detail";
 
@@ -26,7 +28,12 @@ export function RequestHubView() {
   const [debouncedSearchValue] = useDebounce(searchValue, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
+  const [showStripeModal, setShowStripeModal] = useState(false);
   const router = useRouter();
+
+  // Auth and Stripe status
+  const { isAuthenticated } = useAuthStore();
+  const { isArtist, hasStripeAccount } = useStripeAccountStatus();
 
   // Fetch requests with pagination
   const { data: requestsData, isLoading } = useQuery(
@@ -75,8 +82,25 @@ export function RequestHubView() {
   };
 
   const handleApply = (id: string) => {
-    console.log("Apply to request:", id);
-    toast.info("Application feature coming soon!");
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      toast.info("Please sign in to apply for requests");
+      return;
+    }
+
+    // Check if user is artist and has stripe account
+    if (isArtist && !hasStripeAccount) {
+      setShowStripeModal(true);
+      return;
+    }
+
+    // Only allow artists to apply
+    if (isArtist) {
+      console.log("Apply to request:", id);
+      toast.info("Application feature coming soon!");
+    } else {
+      toast.info("Only artists can apply to requests");
+    }
   };
 
   const handleSave = (id: string) => {
@@ -91,8 +115,25 @@ export function RequestHubView() {
   };
 
   const handleContactClient = () => {
-    console.log("Contact client");
-    toast.info("Contact feature coming soon!");
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      toast.info("Please sign in to contact clients");
+      return;
+    }
+
+    // Check if user is artist and has stripe account
+    if (isArtist && !hasStripeAccount) {
+      setShowStripeModal(true);
+      return;
+    }
+
+    // Only allow artists to contact client
+    if (isArtist) {
+      console.log("Contact client");
+      toast.info("Contact feature coming soon!");
+    } else {
+      toast.info("Only artists can contact clients");
+    }
   };
 
   const handleCreateSubmit = async (data: CreateRequestData) => {
@@ -208,5 +249,16 @@ export function RequestHubView() {
     }
   };
 
-  return <>{renderContent()}</>;
+  return (
+    <>
+      {renderContent()}
+      
+      {/* Stripe Account Required Modal */}
+      <StripeAccountRequiredModal
+        open={showStripeModal}
+        onOpenChange={setShowStripeModal}
+        onCancel={() => setShowStripeModal(false)}
+      />
+    </>
+  );
 }

@@ -54,7 +54,7 @@ export const artistPackagesOptions = (
   queryOptions({
     queryKey: ["artist-packages", artistId, page, pageSize, searchTerm],
     queryFn: () => {
-      const where: ArtistPackageFilterInput = { artistId: { eq: artistId } };
+      const where: ArtistPackageFilterInput = { artistId: { contains: artistId } };
 
       // Add packageName filter if search term is provided
       if (searchTerm.trim()) {
