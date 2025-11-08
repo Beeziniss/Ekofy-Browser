@@ -14,6 +14,8 @@ import {
   FileChartColumnIcon,
   ImageIcon,
   LockIcon,
+  FileTextIcon,
+  UploadIcon,
 } from "lucide-react";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -37,7 +39,7 @@ import {
 } from "@/gql/graphql";
 import { useAuthStore } from "@/store";
 import { useDropzone, FileRejection } from "react-dropzone";
-import { uploadImageToCloudinary } from "@/utils/cloudinary-utils";
+import { uploadImageToCloudinary, uploadLegalDocument, validateDocumentFile } from "@/utils/cloudinary-utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import InputTags from "@/components/ui/tags-input";
@@ -73,25 +75,7 @@ const FormSchema = z
     isReleased: z.boolean(),
     releaseDate: z.date().optional(),
     isOriginal: z.boolean(),
-    legalDocuments: z
-      .array(
-        z.object({
-          documentType: z.string(),
-          documentUrl: z.url({
-            error: "Please enter a valid URL (e.g., https://example.com)",
-          }),
-          name: z.string().min(1, { message: "Document name is required." }),
-          note: z.string().min(1, { message: "Note is required." }),
-        }),
-      )
-      .min(1, { message: "At least one legal document is required." })
-      .refine(
-        (documents) =>
-          documents.every((doc) => doc.name.trim() !== "" && doc.documentUrl.trim() !== "" && doc.note.trim() !== ""),
-        {
-          message: "At least one document must have all fields completed.",
-        },
-      ),
+    legalDocuments: z.array(z.any()).optional(), // We'll validate this manually
     workSplits: z
       .array(
         z.object({
@@ -222,14 +206,14 @@ const TrackUploadMetadataSection = () => {
   const [legalDocuments, setLegalDocuments] = useState<
     {
       documentType: DocumentType;
-      documentUrl: string;
+      documentFile: File | null;
       name: string;
       note: string;
     }[]
   >([
     {
       documentType: DocumentType.License,
-      documentUrl: "",
+      documentFile: null,
       name: "",
       note: "",
     },
@@ -371,6 +355,40 @@ const TrackUploadMetadataSection = () => {
     [form],
   );
 
+  // Handle document file upload
+  const onDropDocument = useCallback(
+    async (acceptedFiles: File[], rejectedFiles: FileRejection[], index: number) => {
+      // Handle rejected files first
+      if (rejectedFiles.length > 0) {
+        const error = rejectedFiles[0].errors?.[0];
+        if (error?.code === "file-too-large") {
+          toast.error("Document size must be less than 20MB");
+        } else if (error?.code === "file-invalid-type") {
+          toast.error("Only PDF, DOC, DOCX, TXT, and image files are allowed");
+        } else {
+          toast.error("Invalid file selected");
+        }
+        return;
+      }
+
+      const file = acceptedFiles[0];
+      if (file) {
+        // Additional validation
+        if (!validateDocumentFile(file)) {
+          return;
+        }
+
+        // Update the document in state
+        const newDocs = [...legalDocuments];
+        newDocs[index].documentFile = file;
+        setLegalDocuments(newDocs);
+
+        toast.success(`Document "${file.name}" uploaded successfully!`);
+      }
+    },
+    [legalDocuments],
+  );
+
   const {
     getRootProps: getCoverRootProps,
     getInputProps: getCoverInputProps,
@@ -385,8 +403,18 @@ const TrackUploadMetadataSection = () => {
   });
 
   async function onSubmit(data: FormData) {
-    if (!displayTrack || !user?.userId) {
+    /* if (!displayTrack || !user?.userId) {
       toast.error("No track found or user not authenticated");
+      return;
+    }
+
+    // Validate legal documents manually
+    const hasValidDocuments =
+      legalDocuments.length > 0 &&
+      legalDocuments.every((doc) => doc.documentFile && doc.name.trim() && doc.note.trim());
+
+    if (!hasValidDocuments) {
+      toast.error("Please ensure all legal documents have files uploaded and required fields filled.");
       return;
     }
 
@@ -434,7 +462,8 @@ const TrackUploadMetadataSection = () => {
       setUploading(false);
       console.error("Upload failed:", error);
       toast.error("Failed to upload track. Please try again.");
-    }
+    } */
+    console.log(data);
   }
 
   const continueUploadProcess = async (data: FormData) => {
@@ -471,6 +500,29 @@ const TrackUploadMetadataSection = () => {
         releaseStatus = ReleaseStatus.NotAnnounced;
       }
 
+      // Upload legal documents to Cloudinary
+      const uploadedLegalDocuments = [];
+      for (const doc of legalDocuments) {
+        if (doc.documentFile && doc.name && doc.note) {
+          try {
+            const uploadResult = await uploadLegalDocument(
+              doc.documentFile,
+              user.userId,
+              doc.documentType.toLowerCase(),
+            );
+            uploadedLegalDocuments.push({
+              documentType: doc.documentType as DocumentType,
+              documentUrl: uploadResult.secure_url,
+              name: doc.name,
+              note: doc.note,
+            });
+          } catch (error) {
+            console.error("Failed to upload document:", error);
+            toast.error(`Failed to upload document: ${doc.name}`);
+          }
+        }
+      }
+
       // Prepare the mutation data
       const mutationData = {
         file: displayTrack.file,
@@ -487,14 +539,7 @@ const TrackUploadMetadataSection = () => {
           featuredArtistIds: data.featuredArtistIds,
           tags: data.tags || [],
           isExplicit: data.isExplicit,
-          legalDocuments: legalDocuments
-            .filter((doc) => doc.documentUrl && doc.name)
-            .map((doc) => ({
-              documentType: doc.documentType as DocumentType,
-              documentUrl: doc.documentUrl,
-              name: doc.name,
-              note: doc.note || "",
-            })),
+          legalDocuments: uploadedLegalDocuments,
         } as CreateTrackRequestInput,
         createWorkRequest: {
           description: null,
@@ -567,7 +612,7 @@ const TrackUploadMetadataSection = () => {
       setLegalDocuments([
         {
           documentType: DocumentType.License,
-          documentUrl: "",
+          documentFile: null,
           name: "",
           note: "",
         },
@@ -596,7 +641,8 @@ const TrackUploadMetadataSection = () => {
   }, [recordingSplits, form]);
 
   useEffect(() => {
-    form.setValue("legalDocuments", legalDocuments);
+    // Only sync documents that have valid files - don't sync to form for validation
+    // The form validation will be handled separately during submission
   }, [legalDocuments, form]);
 
   // Clear release date when isReleased is set to false
@@ -1118,10 +1164,7 @@ const TrackUploadMetadataSection = () => {
                                   className={cn(
                                     "space-y-3 rounded-md border p-4 transition-colors",
                                     form.formState.isSubmitted &&
-                                      (!doc.name.trim() ||
-                                        !doc.documentUrl.trim() ||
-                                        !doc.note.trim() ||
-                                        !/^https?:\/\/.+/.test(doc.documentUrl))
+                                      (!doc.name.trim() || !doc.documentFile || !doc.note.trim())
                                       ? "border-destructive/50 bg-destructive/5"
                                       : "border-white/20",
                                   )}
@@ -1130,10 +1173,7 @@ const TrackUploadMetadataSection = () => {
                                     <div className="flex items-center gap-2">
                                       <h4 className="text-sm font-medium text-white">Document {index + 1}</h4>
                                       {form.formState.isSubmitted &&
-                                        (!doc.name.trim() ||
-                                          !doc.documentUrl.trim() ||
-                                          !doc.note.trim() ||
-                                          !/^https?:\/\/.+/.test(doc.documentUrl)) && (
+                                        (!doc.name.trim() || !doc.documentFile || !doc.note.trim()) && (
                                           <span className="text-destructive text-xs font-medium">(Incomplete)</span>
                                         )}
                                     </div>
@@ -1145,7 +1185,6 @@ const TrackUploadMetadataSection = () => {
                                         onClick={() => {
                                           const newDocs = legalDocuments.filter((_, i) => i !== index);
                                           setLegalDocuments(newDocs);
-                                          form.setValue("legalDocuments", newDocs);
                                         }}
                                       >
                                         <Trash2 className="size-4" />
@@ -1162,7 +1201,6 @@ const TrackUploadMetadataSection = () => {
                                           const newDocs = [...legalDocuments];
                                           newDocs[index].documentType = value as DocumentType;
                                           setLegalDocuments(newDocs);
-                                          form.setValue("legalDocuments", newDocs);
                                         }}
                                       >
                                         <SelectTrigger size="sm">
@@ -1186,7 +1224,6 @@ const TrackUploadMetadataSection = () => {
                                           const newDocs = [...legalDocuments];
                                           newDocs[index].name = e.target.value;
                                           setLegalDocuments(newDocs);
-                                          form.setValue("legalDocuments", newDocs);
                                           if (fieldState.error) {
                                             form.clearErrors("legalDocuments");
                                           }
@@ -1196,24 +1233,50 @@ const TrackUploadMetadataSection = () => {
                                     </div>
                                   </div>
 
+                                  {/* Document File Upload */}
                                   <div className="space-y-1">
                                     <Label className="text-xs">
-                                      Document URL <span className="text-red-500">*</span>
+                                      Document File <span className="text-red-500">*</span>
                                     </Label>
-                                    <Input
-                                      placeholder="Enter document URL (https://example.com)"
-                                      value={doc.documentUrl}
-                                      onChange={(e) => {
-                                        const newDocs = [...legalDocuments];
-                                        newDocs[index].documentUrl = e.target.value;
-                                        setLegalDocuments(newDocs);
-                                        form.setValue("legalDocuments", newDocs);
-                                        if (fieldState.error) {
-                                          form.clearErrors("legalDocuments");
-                                        }
-                                      }}
-                                      className={cn("h-8", fieldState.error ? "border-destructive" : "")}
-                                    />
+                                    <div className="relative">
+                                      <input
+                                        type="file"
+                                        accept=".pdf,.doc,.docx,.txt,.jpeg,.jpg,.png,.webp"
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0];
+                                          if (file) {
+                                            onDropDocument([file], [], index);
+                                          }
+                                        }}
+                                        className="sr-only"
+                                        id={`document-upload-${index}`}
+                                      />
+                                      <label
+                                        htmlFor={`document-upload-${index}`}
+                                        className={cn(
+                                          "block cursor-pointer rounded-md border-2 border-dashed p-4 text-center transition-colors",
+                                          doc.documentFile
+                                            ? "border-green-500 bg-green-500/10"
+                                            : "border-gray-300 hover:border-gray-400",
+                                          fieldState.error ? "border-destructive" : "",
+                                        )}
+                                      >
+                                        {doc.documentFile ? (
+                                          <div className="flex items-center justify-center gap-2">
+                                            <FileTextIcon className="h-5 w-5 text-green-500" />
+                                            <span className="text-sm text-green-500">{doc.documentFile.name}</span>
+                                          </div>
+                                        ) : (
+                                          <div className="flex flex-col items-center justify-center gap-2">
+                                            <UploadIcon className="h-8 w-8 text-gray-400" />
+                                            <p className="text-sm text-gray-500">Click to upload document</p>
+                                            <p className="text-xs text-gray-400">
+                                              PDF, DOC, DOCX, TXT, or Images (max 20MB)
+                                            </p>
+                                          </div>
+                                        )}
+                                      </label>
+                                    </div>
                                   </div>
 
                                   <div className="space-y-1">
@@ -1227,7 +1290,6 @@ const TrackUploadMetadataSection = () => {
                                         const newDocs = [...legalDocuments];
                                         newDocs[index].note = e.target.value;
                                         setLegalDocuments(newDocs);
-                                        form.setValue("legalDocuments", newDocs);
                                         if (fieldState.error) {
                                           form.clearErrors("legalDocuments");
                                         }
@@ -1253,13 +1315,12 @@ const TrackUploadMetadataSection = () => {
                           ...legalDocuments,
                           {
                             documentType: DocumentType.License,
-                            documentUrl: "",
+                            documentFile: null,
                             name: "",
                             note: "",
                           },
                         ];
                         setLegalDocuments(newDocs);
-                        form.setValue("legalDocuments", newDocs);
                       }}
                       className="w-full"
                     >
