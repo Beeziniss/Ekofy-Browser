@@ -147,6 +147,10 @@ export const useTrackUploadStore = create<TrackUploadStore>()(
           isUploading: false,
         });
       },
+
+      setUploading: (isUploading: boolean) => {
+        set({ isUploading });
+      },
     }),
     {
       name: "track-upload-store",

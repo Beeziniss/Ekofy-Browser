@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Music, Calendar, User, Tag, FileText } from "lucide-react";
+import { Music, Tag, FileText } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { TrackUploadRequest } from "@/types/approval-track";
@@ -74,14 +74,11 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
               </Badge>
               {track.track.isExplicit && <Badge variant="destructive">Explicit</Badge>}
             </div>
-            {track.track.description && <p className="text-muted-foreground">{track.track.description}</p>}
             <div className="text-muted-foreground flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                Requested {formatDistanceToNow(new Date(track.requestedAt), { addSuffix: true })}
+                Requested: {formatDistanceToNow(new Date(track.requestedAt), { addSuffix: true })}
               </div>
               <div className="flex items-center gap-1">
-                <User className="h-4 w-4" />
                 {isLoadingUser
                   ? "Loading user..."
                   : createdByUser
@@ -89,13 +86,13 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
                     : `Created by: ${track.createdBy}`}
               </div>
             </div>
+            <div className="text-muted-foreground">
+              <div className="flex items-center gap-1">
+              Description: {track.track.description && <p className="text-muted-foreground">{track.track.description}</p>}
+              </div>
+            </div>
           </div>
         </div>
-
-        <Separator />
-
-        {/* Audio Player - Now integrated into cover image */}
-
         {/* Tags */}
         {track.track.tags && track.track.tags.length > 0 && (
           <>

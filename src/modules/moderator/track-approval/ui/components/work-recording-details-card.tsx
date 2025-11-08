@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { FileText, Music2, Percent } from "lucide-react";
+import { FileText } from "lucide-react";
 import { TrackUploadRequest } from "@/types/approval-track";
 
 interface WorkRecordingDetailsCardProps {
@@ -45,7 +45,6 @@ export function WorkRecordingDetailsCard({ track }: WorkRecordingDetailsCardProp
         {hasWorkInfo && (
           <div className="space-y-4">
             <h3 className="flex items-center gap-2 font-medium">
-              <FileText className="h-4 w-4" />
               Work Information
             </h3>
 
@@ -58,7 +57,6 @@ export function WorkRecordingDetailsCard({ track }: WorkRecordingDetailsCardProp
             {track.work?.workSplits && track.work.workSplits.length > 0 && (
               <div className="space-y-3">
                 <h4 className="flex items-center gap-2 text-sm font-medium">
-                  <Percent className="h-3 w-3" />
                   Work Splits
                 </h4>
                 <div className="space-y-2">
@@ -88,7 +86,6 @@ export function WorkRecordingDetailsCard({ track }: WorkRecordingDetailsCardProp
         {hasRecordingInfo && (
           <div className="space-y-4">
             <h3 className="flex items-center gap-2 font-medium">
-              <Music2 className="h-4 w-4" />
               Recording Information
             </h3>
 
@@ -101,7 +98,6 @@ export function WorkRecordingDetailsCard({ track }: WorkRecordingDetailsCardProp
             {track.recording?.recordingSplitRequests && track.recording.recordingSplitRequests.length > 0 && (
               <div className="space-y-3">
                 <h4 className="flex items-center gap-2 text-sm font-medium">
-                  <Percent className="h-3 w-3" />
                   Recording Split Requests
                 </h4>
                 <div className="space-y-2">
