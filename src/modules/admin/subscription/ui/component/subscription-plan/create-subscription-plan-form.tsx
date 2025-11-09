@@ -1,3 +1,5 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
@@ -138,12 +140,33 @@ export default function CreateSubscriptionPlanForm({
       }
 
       await createSubscriptionPlanMutation.mutateAsync(transformedData);
-      form.reset();
+      handleReset();
       onOpenChange(false);
       onSuccess?.(); // Call onSuccess callback if provided
     } catch (error) {
       console.error("Failed to create subscription plan:", error);
     }
+  };
+
+  const handleReset = () => {
+    form.reset({
+      name: "",
+      subscriptionCode: preselectedSubscriptionCode || "",
+      images: [],
+      metadata: [],
+      prices: [
+        {
+          interval: PeriodTime.Month,
+          intervalCount: 1,
+          lookupKey: "",
+        },
+      ],
+    });
+  };
+
+  const handleCancel = () => {
+    onOpenChange(false);
+    handleReset();
   };
 
   return (
@@ -402,7 +425,7 @@ export default function CreateSubscriptionPlanForm({
             </Card>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button type="submit" disabled={createSubscriptionPlanMutation.isPending}>

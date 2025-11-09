@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -13,6 +14,7 @@ import { PlanPricingInfo } from "../component/subscription-plan/plan-pricing-inf
 import { PlanImages } from "../component/subscription-plan/plan-images";
 import { PlanMetadata } from "../component/subscription-plan/plan-metadata";
 import { PlanQuickStats } from "../component/subscription-plan/plan-quick-stats";
+import { default as EditSubscriptionPlanForm } from "../component/subscription-plan/edit-subscription-plan-form";
 
 interface SubscriptionPlanDetailViewProps {
   subscriptionId: string;
@@ -20,14 +22,16 @@ interface SubscriptionPlanDetailViewProps {
 }
 
 export default function SubscriptionPlanDetailView({ subscriptionId, planId }: SubscriptionPlanDetailViewProps) {
-  const { data, isLoading, error } = useQuery(subscriptionPlanDetailQueryOptions(planId));
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const { data, isLoading, error, refetch } = useQuery(subscriptionPlanDetailQueryOptions(planId));
 
   const handleEdit = () => {
-    console.log("Edit plan");
+    setIsEditFormOpen(true);
   };
 
-  const handleDelete = () => {
-    console.log("Delete plan");
+  const handleEditSuccess = () => {
+    refetch();
+    setIsEditFormOpen(false);
   };
 
   if (isLoading) {
@@ -66,7 +70,7 @@ export default function SubscriptionPlanDetailView({ subscriptionId, planId }: S
   return (
     <SubscriptionLayout title={plan.stripeProductName} description="Subscription Plan Details" showCard={false}>
       <div className="space-y-6">
-        <PlanDetailHeader subscriptionId={subscriptionId} onEdit={handleEdit} onDelete={handleDelete} />
+        <PlanDetailHeader subscriptionId={subscriptionId} onEdit={handleEdit} />
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Main Information */}
@@ -92,6 +96,14 @@ export default function SubscriptionPlanDetailView({ subscriptionId, planId }: S
             />
           </div>
         </div>
+
+        {/* Edit Subscription Plan Form */}
+        <EditSubscriptionPlanForm
+          open={isEditFormOpen}
+          onOpenChange={setIsEditFormOpen}
+          onSuccess={handleEditSuccess}
+          subscriptionPlan={plan}
+        />
       </div>
     </SubscriptionLayout>
   );

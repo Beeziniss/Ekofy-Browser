@@ -1,3 +1,5 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateSubscriptionMutation } from "@/gql/client-mutation-options/subscription-mutation-options";
-import { SubscriptionStatus, SubscriptionTier } from "@/gql/graphql";
+import { SubscriptionTier } from "@/gql/graphql";
 import type { CreateSubscriptionInput } from "@/types";
 import { useState } from "react";
 
@@ -44,10 +46,8 @@ const createSubscriptionSchema = z.object({
       /^[a-z][a-z0-9_]*$/,
       "Code must be lowercase, start with a letter, and contain only letters, numbers, and underscores",
     ),
-  version: z.number().min(1, "Version must be at least 1"),
   tier: z.nativeEnum(SubscriptionTier),
   price: z.number().min(0, "Price must be at least 0"),
-  status: z.nativeEnum(SubscriptionStatus),
 });
 
 type CreateSubscriptionFormData = z.infer<typeof createSubscriptionSchema>;
@@ -68,23 +68,30 @@ export function CreateSubscriptionForm({ open, onOpenChange, onSuccess }: Create
       name: "",
       description: "",
       code: "",
-      version: 1,
       tier: SubscriptionTier.Free,
       price: 0,
-      status: SubscriptionStatus.Active,
     },
   });
 
   const onSubmit = async (data: CreateSubscriptionFormData) => {
     try {
       await createSubscriptionMutation.mutateAsync(data as CreateSubscriptionInput);
-      form.reset();
-      setFormattedPrice("0"); // Reset formatted price as well
+      handleReset();
       onOpenChange(false);
       onSuccess?.();
     } catch (error) {
       console.error("Failed to create subscription:", error);
     }
+  };
+
+  const handleReset = () => {
+    form.reset();
+    setFormattedPrice("0");
+  };
+
+  const handleCancel = () => {
+    onOpenChange(false);
+    handleReset();
   };
 
   const isLoading = createSubscriptionMutation.isPending;
@@ -98,35 +105,34 @@ export function CreateSubscriptionForm({ open, onOpenChange, onSuccess }: Create
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Premium Plan" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Code</FormLabel>
-                    <FormControl>
-                      <Input placeholder="premium_plan" {...field} />
-                    </FormControl>
-                    <FormDescription>Unique identifier for the subscription</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Premium Plan" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Code</FormLabel>
+                  <FormControl>
+                    <Input placeholder="premium_plan" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription>Unique identifier for the subscription</FormDescription>
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -142,7 +148,7 @@ export function CreateSubscriptionForm({ open, onOpenChange, onSuccess }: Create
               )}
             />
 
-            <div className="grid grid-cols-3 gap-4">
+            {/* <div className="grid grid-cols-3 gap-4"> */}
               <FormField
                 control={form.control}
                 name="tier"
@@ -165,42 +171,6 @@ export function CreateSubscriptionForm({ open, onOpenChange, onSuccess }: Create
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={SubscriptionStatus.Active}>Active</SelectItem>
-                        <SelectItem value={SubscriptionStatus.Inactive}>Inactive</SelectItem>
-                        <SelectItem value={SubscriptionStatus.Deprecated}>Deprecated</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="version"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Version</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
             <FormField
               control={form.control}
@@ -233,11 +203,7 @@ export function CreateSubscriptionForm({ open, onOpenChange, onSuccess }: Create
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => {
-                  onOpenChange(false);
-                  form.reset();
-                  setFormattedPrice("0");
-                }}
+                onClick={handleCancel}
                 disabled={isLoading}
               >
                 Cancel

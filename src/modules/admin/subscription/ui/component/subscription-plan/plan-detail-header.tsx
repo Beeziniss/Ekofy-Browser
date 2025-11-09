@@ -1,14 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft, Edit } from "lucide-react";
 
 interface PlanDetailHeaderProps {
   subscriptionId: string;
   onEdit?: () => void;
-  onDelete?: () => void;
 }
 
-export function PlanDetailHeader({ subscriptionId, onEdit, onDelete }: PlanDetailHeaderProps) {
+export function PlanDetailHeader({ subscriptionId, onEdit }: PlanDetailHeaderProps) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-4">
@@ -22,11 +23,7 @@ export function PlanDetailHeader({ subscriptionId, onEdit, onDelete }: PlanDetai
       <div className="flex items-center space-x-2">
         <Button variant="outline" size="sm" onClick={onEdit}>
           <Edit className="mr-2 h-4 w-4" />
-          Edit
-        </Button>
-        <Button variant="destructive" size="sm" onClick={onDelete}>
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete
+          Edit Subscription Plan
         </Button>
       </div>
     </div>
