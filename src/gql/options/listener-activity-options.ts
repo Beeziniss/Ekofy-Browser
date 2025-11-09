@@ -5,6 +5,7 @@ import {
   PaymentTransactionFilterInput,
   PaymentTransactionSortInput,
   SortEnumType,
+  TransactionStatus,
 } from "@/gql/graphql";
 import {
   GetListenerInvoicesQuery,
@@ -28,6 +29,23 @@ export function listenerTransactionsOptions(params: {
 
   return {
     queryKey: ["listener-transactions", userId, page, pageSize],
+    queryFn: async () => execute(GetListenerTransactionsQuery, { where, order, skip, take }),
+  };
+}
+
+// New function to check for open transactions
+export function listenerOpenTransactionsOptions(params: { userId: string }) {
+  const { userId } = params;
+  const where: PaymentTransactionFilterInput = {
+    userId: { eq: userId },
+    status: { eq: TransactionStatus.Open },
+  };
+  const order: PaymentTransactionSortInput[] = [{ createdAt: SortEnumType.Desc }];
+  const take = 1; // We only need to know if there's at least one
+  const skip = 0;
+
+  return {
+    queryKey: ["listener-open-transactions", userId],
     queryFn: async () => execute(GetListenerTransactionsQuery, { where, order, skip, take }),
   };
 }

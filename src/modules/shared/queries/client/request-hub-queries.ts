@@ -1,7 +1,7 @@
 import { graphql } from "@/gql";
 
 export const REQUEST_HUB_QUERY = graphql(`
-  query Requests($skip: Int, $take: Int, $where: RequestHubFilterInput) {
+  query Requests($skip: Int, $take: Int, $where: RequestFilterInput) {
     requests(skip: $skip, take: $take, where: $where) {
       pageInfo {
         hasNextPage

@@ -1,24 +1,25 @@
 "use client";
 
+import { Skeleton } from "@/components/ui/skeleton";
+import { PeriodTime, SubscriptionPlan } from "@/gql/graphql";
 import { SubscriptionPlanCard } from "../components/subscription-plan-card";
-import type { SubscriptionPlan } from "@/types";
 
 interface SubscriptionPlansGridSectionProps {
-  plans: SubscriptionPlan[];
   isLoading?: boolean;
-  onSelectPlan: (plan: SubscriptionPlan) => void;
+  proFeatures?: string[];
   couponDiscount?: number;
+  plans: SubscriptionPlan[];
   premiumFeatures?: string[];
-  proFeatures?: string[]; // Add support for Pro features
+  onSelectPlan: (subscriptionCode: string, period: PeriodTime) => void;
 }
 
 export function SubscriptionPlansGridSection({
   plans,
   isLoading,
   onSelectPlan,
+  proFeatures = [],
   couponDiscount = 0,
   premiumFeatures = [],
-  proFeatures = [], // Add proFeatures parameter
 }: SubscriptionPlansGridSectionProps) {
   if (isLoading) {
     return (
@@ -29,7 +30,7 @@ export function SubscriptionPlansGridSection({
         </div>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-96 animate-pulse rounded-lg bg-gray-200" />
+            <Skeleton key={i} className="h-96 rounded-md" />
           ))}
         </div>
       </section>

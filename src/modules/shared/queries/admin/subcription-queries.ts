@@ -1,8 +1,8 @@
 import { graphql } from "@/gql";
 
 export const SUBSCRIPTION_QUERIES = graphql(`
-  query Subscriptions($skip: Int, $take: Int, $where: SubscriptionFilterInput!) {
-    subscriptions(skip: $skip, take: $take, where: $where) {
+  query Subscriptions($where: SubscriptionFilterInput!) {
+    subscriptions(where: $where, order: { version: DESC }) {
       pageInfo {
         hasNextPage
         hasPreviousPage

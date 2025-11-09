@@ -15,11 +15,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const initializeAuth = () => {
       setLoading(true);
-      console.log("Set to true");
-
-      setTimeout(() => {
-        console.log("Timeout completed");
-      }, 2000);
 
       try {
         // Check if user is authenticated based on localStorage

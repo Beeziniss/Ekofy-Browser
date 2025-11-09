@@ -4,7 +4,7 @@ import {
   CREATE_REQUEST_MUTATION,
   UPDATE_REQUEST_MUTATION,
   BLOCK_REQUEST_MUTATION,
-} from "@/modules/shared/mutations/client/request-hub-mutation";
+} from "@/modules/shared/mutations/client/request-hub-mutations";
 import { RequestCreatingRequestInput, RequestUpdatingRequestInput, RequestStatus } from "@/gql/graphql";
 
 export const useCreateRequest = () => {

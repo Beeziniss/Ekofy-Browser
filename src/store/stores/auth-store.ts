@@ -39,8 +39,6 @@ const syncAuthWithCookies = (state: Partial<AuthState>) => {
           },
         };
 
-        console.log("Syncing auth data to cookies:", authData);
-
         // Set cookie with auth data for middleware access
         const cookieValue = JSON.stringify(authData);
         document.cookie = `auth-storage=${encodeURIComponent(cookieValue)}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=lax`;

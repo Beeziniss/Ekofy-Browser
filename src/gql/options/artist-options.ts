@@ -6,9 +6,12 @@ import {
   PendingArtistPackagesQuery,
 } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { ArtistPackageFilterInput, PaginatedDataOfPendingArtistPackageResponseFilterInput } from "@/gql/graphql";
-import { CategoriesQuery } from "@/modules/shared/queries/artist/category-queries";
-import { TrackListWithFiltersQuery } from "@/modules/artist/studio/ui/sections/tracks/track-table-section";
-import { GetArtistProfileQuery, TrackUploadArtistListQuery } from "@/modules/shared/queries/artist/user-queries";
+import {
+  CategoriesQuery,
+  GetArtistProfileQuery,
+  TrackListWithFiltersQuery,
+  TrackUploadArtistListQuery,
+} from "@/modules/shared/queries/artist";
 
 // TRACK LIST OPTIONS
 export const trackListOptions = queryOptions({
