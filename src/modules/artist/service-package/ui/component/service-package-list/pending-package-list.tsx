@@ -5,9 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
-
 import { PendingArtistPackageResponse, Metadata } from "@/gql/graphql";
 
 interface Artist {
@@ -75,7 +74,10 @@ const PendingPackageList = ({ packages, artists }: PendingPackageListProps) => {
               </div>
             </div>
             <CardDescription className="text-green-400">{formatCurrency(pkg.amount, pkg.currency)}</CardDescription>
-            <CardDescription className="text-gray-400">Delivery time: {pkg.estimateDeliveryDays} days</CardDescription>
+            <CardDescription className="text-gray-400 flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              Delivery: {pkg.estimateDeliveryDays} days
+            </CardDescription>
             <CardDescription className="text-gray-400">
               Requested: {new Date(pkg.requestedAt).toLocaleDateString()}
             </CardDescription>

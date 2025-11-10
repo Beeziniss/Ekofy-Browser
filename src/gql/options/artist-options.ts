@@ -4,7 +4,7 @@ import {
   ServicePackageServiceViewQuery,
   ServicePackageDetailQuery,
   PendingArtistPackagesQuery,
-} from "@/modules/artist/service-package/ui/view/service-package-service-view";
+} from "@/modules/shared/queries/artist/artist-packages-queries";
 import { ArtistPackageFilterInput, PaginatedDataOfPendingArtistPackageResponseFilterInput } from "@/gql/graphql";
 import {
   CategoriesQuery,
@@ -57,7 +57,7 @@ export const artistPackagesOptions = (
   queryOptions({
     queryKey: ["artist-packages", artistId, page, pageSize, searchTerm],
     queryFn: () => {
-      const where: ArtistPackageFilterInput = { artistId: { eq: artistId } };
+      const where: ArtistPackageFilterInput = { artistId: { contains: artistId } };
 
       // Add packageName filter if search term is provided
       if (searchTerm.trim()) {

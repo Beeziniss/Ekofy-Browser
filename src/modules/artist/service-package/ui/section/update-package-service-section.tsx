@@ -1,12 +1,10 @@
 "use client";
 
 import React from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import UpdatePackageService from "../component/update-package-service/update-package-service";
 import { packageDetailOptions } from "@/gql/options/artist-options";
-import { execute } from "@/gql/execute";
-import { updateArtistPackageMutation } from "@/modules/artist/service-package/ui/view/service-package-service-view";
+import { usePackageOperations } from "../../hooks/use-package-operations";
 
 interface UpdatePackageFormData {
   id: string;
@@ -27,37 +25,24 @@ const UpdatePackageServiceSection = ({
   onSuccess,
   onDelete,
 }: UpdatePackageServiceSectionProps) => {
-  const queryClient = useQueryClient();
+  const { updatePackage, isUpdating } = usePackageOperations();
 
   // Query for package detail using options
   const { data: packageData, isLoading } = useQuery(packageDetailOptions(packageId));
 
-  // Note: Update mutation would be implemented here when available in GraphQL schema
-  const updatePackageMutation = useMutation({
-    mutationFn: (data: UpdatePackageFormData) =>
-      execute(updateArtistPackageMutation, {
-        updateRequest: {
-          id: data.id,
-          packageName: data.packageName,
-          description: data.description,
-        },
-      }),
-    onSuccess: () => {
-      toast.success("Package updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["package-detail", packageId] });
-      queryClient.invalidateQueries({ queryKey: ["artist-packages"] });
-      queryClient.invalidateQueries({ queryKey: ["pending-packages"] });
-      queryClient.invalidateQueries({ queryKey: ["moderator-pending-packages"] });
-      onSuccess();
-    },
-    onError: (error) => {
-      toast.error("Failed to update package");
-      console.error("Update package error:", error);
-    },
-  });
-
   const handleSubmit = (data: UpdatePackageFormData) => {
-    updatePackageMutation.mutate(data);
+    updatePackage(
+      {
+        id: data.id,
+        packageName: data.packageName,
+        description: data.description,
+      },
+      {
+        onSuccess: () => {
+          onSuccess();
+        },
+      }
+    );
   };
 
   const handleDelete = () => {
@@ -93,7 +78,7 @@ const UpdatePackageServiceSection = ({
       onSubmit={handleSubmit}
       onCancel={onCancel}
       onDelete={handleDelete}
-      isLoading={updatePackageMutation.isPending}
+      isLoading={isUpdating}
     />
   );
 };

@@ -1,3 +1,5 @@
+"use client";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,23 +12,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye} from "lucide-react";
 import { formatNumber } from "@/utils/format-number";
 import type { Subscription } from "@/types";
 
 interface SubscriptionTableProps {
   subscriptions: Subscription[];
   onView?: (subscription: Subscription) => void;
-  onEdit?: (subscription: Subscription) => void;
-  onDelete?: (subscription: Subscription) => void;
   isLoading?: boolean;
 }
 
 export function SubscriptionTable({
   subscriptions,
   onView,
-  onEdit,
-  onDelete,
   isLoading = false,
 }: SubscriptionTableProps) {
   const getStatusBadgeVariant = (status: string) => {
@@ -136,21 +134,6 @@ export function SubscriptionTable({
                         <DropdownMenuItem onClick={() => onView(subscription)}>
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
-                        </DropdownMenuItem>
-                      )}
-                      {onEdit && (
-                        <DropdownMenuItem onClick={() => onEdit(subscription)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                      )}
-                      {onDelete && (
-                        <DropdownMenuItem
-                          onClick={() => onDelete(subscription)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
                         </DropdownMenuItem>
                       )}
                     </DropdownMenuContent>

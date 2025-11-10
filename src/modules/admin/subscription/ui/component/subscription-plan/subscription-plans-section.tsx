@@ -1,6 +1,8 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { SubscriptionActions } from "../subscription/subscription-actions";
-import { SubscriptionPlanTable } from "../subscription/subscription-plan-table";
+import { SubscriptionPlanTable } from "./subscription-plan-table";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import type { SubscriptionPlan } from "@/types";
 
@@ -26,8 +28,6 @@ interface SubscriptionPlansSectionProps {
   onSearch: (searchTerm: string) => void;
   onPageChange: (page: number) => void;
   onViewPlan: (plan: SubscriptionPlan) => void;
-  onEditPlan: (plan: SubscriptionPlan) => void;
-  onDeletePlan: (plan: SubscriptionPlan) => void;
 }
 
 export function SubscriptionPlansSection({
@@ -43,13 +43,13 @@ export function SubscriptionPlansSection({
   onSearch,
   onPageChange,
   onViewPlan,
-  onEditPlan,
-  onDeletePlan,
 }: SubscriptionPlansSectionProps) {
   // Check if subscription can create plans
   const canCreateSubscriptionPlans = () => {
     if (!subscription) return false;
-    return (subscription.tier === "PREMIUM" || subscription.tier === "PRO") && subscription.status === "ACTIVE";
+    // Hide create button if there are already plans
+    if (plans.length > 0) return false;
+    return subscription.tier === "PREMIUM" || subscription.tier === "PRO";
   };
 
   // Check if subscription plans section should be shown
@@ -80,13 +80,14 @@ export function SubscriptionPlansSection({
       />
 
       {/* Info message when cannot create plans */}
-      {!canCreateSubscriptionPlans() && subscription && (
-        <Card className="border-amber-200 bg-amber-50">
+      {!canCreateSubscriptionPlans() && subscription && subscription.tier !== "FREE" && (
+        <Card className="border-main-dark-bg-1 bg-main-card-bg">
           <CardContent className="p-4">
-            <p className="text-sm text-amber-800">
-              {(subscription.tier !== "PREMIUM" && subscription.tier !== "PRO") || subscription.status !== "ACTIVE"
-                ? "Only Premium and Pro subscriptions can create subscription plans."
-                : "Only Active subscriptions can create subscription plans."}
+            <p className="text-sm text-main-white">
+              {plans.length > 0 
+                ? "This subscription already has plans. Only one plan per subscription is allowed."
+                : "Only Premium and Pro subscriptions can create subscription plans."
+              }
             </p>
           </CardContent>
         </Card>
@@ -95,8 +96,6 @@ export function SubscriptionPlansSection({
       <SubscriptionPlanTable
         subscriptionPlans={plans}
         onView={onViewPlan}
-        onEdit={onEditPlan}
-        onDelete={onDeletePlan}
         isLoading={isLoadingPlans}
         showSubscriptionInfo={false}
         subscriptionId={subscriptionId}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "use-debounce";
 import { myRequestsOptions } from "@/gql/options/client-options";
 import {
   useCreateRequest,
@@ -10,7 +11,7 @@ import {
 } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { RequestHubLayout } from "../layout";
 import { CreateRequestSection, ViewRequestSection, EditRequestSection } from "../section";
-import { Pagination } from "../component";
+import { Pagination, StripeAccountRequiredModal } from "../component";
 import { CreateRequestData, UpdateRequestData } from "@/types/request-hub";
 import { RequestsQuery, RequestStatus as GqlRequestStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
@@ -19,6 +20,7 @@ import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AuthDialogProvider } from "../context/auth-dialog-context";
+import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 
 type RequestHubMode = "view" | "create" | "edit" | "detail";
 
@@ -28,16 +30,21 @@ export function MyRequestsView() {
   const [mode, setMode] = useState<RequestHubMode>("view");
   const [editingRequest, setEditingRequest] = useState<RequestItem | null>(null);
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearchValue] = useDebounce(searchValue, 300);
   const [statusFilter, setStatusFilter] = useState<GqlRequestStatus | "ALL">("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
+  const [showStripeModal, setShowStripeModal] = useState(false);
   const router = useRouter();
   const { user } = useAuthStore();
+
+  // Stripe account status
+  const { isArtist, hasStripeAccount } = useStripeAccountStatus();
 
   // Fetch requests with pagination
   const skip = (currentPage - 1) * pageSize;
   const where = {
-    ...(searchValue && { title: { contains: searchValue } }),
+    ...(debouncedSearchValue && { title: { contains: debouncedSearchValue } }),
     ...(statusFilter !== "ALL" && { status: { eq: statusFilter } }),
     // Filter by current user's requests only
     ...(user?.userId && { requestUserId: { eq: user.userId } }),
@@ -87,8 +94,19 @@ export function MyRequestsView() {
   };
 
   const handleApply = (id: string) => {
-    console.log("Apply to request:", id);
-    toast.info("Application feature coming soon!");
+    // Check if user is artist and has stripe account
+    if (isArtist && !hasStripeAccount) {
+      setShowStripeModal(true);
+      return;
+    }
+
+    // Only allow artists to apply
+    if (isArtist) {
+      console.log("Apply to request:", id);
+      toast.info("Application feature coming soon!");
+    } else {
+      toast.info("Only artists can apply to requests");
+    }
   };
 
   const handleSave = (id: string) => {
@@ -257,21 +275,30 @@ export function MyRequestsView() {
                 onSave={handleSave}
               />
 
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  isLoading={isLoading}
-                  totalItems={totalItems}
-                  itemsPerPage={pageSize}
-                />
-              )}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                isLoading={isLoading}
+                totalItems={totalItems}
+                itemsPerPage={pageSize}
+              />
             </RequestHubLayout>
           </AuthDialogProvider>
         );
     }
   };
 
-  return <>{renderContent()}</>;
+  return (
+    <>
+      {renderContent()}
+      
+      {/* Stripe Account Required Modal */}
+      <StripeAccountRequiredModal
+        open={showStripeModal}
+        onOpenChange={setShowStripeModal}
+        onCancel={() => setShowStripeModal(false)}
+      />
+    </>
+  );
 }

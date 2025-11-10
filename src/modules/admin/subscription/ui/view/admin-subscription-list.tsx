@@ -1,3 +1,5 @@
+"use client";
+
 import { SubscriptionListSection } from "../section/subscription-list-section";
 import { SubscriptionLayout } from "../layout/subscription-layout";
 import type { SubscriptionsResponse } from "@/types";

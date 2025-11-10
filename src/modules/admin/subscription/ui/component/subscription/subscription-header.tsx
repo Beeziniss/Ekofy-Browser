@@ -1,5 +1,7 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Edit } from "lucide-react";
+import { ArrowLeft, Edit, CheckCircle } from "lucide-react";
 
 interface SubscriptionHeaderProps {
   subscription: {
@@ -11,9 +13,14 @@ interface SubscriptionHeaderProps {
     status: string;
   };
   onBack?: () => void;
+  onActivate?: () => void;
+  hasPlans?: boolean;
+  isActivating?: boolean;
 }
 
-export function SubscriptionHeader({ onBack }: SubscriptionHeaderProps) {
+export function SubscriptionHeader({ subscription, onBack, onActivate, hasPlans, isActivating }: SubscriptionHeaderProps) {
+  const canActivate = hasPlans && subscription.status !== "ACTIVE";
+
   return (
     <div className="flex items-center justify-between gap-4">
       {onBack && (
@@ -22,10 +29,22 @@ export function SubscriptionHeader({ onBack }: SubscriptionHeaderProps) {
           Back
         </Button>
       )}
-      <Button variant="outline">
-        <Edit className="mr-2 h-4 w-4" />
-        Edit Subscription
-      </Button>
+      <div className="flex items-center gap-2">
+        {canActivate && onActivate && (
+          <Button 
+            variant="default" 
+            onClick={onActivate}
+            disabled={isActivating}
+          >
+            <CheckCircle className="mr-2 h-4 w-4" />
+            {isActivating ? "Activating..." : "Activate"}
+          </Button>
+        )}
+        <Button variant="outline">
+          <Edit className="mr-2 h-4 w-4" />
+          Edit Subscription
+        </Button>
+      </div>
     </div>
   );
 }

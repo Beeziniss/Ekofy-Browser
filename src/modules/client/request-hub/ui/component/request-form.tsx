@@ -69,15 +69,15 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
   const [budgetMin, setBudgetMin] = useState(
     initialData?.budget
       ? typeof initialData.budget === "object"
-        ? initialData.budget.min.toString()
-        : initialData.budget.toString()
+        ? formatCurrency(initialData.budget.min.toString())
+        : formatCurrency(initialData.budget.toString())
       : "",
   );
   const [budgetMax, setBudgetMax] = useState(
     initialData?.budget
       ? typeof initialData.budget === "object"
-        ? initialData.budget.max.toString()
-        : initialData.budget.toString()
+        ? formatCurrency(initialData.budget.max.toString())
+        : formatCurrency(initialData.budget.toString())
       : "",
   );
 

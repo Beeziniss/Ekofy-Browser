@@ -1,11 +1,13 @@
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { subscriptionDetailQueryOptions, subscriptionPlansQueryOptions } from "@/gql/options/subscription-options";
-import { SubscriptionTier, SubscriptionStatus } from "@/gql/graphql";
+import { useActivateSubscriptionMutation } from "@/gql/client-mutation-options/subscription-mutation-options";
+import { SubscriptionTier } from "@/gql/graphql";
 import { SubscriptionHeader } from "../component/subscription/subscription-header";
 import { SubscriptionInfoCard } from "../component/subscription/subscription-info-card";
 import { SubscriptionPlansSection } from "../component/subscription-plan/subscription-plans-section";
 import { default as CreateSubscriptionPlanForm } from "../component/subscription-plan/create-subscription-plan-form";
+import { default as EditSubscriptionPlanForm } from "../component/subscription-plan/edit-subscription-plan-form";
 import type { SubscriptionPlan } from "@/types";
 
 interface SubscriptionDetailSectionProps {
@@ -17,11 +19,15 @@ export function SubscriptionDetailSection({ subscriptionId, onBack }: Subscripti
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreatePlanFormOpen, setIsCreatePlanFormOpen] = useState(false);
+  const [editPlan, setEditPlan] = useState<SubscriptionPlan | null>(null);
+  const [isEditPlanFormOpen, setIsEditPlanFormOpen] = useState(false);
 
   const pageSize = 10;
   const skip = (currentPage - 1) * pageSize;
 
-  const { data: subscriptionData, isLoading: isLoadingSubscription } = useQuery(
+  const activateSubscriptionMutation = useActivateSubscriptionMutation();
+
+  const { data: subscriptionData, isLoading: isLoadingSubscription, refetch: refetchSubscription } = useQuery(
     subscriptionDetailQueryOptions(subscriptionId),
   );
 
@@ -35,6 +41,7 @@ export function SubscriptionDetailSection({ subscriptionId, onBack }: Subscripti
   const plans = plansData?.subscriptionPlans.items || [];
   const totalCount = plansData?.subscriptionPlans.totalCount || 0;
   const totalPages = Math.ceil(totalCount / pageSize);
+  const hasPlans = plans.length > 0;
 
   const handleSearch = useCallback((newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);
@@ -49,16 +56,25 @@ export function SubscriptionDetailSection({ subscriptionId, onBack }: Subscripti
     console.log("View plan:", plan);
   };
 
-  const handleEditPlan = (plan: SubscriptionPlan) => {
-    console.log("Edit plan:", plan);
-  };
-
-  const handleDeletePlan = (plan: SubscriptionPlan) => {
-    console.log("Delete plan:", plan);
+  const handleEditPlanSuccess = () => {
+    refetchPlans();
+    setIsEditPlanFormOpen(false);
+    setEditPlan(null);
   };
 
   const handleCreatePlanSuccess = () => {
     refetchPlans();
+  };
+
+  const handleActivateSubscription = async () => {
+    if (!subscription?.id) return;
+    
+    try {
+      await activateSubscriptionMutation.mutateAsync(subscription.id);
+      refetchSubscription();
+    } catch (error) {
+      console.error("Failed to activate subscription:", error);
+    }
   };
 
   const getStatusBadgeVariant = (status: string) => {
@@ -103,7 +119,13 @@ export function SubscriptionDetailSection({ subscriptionId, onBack }: Subscripti
 
   return (
     <div className="space-y-6">
-      <SubscriptionHeader subscription={subscription} onBack={onBack} />
+      <SubscriptionHeader 
+        subscription={subscription} 
+        onBack={onBack} 
+        onActivate={handleActivateSubscription}
+        hasPlans={hasPlans}
+        isActivating={activateSubscriptionMutation.isPending}
+      />
 
       <SubscriptionInfoCard
         subscription={subscription}
@@ -124,20 +146,27 @@ export function SubscriptionDetailSection({ subscriptionId, onBack }: Subscripti
         onSearch={handleSearch}
         onPageChange={handlePageChange}
         onViewPlan={handleViewPlan}
-        onEditPlan={handleEditPlan}
-        onDeletePlan={handleDeletePlan}
       />
 
       {/* Show form for Premium and Pro subscriptions */}
-      {(subscription.tier === SubscriptionTier.Premium || subscription.tier === SubscriptionTier.Pro) &&
-        subscription.status === SubscriptionStatus.Active && (
+      {subscription.tier === SubscriptionTier.Premium || subscription.tier === SubscriptionTier.Pro ? (
           <CreateSubscriptionPlanForm
             open={isCreatePlanFormOpen}
             onOpenChange={setIsCreatePlanFormOpen}
             onSuccess={handleCreatePlanSuccess}
             preselectedSubscriptionCode={subscription?.code}
           />
-        )}
+      ) : null}
+
+      {/* Edit Subscription Plan Form */}
+      {editPlan && (
+        <EditSubscriptionPlanForm
+          open={isEditPlanFormOpen}
+          onOpenChange={setIsEditPlanFormOpen}
+          onSuccess={handleEditPlanSuccess}
+          subscriptionPlan={editPlan}
+        />
+      )}
     </div>
   );
 }

@@ -1,0 +1,1 @@
+export { StripeFailCard } from "./stripe-fail-card";
