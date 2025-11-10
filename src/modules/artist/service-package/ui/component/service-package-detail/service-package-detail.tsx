@@ -10,7 +10,7 @@ import { ArtistPackage, Metadata } from "@/gql/graphql";
 import { usePackageUtils } from "../../../hooks";
 
 interface ServicePackageDetailProps {
-  package: ArtistPackage;
+  package: Omit<ArtistPackage, "artist" | "review">;
   onBack: () => void;
 }
 

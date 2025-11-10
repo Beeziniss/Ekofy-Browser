@@ -23,7 +23,7 @@ const updatePackageSchema = z.object({
 type UpdatePackageFormData = z.infer<typeof updatePackageSchema>;
 
 interface UpdatePackageServiceProps {
-  package: ArtistPackage;
+  package: Omit<ArtistPackage, "artist" | "review">;
   onSubmit: (data: UpdatePackageFormData) => void;
   onCancel: () => void;
   onDelete: () => void;
@@ -62,7 +62,6 @@ const UpdatePackageService = ({
             </Button>
           </div>
         </CardHeader>
-
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
@@ -93,9 +92,7 @@ const UpdatePackageService = ({
                   </div>
                   <div>
                     <span className="text-gray-400">Amount:</span>
-                    <span className="ml-2 text-white">
-                      {formatCurrency(pkg.amount, pkg.currency)}
-                    </span>
+                    <span className="ml-2 text-white">{formatCurrency(pkg.amount, pkg.currency)}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">

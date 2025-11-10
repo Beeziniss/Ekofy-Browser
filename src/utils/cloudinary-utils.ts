@@ -194,7 +194,7 @@ export const uploadDocumentToCloudinary = async (
       "image/jpeg",
       "image/png",
       "image/jpg",
-      "image/webp"
+      "image/webp",
     ];
 
     if (!allowedTypes.includes(file.type)) {
@@ -331,11 +331,11 @@ export const validateDocumentFile = (file: File, maxSize: number = 20): boolean 
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "text/plain",
     "image/jpeg",
-    "image/png", 
+    "image/png",
     "image/jpg",
-    "image/webp"
+    "image/webp",
   ];
-  
+
   if (!supportedFormats.includes(file.type)) {
     toast.error("Only supports formats: PDF, DOC, DOCX, TXT, JPG, PNG, WEBP");
     return false;

@@ -121,6 +121,28 @@ export function CreateModeratorModal({ isOpen, onClose, onSubmit }: CreateModera
                 )}
               />
 
+              {/* Full Name */}
+              <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-300">
+                      Full Name <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Enter full name"
+                        className="border-gray-600 bg-gray-700 text-white placeholder-gray-400"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-400" />
+                  </FormItem>
+                )}
+              />
+
               {/* Password */}
               <FormField
                 control={form.control}

@@ -191,7 +191,6 @@ const ApprovalServicePackageSection = () => {
                 onReject={handleReject}
                 isLoading={isLoading}
               />
-
               {/* Pagination */}
               <CustomPagination
                 currentPage={currentPage}

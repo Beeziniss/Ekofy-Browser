@@ -119,7 +119,6 @@ export const useCloudinaryUpload = (): UseCloudinaryUploadState & UseCloudinaryU
         isUploading: false,
         uploadProgress: 0,
       }));
-
       return result;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Upload failed";

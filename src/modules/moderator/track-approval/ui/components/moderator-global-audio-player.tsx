@@ -54,7 +54,6 @@ const ModeratorGlobalAudioPlayer = () => {
         setError(null);
 
         const audio = audioRef.current;
-
         // Abort any current play request first
         try {
           audio.pause();
@@ -74,7 +73,6 @@ const ModeratorGlobalAudioPlayer = () => {
         // Set new source (direct file URL from GraphQL)
         audio.src = audioUrl;
         audio.load();
-
         // Wait for audio to be ready
         const handleCanPlayThrough = () => {
           if (loadingRef.current && audioRef.current) {
@@ -147,7 +145,6 @@ const ModeratorGlobalAudioPlayer = () => {
     if (!audioRef.current || loadingRef.current) return;
 
     const audio = audioRef.current;
-
     if (isPlaying) {
       // Only play if audio has a source and is ready
       if (audio.src && audio.readyState >= 2) {
@@ -194,7 +191,6 @@ const ModeratorGlobalAudioPlayer = () => {
             // Ignore pause errors
           }
         }
-
         lastTrackIdRef.current = currentTrack.id;
         loadTrack(currentTrack.id, moderatorAudioUrl);
       }
@@ -247,7 +243,6 @@ const ModeratorGlobalAudioPlayer = () => {
 
   const handleError = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
     const target = e.target as HTMLAudioElement;
-
     // Only log and set error if there's actually a track selected
     if (currentTrack?.id) {
       console.error("Audio element error for track:", currentTrack.id, {
@@ -278,7 +273,6 @@ const ModeratorGlobalAudioPlayer = () => {
         setError("Failed to play audio file");
       }
     }
-
     setLoading(false);
     loadingRef.current = false;
   };

@@ -5,7 +5,6 @@ import {
   ModeratorApprovalHistoryDetailQuery,
   ApprovalHistoriesListQuery,
 } from "@/modules/shared/queries/moderator/approval-histories-queries";
-import { PendingArtistPackagesQuery } from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
 import {
@@ -31,6 +30,7 @@ import {
   GetCategory,
 } from "@/modules/shared/queries/moderator/track-approval-queries";
 import { QUERY_USER_CREATED_BY } from "@/modules/shared/queries/moderator/track-approval-queries";
+import { PendingArtistPackagesQuery } from "@/modules/shared/queries/artist/artist-packages-queries";
 
 export const moderatorProfileOptions = (userId: string) =>
   queryOptions({

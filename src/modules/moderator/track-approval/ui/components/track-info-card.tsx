@@ -88,7 +88,8 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
             </div>
             <div className="text-muted-foreground">
               <div className="flex items-center gap-1">
-              Description: {track.track.description && <p className="text-muted-foreground">{track.track.description}</p>}
+                Description:{" "}
+                {track.track.description && <p className="text-muted-foreground">{track.track.description}</p>}
               </div>
             </div>
           </div>

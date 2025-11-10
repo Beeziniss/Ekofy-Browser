@@ -1,10 +1,7 @@
-"use client";
-
-import { use } from "react";
 import { moderatorArtistDetailsQueryOptions } from "@/gql/options/moderator-options";
-import { ArtistDetailsView } from "@/modules/moderator/artist-approval/ui/views";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import ArtistDetailsView from "@/modules/moderator/artist-approval/ui/views/artist-details-view";
 
 interface ArtistDetailsPageProps {
   params: Promise<{
@@ -12,8 +9,8 @@ interface ArtistDetailsPageProps {
   }>;
 }
 
-const ArtistDetailsPage = ({ params }: ArtistDetailsPageProps) => {
-  const resolvedParams = use(params);
+const ArtistDetailsPage = async ({ params }: ArtistDetailsPageProps) => {
+  const resolvedParams = await params;
   const queryClient = getQueryClient();
 
   // Prefetch artist details

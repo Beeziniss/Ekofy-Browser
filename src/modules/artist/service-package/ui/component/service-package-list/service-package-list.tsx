@@ -11,7 +11,7 @@ import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { usePackageUtils } from "../../../hooks";
 
 interface ServicePackageListProps {
-  packages: ArtistPackage[];
+  packages: Omit<ArtistPackage, "artist" | "review">[];
   onEdit: (packageId: string) => void;
   onDelete: (packageId: string) => void;
   onViewDetail: (packageId: string) => void;
@@ -20,9 +20,7 @@ interface ServicePackageListProps {
 
 const ServicePackageList = ({ packages, onEdit, onDelete, onViewDetail, onStatusChange }: ServicePackageListProps) => {
   const [expandedItems, setExpandedItems] = React.useState<Set<string>>(new Set());
-  const { 
-    formatRevisionText,
-  } = usePackageUtils();
+  const { formatRevisionText } = usePackageUtils();
 
   const toggleExpanded = (packageId: string) => {
     const newExpanded = new Set(expandedItems);
@@ -134,7 +132,7 @@ const ServicePackageList = ({ packages, onEdit, onDelete, onViewDetail, onStatus
               </div>
             </div>
             <CardDescription className="text-green-400">{formatCurrency(pkg.amount, pkg.currency)}</CardDescription>
-            <CardDescription className="text-gray-400 flex items-center gap-4">
+            <CardDescription className="flex items-center gap-4 text-gray-400">
               <span className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 {pkg.estimateDeliveryDays} days

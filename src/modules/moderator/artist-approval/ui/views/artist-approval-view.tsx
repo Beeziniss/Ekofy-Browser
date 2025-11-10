@@ -1,5 +1,3 @@
-"use client";
-
 import { ArtistApprovalLayout } from "../layout";
 import { ArtistApprovalSection } from "../section";
 

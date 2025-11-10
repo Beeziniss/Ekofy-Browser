@@ -1,5 +1,3 @@
-"use client";
-
 import { ArtistDetailsLayout } from "../layout";
 import { ArtistDetailsSection } from "../section";
 
@@ -7,7 +5,7 @@ interface ArtistDetailsViewProps {
   userId: string;
 }
 
-export function ArtistDetailsView({ userId }: ArtistDetailsViewProps) {
+const ArtistDetailsView = ({ userId }: ArtistDetailsViewProps) => {
   return (
     <ArtistDetailsLayout
       title="Artist information"
@@ -16,4 +14,6 @@ export function ArtistDetailsView({ userId }: ArtistDetailsViewProps) {
       <ArtistDetailsSection userId={userId} />
     </ArtistDetailsLayout>
   );
-}
+};
+
+export default ArtistDetailsView;

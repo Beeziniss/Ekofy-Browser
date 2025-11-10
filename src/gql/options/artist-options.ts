@@ -106,7 +106,6 @@ export const pendingPackagesOptions = (
           where.items.all.packageName = { contains: searchTerm };
         }
       }
-
       return execute(PendingArtistPackagesQuery, {
         pageNumber: page,
         pageSize: pageSize,
