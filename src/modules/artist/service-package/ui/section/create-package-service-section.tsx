@@ -10,7 +10,7 @@ interface CreatePackageFormData {
   amount: number;
   estimateDeliveryDays: number;
   description: string;
-  maxRevisions: number;
+  maxRevision: number;
   serviceDetails: Array<{
     key: string;
     value: string;
@@ -43,7 +43,7 @@ const CreatePackageServiceSection: React.FC<CreatePackageServiceSectionProps> = 
         estimateDeliveryDays: data.estimateDeliveryDays,
         description: data.description,
         serviceDetails: data.serviceDetails,
-        maxRevisions: data.maxRevisions,
+        maxRevision: data.maxRevision,
       },
       {
         onSuccess: () => {

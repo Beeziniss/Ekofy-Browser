@@ -57,14 +57,14 @@ export const usePackageValidation = () => {
     }
 
     // Max revisions validation
-    if (typeof data.maxRevisions !== "number" || data.maxRevisions < 0) {
+    if (typeof data.maxRevision !== "number" || data.maxRevision < 0) {
       validationErrors.push({
-        field: "maxRevisions",
+        field: "maxRevision",
         message: "Max revisions must be at least 0"
       });
-    } else if (data.maxRevisions > 100) {
+    } else if (data.maxRevision > 100) {
       validationErrors.push({
-        field: "maxRevisions",
+        field: "maxRevision",
         message: "Max revisions cannot exceed 100"
       });
     }

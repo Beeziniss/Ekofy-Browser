@@ -7,7 +7,7 @@ import {
   updateArtistPackageMutation,
   deleteArtistPackageMutation,
   changeArtistPackageStatusMutation,
-} from "@/modules/artist/service-package/ui/view/service-package-service-view";
+} from "@/modules/shared/mutations/artist/artist-packages-mutation";
 import { ArtistPackageStatus } from "@/gql/graphql";
 
 // Approve Artist Package
@@ -58,7 +58,7 @@ export const useCreateArtistPackage = () => {
       estimateDeliveryDays: number;
       description: string;
       serviceDetails: Array<{ key: string; value: string }>;
-      maxRevisions: number;
+      maxRevision: number;
     }) => {
       const result = await execute(createArtistPackageMutation, { createRequest });
       return result;

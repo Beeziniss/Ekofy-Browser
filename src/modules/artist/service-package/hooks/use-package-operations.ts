@@ -15,7 +15,7 @@ export interface CreatePackageData {
   estimateDeliveryDays: number;
   description: string;
   serviceDetails: Array<{ key: string; value: string }>;
-  maxRevisions: number;
+  maxRevision: number;
 }
 
 export interface UpdatePackageData {
