@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { artistTransactionsOptions } from "@/gql/options/artist-activity-options";
 import { listenerTransactionsOptions } from "@/gql/options/listener-activity-options";
-import { paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
+import { methodBadge, paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type Source = "listener" | "artist";
@@ -17,8 +17,6 @@ interface SharedPaymentTransactionsTableProps {
   source: Source;
   linkPrefix: string; // e.g. "/profile/payment-history" or "/artist/studio/transactions/payment-history"
 }
-
-const statusBadge = paymentStatusBadge;
 
 export default function SharedPaymentTransactionsTable({
   pageSize = 10,
@@ -46,7 +44,7 @@ export default function SharedPaymentTransactionsTable({
     enabled: source === "artist",
   });
 
-  const items = listenerData?.transactions?.items || artistData?.transactions?.items || [];
+  const transactionData = listenerData?.transactions?.items || artistData?.transactions?.items || [];
   const totalCount = listenerData?.transactions?.totalCount ?? artistData?.transactions?.totalCount ?? 0;
   const hasNext =
     !!listenerData?.transactions?.pageInfo?.hasNextPage || !!artistData?.transactions?.pageInfo?.hasNextPage;
@@ -59,78 +57,73 @@ export default function SharedPaymentTransactionsTable({
 
   return (
     <div className="space-y-4">
-      <div>
-        <Table>
-          <TableHeader>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Method</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Transaction</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {isLoading ? (
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Transaction</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableCell colSpan={6}>Loading...</TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={6}>Loading...</TableCell>
-              </TableRow>
-            ) : isError ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-red-500">
-                  Failed to load transactions.
+          ) : isError ? (
+            <TableRow>
+              <TableCell colSpan={6} className="text-red-500">
+                Failed to load transactions.
+              </TableCell>
+            </TableRow>
+          ) : transactionData && transactionData.length > 0 ? (
+            transactionData.map((transaction, idx) => (
+              <TableRow key={transaction?.id ?? idx}>
+                <TableCell>
+                  {transaction?.createdAt ? new Date(transaction.createdAt as unknown as string).toLocaleString() : "-"}
+                </TableCell>
+                <TableCell>
+                  {typeof transaction?.amount === "number" ? transaction.amount.toLocaleString() : transaction?.amount}{" "}
+                  {transaction?.currency}
+                </TableCell>
+                <TableCell className="space-x-1">
+                  {Array.isArray(transaction?.stripePaymentMethod) && transaction!.stripePaymentMethod.length > 0
+                    ? transaction.stripePaymentMethod.map((method, index) => methodBadge(method, index))
+                    : "-"}
+                </TableCell>
+                <TableCell>
+                  {transaction?.paymentStatus ? paymentStatusBadge(transaction.paymentStatus) : "-"}
+                </TableCell>
+                <TableCell>
+                  {transaction?.id ? (
+                    <Link href={`${linkPrefix}/${transaction?.id}`} className="text-primary hover:underline">
+                      #{transaction?.id!.slice(-8)}
+                    </Link>
+                  ) : (
+                    "-"
+                  )}
+                </TableCell>
+                <TableCell>
+                  {transaction?.id ? (
+                    <Link href={`${linkPrefix}/${transaction?.id}`} className="text-primary hover:underline">
+                      View
+                    </Link>
+                  ) : (
+                    "-"
+                  )}
                 </TableCell>
               </TableRow>
-            ) : items && items.length > 0 ? (
-              items.map((tx, idx) => (
-                <TableRow key={tx?.id ?? idx}>
-                  <TableCell>
-                    {tx?.createdAt ? new Date(tx.createdAt as unknown as string).toLocaleString() : "-"}
-                  </TableCell>
-                  <TableCell>
-                    {typeof tx?.amount === "number" ? tx.amount.toLocaleString() : tx?.amount} {tx?.currency}
-                  </TableCell>
-                  <TableCell>
-                    {Array.isArray(tx?.stripePaymentMethod) && tx!.stripePaymentMethod.length > 0
-                      ? tx!.stripePaymentMethod.join(", ")
-                      : "-"}
-                  </TableCell>
-                  <TableCell>{tx?.paymentStatus ? statusBadge(tx.paymentStatus) : "-"}</TableCell>
-                  <TableCell>
-                    {tx?.stripePaymentId || tx?.id ? (
-                      <Link
-                        href={`${linkPrefix}/${tx?.stripePaymentId || tx?.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        #{(tx?.stripePaymentId || tx?.id)!.slice(-8)}
-                      </Link>
-                    ) : (
-                      "-"
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {tx?.stripePaymentId || tx?.id ? (
-                      <Link
-                        href={`${linkPrefix}/${tx?.stripePaymentId || tx?.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        View
-                      </Link>
-                    ) : (
-                      "-"
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6}>No transactions found.</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6}>No transactions found.</TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
 
       <div className="flex items-center justify-between">
         <div className="text-muted-foreground text-sm">

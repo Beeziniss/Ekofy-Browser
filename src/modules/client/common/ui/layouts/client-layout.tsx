@@ -9,7 +9,7 @@ interface ClientLayoutProps {
 
 const ClientLayout = ({ children }: ClientLayoutProps) => {
   return (
-    <div className="h-full w-full pt-16 pb-20">
+    <div className="h-full w-full pt-16 pb-12">
       {/* Header */}
       <ClientHeader />
 

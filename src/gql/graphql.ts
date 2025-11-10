@@ -5629,16 +5629,6 @@ export type UnbanUserMutationVariables = Exact<{
 
 export type UnbanUserMutation = { __typename?: 'MutationInitialization', unbanUser: boolean };
 
-export type TracksWithFiltersQueryVariables = Exact<{
-  skip: Scalars['Int']['input'];
-  take: Scalars['Int']['input'];
-  where?: InputMaybe<TrackFilterInput>;
-  order?: InputMaybe<Array<TrackSortInput> | TrackSortInput>;
-}>;
-
-
-export type TracksWithFiltersQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean } }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
-
 export type PlaylistBriefQueryVariables = Exact<{
   userId: Scalars['String']['input'];
 }>;
@@ -5887,6 +5877,13 @@ export type CreateExpressConnectedAccountMutationVariables = Exact<{
 
 export type CreateExpressConnectedAccountMutation = { __typename?: 'MutationInitialization', createExpressConnectedAccount: { __typename?: 'AccountLinkResponse', url: string } };
 
+export type SubscriptionCreateCheckoutSessionMutationVariables = Exact<{
+  createSubscriptionCheckoutSessionInput: CreateSubscriptionCheckoutSessionRequestInput;
+}>;
+
+
+export type SubscriptionCreateCheckoutSessionMutation = { __typename?: 'MutationInitialization', createSubscriptionCheckoutSession: { __typename?: 'CheckoutSessionResponse', id: string, url: string } };
+
 export type UpdateTrackCommentMutationVariables = Exact<{
   commentId: Scalars['String']['input'];
   content: Scalars['String']['input'];
@@ -5953,8 +5950,6 @@ export type RejectArtistRegistrationMutationVariables = Exact<{
 export type RejectArtistRegistrationMutation = { __typename?: 'MutationInitialization', rejectArtistRegistration: boolean };
 
 export type SubscriptionsQueryVariables = Exact<{
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
   where: SubscriptionFilterInput;
 }>;
 
@@ -6016,7 +6011,7 @@ export type GetArtistTransactionsQueryVariables = Exact<{
 }>;
 
 
-export type GetArtistTransactionsQuery = { __typename?: 'QueryInitialization', transactions?: { __typename?: 'TransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, paymentStatus: PaymentTransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type GetArtistTransactionsQuery = { __typename?: 'QueryInitialization', transactions?: { __typename?: 'TransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null, stripeCheckoutSessionId?: string | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type GetArtistPayoutsQueryVariables = Exact<{
   where?: InputMaybe<PayoutTransactionFilterInput>;
@@ -6037,6 +6032,16 @@ export type GetArtistInvoicesQueryVariables = Exact<{
 
 
 export type GetArtistInvoicesQuery = { __typename?: 'QueryInitialization', invoices?: { __typename?: 'InvoicesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Invoice', id: string, amount: any, currency: string, email: string, to: string, from: string, paidAt: any, paymentTransactionId: string }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type TracksWithFiltersQueryVariables = Exact<{
+  skip: Scalars['Int']['input'];
+  take: Scalars['Int']['input'];
+  where?: InputMaybe<TrackFilterInput>;
+  order?: InputMaybe<Array<TrackSortInput> | TrackSortInput>;
+}>;
+
+
+export type TracksWithFiltersQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean } }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type TrackUploadArtistListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -6155,7 +6160,7 @@ export type GetListenerTransactionsQueryVariables = Exact<{
 }>;
 
 
-export type GetListenerTransactionsQuery = { __typename?: 'QueryInitialization', transactions?: { __typename?: 'TransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, paymentStatus: PaymentTransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type GetListenerTransactionsQuery = { __typename?: 'QueryInitialization', transactions?: { __typename?: 'TransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null, stripeCheckoutSessionId?: string | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type GetListenerInvoicesQueryVariables = Exact<{
   where?: InputMaybe<InvoiceFilterInput>;
@@ -6245,7 +6250,7 @@ export type GetUserActiveSubscriptionQueryVariables = Exact<{
 }>;
 
 
-export type GetUserActiveSubscriptionQuery = { __typename?: 'QueryInitialization', userSubscriptions?: { __typename?: 'UserSubscriptionsCollectionSegment', items?: Array<{ __typename?: 'UserSubscription', id: string, isActive: boolean, subscription: Array<{ __typename?: 'Subscription', tier: SubscriptionTier, status: SubscriptionStatus, name: string }> }> | null } | null };
+export type GetUserActiveSubscriptionQuery = { __typename?: 'QueryInitialization', userSubscriptions?: { __typename?: 'UserSubscriptionsCollectionSegment', items?: Array<{ __typename?: 'UserSubscription', id: string, isActive: boolean, subscriptionId: string, subscription: Array<{ __typename?: 'Subscription', tier: SubscriptionTier, status: SubscriptionStatus, name: string }> }> | null } | null };
 
 export type GetUserStripeAccountIdQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -6611,30 +6616,6 @@ export const UnbanUserDocument = new TypedDocumentString(`
   unbanUser(targetUserId: $targetUserId)
 }
     `) as unknown as TypedDocumentString<UnbanUserMutation, UnbanUserMutationVariables>;
-export const TracksWithFiltersDocument = new TypedDocumentString(`
-    query TracksWithFilters($skip: Int!, $take: Int!, $where: TrackFilterInput, $order: [TrackSortInput!]) {
-  tracks(skip: $skip, take: $take, where: $where, order: $order) {
-    totalCount
-    items {
-      id
-      name
-      mainArtistIds
-      streamCount
-      favoriteCount
-      coverImage
-      isExplicit
-      releaseInfo {
-        releaseDate
-        isRelease
-      }
-    }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<TracksWithFiltersQuery, TracksWithFiltersQueryVariables>;
 export const PlaylistBriefDocument = new TypedDocumentString(`
     query PlaylistBrief($userId: String!) {
   playlists(where: {userId: {eq: $userId}}) {
@@ -6946,6 +6927,16 @@ export const CreateExpressConnectedAccountDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<CreateExpressConnectedAccountMutation, CreateExpressConnectedAccountMutationVariables>;
+export const SubscriptionCreateCheckoutSessionDocument = new TypedDocumentString(`
+    mutation SubscriptionCreateCheckoutSession($createSubscriptionCheckoutSessionInput: CreateSubscriptionCheckoutSessionRequestInput!) {
+  createSubscriptionCheckoutSession(
+    createCheckoutSessionRequest: $createSubscriptionCheckoutSessionInput
+  ) {
+    id
+    url
+  }
+}
+    `) as unknown as TypedDocumentString<SubscriptionCreateCheckoutSessionMutation, SubscriptionCreateCheckoutSessionMutationVariables>;
 export const UpdateTrackCommentDocument = new TypedDocumentString(`
     mutation UpdateTrackComment($commentId: String!, $content: String!) {
   updateComment(request: {commentId: $commentId, content: $content})
@@ -6992,8 +6983,8 @@ export const RejectArtistRegistrationDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<RejectArtistRegistrationMutation, RejectArtistRegistrationMutationVariables>;
 export const SubscriptionsDocument = new TypedDocumentString(`
-    query Subscriptions($skip: Int, $take: Int, $where: SubscriptionFilterInput!) {
-  subscriptions(skip: $skip, take: $take, where: $where) {
+    query Subscriptions($where: SubscriptionFilterInput!) {
+  subscriptions(where: $where, order: {version: DESC}) {
     pageInfo {
       hasNextPage
       hasPreviousPage
@@ -7184,8 +7175,10 @@ export const GetArtistTransactionsDocument = new TypedDocumentString(`
       currency
       createdAt
       paymentStatus
+      status
       stripePaymentMethod
       stripePaymentId
+      stripeCheckoutSessionId
     }
     pageInfo {
       hasNextPage
@@ -7240,6 +7233,30 @@ export const GetArtistInvoicesDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetArtistInvoicesQuery, GetArtistInvoicesQueryVariables>;
+export const TracksWithFiltersDocument = new TypedDocumentString(`
+    query TracksWithFilters($skip: Int!, $take: Int!, $where: TrackFilterInput, $order: [TrackSortInput!]) {
+  tracks(skip: $skip, take: $take, where: $where, order: $order) {
+    totalCount
+    items {
+      id
+      name
+      mainArtistIds
+      streamCount
+      favoriteCount
+      coverImage
+      isExplicit
+      releaseInfo {
+        releaseDate
+        isRelease
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TracksWithFiltersQuery, TracksWithFiltersQueryVariables>;
 export const TrackUploadArtistListDocument = new TypedDocumentString(`
     query TrackUploadArtistList {
   artists(where: {isVisible: {eq: true}}, take: 50) {
@@ -7611,8 +7628,10 @@ export const GetListenerTransactionsDocument = new TypedDocumentString(`
       currency
       createdAt
       paymentStatus
+      status
       stripePaymentMethod
       stripePaymentId
+      stripeCheckoutSessionId
     }
     pageInfo {
       hasNextPage
@@ -7950,6 +7969,7 @@ export const GetUserActiveSubscriptionDocument = new TypedDocumentString(`
     items {
       id
       isActive
+      subscriptionId
       subscription {
         tier
         status

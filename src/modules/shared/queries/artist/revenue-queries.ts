@@ -15,8 +15,10 @@ export const GetArtistTransactionsQuery = graphql(`
         currency
         createdAt
         paymentStatus
+        status
         stripePaymentMethod
         stripePaymentId
+        stripeCheckoutSessionId
       }
       pageInfo {
         hasNextPage

@@ -1,18 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
 import { formatNumber } from "@/utils/format-number";
-import type { SubscriptionPlan } from "@/types";
+import { PeriodTime, SubscriptionPlan, UserRole } from "@/gql/graphql";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { listenerOpenTransactionsOptions } from "@/gql/options/listener-activity-options";
+import { userActiveSubscriptionOptions } from "@/gql/options/client-options";
+import { useAuthStore } from "@/store";
 
 interface SubscriptionPlanCardProps {
   plan: SubscriptionPlan;
-  onSelectPlan: (plan: SubscriptionPlan) => void;
-  couponDiscount?: number; // Percent off from coupon - only applies to yearly
-  keyFeatures?: string[]; // Premium features from entitlements
+  keyFeatures?: string[];
+  couponDiscount?: number;
+  onSelectPlan: (subscriptionCode: string, period: PeriodTime) => void;
 }
 
 export function SubscriptionPlanCard({
@@ -21,21 +26,43 @@ export function SubscriptionPlanCard({
   couponDiscount = 0,
   keyFeatures = [],
 }: SubscriptionPlanCardProps) {
+  const { user } = useAuthStore();
   const [selectedInterval, setSelectedInterval] = useState<"monthly" | "yearly">("monthly");
   const subscription = plan.subscription?.[0];
 
-  const isPremium = subscription.tier === "PREMIUM";
+  // Check for open transactions
+  const { data: openTransactionData } = useQuery({
+    ...listenerOpenTransactionsOptions({ userId: user?.userId || "" }),
+    enabled: !!user?.userId,
+  });
+
+  // Check for active subscription
+  const { data: userActiveSubscription } = useQuery({
+    ...userActiveSubscriptionOptions(user?.userId || ""),
+    enabled: !!user?.userId,
+  });
+
+  const hasOpenTransaction =
+    openTransactionData?.transactions?.items && openTransactionData.transactions.items.length > 0;
+  const openTransaction = hasOpenTransaction ? openTransactionData?.transactions?.items?.[0] : null;
+
+  // Check if this plan is the user's current active plan
+  const isCurrentPlan = userActiveSubscription?.subscription?.[0]?.tier === subscription.tier;
+
   const isPro = subscription.tier === "PRO";
+  const isPremium = subscription.tier === "PREMIUM";
 
   // Find the correct price based on selected interval
   const getCorrectPrice = () => {
     const prices = plan.subscriptionPlanPrices.filter((p) => p.stripePriceActive);
 
     if (selectedInterval === "monthly") {
-      return prices.find((p) => p.interval === "MONTH" && p.intervalCount === 1) || prices[0];
+      return prices.find((p) => p.interval === PeriodTime.Month && p.intervalCount === 1) || prices[0];
     } else {
       return (
-        prices.find((p) => p.interval === "YEAR" || (p.interval === "MONTH" && p.intervalCount === 12)) || prices[0]
+        prices.find(
+          (p) => p.interval === PeriodTime.Year || (p.interval === PeriodTime.Month && p.intervalCount === 12),
+        ) || prices[0]
       );
     }
   };
@@ -77,16 +104,6 @@ export function SubscriptionPlanCard({
 
   // Use provided key features or fallback to metadata
   const getFeatures = () => {
-    console.log("🔍 SubscriptionPlanCard Debug:", {
-      planName: plan.stripeProductName,
-      tier: subscription.tier,
-      keyFeatures,
-      keyFeaturesLength: keyFeatures.length,
-      metadataFeatures: plan.stripeProductMetadata
-        ?.filter((meta) => meta.key.toLowerCase().includes("feature") || meta.key.toLowerCase().includes("benefit"))
-        ?.map((meta) => meta.value),
-    });
-
     if (keyFeatures.length > 0) return keyFeatures;
 
     if (!plan.stripeProductMetadata) return [];
@@ -165,9 +182,7 @@ export function SubscriptionPlanCard({
   const styling = getCardStyling();
 
   return (
-    <Card
-      className={`relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl ${styling.cardClass}`}
-    >
+    <Card className={`relative overflow-hidden transition-all duration-300 ${styling.cardClass}`}>
       {/* Gradient border for premium/pro */}
       {(isPremium || isPro) && (
         <div className={`absolute inset-0 ${styling.borderGradient} rounded-lg p-[2px]`}>
@@ -215,7 +230,7 @@ export function SubscriptionPlanCard({
         {/* Pricing */}
         <div className="text-center">
           <div className="flex items-baseline justify-start space-x-1">
-            <span className={`text-4xl font-bold ${styling.priceGradient}`}>
+            <span className={`text-2xl font-bold ${styling.priceGradient}`}>
               {formatNumber(pricePerMonth)} {mainPrice.stripePriceCurrency.toUpperCase()}
             </span>
             <span className={`text-lg ${styling.subTextColor}`}>
@@ -255,12 +270,29 @@ export function SubscriptionPlanCard({
         </div>
 
         {/* Action Button */}
-        <Button
-          className={`h-12 w-full text-base font-semibold transition-all duration-200 ${styling.buttonClass}`}
-          onClick={() => onSelectPlan(plan)}
-        >
-          Select Plan
-        </Button>
+        {isCurrentPlan ? (
+          <div
+            className={`inline-flex h-12 w-full items-center justify-center text-base font-semibold ${styling.textColor} border-main-white/30 cursor-default rounded-md border ${styling.subTextColor}`}
+          >
+            Current Plan
+          </div>
+        ) : hasOpenTransaction && openTransaction ? (
+          <Link
+            href={`${String(user?.role) === String(UserRole.Artist) ? "/artist/studio" : "/profile"}/transactions/payment-history/${openTransaction.id}`}
+            className={`inline-flex h-12 w-full items-center justify-center text-base font-semibold transition-all duration-200 ${styling.buttonClass} rounded-md`}
+          >
+            Continue Payment
+          </Link>
+        ) : (
+          <Button
+            className={`h-12 w-full text-base font-semibold transition-all duration-200 ${styling.buttonClass}`}
+            onClick={() =>
+              onSelectPlan(subscription.code, selectedInterval === "monthly" ? PeriodTime.Month : PeriodTime.Year)
+            }
+          >
+            Select Plan
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

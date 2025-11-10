@@ -1,69 +1,63 @@
-"use client";
-
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Music, Star, Headphones, Mic, Radio, TrendingUp, Award } from "lucide-react";
-import { useAuthStore } from "@/store/stores/auth-store";
-import { UserRole } from "@/types/role";
 
 interface SubscriptionHeroSectionProps {
   onExploreClick: () => void;
+  isArtist: boolean;
 }
 
-export function SubscriptionHeroSection({ onExploreClick }: SubscriptionHeroSectionProps) {
-  const { user } = useAuthStore();
-  const isArtist = user?.role === UserRole.ARTIST;
+const artistFeatures = [
+  {
+    icon: Music,
+    title: "Professional Music Distribution",
+    description: "Distribute to all major platforms",
+  },
+  {
+    icon: Mic,
+    title: "Studio Quality Recording",
+    description: "Upload unlimited high-quality tracks",
+  },
+  {
+    icon: TrendingUp,
+    title: "Advanced Analytics",
+    description: "Track performance and audience insights",
+  },
+  {
+    icon: Award,
+    title: "Artist Verification",
+    description: "Get verified artist status and perks",
+  },
+];
 
-  const artistFeatures = [
-    {
-      icon: Music,
-      title: "Professional Music Distribution",
-      description: "Distribute to all major platforms",
-    },
-    {
-      icon: Mic,
-      title: "Studio Quality Recording",
-      description: "Upload unlimited high-quality tracks",
-    },
-    {
-      icon: TrendingUp,
-      title: "Advanced Analytics",
-      description: "Track performance and audience insights",
-    },
-    {
-      icon: Award,
-      title: "Artist Verification",
-      description: "Get verified artist status and perks",
-    },
-  ];
+const listenerFeatures = [
+  {
+    icon: Music,
+    title: "Search track by audio file",
+    description: "Find any song instantly",
+  },
+  {
+    icon: Headphones,
+    title: "Premium quality audio",
+    description: "320kbit/s crystal clear sound",
+  },
+  {
+    icon: Star,
+    title: "Track suggestions",
+    description: "Daily personalized recommendations",
+  },
+  {
+    icon: Radio,
+    title: "Unlimited streaming",
+    description: "Millions of tracks worldwide",
+  },
+];
 
-  const listenerFeatures = [
-    {
-      icon: Music,
-      title: "Search track by audio file",
-      description: "Find any song instantly",
-    },
-    {
-      icon: Headphones,
-      title: "Premium quality audio",
-      description: "320kbit/s crystal clear sound",
-    },
-    {
-      icon: Star,
-      title: "Track suggestions",
-      description: "Daily personalized recommendations",
-    },
-    {
-      icon: Radio,
-      title: "Unlimited streaming",
-      description: "Millions of tracks worldwide",
-    },
-  ];
-
+export function SubscriptionHeroSection({ onExploreClick, isArtist }: SubscriptionHeroSectionProps) {
   const features = isArtist ? artistFeatures : listenerFeatures;
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-800">
+    <section className="relative h-[calc(100dvh-64px-48px)] overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-800">
       <div className="absolute inset-0 bg-black/10" />
 
       {/* Animated Background Elements */}
@@ -89,7 +83,7 @@ export function SubscriptionHeroSection({ onExploreClick }: SubscriptionHeroSect
             {features.map((feature, index) => (
               <Card
                 key={index}
-                className="border-white/20 bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/15"
+                className="border-white/20 bg-white/10 py-0 backdrop-blur-sm transition-all duration-300 hover:bg-white/15"
               >
                 <CardContent className="p-6 text-center">
                   <feature.icon className="mx-auto mb-4 h-10 w-10 text-purple-200" />
@@ -100,11 +94,7 @@ export function SubscriptionHeroSection({ onExploreClick }: SubscriptionHeroSect
             ))}
           </div>
 
-          <Button
-            size="lg"
-            className="rounded-xl bg-white px-10 py-4 text-xl font-semibold text-purple-600 shadow-2xl transition-all duration-300 hover:bg-purple-50 hover:shadow-purple-500/25"
-            onClick={onExploreClick}
-          >
+          <Button size="lg" className="bg-main-white text-xl font-semibold shadow-md" onClick={onExploreClick}>
             Explore {isArtist ? "Pro" : "Premium"} Plans ✨
           </Button>
         </div>

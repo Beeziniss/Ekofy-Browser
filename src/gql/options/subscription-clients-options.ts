@@ -2,40 +2,34 @@ import { queryOptions } from "@tanstack/react-query";
 import { execute } from "@/gql/execute";
 import { SUBSCRIPTION_PLANS_QUERIES, SUBSCRIPTION_QUERIES } from "@/modules/shared/queries/admin/subcription-queries";
 import { COUPON_QUERIES, ENTITLEMENT_QUERIES } from "@/modules/shared/queries/client/plans-queries";
-import { SubscriptionTier } from "@/gql/graphql";
+import { SubscriptionStatus, SubscriptionTier } from "@/gql/graphql";
 
-export const subscriptionsPremiumQueryOptions = (skip: number = 0, take: number = 10) =>
+export const subscriptionsPremiumQueryOptions = () =>
   queryOptions({
-    queryKey: ["subscriptions-premium", { skip, take }],
+    queryKey: ["subscriptions-premium"],
     queryFn: async () => {
       const response = await execute(SUBSCRIPTION_QUERIES, {
-        skip,
-        take,
         where: {
           tier: { eq: SubscriptionTier.Premium },
+          status: { eq: SubscriptionStatus.Active },
         },
       });
       return response;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
   });
 
-export const subscriptionsProQueryOptions = (skip: number = 0, take: number = 10) =>
+export const subscriptionsProQueryOptions = () =>
   queryOptions({
-    queryKey: ["subscriptions-pro", { skip, take }],
+    queryKey: ["subscriptions-pro"],
     queryFn: async () => {
       const response = await execute(SUBSCRIPTION_QUERIES, {
-        skip,
-        take,
         where: {
           tier: { eq: SubscriptionTier.Pro },
+          status: { eq: SubscriptionStatus.Active },
         },
       });
       return response;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
   });
 
 // Get all public subscription plans
@@ -50,8 +44,6 @@ export const allPublicSubscriptionPlansQueryOptions = () =>
       });
       return response;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
   });
 
 // Get subscription plans for specific subscription ID (Premium)
@@ -61,15 +53,13 @@ export const premiumSubscriptionPlansQueryOptions = (subscriptionId: string) =>
     queryFn: async () => {
       const response = await execute(SUBSCRIPTION_PLANS_QUERIES, {
         skip: 0,
-        take: 10,
+        take: 1,
         where: {
           subscriptionId: { eq: subscriptionId },
         },
       });
       return response;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
   });
 
 // Get subscription plans for specific subscription ID (Pro)
@@ -79,15 +69,13 @@ export const proSubscriptionPlansQueryOptions = (subscriptionId: string) =>
     queryFn: async () => {
       const response = await execute(SUBSCRIPTION_PLANS_QUERIES, {
         skip: 0,
-        take: 10,
+        take: 1,
         where: {
           subscriptionId: { eq: subscriptionId },
         },
       });
       return response;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
   });
 
 // Get key features for premium subscription
@@ -105,8 +93,6 @@ export const listenerPremiumEntitlementsQueryOptions = () =>
       });
       return response;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
   });
 
 export const artistProEntitlementsQueryOptions = () =>
@@ -123,8 +109,6 @@ export const artistProEntitlementsQueryOptions = () =>
       });
       return response;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
   });
 
 // Get available coupons for pricing calculation
@@ -139,8 +123,6 @@ export const availableCouponsQueryLISTENER10FOREVEROptions = () =>
       });
       return response;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
   });
 
 export const availableCouponsQueryARTIST20FOREVEROptions = () =>
@@ -154,6 +136,4 @@ export const availableCouponsQueryARTIST20FOREVEROptions = () =>
       });
       return response;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
   });

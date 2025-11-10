@@ -32,14 +32,14 @@ const SubscriptionPage = async () => {
   if (userRole === UserRole.ARTIST) {
     // Prefetch Artist Pro data
     await Promise.all([
-      queryClient.prefetchQuery(subscriptionsProQueryOptions(0, 1)),
+      queryClient.prefetchQuery(subscriptionsProQueryOptions()),
       queryClient.prefetchQuery(artistProEntitlementsQueryOptions()),
       queryClient.prefetchQuery(availableCouponsQueryARTIST20FOREVEROptions()),
     ]);
   } else {
     // Prefetch Listener/Guest Premium data
     await Promise.all([
-      queryClient.prefetchQuery(subscriptionsPremiumQueryOptions(0, 1)),
+      queryClient.prefetchQuery(subscriptionsPremiumQueryOptions()),
       queryClient.prefetchQuery(listenerPremiumEntitlementsQueryOptions()),
       queryClient.prefetchQuery(availableCouponsQueryLISTENER10FOREVEROptions()),
     ]);

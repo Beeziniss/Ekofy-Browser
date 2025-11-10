@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PaymentTransactionStatus } from "@/gql/graphql";
 import { useQuery } from "@tanstack/react-query";
-import { listenerTransactionsOptions } from "@/gql/options/listener-activity-options";
 import { artistTransactionsOptions } from "@/gql/options/artist-activity-options";
+import { listenerTransactionsOptions } from "@/gql/options/listener-activity-options";
 import { paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type Source = "listener" | "artist";
 
@@ -36,25 +35,7 @@ export default function SharedPaymentTransactionsTable({
 
   const { data, isLoading, isError } = useQuery({
     ...queryOptions,
-  }) as {
-    data?: {
-      transactions?: {
-        items?: Array<{
-          id?: string | null;
-          amount?: number | null;
-          currency?: string | null;
-          createdAt?: unknown;
-          paymentStatus?: PaymentTransactionStatus | null;
-          stripePaymentMethod?: string[] | null;
-          stripePaymentId?: string | null;
-        } | null> | null;
-        totalCount?: number;
-        pageInfo?: { hasNextPage?: boolean; hasPreviousPage?: boolean };
-      };
-    };
-    isLoading: boolean;
-    isError: boolean;
-  };
+  });
 
   const items = data?.transactions?.items ?? [];
   const totalCount = data?.transactions?.totalCount ?? 0;
