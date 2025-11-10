@@ -5731,6 +5731,48 @@ export type UpdateSubscriptionPlanMutationVariables = Exact<{
 
 export type UpdateSubscriptionPlanMutation = { __typename?: 'MutationInitialization', updateSubscriptionPlan: boolean };
 
+export type CreateArtistPackageMutationVariables = Exact<{
+  createRequest: CreateArtistPackageRequestInput;
+}>;
+
+
+export type CreateArtistPackageMutation = { __typename?: 'MutationInitialization', createArtistPackage: boolean };
+
+export type ChangeArtistPackageStatusMutationVariables = Exact<{
+  updateStatusRequest: UpdateStatusArtistPackageRequestInput;
+}>;
+
+
+export type ChangeArtistPackageStatusMutation = { __typename?: 'MutationInitialization', changeArtistPackageStatus: boolean };
+
+export type ApproveArtistPackageMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ApproveArtistPackageMutation = { __typename?: 'MutationInitialization', approveArtistPackage: boolean };
+
+export type RejectArtistPackageMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type RejectArtistPackageMutation = { __typename?: 'MutationInitialization', rejectArtistPackage: boolean };
+
+export type UpdateArtistPackageMutationVariables = Exact<{
+  updateRequest: UpdateArtistPackageRequestInput;
+}>;
+
+
+export type UpdateArtistPackageMutation = { __typename?: 'MutationInitialization', updateArtistPackage: boolean };
+
+export type DeleteArtistPackageMutationVariables = Exact<{
+  artistPackageId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteArtistPackageMutation = { __typename?: 'MutationInitialization', deleteArtistPackage: boolean };
+
 export type UploadTrackMutationVariables = Exact<{
   file: Scalars['Upload']['input'];
   createTrackRequest: CreateTrackRequestInput;
@@ -5934,6 +5976,32 @@ export type SubscriptionPlansQueryVariables = Exact<{
 
 
 export type SubscriptionPlansQuery = { __typename?: 'QueryInitialization', subscriptionPlans?: { __typename?: 'SubscriptionPlansCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'SubscriptionPlan', id: string, subscriptionId: string, stripeProductId: string, stripeProductActive: boolean, stripeProductName: string, stripeProductImages?: Array<string> | null, stripeProductType: string, stripeProductMetadata?: Array<{ __typename?: 'Metadata', key: string, value: string }> | null, subscriptionPlanPrices: Array<{ __typename?: 'SubscriptionPlanPrice', stripePriceId: string, stripePriceActive: boolean, stripePriceUnitAmount: any, stripePriceCurrency: string, stripePriceLookupKey: string, interval: PeriodTime, intervalCount: any }>, subscription: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, version: number, amount: any, currency: CurrencyType, tier: SubscriptionTier, status: SubscriptionStatus, createdAt: any, updatedAt?: any | null }> }> | null } | null };
+
+export type ArtistPackagesServiceQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ArtistPackageFilterInput>;
+}>;
+
+
+export type ArtistPackagesServiceQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number, updatedAt?: any | null, createdAt: any, artistId: string, status: ArtistPackageStatus, isDelete: boolean, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type ArtistPackagesDetailQueryVariables = Exact<{
+  where?: InputMaybe<ArtistPackageFilterInput>;
+}>;
+
+
+export type ArtistPackagesDetailQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number, status: ArtistPackageStatus, isDelete: boolean, createdAt: any, updatedAt?: any | null, artistId: string, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> | null } | null };
+
+export type PendingArtistPackagesQueryVariables = Exact<{
+  pageNumber: Scalars['Int']['input'];
+  pageSize: Scalars['Int']['input'];
+  where?: InputMaybe<PaginatedDataOfPendingArtistPackageResponseFilterInput>;
+  artistWhere?: InputMaybe<ArtistFilterInput>;
+}>;
+
+
+export type PendingArtistPackagesQuery = { __typename?: 'QueryInitialization', pendingArtistPackages: { __typename?: 'PaginatedDataOfPendingArtistPackageResponse', totalCount: number, items: Array<{ __typename?: 'PendingArtistPackageResponse', id: string, artistId: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, status: ArtistPackageStatus, requestedAt: any, timeToLive?: any | null, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> }, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string, userId: string, id: string }> | null } | null };
 
 export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -6764,6 +6832,36 @@ export const UpdateSubscriptionPlanDocument = new TypedDocumentString(`
   )
 }
     `) as unknown as TypedDocumentString<UpdateSubscriptionPlanMutation, UpdateSubscriptionPlanMutationVariables>;
+export const CreateArtistPackageDocument = new TypedDocumentString(`
+    mutation CreateArtistPackage($createRequest: CreateArtistPackageRequestInput!) {
+  createArtistPackage(createRequest: $createRequest)
+}
+    `) as unknown as TypedDocumentString<CreateArtistPackageMutation, CreateArtistPackageMutationVariables>;
+export const ChangeArtistPackageStatusDocument = new TypedDocumentString(`
+    mutation ChangeArtistPackageStatus($updateStatusRequest: UpdateStatusArtistPackageRequestInput!) {
+  changeArtistPackageStatus(updateStatusRequest: $updateStatusRequest)
+}
+    `) as unknown as TypedDocumentString<ChangeArtistPackageStatusMutation, ChangeArtistPackageStatusMutationVariables>;
+export const ApproveArtistPackageDocument = new TypedDocumentString(`
+    mutation ApproveArtistPackage($id: String!) {
+  approveArtistPackage(id: $id)
+}
+    `) as unknown as TypedDocumentString<ApproveArtistPackageMutation, ApproveArtistPackageMutationVariables>;
+export const RejectArtistPackageDocument = new TypedDocumentString(`
+    mutation RejectArtistPackage($id: String!) {
+  rejectArtistPackage(id: $id)
+}
+    `) as unknown as TypedDocumentString<RejectArtistPackageMutation, RejectArtistPackageMutationVariables>;
+export const UpdateArtistPackageDocument = new TypedDocumentString(`
+    mutation UpdateArtistPackage($updateRequest: UpdateArtistPackageRequestInput!) {
+  updateArtistPackage(updateRequest: $updateRequest)
+}
+    `) as unknown as TypedDocumentString<UpdateArtistPackageMutation, UpdateArtistPackageMutationVariables>;
+export const DeleteArtistPackageDocument = new TypedDocumentString(`
+    mutation DeleteArtistPackage($artistPackageId: String!) {
+  deleteArtistPackage(artistPackageId: $artistPackageId)
+}
+    `) as unknown as TypedDocumentString<DeleteArtistPackageMutation, DeleteArtistPackageMutationVariables>;
 export const UploadTrackDocument = new TypedDocumentString(`
     mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!) {
   uploadTrack(
@@ -6979,6 +7077,93 @@ export const SubscriptionPlansDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SubscriptionPlansQuery, SubscriptionPlansQueryVariables>;
+export const ArtistPackagesServiceDocument = new TypedDocumentString(`
+    query ArtistPackagesService($skip: Int, $take: Int, $where: ArtistPackageFilterInput) {
+  artistPackages(skip: $skip, take: $take, where: $where) {
+    totalCount
+    items {
+      id
+      packageName
+      amount
+      currency
+      estimateDeliveryDays
+      description
+      maxRevision
+      serviceDetails {
+        key
+        value
+      }
+      updatedAt
+      createdAt
+      artistId
+      status
+      isDelete
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ArtistPackagesServiceQuery, ArtistPackagesServiceQueryVariables>;
+export const ArtistPackagesDetailDocument = new TypedDocumentString(`
+    query ArtistPackagesDetail($where: ArtistPackageFilterInput) {
+  artistPackages(where: $where) {
+    items {
+      id
+      packageName
+      amount
+      currency
+      estimateDeliveryDays
+      description
+      maxRevision
+      serviceDetails {
+        key
+        value
+      }
+      status
+      isDelete
+      createdAt
+      updatedAt
+      artistId
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ArtistPackagesDetailQuery, ArtistPackagesDetailQueryVariables>;
+export const PendingArtistPackagesDocument = new TypedDocumentString(`
+    query PendingArtistPackages($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPendingArtistPackageResponseFilterInput, $artistWhere: ArtistFilterInput) {
+  pendingArtistPackages(
+    pageNumber: $pageNumber
+    pageSize: $pageSize
+    where: $where
+  ) {
+    totalCount
+    items {
+      id
+      artistId
+      packageName
+      amount
+      currency
+      estimateDeliveryDays
+      description
+      status
+      requestedAt
+      timeToLive
+      serviceDetails {
+        key
+        value
+      }
+    }
+  }
+  artists(where: $artistWhere) {
+    items {
+      stageName
+      userId
+      id
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PendingArtistPackagesQuery, PendingArtistPackagesQueryVariables>;
 export const CategoriesDocument = new TypedDocumentString(`
     query Categories {
   categories {

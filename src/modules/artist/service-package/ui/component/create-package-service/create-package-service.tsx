@@ -24,7 +24,7 @@ const createPackageSchema = z.object({
   packageName: z.string().min(1, "Package name is required").max(100, "Package name must be at most 100 characters"),
   amount: z.number().min(0, "Amount must be positive").max(1000000000, "Amount is too large"),
   estimateDeliveryDays: z.number().min(1, "Delivery days must be at least 1").max(365, "Delivery days is too large"),
-  maxRevisions: z.number().min(0, "Max revisions must be at least 0").max(100, "Max revisions is too large"),
+  maxRevision: z.number().min(0, "Max revisions must be at least 0").max(100, "Max revisions is too large"),
   description: z.string().min(1, "Description is required").max(1000, "Description must be at most 1000 characters"),
   serviceDetails: z.array(serviceDetailSchema).min(1, "At least one service detail is required"),
 });
@@ -46,7 +46,7 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
       packageName: "",
       amount: 0,
       estimateDeliveryDays: 1,
-      maxRevisions: 0,
+      maxRevision: 0,
       description: "",
       serviceDetails: [{ key: "1", value: "" }], // Initialize with a default key
     },
@@ -166,11 +166,11 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
 
               <FormField
                 control={form.control}
-                name="maxRevisions"
+                name="maxRevision"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Max Revisions <span className="text-red-500">*</span>
+                      Max Revision <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input
