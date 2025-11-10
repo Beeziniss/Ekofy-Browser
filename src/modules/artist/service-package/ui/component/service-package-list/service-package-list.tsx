@@ -141,7 +141,7 @@ const ServicePackageList = ({ packages, onEdit, onDelete, onViewDetail, onStatus
               </span>
               <span className="flex items-center gap-1">
                 <RotateCcw className="h-3 w-3" />
-                {formatRevisionText(pkg.maxRevisions || 0)}
+                {formatRevisionText(pkg.maxRevision || 0)}
               </span>
             </CardDescription>
           </CardHeader>

@@ -44,7 +44,7 @@ const ServicePackageDetail: React.FC<ServicePackageDetailProps> = ({ package: pk
                 </CardDescription>
                 <CardDescription className="flex items-center gap-2">
                   <RotateCcw className="h-4 w-4" />
-                  {formatRevisionText(pkg.maxRevisions || 0)}
+                  {formatRevisionText(pkg.maxRevision || 0)}
                 </CardDescription>
               </div>
               <CardDescription className="text-gray-400">

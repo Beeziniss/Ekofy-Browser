@@ -35,13 +35,13 @@ export const usePackageUtils = () => {
     }
   };
 
-  const formatRevisionText = (maxRevisions: number): string => {
-    if (maxRevisions === 0) {
+  const formatRevisionText = (maxRevision: number): string => {
+    if (maxRevision === 0) {
       return "No revisions";
-    } else if (maxRevisions === 1) {
+    } else if (maxRevision === 1) {
       return "1 revision";
     } else {
-      return `${maxRevisions} revisions`;
+      return `${maxRevision} revisions`;
     }
   };
 
@@ -93,7 +93,7 @@ export const usePackageUtils = () => {
       name: pkg.packageName,
       formattedPrice: formatCurrency(pkg.amount),
       formattedDeliveryTime: formatDeliveryTime(pkg.estimateDeliveryDays),
-      formattedRevisions: formatRevisionText(pkg.maxRevisions || 0),
+      formattedRevisions: formatRevisionText(pkg.maxRevision || 0),
       statusColor: getStatusColor(pkg.status),
       statusText: getStatusText(pkg.status),
       description: pkg.description || "",

@@ -106,7 +106,7 @@ const UpdatePackageService = ({
                     <div className="flex items-center gap-2">
                       <RotateCcw className="h-4 w-4 text-gray-400" />
                       <span className="text-gray-400">Revisions:</span>
-                      <span className="text-white">{formatRevisionText(pkg.maxRevisions || 0)}</span>
+                      <span className="text-white">{formatRevisionText(pkg.maxRevision || 0)}</span>
                     </div>
                   </div>
                   <div>

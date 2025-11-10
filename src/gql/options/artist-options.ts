@@ -4,7 +4,7 @@ import {
   ServicePackageServiceViewQuery,
   ServicePackageDetailQuery,
   PendingArtistPackagesQuery,
-} from "@/modules/artist/service-package/ui/view/service-package-service-view";
+} from "@/modules/shared/queries/artist/artist-packages-queries";
 import { ArtistPackageFilterInput, PaginatedDataOfPendingArtistPackageResponseFilterInput } from "@/gql/graphql";
 import { CategoriesQuery } from "@/modules/shared/queries/artist/category-queries";
 import { TrackListWithFiltersQuery } from "@/modules/artist/studio/ui/sections/tracks/track-table-section";
