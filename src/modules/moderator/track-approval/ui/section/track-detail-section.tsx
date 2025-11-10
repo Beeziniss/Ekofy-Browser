@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { moderatorUserCreatedByOptions } from "@/gql/options/moderator-options";
 import {
@@ -87,8 +87,8 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
           {/* Track Information */}
           <TrackInfoCard track={track} createdByUser={createdByUser} isLoadingUser={isLoadingUser} />
 
-          {/* Track Categories */}
-          <TrackCategoriesCard categoryIds={track.track.categoryIds || []} />
+          {/* Track Categories with Tags */}
+          <TrackCategoriesCard categoryIds={track.track.categoryIds || []} tags={track.track.tags || []} />
 
           {/* Artists & Contributors */}
           <ArtistsContributorsCard track={track} />
@@ -100,38 +100,16 @@ export function TrackDetailSection({ track, onDownloadOriginal }: TrackDetailSec
           <div id="legal-documents">
             <LegalDocumentsCard track={track} />
           </div>
-
-          {/* Action Buttons */}
-          <div className="rounded-lg border border-gray-700/50 bg-black/90 p-4 backdrop-blur-sm">
-            <div className="flex items-center justify-center gap-3">
-              <Button
-                variant="outline"
-                className="h-12 border-red-400 bg-transparent px-8 py-3 text-red-400 hover:bg-red-400/10"
-                onClick={() => setRejectDialogOpen(true)}
-                disabled={approveMutation.isPending || rejectMutation.isPending}
-              >
-                <XCircle className="mr-2 h-5 w-5" />
-                {rejectMutation.isPending ? "Rejecting..." : "Reject Track"}
-              </Button>
-              <Button
-                className="h-12 bg-green-600 px-8 py-3 text-white hover:bg-green-700"
-                onClick={() => setApproveDialogOpen(true)}
-                disabled={approveMutation.isPending || rejectMutation.isPending}
-              >
-                <CheckCircle className="mr-2 h-5 w-5" />
-                {approveMutation.isPending ? "Approving..." : "Approve"}
-              </Button>
-            </div>
-          </div>
         </div>
 
         {/* Sidebar */}
         <div className="lg:col-span-1">
           <TrackDetailSidebar
-            track={track}
             onDownloadOriginal={onDownloadOriginal}
-            createdByUser={createdByUser}
-            isLoadingUser={isLoadingUser}
+            onApprove={() => setApproveDialogOpen(true)}
+            onReject={() => setRejectDialogOpen(true)}
+            isApproving={approveMutation.isPending}
+            isRejecting={rejectMutation.isPending}
           />
         </div>
       </div>

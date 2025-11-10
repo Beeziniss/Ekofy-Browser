@@ -1,116 +1,51 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { TrackUploadRequest } from "@/types/approval-track";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, XCircle } from "lucide-react";
 
 interface TrackDetailSidebarProps {
-  track: TrackUploadRequest;
   onDownloadOriginal: () => void;
-  createdByUser?: {
-    id: string;
-    email: string;
-    fullName: string;
-    role: string;
-  } | null;
-  isLoadingUser?: boolean;
+  onApprove: () => void;
+  onReject: () => void;
+  isApproving?: boolean;
+  isRejecting?: boolean;
 }
 
-export function TrackDetailSidebar({ track, createdByUser, isLoadingUser }: TrackDetailSidebarProps) {
+export function TrackDetailSidebar({ 
+  onApprove,
+  onReject,
+  isApproving = false,
+  isRejecting = false,
+}: TrackDetailSidebarProps) {
   return (
-    <div className="space-y-4">
-      {/* Track Details */}
-      <Card>
+    <div className="sticky top-20 space-y-4">
+      {/* Action Buttons - Sticky */}
+      <Card className="border-2">
         <CardHeader>
-          <CardTitle className="text-lg">Track Details</CardTitle>
+          <CardTitle className="text-lg">Moderation Actions</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="text-sm">
-            <span className="font-medium">Type: </span>
-            <span className="text-muted-foreground">{track.track.type}</span>
-          </div>
-          <div className="text-sm">
-            <span className="font-medium">Explicit: </span>
-            <span>{track.track.isExplicit ? "Yes" : "No"}</span>
-          </div>
-          <div className="text-sm">
-            <span className="font-medium">Categories: </span>
-            <span className="text-muted-foreground">{track.track.categoryIds?.length || 0} categories</span>
-          </div>
-          <div className="text-sm">
-            <span className="font-medium">Main Artists: </span>
-            <span className="text-muted-foreground">{track.track.mainArtistIds?.length || 0} artists</span>
-          </div>
-          <div className="text-sm">
-            <span className="font-medium">Featured Artists: </span>
-            <span className="text-muted-foreground">{track.track.featuredArtistIds?.length || 0} artists</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Release Info */}
-      {track.track.releaseInfo && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">Release Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="text-sm">
-              <span className="font-medium">Status: </span>
-              <span className={track.track.releaseInfo.isRelease ? "text-green-600" : "text-muted-foreground"}>
-                {track.track.releaseInfo.isRelease ? "Released" : "Not Released"}
-              </span>
-            </div>
-            {track.track.releaseInfo.releaseDate && (
-              <div className="text-sm">
-                <span className="font-medium">Release Date: </span>
-                <span className="text-muted-foreground">
-                  {new Date(track.track.releaseInfo.releaseDate).toLocaleDateString()}
-                </span>
-              </div>
-            )}
-            {track.track.releaseInfo.releasedAt && (
-              <div className="text-sm">
-                <span className="font-medium">Released At: </span>
-                <span className="text-muted-foreground">
-                  {new Date(track.track.releaseInfo.releasedAt).toLocaleString()}
-                </span>
-              </div>
-            )}
-            {track.track.releaseInfo.releaseStatus && (
-              <div className="text-sm">
-                <span className="font-medium">Release Status: </span>
-                <Badge variant="outline">{track.track.releaseInfo.releaseStatus}</Badge>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Request Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">Request Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="text-sm">
-            <span className="font-medium">Requested: </span>
-            <span className="text-muted-foreground">{new Date(track.requestedAt).toLocaleString()}</span>
-          </div>
-          <div className="text-sm">
-            <span className="font-medium">Created by: </span>
-            {isLoadingUser ? (
-              <span className="text-muted-foreground">Loading...</span>
-            ) : createdByUser ? (
-              <div className="text-muted-foreground">
-                <div>{createdByUser.fullName}</div>
-                <Badge variant="outline" className="mt-1 text-xs">
-                  {createdByUser.role}
-                </Badge>
-              </div>
-            ) : (
-              <span className="text-muted-foreground">{track.createdBy}</span>
-            )}
+        <CardContent className="space-y-4">          
+          {/* Approve/Reject Buttons */}
+          <div className="space-y-3">
+            <Button
+              className="w-full bg-green-600 text-white hover:bg-green-700"
+              onClick={onApprove}
+              disabled={isApproving || isRejecting}
+            >
+              <CheckCircle className="mr-2 h-4 w-4" />
+              {isApproving ? "Approving..." : "Approve Track"}
+            </Button>
+            
+            <Button
+              variant="outline"
+              className="w-full border-red-400 text-red-400 hover:bg-red-400/10"
+              onClick={onReject}
+              disabled={isApproving || isRejecting}
+            >
+              <XCircle className="mr-2 h-4 w-4" />
+              {isRejecting ? "Rejecting..." : "Reject Track"}
+            </Button>
           </div>
         </CardContent>
       </Card>

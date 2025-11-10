@@ -5,12 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { moderatorCategoriesOptions } from "@/gql/options/moderator-options";
 import { FolderOpen, Tag } from "lucide-react";
+import { Separator } from "@radix-ui/react-select";
 
 interface TrackCategoriesCardProps {
   categoryIds: string[];
+  tags?: string[];
 }
 
-export function TrackCategoriesCard({ categoryIds }: TrackCategoriesCardProps) {
+export function TrackCategoriesCard({ categoryIds, tags }: TrackCategoriesCardProps) {
   const { data: categoriesData, isLoading, error } = useQuery(moderatorCategoriesOptions(categoryIds));
 
   const categories = categoriesData?.categories?.items || [];
@@ -75,17 +77,41 @@ export function TrackCategoriesCard({ categoryIds }: TrackCategoriesCardProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FolderOpen className="h-5 w-5" />
-          Categories
+          Categories & Tags
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <Badge key={category.id} variant="outline" className="h-10 w-16 text-[14px]">
-              {category.name}
-            </Badge>
-          ))}
+        {/* Categories */}
+        <div className="space-y-2">
+          <h4 className="font-medium text-sm">Categories</h4>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <Badge key={category.id} variant="outline" className="h-8 text-sm">
+                {category.name}
+              </Badge>
+            ))}
+          </div>
         </div>
+
+        {/* Tags */}
+        {tags && tags.length > 0 && (
+          <>
+          <Separator />
+          <div className="space-y-2">
+            <h4 className="flex items-center gap-2 font-medium text-sm">
+              <Tag className="h-4 w-4" />
+              Tags
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag, index) => (
+                <Badge key={index} variant="outline" className="h-8 text-sm">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
