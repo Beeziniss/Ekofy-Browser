@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,9 @@ import { RequestsQuery } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
+import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 import RequestHubCommentSection from "./comment-section";
+import { StripeAccountRequiredModal } from "@/modules/shared/ui/components/stripe-account-required-modal";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
@@ -32,9 +35,14 @@ interface RequestDetailViewProps {
 }
 
 export function RequestDetailView({ request, onBack, onApply, onContactClient, className }: RequestDetailViewProps) {
+  const [showStripeModal, setShowStripeModal] = useState(false);
+  
   // Get auth state and dialog
   const { isAuthenticated } = useAuthStore();
   const { showAuthDialog } = useAuthDialog();
+
+  // Get Stripe account status
+  const { isArtist, hasStripeAccount } = useStripeAccountStatus();
 
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
@@ -108,7 +116,17 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
       showAuthDialog("apply", request.title);
       return;
     }
-    onApply();
+
+    // Check if user is artist and has stripe account
+    if (isArtist && !hasStripeAccount) {
+      setShowStripeModal(true);
+      return;
+    }
+
+    // Only allow artists to apply
+    if (isArtist) {
+      onApply();
+    }
   };
 
   const handleContactClient = () => {
@@ -116,7 +134,17 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
       showAuthDialog("contact", request.title);
       return;
     }
-    onContactClient();
+
+    // Check if user is artist and has stripe account for contact
+    if (isArtist && !hasStripeAccount) {
+      setShowStripeModal(true);
+      return;
+    }
+
+    // Only allow artists to contact client
+    if (isArtist) {
+      onContactClient();
+    }
   };
 
   return (
@@ -157,17 +185,13 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span>Posted {formatTimeAgo(request.createdAt)}</span>
-                  <div className="flex items-center">
-                    <MessageCircle className="mr-1 h-4 w-4" />
-                    View Comments
-                  </div>
                 </div>
               </div>
             </div>
 
             {/* Summary */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="py-0 px-6">
                 <h2 className="mb-4 text-lg font-semibold">Summary</h2>
                 <p className="mb-4 leading-relaxed text-white">{request.summary}</p>
               </CardContent>
@@ -175,7 +199,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
 
             {/* Detail Description */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="py-0 px-6">
                 <h2 className="mb-4 text-lg font-semibold">Detailed Description</h2>
                 <div
                   className="prose prose-invert max-w-none leading-relaxed text-white"
@@ -186,13 +210,18 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
 
             {/* Status */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="py-0 px-6">
                 <h2 className="mb-4 text-lg font-semibold">Request Status</h2>
                 <Badge variant={getStatusVariant(request.status)} className="px-3 py-1 text-sm">
                   {formatStatus(request.status)}
                 </Badge>
               </CardContent>
             </Card>
+
+            {/* Comments Section */}
+            <div className="mt-8">
+              <RequestHubCommentSection requestId={request.id} />
+            </div>
           </div>
 
           {/* Sidebar */}
@@ -200,7 +229,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
             <div className="sticky top-20">
               {/* Budget */}
               <Card>
-                <CardContent className="p-6">
+                <CardContent className="py-0 px-6">
                   <div className="mb-2 flex items-center text-gray-500">
                     <DollarSign className="mr-1 h-4 w-4" />
                     <span className="text-sm">Budget</span>
@@ -239,12 +268,14 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
             </div>
           </div>
         </div>
-
-        {/* Comments Section */}
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <RequestHubCommentSection requestId={request.id} />
-        </div>
       </div>
+
+      {/* Stripe Account Required Modal */}
+      <StripeAccountRequiredModal
+        open={showStripeModal}
+        onOpenChange={setShowStripeModal}
+        onCancel={() => setShowStripeModal(false)}
+      />
     </div>
   );
 }

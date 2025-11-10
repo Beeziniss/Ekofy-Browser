@@ -1,0 +1,1 @@
+export { StripeFailView } from "./stripe-fail-view";

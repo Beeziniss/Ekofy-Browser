@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,12 +10,8 @@ import { Search, X } from "lucide-react";
 import ServicePackageList from "../component/service-package-list/service-package-list";
 import PendingPackageList from "../component/service-package-list/pending-package-list";
 import DeleteConfirmModal from "../component/delete-package-service/delete-confirm-modal";
-import { execute } from "@/gql/execute";
 import { artistPackagesOptions, pendingPackagesOptions } from "@/gql/options/artist-options";
-import {
-  changeArtistPackageStatusMutation,
-  deleteArtistPackageMutation,
-} from "@/modules/artist/service-package/ui/view/service-package-service-view";
+import { usePackageOperations } from "../../hooks/use-package-operations";
 import { ArtistPackageStatus } from "@/gql/graphql";
 import { useAuthStore } from "@/store";
 interface ServicePackageListSectionProps {
@@ -38,8 +33,9 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pendingCurrentPage, setPendingCurrentPage] = useState<number>(1);
   const pageSize = 10;
-  const queryClient = useQueryClient();
   const { user } = useAuthStore();
+  
+  const { changePackageStatus, deletePackage } = usePackageOperations();
 
   useEffect(() => {
     if (user?.artistId) {
@@ -65,49 +61,8 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
     enabled: !!artistId && currentView === "pending",
   });
 
-  // Mutation for changing package status
-  const changeStatusMutation = useMutation({
-    mutationFn: (variables: { packageId: string; status: ArtistPackageStatus }) =>
-      execute(changeArtistPackageStatusMutation, {
-        updateStatusRequest: {
-          id: variables.packageId,
-          status: variables.status,
-        },
-      }),
-    onSuccess: () => {
-      toast.success("Package status updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["artist-packages"] });
-      queryClient.invalidateQueries({ queryKey: ["pending-packages"] });
-      queryClient.invalidateQueries({ queryKey: ["moderator-pending-packages"] });
-    },
-    onError: (error) => {
-      toast.error("Failed to update package status");
-      console.error("Status change error:", error);
-    },
-  });
-
-  // Mutation for deleting package
-  const deletePackageMutation = useMutation({
-    mutationFn: (packageId: string) =>
-      execute(deleteArtistPackageMutation, {
-        artistPackageId: packageId,
-      }),
-    onSuccess: () => {
-      toast.success("Package deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["artist-packages"] });
-      queryClient.invalidateQueries({ queryKey: ["pending-packages"] });
-      queryClient.invalidateQueries({ queryKey: ["moderator-pending-packages"] });
-      setDeleteModalOpen(false);
-      setPackageToDelete("");
-    },
-    onError: (error) => {
-      toast.error("Failed to delete package");
-      console.error("Delete error:", error);
-    },
-  });
-
   const handleStatusChange = (packageId: string, status: ArtistPackageStatus) => {
-    changeStatusMutation.mutate({ packageId, status });
+    changePackageStatus(packageId, status);
   };
 
   const handleDeletePackage = (packageId: string) => {
@@ -117,7 +72,12 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
 
   const handleConfirmDelete = () => {
     if (packageToDelete) {
-      deletePackageMutation.mutate(packageToDelete);
+      deletePackage(packageToDelete, {
+        onSuccess: () => {
+          setDeleteModalOpen(false);
+          setPackageToDelete("");
+        },
+      });
     }
   };
 
@@ -156,7 +116,7 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
   const handleCancelPendingPackage = (packageId: string) => {
     // This would typically call a cancel pending package mutation
     console.log("Cancel pending package:", packageId);
-    toast.info("Cancel pending package functionality to be implemented");
+    // TODO: Implement cancel pending package functionality
   };
 
   const packages = useMemo(() => packagesData?.artistPackages?.items || [], [packagesData]);

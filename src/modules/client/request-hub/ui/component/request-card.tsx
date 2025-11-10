@@ -9,10 +9,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MessageCircle, Clock, Send, ChevronDown, ChevronUp, SquarePen } from "lucide-react";
 import { RequestsQuery } from "@/gql/graphql";
 import { userForRequestsOptions, requestHubCommentsOptions } from "@/gql/options/client-options";
-import { RequestHubCommentSection } from "./";
+import { RequestHubCommentSection, StripeAccountRequiredModal } from "./";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
+import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
@@ -28,10 +29,14 @@ interface RequestCardProps {
 
 export function RequestCard({ request, onViewDetails, onApply, onEdit, className, isOwner = false }: RequestCardProps) {
   const [showComments, setShowComments] = useState(false);
+  const [showStripeModal, setShowStripeModal] = useState(false);
 
   // Get auth state and dialog
   const { isAuthenticated } = useAuthStore();
   const { showAuthDialog } = useAuthDialog();
+
+  // Get Stripe account status
+  const { isArtist, hasStripeAccount } = useStripeAccountStatus();
 
   // Fetch user data for the request creator
   const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
@@ -94,7 +99,17 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
       showAuthDialog("apply", request.title);
       return;
     }
-    onApply?.(request.id);
+
+    // Check if user is artist and has stripe account
+    if (isArtist && !hasStripeAccount) {
+      setShowStripeModal(true);
+      return;
+    }
+
+    // Only allow artists to apply
+    if (isArtist) {
+      onApply?.(request.id);
+    }
   };
 
   const handleEdit = () => {
@@ -145,7 +160,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
 
   return (
     <Card className={cn("w-full transition-shadow hover:shadow-md", className)}>
-      <CardContent className="p-6">
+      <CardContent className="py-0 px-6">
         {/* Header with Avatar and Save Button */}
         <div className="mb-4 flex items-start justify-between">
           <div className="flex items-center space-x-3">
@@ -226,10 +241,17 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
 
       {/* Comments Section */}
       {showComments && (
-        <div className="border-t border-gray-100">
+        <div className="border-t border-gray-100 px-6">
           <RequestHubCommentSection requestId={request.id} />
         </div>
       )}
+
+      {/* Stripe Account Required Modal */}
+      <StripeAccountRequiredModal
+        open={showStripeModal}
+        onOpenChange={setShowStripeModal}
+        onCancel={() => setShowStripeModal(false)}
+      />
     </Card>
   );
 }

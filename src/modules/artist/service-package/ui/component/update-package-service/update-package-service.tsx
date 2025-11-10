@@ -10,7 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Clock, RotateCcw } from "lucide-react";
 import { ArtistPackage } from "@/gql/graphql";
+import { usePackageUtils } from "../../../hooks";
 
 const updatePackageSchema = z.object({
   id: z.string().min(1, "Package ID is required"),
@@ -35,6 +37,7 @@ const UpdatePackageService = ({
   onDelete,
   isLoading = false,
 }: UpdatePackageServiceProps) => {
+  const { formatCurrency, formatRevisionText } = usePackageUtils();
   const form = useForm<UpdatePackageFormData>({
     resolver: zodResolver(updatePackageSchema),
     defaultValues: {
@@ -91,12 +94,20 @@ const UpdatePackageService = ({
                   <div>
                     <span className="text-gray-400">Amount:</span>
                     <span className="ml-2 text-white">
-                      {pkg.amount.toLocaleString()} {pkg.currency}
+                      {formatCurrency(pkg.amount, pkg.currency)}
                     </span>
                   </div>
-                  <div>
-                    <span className="text-gray-400">Delivery Days:</span>
-                    <span className="ml-2 text-white">{pkg.estimateDeliveryDays}</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-gray-400" />
+                      <span className="text-gray-400">Delivery:</span>
+                      <span className="text-white">{pkg.estimateDeliveryDays} days</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RotateCcw className="h-4 w-4 text-gray-400" />
+                      <span className="text-gray-400">Revisions:</span>
+                      <span className="text-white">{formatRevisionText(pkg.maxRevision || 0)}</span>
+                    </div>
                   </div>
                   <div>
                     <span className="text-gray-400">Created:</span>

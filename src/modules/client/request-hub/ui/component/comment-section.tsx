@@ -89,7 +89,7 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
   const totalComments = getTotalCommentCount();
 
   return (
-    <div className="w-full space-y-6 rounded-lg border border-gray-700/50 p-4">
+    <div className="w-full space-y-6">
       {/* Comments Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
