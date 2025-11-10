@@ -30,3 +30,22 @@ export const payoutStatusBadge = (status: PayoutTransactionStatus) => {
       return <Badge className="border-gray-200 bg-gray-100 text-gray-800">Unknown</Badge>;
   }
 };
+
+export const methodBadge = (method: string, index: number) => {
+  switch (method) {
+    case "card":
+      return (
+        <Badge key={index} className="text-main-white bg-blue-500">
+          Card
+        </Badge>
+      );
+    case "link":
+      return (
+        <Badge key={index} className="text-main-white bg-purple-500">
+          Link
+        </Badge>
+      );
+    default:
+      return <Badge key={index}>{method}</Badge>;
+  }
+};

@@ -12,8 +12,8 @@ interface DetailViewProps {
     readonly gender: UserGender | undefined;
   };
   account: {
-    readonly createdAt: string | undefined;
-    readonly membershipStatus: string;
+    createdAt: string;
+    membershipStatus: string;
   };
   userId?: string;
 }

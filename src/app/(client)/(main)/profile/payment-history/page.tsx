@@ -9,9 +9,9 @@ export default function PaymentHistoryPage() {
         <h1 className="text-2xl font-bold">Payment History</h1>
         <Link
           href="/profile"
-          className="hover:border-main-white flex items-center gap-x-2 pb-0.5 font-normal transition hover:border-b"
+          className="hover:border-main-white flex items-center gap-x-2 pb-0.5 text-sm font-normal transition hover:border-b"
         >
-          <ArrowLeftIcon className="size-4" /> Back to Profile
+          <ArrowLeftIcon className="w-4" /> Back to Profile
         </Link>
       </div>
       <p className="text-muted-foreground mb-2 text-sm">All payments you made on Ekofy.</p>

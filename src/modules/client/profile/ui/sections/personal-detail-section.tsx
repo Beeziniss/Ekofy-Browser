@@ -193,12 +193,7 @@ const PersonalDetailSection = ({ personal, userId }: PersonalDetailSectionProps)
             </Button>
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
               <AlertDialogTrigger asChild>
-                <Button
-                  type="button"
-                  className="bg-main-purple hover:bg-main-purple/90"
-                  onClick={form.handleSubmit(onSubmit)}
-                  disabled={isPending}
-                >
+                <Button type="button" variant={"ekofy"} onClick={form.handleSubmit(onSubmit)} disabled={isPending}>
                   {isPending ? "Saving..." : "Save"}
                 </Button>
               </AlertDialogTrigger>

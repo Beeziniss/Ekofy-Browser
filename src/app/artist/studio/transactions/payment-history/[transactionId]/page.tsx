@@ -1,32 +1,19 @@
-"use client";
-
-import React, { Suspense } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { useAuthStore } from "@/store";
-import { UserRole } from "@/types/role";
+import { artistTransactionByIdOptions } from "@/gql/options/artist-activity-options";
 import TransactionDetailSection from "@/modules/artist/studio/ui/sections/transactions/transaction-detail-section";
+import { getQueryClient } from "@/providers/get-query-client";
 
-export default function ArtistTransactionDetailPage() {
-  const router = useRouter();
-  const params = useParams<{ transactionId: string }>();
-  const { isAuthenticated, user, clearUserData } = useAuthStore();
-
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/login");
-      return;
-    }
-    if (user?.role !== UserRole.ARTIST) {
-      clearUserData();
-      router.replace("/login");
-    }
-  }, [isAuthenticated, user?.role, router, clearUserData]);
-
-  if (!isAuthenticated || user?.role !== UserRole.ARTIST) return null;
-
-  return (
-    <Suspense fallback={<div className="p-4">Loading transaction…</div>}>
-      <TransactionDetailSection referenceId={params.transactionId} backHref="/artist/studio/transactions/payment-history" />
-    </Suspense>
-  );
+interface PageProps {
+  params: Promise<{ transactionId: string }>;
 }
+
+const ArtistTransactionDetailPage = async ({ params }: PageProps) => {
+  const { transactionId } = await params;
+
+  const queryClient = getQueryClient();
+  void queryClient.prefetchQuery(artistTransactionByIdOptions({ id: transactionId }));
+  return (
+    <TransactionDetailSection referenceId={transactionId} backHref="/artist/studio/transactions/payment-history" />
+  );
+};
+
+export default ArtistTransactionDetailPage;

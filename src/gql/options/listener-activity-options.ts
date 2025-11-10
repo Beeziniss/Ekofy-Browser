@@ -69,9 +69,8 @@ export function listenerInvoicesOptions(params: { userId: string; page: number; 
 // Detail by ID: Payment Transaction (listener)
 export function listenerTransactionByIdOptions(params: { id: string }) {
   const { id } = params;
-  // Support both internal id and stripePaymentId lookups
   const where: PaymentTransactionFilterInput = {
-    or: [{ id: { eq: id } }, { stripePaymentId: { eq: id } }],
+    or: [{ id: { eq: id } }],
   };
 
   const take = 1;

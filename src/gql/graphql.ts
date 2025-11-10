@@ -403,6 +403,43 @@ export type ArtistRegistrationApprovalRequestInput = {
   userId: Scalars['String']['input'];
 };
 
+export type ArtistRevenue = {
+  __typename?: 'ArtistRevenue';
+  createdAt: Scalars['DateTime']['output'];
+  grossRevenue: Scalars['Decimal']['output'];
+  id: Scalars['String']['output'];
+  netEarnings: Scalars['Decimal']['output'];
+  refundAmount: Scalars['Decimal']['output'];
+  royaltyEarnings: Scalars['Decimal']['output'];
+  serviceRevenue: Scalars['Decimal']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId: Scalars['String']['output'];
+};
+
+export type ArtistRevenueFilterInput = {
+  and?: InputMaybe<Array<ArtistRevenueFilterInput>>;
+  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  grossRevenue?: InputMaybe<DecimalOperationFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<ArtistRevenueFilterInput>>;
+  refundAmount?: InputMaybe<DecimalOperationFilterInput>;
+  royaltyEarnings?: InputMaybe<DecimalOperationFilterInput>;
+  serviceRevenue?: InputMaybe<DecimalOperationFilterInput>;
+  updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
+  userId?: InputMaybe<StringOperationFilterInput>;
+};
+
+export type ArtistRevenueSortInput = {
+  createdAt?: InputMaybe<SortEnumType>;
+  grossRevenue?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  refundAmount?: InputMaybe<SortEnumType>;
+  royaltyEarnings?: InputMaybe<SortEnumType>;
+  serviceRevenue?: InputMaybe<SortEnumType>;
+  updatedAt?: InputMaybe<SortEnumType>;
+  userId?: InputMaybe<SortEnumType>;
+};
+
 export enum ArtistRole {
   Composer = 'COMPOSER',
   Featured = 'FEATURED',
@@ -1131,7 +1168,6 @@ export type CreateSubscriptionRequestInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   price: Scalars['Decimal']['input'];
-  status: SubscriptionStatus;
   tier: SubscriptionTier;
 };
 
@@ -2131,6 +2167,7 @@ export enum MoodType {
 
 export type MutationInitialization = {
   __typename?: 'MutationInitialization';
+  activateSubscription: Scalars['Boolean']['output'];
   addConversationFromRequestHub: Scalars['Boolean']['output'];
   addToFavoritePlaylist: Scalars['Boolean']['output'];
   addToFavoriteTrack: Scalars['Boolean']['output'];
@@ -2143,6 +2180,7 @@ export type MutationInitialization = {
   blockRequest: Scalars['Boolean']['output'];
   cancelSubscriptionAtPeriodEnd: Scalars['Boolean']['output'];
   changeArtistPackageStatus: Scalars['Boolean']['output'];
+  computeArtistRevenueByArtistId: ArtistRevenue;
   computePlatformRevenue: PlatformRevenue;
   createAdmin: Scalars['Boolean']['output'];
   createArtistPackage: Scalars['Boolean']['output'];
@@ -2176,7 +2214,6 @@ export type MutationInitialization = {
   deleteReviewSoft: Scalars['Boolean']['output'];
   deleteUserManual: Scalars['Boolean']['output'];
   deprecateCoupon: Scalars['Boolean']['output'];
-  deprecateSubscription: Scalars['Boolean']['output'];
   downgradeEscrowCommissionPolicyVersion: Scalars['Boolean']['output'];
   downgradeRoyaltyPolicyVersion: Scalars['Boolean']['output'];
   entitlementUserCount: Scalars['Long']['output'];
@@ -2213,6 +2250,11 @@ export type MutationInitialization = {
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
   upsertTopTrackCount: Scalars['Boolean']['output'];
+};
+
+
+export type MutationInitializationActivateSubscriptionArgs = {
+  subscriptionId: Scalars['String']['input'];
 };
 
 
@@ -2271,6 +2313,11 @@ export type MutationInitializationBlockRequestArgs = {
 
 export type MutationInitializationChangeArtistPackageStatusArgs = {
   updateStatusRequest: UpdateStatusArtistPackageRequestInput;
+};
+
+
+export type MutationInitializationComputeArtistRevenueByArtistIdArgs = {
+  artistId: Scalars['String']['input'];
 };
 
 
@@ -2433,11 +2480,6 @@ export type MutationInitializationDeleteUserManualArgs = {
 
 export type MutationInitializationDeprecateCouponArgs = {
   couponIds: Array<Scalars['String']['input']>;
-};
-
-
-export type MutationInitializationDeprecateSubscriptionArgs = {
-  subscriptionId: Scalars['String']['input'];
 };
 
 
@@ -3300,6 +3342,7 @@ export type QueryInitialization = {
   approvalHistories?: Maybe<ApprovalHistoriesCollectionSegment>;
   artistPackages?: Maybe<ArtistPackagesCollectionSegment>;
   artistPackagesInConversation?: Maybe<ArtistPackagesInConversationCollectionSegment>;
+  artistRevenues: Array<ArtistRevenue>;
   artists?: Maybe<ArtistsCollectionSegment>;
   categories?: Maybe<CategoriesCollectionSegment>;
   commentDepth: Scalars['Int']['output'];
@@ -3385,6 +3428,12 @@ export type QueryInitializationArtistPackagesInConversationArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ArtistPackageFilterInput>;
+};
+
+
+export type QueryInitializationArtistRevenuesArgs = {
+  order?: InputMaybe<Array<ArtistRevenueSortInput>>;
+  where?: InputMaybe<ArtistRevenueFilterInput>;
 };
 
 
@@ -6111,7 +6160,7 @@ export type GetUserActiveSubscriptionQueryVariables = Exact<{
 }>;
 
 
-export type GetUserActiveSubscriptionQuery = { __typename?: 'QueryInitialization', userSubscriptions?: { __typename?: 'UserSubscriptionsCollectionSegment', items?: Array<{ __typename?: 'UserSubscription', id: string, isActive: boolean, subscription: Array<{ __typename?: 'Subscription', tier: SubscriptionTier, status: SubscriptionStatus, name: string }> }> | null } | null };
+export type GetUserActiveSubscriptionQuery = { __typename?: 'QueryInitialization', userSubscriptions?: { __typename?: 'UserSubscriptionsCollectionSegment', items?: Array<{ __typename?: 'UserSubscription', id: string, isActive: boolean, subscriptionId: string, subscription: Array<{ __typename?: 'Subscription', tier: SubscriptionTier, status: SubscriptionStatus, name: string }> }> | null } | null };
 
 export type ApprovalHistoriesListQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -7687,6 +7736,7 @@ export const GetUserActiveSubscriptionDocument = new TypedDocumentString(`
     items {
       id
       isActive
+      subscriptionId
       subscription {
         tier
         status

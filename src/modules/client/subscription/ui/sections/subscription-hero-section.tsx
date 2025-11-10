@@ -57,7 +57,7 @@ export function SubscriptionHeroSection({ onExploreClick, isArtist }: Subscripti
   const features = isArtist ? artistFeatures : listenerFeatures;
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-800">
+    <section className="relative h-[calc(100dvh-64px-48px)] overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-800">
       <div className="absolute inset-0 bg-black/10" />
 
       {/* Animated Background Elements */}

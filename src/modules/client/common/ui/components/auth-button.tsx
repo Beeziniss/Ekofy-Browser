@@ -13,13 +13,18 @@ import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { SparklesColorful } from "@/assets/icons";
+import { SparklesColorful, Crown } from "@/assets/icons";
 import { authApi } from "@/services/auth-services";
 import { getUserInitials } from "@/utils/format-shorten-name";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { artistOptions, listenerOptions } from "@/gql/options/client-options";
+import { artistOptions, listenerOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
 import { AudioLines, Bell, LogOut, MicVocalIcon, Settings, User } from "lucide-react";
+
+interface ProfileLink {
+  label: string;
+  href: string;
+}
 
 const AuthButton = () => {
   const router = useRouter();
@@ -42,14 +47,19 @@ const AuthButton = () => {
     },
   });
 
-  const { data: listenerData } = useQuery(listenerOptions(user?.userId || "", user?.listenerId));
-  const { data: artistData } = useQuery(artistOptions({ userId: user?.userId || "", artistId: user?.artistId }));
-
   const handleLogout = () => {
     logout();
   };
 
-  const profileLinks: { label: string; href: string }[] = [];
+  const { data: listenerData } = useQuery(listenerOptions(user?.userId || "", user?.listenerId));
+  const { data: artistData } = useQuery(artistOptions({ userId: user?.userId || "", artistId: user?.artistId }));
+
+  const { data: userSubscription } = useQuery({
+    ...userActiveSubscriptionOptions(user?.userId || ""),
+    enabled: !!user?.userId && (!!listenerData || !!artistData) && isAuthenticated,
+  });
+
+  const profileLinks: ProfileLink[] = [];
   if (isAuthenticated && user) {
     switch (user.role) {
       case UserRole.LISTENER:
@@ -94,11 +104,11 @@ const AuthButton = () => {
       className: "text-main-white",
       showForRoles: [UserRole.ARTIST],
     },
-    // Premium option (available for all)
+    // Premium/Pro option (available for all)
     {
       type: "button" as const,
       icon: SparklesColorful,
-      label: "Go Premium",
+      label: user?.role === UserRole.ARTIST ? "Go Pro" : "Go Premium",
       className: "primary_gradient !bg-gradient-to-b bg-clip-text text-base font-semibold text-transparent",
       showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
     },
@@ -142,25 +152,35 @@ const AuthButton = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Avatar className="size-10 cursor-pointer">
-                <AvatarImage
-                  src={
-                    listenerData?.listeners?.items?.[0].avatarImage ||
-                    artistData?.artists?.items?.[0].avatarImage ||
-                    undefined
-                  }
-                  alt={
-                    listenerData?.listeners?.items?.[0].displayName ||
-                    artistData?.artists?.items?.[0].stageName ||
-                    "User Avatar"
-                  }
-                />
-                <AvatarFallback>
-                  {getUserInitials(
-                    listenerData?.listeners?.items?.[0].displayName || artistData?.artists?.items?.[0].stageName || "E",
-                  )}
-                </AvatarFallback>
-              </Avatar>
+              <div
+                className={`${userSubscription?.subscription[0].tier === "PREMIUM" || userSubscription?.subscription[0].tier === "PRO" ? "primary_gradient relative flex size-9 items-center justify-center rounded-full p-0.5" : ""}`}
+              >
+                <Avatar className="size-8 cursor-pointer">
+                  <AvatarImage
+                    src={
+                      listenerData?.listeners?.items?.[0].avatarImage ||
+                      artistData?.artists?.items?.[0].avatarImage ||
+                      undefined
+                    }
+                    alt={
+                      listenerData?.listeners?.items?.[0].displayName ||
+                      artistData?.artists?.items?.[0].stageName ||
+                      "User Avatar"
+                    }
+                  />
+                  <AvatarFallback>
+                    {getUserInitials(
+                      listenerData?.listeners?.items?.[0].displayName ||
+                        artistData?.artists?.items?.[0].stageName ||
+                        "E",
+                    )}
+                  </AvatarFallback>
+                </Avatar>
+                {(userSubscription?.subscription[0].tier === "PREMIUM" ||
+                  userSubscription?.subscription[0].tier === "PRO") && (
+                  <Crown className="absolute -top-1 -right-1.5 w-3 rotate-45" />
+                )}
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="start">
               <DropdownMenuGroup>

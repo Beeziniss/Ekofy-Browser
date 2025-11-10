@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PaymentTransaction, TransactionStatus } from "@/gql/graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
+import { methodBadge, paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import { useCheckoutSession } from "@/hooks/use-checkout-session";
 import { useEffect, useState } from "react";
 
@@ -27,7 +26,6 @@ export default function PaymentTransactionDetailSection({
 }: PaymentTransactionDetailProps) {
   const { getSession } = useCheckoutSession();
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
-  const statusBadge = paymentStatusBadge;
 
   // Load checkout session on component mount
   useEffect(() => {
@@ -57,25 +55,6 @@ export default function PaymentTransactionDetailSection({
     }
   };
 
-  const methodBadge = (method: string, index: number) => {
-    switch (method) {
-      case "card":
-        return (
-          <Badge key={index} className="text-main-white bg-blue-500">
-            Card
-          </Badge>
-        );
-      case "link":
-        return (
-          <Badge key={index} className="text-main-white bg-purple-500">
-            Link
-          </Badge>
-        );
-      default:
-        return <Badge key={index}>{method}</Badge>;
-    }
-  };
-
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-6 md:px-6">
       <div className="mb-4 flex items-center justify-between">
@@ -95,7 +74,7 @@ export default function PaymentTransactionDetailSection({
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
             <span>#{transaction.id.slice(-8)}</span>
-            {statusBadge(transaction.paymentStatus)}
+            {paymentStatusBadge(transaction.paymentStatus)}
           </CardTitle>
         </CardHeader>
         <CardContent>

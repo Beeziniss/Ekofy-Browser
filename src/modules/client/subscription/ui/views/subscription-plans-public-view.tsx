@@ -26,23 +26,16 @@ export function SubscriptionPlansPublicView() {
   const { user } = useAuthStore();
   const { saveSession } = useCheckoutSession();
 
-  // Determine user role (default to guest if not authenticated)
   const userRole = user?.role;
   const isArtist = userRole === UserRole.ARTIST;
 
   const { mutateAsync: buySubscription } = useMutation(subscriptionCreateCheckoutSessionMutationOptions);
-
-  // Query for subscriptions based on user role
   const { data: subscriptionsData, isLoading: subscriptionsLoading } = useQuery(
     isArtist ? subscriptionsProQueryOptions() : subscriptionsPremiumQueryOptions(),
   );
-
-  // Query for entitlements based on user role
   const { data: entitlementsData, isLoading: entitlementsLoading } = useQuery(
     isArtist ? artistProEntitlementsQueryOptions() : listenerPremiumEntitlementsQueryOptions(),
   );
-
-  // Query for coupons based on user role
   const { data: couponsData, isLoading: couponsLoading } = useQuery(
     isArtist ? availableCouponsQueryARTIST20FOREVEROptions() : availableCouponsQueryLISTENER10FOREVEROptions(),
   );
@@ -70,17 +63,13 @@ export function SubscriptionPlansPublicView() {
     enabled: !isArtist && !!subscriptionId,
   });
 
-  // Use the appropriate data based on user role
   const plansData = proPlansData || premiumPlansData;
   const plansError = proPlansError || premiumPlansError;
   const plansLoading = proPlansLoading || premiumPlansLoading;
 
   const plans = plansData?.subscriptionPlans?.items || [];
-
-  // Extract features from entitlements
   const features = entitlementsData?.entitlements?.items?.map((item) => item.name) || [];
 
-  // Get coupon discount
   const coupon = couponsData?.coupons?.items?.[0];
   const couponDiscount = coupon?.percentOff || 0;
 
@@ -95,7 +84,7 @@ export function SubscriptionPlansPublicView() {
       const { createSubscriptionCheckoutSession } = await buySubscription({
         successUrl: window.location.origin,
         cancelUrl: window.location.origin,
-        isSavePaymentMethod: true,
+        isSavePaymentMethod: false,
         period,
         subscriptionCode,
       });

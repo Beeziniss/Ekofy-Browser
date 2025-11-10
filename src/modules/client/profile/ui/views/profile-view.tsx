@@ -8,13 +8,13 @@ import { useAuthStore } from "@/store";
 
 export default function ProfileView() {
   const profileData = useClientProfile();
-  const { personal, data, account } = profileData;
+  const { personal, account, avatarImage, bannerImage } = profileData;
   const { user } = useAuthStore();
 
   const profileHeader = {
     name: personal.displayName || personal.email || "User",
-    avatarUrl: data?.avatarImage || "",
-    backgroundUrl: data?.bannerImage || "/image- login.png",
+    avatarUrl: avatarImage || "",
+    backgroundUrl: bannerImage || "/image-login.png",
     userId: user?.userId || "",
   };
 

@@ -6,10 +6,11 @@ import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/utils/format-number";
-import { PeriodTime, SubscriptionPlan } from "@/gql/graphql";
+import { PeriodTime, SubscriptionPlan, UserRole } from "@/gql/graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { listenerOpenTransactionsOptions } from "@/gql/options/listener-activity-options";
+import { userActiveSubscriptionOptions } from "@/gql/options/client-options";
 import { useAuthStore } from "@/store";
 
 interface SubscriptionPlanCardProps {
@@ -35,9 +36,18 @@ export function SubscriptionPlanCard({
     enabled: !!user?.userId,
   });
 
+  // Check for active subscription
+  const { data: userActiveSubscription } = useQuery({
+    ...userActiveSubscriptionOptions(user?.userId || ""),
+    enabled: !!user?.userId,
+  });
+
   const hasOpenTransaction =
     openTransactionData?.transactions?.items && openTransactionData.transactions.items.length > 0;
   const openTransaction = hasOpenTransaction ? openTransactionData?.transactions?.items?.[0] : null;
+
+  // Check if this plan is the user's current active plan
+  const isCurrentPlan = userActiveSubscription?.subscription?.[0]?.tier === subscription.tier;
 
   const isPro = subscription.tier === "PRO";
   const isPremium = subscription.tier === "PREMIUM";
@@ -260,9 +270,15 @@ export function SubscriptionPlanCard({
         </div>
 
         {/* Action Button */}
-        {hasOpenTransaction && openTransaction ? (
+        {isCurrentPlan ? (
+          <div
+            className={`inline-flex h-12 w-full items-center justify-center text-base font-semibold ${styling.textColor} border-main-white/30 cursor-default rounded-md border ${styling.subTextColor}`}
+          >
+            Current Plan
+          </div>
+        ) : hasOpenTransaction && openTransaction ? (
           <Link
-            href={`/profile/payment-history/${openTransaction.stripePaymentId || openTransaction.id}`}
+            href={`${String(user?.role) === String(UserRole.Artist) ? "/artist/studio" : "/profile"}/transactions/payment-history/${openTransaction.id}`}
             className={`inline-flex h-12 w-full items-center justify-center text-base font-semibold transition-all duration-200 ${styling.buttonClass} rounded-md`}
           >
             Continue Payment
