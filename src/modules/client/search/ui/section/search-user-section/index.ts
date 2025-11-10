@@ -1,1 +1,1 @@
-export { SearchArtistSection } from './search-artist-section';
+export { SearchArtistSection } from "./search-artist-section";

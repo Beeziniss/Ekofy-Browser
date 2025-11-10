@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import EkofyLogo from "../../../../../../public/ekofy-logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import useArtistSignIn from "../../hook/use-artist-sign-in";
+import { EkofyLogo } from "@/assets/icons";
 
 const ArtistLoginFormSection = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,8 +20,8 @@ const ArtistLoginFormSection = () => {
   // Custom validation function
   const validateField = (field: string, value: string) => {
     const errors = { ...customErrors };
-    
-    if (field === 'email') {
+
+    if (field === "email") {
       if (!value) {
         errors.email = "Email is required";
       } else if (value.length > 50) {
@@ -33,8 +32,8 @@ const ArtistLoginFormSection = () => {
         delete errors.email;
       }
     }
-    
-    if (field === 'password') {
+
+    if (field === "password") {
       if (!value) {
         errors.password = "Password is required";
       } else if (value.length < 6) {
@@ -45,25 +44,25 @@ const ArtistLoginFormSection = () => {
         delete errors.password;
       }
     }
-    
+
     setCustomErrors(errors);
     return !errors[field];
   };
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Clear custom errors
     setCustomErrors({});
-    
+
     // Validate all fields
     const emailValid = validateField("email", email);
     const passwordValid = validateField("password", password);
-    
+
     if (!emailValid || !passwordValid) {
       return;
     }
-    
+
     signIn({
       email,
       password,
@@ -77,16 +76,12 @@ const ArtistLoginFormSection = () => {
         <div className="mb-8 text-center">
           <div className="mb-6 flex items-center justify-center">
             <div className="mr-3 flex items-center justify-center rounded-full">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+              <EkofyLogo className="size-[60px]" />
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="mb-4 text-3xl font-bold text-white">
-            Welcome Back, Artist
-          </h2>
-          <p className="text-sm text-gray-300">
-            Enter your email and password to access your artist account
-          </p>
+          <h2 className="mb-4 text-3xl font-bold text-white">Welcome Back, Artist</h2>
+          <p className="text-sm text-gray-300">Enter your email and password to access your artist account</p>
         </div>
 
         {/* Login Form */}
@@ -118,9 +113,7 @@ const ArtistLoginFormSection = () => {
                 customErrors.email ? "border-red-500" : ""
               }`}
             />
-            {customErrors.email && (
-              <p className="mt-1 text-sm text-red-400">{customErrors.email}</p>
-            )}
+            {customErrors.email && <p className="mt-1 text-sm text-red-400">{customErrors.email}</p>}
           </div>
 
           {/* Password Field */}
@@ -155,18 +148,12 @@ const ArtistLoginFormSection = () => {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isLoading}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white"
+                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {customErrors.password && (
-              <p className="mt-1 text-sm text-red-400">{customErrors.password}</p>
-            )}
+            {customErrors.password && <p className="mt-1 text-sm text-red-400">{customErrors.password}</p>}
           </div>
 
           {/* Remember Me and Forgot Password */}
@@ -177,14 +164,9 @@ const ArtistLoginFormSection = () => {
                 onCheckedChange={(checked) => setRememberMe(!!checked)}
                 className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
               />
-              <label className="cursor-pointer text-sm text-white">
-                Remember me
-              </label>
+              <label className="cursor-pointer text-sm text-white">Remember me</label>
             </div>
-            <Link
-              href="#"
-              className="text-sm text-white underline transition-colors hover:text-blue-400"
-            >
+            <Link href="#" className="text-sm text-white underline transition-colors hover:text-blue-400">
               Forgot your password?
             </Link>
           </div>
@@ -202,9 +184,7 @@ const ArtistLoginFormSection = () => {
 
         {/* Sign Up Link */}
         <div className="mt-6 text-center">
-          <span className="text-sm text-white">
-            Don&apos;t have an artist account?{" "}
-          </span>
+          <span className="text-sm text-white">Don&apos;t have an artist account? </span>
           <Link
             href="/artist/sign-up"
             className="font-medium text-white underline transition-colors hover:text-blue-400"

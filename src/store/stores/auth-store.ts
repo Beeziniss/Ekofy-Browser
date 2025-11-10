@@ -39,8 +39,6 @@ const syncAuthWithCookies = (state: Partial<AuthState>) => {
           },
         };
 
-        console.log("Syncing auth data to cookies:", authData);
-
         // Set cookie with auth data for middleware access
         const cookieValue = JSON.stringify(authData);
         document.cookie = `auth-storage=${encodeURIComponent(cookieValue)}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=lax`;
@@ -85,18 +83,21 @@ export const useAuthStore = create<AuthState>()(
 
           // Clear auth cookie
           if (typeof window !== "undefined") {
-            document.cookie =
-              "auth-storage=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = "auth-storage=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           }
         },
 
         // Set authentication status
         setAuthenticated: (authenticated: boolean) => {
-          set((state) => {
-            const newState = { ...state, isAuthenticated: authenticated };
-            syncAuthWithCookies(newState);
-            return { isAuthenticated: authenticated };
-          }, false, "auth/setAuthenticated");
+          set(
+            (state) => {
+              const newState = { ...state, isAuthenticated: authenticated };
+              syncAuthWithCookies(newState);
+              return { isAuthenticated: authenticated };
+            },
+            false,
+            "auth/setAuthenticated",
+          );
         },
 
         // Set loading status
@@ -115,8 +116,7 @@ export const useAuthStore = create<AuthState>()(
 
           // Clear auth cookie
           if (typeof window !== "undefined") {
-            document.cookie =
-              "auth-storage=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = "auth-storage=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           }
         },
       }),

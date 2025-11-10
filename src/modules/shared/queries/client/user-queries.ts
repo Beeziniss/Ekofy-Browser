@@ -2,7 +2,7 @@ import { graphql } from "@/gql";
 
 export const ListenerQuery = graphql(`
   query Listener($userId: String!) {
-    listeners(where: { userId: { eq: $userId } }) {
+    listeners(where: { userId: { eq: $userId }, isVisible: { eq: true } }) {
       items {
         userId
         displayName
@@ -24,7 +24,9 @@ export const ArtistQuery = graphql(`
         avatarImage
         user {
           fullName
+          checkUserFollowing
         }
+        followerCount
       }
     }
   }
@@ -32,13 +34,9 @@ export const ArtistQuery = graphql(`
 
 export const ArtistListQuery = graphql(`
   query ArtistList($take: Int, $skip: Int) {
-    artists(
-      where: { isVisible: { eq: true } }
-      take: $take
-      skip: $skip
-      order: { popularity: DESC }
-    ) {
+    artists(where: { isVisible: { eq: true } }, take: $take, skip: $skip, order: { popularity: DESC }) {
       items {
+        id
         userId
         stageName
         biography
@@ -57,6 +55,85 @@ export const ArtistListQuery = graphql(`
         hasNextPage
       }
       totalCount
+    }
+  }
+`);
+
+export const ArtistDetailQuery = graphql(`
+  query ArtistDetail($artistId: String!) {
+    artists(where: { id: { eq: $artistId }, isVisible: { eq: true } }) {
+      items {
+        userId
+        stageName
+        avatarImage
+        bannerImage
+        biography
+        email
+        user {
+          id
+          fullName
+          checkUserFollowing
+        }
+        followerCount
+        categoryIds
+        categories {
+          items {
+            name
+          }
+        }
+      }
+    }
+  }
+`);
+
+export const GetListenerProfileQuery = graphql(`
+  query GetListenerProfile($where: ListenerFilterInput) {
+    listeners(where: $where, take: 1) {
+      items {
+        id
+        userId
+        displayName
+        email
+        avatarImage
+        bannerImage
+        createdAt
+        followerCount
+        followingCount
+        isVerified
+        user {
+          birthDate
+          gender
+        }
+      }
+    }
+  }
+`);
+
+// Active subscription for a user to derive membership status
+export const GetUserActiveSubscriptionQuery = graphql(`
+  query GetUserActiveSubscription($where: UserSubscriptionFilterInput, $take: Int, $skip: Int) {
+    userSubscriptions(where: $where, take: $take, skip: $skip) {
+      items {
+        id
+        isActive
+        subscriptionId
+        subscription {
+          tier
+          status
+          name
+        }
+      }
+    }
+  }
+`);
+
+export const GetUserstripeAccountIdQuery = graphql(`
+  query GetUserStripeAccountId($userId: String!) {
+    users(where: { id: { eq: $userId } }) {
+      items {
+        role
+        stripeAccountId
+      }
     }
   }
 `);

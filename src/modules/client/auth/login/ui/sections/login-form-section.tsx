@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import EkofyLogo from "../../../../../../../public/ekofy-logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,15 +9,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Eye, EyeOff } from "lucide-react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import useSignIn from "../../hook/use-sign-in";
+import { EkofyLogo } from "@/assets/icons";
 
 const loginSchema = z.object({
   email: z
@@ -63,7 +55,7 @@ const LoginFormSection = () => {
         <div className="text-center">
           <div className="mb-6 flex items-center justify-center">
             <div className="mr-3 flex items-center justify-center rounded-full">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+              <EkofyLogo className="size-[60px]" />
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
@@ -119,7 +111,7 @@ const LoginFormSection = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
+                        className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
@@ -146,16 +138,11 @@ const LoginFormSection = () => {
                       onCheckedChange={field.onChange}
                       className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
                     />
-                    <label className="cursor-pointer text-sm text-white">
-                      Remember me
-                    </label>
+                    <label className="cursor-pointer text-sm text-white">Remember me</label>
                   </div>
                 )}
               />
-              <Link
-                href="#"
-                className="text-sm text-white underline transition-colors hover:text-blue-400"
-              >
+              <Link href="#" className="text-sm text-white underline transition-colors hover:text-blue-400">
                 Forgot your password?
               </Link>
             </div>
@@ -174,13 +161,8 @@ const LoginFormSection = () => {
 
         {/* Sign Up Link */}
         <div className="mt-6 text-center">
-          <span className="text-sm text-white">
-            Don&apos;t have an account?{" "}
-          </span>
-          <Link
-            href="/sign-up"
-            className="font-medium text-white underline transition-colors hover:text-blue-400"
-          >
+          <span className="text-sm text-white">Don&apos;t have an account? </span>
+          <Link href="/sign-up" className="font-medium text-white underline transition-colors hover:text-blue-400">
             Sign up for Ekofy.
           </Link>
         </div>

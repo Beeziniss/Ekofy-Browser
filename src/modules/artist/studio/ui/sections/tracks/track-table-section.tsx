@@ -5,38 +5,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 // import TrackUploadEmpty from "../../components/track-upload/track-upload-empty";
 import TrackTableWrapper from "../../components/track-table/track-table-wrapper";
-import { graphql } from "@/gql";
 import { TrackFilterInput, TrackSortInput, SortEnumType } from "@/gql/graphql";
-
-export const TrackListWithFiltersQuery = graphql(`
-  query TracksWithFilters(
-    $skip: Int!
-    $take: Int!
-    $where: TrackFilterInput
-    $order: [TrackSortInput!]
-  ) {
-    tracks(skip: $skip, take: $take, where: $where, order: $order) {
-      totalCount
-      items {
-        id
-        name
-        mainArtistIds
-        streamCount
-        favoriteCount
-        coverImage
-        isExplicit
-        releaseInfo {
-          releaseDate
-          isReleased
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-      }
-    }
-  }
-`);
+import { TrackListWithFiltersQuery } from "@/modules/shared/queries/artist/track-queries";
 
 const TrackTableSection = () => {
   const searchParams = useSearchParams();
@@ -56,7 +26,7 @@ const TrackTableSection = () => {
   }
   if (privacyFilter !== "all") {
     where.releaseInfo = {
-      isReleased: { eq: privacyFilter === "public" },
+      isRelease: { eq: privacyFilter === "public" },
     };
   }
 
@@ -67,36 +37,25 @@ const TrackTableSection = () => {
       case "releaseDate":
         order.push({
           releaseInfo: {
-            releaseDate:
-              sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
+            releaseDate: sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
           },
         });
         break;
       case "streamCount":
         order.push({
-          streamCount:
-            sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
+          streamCount: sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
         });
         break;
       case "favoriteCount":
         order.push({
-          favoriteCount:
-            sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
+          favoriteCount: sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
         });
         break;
     }
   }
 
   const { data } = useSuspenseQuery({
-    queryKey: [
-      "tracks",
-      skip,
-      pageSize,
-      searchQuery,
-      privacyFilter,
-      sortBy,
-      sortOrder,
-    ],
+    queryKey: ["tracks", skip, pageSize, searchQuery, privacyFilter, sortBy, sortOrder],
     queryFn: () =>
       execute(TrackListWithFiltersQuery, {
         skip,

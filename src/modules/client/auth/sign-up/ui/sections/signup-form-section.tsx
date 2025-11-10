@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import EkofyLogo from "../../../../../../../public/ekofy-logo.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -10,10 +8,11 @@ import { useSignUpStore } from "@/store/stores";
 import { validateEmail, validatePassword } from "@/utils/signup-utils";
 import { Eye, EyeOff } from "lucide-react";
 import { ClientSignUpFormSectionProps } from "@/types/listener-auth";
+import { EkofyLogo } from "@/assets/icons";
 
 const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps) => {
   const { goToNextStep, updateFormData, formData } = useSignUpStore();
-  
+
   // Initialize state from global store or initial data
   const [email, setEmail] = useState(initialData?.email || formData.email || "");
   const [password, setPassword] = useState("");
@@ -71,8 +70,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
   // Real-time validation
   const validateField = (field: string, value: string) => {
     const newErrors = { ...errors };
-    
-    if (field === 'email') {
+
+    if (field === "email") {
       if (!value) {
         newErrors.email = "Email is required";
       } else if (value.length > 50) {
@@ -83,8 +82,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         delete newErrors.email;
       }
     }
-    
-    if (field === 'password') {
+
+    if (field === "password") {
       if (!value) {
         newErrors.password = "Password is required";
       } else if (value.length > 50) {
@@ -97,7 +96,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
           delete newErrors.password;
         }
       }
-      
+
       // Re-validate confirm password if password changes
       if (confirmPassword && value !== confirmPassword) {
         newErrors.confirmPassword = "Passwords do not match";
@@ -105,8 +104,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         delete newErrors.confirmPassword;
       }
     }
-    
-    if (field === 'confirmPassword') {
+
+    if (field === "confirmPassword") {
       if (!value) {
         newErrors.confirmPassword = "Confirm password is required";
       } else if (password !== value) {
@@ -115,7 +114,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         delete newErrors.confirmPassword;
       }
     }
-    
+
     setErrors(newErrors);
   };
 
@@ -147,13 +146,11 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         <div className="text-center">
           <div className="mb-6 flex items-center justify-center">
             <div className="mr-3 flex items-center justify-center rounded-full">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+              <EkofyLogo className="size-[60px]" />
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="mb-4 text-4xl font-bold text-white">
-            Let`s get started
-          </h2>
+          <h2 className="mb-4 text-4xl font-bold text-white">Let`s get started</h2>
           <p className="mb-8 text-sm text-gray-300">
             Enter your email and password to create a new account.
             <br />
@@ -165,10 +162,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email Field */}
           <div>
-            <label
-              htmlFor="email"
-              className="mb-2 block text-sm font-medium text-white"
-            >
+            <label htmlFor="email" className="mb-2 block text-sm font-medium text-white">
               Email*
             </label>
             <Input
@@ -193,17 +187,12 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
                 errors.email ? "border-red-500" : ""
               }`}
             />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-            )}
+            {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
           </div>
 
           {/* Password Field */}
           <div>
-            <label
-              htmlFor="password"
-              className="mb-2 block text-sm font-medium text-white"
-            >
+            <label htmlFor="password" className="mb-2 block text-sm font-medium text-white">
               Password*
             </label>
             <div className="relative">
@@ -232,7 +221,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
+                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
@@ -241,17 +230,12 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
                 )}
               </button>
             </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-            )}
+            {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
           </div>
 
           {/* Confirm Password Field */}
           <div>
-            <label
-              htmlFor="confirmPassword"
-              className="mb-2 block text-sm font-medium text-white"
-            >
+            <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-white">
               Confirm Password*
             </label>
             <div className="relative">
@@ -280,7 +264,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
+                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
               >
                 {showConfirmPassword ? (
                   <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
@@ -289,11 +273,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
                 )}
               </button>
             </div>
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.confirmPassword}
-              </p>
-            )}
+            {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
           </div>
 
           {/* Continue Button */}
@@ -309,10 +289,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         {/* Login Link */}
         <div className="mt-6 text-center">
           <span className="text-sm text-white">Already have an account? </span>
-          <Link
-            href="/login"
-            className="font-medium text-white underline transition-colors hover:text-blue-400"
-          >
+          <Link href="/login" className="font-medium text-white underline transition-colors hover:text-blue-400">
             Log in to Ekofy.
           </Link>
         </div>

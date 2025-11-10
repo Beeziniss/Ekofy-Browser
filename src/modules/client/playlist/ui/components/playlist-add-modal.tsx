@@ -1,25 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  playlistBriefOptions,
-  checkTrackInPlaylistOptions,
-} from "@/gql/options/client-options";
-import {
-  addToPlaylistMutationOptions,
-  removeFromPlaylistMutationOptions,
-} from "@/gql/options/client-mutation-options";
+import { playlistBriefOptions, checkTrackInPlaylistOptions } from "@/gql/options/client-options";
+import { addToPlaylistMutationOptions, removeFromPlaylistMutationOptions } from "@/gql/options/client-mutation-options";
 import { toast } from "sonner";
 import { SearchIcon, PlusIcon, LockIcon, CheckIcon } from "lucide-react";
 import Image from "next/image";
@@ -33,22 +21,19 @@ interface PlaylistAddModalProps {
   trigger?: React.ReactNode;
 }
 
-const PlaylistAddModal = ({
-  open,
-  onOpenChange,
-  trackId,
-  trigger,
-}: PlaylistAddModalProps) => {
+const PlaylistAddModal = ({ open, onOpenChange, trackId, trigger }: PlaylistAddModalProps) => {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
 
-  const { data: playlistsData, isLoading } = useQuery(
-    playlistBriefOptions(user!.userId!),
-  );
-  const { data: trackInPlaylistsData } = useQuery(
-    checkTrackInPlaylistOptions(trackId),
-  );
+  const { data: playlistsData, isLoading } = useQuery({
+    ...playlistBriefOptions(user?.userId || ""),
+    enabled: isAuthenticated && !!user?.userId,
+  });
+  const { data: trackInPlaylistsData } = useQuery({
+    ...checkTrackInPlaylistOptions(trackId),
+    enabled: isAuthenticated && !!user?.userId,
+  });
 
   const { mutate: addToPlaylist, isPending: isAddingToPlaylist } = useMutation({
     ...addToPlaylistMutationOptions,
@@ -69,29 +54,27 @@ const PlaylistAddModal = ({
     },
   });
 
-  const { mutate: removeFromPlaylist, isPending: isRemovingFromPlaylist } =
-    useMutation({
-      ...removeFromPlaylistMutationOptions,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["playlist-detail"] });
-        queryClient.invalidateQueries({
-          queryKey: ["playlist-detail-tracklist"],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["check-track-in-playlist", trackId],
-        });
-        // Don't close modal after successful removal
-        toast.success("Track removed from playlist successfully!");
-      },
-      onError: (error) => {
-        console.error("Failed to remove track from playlist:", error);
-        toast.error("Failed to remove track from playlist. Please try again.");
-      },
-    });
+  const { mutate: removeFromPlaylist, isPending: isRemovingFromPlaylist } = useMutation({
+    ...removeFromPlaylistMutationOptions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["playlist-detail"] });
+      queryClient.invalidateQueries({
+        queryKey: ["playlist-detail-tracklist"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["check-track-in-playlist", trackId],
+      });
+      // Don't close modal after successful removal
+      toast.success("Track removed from playlist successfully!");
+    },
+    onError: (error) => {
+      console.error("Failed to remove track from playlist:", error);
+      toast.error("Failed to remove track from playlist. Please try again.");
+    },
+  });
 
   const playlists = playlistsData?.playlists?.items || [];
-  const trackInPlaylistsIds =
-    trackInPlaylistsData?.playlists?.items?.map((p) => p.id) || [];
+  const trackInPlaylistsIds = trackInPlaylistsData?.playlists?.items?.map((p) => p.id) || [];
 
   const filteredPlaylists = playlists.filter((playlist) =>
     playlist.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -123,9 +106,7 @@ const PlaylistAddModal = ({
       <DialogContent className="w-full sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl">Add to playlist</DialogTitle>
-          <DialogDescription className="text-main-grey">
-            Choose a playlist to add this track to
-          </DialogDescription>
+          <DialogDescription className="text-main-grey">Choose a playlist to add this track to</DialogDescription>
         </DialogHeader>
 
         <Separator className="-mx-6 mb-4 bg-neutral-700 data-[orientation=horizontal]:w-[calc(100%+48px)]" />
@@ -144,9 +125,7 @@ const PlaylistAddModal = ({
         {/* Playlist List */}
         <div className="max-h-64 space-y-2 overflow-y-auto">
           {isLoading ? (
-            <div className="flex items-center justify-center py-8 text-sm text-gray-400">
-              Loading playlists...
-            </div>
+            <div className="flex items-center justify-center py-8 text-sm text-gray-400">Loading playlists...</div>
           ) : filteredPlaylists.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-sm text-gray-400">
               {searchQuery ? "No playlists found" : "No playlists available"}
@@ -170,15 +149,10 @@ const PlaylistAddModal = ({
                   </div>
 
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-white">
-                      {playlist.name}
-                    </span>
+                    <span className="text-sm font-medium text-white">{playlist.name}</span>
                     <div className="flex items-center gap-2">
                       {!playlist.isPublic && (
-                        <Badge
-                          variant="secondary"
-                          className="flex items-center gap-1 px-1.5 py-0.5 text-xs"
-                        >
+                        <Badge variant="secondary" className="flex items-center gap-1 px-1.5 py-0.5 text-xs">
                           <LockIcon className="size-3" />
                           Private
                         </Badge>

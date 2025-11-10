@@ -1,9 +1,4 @@
-import {
-  ActivityIcon,
-  DownloadIcon,
-  HeartIcon,
-  MessageSquareTextIcon,
-} from "lucide-react";
+import { ActivityIcon, DownloadIcon, HeartIcon, MessageSquareTextIcon } from "lucide-react";
 import TrackStatCard from "../../components/track-stat-card";
 
 const trackStats = [
@@ -34,9 +29,7 @@ const TrackStatSection = () => {
     <div className="rounded-md border border-white/30 p-8 pb-6">
       <div className="flex items-end gap-x-3">
         <h2 className="text-xl font-bold">Artist Tracks</h2>
-        <span className="primary_gradient w-fit bg-clip-text text-sm text-transparent">
-          Stats updated daily
-        </span>
+        <span className="primary_gradient w-fit bg-clip-text text-sm text-transparent">Stats updated daily</span>
       </div>
 
       <div className="mt-12 flex items-center justify-between gap-8">

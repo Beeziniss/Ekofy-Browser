@@ -10,12 +10,7 @@ interface InfiniteScrollProps {
   fetchNextPage: () => void;
 }
 
-const InfiniteScroll = ({
-  isManual = false,
-  hasNextPage,
-  isFetchingNextPage,
-  fetchNextPage,
-}: InfiniteScrollProps) => {
+const InfiniteScroll = ({ isManual = false, hasNextPage, isFetchingNextPage, fetchNextPage }: InfiniteScrollProps) => {
   const observerOptions = useMemo(
     () => ({
       threshold: 0.5,
@@ -24,37 +19,24 @@ const InfiniteScroll = ({
     [],
   );
 
-  const { targetRef, isIntersecting } =
-    useIntersectionObserver(observerOptions);
+  const { targetRef, isIntersecting } = useIntersectionObserver(observerOptions);
 
   useEffect(() => {
     if (isIntersecting && hasNextPage && !isFetchingNextPage && !isManual) {
       fetchNextPage();
     }
-  }, [
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isIntersecting,
-    isManual,
-  ]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isIntersecting, isManual]);
 
   return (
     <div className="flex flex-col items-center gap-4 p-4">
       <div ref={targetRef} className="h-1" />
       {hasNextPage ? (
-        <Button
-          variant={"ekofy"}
-          disabled={!hasNextPage || isFetchingNextPage}
-          onClick={() => fetchNextPage()}
-        >
+        <Button variant={"ekofy"} disabled={!hasNextPage || isFetchingNextPage} onClick={() => fetchNextPage()}>
           {isFetchingNextPage && <Spinner />}
           {isFetchingNextPage ? "Loading..." : "Load more"}
         </Button>
       ) : (
-        <p className="text-muted-foreground text-sm">
-          You have reached the end of the list
-        </p>
+        <p className="text-muted-foreground text-sm">You have reached the end of the list</p>
       )}
     </div>
   );

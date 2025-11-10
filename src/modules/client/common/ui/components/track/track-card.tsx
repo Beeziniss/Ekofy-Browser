@@ -13,13 +13,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Ellipsis, Heart, LinkIcon, ListPlus } from "lucide-react";
-import { useAudioStore } from "@/store";
-import {
-  GraphQLTrack,
-  convertGraphQLTracksToStore,
-} from "@/utils/track-converter";
+import { useAudioStore, useAuthStore } from "@/store";
+import { GraphQLTrack, convertGraphQLTracksToStore } from "@/utils/track-converter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-options";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { PauseButtonMedium, PlayButtonMedium } from "@/assets/icons";
 
 type ArtistInfo = {
   id: string;
@@ -36,22 +35,16 @@ interface TrackCardProps {
 }
 
 const TrackCard = React.memo(
-  ({
-    trackId,
-    coverImage,
-    trackName,
-    artists,
-    trackQueue,
-    checkTrackInFavorite,
-  }: TrackCardProps) => {
+  ({ trackId, coverImage, trackName, artists, trackQueue, checkTrackInFavorite }: TrackCardProps) => {
     const queryClient = useQueryClient();
+    const { isAuthenticated } = useAuthStore();
     const [isHovered, setIsHovered] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showAuthDialog, setShowAuthDialog] = useState(false);
+    const [authDialogAction, setAuthDialogAction] = useState<"play" | "favorite">("play");
 
     // Selective subscriptions - only subscribe to what affects THIS track
-    const isCurrentTrack = useAudioStore(
-      (state) => state.currentTrack?.id === trackId,
-    );
+    const isCurrentTrack = useAudioStore((state) => state.currentTrack?.id === trackId);
     const globalIsPlaying = useAudioStore((state) => state.isPlaying);
     const setCurrentTrack = useAudioStore((state) => state.setCurrentTrack);
     const togglePlayPause = useAudioStore((state) => state.togglePlayPause);
@@ -78,6 +71,14 @@ const TrackCard = React.memo(
     const handlePlayPauseClick = useCallback(
       (e: React.MouseEvent) => {
         e.preventDefault();
+
+        // Check if user is authenticated
+        if (!isAuthenticated) {
+          setAuthDialogAction("play");
+          setShowAuthDialog(true);
+          return;
+        }
+
         if (isCurrentTrack) {
           togglePlayPause();
         } else {
@@ -95,6 +96,7 @@ const TrackCard = React.memo(
         }
       },
       [
+        isAuthenticated,
         isCurrentTrack,
         togglePlayPause,
         trackQueue,
@@ -135,6 +137,13 @@ const TrackCard = React.memo(
 
       if (!trackId) return;
 
+      // Check if user is authenticated
+      if (!isAuthenticated) {
+        setAuthDialogAction("favorite");
+        setShowAuthDialog(true);
+        return;
+      }
+
       if (checkTrackInFavorite) {
         favoriteTrack({ trackId, isAdding: false });
         toast.success(`${trackName} removed from favorites!`);
@@ -145,10 +154,10 @@ const TrackCard = React.memo(
     };
 
     return (
-      <div className="max-w-70 rounded-sm">
+      <div className="w-full rounded-sm">
         <Link href={`/track/${trackId}`}>
           <div
-            className="group relative size-70 overflow-hidden rounded-sm hover:cursor-pointer"
+            className="group relative aspect-square w-full overflow-hidden rounded-sm hover:cursor-pointer"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -161,25 +170,19 @@ const TrackCard = React.memo(
               alt="Track Name"
               width={280}
               height={280}
-              className={`rounded-sm object-cover transition-transform duration-500`}
+              className="h-full w-full rounded-sm object-cover transition-transform duration-500"
               unoptimized
             />
             <div
               className={`absolute top-0 left-0 size-full bg-[#00000080] ${isHovered || isMenuOpen || (globalIsPlaying && isCurrentTrack) ? "opacity-100" : "opacity-0"}`}
             />
             <div
-              className={`absolute top-0 left-0 flex size-full items-center justify-center gap-x-7 transition-opacity duration-200 ${isHovered || isMenuOpen || (globalIsPlaying && isCurrentTrack) ? "opacity-100" : "opacity-0"}`}
+              className={`absolute top-0 left-0 flex size-full items-center justify-center gap-x-2 transition-opacity duration-200 sm:gap-x-4 md:gap-x-6 lg:gap-x-7 ${isHovered || isMenuOpen || (globalIsPlaying && isCurrentTrack) ? "opacity-100" : "opacity-0"}`}
             >
-              <Button
-                variant="ghost"
-                size="iconMd"
+              <Heart
                 onClick={handleFavorite}
-                className="rounded-full duration-0 hover:brightness-90"
-              >
-                <Heart
-                  className={`size-6 ${checkTrackInFavorite ? "fill-main-purple text-main-purple" : "text-main-white"}`}
-                />
-              </Button>
+                className={`hover:text-main-grey hover:fill-main-grey size-4 sm:size-5 md:size-6 ${checkTrackInFavorite ? "fill-main-purple text-main-purple" : "text-main-white fill-main-white"}`}
+              />
 
               <Button
                 variant="ghost"
@@ -189,19 +192,9 @@ const TrackCard = React.memo(
               >
                 {/* Show pause button only when this specific track is playing */}
                 {isCurrentTrack && globalIsPlaying ? (
-                  <Image
-                    src={"/pause-button-medium.svg"}
-                    alt="Ekofy Pause Button"
-                    width={48}
-                    height={48}
-                  />
+                  <PauseButtonMedium className="size-8 sm:size-10 md:size-12" />
                 ) : (
-                  <Image
-                    src={"/play-button-medium.svg"}
-                    alt="Ekofy Play Button"
-                    width={48}
-                    height={48}
-                  />
+                  <PlayButtonMedium className="size-8 sm:size-10 md:size-12" />
                 )}
               </Button>
 
@@ -212,7 +205,7 @@ const TrackCard = React.memo(
                     size="iconMd"
                     className="text-main-white rounded-full duration-0 hover:brightness-90"
                   >
-                    <Ellipsis className="text-main-white size-6" />
+                    <Ellipsis className="text-main-white size-4 sm:size-5 md:size-6" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="start">
@@ -222,9 +215,7 @@ const TrackCard = React.memo(
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <ListPlus className="text-main-white mr-2 size-4" />
-                    <span className="text-main-white text-sm">
-                      Add to playlist
-                    </span>
+                    <span className="text-main-white text-sm">Add to playlist</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -232,8 +223,8 @@ const TrackCard = React.memo(
           </div>
         </Link>
 
-        <div className="mt-2 flex flex-col">
-          <div className="flex items-center gap-3 text-sm font-bold">
+        <div className="mt-2 flex flex-col space-y-1">
+          <div className="flex items-center gap-2 text-xs font-bold sm:gap-3 sm:text-sm">
             <Link
               href={`/track/${trackId}`}
               className={`hover:text-main-purple line-clamp-1 ${
@@ -245,28 +236,25 @@ const TrackCard = React.memo(
             {/* Now Playing Indicator */}
             {isCurrentTrack && globalIsPlaying && (
               <div className="flex items-center gap-0.5">
-                <div className="bg-main-purple h-2 w-0.5 animate-pulse rounded-full" />
+                <div className="bg-main-purple h-1.5 w-0.5 animate-pulse rounded-full sm:h-2" />
                 <div
-                  className="bg-main-purple h-3 w-0.5 animate-pulse rounded-full"
+                  className="bg-main-purple h-2.5 w-0.5 animate-pulse rounded-full sm:h-3"
                   style={{ animationDelay: "0.1s" }}
                 />
                 <div
-                  className="bg-main-purple h-2 w-0.5 animate-pulse rounded-full"
+                  className="bg-main-purple h-1.5 w-0.5 animate-pulse rounded-full sm:h-2"
                   style={{ animationDelay: "0.2s" }}
                 />
               </div>
             )}
           </div>
 
-          <div className="text-main-grey line-clamp-1 text-sm">
+          <div className="text-main-grey line-clamp-1 text-xs sm:text-sm">
             {artists &&
               artists.length > 0 &&
               artists.map((artist, index) => (
                 <span key={index}>
-                  <Link
-                    href="#"
-                    className="hover:text-main-purple hover:underline"
-                  >
+                  <Link href="#" className="hover:text-main-purple hover:underline">
                     {artist?.stageName}
                   </Link>
                   {index < artists.length - 1 && ", "}
@@ -274,6 +262,14 @@ const TrackCard = React.memo(
               ))}
           </div>
         </div>
+
+        {/* Authentication Warning Dialog */}
+        <WarningAuthDialog
+          open={showAuthDialog}
+          onOpenChange={setShowAuthDialog}
+          action={authDialogAction}
+          trackName={trackName}
+        />
       </div>
     );
   },

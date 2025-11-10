@@ -8,6 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TrackDetailQuery } from "@/gql/graphql";
 import { HeartIcon, PlayIcon } from "lucide-react";
 import { formatPlayCount } from "@/utils/format-number";
+import { PauseButtonLarge, PlayButtonLarge } from "@/assets/icons";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { useAuthAction } from "@/hooks/use-auth-action";
 
 interface TrackSectionProps {
   data: TrackDetailQuery;
@@ -38,13 +41,8 @@ const TrackSectionSkeleton = () => {
 
 // TODO: Check for track-card.tsx for code and fix to apply approriate changes in future
 const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
-  const {
-    currentTrack,
-    isPlaying: globalIsPlaying,
-    setCurrentTrack,
-    togglePlayPause,
-    play,
-  } = useAudioStore();
+  const { currentTrack, isPlaying: globalIsPlaying, setCurrentTrack, togglePlayPause, play } = useAudioStore();
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
 
   // Check if this is the currently playing track
   const isCurrentTrack = currentTrack?.id === trackId;
@@ -64,14 +62,21 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
   // Handle play/pause click
   const handlePlayPauseClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (isCurrentTrack) {
-      // If it's the current track, toggle play/pause
-      togglePlayPause();
-    } else {
-      // If it's a different track, set as current track and play
-      setCurrentTrack(trackData);
-      play();
-    }
+
+    executeWithAuth(
+      () => {
+        if (isCurrentTrack) {
+          // If it's the current track, toggle play/pause
+          togglePlayPause();
+        } else {
+          // If it's a different track, set as current track and play
+          setCurrentTrack(trackData);
+          play();
+        }
+      },
+      "play",
+      data?.tracks?.items?.[0]?.name,
+    );
   };
 
   return (
@@ -86,12 +91,8 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
 
       <div className="flex flex-col">
         <div className="flex flex-col gap-y-2">
-          <h1 className="text-main-white text-4xl font-bold">
-            {data.tracks?.items?.[0]?.name}
-          </h1>
-          <p className="text-lg font-semibold">
-            {data.tracks?.items?.[0].mainArtists?.items?.[0]?.stageName}
-          </p>
+          <h1 className="text-main-white text-4xl font-bold">{data.tracks?.items?.[0]?.name}</h1>
+          <p className="text-lg font-semibold">{data.tracks?.items?.[0].mainArtists?.items?.[0]?.stageName}</p>
 
           <div className="bg-main-dark-bg-1 flex w-fit items-center gap-x-3 rounded-sm border-white/30 px-2 py-1">
             <div className="flex items-center gap-x-1.5">
@@ -117,22 +118,19 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
           onClick={handlePlayPauseClick}
         >
           {isCurrentTrack && globalIsPlaying ? (
-            <Image
-              src={"/pause-button-large.svg"}
-              alt="Ekofy Pause Button"
-              width={64}
-              height={64}
-            />
+            <PauseButtonLarge className="size-16" />
           ) : (
-            <Image
-              src={"/play-button-large.svg"}
-              alt="Ekofy Play Button"
-              width={64}
-              height={64}
-            />
+            <PlayButtonLarge className="size-16" />
           )}
         </Button>
       </div>
+
+      <WarningAuthDialog
+        open={showWarningDialog}
+        onOpenChange={setShowWarningDialog}
+        action={warningAction}
+        trackName={trackName}
+      />
     </div>
   );
 };

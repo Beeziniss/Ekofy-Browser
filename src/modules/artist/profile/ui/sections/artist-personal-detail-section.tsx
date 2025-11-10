@@ -1,12 +1,23 @@
 import React from "react";
 import DetailItem from "@/modules/client/profile/ui/components/detail-item";
-import { useArtistProfile } from "../../hooks/use-artist-profile";
 import { format } from "date-fns";
 import type { UserGender } from "@/gql/graphql";
 
-export default function ArtistPersonalDetailSection() {
-  const { identityCard } = useArtistProfile();
+interface ArtistPersonalDetailSectionProps {
+  identityCard?: {
+    number?: string;
+    fullName?: string;
+    dateOfBirth?: string;
+    gender?: UserGender;
+    placeOfOrigin?: string;
+    placeOfResidence?: {
+      addressLine?: string;
+    };
+    validUntil?: string;
+  };
+}
 
+export default function ArtistPersonalDetailSection({ identityCard }: ArtistPersonalDetailSectionProps) {
   const genderLabel = (g?: UserGender | null): string => {
     switch (g) {
       case "MALE":
@@ -40,11 +51,11 @@ export default function ArtistPersonalDetailSection() {
   ];
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <div className="flex items-end justify-between gap-x-3">
         <h2 className="text-xl font-bold">Personal Details</h2>
       </div>
-      <div className="w-full mt-6 md:mt-12 md:mb-12">
+      <div className="mt-6 w-full md:mt-12 md:mb-12">
         {personalFields.map((item) => (
           <DetailItem key={item.title} {...item} />
         ))}

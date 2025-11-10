@@ -1,22 +1,7 @@
 "use client";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "@/components/ui/sidebar";
-import {
-  // Command,
-  AlbumIcon,
-  // AudioWaveform,
-  AudioLinesIcon,
-  // GalleryVerticalEnd,
-  LayoutDashboardIcon,
-  // Music4Icon,
-  LayoutPanelLeftIcon,
-} from "lucide-react";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
+import { AlbumIcon, AudioLinesIcon, LayoutDashboardIcon, LayoutPanelLeftIcon, BanknoteIcon } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
 import { NavProjects } from "../nav-projects";
@@ -53,7 +38,17 @@ const data = {
       name: "Service Packages",
       url: "/artist/studio/service-package",
       icon: LayoutPanelLeftIcon,
-    }
+    },
+    // {
+    //   name: "Payment History",
+    //   url: "/artist/studio/transactions/payment-history",
+    //   icon: CreditCardIcon,
+    // },
+    {
+      name: "Payouts",
+      url: "/artist/studio/transactions/payouts",
+      icon: BanknoteIcon,
+    },
   ],
 };
 

@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 
 // Simple error formatter that only uses status and detail
 
-
 interface SignUpResponse {
   user?: RegisterListenerData | null;
   message?: string;
@@ -50,9 +49,9 @@ const useSignUp = (onNavigate?: () => void) => {
           // Show success message immediately
           const message = data?.message || "Registration successful! We have sent a verification code to your email.";
           toast.success(message);
-          
+
           // Keep only email for OTP verification, clear everything else
-          updateFormData({ 
+          updateFormData({
             email: formData.email,
             password: undefined,
             confirmPassword: undefined,
@@ -61,9 +60,9 @@ const useSignUp = (onNavigate?: () => void) => {
             gender: formData.gender,
             displayName: formData.displayName,
             avatarImage: formData.avatarImage,
-            otp: undefined
+            otp: undefined,
           });
-          
+
           // Auto-navigate to next step after success
           setTimeout(() => {
             goToNextStep();
@@ -96,10 +95,10 @@ const useSignUp = (onNavigate?: () => void) => {
       const message = data?.message || "OTP verification successful! Redirecting to login page...";
       toast.success(message);
       setAuthenticated(true);
-      
+
       // Reset form data after successful OTP verification
       resetForm();
-      
+
       // Redirect to login page after successful OTP verification
       setTimeout(() => {
         router.push("/login");
@@ -111,7 +110,7 @@ const useSignUp = (onNavigate?: () => void) => {
     },
   });
 
-  // Resend OTP Mutation  
+  // Resend OTP Mutation
   const resendOTPMutation = useMutation({
     mutationFn: async () => {
       if (!formData.email) {

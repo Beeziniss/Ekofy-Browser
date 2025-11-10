@@ -12,21 +12,14 @@ import {
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, CreditCard, UserCheck, UserX, Search } from "lucide-react";
@@ -74,33 +67,25 @@ export function UserTable({
       header: "User",
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
-          <span className="font-medium text-white">{row.original.fullName || 'User name'}</span>
+          <span className="font-medium text-white">{row.original.fullName || "User name"}</span>
         </div>
       ),
     },
     {
       accessorKey: "email",
       header: "Email",
-      cell: ({ row }) => (
-        <span className="text-gray-300">{row.original.email}</span>
-      ),
+      cell: ({ row }) => <span className="text-gray-300">{row.original.email}</span>,
     },
     {
       accessorKey: "role",
       header: "Role",
-      cell: ({ row }) => (
-        <span className="text-gray-300 capitalize">
-          {row.original.role?.toLowerCase()}
-        </span>
-      ),
+      cell: ({ row }) => <span className="text-gray-300 capitalize">{row.original.role?.toLowerCase()}</span>,
     },
     {
       accessorKey: "gender",
       header: "Gender",
       cell: ({ row }) => (
-        <span className="text-gray-300 capitalize">
-          {row.original.gender?.toLowerCase() || "N/A"}
-        </span>
+        <span className="text-gray-300 capitalize">{row.original.gender?.toLowerCase() || "N/A"}</span>
       ),
     },
     {
@@ -110,7 +95,7 @@ export function UserTable({
         <span className="text-gray-300">
           {new Date(row.original.createdAt).toLocaleDateString("en-US", {
             year: "numeric",
-            month: "short", 
+            month: "short",
             day: "numeric",
           })}
         </span>
@@ -124,14 +109,13 @@ export function UserTable({
         return (
           <Badge
             variant={status === UserStatus.Active ? "default" : "secondary"}
-            className={`
-              ${status === UserStatus.Active 
-                ? "bg-green-100 text-green-800 border-green-200" 
+            className={` ${
+              status === UserStatus.Active
+                ? "border-green-200 bg-green-100 text-green-800"
                 : status === UserStatus.Inactive
-                ? "bg-yellow-100 text-yellow-800 border-yellow-200"
-                : "bg-red-100 text-red-800 border-red-200"
-              }
-            `}
+                  ? "border-yellow-200 bg-yellow-100 text-yellow-800"
+                  : "border-red-200 bg-red-100 text-red-800"
+            } `}
           >
             {status}
           </Badge>
@@ -143,7 +127,7 @@ export function UserTable({
       header: "Action",
       cell: ({ row }) => {
         const isActive = row.original.status === UserStatus.Active;
-        
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -151,20 +135,18 @@ export function UserTable({
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700 min-w-[180px]">
+            <DropdownMenuContent align="end" className="min-w-[180px] border-gray-700 bg-gray-800">
               <DropdownMenuItem
                 onClick={() => {
                   const role = row.original.role;
                   router.push(`/admin/user-management/${row.original.id}?role=${role}`);
                 }}
-                className="text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer flex items-center gap-2"
+                className="flex cursor-pointer items-center gap-2 text-gray-300 hover:bg-gray-700 hover:text-white"
               >
                 <Eye className="h-4 w-4" />
                 View Detail
               </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer flex items-center gap-2"
-              >
+              <DropdownMenuItem className="flex cursor-pointer items-center gap-2 text-gray-300 hover:bg-gray-700 hover:text-white">
                 <CreditCard className="h-4 w-4" />
                 View Payment History
               </DropdownMenuItem>
@@ -172,7 +154,7 @@ export function UserTable({
               {isActive ? (
                 <DropdownMenuItem
                   onClick={() => onStatusChange(row.original.id, UserStatus.Banned)}
-                  className="text-red-400 hover:text-red-300 hover:bg-gray-700 cursor-pointer flex items-center gap-2"
+                  className="flex cursor-pointer items-center gap-2 text-red-400 hover:bg-gray-700 hover:text-red-300"
                 >
                   <UserX className="h-4 w-4" />
                   Banned
@@ -180,7 +162,7 @@ export function UserTable({
               ) : (
                 <DropdownMenuItem
                   onClick={() => onStatusChange(row.original.id, UserStatus.Active)}
-                  className="text-green-400 hover:text-green-300 hover:bg-gray-700 cursor-pointer flex items-center gap-2"
+                  className="flex cursor-pointer items-center gap-2 text-green-400 hover:bg-gray-700 hover:text-green-300"
                 >
                   <UserCheck className="h-4 w-4" />
                   Active
@@ -220,20 +202,17 @@ export function UserTable({
       <div className="flex items-center justify-between">
         {/* <div className="flex items-center space-x-4"> */}
         <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Search name..."
             value={searchTerm}
             onChange={(event) => handleSearch(event.target.value)}
-            className="pl-9 bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+            className="border-gray-700 bg-gray-800 pl-9 text-white placeholder-gray-400"
           />
         </div>
-          <Button 
-            onClick={onCreateModerator}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            Create Moderator
-          </Button>
+        <Button onClick={onCreateModerator} className="bg-blue-600 text-white hover:bg-blue-700">
+          Create Moderator
+        </Button>
         {/* </div> */}
       </div>
 
@@ -245,12 +224,7 @@ export function UserTable({
               <TableRow key={headerGroup.id} className="border-gray-700 hover:bg-gray-800">
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id} className="text-gray-300">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -277,9 +251,7 @@ export function UserTable({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
@@ -306,23 +278,23 @@ export function UserTable({
             size="sm"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={!hasPreviousPage || isLoading}
-            className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
+            className="border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
           >
             <ChevronLeft className="h-4 w-4" />
             Previous
           </Button>
-          
+
           {/* Page Numbers */}
           {!isLoading && totalCount > 0 && (
             <div className="flex items-center space-x-1">
               {(() => {
                 const totalPages = Math.ceil(totalCount / pageSize);
                 const pages = [];
-                
+
                 // Calculate which pages to show
                 let startPage = Math.max(1, currentPage - 2);
                 let endPage = Math.min(totalPages, currentPage + 2);
-                
+
                 // Adjust if we're near the beginning or end
                 if (currentPage <= 3) {
                   endPage = Math.min(5, totalPages);
@@ -330,7 +302,7 @@ export function UserTable({
                 if (currentPage >= totalPages - 2) {
                   startPage = Math.max(1, totalPages - 4);
                 }
-                
+
                 // Add first page and ellipsis if needed
                 if (startPage > 1) {
                   pages.push(
@@ -339,25 +311,29 @@ export function UserTable({
                       variant="outline"
                       size="sm"
                       onClick={() => onPageChange(1)}
-                      className="w-8 h-8 p-0 bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white"
-                      style={currentPage === 1 ? {
-                        backgroundColor: '#2563eb',
-                        borderColor: '#2563eb',
-                        color: 'white'
-                      } : {}}
+                      className="h-8 w-8 border-gray-700 bg-gray-800 p-0 text-gray-300 hover:bg-gray-700 hover:text-white"
+                      style={
+                        currentPage === 1
+                          ? {
+                              backgroundColor: "#2563eb",
+                              borderColor: "#2563eb",
+                              color: "white",
+                            }
+                          : {}
+                      }
                     >
                       1
-                    </Button>
+                    </Button>,
                   );
                   if (startPage > 2) {
                     pages.push(
-                      <span key="ellipsis1" className="text-gray-400 px-2">
+                      <span key="ellipsis1" className="px-2 text-gray-400">
                         ...
-                      </span>
+                      </span>,
                     );
                   }
                 }
-                
+
                 // Add the current range of pages
                 for (let i = startPage; i <= endPage; i++) {
                   pages.push(
@@ -366,25 +342,29 @@ export function UserTable({
                       variant="outline"
                       size="sm"
                       onClick={() => onPageChange(i)}
-                      className="w-8 h-8 p-0 bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white"
-                      style={currentPage === i ? {
-                        backgroundColor: '#2563eb',
-                        borderColor: '#2563eb',
-                        color: 'white'
-                      } : {}}
+                      className="h-8 w-8 border-gray-700 bg-gray-800 p-0 text-gray-300 hover:bg-gray-700 hover:text-white"
+                      style={
+                        currentPage === i
+                          ? {
+                              backgroundColor: "#2563eb",
+                              borderColor: "#2563eb",
+                              color: "white",
+                            }
+                          : {}
+                      }
                     >
                       {i}
-                    </Button>
+                    </Button>,
                   );
                 }
-                
+
                 // Add ellipsis and last page if needed
                 if (endPage < totalPages) {
                   if (endPage < totalPages - 1) {
                     pages.push(
-                      <span key="ellipsis2" className="text-gray-400 px-2">
+                      <span key="ellipsis2" className="px-2 text-gray-400">
                         ...
-                      </span>
+                      </span>,
                     );
                   }
                   pages.push(
@@ -393,29 +373,33 @@ export function UserTable({
                       variant="outline"
                       size="sm"
                       onClick={() => onPageChange(totalPages)}
-                      className="w-8 h-8 p-0 bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white"
-                      style={currentPage === totalPages ? {
-                        backgroundColor: '#2563eb',
-                        borderColor: '#2563eb',
-                        color: 'white'
-                      } : {}}
+                      className="h-8 w-8 border-gray-700 bg-gray-800 p-0 text-gray-300 hover:bg-gray-700 hover:text-white"
+                      style={
+                        currentPage === totalPages
+                          ? {
+                              backgroundColor: "#2563eb",
+                              borderColor: "#2563eb",
+                              color: "white",
+                            }
+                          : {}
+                      }
                     >
                       {totalPages}
-                    </Button>
+                    </Button>,
                   );
                 }
-                
+
                 return pages;
               })()}
             </div>
           )}
-          
+
           <Button
             variant="outline"
             size="sm"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={!hasNextPage || isLoading}
-            className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
+            className="border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
           >
             Next
             <ChevronRight className="h-4 w-4" />

@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, HomeIcon, LogOut, Sparkles } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -19,17 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import { useMutation } from "@tanstack/react-query";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
 import { useAuthStore } from "@/store";
 import { useRouter } from "next/navigation";
 import { useArtistProfile } from "@/modules/artist/profile/hooks/use-artist-profile";
+import Link from "next/link";
 
 export function NavUser({
   user,
@@ -44,7 +33,7 @@ export function NavUser({
   const { clearUserData } = useAuthStore();
   const router = useRouter();
   const { header, data } = useArtistProfile();
-
+  const queryClient = useQueryClient();
   const displayName = header?.name || user.name;
   const displayEmail = data?.email || user.email;
   const avatarSrc = data?.avatarImage || user.avatar;
@@ -54,6 +43,7 @@ export function NavUser({
     mutationFn: authApi.general.logout,
     onSuccess: () => {
       clearUserData();
+      queryClient.clear();
       router.push("/artist/login");
     },
     onError: (error) => {
@@ -103,22 +93,34 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
+              <DropdownMenuItem asChild>
+                <Link href={"/"}>
+                  <HomeIcon />
+                  Home
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuItem asChild>
+                <Link href={"/subscription"} className="text-main-purple hover:!text-main-purple font-semibold">
+                  <Sparkles className="text-main-purple" />
+                  Upgrade to Pro
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={() => router.push("/artist/studio/profile")}
-              >
-                <BadgeCheck />
-                Account
+              <DropdownMenuItem asChild>
+                <Link href={"/artist/studio/profile"}>
+                  <BadgeCheck />
+                  Account
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
+              <DropdownMenuItem asChild>
+                <Link href={"/artist/studio/transactions/payment-history"}>
+                  <CreditCard />
+                  Billing
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />

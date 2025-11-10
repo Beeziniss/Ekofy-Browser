@@ -1,9 +1,7 @@
-import React from 'react'
-import AdminLoginView from '@/modules/admin/auth/login/ui/views/admin-login-view'
+import React from "react";
+import AdminLoginView from "@/modules/admin/auth/login/ui/views/admin-login-view";
 const Page = () => {
-  return (
-        <AdminLoginView />
-  )
-}
+  return <AdminLoginView />;
+};
 
-export default Page
+export default Page;

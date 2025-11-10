@@ -21,30 +21,22 @@ export function UserManagementLayout({
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-main-dark-bg text-white">
+    <div className="bg-main-dark-bg min-h-screen text-white">
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
           {showBackButton && (
-            <Button
-              variant="ghost"
-              onClick={() => router.back()}
-              className="mb-4 text-gray-400 hover:text-white"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
+            <Button variant="ghost" onClick={() => router.back()} className="mb-4 text-gray-400 hover:text-white">
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Back
             </Button>
           )}
-          <h1 className="text-3xl font-bold text-white mb-2">{title}</h1>
-          {description && (
-            <p className="text-gray-400">{description}</p>
-          )}
+          <h1 className="mb-2 text-3xl font-bold text-white">{title}</h1>
+          {description && <p className="text-gray-400">{description}</p>}
         </div>
 
         {/* Content */}
-        <div className="space-y-6">
-          {children}
-        </div>
+        <div className="space-y-6">{children}</div>
       </div>
     </div>
   );

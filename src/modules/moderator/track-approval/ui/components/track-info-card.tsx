@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Music, Calendar, User, Tag, FileText } from "lucide-react";
+import { Music, FileText } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { TrackUploadRequest } from "@/types/approval-track";
@@ -47,82 +47,116 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-start gap-4">
-          <div className="relative group">
+          <div className="group relative">
             <Avatar className="h-32 w-32">
-              <AvatarImage 
-                src={track.track.coverImage || undefined} 
-                alt={track.track.name}
-              />
+              <AvatarImage src={track.track.coverImage || undefined} alt={track.track.name} />
               <AvatarFallback>
                 <Music className="h-12 w-12" />
               </AvatarFallback>
             </Avatar>
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <SimplePlayButton
                 trackId={track.track.id}
                 trackName={track.track.name}
-                trackArtist={track.mainArtists?.items?.map(artist => artist.stageName).join(", ") || "Unknown Artist"}
+                trackArtist={track.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
                 trackCoverImage={track.track.coverImage}
                 uploadId={track.id} // Pass uploadId for audio player
-                size="full"
-                className="h-full w-full bg-transparent hover:bg-black/20 text-white border-0 rounded-full"
+                size="lg"
+                className="h-14 w-14"
               />
             </div>
           </div>
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-semibold">{track.track.name}</h2>
-              <Badge 
-                variant="secondary" 
-                className={cn(getTrackTypeColor(track.track.type))}
-              >
+              <Badge variant="secondary" className={cn(getTrackTypeColor(track.track.type))}>
                 {track.track.type}
               </Badge>
-              {track.track.isExplicit && (
-                <Badge variant="destructive">Explicit</Badge>
-              )}
+              {track.track.isExplicit && <Badge variant="destructive">Explicit</Badge>}
             </div>
-            {track.track.description && (
-              <p className="text-muted-foreground">{track.track.description}</p>
-            )}
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="text-muted-foreground flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                Requested {formatDistanceToNow(new Date(track.requestedAt), { addSuffix: true })}
+                Requested: {formatDistanceToNow(new Date(track.requestedAt), { addSuffix: true })}
               </div>
               <div className="flex items-center gap-1">
-                <User className="h-4 w-4" />
-                {isLoadingUser ? (
-                  "Loading user..."
-                ) : createdByUser ? (
-                  `Created by: ${createdByUser.fullName}`
-                ) : (
-                  `Created by: ${track.createdBy}`
-                )}
+                {isLoadingUser
+                  ? "Loading user..."
+                  : createdByUser
+                    ? `Created by: ${createdByUser.fullName}`
+                    : `Created by: ${track.createdBy}`}
+              </div>
+            </div>
+            <div className="text-muted-foreground">
+              <div className="flex items-center gap-1">
+                Description:{" "}
+                {track.track.description && <p className="text-muted-foreground">{track.track.description}</p>}
               </div>
             </div>
           </div>
         </div>
+        {/* Track Details - Di chuyển từ sidebar */}
+        <>
+          <Separator />
+          <div className="space-y-3">
+            <h3 className="font-medium">Track Details</h3>
+            <div className="grid gap-3 text-sm md:grid-cols-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Type:</span>
+                <Badge variant="outline" className={cn(getTrackTypeColor(track.track.type))}>
+                  {track.track.type}
+                </Badge>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Explicit:</span>
+                <span>{track.track.isExplicit ? "Yes" : "No"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Categories:</span>
+                <span>{track.track.categoryIds?.length || 0} categories</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Main Artists:</span>
+                <span>{track.track.mainArtistIds?.length || 0} artists</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Featured Artists:</span>
+                <span>{track.track.featuredArtistIds?.length || 0} artists</span>
+              </div>
+            </div>
+          </div>
+        </>
 
-        <Separator />
-
-        {/* Audio Player - Now integrated into cover image */}
-
-        {/* Tags */}
-        {track.track.tags && track.track.tags.length > 0 && (
+        {/* Release Information */}
+        {track.track.releaseInfo && (
           <>
             <Separator />
-            <div className="space-y-2">
-              <h3 className="font-medium flex items-center gap-2">
-                <Tag className="h-4 w-4" />
-                Tags
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {track.track.tags.map((tag, index) => (
-                  <Badge key={index} variant="outline">
-                    {tag}
-                  </Badge>
-                ))}
+            <div className="space-y-3">
+              <h3 className="font-medium">Release Information</h3>
+              <div className="grid gap-3 text-sm md:grid-cols-2">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Status:</span>
+                  <span className={track.track.releaseInfo.isRelease ? "text-green-600" : "text-main-white"}>
+                    {track.track.releaseInfo.isRelease ? "Released" : "Not Released"}
+                  </span>
+                </div>
+                {track.track.releaseInfo.releaseDate && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Release Date:</span>
+                    <span>{new Date(track.track.releaseInfo.releaseDate).toLocaleDateString()}</span>
+                  </div>
+                )}
+                {track.track.releaseInfo.releasedAt && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Released At:</span>
+                    <span>{new Date(track.track.releaseInfo.releasedAt).toLocaleString()}</span>
+                  </div>
+                )}
+                {track.track.releaseInfo.releaseStatus && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Release Status:</span>
+                    <Badge variant="outline">{track.track.releaseInfo.releaseStatus}</Badge>
+                  </div>
+                )}
               </div>
             </div>
           </>
@@ -133,12 +167,12 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
           <>
             <Separator />
             <div className="space-y-2">
-              <h3 className="font-medium flex items-center gap-2">
+              <h3 className="flex items-center gap-2 font-medium">
                 <FileText className="h-4 w-4" />
                 Lyrics
               </h3>
-              <div className="bg-muted p-4 rounded-lg">
-                <pre className="whitespace-pre-wrap text-sm">{track.track.lyrics}</pre>
+              <div className="bg-muted rounded-lg p-4">
+                <pre className="text-sm whitespace-pre-wrap">{track.track.lyrics}</pre>
               </div>
             </div>
           </>
@@ -150,12 +184,7 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
             <Separator />
             <div className="space-y-2">
               <h3 className="font-medium">Preview Video</h3>
-              <video 
-                src={track.track.previewVideo} 
-                controls 
-                className="w-full rounded-lg"
-                preload="metadata"
-              >
+              <video src={track.track.previewVideo} controls className="w-full rounded-lg" preload="metadata">
                 Your browser does not support the video tag.
               </video>
             </div>

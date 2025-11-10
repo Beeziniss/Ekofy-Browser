@@ -10,7 +10,7 @@ interface PageProps {
 
 export default function ModeratorUserDetailPage({ params }: PageProps) {
   const { userId } = use(params);
-    const queryClient = getQueryClient();
+  const queryClient = getQueryClient();
 
   // Prefetch user detail data
   void queryClient.prefetchQuery(moderatorUserDetailOptions(userId));

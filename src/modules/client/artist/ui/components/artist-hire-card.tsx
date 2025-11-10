@@ -1,20 +1,13 @@
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArtistListQuery } from "@/gql/graphql";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 interface ArtistHireCardProps {
-  artist?: NonNullable<
-    NonNullable<ArtistListQuery["artists"]>["items"]
-  >[number];
+  artist?: NonNullable<NonNullable<ArtistListQuery["artists"]>["items"]>[number];
 }
 
 const ArtistHireCard = ({ artist }: ArtistHireCardProps) => {
@@ -30,10 +23,7 @@ const ArtistHireCard = ({ artist }: ArtistHireCardProps) => {
           </div>
         </div>
         <Skeleton className="mt-4 h-20 w-full rounded-md" />
-        <Carousel
-          opts={{ align: "start", dragFree: true }}
-          className="mt-6 w-full px-12"
-        >
+        <Carousel opts={{ align: "start", dragFree: true }} className="mt-6 w-full px-12">
           <CarouselContent className="-ml-8">
             {[...Array(6)].map((_, idx) => (
               <CarouselItem key={idx} className="basis-auto pl-8">
@@ -57,9 +47,7 @@ const ArtistHireCard = ({ artist }: ArtistHireCardProps) => {
       <div className="flex items-start gap-x-3">
         <Avatar className="size-15 shrink-0">
           <AvatarImage src={artist.avatarImage || ""} alt={artist.stageName} />
-          <AvatarFallback>
-            {artist.stageName.charAt(0).toUpperCase()}
-          </AvatarFallback>
+          <AvatarFallback>{artist.stageName.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="flex min-w-0 flex-1 flex-col gap-y-1">
           <h3 className="truncate text-lg font-semibold">{artist.stageName}</h3>
@@ -86,9 +74,11 @@ const ArtistHireCard = ({ artist }: ArtistHireCardProps) => {
         </div>
       </div>
 
-      <Button className="mt-6 w-full" variant="ekofy">
-        View Profile
-      </Button>
+      <Link href={`/artists/${artist.id}`}>
+        <Button className="mt-6 w-full" variant="ekofy">
+          View Profile
+        </Button>
+      </Link>
     </div>
   );
 };

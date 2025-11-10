@@ -19,15 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  HeartIcon,
-  SendIcon,
-  MoreVertical,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import TrackCommentReply from "./track-comment-reply";
 import { CommentThread, CommentType } from "@/gql/graphql";
@@ -39,6 +31,8 @@ import {
 } from "@/gql/options/client-mutation-options";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
+import { useAuthAction } from "@/hooks/use-auth-action";
+import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
 interface TrackCommentUserProps {
   thread: Omit<CommentThread, "hasMoreReplies" | "lastActivity">;
@@ -46,11 +40,7 @@ interface TrackCommentUserProps {
   level?: number;
 }
 
-const TrackCommentUser = ({
-  thread,
-  trackId,
-  level = 0,
-}: TrackCommentUserProps) => {
+const TrackCommentUser = ({ thread, trackId, level = 0 }: TrackCommentUserProps) => {
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -60,6 +50,7 @@ const TrackCommentUser = ({
 
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
   const comment = thread.rootComment;
 
   // Check if current user is the owner of this comment
@@ -156,22 +147,16 @@ const TrackCommentUser = ({
     <div className={`flex gap-x-3 ${level > 0 ? "ml-8" : ""}`}>
       <Avatar className="size-12">
         <AvatarImage
-          src={
-            comment.commenter?.listener?.avatarImage ||
-            comment.commenter?.artist?.avatarImage ||
-            undefined
-          }
+          src={comment.commenter?.listener?.avatarImage || comment.commenter?.artist?.avatarImage || undefined}
         />
-        <AvatarFallback>
-          {comment.commenter?.fullName.slice(0, 2)}
-        </AvatarFallback>
+        <AvatarFallback>{comment.commenter?.fullName.slice(0, 2)}</AvatarFallback>
       </Avatar>
 
       <div className="flex flex-1 flex-col gap-y-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-2">
             <span className="text-main-white text-base font-semibold">
-              {comment.commenter?.fullName}
+              {comment.commenter?.artist?.stageName || comment.commenter?.listener?.displayName}
             </span>
             <span className="text-main-grey text-sm">
               {formatDistanceToNow(new Date(comment.createdAt), {
@@ -184,19 +169,12 @@ const TrackCommentUser = ({
           {isOwner && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-main-grey hover:text-main-white h-6 w-6 p-0"
-                >
+                <Button variant="ghost" size="sm" className="text-main-grey hover:text-main-white h-6 w-6 p-0">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem
-                  onClick={handleEditComment}
-                  className="cursor-pointer text-sm"
-                >
+                <DropdownMenuItem onClick={handleEditComment} className="cursor-pointer text-sm">
                   <Edit className="mr-2 h-4 w-4" />
                   Edit
                 </DropdownMenuItem>
@@ -262,7 +240,7 @@ const TrackCommentUser = ({
 
           <Button
             variant={"ghost"}
-            onClick={() => setShowReplyInput(!showReplyInput)}
+            onClick={() => executeWithAuth(() => setShowReplyInput(!showReplyInput), "comment")}
             className="text-main-white hover:text-main-grey cursor-pointer"
           >
             Reply
@@ -275,16 +253,10 @@ const TrackCommentUser = ({
               onClick={() => setShowReplies(!showReplies)}
               className="text-main-purple hover:text-main-purple hover:bg-main-purple/20 flex cursor-pointer items-center gap-x-2"
             >
-              {showReplies ? (
-                <ChevronUpIcon className="size-4" />
-              ) : (
-                <ChevronDownIcon className="size-4" />
-              )}
+              {showReplies ? <ChevronUpIcon className="size-4" /> : <ChevronDownIcon className="size-4" />}
               <span className="text-sm">
                 {thread.totalReplies || comment.replyCount}{" "}
-                {(thread.totalReplies || comment.replyCount) === 1
-                  ? "reply"
-                  : "replies"}
+                {(thread.totalReplies || comment.replyCount) === 1 ? "reply" : "replies"}
               </span>
             </Button>
           )}
@@ -293,17 +265,11 @@ const TrackCommentUser = ({
         {/* Reply Input */}
         {showReplyInput && (
           <div className="mt-3 flex items-center gap-x-3">
-            <Avatar className="size-8">
+            <Avatar className="size-10">
               <AvatarImage
-                src={
-                  comment.commenter?.listener?.avatarImage ||
-                  comment.commenter?.artist?.avatarImage ||
-                  undefined
-                }
+                src={comment.commenter?.listener?.avatarImage || comment.commenter?.artist?.avatarImage || undefined}
               />
-              <AvatarFallback>
-                {comment.commenter?.fullName.slice(0, 2)}
-              </AvatarFallback>
+              <AvatarFallback>{comment.commenter?.fullName.slice(0, 2)}</AvatarFallback>
             </Avatar>
             <div className="relative flex-1">
               <Input
@@ -325,10 +291,8 @@ const TrackCommentUser = ({
                 size="sm"
                 className="bg-main-white absolute top-0 right-0 h-8 rounded-tl-none rounded-tr-full rounded-br-full rounded-bl-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <SendIcon className="size-3" />
-                <span className="text-xs">
-                  {isPending ? "Posting..." : "Reply"}
-                </span>
+                <SendIcon className="size-4" />
+                <span className="text-xs">{isPending ? "Posting..." : "Reply"}</span>
               </Button>
             </div>
           </div>
@@ -355,14 +319,11 @@ const TrackCommentUser = ({
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Comment</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this comment? This action cannot
-                be undone.
+                Are you sure you want to delete this comment? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel disabled={isDeleting}>
-                Cancel
-              </AlertDialogCancel>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteComment}
                 disabled={isDeleting}
@@ -373,6 +334,13 @@ const TrackCommentUser = ({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <WarningAuthDialog
+          open={showWarningDialog}
+          onOpenChange={setShowWarningDialog}
+          action={warningAction}
+          trackName={trackName}
+        />
       </div>
     </div>
   );

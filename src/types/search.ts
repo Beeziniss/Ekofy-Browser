@@ -1,11 +1,4 @@
-export type SearchType =
-  | "all"
-  | "songs"
-  | "artists"
-  | "playlists"
-  | "albums"
-  | "profiles"
-  | "genres";
+export type SearchType = "all" | "songs" | "artists" | "playlists" | "albums" | "profiles" | "genres";
 
 export interface SearchParams {
   query: string;
@@ -44,6 +37,7 @@ export interface SearchTrackItem {
   type: string;
   categoryIds: string[];
   mainArtistIds: string[];
+  createdAt: string;
   coverImage: string;
   restriction: {
     type: string;
@@ -56,6 +50,7 @@ export interface SearchTrackItem {
       artistType: string;
     }[];
   };
+  checkTrackInFavorite: boolean;
   // Add other track properties as needed
 }
 
@@ -71,7 +66,7 @@ export interface SearchArtistItem {
   user: {
     fullName: string;
     role: string;
-  };
+  }[];
   // Add other artist properties as needed
 }
 
@@ -89,7 +84,8 @@ export interface SearchPlaylistItem {
   user: {
     id: string;
     fullName: string;
-  };
+  }[];
+  checkPlaylistInFavorite: boolean;
   // Add other playlist properties as needed
 }
 
@@ -138,7 +134,4 @@ export interface SearchListenersResponse {
 }
 
 // Union types for components
-export type SearchableItem =
-  | SearchArtistItem
-  | SearchPlaylistItem
-  | SearchTrackItem;
+export type SearchableItem = SearchArtistItem | SearchPlaylistItem | SearchTrackItem;

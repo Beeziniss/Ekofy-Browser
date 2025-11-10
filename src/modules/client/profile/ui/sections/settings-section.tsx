@@ -1,11 +1,19 @@
-import React from "react";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemTitle,
-} from "@/components/ui/item";
+import Link from "next/link";
 import { ChevronRightIcon } from "lucide-react";
+import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item";
+
+const settingItewms = [
+  {
+    title: "Change password",
+    // href: "/profile/change-password",
+    href: "#",
+  },
+  {
+    title: "Deactivate account",
+    // href: "/profile/deactivate-account",
+    href: "#",
+  },
+];
 
 const SettingsSection = () => {
   return (
@@ -14,22 +22,18 @@ const SettingsSection = () => {
         <h2 className="text-xl font-bold">Settings & Privacy</h2>
       </div>
       <div className="flex flex-col gap-6 pt-8">
-        <Item variant="muted">
-          <ItemContent>
-            <ItemTitle>Change password</ItemTitle>
-          </ItemContent>
-          <ItemActions>
-            <ChevronRightIcon className="size-8" />
-          </ItemActions>
-        </Item>
-        <Item variant="muted">
-          <ItemContent>
-            <ItemTitle>Deactivate account</ItemTitle>
-          </ItemContent>
-          <ItemActions>
-            <ChevronRightIcon className="size-8" />
-          </ItemActions>
-        </Item>
+        {settingItewms.map((item) => (
+          <Item asChild variant="muted" key={item.title} size={"sm"}>
+            <Link href={item.href} className="no-underline">
+              <ItemContent>
+                <ItemTitle>{item.title}</ItemTitle>
+              </ItemContent>
+              <ItemActions>
+                <ChevronRightIcon className="size-5" />
+              </ItemActions>
+            </Link>
+          </Item>
+        ))}
       </div>
     </div>
   );

@@ -18,4 +18,4 @@ const UserManagementPage = () => {
   );
 };
 
-export default UserManagementPage;;
+export default UserManagementPage;

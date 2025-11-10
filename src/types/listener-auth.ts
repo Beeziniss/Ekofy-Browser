@@ -13,7 +13,7 @@ export interface ClientProfileData {
   displayName: string;
   fullName: string;
   dateOfBirth: Date;
-  gender: 'Male' | 'Female' | 'Other';
+  gender: "Male" | "Female" | "Other";
   avatar?: File | null;
   avatarImage?: string;
 }
@@ -23,7 +23,7 @@ export interface ClientOTPData {
 }
 
 // Complete client sign-up data combining all steps
-export interface CompleteClientSignUpData extends ClientSignUpFormData, Omit<ClientProfileData, 'avatar'> {
+export interface CompleteClientSignUpData extends ClientSignUpFormData, Omit<ClientProfileData, "avatar"> {
   avatarImage?: string;
 }
 

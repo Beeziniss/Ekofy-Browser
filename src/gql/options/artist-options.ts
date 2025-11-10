@@ -1,33 +1,31 @@
-import { TrackListWithFiltersQuery } from "@/modules/artist/studio/ui/sections/tracks/track-table-section";
-import { GetArtistProfileQuery } from "@/modules/artist/profile/ui/views/queries";
-import { 
-  ServicePackageServiceViewQuery, 
-  ServicePackageDetailQuery, 
-  PendingArtistPackagesQuery 
-} from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
 import {
-  CategoriesQuery,
-  UserLicenseQuery,
-} from "@/modules/artist/track-upload/ui/views/track-upload-view";
+  ServicePackageServiceViewQuery,
+  ServicePackageDetailQuery,
+  PendingArtistPackagesQuery,
+} from "@/modules/shared/queries/artist/artist-packages-queries";
 import { ArtistPackageFilterInput, PaginatedDataOfPendingArtistPackageResponseFilterInput } from "@/gql/graphql";
+import {
+  CategoriesQuery,
+  GetArtistProfileQuery,
+  TrackListWithFiltersQuery,
+  TrackUploadArtistListQuery,
+} from "@/modules/shared/queries/artist";
 
+// TRACK LIST OPTIONS
 export const trackListOptions = queryOptions({
   queryKey: ["tracks"],
   queryFn: () => execute(TrackListWithFiltersQuery, { skip: 0, take: 10 }),
 });
 
+// CATEGORIES OPTIONS
 export const categoriesOptions = queryOptions({
   queryKey: ["categories"],
   queryFn: async () => await execute(CategoriesQuery),
 });
 
-export const userLicenseOptions = queryOptions({
-  queryKey: ["user-license"],
-  queryFn: async () => await execute(UserLicenseQuery),
-});
-
+// ARTIST OPTIONS
 export const artistProfileOptions = (userId: string) =>
   queryOptions({
     queryKey: ["artist-profile", userId],
@@ -43,24 +41,35 @@ export const artistProfileOptions = (userId: string) =>
     retry: 0,
   });
 
-// Service Package Options with prefetch and search
-export const artistPackagesOptions = (artistId: string, page: number = 1, pageSize: number = 10, searchTerm: string = '') =>
+// ARTIST LIST OPTIONS
+export const trackUploadArtistListOptions = queryOptions({
+  queryKey: ["track-upload-artist-list"],
+  queryFn: async () => await execute(TrackUploadArtistListQuery),
+});
+
+// ARTIST PACKAGES OPTIONS
+export const artistPackagesOptions = (
+  artistId: string,
+  page: number = 1,
+  pageSize: number = 10,
+  searchTerm: string = "",
+) =>
   queryOptions({
     queryKey: ["artist-packages", artistId, page, pageSize, searchTerm],
     queryFn: () => {
-      const where: ArtistPackageFilterInput = { artistId: { eq: artistId } };
-      
+      const where: ArtistPackageFilterInput = { artistId: { contains: artistId } };
+
       // Add packageName filter if search term is provided
       if (searchTerm.trim()) {
         where.packageName = { contains: searchTerm };
       }
-      
+
       const skip = (page - 1) * pageSize;
-      
+
       return execute(ServicePackageServiceViewQuery, {
         skip,
         take: pageSize,
-        where
+        where,
       });
     },
     enabled: !!artistId,
@@ -70,31 +79,38 @@ export const artistPackagesOptions = (artistId: string, page: number = 1, pageSi
 export const packageDetailOptions = (packageId: string) =>
   queryOptions({
     queryKey: ["package-detail", packageId],
-    queryFn: () => execute(ServicePackageDetailQuery, {
-      where: { id: { eq: packageId } }
-    }),
+    queryFn: () =>
+      execute(ServicePackageDetailQuery, {
+        where: { id: { eq: packageId } },
+      }),
     enabled: !!packageId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-export const pendingPackagesOptions = (artistId: string, page: number = 1, pageSize: number = 10, searchTerm: string = '') =>
+export const pendingPackagesOptions = (
+  artistId: string,
+  page: number = 1,
+  pageSize: number = 10,
+  searchTerm: string = "",
+) =>
   queryOptions({
     queryKey: ["pending-packages", artistId, page, pageSize, searchTerm],
     queryFn: () => {
-      const where: PaginatedDataOfPendingArtistPackageResponseFilterInput = { items: { all: { artistId: { eq: artistId } } } };
-      
+      const where: PaginatedDataOfPendingArtistPackageResponseFilterInput = {
+        items: { all: { artistId: { eq: artistId } } },
+      };
+
       // Add packageName filter if search term is provided
       if (searchTerm.trim()) {
         if (where.items?.all) {
           where.items.all.packageName = { contains: searchTerm };
         }
       }
-      
       return execute(PendingArtistPackagesQuery, {
         pageNumber: page,
         pageSize: pageSize,
         where,
-        artistWhere: {} // Get all artists for stage name lookup
+        artistWhere: {}, // Get all artists for stage name lookup
       });
     },
     enabled: !!artistId,

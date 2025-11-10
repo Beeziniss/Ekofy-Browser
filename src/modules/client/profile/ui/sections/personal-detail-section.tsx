@@ -1,12 +1,21 @@
+"use client";
 
 "use client";
 
 import React from "react";
-import DetailItem from "../components/detail-item";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
-import { useClientProfile } from "../../hook/use-client-profile";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,39 +30,43 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateListenerProfileMutationOptions } from "@/gql/options/client-mutation-options";
 import { toast } from "sonner";
-import { useAuthStore } from "@/store";
 import type { UserGender } from "@/gql/graphql";
+import DetailItem from "../components/detail-item";
 
-const PersonalDetailSection = () => {
+interface PersonalDetailSectionProps {
+  personal: {
+    readonly displayName: string;
+    readonly email: string;
+    readonly birthDate: string | undefined;
+    readonly gender: UserGender | undefined;
+  };
+  userId?: string;
+}
+
+const PersonalDetailSection = ({ personal, userId }: PersonalDetailSectionProps) => {
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
-  const userId = user?.userId;
-  const { personal } = useClientProfile();
   const [isEditing, setIsEditing] = React.useState(false);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
-  const formSchema = z.object({
-    displayName: z.string().min(1, "Display name is required").max(100),
-    // Email is immutable here; keep for display only
-    email: z.string().optional(),
-    // Only allow explicit gender options; omit NOT_SPECIFIED from choices
-    gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
-    birthDate: z.date(),
-  })
+  const formSchema = z
+    .object({
+      displayName: z.string().min(1, "Display name is required").max(100),
+      // Email is immutable here; keep for display only
+      email: z.string().optional(),
+      // Only allow explicit gender options; omit NOT_SPECIFIED from choices
+      gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
+      birthDate: z.date(),
+    })
     // Must not be in the future
     .refine((data) => !data.birthDate || data.birthDate <= new Date(), {
       message: "Birthdate cannot be in the future",
       path: ["birthDate"],
     })
     // Must be at least 13 years old (same rule as sign up)
-    .refine(
-      (data) =>
-        !data.birthDate || differenceInYears(new Date(), data.birthDate) >= 13,
-      {
-        message: "You must be at least 13 years old",
-        path: ["birthDate"],
-      }
-    );
+    .refine((data) => !data.birthDate || differenceInYears(new Date(), data.birthDate) >= 13, {
+      message: "You must be at least 13 years old",
+      path: ["birthDate"],
+    });
 
   type FormValues = z.infer<typeof formSchema>;
 
@@ -66,9 +79,7 @@ const PersonalDetailSection = () => {
       displayName: personal.displayName || "",
       email: personal.email || "",
       birthDate: personal.birthDate ? new Date(personal.birthDate) : undefined,
-      gender: isExplicitGender(personal.gender)
-        ? (personal.gender as FormValues["gender"]) 
-        : undefined,
+      gender: isExplicitGender(personal.gender) ? (personal.gender as FormValues["gender"]) : undefined,
     },
   });
 
@@ -78,9 +89,7 @@ const PersonalDetailSection = () => {
       displayName: personal.displayName || "",
       email: personal.email || "",
       birthDate: personal.birthDate ? new Date(personal.birthDate) : undefined,
-      gender: isExplicitGender(personal.gender)
-        ? (personal.gender as FormValues["gender"]) 
-        : undefined,
+      gender: isExplicitGender(personal.gender) ? (personal.gender as FormValues["gender"]) : undefined,
     });
   }, [form, personal.displayName, personal.email, personal.birthDate, personal.gender]);
 
@@ -102,13 +111,16 @@ const PersonalDetailSection = () => {
           return {
             ...old,
             displayName: variables.displayName ?? old.displayName,
-            user: Array.isArray(old.user) && old.user.length > 0
-              ? [{
-                  ...old.user[0],
-                  birthDate: (variables.birthDate as string | undefined) ?? old.user[0]?.birthDate,
-                  gender: (variables.gender as UserGender | undefined) ?? old.user[0]?.gender,
-                }]
-              : old.user,
+            user:
+              Array.isArray(old.user) && old.user.length > 0
+                ? [
+                    {
+                      ...old.user[0],
+                      birthDate: (variables.birthDate as string | undefined) ?? old.user[0]?.birthDate,
+                      gender: (variables.gender as UserGender | undefined) ?? old.user[0]?.gender,
+                    },
+                  ]
+                : old.user,
           } as ListenerCache;
         });
       }
@@ -130,11 +142,9 @@ const PersonalDetailSection = () => {
     const values = form.getValues();
     // Ensure DateTime is sent as full ISO string at UTC midnight to avoid timezone shifting
     const birthDateIso = values.birthDate
-      ? new Date(Date.UTC(
-          values.birthDate.getFullYear(),
-          values.birthDate.getMonth(),
-          values.birthDate.getDate()
-        )).toISOString()
+      ? new Date(
+          Date.UTC(values.birthDate.getFullYear(), values.birthDate.getMonth(), values.birthDate.getDate()),
+        ).toISOString()
       : undefined;
     updateProfile({
       displayName: values.displayName,
@@ -167,8 +177,8 @@ const PersonalDetailSection = () => {
   })();
 
   return (
-    <div className="w-full ">
-      <div className="flex items-end gap-x-3 justify-between">
+    <div className="w-full">
+      <div className="flex items-end justify-between gap-x-3">
         <h2 className="text-xl font-bold">Personal Details</h2>
         {isEditing ? (
           <div className="flex items-center gap-2">
@@ -185,12 +195,7 @@ const PersonalDetailSection = () => {
             </Button>
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
               <AlertDialogTrigger asChild>
-                <Button
-                  type="button"
-                  className="bg-main-purple hover:bg-main-purple/90"
-                  onClick={form.handleSubmit(onSubmit)}
-                  disabled={isPending}
-                >
+                <Button type="button" variant={"ekofy"} onClick={form.handleSubmit(onSubmit)} disabled={isPending}>
                   {isPending ? "Saving..." : "Save"}
                 </Button>
               </AlertDialogTrigger>
@@ -224,7 +229,7 @@ const PersonalDetailSection = () => {
         )}
       </div>
 
-      <div className="w-full mt-6 md:mt-12 md:mb-12">
+      <div className="mt-6 w-full md:mt-12 md:mb-12">
         {/* Display name row: editable */}
         <div className="py-2">
           {isEditing ? (
@@ -282,7 +287,7 @@ const PersonalDetailSection = () => {
                               variant="outline"
                               className={cn(
                                 "w-full justify-start text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                !field.value && "text-muted-foreground",
                               )}
                             >
                               <CalendarIcon className="mr-2 h-4 w-4" />
@@ -297,9 +302,9 @@ const PersonalDetailSection = () => {
                             onSelect={field.onChange}
                             disabled={(date) => date > new Date()}
                             captionLayout="dropdown"
-                            fromYear={1700}
-                            toYear={new Date().getFullYear()}
-                            initialFocus
+                            startMonth={new Date(1900, 0)}
+                            endMonth={new Date(new Date().getFullYear(), 0)}
+                            autoFocus
                           />
                         </PopoverContent>
                       </Popover>

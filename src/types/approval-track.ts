@@ -10,7 +10,7 @@ export interface UserBasic {
   birthDate: string;
 }
 
-// Extended User type for detail view (full fields)  
+// Extended User type for detail view (full fields)
 export interface UserDetailed extends UserBasic {
   phoneNumber?: string | null;
   status: string;
@@ -35,7 +35,7 @@ export interface TrackUploadRequestListItem {
     createdBy: string;
     requestedAt: string;
     releaseInfo?: {
-      isReleased: boolean;
+      isRelease: boolean;
       releaseDate?: string | null;
       releasedAt?: string | null;
       releaseStatus?: string | null;
@@ -110,7 +110,7 @@ export interface TrackUploadRequest {
     createdBy: string;
     requestedAt: string;
     releaseInfo?: {
-      isReleased: boolean;
+      isRelease: boolean;
       releaseDate?: string | null;
       releasedAt?: string | null;
       releaseStatus?: string | null;
@@ -134,7 +134,7 @@ export interface TrackUploadRequest {
       stageNameUnsigned: string;
       email: string;
       artistType: string;
-        avatarImage?: string | null;
+      avatarImage?: string | null;
       members?: Array<{
         fullName: string;
         email: string;

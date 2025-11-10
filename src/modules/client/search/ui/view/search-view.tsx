@@ -1,13 +1,8 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  SearchType,
-  SearchArtistItem,
-  SearchPlaylistItem,
-  SearchTrackItem,
-} from "@/types/search";
+import { SearchType, SearchArtistItem, SearchPlaylistItem, SearchTrackItem } from "@/types/search";
 import { SearchLayout } from "../layout/search-layout";
 import { SearchAllSection } from "../section/search-all-section/search-all-section";
 import { SearchTrackSection } from "../section/search-track-section/search-track-section";
@@ -44,11 +39,7 @@ interface SearchViewProps {
 // GraphQL Queries - using raw strings until schema is updated
 export const SEARCH_ARTISTS = graphql(`
   query SearchArtists($skip: Int, $take: Int, $stageName: String!) {
-    searchArtists(
-      skip: $skip
-      take: $take
-      stageName: $stageName
-    ) {
+    searchArtists(skip: $skip, take: $take, stageName: $stageName) {
       totalCount
       items {
         id
@@ -68,14 +59,9 @@ export const SEARCH_ARTISTS = graphql(`
   }
 `);
 
-
 export const SEARCH_LISTENERS = graphql(`
   query SearchListeners($skip: Int, $take: Int, $displayName: String!) {
-    searchListeners(
-      skip: $skip
-      take: $take
-      displayName: $displayName
-    ) {
+    searchListeners(skip: $skip, take: $take, displayName: $displayName) {
       totalCount
       items {
         id
@@ -97,11 +83,7 @@ export const SEARCH_LISTENERS = graphql(`
 
 export const SEARCH_TRACKS = graphql(`
   query SearchTracks($skip: Int, $take: Int, $name: String!) {
-    searchTracks(
-      skip: $skip
-      take: $take
-      name: $name
-    ) {
+    searchTracks(skip: $skip, take: $take, name: $name) {
       totalCount
       items {
         id
@@ -111,6 +93,7 @@ export const SEARCH_TRACKS = graphql(`
         type
         categoryIds
         mainArtistIds
+        createdAt
         mainArtists {
           items {
             id
@@ -123,6 +106,7 @@ export const SEARCH_TRACKS = graphql(`
         restriction {
           type
         }
+        checkTrackInFavorite
       }
     }
   }
@@ -130,11 +114,7 @@ export const SEARCH_TRACKS = graphql(`
 
 export const SEARCH_PLAYLISTS = graphql(`
   query SearchPlaylists($skip: Int, $take: Int, $name: String!) {
-    searchPlaylists(
-      skip: $skip
-      take: $take
-      name: $name
-    ) {
+    searchPlaylists(skip: $skip, take: $take, name: $name) {
       totalCount
       items {
         id
@@ -151,17 +131,13 @@ export const SEARCH_PLAYLISTS = graphql(`
           id
           fullName
         }
+        checkPlaylistInFavorite
       }
     }
   }
 `);
 
-
-export const SearchView: React.FC<SearchViewProps> = ({
-  query,
-  type,
-  onTypeChange,
-}) => {
+export const SearchView: React.FC<SearchViewProps> = ({ query, type, onTypeChange }) => {
   // Always call hooks at top level - use enabled to control execution
   const tracksQuery = useInfiniteQuery({
     ...searchTracksInfiniteOptions(query, 10),
@@ -180,32 +156,18 @@ export const SearchView: React.FC<SearchViewProps> = ({
 
   if (!query) {
     return (
-      <SearchLayout
-        query={query}
-        currentType={type}
-        onTypeChange={onTypeChange}
-      >
+      <SearchLayout query={query} currentType={type} onTypeChange={onTypeChange}>
         <div className="py-12 text-center">
-          <p className="text-muted-foreground">
-            Enter a search term to find tracks, artists, and playlists
-          </p>
+          <p className="text-muted-foreground">Enter a search term to find tracks, artists, and playlists</p>
         </div>
       </SearchLayout>
     );
   }
 
   // Show loading state
-  if (
-    tracksQuery.isLoading ||
-    artistsQuery.isLoading ||
-    playlistsQuery.isLoading
-  ) {
+  if (tracksQuery.isLoading || artistsQuery.isLoading || playlistsQuery.isLoading) {
     return (
-      <SearchLayout
-        query={query}
-        currentType={type}
-        onTypeChange={onTypeChange}
-      >
+      <SearchLayout query={query} currentType={type} onTypeChange={onTypeChange}>
         <div className="py-12 text-center">
           <p className="text-muted-foreground">Searching...</p>
         </div>
@@ -214,18 +176,10 @@ export const SearchView: React.FC<SearchViewProps> = ({
   }
 
   // Extract data from queries
-  const tracks =
-    tracksQuery.data?.pages.flatMap(
-      (page) => (page as SearchResponse).searchTracks?.items || [],
-    ) || [];
-  const artists =
-    artistsQuery.data?.pages.flatMap(
-      (page) => (page as SearchResponse).searchArtists?.items || [],
-    ) || [];
+  const tracks = tracksQuery.data?.pages.flatMap((page) => (page as SearchResponse).searchTracks?.items || []) || [];
+  const artists = artistsQuery.data?.pages.flatMap((page) => (page as SearchResponse).searchArtists?.items || []) || [];
   const playlists =
-    playlistsQuery.data?.pages.flatMap(
-      (page) => (page as SearchResponse).searchPlaylists?.items || [],
-    ) || [];
+    playlistsQuery.data?.pages.flatMap((page) => (page as SearchResponse).searchPlaylists?.items || []) || [];
 
   const renderContent = () => {
     switch (type) {
@@ -257,11 +211,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
           />
         );
       case "all":
-        if (
-          tracks.length === 0 &&
-          artists.length === 0 &&
-          playlists.length === 0
-        ) {
+        if (tracks.length === 0 && artists.length === 0 && playlists.length === 0) {
           return <SearchEmptySection query={query} type={type} />;
         }
         return (

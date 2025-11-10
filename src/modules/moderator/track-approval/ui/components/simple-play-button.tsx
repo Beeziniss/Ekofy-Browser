@@ -4,8 +4,8 @@ import { useAudioStore } from "@/store";
 import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { useCallback } from "react";
+import { Play, Pause } from "lucide-react";
 
 interface SimplePlayButtonProps {
   trackId: string;
@@ -17,22 +17,16 @@ interface SimplePlayButtonProps {
   size?: "sm" | "md" | "lg" | "full";
 }
 
-export function SimplePlayButton({ 
-  trackId, 
-  trackName, 
-  trackArtist, 
-  trackCoverImage, 
+export function SimplePlayButton({
+  trackId,
+  trackName,
+  trackArtist,
+  trackCoverImage,
   uploadId, // Add this to the destructuring
   className,
-  size = "sm" 
+  size = "sm",
 }: SimplePlayButtonProps) {
-  const {
-    currentTrack,
-    isPlaying,
-    setCurrentTrack,
-    togglePlayPause,
-    isLoading,
-  } = useAudioStore();
+  const { currentTrack, isPlaying, setCurrentTrack, togglePlayPause, isLoading } = useAudioStore();
 
   // Use uploadId if available, otherwise fall back to trackId
   const audioTrackId = uploadId || trackId;
@@ -58,43 +52,46 @@ export function SimplePlayButton({
 
   const sizeClasses = {
     sm: "h-8 w-8 p-0",
-    md: "h-10 w-10 p-0", 
-    lg: "h-12 w-12 p-0",
-    full: "h-full w-full p-0"
+    md: "h-10 w-10 p-0",
+    lg: "h-14 w-14 p-0",
+    full: "h-full w-full p-0",
   };
 
   const iconSizes = {
-    sm: "h-4 w-4",
-    md: "h-5 w-5",
-    lg: "h-6 w-6",
-    full: "h-16 w-16"
+    sm: "h-5 w-5",
+    md: "h-6 w-6",
+    lg: "h-10 w-10",
+    full: "h-12 w-12",
+  };
+
+  const backgroundClasses = {
+    sm: "bg-white/50 hover:bg-white/70 backdrop-blur-sm border border-black/20",
+    md: "bg-white/50 hover:bg-white/70 backdrop-blur-sm border border-black/20",
+    lg: "bg-white/60 hover:bg-white/80 backdrop-blur-md border border-black/30 shadow-lg",
+    full: "bg-white/60 hover:bg-white/80 backdrop-blur-md border border-black/30 shadow-lg",
   };
 
   return (
     <Button
-      variant={isCurrentTrack ? "default" : "ghost"}
+      variant="ghost"
       size="sm"
       onClick={handleClick}
       disabled={isLoading && isCurrentTrack}
-      className={cn(sizeClasses[size], className)}
+      className={cn(
+        sizeClasses[size],
+        backgroundClasses[size],
+        "rounded-full text-white transition-all duration-200 hover:text-white",
+        isCurrentTrack && "ring-2 ring-white/50",
+        className,
+      )}
       title={isCurrentlyPlaying ? "Pause" : "Play"}
     >
       {isLoading && isCurrentTrack ? (
-        <div className={cn("animate-spin rounded-full border-primary border-t-transparent", iconSizes[size])} />
+        <div className={cn("border-primary animate-spin rounded-full border-t-transparent", iconSizes[size])} />
       ) : isCurrentlyPlaying ? (
-        <Image
-          src={"/pause-button.svg"}
-          alt="Ekofy Pause Button"
-          width={size === "full" ? 64 : 32}
-          height={size === "full" ? 64 : 32}
-        />
+        <Pause className={cn(iconSizes[size], "text-black")} />
       ) : (
-        <Image
-          src={"/play-button.svg"}
-          alt="Ekofy Play Button"
-          width={size === "full" ? 64 : 32}
-          height={size === "full" ? 64 : 32}
-        />  
+        <Play className={cn(iconSizes[size], "text-black")} />
       )}
     </Button>
   );

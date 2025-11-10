@@ -1,32 +1,34 @@
 "use client";
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ArtistPackage } from '@/gql/graphql';
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Clock, RotateCcw } from "lucide-react";
+import { ArtistPackage } from "@/gql/graphql";
+import { usePackageUtils } from "../../../hooks";
 
 const updatePackageSchema = z.object({
-  id: z.string().min(1, 'Package ID is required'),
-  packageName: z.string().min(1, 'Package name is required'),
+  id: z.string().min(1, "Package ID is required"),
+  packageName: z.string().min(1, "Package name is required"),
   description: z.string().optional(),
 });
 
 type UpdatePackageFormData = z.infer<typeof updatePackageSchema>;
 
 interface UpdatePackageServiceProps {
-  package: ArtistPackage;
+  package: Omit<ArtistPackage, "artist" | "review">;
   onSubmit: (data: UpdatePackageFormData) => void;
   onCancel: () => void;
   onDelete: () => void;
   isLoading?: boolean;
-};
+}
 
 const UpdatePackageService = ({
   package: pkg,
@@ -35,12 +37,13 @@ const UpdatePackageService = ({
   onDelete,
   isLoading = false,
 }: UpdatePackageServiceProps) => {
+  const { formatCurrency, formatRevisionText } = usePackageUtils();
   const form = useForm<UpdatePackageFormData>({
     resolver: zodResolver(updatePackageSchema),
     defaultValues: {
       id: pkg.id,
       packageName: pkg.packageName,
-      description: pkg.description || '',
+      description: pkg.description || "",
     },
   });
 
@@ -49,21 +52,16 @@ const UpdatePackageService = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <Card className=" border-gradient-input">
+    <div className="mx-auto max-w-7xl p-6">
+      <Card className="border-gradient-input">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-white">Update Artist Service Package</CardTitle>
-            <Button
-              variant="destructive"
-              onClick={onDelete}
-              disabled={isLoading}
-            >
+            <Button variant="destructive" onClick={onDelete} disabled={isLoading}>
               Delete Package
             </Button>
           </div>
         </CardHeader>
-        
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
@@ -81,35 +79,43 @@ const UpdatePackageService = ({
               />
 
               {/* Package Information Display */}
-              <div className="p-4 rounded-md border-gradient-input">
-                <h3 className="text-white text-lg font-medium mb-4">Current Package Information</h3>
+              <div className="border-gradient-input rounded-md p-4">
+                <h3 className="mb-4 text-lg font-medium text-white">Current Package Information</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-400">Package ID:</span>
-                    <span className="text-white ml-2">{pkg.id}</span>
+                    <span className="ml-2 text-white">{pkg.id}</span>
                   </div>
                   <div>
                     <span className="text-gray-400">Status:</span>
-                    <span className="text-white ml-2">{pkg.status}</span>
+                    <span className="ml-2 text-white">{pkg.status}</span>
                   </div>
                   <div>
                     <span className="text-gray-400">Amount:</span>
-                    <span className="text-white ml-2">{pkg.amount.toLocaleString()} {pkg.currency}</span>
+                    <span className="ml-2 text-white">{formatCurrency(pkg.amount, pkg.currency)}</span>
                   </div>
-                  <div>
-                    <span className="text-gray-400">Delivery Days:</span>
-                    <span className="text-white ml-2">{pkg.estimateDeliveryDays}</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-gray-400" />
+                      <span className="text-gray-400">Delivery:</span>
+                      <span className="text-white">{pkg.estimateDeliveryDays} days</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RotateCcw className="h-4 w-4 text-gray-400" />
+                      <span className="text-gray-400">Revisions:</span>
+                      <span className="text-white">{formatRevisionText(pkg.maxRevision || 0)}</span>
+                    </div>
                   </div>
                   <div>
                     <span className="text-gray-400">Created:</span>
-                    <span className="text-white ml-2">{new Date(pkg.createdAt).toLocaleDateString()}</span>
+                    <span className="ml-2 text-white">{new Date(pkg.createdAt).toLocaleDateString()}</span>
                   </div>
                   <div>
                     <span className="text-gray-400">Updated:</span>
-                    <span className="text-white ml-2">{new Date(pkg.updatedAt).toLocaleDateString()}</span>
+                    <span className="ml-2 text-white">{new Date(pkg.updatedAt).toLocaleDateString()}</span>
                   </div>
                 </div>
-                
+
                 {pkg.serviceDetails && pkg.serviceDetails.length > 0 && (
                   <div className="mt-4">
                     <span className="text-gray-400">Service Details:</span>
@@ -117,7 +123,7 @@ const UpdatePackageService = ({
                       {pkg.serviceDetails.map((detail, index) => (
                         <div key={index} className="text-sm">
                           <span className="text-gray-300">{detail.key}:</span>
-                          <span className="text-white ml-2">{detail.value}</span>
+                          <span className="ml-2 text-white">{detail.value}</span>
                         </div>
                       ))}
                     </div>
@@ -135,7 +141,7 @@ const UpdatePackageService = ({
                     <FormControl>
                       <Input
                         {...field}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="border-gray-600 bg-gray-700 text-white"
                         placeholder="Enter package name"
                       />
                     </FormControl>
@@ -154,7 +160,7 @@ const UpdatePackageService = ({
                       <Textarea
                         {...field}
                         placeholder="Enter package description"
-                        className="bg-gray-700 border-gray-600 text-white min-h-32"
+                        className="min-h-32 border-gray-600 bg-gray-700 text-white"
                       />
                     </FormControl>
                     <FormMessage />
@@ -174,12 +180,8 @@ const UpdatePackageService = ({
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="bg-white hover:primary_gradient text-black"
-                >
-                  {isLoading ? 'Updating...' : 'Update Package'}
+                <Button type="submit" disabled={isLoading} className="hover:primary_gradient bg-white text-black">
+                  {isLoading ? "Updating..." : "Update Package"}
                 </Button>
               </div>
             </form>

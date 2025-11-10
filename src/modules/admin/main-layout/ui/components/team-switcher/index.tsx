@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";

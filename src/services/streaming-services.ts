@@ -5,15 +5,11 @@ export const streamingApi = {
   // Sign token for a specific track ID
   signToken: async (trackId: string) => {
     try {
-      const response = await axiosInstance.post(
-        "/api/media-streaming/signed-token",
-        trackId,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+      const response = await axiosInstance.post("/api/media-streaming/signed-token", trackId, {
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+      });
       return response.data.token;
     } catch (error) {
       if (isAxiosError(error)) {

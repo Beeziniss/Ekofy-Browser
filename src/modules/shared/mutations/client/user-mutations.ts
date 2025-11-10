@@ -2,16 +2,18 @@ import { graphql } from "@/gql";
 
 export const UserFollowMutation = graphql(`
   mutation FollowUser($targetId: String!) {
-    followUser(
-      request: { targetId: $targetId, targetType: ARTIST, action: FOLLOW }
-    )
+    followUser(request: { targetId: $targetId })
   }
 `);
 
 export const UserUnfollowMutation = graphql(`
   mutation UnfollowUser($targetId: String!) {
-    unfollowUser(
-      request: { targetId: $targetId, targetType: ARTIST, action: FOLLOW }
-    )
+    unfollowUser(request: { targetId: $targetId })
+  }
+`);
+
+export const UpdateListenerProfileMutation = graphql(`
+  mutation UpdateListenerProfile($updateListenerRequest: UpdateListenerRequestInput!) {
+    updateListenerProfile(updateListenerRequest: $updateListenerRequest)
   }
 `);

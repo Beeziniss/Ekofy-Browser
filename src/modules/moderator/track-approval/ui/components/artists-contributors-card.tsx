@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Users, Music } from "lucide-react";
+import { User, Users } from "lucide-react";
 import { TrackUploadRequest } from "@/types/approval-track";
 
 interface ArtistsContributorsCardProps {
@@ -11,6 +11,7 @@ interface ArtistsContributorsCardProps {
 }
 
 export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps) {
+  console.log("ArtistsContributorsCard track data:", track);
   return (
     <Card>
       <CardHeader>
@@ -23,13 +24,10 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
         {/* Main Artists */}
         {track.mainArtists?.items && track.mainArtists.items.length > 0 && (
           <div className="space-y-3">
-            <h3 className="font-medium flex items-center gap-2">
-              <Music className="h-4 w-4" />
-              Main Artists
-            </h3>
+            <h3 className="flex items-center gap-2 font-medium">Main Artists:</h3>
             <div className="grid gap-3">
               {track.mainArtists.items.map((artist) => (
-                <div key={artist.id} className="flex items-center border-2 border-white gap-3 p-3 rounded-lg">
+                <div key={artist.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={artist.avatarImage || undefined} alt={artist.stageName} />
                     <AvatarFallback>
@@ -38,8 +36,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
                   </Avatar>
                   <div className="flex-1">
                     <p className="font-medium">{artist.stageName}</p>
-                    <p className="text-sm text-muted-foreground">{artist.email}</p>
-                    <p className="text-xs text-muted-foreground">User ID: {artist.userId}</p>
+                    <p className="text-muted-foreground text-sm">{artist.email}</p>
                   </div>
                   <Badge variant="outline">{artist.artistType}</Badge>
                 </div>
@@ -51,23 +48,21 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
         {/* Featured Artists */}
         {track.featuredArtists?.items && track.featuredArtists.items.length > 0 && (
           <div className="space-y-3">
-            <h3 className="font-medium flex items-center gap-2">
-              <Music className="h-4 w-4" />
-              Featured Artists
-            </h3>
+            <h3 className="flex items-center gap-2 font-medium">Featured Artists:</h3>
             <div className="grid gap-3">
               {track.featuredArtists.items.map((artist) => (
-                <div key={artist.id} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                <div key={artist.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
                   <Avatar className="h-10 w-10">
+                    <AvatarImage src={artist.avatarImage || undefined} alt={artist.stageName} />
                     <AvatarFallback>
                       <User className="h-5 w-5" />
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <p className="font-medium">{artist.stageName}</p>
-                    <p className="text-sm text-muted-foreground">{artist.email}</p>
-                    <p className="text-xs text-muted-foreground">User ID: {artist.userId}</p>
+                    <p className="text-muted-foreground text-sm">{artist.email}</p>
                   </div>
+                  <Badge variant="outline">{artist.artistType}</Badge>
                 </div>
               ))}
             </div>
@@ -77,13 +72,10 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
         {/* Recording Users */}
         {track.recordingUsers?.items && track.recordingUsers.items.length > 0 && (
           <div className="space-y-3">
-            <h3 className="font-medium flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Recording Contributors
-            </h3>
+            <h3 className="flex items-center gap-2 font-medium">Recording Contributors:</h3>
             <div className="grid gap-3">
               {track.recordingUsers.items.map((user) => (
-                <div key={user.id} className="flex items-center border-2 border-white gap-3 p-3 rounded-lg">
+                <div key={user.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback>
                       <User className="h-5 w-5" />
@@ -91,21 +83,13 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
                   </Avatar>
                   <div className="flex-1">
                     <p className="font-medium">{user.fullName}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
-                    <div className="text-xs text-muted-foreground space-x-2">
-                      <span>Gender: {user.gender}</span>
-                      {user.phoneNumber && <span>• Phone: {user.phoneNumber}</span>}
-                    </div>
+                    <p className="text-muted-foreground text-sm">{user.email}</p>
                   </div>
-                    <Badge
-                    className={`${
-                      user.status === "ACTIVE"
-                      ? "bg-green-700 text-white"
-                      : "bg-red-700 text-white"
-                    }`}
-                    >
+                  <Badge
+                    className={`${user.status === "ACTIVE" ? "bg-green-700 text-white" : "bg-red-700 text-white"}`}
+                  >
                     {user.status}
-                    </Badge>
+                  </Badge>
                 </div>
               ))}
             </div>
@@ -115,13 +99,10 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
         {/* Work Users */}
         {track.workUsers?.items && track.workUsers.items.length > 0 && (
           <div className="space-y-3">
-            <h3 className="font-medium flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Work Contributors
-            </h3>
+            <h3 className="flex items-center gap-2 font-medium">Work Contributors:</h3>
             <div className="grid gap-3">
               {track.workUsers.items.map((user) => (
-                <div key={user.id} className="flex items-center border-2 border-white gap-3 p-3 rounded-lg">
+                <div key={user.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback>
                       <User className="h-5 w-5" />
@@ -129,21 +110,13 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
                   </Avatar>
                   <div className="flex-1">
                     <p className="font-medium">{user.fullName}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
-                    <div className="text-xs text-muted-foreground space-x-2">
-                      <span>Gender: {user.gender}</span>
-                      {user.phoneNumber && <span>• Phone: {user.phoneNumber}</span>}
-                    </div>
+                    <p className="text-muted-foreground text-sm">{user.email}</p>
                   </div>
                   <Badge
-                    className={`${
-                      user.status === "ACTIVE"
-                      ? "bg-green-700 text-white"
-                      : "bg-red-700 text-white"
-                    }`}
-                    >
+                    className={`${user.status === "ACTIVE" ? "bg-green-700 text-white" : "bg-red-700 text-white"}`}
+                  >
                     {user.status}
-                    </Badge>
+                  </Badge>
                 </div>
               ))}
             </div>

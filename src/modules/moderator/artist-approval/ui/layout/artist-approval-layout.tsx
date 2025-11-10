@@ -8,26 +8,18 @@ interface ArtistApprovalLayoutProps {
   description?: string;
 }
 
-export function ArtistApprovalLayout({
-  children,
-  title = "Approval Center",
-  description,
-}: ArtistApprovalLayoutProps) {
+export function ArtistApprovalLayout({ children, title = "Approval Center", description }: ArtistApprovalLayoutProps) {
   return (
-    <div className="min-h-screen bg-main-dark-bg text-white">
+    <div className="bg-main-dark-bg min-h-screen text-white">
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">{title}</h1>
-          {description && (
-            <p className="text-gray-400">{description}</p>
-          )}
+          <h1 className="mb-2 text-3xl font-bold text-white">{title}</h1>
+          {description && <p className="text-gray-400">{description}</p>}
         </div>
 
         {/* Content */}
-        <div className="space-y-6">
-          {children}
-        </div>
+        <div className="space-y-6">{children}</div>
       </div>
     </div>
   );

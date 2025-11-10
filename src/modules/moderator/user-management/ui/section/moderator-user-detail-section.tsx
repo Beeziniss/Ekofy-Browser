@@ -5,13 +5,13 @@ import { useSearchParams } from "next/navigation";
 import { moderatorArtistDetailOptions, moderatorListenerDetailOptions } from "@/gql/options/moderator-options";
 import { ArtistType, UserRole, UserStatus, UserGender } from "@/gql/graphql";
 import { ModeratorArtistDetailCard, ModeratorListenerDetailCard, ModeratorArtistTeamMembers } from "../component";
-import { 
-  // ModeratorArtist, 
-  // ModeratorListener, 
+import {
+  // ModeratorArtist,
+  // ModeratorListener,
   ModeratorUser,
   ModeratorArtistDetailResponse,
   ModeratorListenerDetailResponse,
-  ModeratorUserBasic
+  ModeratorUserBasic,
 } from "@/types";
 import { useState } from "react";
 import Image from "next/image";
@@ -63,13 +63,27 @@ const transformToModeratorArtist = (artistData: unknown): ModeratorArtistDetailR
       nationality: ((data?.identityCard as Record<string, unknown>)?.nationality as string) || "",
       validUntil: ((data?.identityCard as Record<string, unknown>)?.validUntil as string) || undefined,
       placeOfResidence: {
-        street: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.street as string) || "",
-        ward: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.ward as string) || "",
-        province: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.province as string) || "",
-        oldDistrict: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.oldDistrict as string) || "",
-        oldWard: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.oldWard as string) || "",
-        oldProvince: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.oldProvince as string) || "",
-        addressLine: (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)?.addressLine as string) || "",
+        street:
+          (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)
+            ?.street as string) || "",
+        ward:
+          (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)
+            ?.ward as string) || "",
+        province:
+          (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)
+            ?.province as string) || "",
+        oldDistrict:
+          (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)
+            ?.oldDistrict as string) || "",
+        oldWard:
+          (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)
+            ?.oldWard as string) || "",
+        oldProvince:
+          (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)
+            ?.oldProvince as string) || "",
+        addressLine:
+          (((data?.identityCard as Record<string, unknown>)?.placeOfResidence as Record<string, unknown>)
+            ?.addressLine as string) || "",
       },
     },
     createdAt: (data?.createdAt as string) || new Date().toISOString(),
@@ -125,9 +139,7 @@ export function ModeratorUserDetailSection({ userId }: ModeratorUserDetailSectio
   if (error) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="text-red-400">
-          Error loading user details: {error.message}
-        </div>
+        <div className="text-red-400">Error loading user details: {error.message}</div>
       </div>
     );
   }
@@ -138,12 +150,15 @@ export function ModeratorUserDetailSection({ userId }: ModeratorUserDetailSectio
   // Transform data to component-compatible types
   const artistUser = Array.isArray(artist?.user) ? artist.user[0] : artist?.user;
   const listenerUser = Array.isArray(listener?.user) ? listener.user[0] : listener?.user;
-  
-  const transformedUser = artistUser ? transformToModeratorUser(artistUser as unknown as ModeratorUserBasic, userId) : 
-                         listenerUser ? transformToModeratorUser(listenerUser as unknown as ModeratorUserBasic, userId) : null;
+
+  const transformedUser = artistUser
+    ? transformToModeratorUser(artistUser as unknown as ModeratorUserBasic, userId)
+    : listenerUser
+      ? transformToModeratorUser(listenerUser as unknown as ModeratorUserBasic, userId)
+      : null;
   const transformedArtist = artist ? transformToModeratorArtist(artist) : null;
   const transformedListener = listener ? transformToModeratorListener(listener) : null;
-  
+
   if (role === UserRole.Artist && !transformedArtist) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -160,11 +175,10 @@ export function ModeratorUserDetailSection({ userId }: ModeratorUserDetailSectio
     );
   }
 
-// Render Artist Detail
+  // Render Artist Detail
   if (role === UserRole.Artist && transformedArtist && transformedUser) {
     const showTeamTab =
-      transformedArtist.artistType === ArtistType.Band ||
-      transformedArtist.artistType === ArtistType.Group;
+      transformedArtist.artistType === ArtistType.Band || transformedArtist.artistType === ArtistType.Group;
 
     return (
       <div className="space-y-6">
@@ -213,12 +227,10 @@ export function ModeratorUserDetailSection({ userId }: ModeratorUserDetailSectio
           {/* Artist Info */}
           <div>
             <h2 className="mb-1 text-3xl font-bold text-white">
-              {transformedArtist.stageName || "Artist Name"} •{" "}
-              <span className="text-white">Artist</span>
+              {transformedArtist.stageName || "Artist Name"} • <span className="text-white">Artist</span>
             </h2>
             <p className="text-lg text-gray-300">
-              <span className="font-medium">{transformedArtist.followerCount || 100}</span>{" "}
-              followers
+              <span className="font-medium">{transformedArtist.followerCount || 100}</span> followers
             </p>
           </div>
         </div>
@@ -261,78 +273,72 @@ export function ModeratorUserDetailSection({ userId }: ModeratorUserDetailSectio
     );
   }
 
- // Render Listener Detail
-   if (role === UserRole.Listener && transformedListener && transformedUser) {
-     return (
-       <div className="space-y-6">
-         {/* Banner Background */}
-         <div className="relative">
-           {/* Banner Image */}
-           <div className="primary_gradient h-64 w-full overflow-hidden rounded-xl">
-             {transformedListener.bannerImage ? (
-               <Image
-                 src={transformedListener.bannerImage}
-                 alt="Banner"
-                 width={1200}
-                 height={256}
-                 className="h-full w-full object-cover"
-               />
-             ) : (
-               <div className="primary_gradient h-full w-full" />
-             )}
-           </div>
- 
-           {/* Avatar positioned over banner */}
-           <div className="absolute bottom-0 left-8 translate-y-1/2 transform">
-             <div className="primary_gradient h-52 w-52 overflow-hidden rounded-full border-4 border-black">
-               {transformedListener.avatarImage ? (
-                 <Image
-                   src={transformedListener.avatarImage}
-                   alt="Avatar"
-                   width={128}
-                   height={128}
-                   className="h-full w-full object-cover"
-                 />
-               ) : (
-                 <div className="flex h-full w-full items-center justify-center text-4xl font-bold text-white">
-                   {transformedListener.displayName?.charAt(0).toUpperCase() ||
-                     transformedUser.fullName?.charAt(0).toUpperCase() ||
-                     "L"}
-                 </div>
-               )}
-             </div>
-           </div>
-         </div>
- 
-         {/* Listener Info positioned next to avatar, outside banner */}
-         <div className="flex items-center space-x-6 pl-28">
-           {/* Spacer for avatar */}
-           <div className="w-32"></div>
- 
-           {/* Listener Info */}
-           <div>
-             <h2 className="mb-1 text-3xl font-bold text-white">
-               {transformedListener.displayName || transformedUser.fullName || "Display Name"} •{" "}
-               <span className="text-white">Listener</span>
-             </h2>
-             <p className="text-lg text-gray-300">
-               <span className="font-medium">
-                 {transformedListener.followerCount || 100}
-               </span>{" "}
-               followers •{" "}
-               <span className="font-medium">
-                 {transformedListener.followingCount || 100}
-               </span>{" "}
-               following
-             </p>
-           </div>
-         </div>
- 
-         {/* Content */}
-         <ModeratorListenerDetailCard listener={transformedListener} user={transformedUser} />
-       </div>
-     );
-   }
+  // Render Listener Detail
+  if (role === UserRole.Listener && transformedListener && transformedUser) {
+    return (
+      <div className="space-y-6">
+        {/* Banner Background */}
+        <div className="relative">
+          {/* Banner Image */}
+          <div className="primary_gradient h-64 w-full overflow-hidden rounded-xl">
+            {transformedListener.bannerImage ? (
+              <Image
+                src={transformedListener.bannerImage}
+                alt="Banner"
+                width={1200}
+                height={256}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="primary_gradient h-full w-full" />
+            )}
+          </div>
+
+          {/* Avatar positioned over banner */}
+          <div className="absolute bottom-0 left-8 translate-y-1/2 transform">
+            <div className="primary_gradient h-52 w-52 overflow-hidden rounded-full border-4 border-black">
+              {transformedListener.avatarImage ? (
+                <Image
+                  src={transformedListener.avatarImage}
+                  alt="Avatar"
+                  width={128}
+                  height={128}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-4xl font-bold text-white">
+                  {transformedListener.displayName?.charAt(0).toUpperCase() ||
+                    transformedUser.fullName?.charAt(0).toUpperCase() ||
+                    "L"}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Listener Info positioned next to avatar, outside banner */}
+        <div className="flex items-center space-x-6 pl-28">
+          {/* Spacer for avatar */}
+          <div className="w-32"></div>
+
+          {/* Listener Info */}
+          <div>
+            <h2 className="mb-1 text-3xl font-bold text-white">
+              {transformedListener.displayName || transformedUser.fullName || "Display Name"} •{" "}
+              <span className="text-white">Listener</span>
+            </h2>
+            <p className="text-lg text-gray-300">
+              <span className="font-medium">{transformedListener.followerCount || 100}</span> followers •{" "}
+              <span className="font-medium">{transformedListener.followingCount || 100}</span> following
+            </p>
+          </div>
+        </div>
+
+        {/* Content */}
+        <ModeratorListenerDetailCard listener={transformedListener} user={transformedUser} />
+      </div>
+    );
+  }
 
   // Fallback for other roles or missing data
   return (

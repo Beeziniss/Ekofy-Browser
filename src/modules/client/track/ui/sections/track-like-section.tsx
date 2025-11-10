@@ -5,13 +5,8 @@ const TrackLikeSection = () => {
   return (
     <div className="w-full space-y-4">
       <div className="flex w-full items-center justify-between">
-        <span className="text-main-white text-sm font-bold uppercase">
-          Likes
-        </span>
-        <Link
-          href={"#"}
-          className="text-primary-500 text-main-grey-dark-1 text-sm font-bold hover:underline"
-        >
+        <span className="text-main-white text-sm font-bold uppercase">Likes</span>
+        <Link href={"#"} className="text-primary-500 text-main-grey-dark-1 text-sm font-bold hover:underline">
           View all
         </Link>
       </div>

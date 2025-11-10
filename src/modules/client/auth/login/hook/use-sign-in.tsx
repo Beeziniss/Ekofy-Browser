@@ -1,11 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
 import { useAuthStore } from "@/store";
-import {
-  setUserInfoToLocalStorage,
-  setAccessTokenToLocalStorage,
-  formatAuthError,
-} from "@/utils/auth-utils";
+import { setUserInfoToLocalStorage, setAccessTokenToLocalStorage, formatAuthError } from "@/utils/auth-utils";
 import { ListenerLoginResponse } from "@/types/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

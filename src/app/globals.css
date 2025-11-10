@@ -147,11 +147,11 @@
 /* Gradient colors */
 
 .primary_gradient {
-  @apply bg-gradient-to-r from-[#3B54EA] to-[#AB4EE5];
+  @apply from-main-blue to-main-purple bg-gradient-to-r;
 }
 
 .text-primary-gradient {
-  @apply bg-gradient-to-r from-[#3B54EA] to-[#AB4EE5] bg-clip-text text-transparent;
+  @apply from-main-blue to-main-purple bg-gradient-to-r bg-clip-text text-transparent;
 }
 
 .border-gradient-input {

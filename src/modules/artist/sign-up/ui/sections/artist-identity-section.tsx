@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ArrowLeft } from 'lucide-react';
-import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
-import useArtistSignUp from '../../hooks/use-artist-sign-up';
-import { convertArtistStoreDataToAPIFormat } from '@/utils/signup-utils';
-import { toast } from 'sonner';
-import { uploadImageToCloudinary, validateImageFile } from '@/utils/cloudinary-utils';
-import { useRouter } from 'next/navigation';
-import { ArtistIdentityData, ArtistSignUpSectionProps } from '@/types/artist_type';
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft } from "lucide-react";
+import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
+import useArtistSignUp from "../../hooks/use-artist-sign-up";
+import { convertArtistStoreDataToAPIFormat } from "@/utils/signup-utils";
+import { toast } from "sonner";
+import { uploadImageToCloudinary, validateImageFile } from "@/utils/cloudinary-utils";
+import { useRouter } from "next/navigation";
+import { ArtistIdentityData, ArtistSignUpSectionProps } from "@/types/artist_type";
+import { EkofyLogo } from "@/assets/icons";
 
 type ArtistIdentitySectionProps = ArtistSignUpSectionProps<ArtistIdentityData> & {
   onBack: () => void;
@@ -21,22 +21,22 @@ type ArtistIdentitySectionProps = ArtistSignUpSectionProps<ArtistIdentityData> &
 const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySectionProps) => {
   const router = useRouter();
   const { formData, sessionData, updateFormData, goToNextStep, resetForm, clearSessionData } = useArtistSignUpStore();
-  
+
   // Handle navigation to login after successful registration
   const handleNavigateToLogin = () => {
     // Clear all global state data after successful registration
     resetForm();
     clearSessionData();
-    router.push('/artist/login');
+    router.push("/artist/login");
   };
-  
+
   const { signUp, isLoading } = useArtistSignUp(handleNavigateToLogin);
-  
+
   // Initialize state from global store or initial data
   // const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
   const [avatarImage, setAvatarImage] = useState<File | null>(initialData?.avatarImage || null);
   const [avatarImagePreview, setAvatarImagePreview] = useState<string | null>(null);
-  const [stageName, setStageName] = useState(initialData?.stageName || formData.stageName || '');
+  const [stageName, setStageName] = useState(initialData?.stageName || formData.stageName || "");
   // const [coverUploading, setCoverUploading] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   // const [coverImageUrl, setCoverImageUrl] = useState<string | null>(formData.avatarImage || null);
@@ -55,9 +55,9 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
   // Save form data to global state on input change (debounced)
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      updateFormData({ 
+      updateFormData({
         stageName,
-        avatarImage: avatarImageUrl || undefined 
+        avatarImage: avatarImageUrl || undefined,
       });
     }, 300); // Debounce to avoid too many updates
 
@@ -79,26 +79,26 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
 
   const handleSubmit = async () => {
     const newErrors: Record<string, string> = {};
-    
+
     // if (!coverImage) {
     //   newErrors.coverImage = "Vui lòng tải lên ảnh bìa";
     // }
-    
+
     if (!stageName.trim()) {
       newErrors.stageName = "Please enter your stage name";
     }
-    
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length === 0) {
       // Update store with identity data
       const identityData = {
         stageName: stageName.trim(),
         avatarImage: avatarImageUrl || undefined, // Add avatar image URL to store
       };
-      
+
       updateFormData(identityData);
-      
+
       // Check artist type to determine next action
       if (formData.artistType === "INDIVIDUAL") {
         // Check if password exists in session data before attempting registration
@@ -114,25 +114,26 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
           const combinedData = {
             ...formData,
             ...sessionData, // Include password from session data
-            ...identityData
+            ...identityData,
           };
           // Convert store data to API format for registration
           const registrationData = convertArtistStoreDataToAPIFormat({
             ...combinedData,
-            avatarImage: avatarImageUrl || undefined // Add avatar image URL
+            avatarImage: avatarImageUrl || undefined, // Add avatar image URL
           });
-          
+
           // Call registration API
           signUp(registrationData);
-          
+
           // Registration will redirect to login on success via hook
-          
         } catch (error) {
           console.error("❌ Registration error:", error);
           if (error instanceof Error) {
             // Check if error is related to missing password and redirect accordingly
             if (error.message.includes("password")) {
-              toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
+              toast.error(
+                "Password information is missing. Please go back to the first step and re-enter your password.",
+              );
               // router.push('/artist/sign-up');
               return;
             }
@@ -144,12 +145,12 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
       } else {
         goToNextStep(identityData);
       }
-      
+
       // Also call the original onNext for backward compatibility
       onNext({
         // coverImage,
         stageName,
-        avatarImage
+        avatarImage,
       });
     }
   };
@@ -200,18 +201,18 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
     try {
       // Upload to Cloudinary
       const uploadResult = await uploadImageToCloudinary(file, {
-        folder: 'artist-avatars',
-        tags: ['artist', 'avatar']
+        folder: "artist-avatars",
+        tags: ["artist", "avatar"],
       });
 
       setAvatarImageUrl(uploadResult.secure_url);
-      toast.success('Profile picture uploaded successfully!');
-      
+      toast.success("Profile picture uploaded successfully!");
+
       // Store avatar URL in form data immediately
       updateFormData({ avatarImage: uploadResult.secure_url });
     } catch (error) {
-      console.error('Error uploading avatar image:', error);
-      toast.error('Error uploading profile image. Please try again.');
+      console.error("Error uploading avatar image:", error);
+      toast.error("Error uploading profile image. Please try again.");
       setAvatarImage(null);
       setAvatarImageUrl(null);
     } finally {
@@ -220,49 +221,46 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#121212] px-6 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-[#121212] px-6 py-12">
       <div className="w-full max-w-6xl">
         {/* Back Button */}
-        <button 
-          onClick={onBack}
-          className="flex items-center text-white hover:text-blue-400 transition-colors mb-8"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+        <button onClick={onBack} className="mb-8 flex items-center text-white transition-colors hover:text-blue-400">
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </button>
 
         {/* Logo and Title */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-6">
-            <div className="rounded-full flex items-center justify-center mr-3">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+        <div className="mb-8 text-center">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="mr-3 flex items-center justify-center rounded-full">
+              <EkofyLogo className="size-[60px]" />
             </div>
-            <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
+            <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Define Your Identity</h2>
-          <p className="text-gray-300 text-sm mb-8">
-            Choose a stage name that represents you or your band.
-          </p>
+          <h2 className="mb-4 text-3xl font-bold text-white">Define Your Identity</h2>
+          <p className="mb-8 text-sm text-gray-300">Choose a stage name that represents you or your band.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
           {/* Left Side - Avatar Image Upload */}
           <div>
-            <label className="block text-sm font-medium text-white mb-4">Add avatar image</label>
+            <label className="mb-4 block text-sm font-medium text-white">Add avatar image</label>
             <div className="relative w-full">
-              <div className={`w-full h-64 border-2 border-dashed ${errors.avatarImage ? 'border-red-500' : 'border-gray-600'} rounded-lg flex flex-col items-center justify-center bg-gray-800/30 cursor-pointer hover:border-gray-500 transition-colors`}>
+              <div
+                className={`h-64 w-full border-2 border-dashed ${errors.avatarImage ? "border-red-500" : "border-gray-600"} flex cursor-pointer flex-col items-center justify-center rounded-lg bg-gray-800/30 transition-colors hover:border-gray-500`}
+              >
                 {avatarImagePreview ? (
-                  <div className="w-full h-full relative">
+                  <div className="relative h-full w-full">
                     <Image
                       src={avatarImagePreview}
                       width={1000}
                       height={1000}
                       alt="Avatar Preview"
-                      className="w-full h-full object-cover rounded-lg"
+                      className="h-full w-full rounded-lg object-cover"
                     />
                     {avatarUploading && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-                        <div className="text-white text-sm">Uploading...</div>
+                      <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-lg bg-black">
+                        <div className="text-sm text-white">Uploading...</div>
                       </div>
                     )}
                     {/* Clear button */}
@@ -274,19 +272,24 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
                         setAvatarImagePreview(null);
                         updateFormData({ avatarImage: undefined });
                       }}
-                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs text-white hover:bg-red-600"
                     >
                       ×
                     </button>
                   </div>
                 ) : (
                   <>
-                    <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-3">
-                      <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-700">
+                      <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
                       </svg>
                     </div>
-                    <p className="text-white text-sm font-medium mb-2">Add avatar image</p>
+                    <p className="mb-2 text-sm font-medium text-white">Add avatar image</p>
                   </>
                 )}
               </div>
@@ -295,13 +298,11 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
                 accept="image/*"
                 onChange={handleAvatarImageUpload}
                 disabled={avatarUploading}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
               />
             </div>
-            {errors.avatarImage && (
-              <p className="mt-2 text-sm text-red-400">{errors.avatarImage}</p>
-            )}
-            <p className="text-gray-400 text-xs mt-3">
+            {errors.avatarImage && <p className="mt-2 text-sm text-red-400">{errors.avatarImage}</p>}
+            <p className="mt-3 text-xs text-gray-400">
               Upload your profile picture. Recommended size 500×500px, JPG or PNG, under 5MB
             </p>
           </div>
@@ -354,19 +355,17 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
           </div> */}
 
           {/* Right Side - Stage Name */}
-          <div className="flex flex-col justify-center h-64">
+          <div className="flex h-64 flex-col justify-center">
             <div>
-              <label className="block text-sm font-medium text-white mb-2">Stage Name*</label>
+              <label className="mb-2 block text-sm font-medium text-white">Stage Name*</label>
               <Input
                 value={stageName}
                 onChange={(e) => setStageName(e.target.value)}
                 placeholder="Enter stage name"
-                className={`w-full ${errors.stageName ? 'border-gradient-input-error' : 'border-gradient-input'} text-white placeholder-gray-400 h-12`}
+                className={`w-full ${errors.stageName ? "border-gradient-input-error" : "border-gradient-input"} h-12 text-white placeholder-gray-400`}
               />
-              {errors.stageName && (
-                <p className="mt-2 text-sm text-red-400">{errors.stageName}</p>
-              )}
-              <p className="text-gray-400 text-xs mt-2">
+              {errors.stageName && <p className="mt-2 text-sm text-red-400">{errors.stageName}</p>}
+              <p className="mt-2 text-xs text-gray-400">
                 Your stage name will appear on your profile and tracks. Make sure it is unique and easy to recognize.
               </p>
             </div>
@@ -377,11 +376,17 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
           <Button
             type="button"
             onClick={handleSubmit}
-            className="primary_gradient hover:opacity-90 text-white font-medium py-3 px-8 rounded-md transition duration-300 ease-in-out"
+            className="primary_gradient rounded-md px-8 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-90"
             size="lg"
             disabled={isLoading || avatarUploading}
           >
-            { avatarUploading ? 'Uploading images...' : isLoading ? 'Processing...' : (formData.artistType === "INDIVIDUAL" ? 'Register' : 'Continue')}
+            {avatarUploading
+              ? "Uploading images..."
+              : isLoading
+                ? "Processing..."
+                : formData.artistType === "INDIVIDUAL"
+                  ? "Register"
+                  : "Continue"}
           </Button>
         </div>
       </div>

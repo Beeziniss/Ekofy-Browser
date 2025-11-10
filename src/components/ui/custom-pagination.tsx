@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Pagination,
   PaginationContent,
@@ -7,7 +7,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '@/components/ui/pagination';
+} from "@/components/ui/pagination";
 
 interface CustomPaginationProps {
   currentPage: number;
@@ -30,13 +30,13 @@ export const CustomPagination: React.FC<CustomPaginationProps> = ({
 }) => {
   if (totalPages <= 1) return null;
 
-  const startItem = ((currentPage - 1) * pageSize) + 1;
+  const startItem = (currentPage - 1) * pageSize + 1;
   const endItem = Math.min(currentPage * pageSize, totalCount);
 
   const generatePageNumbers = () => {
     const maxVisiblePages = 5;
     const pages = [];
-    
+
     if (totalPages <= maxVisiblePages) {
       // Show all pages if total pages is less than or equal to max visible pages
       for (let i = 1; i <= totalPages; i++) {
@@ -45,63 +45,65 @@ export const CustomPagination: React.FC<CustomPaginationProps> = ({
     } else {
       // Always show first page
       pages.push(1);
-      
+
       // Calculate range around current page
       const start = Math.max(2, currentPage - 1);
       const end = Math.min(totalPages - 1, currentPage + 1);
-      
+
       // Add ellipsis after first page if needed
       if (start > 2) {
-        pages.push('ellipsis-start');
+        pages.push("ellipsis-start");
       }
-      
+
       // Add pages around current page
       for (let i = start; i <= end; i++) {
         if (i !== 1 && i !== totalPages) {
           pages.push(i);
         }
       }
-      
+
       // Add ellipsis before last page if needed
       if (end < totalPages - 1) {
-        pages.push('ellipsis-end');
+        pages.push("ellipsis-end");
       }
-      
+
       // Always show last page
       if (totalPages > 1) {
         pages.push(totalPages);
       }
     }
-    
+
     return pages;
   };
 
   const pageNumbers = generatePageNumbers();
 
   return (
-    <div className={`flex justify-between items-center ${className} ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
+    <div
+      className={`flex items-center justify-between ${className} ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+    >
       <div className="text-sm text-gray-400">
         Showing {startItem} to {endItem} of {totalCount} results
       </div>
-      
+
       <Pagination>
         <PaginationContent>
           <PaginationItem>
-            <PaginationPrevious 
+            <PaginationPrevious
               onClick={() => onPageChange(Math.max(1, currentPage - 1))}
               className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-gray-700"}
             />
           </PaginationItem>
-          
+
           {pageNumbers.map((pageNum, index) => {
-            if (typeof pageNum === 'string') {
+            if (typeof pageNum === "string") {
               return (
                 <PaginationItem key={`${pageNum}-${index}`}>
                   <PaginationEllipsis className="text-gray-400" />
                 </PaginationItem>
               );
             }
-            
+
             return (
               <PaginationItem key={pageNum}>
                 <PaginationLink
@@ -114,11 +116,13 @@ export const CustomPagination: React.FC<CustomPaginationProps> = ({
               </PaginationItem>
             );
           })}
-          
+
           <PaginationItem>
-            <PaginationNext 
+            <PaginationNext
               onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-              className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-gray-700"}
+              className={
+                currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-gray-700"
+              }
             />
           </PaginationItem>
         </PaginationContent>

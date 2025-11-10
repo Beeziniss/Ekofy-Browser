@@ -1,8 +1,8 @@
 "use client";
 
-import { graphql } from '@/gql';
-import { UserManagementLayout } from '../layout';
-import { UserDetailSection } from '../section';
+import { graphql } from "@/gql";
+import { UserManagementLayout } from "../layout";
+import { UserDetailSection } from "../section";
 
 interface AdminUserDetailViewProps {
   userId: string;
@@ -72,26 +72,26 @@ export const AdminListenerDetail = graphql(`
   query AdminListenerDetail($where: ListenerFilterInput) {
     listeners(where: $where) {
       items {
-      id
-            userId
-            displayName
-            email
-            avatarImage
-            bannerImage
-            isVerified
-            verifiedAt
-            followerCount
-            followingCount
-            createdAt
-            updatedAt
-            user {
-                gender
-                birthDate
-                role
-                fullName
-                status
-            }
+        id
+        userId
+        displayName
+        email
+        avatarImage
+        bannerImage
+        isVerified
+        verifiedAt
+        followerCount
+        followingCount
+        createdAt
+        updatedAt
+        user {
+          gender
+          birthDate
+          role
+          fullName
+          status
         }
+      }
     }
   }
 `);

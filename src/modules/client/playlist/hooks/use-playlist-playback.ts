@@ -6,13 +6,7 @@ import { useAudioStore, Track } from "@/store";
 import { toast } from "sonner";
 
 export const usePlaylistPlayback = (playlistId: string) => {
-  const {
-    isPlaying: globalIsPlaying,
-    currentPlaylistId,
-    togglePlayPause,
-    play,
-    setPlaylist,
-  } = useAudioStore();
+  const { isPlaying: globalIsPlaying, currentPlaylistId, togglePlayPause, play, setPlaylist } = useAudioStore();
 
   // Only fetch track data when we need it (lazy loading for performance)
   const { data: trackListData, refetch: fetchTracks } = useQuery({
@@ -31,7 +25,7 @@ export const usePlaylistPlayback = (playlistId: string) => {
       id: string;
       name?: string | null;
       coverImage?: string | null;
-      mainArtistsAsync?: {
+      mainArtists?: {
         items?: Array<{
           stageName?: string | null;
         } | null> | null;
@@ -44,7 +38,7 @@ export const usePlaylistPlayback = (playlistId: string) => {
         id: track.id,
         name: track.name || "Unknown Track",
         artist:
-          track.mainArtistsAsync?.items
+          track.mainArtists?.items
             ?.map((a) => a?.stageName)
             .filter(Boolean)
             .join(", ") || "Unknown Artist",

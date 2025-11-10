@@ -31,26 +31,25 @@ const PlaylistRemoveTrackModal = ({
 }: PlaylistRemoveTrackModalProps) => {
   const queryClient = useQueryClient();
 
-  const { mutate: removeFromPlaylist, isPending: isRemovingFromPlaylist } =
-    useMutation({
-      ...removeFromPlaylistMutationOptions,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["playlist-detail"] });
-        queryClient.invalidateQueries({
-          queryKey: ["playlist-detail-tracklist"],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["check-track-in-playlist", trackId],
-        });
-        onSuccess?.();
-        // Don't close modal after successful removal
-        toast.success("Track removed from playlist successfully!");
-      },
-      onError: (error) => {
-        console.error("Failed to remove track from playlist:", error);
-        toast.error("Failed to remove track from playlist. Please try again.");
-      },
-    });
+  const { mutate: removeFromPlaylist, isPending: isRemovingFromPlaylist } = useMutation({
+    ...removeFromPlaylistMutationOptions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["playlist-detail"] });
+      queryClient.invalidateQueries({
+        queryKey: ["playlist-detail-tracklist"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["check-track-in-playlist", trackId],
+      });
+      onSuccess?.();
+      // Don't close modal after successful removal
+      toast.success("Track removed from playlist successfully!");
+    },
+    onError: (error) => {
+      console.error("Failed to remove track from playlist:", error);
+      toast.error("Failed to remove track from playlist. Please try again.");
+    },
+  });
 
   const handleConfirmDelete = () => {
     removeFromPlaylist({ playlistId, trackId });
@@ -63,10 +62,7 @@ const PlaylistRemoveTrackModal = ({
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently remove the track
-            <strong className="text-main-white font-bold">
-              &ldquo;{trackName}&rdquo;
-            </strong>{" "}
-            from the playlist.
+            <strong className="text-main-white font-bold">&ldquo;{trackName}&rdquo;</strong> from the playlist.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

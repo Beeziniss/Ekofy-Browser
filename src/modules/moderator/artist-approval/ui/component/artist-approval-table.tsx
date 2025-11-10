@@ -12,28 +12,21 @@ import {
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { UserManagementArtist } from "@/types/user-management";
 
 // Extended interface for artist approval data with additional fields
-interface ArtistApprovalTableData extends Omit<UserManagementArtist, 'followers'> {
+interface ArtistApprovalTableData extends Omit<UserManagementArtist, "followers"> {
   fullName?: string;
   gender?: string;
   birthDate?: string;
@@ -77,40 +70,28 @@ export function ArtistApprovalTable({
     {
       accessorKey: "stageName",
       header: "Stage Name",
-      cell: ({ row }) => (
-          <span className="font-medium text-gray-300">{row.original.stageName}</span>
-      ),
+      cell: ({ row }) => <span className="font-medium text-gray-300">{row.original.stageName}</span>,
     },
     {
       accessorKey: "fullName",
       header: "Full Name",
-      cell: ({ row }) => (
-        <span className="text-gray-300">{row.original.fullName}</span>
-      ),
+      cell: ({ row }) => <span className="text-gray-300">{row.original.fullName}</span>,
     },
     {
       accessorKey: "email",
       header: "Email",
-      cell: ({ row }) => (
-        <span className="text-gray-300">{row.original.email}</span>
-      ),
+      cell: ({ row }) => <span className="text-gray-300">{row.original.email}</span>,
     },
     {
       accessorKey: "artistType",
       header: "Type",
-      cell: ({ row }) => (
-        <span className="text-gray-300 capitalize">
-          {row.original.artistType.toLowerCase()}
-        </span>
-      ),
+      cell: ({ row }) => <span className="text-gray-300 capitalize">{row.original.artistType.toLowerCase()}</span>,
     },
     {
       accessorKey: "gender",
       header: "Gender",
       cell: ({ row }) => (
-        <span className="text-gray-300 capitalize">
-          {row.original.gender?.toLowerCase() || "N/A"}
-        </span>
+        <span className="text-gray-300 capitalize">{row.original.gender?.toLowerCase() || "N/A"}</span>
       ),
     },
     {
@@ -118,7 +99,7 @@ export function ArtistApprovalTable({
       header: "Birth Date",
       cell: ({ row }) => (
         <span className="text-gray-300">
-          {row.original.birthDate 
+          {row.original.birthDate
             ? new Date(row.original.birthDate).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
@@ -131,11 +112,7 @@ export function ArtistApprovalTable({
     {
       accessorKey: "phoneNumber",
       header: "Phone",
-      cell: ({ row }) => (
-        <span className="text-gray-300">
-          {row.original.phoneNumber || "N/A"}
-        </span>
-      ),
+      cell: ({ row }) => <span className="text-gray-300">{row.original.phoneNumber || "N/A"}</span>,
     },
     {
       id: "actions",
@@ -147,10 +124,10 @@ export function ArtistApprovalTable({
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+          <DropdownMenuContent align="end" className="border-gray-700 bg-gray-800">
             <DropdownMenuItem
               onClick={() => router.push(`/moderator/artist-approval/${row.original.id}`)}
-              className="text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer"
+              className="cursor-pointer text-gray-300 hover:bg-gray-700 hover:text-white"
             >
               View Details
             </DropdownMenuItem>
@@ -189,7 +166,7 @@ export function ArtistApprovalTable({
           placeholder="Search name..."
           value={searchTerm}
           onChange={(event) => handleSearch(event.target.value)}
-          className="max-w-sm bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+          className="max-w-sm border-gray-700 bg-gray-800 text-white placeholder-gray-400"
         />
       </div>
 
@@ -197,26 +174,21 @@ export function ArtistApprovalTable({
       <div className="relative">
         {/* Loading overlay */}
         {isLoading && (
-          <div className="absolute inset-0 bg-gray-900/50 flex items-center justify-center z-10 rounded-md">
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-gray-900/50">
             <div className="flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-white"></div>
               <span className="text-white">Loading...</span>
             </div>
           </div>
         )}
-        
+
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="border-gray-700 hover:bg-gray-800">
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id} className="text-gray-300">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -237,9 +209,7 @@ export function ArtistApprovalTable({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
@@ -257,8 +227,8 @@ export function ArtistApprovalTable({
       {/* Pagination */}
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="text-sm text-gray-400">
-          Showing {(currentPage - 1) * pageSize + 1} to{" "}
-          {Math.min(currentPage * pageSize, totalCount)} of {totalCount} entries
+          Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount}{" "}
+          entries
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -266,7 +236,7 @@ export function ArtistApprovalTable({
             size="sm"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={!hasPreviousPage || isLoading}
-            className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
+            className="border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
           >
             <ChevronLeft className="h-4 w-4" />
             Previous
@@ -276,7 +246,7 @@ export function ArtistApprovalTable({
             size="sm"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={!hasNextPage || isLoading}
-            className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
+            className="border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
           >
             Next
             <ChevronRight className="h-4 w-4" />

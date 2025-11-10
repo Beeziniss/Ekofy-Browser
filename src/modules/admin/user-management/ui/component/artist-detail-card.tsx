@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { UserManagementUser, UserManagementArtist  } from "@/types";
+import { UserManagementUser, UserManagementArtist } from "@/types";
 interface ArtistDetailCardProps {
   artist: UserManagementArtist;
   user: UserManagementUser;
@@ -9,60 +9,59 @@ interface ArtistDetailCardProps {
 
 export function ArtistDetailCard({ artist, user }: ArtistDetailCardProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
       {/* Personal Detail */}
       <div>
-        <h3 className="text-xl font-semibold text-white mb-6">Personal detail</h3>
+        <h3 className="mb-6 text-xl font-semibold text-white">Personal detail</h3>
         <div className="space-y-4">
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Email:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Email:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
               {user?.email || "email"}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Gender:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Gender:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
               {user?.gender || "gender"}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Date of birth:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
-              {user?.birthDate ? new Date(user.birthDate).toLocaleDateString('en-GB') : "DD/MM/YYYY"}
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Date of birth:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
+              {user?.birthDate ? new Date(user.birthDate).toLocaleDateString("en-GB") : "DD/MM/YYYY"}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Phone Number:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Phone Number:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
               {user?.phoneNumber || "PhoneNumber"}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Status:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Status:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
               {user?.status || "Status"}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Place of origin:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Place of origin:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
               {artist?.identityCard?.placeOfOrigin || "Place of origin"}
             </span>
           </div>
           <div className="flex items-start gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0 pt-3">Place of residence:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 leading-relaxed">
+            <label className="w-48 flex-shrink-0 pt-3 text-base text-gray-300">Place of residence:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 leading-relaxed text-gray-400">
               {artist?.identityCard?.placeOfResidence?.addressLine || "Place of residence"}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Date of expiration:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
-              {artist?.identityCard?.validUntil ? 
-                new Date(artist.identityCard.validUntil).toLocaleDateString('en-GB') : 
-                "Date of expiration"
-              }
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Date of expiration:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
+              {artist?.identityCard?.validUntil
+                ? new Date(artist.identityCard.validUntil).toLocaleDateString("en-GB")
+                : "Date of expiration"}
             </span>
           </div>
         </div>
@@ -70,44 +69,42 @@ export function ArtistDetailCard({ artist, user }: ArtistDetailCardProps) {
 
       {/* Account Detail */}
       <div>
-        <h3 className="text-xl font-semibold text-white mb-6">Account detail</h3>
+        <h3 className="mb-6 text-xl font-semibold text-white">Account detail</h3>
         <div className="space-y-4">
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Stage Name:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Stage Name:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
               {artist?.stageName || "stagename"}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Artist Type:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Artist Type:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
               {artist?.artistType || "Band"}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Category:</label>
-            <div className="flex gap-2 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
-              <Badge className="bg-gray-700 hover:bg-gray-600 text-gray-200 border-gray-600 px-3 py-1 rounded-full text-xs">
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Category:</label>
+            <div className="flex flex-1 gap-2 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
+              <Badge className="rounded-full border-gray-600 bg-gray-700 px-3 py-1 text-xs text-gray-200 hover:bg-gray-600">
                 Pop
               </Badge>
-              <Badge className="bg-gray-700 hover:bg-gray-600 text-gray-200 border-gray-600 px-3 py-1 rounded-full text-xs">
+              <Badge className="rounded-full border-gray-600 bg-gray-700 px-3 py-1 text-xs text-gray-200 hover:bg-gray-600">
                 Jazz
               </Badge>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0">Create At:</label>
-            <span className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3">
-              {artist?.createdAt ? 
-                new Date(artist.createdAt).toLocaleDateString('en-GB') : 
-                "DD/MM/YYYY"
-              }
+            <label className="w-48 flex-shrink-0 text-base text-gray-300">Create At:</label>
+            <span className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 text-gray-400">
+              {artist?.createdAt ? new Date(artist.createdAt).toLocaleDateString("en-GB") : "DD/MM/YYYY"}
             </span>
           </div>
           <div className="flex items-start gap-4">
-            <label className="text-base text-gray-300 w-48 flex-shrink-0 pt-3">Biography:</label>
-            <p className="text-gray-400 flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 leading-relaxed">
-              {artist?.biography || "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
+            <label className="w-48 flex-shrink-0 pt-3 text-base text-gray-300">Biography:</label>
+            <p className="flex-1 rounded-xl border border-[#1F1F1F] bg-[#1A1A1A] p-3 leading-relaxed text-gray-400">
+              {artist?.biography ||
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
             </p>
           </div>
         </div>

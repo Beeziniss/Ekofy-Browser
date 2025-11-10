@@ -1,11 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {
-  TrackUploadStore,
-  UploadedTrack,
-  UploadProgress,
-  TrackMetadata,
-} from "../types/track-upload";
+import { TrackUploadStore, UploadedTrack, UploadProgress, TrackMetadata } from "../types/track-upload";
 
 // Utility function to extract basic metadata from audio file
 const extractMetadata = async (file: File): Promise<TrackMetadata> => {
@@ -35,8 +30,12 @@ const simulateUpload = (
   completeUpload: (trackId: string) => void,
 ) => {
   let progress = 0;
+  let lastUpdatePercentage = -1; // Track last updated percentage
+
   const interval = setInterval(() => {
     progress += Math.random() * 15; // Random progress increment
+    const roundedProgress = Math.floor(progress);
+
     if (progress >= 100) {
       progress = 100;
       updateProgress(trackId, {
@@ -47,13 +46,17 @@ const simulateUpload = (
       completeUpload(trackId);
       clearInterval(interval);
     } else {
-      updateProgress(trackId, {
-        percentage: Math.floor(progress),
-        status: "uploading",
-        message: `Uploading... ${Math.floor(progress)}%`,
-      });
+      // Only update if progress changed by at least 1% to reduce re-renders
+      if (roundedProgress !== lastUpdatePercentage) {
+        lastUpdatePercentage = roundedProgress;
+        updateProgress(trackId, {
+          percentage: roundedProgress,
+          status: "uploading",
+          message: `Uploading... ${roundedProgress}%`,
+        });
+      }
     }
-  }, 200); // Update every 200ms
+  }, 100); // Check more frequently but update less frequently
 };
 
 export const useTrackUploadStore = create<TrackUploadStore>()(
@@ -93,15 +96,29 @@ export const useTrackUploadStore = create<TrackUploadStore>()(
       },
 
       updateProgress: (trackId: string, progress: UploadProgress) => {
-        set((state) => ({
-          uploadedTracks: state.uploadedTracks.map((track) =>
-            track.id === trackId ? { ...track, progress } : track,
-          ),
-          currentUpload:
+        set((state) => {
+          // Check if progress actually changed to prevent unnecessary updates
+          const currentTrack =
             state.currentUpload?.id === trackId
-              ? { ...state.currentUpload, progress }
-              : state.currentUpload,
-        }));
+              ? state.currentUpload
+              : state.uploadedTracks.find((track) => track.id === trackId);
+
+          if (
+            currentTrack &&
+            currentTrack.progress.percentage === progress.percentage &&
+            currentTrack.progress.status === progress.status
+          ) {
+            return state; // No change, return current state
+          }
+
+          return {
+            uploadedTracks: state.uploadedTracks.map((track) =>
+              track.id === trackId ? { ...track, progress } : track,
+            ),
+            currentUpload:
+              state.currentUpload?.id === trackId ? { ...state.currentUpload, progress } : state.currentUpload,
+          };
+        });
       },
 
       completeUpload: () => {
@@ -118,11 +135,8 @@ export const useTrackUploadStore = create<TrackUploadStore>()(
 
       removeTrack: (trackId: string) => {
         set((state) => ({
-          uploadedTracks: state.uploadedTracks.filter(
-            (track) => track.id !== trackId,
-          ),
-          currentUpload:
-            state.currentUpload?.id === trackId ? null : state.currentUpload,
+          uploadedTracks: state.uploadedTracks.filter((track) => track.id !== trackId),
+          currentUpload: state.currentUpload?.id === trackId ? null : state.currentUpload,
         }));
       },
 
@@ -132,6 +146,10 @@ export const useTrackUploadStore = create<TrackUploadStore>()(
           currentUpload: null,
           isUploading: false,
         });
+      },
+
+      setUploading: (isUploading: boolean) => {
+        set({ isUploading });
       },
     }),
     {
