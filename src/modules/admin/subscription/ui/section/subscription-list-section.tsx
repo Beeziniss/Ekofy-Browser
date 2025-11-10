@@ -45,16 +45,6 @@ export function SubscriptionListSection({ initialData }: SubscriptionListSection
     router.push(`/admin/subscription/${subscription.id}`);
   };
 
-  const handleEditSubscription = (subscription: Subscription) => {
-    // TODO: Implement edit functionality
-    console.log("Edit subscription:", subscription);
-  };
-
-  const handleDeleteSubscription = (subscription: Subscription) => {
-    // TODO: Implement delete functionality
-    console.log("Delete subscription:", subscription);
-  };
-
   const handleCreateSuccess = () => {
     refetch();
   };
@@ -70,8 +60,6 @@ export function SubscriptionListSection({ initialData }: SubscriptionListSection
       <SubscriptionTable
         subscriptions={subscriptions}
         onView={handleViewSubscription}
-        onEdit={handleEditSubscription}
-        onDelete={handleDeleteSubscription}
         isLoading={isLoading}
       />
 

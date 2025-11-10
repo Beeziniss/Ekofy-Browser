@@ -1,3 +1,5 @@
+"use client";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MoreHorizontal, Eye, Edit, Trash2, ExternalLink } from "lucide-react";
+import { MoreHorizontal, Eye, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { formatNumber } from "@/utils/format-number";
 import type { SubscriptionPlan } from "@/types";
@@ -18,8 +20,6 @@ import type { SubscriptionPlan } from "@/types";
 interface SubscriptionPlanTableProps {
   subscriptionPlans: SubscriptionPlan[];
   onView?: (plan: SubscriptionPlan) => void;
-  onEdit?: (plan: SubscriptionPlan) => void;
-  onDelete?: (plan: SubscriptionPlan) => void;
   isLoading?: boolean;
   showSubscriptionInfo?: boolean;
   subscriptionId?: string; // For generating detail links
@@ -27,9 +27,6 @@ interface SubscriptionPlanTableProps {
 
 export function SubscriptionPlanTable({
   subscriptionPlans,
-  // onView,
-  onEdit,
-  onDelete,
   isLoading = false,
   showSubscriptionInfo = true,
   subscriptionId,
@@ -145,12 +142,6 @@ export function SubscriptionPlanTable({
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      {/* {onView && (
-                        <DropdownMenuItem onClick={() => onView(plan)}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          View Details
-                        </DropdownMenuItem>
-                      )} */}
                       {subscriptionId && (
                         <Link href={`/admin/subscription/${subscriptionId}/subscription-plan/${plan.id}`}>
                           <DropdownMenuItem>
@@ -158,21 +149,6 @@ export function SubscriptionPlanTable({
                             View Details
                           </DropdownMenuItem>
                         </Link>
-                      )}
-                      {onEdit && (
-                        <DropdownMenuItem onClick={() => onEdit(plan)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                      )}
-                      {onDelete && (
-                        <DropdownMenuItem
-                          onClick={() => onDelete(plan)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
                       )}
                     </DropdownMenuContent>
                   </DropdownMenu>

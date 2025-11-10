@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { execute } from "@/gql/execute";
-import { CREATE_SUBSCRIPTION, CREATE_SUBSCRIPTION_PLAN } from "@/modules/shared/mutations/admin/subcription-mutation";
+import { CREATE_SUBSCRIPTION, CREATE_SUBSCRIPTION_PLAN, ACTIVATE_SUBSCRIPTION, UPDATE_SUBSCRIPTION_PLAN } from "@/modules/shared/mutations/admin/subcription-mutation";
 import type {
   CreateSubscriptionInput,
   CreateSubscriptionPlanInput,
@@ -120,9 +120,10 @@ export const useUpdateSubscriptionPlanMutation = () => {
 
   return useMutation({
     mutationFn: async (input: UpdateSubscriptionPlanInput) => {
-      // TODO: Implement when UPDATE_SUBSCRIPTION_PLAN mutation is available
-      console.log("Update subscription plan:", input);
-      throw new Error("Update subscription plan mutation not implemented yet");
+      const result = await execute(UPDATE_SUBSCRIPTION_PLAN, {
+        updateSubscriptionPlanRequest: input,
+      });
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subscriptionPlans"] });
@@ -149,6 +150,26 @@ export const useDeleteSubscriptionPlanMutation = () => {
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete subscription plan");
+    },
+  });
+};
+
+export const useActivateSubscriptionMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (subscriptionId: string) => {
+      const result = await execute(ACTIVATE_SUBSCRIPTION, {
+        subscriptionId,
+      });
+      return result;
+    },
+    onSuccess: () => {
+      // Invalidate and refetch subscriptions
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      toast.success("Subscription activated successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to activate subscription");
     },
   });
 };

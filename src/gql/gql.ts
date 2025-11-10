@@ -34,6 +34,8 @@ type Documents = {
     "\n  query SearchPlaylists($skip: Int, $take: Int, $name: String!) {\n    searchPlaylists(skip: $skip, take: $take, name: $name) {\n      totalCount\n      items {\n        id\n        userId\n        name\n        nameUnsigned\n        tracksInfo {\n          trackId\n          addedTime\n        }\n        coverImage\n        isPublic\n        user {\n          id\n          fullName\n        }\n        checkPlaylistInFavorite\n      }\n    }\n  }\n": typeof types.SearchPlaylistsDocument,
     "\n  mutation CreateSubscription($createSubscriptionRequest: CreateSubscriptionRequestInput!) {\n    createSubscription(createSubscriptionRequest: $createSubscriptionRequest)\n  }\n": typeof types.CreateSubscriptionDocument,
     "\n  mutation CreateSubscriptionPlan($createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!) {\n    createSubscriptionPlan(createSubScriptionPlanRequest: $createSubScriptionPlanRequest)\n  }\n": typeof types.CreateSubscriptionPlanDocument,
+    "\n  mutation ActivateSubscription($subscriptionId: String!) {\n    activateSubscription(subscriptionId: $subscriptionId)\n  }\n": typeof types.ActivateSubscriptionDocument,
+    "\n  mutation UpdateSubscriptionPlan($updateSubscriptionPlanRequest: UpdateSubscriptionPlanRequestInput!) {\n    updateSubscriptionPlan(updateSubscriptionPlanRequest: $updateSubscriptionPlanRequest)\n  }\n": typeof types.UpdateSubscriptionPlanDocument,
     "\n  mutation CreateArtistPackage($createRequest: CreateArtistPackageRequestInput!) {\n    createArtistPackage(createRequest: $createRequest)\n  }\n": typeof types.CreateArtistPackageDocument,
     "\n  mutation ChangeArtistPackageStatus($updateStatusRequest: UpdateStatusArtistPackageRequestInput!) {\n    changeArtistPackageStatus(updateStatusRequest: $updateStatusRequest)\n  }\n": typeof types.ChangeArtistPackageStatusDocument,
     "\n  mutation ApproveArtistPackage($id: String!) {\n    approveArtistPackage(id: $id)\n  }\n": typeof types.ApproveArtistPackageDocument,
@@ -138,6 +140,8 @@ const documents: Documents = {
     "\n  query SearchPlaylists($skip: Int, $take: Int, $name: String!) {\n    searchPlaylists(skip: $skip, take: $take, name: $name) {\n      totalCount\n      items {\n        id\n        userId\n        name\n        nameUnsigned\n        tracksInfo {\n          trackId\n          addedTime\n        }\n        coverImage\n        isPublic\n        user {\n          id\n          fullName\n        }\n        checkPlaylistInFavorite\n      }\n    }\n  }\n": types.SearchPlaylistsDocument,
     "\n  mutation CreateSubscription($createSubscriptionRequest: CreateSubscriptionRequestInput!) {\n    createSubscription(createSubscriptionRequest: $createSubscriptionRequest)\n  }\n": types.CreateSubscriptionDocument,
     "\n  mutation CreateSubscriptionPlan($createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!) {\n    createSubscriptionPlan(createSubScriptionPlanRequest: $createSubScriptionPlanRequest)\n  }\n": types.CreateSubscriptionPlanDocument,
+    "\n  mutation ActivateSubscription($subscriptionId: String!) {\n    activateSubscription(subscriptionId: $subscriptionId)\n  }\n": types.ActivateSubscriptionDocument,
+    "\n  mutation UpdateSubscriptionPlan($updateSubscriptionPlanRequest: UpdateSubscriptionPlanRequestInput!) {\n    updateSubscriptionPlan(updateSubscriptionPlanRequest: $updateSubscriptionPlanRequest)\n  }\n": types.UpdateSubscriptionPlanDocument,
     "\n  mutation CreateArtistPackage($createRequest: CreateArtistPackageRequestInput!) {\n    createArtistPackage(createRequest: $createRequest)\n  }\n": types.CreateArtistPackageDocument,
     "\n  mutation ChangeArtistPackageStatus($updateStatusRequest: UpdateStatusArtistPackageRequestInput!) {\n    changeArtistPackageStatus(updateStatusRequest: $updateStatusRequest)\n  }\n": types.ChangeArtistPackageStatusDocument,
     "\n  mutation ApproveArtistPackage($id: String!) {\n    approveArtistPackage(id: $id)\n  }\n": types.ApproveArtistPackageDocument,
@@ -299,6 +303,14 @@ export function graphql(source: "\n  mutation CreateSubscription($createSubscrip
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CreateSubscriptionPlan($createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!) {\n    createSubscriptionPlan(createSubScriptionPlanRequest: $createSubScriptionPlanRequest)\n  }\n"): typeof import('./graphql').CreateSubscriptionPlanDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ActivateSubscription($subscriptionId: String!) {\n    activateSubscription(subscriptionId: $subscriptionId)\n  }\n"): typeof import('./graphql').ActivateSubscriptionDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateSubscriptionPlan($updateSubscriptionPlanRequest: UpdateSubscriptionPlanRequestInput!) {\n    updateSubscriptionPlan(updateSubscriptionPlanRequest: $updateSubscriptionPlanRequest)\n  }\n"): typeof import('./graphql').UpdateSubscriptionPlanDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

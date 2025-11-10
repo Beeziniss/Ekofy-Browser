@@ -115,13 +115,28 @@ export interface CreateSubScriptionPlanRequestInput {
 }
 
 export interface UpdateSubscriptionPlanInput {
-  id: string;
-  stripeProductActive?: boolean;
-  stripeProductName?: string;
-  stripeProductImages?: string[];
-  stripeProductMetadata?: Array<{
+  subscriptionPlanId: string;
+  name?: string;
+  images?: string[];
+  metadata?: Array<{
     key: string;
     value: string;
+  }>;
+  newPrices: Array<{
+    interval: PeriodTime;
+    intervalCount: number;
+    lookupKey: string;
+  }>;
+  updatePrices: Array<{
+    stripePriceId: string;
+    active?: boolean;
+    interval?: PeriodTime;
+    intervalCount?: number;
+    lookupKey?: string;
+    metadata?: Array<{
+      key: string;
+      value: string;
+    }>;
   }>;
 }
 

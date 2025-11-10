@@ -11,3 +11,15 @@ export const CREATE_SUBSCRIPTION_PLAN = graphql(`
     createSubscriptionPlan(createSubScriptionPlanRequest: $createSubScriptionPlanRequest)
   }
 `);
+
+export const ACTIVATE_SUBSCRIPTION = graphql(`
+  mutation ActivateSubscription($subscriptionId: String!) {
+    activateSubscription(subscriptionId: $subscriptionId)
+  }
+`);
+
+export const UPDATE_SUBSCRIPTION_PLAN = graphql(`
+  mutation UpdateSubscriptionPlan($updateSubscriptionPlanRequest: UpdateSubscriptionPlanRequestInput!) {
+    updateSubscriptionPlan(updateSubscriptionPlanRequest: $updateSubscriptionPlanRequest)
+  }
+`);

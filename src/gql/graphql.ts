@@ -5717,6 +5717,20 @@ export type CreateSubscriptionPlanMutationVariables = Exact<{
 
 export type CreateSubscriptionPlanMutation = { __typename?: 'MutationInitialization', createSubscriptionPlan: boolean };
 
+export type ActivateSubscriptionMutationVariables = Exact<{
+  subscriptionId: Scalars['String']['input'];
+}>;
+
+
+export type ActivateSubscriptionMutation = { __typename?: 'MutationInitialization', activateSubscription: boolean };
+
+export type UpdateSubscriptionPlanMutationVariables = Exact<{
+  updateSubscriptionPlanRequest: UpdateSubscriptionPlanRequestInput;
+}>;
+
+
+export type UpdateSubscriptionPlanMutation = { __typename?: 'MutationInitialization', updateSubscriptionPlan: boolean };
+
 export type CreateArtistPackageMutationVariables = Exact<{
   createRequest: CreateArtistPackageRequestInput;
 }>;
@@ -6806,6 +6820,18 @@ export const CreateSubscriptionPlanDocument = new TypedDocumentString(`
   )
 }
     `) as unknown as TypedDocumentString<CreateSubscriptionPlanMutation, CreateSubscriptionPlanMutationVariables>;
+export const ActivateSubscriptionDocument = new TypedDocumentString(`
+    mutation ActivateSubscription($subscriptionId: String!) {
+  activateSubscription(subscriptionId: $subscriptionId)
+}
+    `) as unknown as TypedDocumentString<ActivateSubscriptionMutation, ActivateSubscriptionMutationVariables>;
+export const UpdateSubscriptionPlanDocument = new TypedDocumentString(`
+    mutation UpdateSubscriptionPlan($updateSubscriptionPlanRequest: UpdateSubscriptionPlanRequestInput!) {
+  updateSubscriptionPlan(
+    updateSubscriptionPlanRequest: $updateSubscriptionPlanRequest
+  )
+}
+    `) as unknown as TypedDocumentString<UpdateSubscriptionPlanMutation, UpdateSubscriptionPlanMutationVariables>;
 export const CreateArtistPackageDocument = new TypedDocumentString(`
     mutation CreateArtistPackage($createRequest: CreateArtistPackageRequestInput!) {
   createArtistPackage(createRequest: $createRequest)
