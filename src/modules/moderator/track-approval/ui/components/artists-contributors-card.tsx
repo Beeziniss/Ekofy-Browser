@@ -29,7 +29,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
             </h3>
             <div className="grid gap-3">
               {track.mainArtists.items.map((artist) => (
-                <div key={artist.id} className="flex items-center gap-3 rounded-lg border-2 border-white p-3">
+                <div key={artist.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={artist.avatarImage || undefined} alt={artist.stageName} />
                     <AvatarFallback>
@@ -55,7 +55,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
             </h3>
             <div className="grid gap-3">
               {track.featuredArtists.items.map((artist) => (
-                <div key={artist.id} className="flex items-center gap-3 rounded-lg border-2 border-white p-3">
+                <div key={artist.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={artist.avatarImage || undefined} alt={artist.stageName} />
                     <AvatarFallback>
@@ -81,7 +81,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
             </h3>
             <div className="grid gap-3">
               {track.recordingUsers.items.map((user) => (
-                <div key={user.id} className="flex items-center gap-3 rounded-lg border-2 border-white p-3">
+                <div key={user.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback>
                       <User className="h-5 w-5" />
@@ -90,10 +90,6 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
                   <div className="flex-1">
                     <p className="font-medium">{user.fullName}</p>
                     <p className="text-muted-foreground text-sm">{user.email}</p>
-                    <div className="text-muted-foreground space-x-2 text-xs">
-                      <span>Gender: {user.gender}</span>
-                      {user.phoneNumber && <span>• Phone: {user.phoneNumber}</span>}
-                    </div>
                   </div>
                   <Badge
                     className={`${user.status === "ACTIVE" ? "bg-green-700 text-white" : "bg-red-700 text-white"}`}
@@ -114,7 +110,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
             </h3>
             <div className="grid gap-3">
               {track.workUsers.items.map((user) => (
-                <div key={user.id} className="flex items-center gap-3 rounded-lg border-2 border-white p-3">
+                <div key={user.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback>
                       <User className="h-5 w-5" />
@@ -123,10 +119,6 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
                   <div className="flex-1">
                     <p className="font-medium">{user.fullName}</p>
                     <p className="text-muted-foreground text-sm">{user.email}</p>
-                    <div className="text-muted-foreground space-x-2 text-xs">
-                      <span>Gender: {user.gender}</span>
-                      {user.phoneNumber && <span>• Phone: {user.phoneNumber}</span>}
-                    </div>
                   </div>
                   <Badge
                     className={`${user.status === "ACTIVE" ? "bg-green-700 text-white" : "bg-red-700 text-white"}`}
