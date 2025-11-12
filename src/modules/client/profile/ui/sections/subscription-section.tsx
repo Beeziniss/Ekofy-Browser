@@ -1,34 +1,23 @@
-import React from "react";
 import Link from "next/link";
-import { ChevronRightIcon, CreditCardIcon, ReceiptIcon, ReceiptTextIcon } from "lucide-react";
+import { ChevronRightIcon, GemIcon } from "lucide-react";
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
-const activityItems = [
+const subscriptionItems = [
   {
-    title: "Payment History",
-    href: "/profile/payment-history",
-    icon: CreditCardIcon,
-  },
-  {
-    title: "Invoices",
-    href: "/profile/invoices",
-    icon: ReceiptIcon,
-  },
-  {
-    title: "Order History",
-    href: "/profile/order-history",
-    icon: ReceiptTextIcon,
+    icon: GemIcon,
+    title: "Manage your subscription",
+    href: "/profile/subscription",
   },
 ];
 
-const ActivitySection = () => {
+const SubscriptionSection = () => {
   return (
     <div className="rounded-md bg-[#2a2a2a] pb-3">
       <div className="flex items-end p-4">
-        <h2 className="text-xl font-bold">My Activity</h2>
+        <h2 className="text-xl font-bold">Subscription</h2>
       </div>
       <div className="flex flex-col">
-        {activityItems.map((item) => (
+        {subscriptionItems.map((item) => (
           <Item asChild variant="subscription" key={item.title} size={"sm"} className="rounded-none">
             <Link href={item.href} className="no-underline">
               <ItemMedia variant={"icon"}>
@@ -48,4 +37,4 @@ const ActivitySection = () => {
   );
 };
 
-export default ActivitySection;
+export default SubscriptionSection;

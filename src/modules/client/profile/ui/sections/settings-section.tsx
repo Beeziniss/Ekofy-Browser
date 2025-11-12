@@ -1,30 +1,35 @@
 import Link from "next/link";
-import { ChevronRightIcon } from "lucide-react";
-import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item";
+import { ChevronRightIcon, LockIcon, LockOpenIcon } from "lucide-react";
+import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
 const settingItewms = [
   {
     title: "Change password",
     // href: "/profile/change-password",
     href: "#",
+    icon: LockIcon,
   },
   {
     title: "Deactivate account",
     // href: "/profile/deactivate-account",
     href: "#",
+    icon: LockOpenIcon,
   },
 ];
 
 const SettingsSection = () => {
   return (
-    <div className="pt-0 pb-6">
-      <div className="flex items-end justify-between gap-x-3">
+    <div className="rounded-md bg-[#2a2a2a] pb-3">
+      <div className="flex items-end p-4">
         <h2 className="text-xl font-bold">Settings & Privacy</h2>
       </div>
-      <div className="flex flex-col gap-6 pt-8">
+      <div className="flex flex-col">
         {settingItewms.map((item) => (
-          <Item asChild variant="muted" key={item.title} size={"sm"}>
+          <Item asChild variant="subscription" key={item.title} size={"sm"} className="rounded-none">
             <Link href={item.href} className="no-underline">
+              <ItemMedia variant={"icon"}>
+                <item.icon />
+              </ItemMedia>
               <ItemContent>
                 <ItemTitle>{item.title}</ItemTitle>
               </ItemContent>

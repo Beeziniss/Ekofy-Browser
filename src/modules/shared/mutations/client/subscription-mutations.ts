@@ -10,3 +10,15 @@ export const SubscriptionCreateCheckoutSessionMutation = graphql(`
     }
   }
 `);
+
+export const SubscriptionCancelMutation = graphql(`
+  mutation CancelSubscriptionAtPeriodEnd {
+    cancelSubscriptionAtPeriodEnd
+  }
+`);
+
+export const SubscriptionResumeMutation = graphql(`
+  mutation ResumeSubscription {
+    resumeSubscription
+  }
+`);
