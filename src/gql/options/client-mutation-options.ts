@@ -24,7 +24,11 @@ import {
   UpdateListenerRequestInput,
 } from "../graphql";
 import { mutationOptions } from "@tanstack/react-query";
-import { SubscriptionCreateCheckoutSessionMutation } from "@/modules/shared/mutations/client/subscription-mutations";
+import {
+  SubscriptionCancelMutation,
+  SubscriptionCreateCheckoutSessionMutation,
+  SubscriptionResumeMutation,
+} from "@/modules/shared/mutations/client/subscription-mutations";
 
 // PLAYLIST MUTATIONS
 export const createPlaylistMutationOptions = mutationOptions({
@@ -145,4 +149,14 @@ export const subscriptionCreateCheckoutSessionMutationOptions = mutationOptions(
   mutationKey: ["subscription-create-checkout-session"],
   mutationFn: async (createSubscriptionCheckoutSessionInput: CreateSubscriptionCheckoutSessionRequestInput) =>
     await execute(SubscriptionCreateCheckoutSessionMutation, { createSubscriptionCheckoutSessionInput }),
+});
+
+export const subscriptionCancelMutationOptions = mutationOptions({
+  mutationKey: ["subscription-cancel"],
+  mutationFn: async () => await execute(SubscriptionCancelMutation),
+});
+
+export const subscriptionResumeMutationOptions = mutationOptions({
+  mutationKey: ["subscription-resume"],
+  mutationFn: async () => await execute(SubscriptionResumeMutation),
 });

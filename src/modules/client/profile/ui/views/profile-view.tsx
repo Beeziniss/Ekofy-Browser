@@ -1,10 +1,10 @@
 "use client";
 
 import DetailView from "./detail-view";
-import HelpCard from "../components/help-card";
-import { useClientProfile } from "../../hooks/use-client-profile";
-import ProfileHeader from "../components/profile-header";
 import { useAuthStore } from "@/store";
+import HelpCard from "../components/help-card";
+import ProfileHeader from "../components/profile-header";
+import { useClientProfile } from "../../hooks/use-client-profile";
 
 export default function ProfileView() {
   const profileData = useClientProfile();
