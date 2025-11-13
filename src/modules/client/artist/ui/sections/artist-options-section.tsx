@@ -13,7 +13,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { ArtistDetailQuery } from "@/gql/graphql";
+import { ArtistDetailQuery, ReportRelatedContentType } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
 import {
@@ -22,6 +22,7 @@ import {
   CopyIcon,
   Disc3Icon,
   EllipsisIcon,
+  FlagIcon,
   ListMusicIcon,
   LucideIcon,
   MailIcon,
@@ -33,6 +34,8 @@ import { useArtistFollow } from "@/hooks/use-artist-follow";
 import { useAuthStore } from "@/store";
 import { useAuthAction } from "@/hooks/use-auth-action";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
+import { useState } from "react";
 
 const activeItemStyles = "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
 
@@ -50,7 +53,10 @@ interface ArtistOptionsSectionProps {
 
 const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProps) => {
   const route = usePathname();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  
+  const artist = artistData.artists?.items?.[0];
 
   const mainNavItems: NavItem[] = [
     {
@@ -154,6 +160,12 @@ const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProp
                 <CopyIcon className="text-main-white mr-2 size-4" />
                 <span className="text-main-white text-base">Copy link</span>
               </DropdownMenuItem>
+              {isAuthenticated && artist?.userId && user?.userId !== artist?.userId && (
+                <DropdownMenuItem onClick={() => setReportDialogOpen(true)}>
+                  <FlagIcon className="text-main-white mr-2 size-4" />
+                  <span className="text-main-white text-base">Report</span>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -165,6 +177,17 @@ const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProp
         action={warningAction}
         trackName={trackName}
       />
+
+      {/* Report Dialog */}
+      {artist?.userId && (
+        <ReportDialog
+          contentType={ReportRelatedContentType.Artist}
+          reportedUserId={artist.userId}
+          reportedUserName={artist.stageName}
+          open={reportDialogOpen}
+          onOpenChange={setReportDialogOpen}
+        />
+      )}
     </div>
   );
 };

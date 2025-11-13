@@ -19,10 +19,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2 } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2, Flag } from "lucide-react";
 import React, { useState } from "react";
 import TrackCommentReply from "./track-comment-reply";
-import { CommentThread, CommentType } from "@/gql/graphql";
+import { CommentThread, CommentType, ReportRelatedContentType } from "@/gql/graphql";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createTrackCommentMutationOptions,
@@ -33,6 +33,7 @@ import { useAuthStore } from "@/store";
 import { toast } from "sonner";
 import { useAuthAction } from "@/hooks/use-auth-action";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
 
 interface TrackCommentUserProps {
   thread: Omit<CommentThread, "hasMoreReplies" | "lastActivity">;
@@ -47,9 +48,10 @@ const TrackCommentUser = ({ thread, trackId, level = 0 }: TrackCommentUserProps)
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
   const comment = thread.rootComment;
 
@@ -165,8 +167,8 @@ const TrackCommentUser = ({ thread, trackId, level = 0 }: TrackCommentUserProps)
             </span>
           </div>
 
-          {/* Actions dropdown for comment owner */}
-          {isOwner && (
+          {/* Actions dropdown */}
+          {isAuthenticated && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-main-grey hover:text-main-white h-6 w-6 p-0">
@@ -174,17 +176,29 @@ const TrackCommentUser = ({ thread, trackId, level = 0 }: TrackCommentUserProps)
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem onClick={handleEditComment} className="cursor-pointer text-sm">
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="cursor-pointer text-sm text-red-500 focus:text-red-500"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
+                {isOwner ? (
+                  <>
+                    <DropdownMenuItem onClick={handleEditComment} className="cursor-pointer text-sm">
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setShowDeleteDialog(true)}
+                      className="cursor-pointer text-sm text-red-500 focus:text-red-500"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem
+                    onClick={() => setReportDialogOpen(true)}
+                    className="cursor-pointer text-sm"
+                  >
+                    <Flag className="mr-2 h-4 w-4" />
+                    Report
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -334,6 +348,22 @@ const TrackCommentUser = ({ thread, trackId, level = 0 }: TrackCommentUserProps)
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Report Dialog */}
+        {comment.commenterId && (
+          <ReportDialog
+            contentType={ReportRelatedContentType.Comment}
+            contentId={comment.id}
+            reportedUserId={comment.commenterId}
+            reportedUserName={
+              comment.commenter?.listener?.displayName ||
+              comment.commenter?.artist?.stageName ||
+              `User ${comment.commenterId.slice(-4)}`
+            }
+            open={reportDialogOpen}
+            onOpenChange={setReportDialogOpen}
+          />
+        )}
 
         <WarningAuthDialog
           open={showWarningDialog}

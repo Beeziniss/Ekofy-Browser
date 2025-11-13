@@ -7,9 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArtistQuery, TrackDetailQuery } from "@/gql/graphql";
+import { ArtistQuery, TrackDetailQuery, ReportRelatedContentType } from "@/gql/graphql";
 import { formatNumber } from "@/utils/format-number";
-import { CopyIcon, EllipsisIcon, HeartIcon, ListPlusIcon, UserIcon } from "lucide-react";
+import { CopyIcon, EllipsisIcon, FlagIcon, HeartIcon, ListPlusIcon, UserIcon } from "lucide-react";
 import { Suspense, useState } from "react";
 import PlaylistAddModal from "@/modules/client/playlist/ui/components/playlist-add-modal";
 import { toast } from "sonner";
@@ -20,6 +20,7 @@ import { useArtistFollow } from "@/hooks/use-artist-follow";
 import { useFavoriteTrack } from "@/modules/client/track/hooks/use-favorite-track";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { useAuthAction } from "@/hooks/use-auth-action";
+import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
 
 interface TrackOwnerSectionProps {
   data: TrackDetailQuery;
@@ -42,6 +43,7 @@ const TrackOwnerSectionSuspense = ({ data, artistData }: TrackOwnerSectionProps)
   const trackDetail = data.tracks?.items?.[0];
   const trackDetailArtist = trackDetail?.mainArtists?.items?.[0];
   const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth, isAuthenticated } =
     useAuthAction();
 
@@ -162,17 +164,39 @@ const TrackOwnerSectionSuspense = ({ data, artistData }: TrackOwnerSectionProps)
                 <ListPlusIcon className="text-main-white mr-2 size-4" />
                 <span className="text-main-white text-base">Add to playlist</span>
               </DropdownMenuItem>
+              {isAuthenticated && trackDetailArtist?.userId && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    setReportDialogOpen(true);
+                  }}
+                >
+                  <FlagIcon className="text-main-white mr-2 size-4" />
+                  <span className="text-main-white text-base">Report</span>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
       {trackDetail?.id && isAuthenticated && (
-        <PlaylistAddModal
-          open={addToPlaylistModalOpen}
-          onOpenChange={setAddToPlaylistModalOpen}
-          trackId={trackDetail.id}
-        />
+        <>
+          <PlaylistAddModal
+            open={addToPlaylistModalOpen}
+            onOpenChange={setAddToPlaylistModalOpen}
+            trackId={trackDetail.id}
+          />
+          {trackDetailArtist?.userId && (
+            <ReportDialog
+              contentType={ReportRelatedContentType.Track}
+              contentId={trackDetail.id}
+              reportedUserId={trackDetailArtist.userId}
+              reportedUserName={trackDetail.name}
+              open={reportDialogOpen}
+              onOpenChange={setReportDialogOpen}
+            />
+          )}
+        </>
       )}
 
       <WarningAuthDialog

@@ -7,7 +7,7 @@ import {
   PlaylistDetailTrackListQuery,
 } from "@/modules/client/playlist/ui/views/playlist-detail-view";
 import {
-  RequestHubFilterInput,
+  RequestFilterInput,
   QueryInitializationRequestsArgs,
   QueryInitializationRequestDetailByIdArgs,
   QueryInitializationSearchRequestsArgs,
@@ -231,7 +231,7 @@ const convertRequestDeadlines = <T extends { deadline?: string | Date }>(items: 
 };
 
 // REQUEST HUB QUERIES
-export const requestHubOptions = (skip: number = 0, take: number = 20, where?: RequestHubFilterInput) =>
+export const requestHubOptions = (skip: number = 0, take: number = 20, where?: RequestFilterInput) =>
   queryOptions({
     queryKey: ["requests", skip, take, where],
     queryFn: async () => {
@@ -308,7 +308,7 @@ export const userForRequestsOptions = (userId: string) =>
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: RequestHubFilterInput) =>
+export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: RequestFilterInput) =>
   queryOptions({
     queryKey: ["my-requests", skip, take, where],
     queryFn: async () => {
