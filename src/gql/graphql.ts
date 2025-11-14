@@ -1226,7 +1226,7 @@ export type CreateReportRequestInput = {
 };
 
 export type CreateReviewRequestInput = {
-  comment: Scalars['String']['input'];
+  content: Scalars['String']['input'];
   packageOrderId: Scalars['String']['input'];
   rating: Scalars['Int']['input'];
 };
@@ -2291,7 +2291,6 @@ export type MutationInitialization = {
   createPlaylist: Scalars['Boolean']['output'];
   createReport: Scalars['Boolean']['output'];
   createRequest: Scalars['Boolean']['output'];
-  createReview: Scalars['Boolean']['output'];
   createRoyaltyPolicy: Scalars['Boolean']['output'];
   createSubscription: Scalars['Boolean']['output'];
   createSubscriptionCheckoutSession: CheckoutSessionResponse;
@@ -2301,8 +2300,6 @@ export type MutationInitialization = {
   deleteComment: Scalars['Boolean']['output'];
   deleteCoupon: Scalars['Boolean']['output'];
   deletePlaylist: Scalars['Boolean']['output'];
-  deleteReviewHard: Scalars['Boolean']['output'];
-  deleteReviewSoft: Scalars['Boolean']['output'];
   deleteUserManual: Scalars['Boolean']['output'];
   deprecateCoupon: Scalars['Boolean']['output'];
   downgradeEscrowCommissionPolicyVersion: Scalars['Boolean']['output'];
@@ -2335,7 +2332,6 @@ export type MutationInitialization = {
   updateListenerProfile: Scalars['Boolean']['output'];
   updatePlaylist: Scalars['Boolean']['output'];
   updateRequest: Scalars['Boolean']['output'];
-  updateReview: Scalars['Boolean']['output'];
   updateRoyaltyPolicy: Scalars['Boolean']['output'];
   updateSubscriptionPlan: Scalars['Boolean']['output'];
   uploadTrack: Scalars['Boolean']['output'];
@@ -2504,11 +2500,6 @@ export type MutationInitializationCreateRequestArgs = {
 };
 
 
-export type MutationInitializationCreateReviewArgs = {
-  createReviewRequest: CreateReviewRequestInput;
-};
-
-
 export type MutationInitializationCreateRoyaltyPolicyArgs = {
   createRoyalPolicyRequest: CreateRoyalPolicyRequestInput;
 };
@@ -2551,16 +2542,6 @@ export type MutationInitializationDeleteCouponArgs = {
 
 export type MutationInitializationDeletePlaylistArgs = {
   playlistId: Scalars['String']['input'];
-};
-
-
-export type MutationInitializationDeleteReviewHardArgs = {
-  reviewId: Scalars['String']['input'];
-};
-
-
-export type MutationInitializationDeleteReviewSoftArgs = {
-  reviewId: Scalars['String']['input'];
 };
 
 
@@ -2723,11 +2704,6 @@ export type MutationInitializationUpdateRequestArgs = {
 };
 
 
-export type MutationInitializationUpdateReviewArgs = {
-  updateReviewRequest: UpdateReviewRequestInput;
-};
-
-
 export type MutationInitializationUpdateRoyaltyPolicyArgs = {
   updateRoyalPolicyRequest: UpdateRoyalPolicyRequestInput;
 };
@@ -2877,6 +2853,7 @@ export type PackageOrder = {
   platformFeePercentage: Scalars['Decimal']['output'];
   provider: Array<Artist>;
   providerId: Scalars['String']['output'];
+  review?: Maybe<Review>;
   revisionCount: Scalars['Int']['output'];
   status: PackageOrderStatus;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2953,6 +2930,7 @@ export type PackageOrderFilterInput = {
   paymentTransactionId?: InputMaybe<StringOperationFilterInput>;
   platformFeePercentage?: InputMaybe<DecimalOperationFilterInput>;
   providerId?: InputMaybe<StringOperationFilterInput>;
+  review?: InputMaybe<ReviewFilterInput>;
   revisionCount?: InputMaybe<IntOperationFilterInput>;
   status?: InputMaybe<PackageOrderStatusOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
@@ -2972,6 +2950,7 @@ export type PackageOrderSortInput = {
   paymentTransactionId?: InputMaybe<SortEnumType>;
   platformFeePercentage?: InputMaybe<SortEnumType>;
   providerId?: InputMaybe<SortEnumType>;
+  review?: InputMaybe<ReviewSortInput>;
   revisionCount?: InputMaybe<SortEnumType>;
   status?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
@@ -3523,7 +3502,6 @@ export type QueryInitialization = {
   reports?: Maybe<ReportsCollectionSegment>;
   requestDetailById?: Maybe<Request>;
   requests?: Maybe<RequestsCollectionSegment>;
-  reviews?: Maybe<ReviewsCollectionSegment>;
   royaltyPolicies?: Maybe<RoyaltyPoliciesCollectionSegment>;
   royaltyReports?: Maybe<RoyaltyReportsCollectionSegment>;
   searchArtists?: Maybe<SearchArtistsCollectionSegment>;
@@ -3873,14 +3851,6 @@ export type QueryInitializationRequestsArgs = {
 };
 
 
-export type QueryInitializationReviewsArgs = {
-  order?: InputMaybe<Array<ReviewSortInput>>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ReviewFilterInput>;
-};
-
-
 export type QueryInitializationRoyaltyPoliciesArgs = {
   order?: InputMaybe<Array<RoyaltyPolicySortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -4132,6 +4102,12 @@ export type RecordingsCollectionSegment = {
   /** Information to aid in pagination. */
   pageInfo: CollectionSegmentInfo;
   totalCount: Scalars['Int']['output'];
+};
+
+export type RedoRequestInput = {
+  clientFeedback: Scalars['String']['input'];
+  packageOrderId: Scalars['String']['input'];
+  revisionNumber: Scalars['Int']['input'];
 };
 
 export enum RefundReasonType {
@@ -4533,40 +4509,17 @@ export type RestrictionTypeOperationFilterInput = {
 
 export type Review = {
   __typename?: 'Review';
-  checkClientReviewedPackageOrder: Scalars['Boolean']['output'];
-  client: Array<Listener>;
-  clientId: Scalars['String']['output'];
-  comment: Scalars['String']['output'];
+  content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
-  deletedAt?: Maybe<Scalars['DateTime']['output']>;
-  id: Scalars['String']['output'];
-  packageOrder: Array<PackageOrder>;
-  packageOrderId: Scalars['String']['output'];
   rating: Scalars['Int']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-
-export type ReviewClientArgs = {
-  order?: InputMaybe<Array<ListenerSortInput>>;
-  where?: InputMaybe<ListenerFilterInput>;
-};
-
-
-export type ReviewPackageOrderArgs = {
-  order?: InputMaybe<Array<PackageOrderSortInput>>;
-  where?: InputMaybe<PackageOrderFilterInput>;
-};
-
 export type ReviewFilterInput = {
   and?: InputMaybe<Array<ReviewFilterInput>>;
-  clientId?: InputMaybe<StringOperationFilterInput>;
-  comment?: InputMaybe<StringOperationFilterInput>;
+  content?: InputMaybe<StringOperationFilterInput>;
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
-  deletedAt?: InputMaybe<DateTimeOperationFilterInput>;
-  id?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<ReviewFilterInput>>;
-  packageOrderId?: InputMaybe<StringOperationFilterInput>;
   rating?: InputMaybe<IntOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
 };
@@ -4578,24 +4531,10 @@ export type ReviewResponse = {
 };
 
 export type ReviewSortInput = {
-  clientId?: InputMaybe<SortEnumType>;
-  comment?: InputMaybe<SortEnumType>;
+  content?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
-  deletedAt?: InputMaybe<SortEnumType>;
-  id?: InputMaybe<SortEnumType>;
-  packageOrderId?: InputMaybe<SortEnumType>;
   rating?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
-};
-
-/** A segment of a collection. */
-export type ReviewsCollectionSegment = {
-  __typename?: 'ReviewsCollectionSegment';
-  /** A flattened list of the items. */
-  items?: Maybe<Array<Review>>;
-  /** Information to aid in pagination. */
-  pageInfo: CollectionSegmentInfo;
-  totalCount: Scalars['Int']['output'];
 };
 
 /** A segment of a collection. */
@@ -4814,6 +4753,12 @@ export enum StripeSubscriptionUpdate {
   PromotionCode = 'PROMOTION_CODE',
   Quantity = 'QUANTITY'
 }
+
+export type SubmitDeliveryRequestInput = {
+  deliveryFileUrl: Scalars['String']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+  packageOrderId: Scalars['String']['input'];
+};
 
 export type Subscription = {
   __typename?: 'Subscription';
@@ -5358,8 +5303,8 @@ export type UpdatePriceRequestInput = {
 
 export type UpdateReviewRequestInput = {
   comment?: InputMaybe<Scalars['String']['input']>;
+  packageOrderId: Scalars['String']['input'];
   rating?: InputMaybe<Scalars['Int']['input']>;
-  reviewId: Scalars['String']['input'];
 };
 
 export type UpdateRoyalPolicyRequestInput = {
