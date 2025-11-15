@@ -1,5 +1,3 @@
-"use client";
-
 import { ApprovalHistoriesLayout } from "../layouts/approval-histories-layout";
 import { ApprovalHistoriesSection } from "../section";
 

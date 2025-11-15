@@ -5,6 +5,7 @@ import {
   PaymentTransactionFilterInput,
   PaymentTransactionSortInput,
   SortEnumType,
+  TransactionStatus,
 } from "@/gql/graphql";
 import {
   GetListenerInvoicesQuery,
@@ -32,6 +33,23 @@ export function listenerTransactionsOptions(params: {
   };
 }
 
+// New function to check for open transactions
+export function listenerOpenTransactionsOptions(params: { userId: string }) {
+  const { userId } = params;
+  const where: PaymentTransactionFilterInput = {
+    userId: { eq: userId },
+    status: { eq: TransactionStatus.Open },
+  };
+  const order: PaymentTransactionSortInput[] = [{ createdAt: SortEnumType.Desc }];
+  const take = 1; // We only need to know if there's at least one
+  const skip = 0;
+
+  return {
+    queryKey: ["listener-open-transactions", userId],
+    queryFn: async () => execute(GetListenerTransactionsQuery, { where, order, skip, take }),
+  };
+}
+
 export function listenerInvoicesOptions(params: { userId: string; page: number; pageSize: number }) {
   const { userId, page, pageSize } = params;
   const skip = (page - 1) * pageSize;
@@ -51,9 +69,8 @@ export function listenerInvoicesOptions(params: { userId: string; page: number; 
 // Detail by ID: Payment Transaction (listener)
 export function listenerTransactionByIdOptions(params: { id: string }) {
   const { id } = params;
-  // Support both internal id and stripePaymentId lookups
   const where: PaymentTransactionFilterInput = {
-    or: [{ id: { eq: id } }, { stripePaymentId: { eq: id } }],
+    or: [{ id: { eq: id } }],
   };
 
   const take = 1;

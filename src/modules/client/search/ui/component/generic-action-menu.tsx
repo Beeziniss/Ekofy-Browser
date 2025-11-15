@@ -109,6 +109,14 @@ export const GenericActionMenu: React.FC<GenericActionMenuProps> = ({ item, type
               setIsMenuOpen(false);
             },
           },
+          {
+            icon: Eye,
+            label: "View Details",
+            action: () => {
+              router.push(`/playlists/${item.id}`);
+              setIsMenuOpen(false);
+            },
+          },
           ...commonItems,
         ];
 

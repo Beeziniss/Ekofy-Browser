@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MessageCircle, Clock, Send, ChevronDown, ChevronUp, SquarePen, MoreVertical, Flag } from "lucide-react";
 import { RequestsQuery, ReportRelatedContentType } from "@/gql/graphql";
-import { userForRequestsOptions, requestHubCommentsOptions } from "@/gql/options/client-options";
+import { requestHubCommentsOptions } from "@/gql/options/client-options";
 import { RequestHubCommentSection, StripeAccountRequiredModal } from "./";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
@@ -45,9 +45,6 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
 
   // Get Stripe account status
   const { isArtist, hasStripeAccount } = useStripeAccountStatus();
-
-  // Fetch user data for the request creator
-  const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
 
   // Fetch comment count for this request
   const { data: commentsData } = useQuery(requestHubCommentsOptions(request.id));
@@ -104,7 +101,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
 
   const handleApply = () => {
     if (!isAuthenticated) {
-      showAuthDialog("apply", request.title);
+      showAuthDialog("apply", request.title || "Untitled Request");
       return;
     }
 
@@ -122,7 +119,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
 
   const handleEdit = () => {
     if (!isAuthenticated) {
-      showAuthDialog("edit", request.title);
+      showAuthDialog("edit", request.title || "Untitled Request");
       return;
     }
     onEdit?.(request.id);
@@ -131,13 +128,20 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffHours < 24) {
-      return `${diffHours} hours ago`;
+    if (diffMinutes < 60) {
+      return `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`;
+    } else if (diffHours < 24) {
+      const hours = diffHours;
+      const minutes = diffMinutes % 60;
+      return `${hours} hour${hours > 1 ? "s" : ""} ${minutes} minute${minutes > 1 ? "s" : ""} ago`;
     } else {
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+      const days = diffDays;
+      const hours = diffHours % 24;
+      return `${days} day${days > 1 ? "s" : ""} ${hours} hour${hours > 1 ? "s" : ""} ago`;
     }
   };
 
@@ -174,14 +178,14 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
           <div className="flex items-center space-x-3">
             <Avatar className="h-12 w-12">
               <AvatarFallback className="bg-gray-200 text-gray-600">
-                {requestUser?.fullName?.charAt(0).toUpperCase() || "U"}
+                {request.requestor?.[0]?.displayName?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             <div>
               <h4 className="font-medium text-white">
-                {requestUser?.fullName || `User ${request.requestUserId.slice(-4)}`}
+                {request.requestor?.[0]?.displayName || `User ${request.requestUserId.slice(-4)}`}
               </h4>
-              <p className="text-sm text-white">{formatTimeAgo(request.createdAt)}</p>
+              <p className="text-sm text-white">{formatTimeAgo(request.postCreatedTime)}</p>
             </div>
           </div>
           

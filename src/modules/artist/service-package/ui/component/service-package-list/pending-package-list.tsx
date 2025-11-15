@@ -74,7 +74,7 @@ const PendingPackageList = ({ packages, artists }: PendingPackageListProps) => {
               </div>
             </div>
             <CardDescription className="text-green-400">{formatCurrency(pkg.amount, pkg.currency)}</CardDescription>
-            <CardDescription className="text-gray-400 flex items-center gap-1">
+            <CardDescription className="flex items-center gap-1 text-gray-400">
               <Clock className="h-3 w-3" />
               Delivery: {pkg.estimateDeliveryDays} days
             </CardDescription>

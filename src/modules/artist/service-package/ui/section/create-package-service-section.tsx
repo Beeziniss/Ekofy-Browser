@@ -26,7 +26,7 @@ const CreatePackageServiceSection: React.FC<CreatePackageServiceSectionProps> = 
   const [artistId, setArtistId] = useState<string>("");
   const { user } = useAuthStore();
   const { createPackage, isCreating } = usePackageOperations();
-  
+
   useEffect(() => {
     const storedArtistId = user?.artistId;
     if (storedArtistId) {
@@ -49,13 +49,11 @@ const CreatePackageServiceSection: React.FC<CreatePackageServiceSectionProps> = 
         onSuccess: () => {
           onSuccess();
         },
-      }
+      },
     );
   };
 
-  return (
-    <CreatePackageService onSubmit={handleSubmit} onCancel={onCancel} isLoading={isCreating} />
-  );
+  return <CreatePackageService onSubmit={handleSubmit} onCancel={onCancel} isLoading={isCreating} />;
 };
 
 export default CreatePackageServiceSection;

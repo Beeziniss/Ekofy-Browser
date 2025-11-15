@@ -94,7 +94,6 @@ const ServicePackageServiceView = () => {
   return (
     <PackageServiceLayout>
       {renderCurrentView()}
-
       <DeleteConfirmModal
         isOpen={deleteModalOpen}
         onConfirm={handleConfirmDelete}

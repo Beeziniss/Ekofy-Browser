@@ -13,7 +13,6 @@ import { ArtistPackageStatus } from "@/gql/graphql";
 // Approve Artist Package
 export const useApproveArtistPackage = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (packageId: string) => {
       const result = await execute(approveArtistPackageMutation, { id: packageId });
@@ -31,7 +30,6 @@ export const useApproveArtistPackage = () => {
 // Reject Artist Package
 export const useRejectArtistPackage = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (packageId: string) => {
       const result = await execute(rejectArtistPackageMutation, { id: packageId });
@@ -49,7 +47,6 @@ export const useRejectArtistPackage = () => {
 // Create Artist Package
 export const useCreateArtistPackage = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (createRequest: {
       artistId: string;
@@ -94,7 +91,6 @@ export const useUpdateArtistPackage = () => {
 // Delete Artist Package
 export const useDeleteArtistPackage = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (packageId: string) => {
       const result = await execute(deleteArtistPackageMutation, { artistPackageId: packageId });
@@ -112,7 +108,6 @@ export const useDeleteArtistPackage = () => {
 // Change Artist Package Status
 export const useChangeArtistPackageStatus = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (variables: { packageId: string; status: ArtistPackageStatus }) => {
       const result = await execute(changeArtistPackageStatusMutation, {

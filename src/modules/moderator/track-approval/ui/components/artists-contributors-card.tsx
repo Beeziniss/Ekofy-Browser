@@ -24,9 +24,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
         {/* Main Artists */}
         {track.mainArtists?.items && track.mainArtists.items.length > 0 && (
           <div className="space-y-3">
-            <h3 className="flex items-center gap-2 font-medium">
-              Main Artists:
-            </h3>
+            <h3 className="flex items-center gap-2 font-medium">Main Artists:</h3>
             <div className="grid gap-3">
               {track.mainArtists.items.map((artist) => (
                 <div key={artist.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
@@ -50,9 +48,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
         {/* Featured Artists */}
         {track.featuredArtists?.items && track.featuredArtists.items.length > 0 && (
           <div className="space-y-3">
-            <h3 className="flex items-center gap-2 font-medium">
-              Featured Artists:
-            </h3>
+            <h3 className="flex items-center gap-2 font-medium">Featured Artists:</h3>
             <div className="grid gap-3">
               {track.featuredArtists.items.map((artist) => (
                 <div key={artist.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
@@ -76,9 +72,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
         {/* Recording Users */}
         {track.recordingUsers?.items && track.recordingUsers.items.length > 0 && (
           <div className="space-y-3">
-            <h3 className="flex items-center gap-2 font-medium">
-              Recording Contributors:
-            </h3>
+            <h3 className="flex items-center gap-2 font-medium">Recording Contributors:</h3>
             <div className="grid gap-3">
               {track.recordingUsers.items.map((user) => (
                 <div key={user.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">
@@ -105,9 +99,7 @@ export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps)
         {/* Work Users */}
         {track.workUsers?.items && track.workUsers.items.length > 0 && (
           <div className="space-y-3">
-            <h3 className="flex items-center gap-2 font-medium">
-              Work Contributors:
-            </h3>
+            <h3 className="flex items-center gap-2 font-medium">Work Contributors:</h3>
             <div className="grid gap-3">
               {track.workUsers.items.map((user) => (
                 <div key={user.id} className="flex items-center gap-3 rounded-lg border-2 border-white/15 p-3">

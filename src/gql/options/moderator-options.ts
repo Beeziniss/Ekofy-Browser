@@ -31,6 +31,7 @@ import {
   GetCategory,
 } from "@/modules/shared/queries/moderator/track-approval-queries";
 import { QUERY_USER_CREATED_BY } from "@/modules/shared/queries/moderator/track-approval-queries";
+import { PendingArtistPackagesQuery } from "@/modules/shared/queries/artist/artist-packages-queries";
 
 export const moderatorProfileOptions = (userId: string) =>
   queryOptions({

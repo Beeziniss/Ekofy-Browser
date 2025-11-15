@@ -25,7 +25,7 @@ const DeletePackageServiceSection: React.FC<DeletePackageServiceSectionProps> = 
 
   const handleConfirmDelete = () => {
     setIsDeleting(true);
-    
+
     deletePackage(packageId, {
       onSuccess: () => {
         setIsDeleting(false);

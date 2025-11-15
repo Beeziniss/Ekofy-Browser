@@ -116,11 +116,15 @@ export const GetUserActiveSubscriptionQuery = graphql(`
       items {
         id
         isActive
+        subscriptionId
         subscription {
           tier
           status
           name
         }
+        periodEnd
+        cancelAtEndOfPeriod
+        canceledAt
       }
     }
   }

@@ -5,7 +5,7 @@ import {
   RequestHubCommentCreateMutation,
   RequestHubCommentDeleteMutation,
   RequestHubCommentUpdateMutation,
-} from "@/modules/shared/mutations/client/request-hub-comment-mutation";
+} from "@/modules/shared/mutations/client/request-hub-comment-mutations";
 
 export const useCreateRequestHubComment = () => {
   const queryClient = useQueryClient();

@@ -94,7 +94,6 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
             </Button>
           </div>
         </CardHeader>
-
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">

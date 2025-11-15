@@ -1,20 +1,20 @@
 "use client";
 
 import DetailView from "./detail-view";
-import HelpCard from "../components/help-card";
-import { useClientProfile } from "../../hooks/use-client-profile";
-import ProfileHeader from "../components/profile-header";
 import { useAuthStore } from "@/store";
+import HelpCard from "../components/help-card";
+import ProfileHeader from "../components/profile-header";
+import { useClientProfile } from "../../hooks/use-client-profile";
 
 export default function ProfileView() {
   const profileData = useClientProfile();
-  const { personal, data, account } = profileData;
+  const { personal, account, avatarImage, bannerImage } = profileData;
   const { user } = useAuthStore();
 
   const profileHeader = {
     name: personal.displayName || personal.email || "User",
-    avatarUrl: data?.avatarImage || "",
-    backgroundUrl: data?.bannerImage || "/image- login.png",
+    avatarUrl: avatarImage || "",
+    backgroundUrl: bannerImage || "/image-login.png",
     userId: user?.userId || "",
   };
 

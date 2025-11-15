@@ -44,9 +44,7 @@ export function WorkRecordingDetailsCard({ track }: WorkRecordingDetailsCardProp
         {/* Work Information */}
         {hasWorkInfo && (
           <div className="space-y-4">
-            <h3 className="flex items-center gap-2 font-medium">
-              Work Information
-            </h3>
+            <h3 className="flex items-center gap-2 font-medium">Work Information</h3>
 
             {track.work?.description && (
               <div className="bg-muted rounded-lg p-3">
@@ -82,9 +80,7 @@ export function WorkRecordingDetailsCard({ track }: WorkRecordingDetailsCardProp
         {/* Recording Information */}
         {hasRecordingInfo && (
           <div className="space-y-4">
-            <h3 className="flex items-center gap-2 font-medium">
-              Recording Information
-            </h3>
+            <h3 className="flex items-center gap-2 font-medium">Recording Information</h3>
 
             {track.recording?.description && (
               <div className="bg-muted rounded-lg p-3">

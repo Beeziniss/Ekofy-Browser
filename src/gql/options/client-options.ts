@@ -23,7 +23,7 @@ import {
   GetListenerProfileQuery,
   GetUserActiveSubscriptionQuery,
   ListenerQuery,
-  MY_REQUESTS_QUERY,
+  OWN_REQUESTS_QUERY,
   PlaylistsHomeQuery,
   PlaylistsPersonalQuery,
   REQUEST_BY_ID_QUERY,
@@ -62,7 +62,6 @@ export const userActiveSubscriptionOptions = (userId: string) =>
         where: {
           userId: { eq: userId },
           isActive: { eq: true },
-          cancelAtEndOfPeriod: { eq: false },
         },
         take: 1,
         skip: 0,
@@ -317,8 +316,8 @@ export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: R
         take,
         where,
       };
-      const result = await execute(MY_REQUESTS_QUERY, variables);
-      const requests = result.requests || {
+      const result = await execute(OWN_REQUESTS_QUERY, variables);
+      const requests = result.ownRequests || {
         items: [],
         pageInfo: { hasNextPage: false, hasPreviousPage: false },
         totalCount: 0,

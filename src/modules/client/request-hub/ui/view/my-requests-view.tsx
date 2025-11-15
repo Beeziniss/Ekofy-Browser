@@ -223,9 +223,9 @@ export function MyRequestsView() {
           <EditRequestSection
             initialData={{
               id: editingRequest.id,
-              title: editingRequest.title,
-              summary: editingRequest.summary,
-              detailDescription: editingRequest.detailDescription,
+              title: editingRequest.title || "",
+              summary: editingRequest.summary || "",
+              detailDescription: editingRequest.detailDescription || "",
               budget: editingRequest.budget,
               deadline: editingRequest.deadline,
             }}

@@ -3,6 +3,7 @@ import AccountDetailSection from "../sections/account-detail-section";
 import SettingsSection from "../sections/settings-section";
 import ActivitySection from "../sections/activity-section";
 import type { UserGender } from "@/gql/graphql";
+import SubscriptionSection from "../sections/subscription-section";
 
 interface DetailViewProps {
   personal: {
@@ -12,19 +13,22 @@ interface DetailViewProps {
     readonly gender: UserGender | undefined;
   };
   account: {
-    readonly createdAt: string | undefined;
-    readonly membershipStatus: string;
+    createdAt: string;
+    membershipStatus: string;
   };
   userId?: string;
 }
 
-export default function DetailView({ personal, account, userId }: DetailViewProps) {
+const DetailView = ({ personal, account, userId }: DetailViewProps) => {
   return (
-    <div className="w-full p-4 pt-6">
+    <div className="w-full space-y-6 pb-10">
       <PersonalDetailSection personal={personal} userId={userId} />
       <AccountDetailSection account={account} />
+      <SubscriptionSection />
       <SettingsSection />
       <ActivitySection />
     </div>
   );
-}
+};
+
+export default DetailView;

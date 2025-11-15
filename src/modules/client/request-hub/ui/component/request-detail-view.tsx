@@ -5,8 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useQuery } from "@tanstack/react-query";
-import { userForRequestsOptions } from "@/gql/options/client-options";
 import {
   ArrowLeft,
   //   Bookmark,
@@ -46,9 +44,6 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
 
   // Get Stripe account status
   const { isArtist, hasStripeAccount } = useStripeAccountStatus();
-
-  // Fetch user data for the request creator
-  const { data: requestUser } = useQuery(userForRequestsOptions(request.requestUserId));
 
   // Format status from GraphQL enum to display text
   const formatStatus = (status: string) => {
@@ -101,22 +96,37 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
     return `${formatCurrency(budget.min)} - ${formatCurrency(budget.max)}`;
   };
 
-  const formatTimeAgo = (dateString: string | Date) => {
-    const date = typeof dateString === "string" ? new Date(dateString) : dateString;
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-  };
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
+    if (diffMinutes < 60) {
+      return `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`;
+    } else if (diffHours < 24) {
+      const hours = diffHours;
+      const minutes = diffMinutes % 60;
+      return `${hours} hour${hours > 1 ? "s" : ""} ${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    } else {
+      const days = diffDays;
+      const hours = diffHours % 24;
+      return `${days} day${days > 1 ? "s" : ""} ${hours} hour${hours > 1 ? "s" : ""} ago`;
+    }
+  };
   const formatDeadline = (deadline: string | Date) => {
     const date = typeof deadline === "string" ? new Date(deadline) : deadline;
-    return date.toLocaleDateString();
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   const handleApply = () => {
     if (!isAuthenticated) {
-      showAuthDialog("apply", request.title);
+      showAuthDialog("apply", request.title || "Untitled Request");
       return;
     }
 
@@ -134,7 +144,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
 
   const handleContactClient = () => {
     if (!isAuthenticated) {
-      showAuthDialog("contact", request.title);
+      showAuthDialog("contact", request.title || "Untitled Request");
       return;
     }
 
@@ -179,15 +189,15 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
             <div className="flex items-center space-x-3">
               <Avatar className="h-10 w-10">
                 <AvatarFallback className="bg-gray-200 text-gray-600">
-                  {requestUser?.fullName?.charAt(0).toUpperCase() || "U"}
+                  {request.requestor?.[0]?.displayName?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <p className="font-medium text-white">
-                  {requestUser?.fullName || `User ${request.requestUserId.slice(-4)}`}
+                  {request.requestor?.[0]?.displayName || `User ${request.requestUserId.slice(-4)}`}
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  <span>Posted {formatTimeAgo(request.createdAt)}</span>
+                  <span>Posted {formatTimeAgo(request.postCreatedTime)}</span>
                 </div>
               </div>
             </div>
@@ -206,7 +216,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
                 <h2 className="mb-4 text-lg font-semibold">Detailed Description</h2>
                 <div
                   className="prose prose-invert max-w-none leading-relaxed text-white"
-                  dangerouslySetInnerHTML={{ __html: request.detailDescription }}
+                  dangerouslySetInnerHTML={{ __html: request.detailDescription || "" }}
                 />
               </CardContent>
             </Card>
@@ -251,7 +261,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
                     <div className="flex items-center text-sm">
                       <Calendar className="mr-2 h-4 w-4 text-gray-400" />
                       <span className="text-gray-500">Posted</span>
-                      <span className="ml-auto font-medium">{formatTimeAgo(request.createdAt)}</span>
+                      <span className="ml-auto font-medium">{formatTimeAgo(request.postCreatedTime)}</span>
                     </div>
                   </div>
 

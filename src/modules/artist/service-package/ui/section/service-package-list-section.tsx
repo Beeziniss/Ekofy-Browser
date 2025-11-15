@@ -34,7 +34,7 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
   const [pendingCurrentPage, setPendingCurrentPage] = useState<number>(1);
   const pageSize = 10;
   const { user } = useAuthStore();
-  
+
   const { changePackageStatus, deletePackage } = usePackageOperations();
 
   useEffect(() => {
@@ -122,7 +122,6 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
   const packages = useMemo(() => packagesData?.artistPackages?.items || [], [packagesData]);
   const pendingPackages = useMemo(() => pendingData?.pendingArtistPackages?.items || [], [pendingData]);
   const artists = useMemo(() => pendingData?.artists?.items || [], [pendingData]);
-
   // Pagination calculations
   const totalPackagesCount = packagesData?.artistPackages?.totalCount || 0;
   const totalPendingCount = pendingData?.pendingArtistPackages?.totalCount || 0;
@@ -213,7 +212,6 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
                   onViewDetail={onViewDetail}
                   onStatusChange={handleStatusChange}
                 />
-
                 {/* Pagination for Packages */}
                 <CustomPagination
                   currentPage={currentPage}

@@ -41,7 +41,7 @@ const UpdatePackageServiceSection = ({
         onSuccess: () => {
           onSuccess();
         },
-      }
+      },
     );
   };
 
