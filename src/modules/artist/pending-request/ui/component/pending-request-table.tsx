@@ -26,26 +26,39 @@ import { useState } from "react";
 
 type PendingRequestItem = NonNullable<NonNullable<GetPendingArtistRequestQuery["requests"]>["items"]>[0];
 
-const STATUS_VARIANTS: Record<RequestStatus, "default" | "secondary" | "destructive" | "outline"> = {
-  [RequestStatus.Pending]: "outline",
-  [RequestStatus.Confirmed]: "default",
-  [RequestStatus.Rejected]: "destructive",
-  [RequestStatus.Canceled]: "secondary",
-  [RequestStatus.Blocked]: "destructive",
-  [RequestStatus.Closed]: "secondary",
-  [RequestStatus.Deleted]: "destructive",
-  [RequestStatus.Open]: "outline",
-};
-
-const STATUS_LABELS: Record<RequestStatus, string> = {
-  [RequestStatus.Pending]: "PENDING",
-  [RequestStatus.Confirmed]: "CONFIRMED",
-  [RequestStatus.Rejected]: "REJECTED",
-  [RequestStatus.Canceled]: "CANCELED",
-  [RequestStatus.Blocked]: "BLOCKED",
-  [RequestStatus.Closed]: "CLOSED",
-  [RequestStatus.Deleted]: "DELETED",
-  [RequestStatus.Open]: "OPEN",
+const STATUS_CONFIG: Record<RequestStatus, { label: string; className: string }> = {
+  [RequestStatus.Pending]: {
+    label: "PENDING",
+    className: "bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20",
+  },
+  [RequestStatus.Confirmed]: {
+    label: "CONFIRMED",
+    className: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20",
+  },
+  [RequestStatus.Rejected]: {
+    label: "REJECTED",
+    className: "bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20",
+  },
+  [RequestStatus.Canceled]: {
+    label: "CANCELED",
+    className: "bg-gray-500/10 text-gray-400 border-gray-500/20 hover:bg-gray-500/20",
+  },
+  [RequestStatus.Blocked]: {
+    label: "BLOCKED",
+    className: "bg-orange-500/10 text-orange-500 border-orange-500/20 hover:bg-orange-500/20",
+  },
+  [RequestStatus.Closed]: {
+    label: "CLOSED",
+    className: "bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20",
+  },
+  [RequestStatus.Deleted]: {
+    label: "DELETED",
+    className: "bg-rose-500/10 text-rose-500 border-rose-500/20 hover:bg-rose-500/20",
+  },
+  [RequestStatus.Open]: {
+    label: "OPEN",
+    className: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20 hover:bg-cyan-500/20",
+  },
 };
 
 interface PendingRequestTableProps {
@@ -143,7 +156,11 @@ export function PendingRequestTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANTS[request.status]}>{STATUS_LABELS[request.status]}</Badge>
+                  <Badge 
+                    className={`${STATUS_CONFIG[request.status as RequestStatus]?.className} border font-semibold transition-colors`}
+                  >
+                    {STATUS_CONFIG[request.status as RequestStatus]?.label}
+                  </Badge>               
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">{format(new Date(request.requestCreatedTime), "dd/MM/yyyy")}</div>

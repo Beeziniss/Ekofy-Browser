@@ -306,8 +306,8 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
                 onSelect={setDeadline}
                 disabled={(date) => date < minDate}
                 captionLayout="dropdown"
-                fromYear={1900}
-                toYear={2030}
+                fromYear={2000}
+                toYear={new Date().getFullYear() + 10}
                 initialFocus
               />
             </PopoverContent>
