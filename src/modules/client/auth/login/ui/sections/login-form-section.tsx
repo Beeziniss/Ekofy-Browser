@@ -37,7 +37,7 @@ const LoginFormSection = () => {
     defaultValues: {
       email: "",
       password: "",
-      isRememberMe: true,
+      isRememberMe: false,
     },
   });
 

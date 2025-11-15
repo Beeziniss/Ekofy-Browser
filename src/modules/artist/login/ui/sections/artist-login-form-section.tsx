@@ -66,6 +66,7 @@ const ArtistLoginFormSection = () => {
     signIn({
       email,
       password,
+      isRememberMe: rememberMe,
     });
   };
 
