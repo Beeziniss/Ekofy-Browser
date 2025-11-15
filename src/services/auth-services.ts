@@ -8,14 +8,19 @@ import {
   ModeratorLoginResponse,
   AdminLoginResponse,
   RegisterListenerData,
+  RefreshTokenResponse,
 } from "@/types/auth";
 import { formatServiceError } from "@/utils/signup-utils";
 
 export const authApi = {
   listener: {
-    login: async (email: string, password: string): Promise<ListenerLoginResponse> => {
+    login: async (email: string, password: string, isRememberMe: boolean): Promise<ListenerLoginResponse> => {
       try {
-        const response = await axiosInstance.post("/api/authentication/login/listener", { email, password });
+        const response = await axiosInstance.post("/api/authentication/login/listener", {
+          email,
+          password,
+          isRememberMe,
+        });
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
@@ -113,6 +118,17 @@ export const authApi = {
     },
   },
   general: {
+    refreshToken: async (): Promise<RefreshTokenResponse> => {
+      try {
+        const response = await axiosInstance.post("/api/authentication/refresh-token");
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(error.response?.data?.message || "Failed to refresh token");
+        }
+        throw error;
+      }
+    },
     getCurrentProfile: async (): Promise<IUserCurrent> => {
       try {
         const response = await axiosInstance.post("/api/authentication/users/me");

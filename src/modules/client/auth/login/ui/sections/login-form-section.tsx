@@ -23,7 +23,7 @@ const loginSchema = z.object({
     .string()
     .min(6, "Password must be at least 6 characters")
     .max(50, "Password must be less than 50 characters"),
-  rememberMe: z.boolean(),
+  isRememberMe: z.boolean(),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -37,7 +37,7 @@ const LoginFormSection = () => {
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: false,
+      isRememberMe: true,
     },
   });
 
@@ -45,6 +45,7 @@ const LoginFormSection = () => {
     signIn({
       email: data.email,
       password: data.password,
+      isRememberMe: data.isRememberMe,
     });
   };
 
@@ -130,7 +131,7 @@ const LoginFormSection = () => {
             <div className="flex items-center justify-between">
               <FormField
                 control={form.control}
-                name="rememberMe"
+                name="isRememberMe"
                 render={({ field }) => (
                   <div className="flex items-center space-x-3">
                     <Checkbox
