@@ -128,7 +128,7 @@ const RequestHubCommentReply = ({ reply, requestId, level, rootCommentId }: Requ
     if (replyContent.trim() && !isPending) {
       createReply({
         targetId: requestId,
-        commentType: CommentType.RequestHub,
+        commentType: CommentType.Request,
         content: replyContent.trim(),
         parentCommentId: rootCommentId,
       });
