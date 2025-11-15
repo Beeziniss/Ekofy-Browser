@@ -23,8 +23,13 @@ export const REQUEST_HUB_QUERY = graphql(`
         currency
         deadline
         status
-        createdAt
+        postCreatedTime
         updatedAt
+        requestor {
+          id
+          userId
+          displayName
+        }
       }
     }
   }
@@ -43,12 +48,17 @@ export const REQUEST_BY_ID_QUERY = graphql(`
       currency
       deadline
       status
-      createdAt
+      postCreatedTime
       updatedAt
       budget {
         min
         max
       }
+    requestor {
+      id
+      userId
+      displayName
+    }
     }
   }
 `);
@@ -71,7 +81,7 @@ export const SEARCH_REQUESTS_QUERY = graphql(`
         currency
         deadline
         status
-        createdAt
+        postCreatedTime
         updatedAt
         budget {
           min
@@ -79,6 +89,41 @@ export const SEARCH_REQUESTS_QUERY = graphql(`
         }
       }
       totalCount
+    }
+  }
+`);
+
+export const OWN_REQUESTS_QUERY = graphql(`
+  query OwnRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
+    ownRequests(skip: $skip, take: $take, where: $where) {
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+      totalCount
+      items {
+        id
+        requestUserId
+        title
+        titleUnsigned
+        summary
+        summaryUnsigned
+        detailDescription
+        currency
+        deadline
+        status
+        postCreatedTime
+        updatedAt
+        budget {
+          min
+          max
+        }
+        requestor {
+          id
+          userId
+          displayName
+        }
+      }
     }
   }
 `);
