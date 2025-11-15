@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 interface SignInCredentials {
   email: string;
   password: string;
+  isRememberMe: boolean;
 }
 
 const useSignIn = () => {
@@ -25,9 +26,9 @@ const useSignIn = () => {
     isSuccess,
     reset,
   } = useMutation<ListenerLoginResponse, Error, SignInCredentials>({
-    mutationFn: async ({ email, password }: SignInCredentials) => {
+    mutationFn: async ({ email, password, isRememberMe }: SignInCredentials) => {
       try {
-        const response = await authApi.listener.login(email, password);
+        const response = await authApi.listener.login(email, password, isRememberMe);
         return response;
       } catch (error) {
         throw new Error(formatAuthError(error));
