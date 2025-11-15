@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { myRequestsOptions } from "@/gql/options/client-options";
-import { RequestStatus as GqlRequestStatus, RequestType as GqlRequestType, RequestsQuery } from "@/gql/graphql";
+import { RequestStatus as GqlRequestStatus, RequestType as GqlRequestType, RequestsQuery, CurrencyType } from "@/gql/graphql";
 import { useAuthStore } from "@/store";
 import { RequestListItem } from "./request-list-item";
 import { Card, CardContent } from "@/components/ui/card";
@@ -156,7 +156,7 @@ export default function MyRequestsSection() {
       summaryUnsigned: "looking for a professional logo that represents innovation and technology",
       detailDescription: "I need a modern, minimalist logo for my tech startup. The logo should incorporate elements of AI and innovation.",
       budget: { min: 500, max: 1000 },
-      currency: "USD",
+      currency: CurrencyType.Usd,
       deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
       status: GqlRequestStatus.Pending,
       type: GqlRequestType.DirectRequest,
@@ -165,6 +165,7 @@ export default function MyRequestsSection() {
       updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       artistId: "artist-001",
       packageId: "pkg-001",
+      requestor: [],
       artist: [
         {
           __typename: "Artist",
@@ -184,7 +185,7 @@ export default function MyRequestsSection() {
       summaryUnsigned: "need full music production including mixing and mastering",
       detailDescription: "Looking for professional music production services for 10 tracks. Genre: Electronic/Pop.",
       budget: { min: 2000, max: 5000 },
-      currency: "USD",
+      currency: CurrencyType.Usd,
       deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       status: GqlRequestStatus.Confirmed,
       type: GqlRequestType.DirectRequest,
@@ -193,6 +194,7 @@ export default function MyRequestsSection() {
       updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       artistId: "artist-002",
       packageId: "pkg-002",
+      requestor: [],
       artist: [
         {
           __typename: "Artist",
@@ -212,7 +214,7 @@ export default function MyRequestsSection() {
       summaryUnsigned: "professional voice over needed for 60 second tv commercial",
       detailDescription: "Need a clear, professional voice for a tech product commercial. Must sound enthusiastic and trustworthy.",
       budget: { min: 300, max: 600 },
-      currency: "USD",
+      currency: CurrencyType.Usd,
       deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       status: GqlRequestStatus.Rejected,
       type: GqlRequestType.DirectRequest,
@@ -221,6 +223,7 @@ export default function MyRequestsSection() {
       updatedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
       artistId: "artist-003",
       packageId: "pkg-003",
+      requestor: [],
       artist: [
         {
           __typename: "Artist",
@@ -240,7 +243,7 @@ export default function MyRequestsSection() {
       summaryUnsigned: "complete website redesign with modern ui ux",
       detailDescription: "Looking for a complete website redesign. Need modern, responsive design with excellent UX.",
       budget: { min: 1500, max: 3000 },
-      currency: "USD",
+      currency: CurrencyType.Usd,
       deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
       status: GqlRequestStatus.Canceled,
       type: GqlRequestType.DirectRequest,
@@ -249,6 +252,7 @@ export default function MyRequestsSection() {
       updatedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
       artistId: "artist-004",
       packageId: "pkg-004",
+      requestor: [],
       artist: [
         {
           __typename: "Artist",
