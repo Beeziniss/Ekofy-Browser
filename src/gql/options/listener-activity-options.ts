@@ -29,7 +29,7 @@ export function listenerTransactionsOptions(params: {
 
   return {
     queryKey: ["listener-transactions", userId, page, pageSize],
-    queryFn: async () => execute(GetListenerTransactionsQuery, { where, order, skip, take }),
+    queryFn: async () => execute(GetListenerTransactionsQuery, { userId, where, order, skip, take }),
   };
 }
 
@@ -46,7 +46,7 @@ export function listenerOpenTransactionsOptions(params: { userId: string }) {
 
   return {
     queryKey: ["listener-open-transactions", userId],
-    queryFn: async () => execute(GetListenerTransactionsQuery, { where, order, skip, take }),
+    queryFn: async () => execute(GetListenerTransactionsQuery, { userId, where, order, skip, take }),
   };
 }
 
@@ -67,8 +67,8 @@ export function listenerInvoicesOptions(params: { userId: string; page: number; 
 }
 
 // Detail by ID: Payment Transaction (listener)
-export function listenerTransactionByIdOptions(params: { id: string }) {
-  const { id } = params;
+export function listenerTransactionByIdOptions(params: { id: string; userId: string }) {
+  const { id, userId } = params;
   const where: PaymentTransactionFilterInput = {
     or: [{ id: { eq: id } }],
   };
@@ -78,7 +78,7 @@ export function listenerTransactionByIdOptions(params: { id: string }) {
 
   return {
     queryKey: ["listener-transaction", id],
-    queryFn: async () => execute(GetListenerTransactionsQuery, { where, skip, take }),
+    queryFn: async () => execute(GetListenerTransactionsQuery, { userId, where, skip, take }),
   };
 }
 
