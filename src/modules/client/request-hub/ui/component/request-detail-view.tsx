@@ -186,12 +186,12 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
             <div className="flex items-center space-x-3">
               <Avatar className="h-10 w-10">
                 <AvatarFallback className="bg-gray-200 text-gray-600">
-                  {request.requestor?.displayName?.charAt(0).toUpperCase() || "U"}
+                  {request.requestor?.[0]?.displayName?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <p className="font-medium text-white">
-                  {request.requestor?.displayName || `User ${request.requestUserId.slice(-4)}`}
+                  {request.requestor?.[0]?.displayName || `User ${request.requestUserId.slice(-4)}`}
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span>Posted {formatTimeAgo(request.postCreatedTime)}</span>
