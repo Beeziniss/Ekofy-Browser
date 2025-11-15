@@ -49,6 +49,11 @@ const data = {
       url: "/artist/studio/transactions/payouts",
       icon: BanknoteIcon,
     },
+    {
+      name: "Pending Requests",
+      url: "/artist/studio/pending-request",
+      icon: AlbumIcon,
+    }
   ],
 };
 
