@@ -52,9 +52,13 @@ export const authApi = {
     },
   },
   artist: {
-    login: async (email: string, password: string): Promise<ArtistLoginResponse> => {
+    login: async (email: string, password: string, isRememberMe: boolean): Promise<ArtistLoginResponse> => {
       try {
-        const response = await axiosInstance.post("/api/authentication/login/artist", { email, password });
+        const response = await axiosInstance.post("/api/authentication/login/artist", {
+          email,
+          password,
+          isRememberMe,
+        });
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
@@ -177,9 +181,13 @@ export const authApi = {
     },
   },
   moderator: {
-    login: async (email: string, password: string): Promise<ModeratorLoginResponse> => {
+    login: async (email: string, password: string, isRememberMe: boolean): Promise<ModeratorLoginResponse> => {
       try {
-        const response = await axiosInstance.post("/api/authentication/login/moderator", { email, password });
+        const response = await axiosInstance.post("/api/authentication/login/moderator", {
+          email,
+          password,
+          isRememberMe,
+        });
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
@@ -190,9 +198,9 @@ export const authApi = {
     },
   },
   admin: {
-    login: async (email: string, password: string): Promise<AdminLoginResponse> => {
+    login: async (email: string, password: string, isRememberMe: boolean): Promise<AdminLoginResponse> => {
       try {
-        const response = await axiosInstance.post("/api/authentication/login/admin", { email, password });
+        const response = await axiosInstance.post("/api/authentication/login/admin", { email, password, isRememberMe });
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
