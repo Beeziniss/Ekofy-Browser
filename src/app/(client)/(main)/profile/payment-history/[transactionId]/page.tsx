@@ -1,7 +1,7 @@
-import { listenerTransactionByIdOptions } from "@/gql/options/listener-activity-options";
-import TransactionDetailSection from "@/modules/client/profile/ui/sections/payment-history/transaction-detail-section";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { listenerTransactionByIdOptions } from "@/gql/options/listener-activity-options";
+import TransactionDetailSection from "@/modules/client/profile/ui/sections/payment-history/transaction-detail-section";
 
 interface PageProps {
   params: Promise<{ transactionId: string }>;
