@@ -283,7 +283,8 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
             </div>
           </div>
           <p className="mt-1 text-xs text-gray-500">
-            Set your budget range (minimum 1,000 VND). If you have a fixed budget, use the same value for both minimum and maximum.
+            Set your budget range (minimum 1,000 VND). If you have a fixed budget, use the same value for both minimum
+            and maximum.
           </p>
         </div>
 

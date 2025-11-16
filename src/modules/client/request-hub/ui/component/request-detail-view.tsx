@@ -34,7 +34,6 @@ interface RequestDetailViewProps {
 
 export function RequestDetailView({ request, onBack, onApply, onContactClient, className }: RequestDetailViewProps) {
   const [showStripeModal, setShowStripeModal] = useState(false);
-
   // Get auth state and dialog
   const { isAuthenticated } = useAuthStore();
   const { showAuthDialog } = useAuthDialog();

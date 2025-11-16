@@ -53,7 +53,7 @@ const data = {
       name: "Pending Requests",
       url: "/artist/studio/pending-request",
       icon: AlbumIcon,
-    }
+    },
   ],
 };
 
