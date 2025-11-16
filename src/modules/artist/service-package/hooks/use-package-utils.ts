@@ -51,10 +51,6 @@ export const usePackageUtils = () => {
         return "bg-green-100 text-green-800 border-green-300";
       case ArtistPackageStatus.Disabled:
         return "bg-gray-100 text-gray-800 border-gray-300";
-      case ArtistPackageStatus.Pending:
-        return "bg-yellow-100 text-yellow-800 border-yellow-300";
-      case ArtistPackageStatus.Rejected:
-        return "bg-red-100 text-red-800 border-red-300";
       default:
         return "bg-gray-100 text-gray-800 border-gray-300";
     }
@@ -66,10 +62,6 @@ export const usePackageUtils = () => {
         return "Active";
       case ArtistPackageStatus.Disabled:
         return "Inactive";
-      case ArtistPackageStatus.Pending:
-        return "Pending Review";
-      case ArtistPackageStatus.Rejected:
-        return "Rejected";
       default:
         return "Unknown";
     }
@@ -77,10 +69,6 @@ export const usePackageUtils = () => {
 
   const isPackageEditable = (status: ArtistPackageStatus): boolean => {
     return status === ArtistPackageStatus.Enabled || status === ArtistPackageStatus.Disabled;
-  };
-
-  const isPackageDeletable = (status: ArtistPackageStatus): boolean => {
-    return status === ArtistPackageStatus.Disabled || status === ArtistPackageStatus.Rejected;
   };
 
   const canChangeStatus = (status: ArtistPackageStatus): boolean => {
@@ -99,7 +87,6 @@ export const usePackageUtils = () => {
       description: pkg.description || "",
       serviceDetails: pkg.serviceDetails || [],
       isEditable: isPackageEditable(pkg.status),
-      isDeletable: isPackageDeletable(pkg.status),
       canChangeStatus: canChangeStatus(pkg.status),
       createdAt: new Date(pkg.createdAt).toLocaleDateString("vi-VN"),
       updatedAt: new Date(pkg.updatedAt).toLocaleDateString("vi-VN"),
@@ -132,7 +119,6 @@ export const usePackageUtils = () => {
     getStatusColor,
     getStatusText,
     isPackageEditable,
-    isPackageDeletable,
     canChangeStatus,
     getPackageDisplayData,
     generateServiceDetailKey,

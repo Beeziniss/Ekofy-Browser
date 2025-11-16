@@ -3,9 +3,8 @@ import { queryOptions } from "@tanstack/react-query";
 import {
   ServicePackageServiceViewQuery,
   ServicePackageDetailQuery,
-  PendingArtistPackagesQuery,
 } from "@/modules/shared/queries/artist/artist-packages-queries";
-import { ArtistPackageFilterInput, PaginatedDataOfPendingArtistPackageResponseFilterInput } from "@/gql/graphql";
+import { ArtistPackageFilterInput } from "@/gql/graphql";
 import {
   CategoriesQuery,
   GetArtistProfileQuery,
@@ -87,32 +86,32 @@ export const packageDetailOptions = (packageId: string) =>
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-export const pendingPackagesOptions = (
-  artistId: string,
-  page: number = 1,
-  pageSize: number = 10,
-  searchTerm: string = "",
-) =>
-  queryOptions({
-    queryKey: ["pending-packages", artistId, page, pageSize, searchTerm],
-    queryFn: () => {
-      const where: PaginatedDataOfPendingArtistPackageResponseFilterInput = {
-        items: { all: { artistId: { eq: artistId } } },
-      };
+// export const pendingPackagesOptions = (
+//   artistId: string,
+//   page: number = 1,
+//   pageSize: number = 10,
+//   searchTerm: string = "",
+// ) =>
+//   queryOptions({
+//     queryKey: ["pending-packages", artistId, page, pageSize, searchTerm],
+//     queryFn: () => {
+//       const where: PaginatedDataOfPendingArtistPackageResponseFilterInput = {
+//         items: { all: { artistId: { eq: artistId } } },
+//       };
 
-      // Add packageName filter if search term is provided
-      if (searchTerm.trim()) {
-        if (where.items?.all) {
-          where.items.all.packageName = { contains: searchTerm };
-        }
-      }
-      return execute(PendingArtistPackagesQuery, {
-        pageNumber: page,
-        pageSize: pageSize,
-        where,
-        artistWhere: {}, // Get all artists for stage name lookup
-      });
-    },
-    enabled: !!artistId,
-    staleTime: 2 * 60 * 1000, // 2 minutes (shorter for pending)
-  });
+//       // Add packageName filter if search term is provided
+//       if (searchTerm.trim()) {
+//         if (where.items?.all) {
+//           where.items.all.packageName = { contains: searchTerm };
+//         }
+//       }
+//       return execute(PendingArtistPackagesQuery, {
+//         pageNumber: page,
+//         pageSize: pageSize,
+//         where,
+//         artistWhere: {}, // Get all artists for stage name lookup
+//       });
+//     },
+//     enabled: !!artistId,
+//     staleTime: 2 * 60 * 1000, // 2 minutes (shorter for pending)
+//   });

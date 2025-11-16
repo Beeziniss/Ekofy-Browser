@@ -15,18 +15,18 @@ export const changeArtistPackageStatusMutation = graphql(`
 `)
 
 // Mutation for approving artist package
-export const approveArtistPackageMutation = graphql(`
-  mutation ApproveArtistPackage($id: String!) {
-    approveArtistPackage(id: $id)
-  }
-`)
+// export const approveArtistPackageMutation = graphql(`
+//   mutation ApproveArtistPackage($id: String!) {
+//     approveArtistPackage(id: $id)
+//   }
+// `)
 
 // Mutation for rejecting artist package
-export const rejectArtistPackageMutation = graphql(`
-  mutation RejectArtistPackage($id: String!) {
-    rejectArtistPackage(id: $id)
-  }
-`)
+// export const rejectArtistPackageMutation = graphql(`
+//   mutation RejectArtistPackage($id: String!) {
+//     rejectArtistPackage(id: $id)
+//   }
+// `)
 
 export const updateArtistPackageMutation = graphql(`
   mutation UpdateArtistPackage($updateRequest: UpdateArtistPackageRequestInput!) {

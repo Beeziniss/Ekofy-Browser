@@ -373,9 +373,7 @@ export type ArtistPackageSortInput = {
 
 export enum ArtistPackageStatus {
   Disabled = 'DISABLED',
-  Enabled = 'ENABLED',
-  Pending = 'PENDING',
-  Rejected = 'REJECTED'
+  Enabled = 'ENABLED'
 }
 
 export type ArtistPackageStatusOperationFilterInput = {
@@ -1968,13 +1966,6 @@ export type ListFilterInputTypeOfPackageOrderDeliveryFilterInput = {
   some?: InputMaybe<PackageOrderDeliveryFilterInput>;
 };
 
-export type ListFilterInputTypeOfPendingArtistPackageResponseFilterInput = {
-  all?: InputMaybe<PendingArtistPackageResponseFilterInput>;
-  any?: InputMaybe<Scalars['Boolean']['input']>;
-  none?: InputMaybe<PendingArtistPackageResponseFilterInput>;
-  some?: InputMaybe<PendingArtistPackageResponseFilterInput>;
-};
-
 export type ListFilterInputTypeOfPlaylistTracksInfoFilterInput = {
   all?: InputMaybe<PlaylistTracksInfoFilterInput>;
   any?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2324,7 +2315,6 @@ export type MutationInitialization = {
   addToFavoritePlaylist: Scalars['Boolean']['output'];
   addToFavoriteTrack: Scalars['Boolean']['output'];
   addToPlaylist: Scalars['Boolean']['output'];
-  approveArtistPackage: Scalars['Boolean']['output'];
   approveArtistRegistration: Scalars['Boolean']['output'];
   approveTrackUploadRequest: Scalars['Boolean']['output'];
   assignReportToModerator: Scalars['Boolean']['output'];
@@ -2373,7 +2363,6 @@ export type MutationInitialization = {
   reactiveEntitlement: Scalars['Boolean']['output'];
   refund: Scalars['Boolean']['output'];
   registerArtistManual: Scalars['Boolean']['output'];
-  rejectArtistPackage: Scalars['Boolean']['output'];
   rejectArtistRegistration: Scalars['Boolean']['output'];
   rejectTrackUploadRequest: Scalars['Boolean']['output'];
   removeFromPlaylist: Scalars['Boolean']['output'];
@@ -2427,11 +2416,6 @@ export type MutationInitializationAddToFavoriteTrackArgs = {
 
 export type MutationInitializationAddToPlaylistArgs = {
   addToPlaylistRequest: AddToPlaylistRequestInput;
-};
-
-
-export type MutationInitializationApproveArtistPackageArgs = {
-  id: Scalars['String']['input'];
 };
 
 
@@ -2662,11 +2646,6 @@ export type MutationInitializationRefundArgs = {
 
 export type MutationInitializationRegisterArtistManualArgs = {
   createArtistRequest: CreateArtistRequestInput;
-};
-
-
-export type MutationInitializationRejectArtistPackageArgs = {
-  id: Scalars['String']['input'];
 };
 
 
@@ -3068,19 +3047,6 @@ export type PaginatedDataOfCombinedUploadRequest = {
   totalCount: Scalars['Int']['output'];
 };
 
-export type PaginatedDataOfPendingArtistPackageResponse = {
-  __typename?: 'PaginatedDataOfPendingArtistPackageResponse';
-  items: Array<PendingArtistPackageResponse>;
-  totalCount: Scalars['Int']['output'];
-};
-
-export type PaginatedDataOfPendingArtistPackageResponseFilterInput = {
-  and?: InputMaybe<Array<PaginatedDataOfPendingArtistPackageResponseFilterInput>>;
-  items?: InputMaybe<ListFilterInputTypeOfPendingArtistPackageResponseFilterInput>;
-  or?: InputMaybe<Array<PaginatedDataOfPendingArtistPackageResponseFilterInput>>;
-  totalCount?: InputMaybe<IntOperationFilterInput>;
-};
-
 export type PaginatedDataOfPendingArtistRegistrationResponse = {
   __typename?: 'PaginatedDataOfPendingArtistRegistrationResponse';
   items: Array<PendingArtistRegistrationResponse>;
@@ -3267,37 +3233,6 @@ export type PayoutTransactionsCollectionSegment = {
   /** Information to aid in pagination. */
   pageInfo: CollectionSegmentInfo;
   totalCount: Scalars['Int']['output'];
-};
-
-export type PendingArtistPackageResponse = {
-  __typename?: 'PendingArtistPackageResponse';
-  amount: Scalars['Decimal']['output'];
-  artistId: Scalars['String']['output'];
-  currency: CurrencyType;
-  description?: Maybe<Scalars['String']['output']>;
-  estimateDeliveryDays: Scalars['Int']['output'];
-  id: Scalars['String']['output'];
-  packageName: Scalars['String']['output'];
-  requestedAt: Scalars['DateTime']['output'];
-  serviceDetails: Array<Metadata>;
-  status: ArtistPackageStatus;
-  timeToLive?: Maybe<Scalars['TimeSpan']['output']>;
-};
-
-export type PendingArtistPackageResponseFilterInput = {
-  amount?: InputMaybe<DecimalOperationFilterInput>;
-  and?: InputMaybe<Array<PendingArtistPackageResponseFilterInput>>;
-  artistId?: InputMaybe<StringOperationFilterInput>;
-  currency?: InputMaybe<CurrencyTypeOperationFilterInput>;
-  description?: InputMaybe<StringOperationFilterInput>;
-  estimateDeliveryDays?: InputMaybe<IntOperationFilterInput>;
-  id?: InputMaybe<StringOperationFilterInput>;
-  or?: InputMaybe<Array<PendingArtistPackageResponseFilterInput>>;
-  packageName?: InputMaybe<StringOperationFilterInput>;
-  requestedAt?: InputMaybe<DateTimeOperationFilterInput>;
-  serviceDetails?: InputMaybe<ListFilterInputTypeOfMetadataFilterInput>;
-  status?: InputMaybe<ArtistPackageStatusOperationFilterInput>;
-  timeToLive?: InputMaybe<TimeSpanOperationFilterInput>;
 };
 
 export type PendingArtistRegistrationResponse = {
@@ -3581,7 +3516,6 @@ export type QueryInitialization = {
   paymentTransactions?: Maybe<PaymentTransactionsCollectionSegment>;
   paymentTransactionsByUserId?: Maybe<PaymentTransactionsByUserIdCollectionSegment>;
   payoutTransactions?: Maybe<PayoutTransactionsCollectionSegment>;
-  pendingArtistPackages: PaginatedDataOfPendingArtistPackageResponse;
   pendingArtistRegistrationById: PendingArtistRegistrationResponse;
   pendingArtistRegistrations: PaginatedDataOfPendingArtistRegistrationResponse;
   pendingTrackUploadRequestById: CombinedUploadRequest;
@@ -3861,13 +3795,6 @@ export type QueryInitializationPayoutTransactionsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<PayoutTransactionFilterInput>;
-};
-
-
-export type QueryInitializationPendingArtistPackagesArgs = {
-  pageNumber?: Scalars['Int']['input'];
-  pageSize?: Scalars['Int']['input'];
-  where?: InputMaybe<PaginatedDataOfPendingArtistPackageResponseFilterInput>;
 };
 
 
@@ -5253,21 +5180,6 @@ export type ThreadedCommentsResponse = {
   totalThreads: Scalars['Int']['output'];
 };
 
-export type TimeSpanOperationFilterInput = {
-  eq?: InputMaybe<Scalars['TimeSpan']['input']>;
-  gt?: InputMaybe<Scalars['TimeSpan']['input']>;
-  gte?: InputMaybe<Scalars['TimeSpan']['input']>;
-  in?: InputMaybe<Array<InputMaybe<Scalars['TimeSpan']['input']>>>;
-  lt?: InputMaybe<Scalars['TimeSpan']['input']>;
-  lte?: InputMaybe<Scalars['TimeSpan']['input']>;
-  neq?: InputMaybe<Scalars['TimeSpan']['input']>;
-  ngt?: InputMaybe<Scalars['TimeSpan']['input']>;
-  ngte?: InputMaybe<Scalars['TimeSpan']['input']>;
-  nin?: InputMaybe<Array<InputMaybe<Scalars['TimeSpan']['input']>>>;
-  nlt?: InputMaybe<Scalars['TimeSpan']['input']>;
-  nlte?: InputMaybe<Scalars['TimeSpan']['input']>;
-};
-
 export type TopTrackInfo = {
   __typename?: 'TopTrackInfo';
   playedCount: Scalars['Int']['output'];
@@ -6126,20 +6038,6 @@ export type ChangeArtistPackageStatusMutationVariables = Exact<{
 
 export type ChangeArtistPackageStatusMutation = { __typename?: 'MutationInitialization', changeArtistPackageStatus: boolean };
 
-export type ApproveArtistPackageMutationVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type ApproveArtistPackageMutation = { __typename?: 'MutationInitialization', approveArtistPackage: boolean };
-
-export type RejectArtistPackageMutationVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type RejectArtistPackageMutation = { __typename?: 'MutationInitialization', rejectArtistPackage: boolean };
-
 export type UpdateArtistPackageMutationVariables = Exact<{
   updateRequest: UpdateArtistPackageRequestInput;
 }>;
@@ -6417,16 +6315,6 @@ export type ArtistPackagesDetailQueryVariables = Exact<{
 
 
 export type ArtistPackagesDetailQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number, status: ArtistPackageStatus, isDelete: boolean, createdAt: any, updatedAt?: any | null, artistId: string, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> | null } | null };
-
-export type PendingArtistPackagesQueryVariables = Exact<{
-  pageNumber: Scalars['Int']['input'];
-  pageSize: Scalars['Int']['input'];
-  where?: InputMaybe<PaginatedDataOfPendingArtistPackageResponseFilterInput>;
-  artistWhere?: InputMaybe<ArtistFilterInput>;
-}>;
-
-
-export type PendingArtistPackagesQuery = { __typename?: 'QueryInitialization', pendingArtistPackages: { __typename?: 'PaginatedDataOfPendingArtistPackageResponse', totalCount: number, items: Array<{ __typename?: 'PendingArtistPackageResponse', id: string, artistId: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, status: ArtistPackageStatus, requestedAt: any, timeToLive?: any | null, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> }, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string, userId: string, id: string }> | null } | null };
 
 export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7331,16 +7219,6 @@ export const ChangeArtistPackageStatusDocument = new TypedDocumentString(`
   changeArtistPackageStatus(updateStatusRequest: $updateStatusRequest)
 }
     `) as unknown as TypedDocumentString<ChangeArtistPackageStatusMutation, ChangeArtistPackageStatusMutationVariables>;
-export const ApproveArtistPackageDocument = new TypedDocumentString(`
-    mutation ApproveArtistPackage($id: String!) {
-  approveArtistPackage(id: $id)
-}
-    `) as unknown as TypedDocumentString<ApproveArtistPackageMutation, ApproveArtistPackageMutationVariables>;
-export const RejectArtistPackageDocument = new TypedDocumentString(`
-    mutation RejectArtistPackage($id: String!) {
-  rejectArtistPackage(id: $id)
-}
-    `) as unknown as TypedDocumentString<RejectArtistPackageMutation, RejectArtistPackageMutationVariables>;
 export const UpdateArtistPackageDocument = new TypedDocumentString(`
     mutation UpdateArtistPackage($updateRequest: UpdateArtistPackageRequestInput!) {
   updateArtistPackage(updateRequest: $updateRequest)
@@ -7659,40 +7537,6 @@ export const ArtistPackagesDetailDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<ArtistPackagesDetailQuery, ArtistPackagesDetailQueryVariables>;
-export const PendingArtistPackagesDocument = new TypedDocumentString(`
-    query PendingArtistPackages($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPendingArtistPackageResponseFilterInput, $artistWhere: ArtistFilterInput) {
-  pendingArtistPackages(
-    pageNumber: $pageNumber
-    pageSize: $pageSize
-    where: $where
-  ) {
-    totalCount
-    items {
-      id
-      artistId
-      packageName
-      amount
-      currency
-      estimateDeliveryDays
-      description
-      status
-      requestedAt
-      timeToLive
-      serviceDetails {
-        key
-        value
-      }
-    }
-  }
-  artists(where: $artistWhere) {
-    items {
-      stageName
-      userId
-      id
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<PendingArtistPackagesQuery, PendingArtistPackagesQueryVariables>;
 export const CategoriesDocument = new TypedDocumentString(`
     query Categories {
   categories {

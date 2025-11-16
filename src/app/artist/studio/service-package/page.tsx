@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { getQueryClient } from "@/providers/get-query-client";
-import { artistPackagesOptions, pendingPackagesOptions } from "@/gql/options/artist-options";
+import { artistPackagesOptions } from "@/gql/options/artist-options";
 import ServicePackageServiceView from "@/modules/artist/service-package/ui/view/service-package-service-view";
 import { useAuthStore } from "@/store";
 
@@ -14,8 +14,6 @@ export default function ServicePackagePage() {
     if (user?.artistId) {
       // Prefetch artist packages
       queryClient.prefetchQuery(artistPackagesOptions(user.artistId));
-      // Prefetch pending packages
-      queryClient.prefetchQuery(pendingPackagesOptions(user.artistId));
     }
   }, [queryClient, user?.artistId]);
 
