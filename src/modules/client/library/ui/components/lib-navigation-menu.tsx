@@ -1,5 +1,3 @@
-"use client";
-
 import { Icon } from "@/components/ui/icon";
 import {
   NavigationMenu,
@@ -8,7 +6,6 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { useAuthStore } from "@/store";
 import {
   AlbumIcon,
   HeartIcon,
@@ -20,7 +17,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import UnauthenticatedMessage from "./unauthenticated-message";
 
 export interface NavItem {
   title: string;
@@ -66,16 +62,6 @@ const activeItemStyles = "bg-neutral-800 text-neutral-100 rounded-br-none rounde
 
 const LibNavigationMenu = () => {
   const route = usePathname();
-  const { user, isAuthenticated } = useAuthStore();
-
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="w-full px-6 pt-6">
-        <h1 className="text-5xl font-bold">Library</h1>
-        <UnauthenticatedMessage />
-      </div>
-    );
-  }
 
   return (
     <NavigationMenu className="flex h-full items-stretch">
