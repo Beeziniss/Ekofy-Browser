@@ -35,12 +35,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle } from "lucide-react";
 import { useProcessReport } from "@/gql/client-mutation-options/report-mutation-options";
 import { toast } from "sonner";
-import { ReportAction, ReportStatus, RestrictionAction } from "@/gql/graphql";
+import { ReportAction, ReportStatus, RestrictionAction, ReportRelatedContentType } from "@/gql/graphql";
 
 interface ProcessReportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   reportId: string;
+  relatedContentType?: ReportRelatedContentType | null;
   onSuccess?: () => void;
 }
 
@@ -104,9 +105,31 @@ const RESTRICTION_ACTION_LABELS: Record<RestrictionAction, string> = {
   [RestrictionAction.Report]: "Report",
 };
 
-export function ProcessReportDialog({ open, onOpenChange, reportId, onSuccess }: ProcessReportDialogProps) {
+export function ProcessReportDialog({ open, onOpenChange, reportId, relatedContentType, onSuccess }: ProcessReportDialogProps) {
   const [selectedRestrictionActions, setSelectedRestrictionActions] = useState<RestrictionAction[]>([]);
   const processReport = useProcessReport();
+
+  // Get available actions based on relatedContentType
+  const getAvailableActions = (): ReportAction[] => {
+    if (relatedContentType && [
+      ReportRelatedContentType.Track,
+      ReportRelatedContentType.Comment,
+      ReportRelatedContentType.Request
+    ].includes(relatedContentType)) {
+      // For content-related reports, only content removal is available
+      return [ReportAction.ContentRemoval];
+    }
+    // For user reports (no related content), all other actions are available
+    return [
+      ReportAction.NoAction,
+      ReportAction.Warning,
+      // ReportAction.Suspended,
+      ReportAction.EntitlementRestriction,
+      // ReportAction.PermanentBan
+    ];
+  };
+
+  const availableActions = getAvailableActions();
 
   const form = useForm<ProcessReportFormValues>({
     resolver: zodResolver(processReportFormSchema),
@@ -202,13 +225,23 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, onSuccess }:
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {Object.entries(ACTION_LABELS).map(([key, label]) => (
-                          <SelectItem key={key} value={key}>
-                            {label}
+                        {availableActions.map((action) => (
+                          <SelectItem key={action} value={action}>
+                            {ACTION_LABELS[action]}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormDescription className="text-xs">
+                      {relatedContentType && [
+                        ReportRelatedContentType.Track,
+                        ReportRelatedContentType.Comment, 
+                        ReportRelatedContentType.Request
+                      ].includes(relatedContentType) 
+                        ? "Content-related reports: Only Content Removal is available"
+                        : "User reports: All actions except Content Removal are available"
+                      }
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -116,6 +116,30 @@ export function ReportDetailInfoSection({ report }: ReportDetailInfoSectionProps
                 </Badge>
               </div>
             )}
+
+            {/* Action Taken Section */}
+            {report.actionTaken && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Action Taken</p>
+                <Badge 
+                  variant="outline" 
+                  className={`gap-2 px-4 py-2 text-sm ${
+                    report.actionTaken === 'PERMANENT_BAN' || report.actionTaken === 'CONTENT_REMOVAL'
+                      ? 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400'
+                      : report.actionTaken === 'SUSPENDED'
+                      ? 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400'
+                      : report.actionTaken === 'WARNING'
+                      ? 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400'
+                      : 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400'
+                  }`}
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  <span className="font-semibold">
+                    {report.actionTaken.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </span>
+                </Badge>
+              </div>
+            )}
           </div>
         </CardHeader>
       </Card>

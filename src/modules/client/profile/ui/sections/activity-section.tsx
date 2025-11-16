@@ -24,6 +24,11 @@ const activityItems = [
     href: "/profile/order-history",
     icon: ReceiptTextIcon,
   },
+  {
+    title: "Report",
+    href: "/reports",
+    icon: ClipboardListIcon,
+  }
 ];
 
 const ActivitySection = () => {

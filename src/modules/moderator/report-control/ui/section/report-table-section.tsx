@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import { ReportStatus, ReportAction, ReportRelatedContentType, ReportQueriesQuery } from "@/gql/graphql";
+import { ReportStatus, ReportRelatedContentType, ReportQueriesQuery } from "@/gql/graphql";
 import { REPORT_TYPE_LABELS, CONTENT_TYPE_LABELS } from "@/types/report";
 import { UserCheck, Eye, MoreHorizontal, FileCheck } from "lucide-react";
 import Link from "next/link";
@@ -77,15 +77,6 @@ const STATUS_CONFIG: Record<ReportStatus, {
   },
 };
 
-const ACTION_LABELS: Record<ReportAction, string> = {
-  [ReportAction.NoAction]: "No Action",
-  [ReportAction.Warning]: "Warning",
-  [ReportAction.Suspended]: "Suspended",
-  [ReportAction.EntitlementRestriction]: "Entitlement Restriction",
-  [ReportAction.ContentRemoval]: "Content Removal",
-  [ReportAction.PermanentBan]: "Permanent Ban",
-};
-
 interface ReportTableSectionProps {
   reports: ReportItem[];
   isLoading: boolean;
@@ -136,11 +127,12 @@ export function ReportTableSection({
                 <TableCell>
                   <div className="space-y-1">
                     <Badge variant="outline">{REPORT_TYPE_LABELS[report.reportType]}</Badge>
-                    {report.relatedContentType && (
-                      <div className="text-xs text-muted-foreground">
-                        {CONTENT_TYPE_LABELS[report.relatedContentType as ReportRelatedContentType]}
-                      </div>
-                    )}
+                    <div className="text-xs text-muted-foreground">
+                      {report.relatedContentType 
+                        ? CONTENT_TYPE_LABELS[report.relatedContentType as ReportRelatedContentType] 
+                        : "User"
+                      }
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>{report.userReporter?.[0]?.fullName || "N/A"}</TableCell>

@@ -6,7 +6,7 @@ import { reportsOptions } from "@/gql/options/report-options";
 import { useAuthStore } from "@/store/stores/auth-store";
 import { useAssignReportToModerator } from "@/gql/client-mutation-options/report-mutation-options";
 import { toast } from "sonner";
-import { ReportStatus } from "@/gql/graphql";
+import { ReportStatus, ReportRelatedContentType } from "@/gql/graphql";
 import { ReportControlLayout } from "../layout/report-control-layout";
 import { ReportFiltersSection } from "../section/report-filters-section";
 import { ReportTableSection } from "../section/report-table-section";
@@ -17,7 +17,9 @@ export function ReportListView() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
+  const [contentTypeFilter, setContentTypeFilter] = useState<ReportRelatedContentType | "all" | "none">("all");
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
+  const [selectedReportType, setSelectedReportType] = useState<ReportRelatedContentType | null>(null);
   const [processDialogOpen, setProcessDialogOpen] = useState(false);
   const pageSize = 10;
   const { user } = useAuthStore();
@@ -26,6 +28,11 @@ export function ReportListView() {
   // Build filter
   const where = {
     ...(statusFilter !== "all" && { status: { eq: statusFilter } }),
+    ...(contentTypeFilter !== "all" && (
+      contentTypeFilter === "none" 
+        ? { relatedContentType: { eq: null } }
+        : { relatedContentType: { eq: contentTypeFilter } }
+    )),
     ...(searchTerm.trim() && {
       or: [
         { description: { contains: searchTerm } },
@@ -52,6 +59,11 @@ export function ReportListView() {
     setPage(1);
   };
 
+  const handleContentTypeChange = (value: ReportRelatedContentType | "all" | "none") => {
+    setContentTypeFilter(value);
+    setPage(1);
+  };
+
   const handleAssignToMe = async (reportId: string) => {
     if (!user?.userId) {
       toast.error("User information not found");
@@ -69,7 +81,9 @@ export function ReportListView() {
   };
 
   const handleProcess = (reportId: string) => {
+    const report = reports.find(r => r.id === reportId);
     setSelectedReportId(reportId);
+    setSelectedReportType(report?.relatedContentType || null);
     setProcessDialogOpen(true);
   };
 
@@ -83,8 +97,10 @@ export function ReportListView() {
         <ReportFiltersSection
           searchTerm={searchTerm}
           statusFilter={statusFilter}
+          contentTypeFilter={contentTypeFilter}
           onSearchChange={handleSearchChange}
           onStatusChange={handleStatusChange}
+          onContentTypeChange={handleContentTypeChange}
         />
 
         <ReportTableSection
@@ -110,6 +126,7 @@ export function ReportListView() {
           open={processDialogOpen}
           onOpenChange={setProcessDialogOpen}
           reportId={selectedReportId}
+          relatedContentType={selectedReportType}
           onSuccess={handleProcessSuccess}
         />
       )}

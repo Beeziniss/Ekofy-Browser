@@ -88,6 +88,7 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
       {/* Process Report Dialog */}
       <ProcessReportDialog
         reportId={report.id}
+        relatedContentType={report.relatedContentType}
         open={processDialogOpen}
         onOpenChange={setProcessDialogOpen}
         onSuccess={handleProcessSuccess}
