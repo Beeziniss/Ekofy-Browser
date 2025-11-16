@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
