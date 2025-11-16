@@ -5,7 +5,7 @@ import SearchBar from "./search-bar";
 import AuthButton from "./auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { EkofyLogo } from "@/assets/icons";
+import { EkofyLogoText } from "@/assets/icons";
 import { useAuthStore } from "@/store";
 
 interface ClientNavbarProps {
@@ -20,34 +20,34 @@ const navBarItems: ClientNavbarProps[] = [
   {
     href: "/",
     label: "Home",
-    activeStyle: "border-b-2 border-b-main-white text-main-white",
+    activeStyle: "border-b-main-white text-main-white",
     useStartsWith: false,
     requireAuth: false,
   },
   {
     href: "/library",
     label: "Library",
-    activeStyle: "border-b-2 border-b-main-white text-main-white",
+    activeStyle: "border-b-main-white text-main-white",
     useStartsWith: true,
-    requireAuth: true,
+    requireAuth: false,
   },
   {
     href: "/subscription",
     label: "Plans",
-    activeStyle: "border-b-2 border-b-main-white text-main-white",
+    activeStyle: "border-b-main-white text-main-white",
     useStartsWith: false,
   },
   {
     href: "/request-hub",
     label: "Request Hub",
-    activeStyle: "border-b-2 border-b-main-white text-main-white",
+    activeStyle: "border-b-main-white text-main-white",
     useStartsWith: false,
     requireAuth: false,
   },
   {
     href: "/artists-for-hire",
     label: "Artists for Hire",
-    activeStyle: "border-b-2 border-b-main-white text-main-white",
+    activeStyle: "border-b-main-white text-main-white",
     useStartsWith: false,
     requireAuth: false,
   },
@@ -74,12 +74,7 @@ const ClientHeader = () => {
       {/* Logo */}
       <div className="flex items-center gap-x-8">
         <Link href={"/"}>
-          <div className="flex items-center gap-x-2">
-            <EkofyLogo className="size-[37px]" />
-            <span className="primary_gradient inline-block bg-clip-text text-2xl font-bold text-transparent uppercase">
-              Ekofy
-            </span>
-          </div>
+          <EkofyLogoText className="w-32" />
         </Link>
 
         {/* Navigation Text */}
@@ -89,8 +84,8 @@ const ClientHeader = () => {
               key={item.href}
               href={item.href}
               className={cn(
-                `text-main-grey-dark-1 hover:text-main-white inline-block py-[19px]`,
-                isNavItemActive(item) ? item.activeStyle : "",
+                `text-main-grey-dark-1 hover:text-main-white inline-block border-b-2 py-[19px]`,
+                isNavItemActive(item) ? item.activeStyle : "border-b-transparent",
                 item.requireAuth && !isAuthenticated ? "hidden" : "",
               )}
             >
