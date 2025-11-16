@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -118,7 +120,7 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubComme
     if (replyContent.trim() && !isPending) {
       createReply({
         targetId: requestId,
-        commentType: CommentType.RequestHub,
+        commentType: CommentType.Request,
         content: replyContent.trim(),
         parentCommentId: comment.id,
       });

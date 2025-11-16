@@ -19,7 +19,7 @@ const moderatorLoginSchema = z.object({
     .string()
     .min(6, "Password must be at least 6 characters")
     .max(50, "Password must be less than 50 characters"),
-  rememberMe: z.boolean(),
+  isRememberMe: z.boolean(),
 });
 
 type ModeratorLoginFormData = z.infer<typeof moderatorLoginSchema>;
@@ -33,7 +33,7 @@ const ModeratorLoginFormSection = () => {
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: false,
+      isRememberMe: false,
     },
   });
 
@@ -41,6 +41,7 @@ const ModeratorLoginFormSection = () => {
     signIn({
       email: data.email,
       password: data.password,
+      isRememberMe: data.isRememberMe,
     });
   };
 
@@ -123,7 +124,7 @@ const ModeratorLoginFormSection = () => {
             <div className="flex items-center justify-between">
               <FormField
                 control={form.control}
-                name="rememberMe"
+                name="isRememberMe"
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-3">
                     <FormControl>

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 interface ArtistSignInCredentials {
   email: string;
   password: string;
+  isRememberMe: boolean;
 }
 
 const useArtistSignIn = () => {
@@ -25,9 +26,9 @@ const useArtistSignIn = () => {
     isSuccess,
     reset,
   } = useMutation<ArtistLoginResponse, Error, ArtistSignInCredentials>({
-    mutationFn: async ({ email, password }: ArtistSignInCredentials) => {
+    mutationFn: async ({ email, password, isRememberMe }: ArtistSignInCredentials) => {
       try {
-        const response = await authApi.artist.login(email, password);
+        const response = await authApi.artist.login(email, password, isRememberMe);
         return response;
       } catch (error) {
         throw new Error(formatAuthError(error));

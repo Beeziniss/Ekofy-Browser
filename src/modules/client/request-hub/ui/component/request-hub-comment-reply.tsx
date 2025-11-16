@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -128,7 +130,7 @@ const RequestHubCommentReply = ({ reply, requestId, level, rootCommentId }: Requ
     if (replyContent.trim() && !isPending) {
       createReply({
         targetId: requestId,
-        commentType: CommentType.RequestHub,
+        commentType: CommentType.Request,
         content: replyContent.trim(),
         parentCommentId: rootCommentId,
       });

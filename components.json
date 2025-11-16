@@ -16,7 +16,8 @@
     "ui": "@/components/ui",
     "lib": "@/lib",
     "hooks": "@/hooks",
-    "gql": "@/gql"
+    "gql": "@/gql",
+    "modules": "@/modules"
   },
   "iconLibrary": "lucide"
 }

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 interface ModeratorSignInCredentials {
   email: string;
   password: string;
+  isRememberMe: boolean;
 }
 
 const useModeratorSignIn = () => {
@@ -25,9 +26,9 @@ const useModeratorSignIn = () => {
     isSuccess,
     reset,
   } = useMutation<ModeratorLoginResponse, Error, ModeratorSignInCredentials>({
-    mutationFn: async ({ email, password }: ModeratorSignInCredentials) => {
+    mutationFn: async ({ email, password, isRememberMe }: ModeratorSignInCredentials) => {
       try {
-        const response = await authApi.moderator.login(email, password);
+        const response = await authApi.moderator.login(email, password, isRememberMe);
         return response;
       } catch (error) {
         throw new Error(formatAuthError(error));

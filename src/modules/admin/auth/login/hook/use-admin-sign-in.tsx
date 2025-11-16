@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 interface AdminSignInCredentials {
   email: string;
   password: string;
+  isRememberMe: boolean;
 }
 
 const useAdminSignIn = () => {
@@ -25,9 +26,9 @@ const useAdminSignIn = () => {
     isSuccess,
     reset,
   } = useMutation<AdminLoginResponse, Error, AdminSignInCredentials>({
-    mutationFn: async ({ email, password }: AdminSignInCredentials) => {
+    mutationFn: async ({ email, password, isRememberMe }: AdminSignInCredentials) => {
       try {
-        const response = await authApi.admin.login(email, password);
+        const response = await authApi.admin.login(email, password, isRememberMe);
         return response;
       } catch (error) {
         throw new Error(formatAuthError(error));

@@ -1,11 +1,27 @@
 import axiosInstance from "@/config/axios-instance";
 import type { TypedDocumentString } from "./graphql";
 import { AxiosError } from "axios";
+import { setAccessTokenToLocalStorage, clearAuthData } from "@/utils/auth-utils";
+
+// Helper function to check if GraphQL error indicates authentication failure
+function isAuthenticationError(errors: Array<{ extensions?: { code?: string; status?: number } }>): boolean {
+  return errors.some(
+    (error) => error.extensions?.code === "AUTH_NOT_AUTHENTICATED" || error.extensions?.status === 401,
+  );
+}
 
 export async function execute<TResult, TVariables>(
   query: TypedDocumentString<TResult, TVariables>,
   ...[variables]: TVariables extends Record<string, never> ? [] : [TVariables]
-) {
+): Promise<TResult> {
+  return executeRequest(query, variables, false);
+}
+
+async function executeRequest<TResult, TVariables>(
+  query: TypedDocumentString<TResult, TVariables>,
+  variables: TVariables | undefined,
+  isRetry: boolean,
+): Promise<TResult> {
   try {
     const response = await axiosInstance.post(
       "/graphql",
@@ -29,6 +45,22 @@ export async function execute<TResult, TVariables>(
     // GraphQL responses have a "data" field that contains the actual query result
     // and optionally an "errors" field
     if (result.errors) {
+      // Check if it's an authentication error and we haven't already retried
+      if (!isRetry && isAuthenticationError(result.errors)) {
+        // Import the auth service here to avoid circular dependency
+        const { authApi } = await import("@/services/auth-services");
+
+        // Attempt to refresh the token
+        const refreshResponse = await authApi.general.refreshToken();
+        const newAccessToken = refreshResponse.result.accessToken;
+
+        // Save the new token to localStorage
+        setAccessTokenToLocalStorage(newAccessToken);
+
+        // Retry the original request with the new token
+        return executeRequest(query, variables, true);
+      }
+
       throw new Error(`GraphQL Error: ${result.errors.map((e: { message: string }) => e.message).join(", ")}`);
     }
 
@@ -63,7 +95,15 @@ export async function execute<TResult, TVariables>(
 export async function executeWithFileUpload<TResult, TVariables>(
   query: TypedDocumentString<TResult, TVariables>,
   variables: TVariables,
-) {
+): Promise<TResult> {
+  return executeFileUploadRequest(query, variables, false);
+}
+
+async function executeFileUploadRequest<TResult, TVariables>(
+  query: TypedDocumentString<TResult, TVariables>,
+  variables: TVariables,
+  isRetry: boolean,
+): Promise<TResult> {
   try {
     const formData = new FormData();
 
@@ -108,6 +148,33 @@ export async function executeWithFileUpload<TResult, TVariables>(
     // GraphQL responses have a "data" field that contains the actual query result
     // and optionally an "errors" field
     if (result.errors) {
+      // Check if it's an authentication error and we haven't already retried
+      if (!isRetry && isAuthenticationError(result.errors)) {
+        try {
+          // Import the auth service here to avoid circular dependency
+          const { authApi } = await import("@/services/auth-services");
+
+          // Attempt to refresh the token
+          const refreshResponse = await authApi.general.refreshToken();
+          const newAccessToken = refreshResponse.result.accessToken;
+
+          // Save the new token to localStorage
+          setAccessTokenToLocalStorage(newAccessToken);
+
+          // Retry the original request with the new token
+          return executeFileUploadRequest(query, variables, true);
+        } catch {
+          // Refresh failed, clear auth data and redirect to login
+          clearAuthData();
+
+          if (typeof window !== "undefined") {
+            window.location.href = "/";
+          }
+
+          throw new Error("Authentication failed and token refresh unsuccessful");
+        }
+      }
+
       throw new Error(`GraphQL Error: ${result.errors.map((e: { message: string }) => e.message).join(", ")}`);
     }
 

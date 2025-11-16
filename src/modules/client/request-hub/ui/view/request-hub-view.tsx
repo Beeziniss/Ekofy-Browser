@@ -52,8 +52,8 @@ export function RequestHubView() {
   // Filter requests based on search (already filtered to OPEN by query)
   const filteredRequests = requests.filter(
     (request: RequestItem) =>
-      request.title.toLowerCase().includes(debouncedSearchValue.toLowerCase()) ||
-      request.summary.toLowerCase().includes(debouncedSearchValue.toLowerCase()),
+      request.title?.toLowerCase().includes(debouncedSearchValue.toLowerCase()) ||
+      request.summary?.toLowerCase().includes(debouncedSearchValue.toLowerCase()),
   );
 
   const handlePostRequest = () => {
@@ -196,10 +196,10 @@ export function RequestHubView() {
           <EditRequestSection
             initialData={{
               id: editingRequest.id,
-              title: editingRequest.title,
-              summary: editingRequest.summary,
-              detailDescription: editingRequest.detailDescription,
-              budget: editingRequest.budget,
+              title: editingRequest.title || "",
+              summary: editingRequest.summary || "",
+              detailDescription: editingRequest.detailDescription || "",
+              budget: editingRequest.budget!,
               deadline: editingRequest.deadline,
             }}
             onSubmit={handleUpdateSubmit}
@@ -252,7 +252,6 @@ export function RequestHubView() {
   return (
     <>
       {renderContent()}
-      
       {/* Stripe Account Required Modal */}
       <StripeAccountRequiredModal
         open={showStripeModal}

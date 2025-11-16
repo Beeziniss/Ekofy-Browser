@@ -122,6 +122,9 @@ export const GetUserActiveSubscriptionQuery = graphql(`
           status
           name
         }
+        periodEnd
+        cancelAtEndOfPeriod
+        canceledAt
       }
     }
   }

@@ -23,6 +23,7 @@ const itemVariants = cva(
         default: "bg-transparent",
         outline: "border-border",
         muted: "bg-muted/50",
+        subscription: "bg-[#2a2a2a] [a]:hover:!bg-[#1f1f1f]",
       },
       size: {
         default: "p-4 gap-4 ",

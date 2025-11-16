@@ -118,6 +118,12 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
     const budgetMinNumber = parseCurrency(budgetMin);
     const budgetMaxNumber = parseCurrency(budgetMax) || budgetMinNumber;
 
+    // Validation: minimum budget should be at least 1000 VND
+    if (budgetMinNumber < 1000) {
+      setBudgetError("Minimum budget must be at least 1,000 VND");
+      return;
+    }
+
     // Validation: max should be >= min
     if (budgetMaxNumber < budgetMinNumber) {
       setBudgetError("Maximum budget must be greater than or equal to minimum budget");
@@ -264,7 +270,9 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
                   // Real-time validation
                   const minValue = parseCurrency(budgetMin);
                   const maxValue = parseCurrency(formattedValue);
-                  if (maxValue > 0 && maxValue < minValue) {
+                  if (minValue > 0 && minValue < 1000) {
+                    setBudgetError("Minimum budget must be at least 1,000 VND");
+                  } else if (maxValue > 0 && maxValue < minValue) {
                     setBudgetError("Maximum budget must be greater than or equal to minimum budget");
                   }
                 }}
@@ -275,7 +283,8 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
             </div>
           </div>
           <p className="mt-1 text-xs text-gray-500">
-            Set your budget range. If you have a fixed budget, use the same value for both minimum and maximum.
+            Set your budget range (minimum 1,000 VND). If you have a fixed budget, use the same value for both minimum
+            and maximum.
           </p>
         </div>
 
@@ -298,6 +307,8 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
                 onSelect={setDeadline}
                 disabled={(date) => date < minDate}
                 captionLayout="dropdown"
+                fromYear={2000}
+                toYear={new Date().getFullYear() + 10}
                 initialFocus
               />
             </PopoverContent>

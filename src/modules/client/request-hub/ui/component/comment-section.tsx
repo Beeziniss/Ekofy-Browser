@@ -53,7 +53,7 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
   const handleCreateComment = (content: string) => {
     createComment({
       targetId: requestId,
-      commentType: CommentType.RequestHub,
+      commentType: CommentType.Request,
       content,
     });
   };
