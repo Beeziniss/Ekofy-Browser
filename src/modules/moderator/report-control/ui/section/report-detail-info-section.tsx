@@ -3,7 +3,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { format } from "date-fns";
 import { 
   FileText, 
   AlertTriangle, 
@@ -19,6 +18,7 @@ import {
 import { ReportDetailQueryQuery, ReportStatus, ReportType, ReportRelatedContentType } from "@/gql/graphql";
 import { REPORT_TYPE_LABELS, CONTENT_TYPE_LABELS } from "@/types/report";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 type ReportItem = NonNullable<NonNullable<ReportDetailQueryQuery["reports"]>["items"]>[0];
 
@@ -306,14 +306,15 @@ export function ReportDetailInfoSection({ report }: ReportDetailInfoSectionProps
                 >
                   {/* Image Preview */}
                   <div className="aspect-video relative bg-muted">
-                    <img
+                    <Image
                       src={evidence}
                       alt={`Evidence ${index + 1}`}
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
+                      onError={() => {
+                        console.error(`Failed to load evidence image: ${evidence}`);
                       }}
+                      width={500}
+                      height={300}
                     />
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-all flex items-center justify-center">

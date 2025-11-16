@@ -23,4 +23,3 @@ export const CHANGE_REQUEST_STATUS_MUTATION = graphql(`
     changeRequestStatus(request: $request)
   }
 `);
-

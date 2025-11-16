@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertTriangle, Flag, X, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
+import { AlertTriangle, Flag, X, Upload, Image as ImageIcon } from "lucide-react";
 import { useCreateReport } from "@/gql/client-mutation-options/report-mutation-options";
 import { useAuthStore } from "@/store/stores/auth-store";
 import { toast } from "sonner";
@@ -43,6 +43,7 @@ import {
 } from "@/types/report";
 import { ReportType } from "@/gql/graphql";
 import { uploadImageToCloudinary, validateImageFile } from "@/utils/cloudinary-utils";
+import Image from "next/image";
 
 const reportFormSchema = z.object({
   reportType: z.nativeEnum(ReportType).refine((val) => val !== undefined, {
@@ -276,10 +277,12 @@ export function ReportDialog({
                         >
                           {/* Image Preview */}
                           <div className="aspect-video relative">
-                            <img
+                            <Image
                               src={previewUrl}
                               alt={`Evidence ${index + 1}`}
                               className="w-full h-full object-cover"
+                              layout="fill"
+                              objectFit="cover"
                             />
                             {/* Overlay on hover */}
                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, FileCheck2, Shield, UserCheck } from "lucide-react";
+import { ArrowLeft, FileCheck2, UserCheck } from "lucide-react";
 import Link from "next/link";
 import { ReportDetailQueryQuery, ReportStatus } from "@/gql/graphql";
 
