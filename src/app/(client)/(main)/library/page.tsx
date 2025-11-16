@@ -6,7 +6,6 @@ import LibraryView from "@/modules/client/library/ui/views/library-view";
 
 const LibraryPage = async () => {
   const queryClient = getQueryClient();
-
   const cookiess = await cookies();
   const authStorage = cookiess.get("auth-storage")?.value;
   const userId = authStorage ? JSON.parse(decodeURIComponent(authStorage)).state.user?.userId : null;
