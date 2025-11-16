@@ -530,7 +530,7 @@ const TrackUploadMetadataSection = () => {
           description: data.description || null,
           categoryIds: data.categoryIds,
           coverImage: coverImageUrl,
-          isReleased: data.isReleased,
+          isRelease: data.isReleased,
           releaseDate: data.releaseDate ? data.releaseDate.toISOString() : null,
           releaseStatus: releaseStatus,
           isOriginal: data.isOriginal,

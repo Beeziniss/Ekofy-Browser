@@ -25,19 +25,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           const accessToken = getAccessTokenFromLocalStorage();
           if (userInfo && accessToken) {
             setUserData(userInfo, accessToken);
-          } else {
-            // If no user info or token found but isAuth is true, clear auth state
-            clearUserData();
           }
         } else {
           // User is not authenticated, ensure auth state is cleared
           setAuthenticated(false);
           console.log("Authenticated false");
         }
-      } catch (error) {
-        console.error("Error initializing auth state:", error);
-        // On error, clear auth state
-        clearUserData();
       } finally {
         setLoading(false);
       }

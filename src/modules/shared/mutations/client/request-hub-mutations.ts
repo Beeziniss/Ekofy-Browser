@@ -1,19 +1,19 @@
 import { graphql } from "@/gql";
 
 export const CREATE_REQUEST_MUTATION = graphql(`
-  mutation CreateRequest($request: RequestCreatingRequestInput!) {
-    createRequest(request: $request)
+  mutation CreatePublicRequest($request: RequestCreatingRequestInput!) {
+    createPublicRequest(request: $request)
   }
 `);
 
 export const UPDATE_REQUEST_MUTATION = graphql(`
-  mutation UpdateRequest($request: RequestUpdatingRequestInput!) {
-    updateRequest(request: $request)
+  mutation UpdatePublicRequest($request: RequestUpdatingRequestInput!) {
+    updatePublicRequest(request: $request)
   }
 `);
 
 export const BLOCK_REQUEST_MUTATION = graphql(`
-  mutation BlockRequest($requestId: String!) {
-    blockRequest(requestId: $requestId)
+  mutation BlockPublicRequest($requestId: String!) {
+    blockPublicRequest(requestId: $requestId)
   }
 `);
