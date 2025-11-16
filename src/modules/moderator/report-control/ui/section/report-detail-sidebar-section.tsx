@@ -5,11 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { 
-  Calendar, 
-  User, 
   AlertTriangle, 
-  Shield, 
-  Clock
 } from "lucide-react";
 import { ReportDetailQueryQuery } from "@/gql/graphql";
 import { useQuery } from "@tanstack/react-query";
