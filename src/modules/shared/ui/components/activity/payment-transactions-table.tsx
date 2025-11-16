@@ -26,34 +26,20 @@ export default function SharedPaymentTransactionsTable({
   const { user } = useAuthStore();
   const [page, setPage] = useState(1);
 
-  const {
-    data: listenerData,
-    isPending: isListenerPending,
-    isError: isListenerError,
-  } = useQuery({
-    ...listenerTransactionsOptions({ userId: user!.userId, page, pageSize }),
-    enabled: source === "listener",
+  const queryOptions =
+    source === "listener"
+      ? listenerTransactionsOptions({ userId: user!.userId, page, pageSize })
+      : artistTransactionsOptions({ userId: user!.userId, page, pageSize });
+
+  const { data, isLoading, isError } = useQuery({
+    ...queryOptions,
   });
 
-  const {
-    data: artistData,
-    isPending: isArtistPending,
-    isError: isArtistError,
-  } = useQuery({
-    ...artistTransactionsOptions({ userId: user!.userId, page, pageSize }),
-    enabled: source === "artist",
-  });
-
-  const transactionData = listenerData?.transactions?.items || artistData?.transactions?.items || [];
-  const totalCount = listenerData?.transactions?.totalCount ?? artistData?.transactions?.totalCount ?? 0;
-  const hasNext =
-    !!listenerData?.transactions?.pageInfo?.hasNextPage || !!artistData?.transactions?.pageInfo?.hasNextPage;
-  const hasPrev =
-    !!listenerData?.transactions?.pageInfo?.hasPreviousPage || !!artistData?.transactions?.pageInfo?.hasPreviousPage;
+  const transactionData = data?.paymentTransactions?.items || [];
+  const totalCount = data?.paymentTransactions?.totalCount ?? 0;
+  const hasNext = !!data?.paymentTransactions?.pageInfo?.hasNextPage;
+  const hasPrev = !!data?.paymentTransactions?.pageInfo?.hasPreviousPage;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-
-  const isLoading = source === "listener" ? isListenerPending : isArtistPending;
-  const isError = source === "listener" ? isListenerError : isArtistError;
 
   return (
     <div className="space-y-4">

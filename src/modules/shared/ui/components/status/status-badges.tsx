@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { PaymentTransactionStatus, PayoutTransactionStatus } from "@/gql/graphql";
+import { PaymentTransactionStatus, PayoutTransactionStatus, RequestStatus } from "@/gql/graphql";
 
 export const paymentStatusBadge = (status: PaymentTransactionStatus) => {
   switch (status) {
@@ -47,5 +47,20 @@ export const methodBadge = (method: string, index: number) => {
       );
     default:
       return <Badge key={index}>{method}</Badge>;
+  }
+};
+
+export const requestStatusBadge = (status: RequestStatus) => {
+  switch (status) {
+    case RequestStatus.Pending:
+      return <Badge className="border-yellow-200 bg-yellow-100 text-yellow-800">Pending</Badge>;
+    case RequestStatus.Confirmed:
+      return <Badge className="border-green-200 bg-green-100 text-green-800">Confirmed</Badge>;
+    case RequestStatus.Canceled:
+      return <Badge className="border-gray-200 bg-gray-100 text-gray-800">Canceled</Badge>;
+    case RequestStatus.Rejected:
+      return <Badge className="border-red-200 bg-red-100 text-red-800">Rejected</Badge>;
+    default:
+      return <Badge className="border-gray-200 bg-gray-100 text-gray-800">{status}</Badge>;
   }
 };

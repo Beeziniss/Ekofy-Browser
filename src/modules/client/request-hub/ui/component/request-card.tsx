@@ -172,7 +172,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
 
   return (
     <Card className={cn("w-full transition-shadow hover:shadow-md", className)}>
-      <CardContent className="py-0 px-6">
+      <CardContent className="px-6 py-0">
         {/* Header with Avatar and Save Button */}
         <div className="mb-4 flex items-start justify-between">
           <div className="flex items-center space-x-3">
@@ -232,7 +232,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
         <div className="mb-4 flex items-center justify-between text-sm">
           <div className="flex items-center">
             <p className="mr-1 text-white">Budget:</p>
-            <p className="text-main-purple font-medium">{formatBudget(request.budget, request.currency)}</p>
+            <p className="text-main-purple font-medium">{formatBudget(request!.budget!, request.currency)}</p>
           </div>
           <div className="flex items-center">
             <Clock className="mr-2 h-4 w-4 text-white" />
