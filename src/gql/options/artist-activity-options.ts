@@ -31,7 +31,7 @@ export function artistTransactionsOptions(params: {
 
   return {
     queryKey: ["artist-transactions", userId, page, pageSize],
-    queryFn: async () => execute(GetArtistTransactionsQuery, { userId, where, order, skip, take }),
+    queryFn: async () => execute(GetArtistTransactionsQuery, { where, order, skip, take }),
   };
 }
 
@@ -52,17 +52,17 @@ export function artistPayoutsOptions(params: { userId: string; page: number; pag
 }
 
 // Detail by ID: Payment Transaction (artist)
-export function artistTransactionByIdOptions(params: { id: string; userId: string }) {
-  const { id, userId } = params;
+export function artistTransactionByIdOptions(params: { id: string }) {
+  const { id } = params;
   const where: PaymentTransactionFilterInput = {
-    or: [{ id: { eq: id } }],
+    id: { eq: id },
   };
   const take = 1;
   const skip = 0;
 
   return {
     queryKey: ["artist-transaction", id],
-    queryFn: async () => execute(GetArtistTransactionsQuery, { userId, where, skip, take }),
+    queryFn: async () => execute(GetArtistTransactionsQuery, { where, skip, take }),
   };
 }
 

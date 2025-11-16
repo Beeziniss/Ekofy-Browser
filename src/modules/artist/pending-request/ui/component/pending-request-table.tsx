@@ -146,21 +146,21 @@ export function PendingRequestTable({
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    {new Intl.NumberFormat("vi-VN").format(request.budget.min)} {request.currency}
-                    {request.budget.min !== request.budget.max && (
+                    {new Intl.NumberFormat("vi-VN").format(request.budget?.min)} {request.currency}
+                    {request.budget?.min !== request.budget?.max && (
                       <>
                         {" - "}
-                        {new Intl.NumberFormat("vi-VN").format(request.budget.max)} {request.currency}
+                        {new Intl.NumberFormat("vi-VN").format(request.budget?.max)} {request.currency}
                       </>
                     )}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge 
+                  <Badge
                     className={`${STATUS_CONFIG[request.status as RequestStatus]?.className} border font-semibold transition-colors`}
                   >
                     {STATUS_CONFIG[request.status as RequestStatus]?.label}
-                  </Badge>               
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">{format(new Date(request.requestCreatedTime), "dd/MM/yyyy")}</div>

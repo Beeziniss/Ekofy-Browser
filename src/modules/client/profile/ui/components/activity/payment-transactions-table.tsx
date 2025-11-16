@@ -18,8 +18,6 @@ interface SharedPaymentTransactionsTableProps {
   linkPrefix: string; // e.g. "/profile/payment-history" or "/artist/studio/transactions/payment-history"
 }
 
-const statusBadge = paymentStatusBadge;
-
 export default function SharedPaymentTransactionsTable({
   userId,
   pageSize = 10,
@@ -37,10 +35,10 @@ export default function SharedPaymentTransactionsTable({
     ...queryOptions,
   });
 
-  const items = data?.transactions?.items ?? [];
-  const totalCount = data?.transactions?.totalCount ?? 0;
-  const hasNext = !!data?.transactions?.pageInfo?.hasNextPage;
-  const hasPrev = !!data?.transactions?.pageInfo?.hasPreviousPage;
+  const items = data?.paymentTransactions?.items ?? [];
+  const totalCount = data?.paymentTransactions?.totalCount ?? 0;
+  const hasNext = !!data?.paymentTransactions?.pageInfo?.hasNextPage;
+  const hasPrev = !!data?.paymentTransactions?.pageInfo?.hasPreviousPage;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
   return (
@@ -82,7 +80,7 @@ export default function SharedPaymentTransactionsTable({
                       ? tx!.stripePaymentMethod.join(", ")
                       : "-"}
                   </TableCell>
-                  <TableCell>{tx?.paymentStatus ? statusBadge(tx.paymentStatus) : "-"}</TableCell>
+                  <TableCell>{tx?.paymentStatus ? paymentStatusBadge(tx.paymentStatus) : "-"}</TableCell>
                   <TableCell>
                     {tx?.stripePaymentId || tx?.id ? (
                       <Link

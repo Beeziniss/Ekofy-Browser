@@ -3,13 +3,12 @@ import { graphql } from "@/gql";
 // Payment Transactions list for a listener (by userId)
 export const GetListenerTransactionsQuery = graphql(`
   query GetListenerTransactions(
-    $userId: String!
     $where: PaymentTransactionFilterInput
-    $order: [UserSortInput!]
+    $order: [PaymentTransactionSortInput!]
     $skip: Int
     $take: Int
   ) {
-    paymentTransactionsByUserId(userId: $userId, where: $where, order: $order, skip: $skip, take: $take) {
+    paymentTransactions(where: $where, order: $order, skip: $skip, take: $take) {
       totalCount
       items {
         id

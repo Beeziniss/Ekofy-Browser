@@ -2,13 +2,12 @@ import { graphql } from "@/gql";
 
 export const GetArtistTransactionsQuery = graphql(`
   query GetArtistTransactions(
-    $userId: String!
     $where: PaymentTransactionFilterInput
-    $order: [UserSortInput!]
+    $order: [PaymentTransactionSortInput!]
     $skip: Int
     $take: Int
   ) {
-    paymentTransactionsByUserId(userId: $userId, where: $where, order: $order, skip: $skip, take: $take) {
+    paymentTransactions(where: $where, order: $order, skip: $skip, take: $take) {
       totalCount
       items {
         id
