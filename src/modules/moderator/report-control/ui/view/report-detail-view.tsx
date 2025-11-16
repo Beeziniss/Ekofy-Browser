@@ -10,6 +10,9 @@ import { useQuery } from "@tanstack/react-query";
 import { reportDetailOptions } from "@/gql/options/report-options";
 import { notFound } from "next/navigation";
 import MainLoader from "@/components/main-loader";
+import { useAuthStore } from "@/store/stores/auth-store";
+import { useAssignReportToModerator } from "@/gql/client-mutation-options/report-mutation-options";
+import { toast } from "sonner";
 
 interface ReportDetailViewProps {
   reportId: string;
@@ -17,9 +20,11 @@ interface ReportDetailViewProps {
 
 export function ReportDetailView({ reportId }: ReportDetailViewProps) {
   const [processDialogOpen, setProcessDialogOpen] = useState(false);
+  const { user } = useAuthStore();
+  const assignReport = useAssignReportToModerator();
 
   // Fetch report detail on client-side with authentication
-  const { data: report, isLoading, isError } = useQuery(reportDetailOptions(reportId));
+  const { data: report, isLoading, isError, refetch } = useQuery(reportDetailOptions(reportId));
 
   // Loading state
   if (isLoading) {
@@ -31,13 +36,49 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
     notFound();
   }
 
+  // Handle assign to me
+  const handleAssignToMe = async () => {
+    if (!user?.userId) {
+      toast.error("User information not found");
+      return;
+    }
+
+    try {
+      await assignReport.mutateAsync({ reportId: report.id, moderatorId: user.userId });
+      toast.success("Report assigned successfully");
+      refetch(); // Refetch to update the UI
+    } catch (error) {
+      console.error("Error assigning report:", error);
+      toast.error("Failed to assign report");
+    }
+  };
+
+  // Handle process click with validation
+  const handleProcessClick = () => {
+    // Check if report is assigned to current user
+    if (report.assignedModeratorId !== user?.userId) {
+      toast.warning("You can only process reports assigned to you. Please assign this report to yourself first.");
+      return;
+    }
+    
+    setProcessDialogOpen(true);
+  };
+
+  // Handle process success
+  const handleProcessSuccess = () => {
+    refetch(); // Refetch to update the UI after processing
+  };
+
   return (
     <>
       <ReportDetailLayout
         header={
           <ReportDetailHeaderSection
             report={report}
-            onProcessClick={() => setProcessDialogOpen(true)}
+            currentUserId={user?.userId}
+            isAssigning={assignReport.isPending}
+            onProcessClick={handleProcessClick}
+            onAssignClick={handleAssignToMe}
           />
         }
         mainContent={<ReportDetailInfoSection report={report} />}
@@ -49,6 +90,7 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
         reportId={report.id}
         open={processDialogOpen}
         onOpenChange={setProcessDialogOpen}
+        onSuccess={handleProcessSuccess}
       />
     </>
   );

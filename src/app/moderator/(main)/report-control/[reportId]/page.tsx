@@ -21,7 +21,7 @@ const ReportDetailPage = ({ params }: ReportDetailPageProps) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="container mx-auto py-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-7xl">
         <ReportDetailView reportId={resolvedParams.reportId} />
       </div>
     </HydrationBoundary>

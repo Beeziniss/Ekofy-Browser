@@ -291,7 +291,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
           contentType={ReportRelatedContentType.Request}
           contentId={request.id}
           reportedUserId={request.requestUserId}
-          reportedUserName={request.title}
+          reportedUserName={request.title || "Untitled Request"}
           open={reportDialogOpen}
           onOpenChange={setReportDialogOpen}
         />

@@ -1,7 +1,7 @@
 import { execute } from "../execute";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
-import { REPORT_QUERIES, REPORT_DETAIL_QUERY } from "@/modules/shared/queries/client/report-queries";
-import { ReportFilterInput, ReportStatus, ReportRelatedContentType } from "../graphql";
+import { REPORT_QUERIES, REPORT_DETAIL_QUERY, QUERY_MODERATOR_REPORTS } from "@/modules/shared/queries/client/report-queries";
+import { ReportFilterInput, ReportStatus, ReportRelatedContentType, UserFilterInput } from "../graphql";
 
 // Get all reports with pagination
 export const reportsOptions = (skip: number = 0, take: number = 20, where?: ReportFilterInput) =>
@@ -115,5 +115,17 @@ export const reportsByContentOptions = (
       };
     },
     enabled: !!contentType && !!contentId,
+    staleTime: 2 * 60 * 1000,
+  });
+
+export const moderatorReportsOptions = (where: UserFilterInput) =>
+  queryOptions({
+    queryKey: ["moderator-users", where],
+    queryFn: async () => {
+      const result = await execute(QUERY_MODERATOR_REPORTS, { where });
+      return result.users || {
+        items: [],
+      };
+    },
     staleTime: 2 * 60 * 1000,
   });

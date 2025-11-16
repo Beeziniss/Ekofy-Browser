@@ -73,20 +73,6 @@ export const REPORT_TYPE_LABELS: Record<ReportType, string> = {
   [ReportType.Other]: "Other",
 };
 
-// Report type descriptions
-export const REPORT_TYPE_DESCRIPTIONS: Record<ReportType, string> = {
-  [ReportType.Harassment]: "Harassment, insults towards others",
-  [ReportType.HateSpeech]: "Hate speech, discrimination",
-  [ReportType.Impersonation]: "Identity impersonation",
-  [ReportType.CopyrightViolation]: "Using content without permission",
-  [ReportType.FakeAccount]: "Fake account",
-  [ReportType.ScamOrFraud]: "Scam, fraud",
-  [ReportType.Spam]: "Spam content, advertising",
-  [ReportType.InappropriateContent]: "Content violating standards",
-  [ReportType.SelfHarmOrDangerousContent]: "Self-harm or violence incitement",
-  [ReportType.Other]: "Other reasons",
-};
-
 // Content type labels
 export const CONTENT_TYPE_LABELS: Record<ReportRelatedContentType, string> = {
   [ReportRelatedContentType.Artist]: "Artist",

@@ -7,7 +7,7 @@ export const GetArtistTransactionsQuery = graphql(`
     $skip: Int
     $take: Int
   ) {
-    transactions(where: $where, order: $order, skip: $skip, take: $take) {
+    paymentTransactions(where: $where, order: $order, skip: $skip, take: $take) {
       totalCount
       items {
         id

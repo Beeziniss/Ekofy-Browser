@@ -31,19 +31,18 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { AlertTriangle, Flag, X } from "lucide-react";
+import { AlertTriangle, Flag, X, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
 import { useCreateReport } from "@/gql/client-mutation-options/report-mutation-options";
 import { useAuthStore } from "@/store/stores/auth-store";
 import { toast } from "sonner";
 import {
   REPORT_TYPES_BY_CONTENT,
   REPORT_TYPE_LABELS,
-  REPORT_TYPE_DESCRIPTIONS,
   CONTENT_TYPE_LABELS,
   type ReportButtonProps,
 } from "@/types/report";
 import { ReportType } from "@/gql/graphql";
+import { uploadImageToCloudinary, validateImageFile } from "@/utils/cloudinary-utils";
 
 const reportFormSchema = z.object({
   reportType: z.nativeEnum(ReportType).refine((val) => val !== undefined, {
@@ -67,8 +66,8 @@ export function ReportDialog({
   onOpenChange: controlledOnOpenChange 
 }: ReportButtonProps) {
   const [internalOpen, setInternalOpen] = useState(false);
-  const [evidenceInput, setEvidenceInput] = useState("");
-  const [evidences, setEvidences] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const { user } = useAuthStore();
   const createReport = useCreateReport();
 
@@ -93,45 +92,72 @@ export function ReportDialog({
       return;
     }
 
-    const reportData = {
-      reportType: data.reportType,
-      description: data.description,
-      reportedUserId,
-      evidences: evidences.length > 0 ? evidences : undefined,
-      relatedContentId: contentId,
-      relatedContentType: contentId ? contentType : undefined,
-    };
-
-    console.log("📝 Submitting report:", reportData);
+    setIsUploading(true);
+    let uploadedEvidences: string[] = [];
 
     try {
+      // Upload all selected images to Cloudinary when submitting
+      if (selectedFiles.length > 0) {
+        toast.loading(`Uploading ${selectedFiles.length} evidence image(s)...`, { id: "upload-evidence" });
+        
+        const uploadPromises = selectedFiles.map(file =>
+          uploadImageToCloudinary(file, {
+            folder: "report-evidences",
+            tags: ["report", "evidence"],
+            resourceType: "image",
+          })
+        );
+
+        const results = await Promise.all(uploadPromises);
+        uploadedEvidences = results.map(result => result.secure_url);
+        
+        toast.success(`${uploadedEvidences.length} image(s) uploaded successfully`, { id: "upload-evidence" });
+      }
+
+      const reportData = {
+        reportType: data.reportType,
+        description: data.description,
+        reportedUserId,
+        evidences: uploadedEvidences.length > 0 ? uploadedEvidences : undefined,
+        relatedContentId: contentId,
+        relatedContentType: contentId ? contentType : undefined,
+      };
+
+      console.log("📝 Submitting report:", reportData);
+
       await createReport.mutateAsync(reportData);
 
       toast.success("Your report has been submitted successfully");
       setOpen(false);
       form.reset();
-      setEvidences([]);
-      setEvidenceInput("");
+      setSelectedFiles([]);
     } catch (error) {
       console.error("Error creating report:", error);
       toast.error("An error occurred while submitting the report");
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const addEvidence = () => {
-    if (evidenceInput.trim()) {
-      try {
-        new URL(evidenceInput);
-        setEvidences([...evidences, evidenceInput.trim()]);
-        setEvidenceInput("");
-      } catch {
-        toast.error("Invalid URL");
-      }
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    
+    // Validate image file
+    if (!validateImageFile(file)) {
+      return;
     }
+
+    setSelectedFiles([...selectedFiles, file]);
+    
+    // Reset input to allow selecting the same file again
+    event.target.value = "";
   };
 
-  const removeEvidence = (index: number) => {
-    setEvidences(evidences.filter((_, i) => i !== index));
+  const removeFile = (index: number) => {
+    setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
   };
 
   return (
@@ -144,7 +170,7 @@ export function ReportDialog({
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-yellow-500" />
@@ -176,9 +202,6 @@ export function ReportDialog({
                         <SelectItem key={type} value={type}>
                           <div className="flex flex-col">
                             <span className="font-medium">{REPORT_TYPE_LABELS[type]}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {REPORT_TYPE_DESCRIPTIONS[type]}
-                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -208,46 +231,90 @@ export function ReportDialog({
               )}
             />
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <FormLabel>Evidence (optional)</FormLabel>
               <FormDescription className="text-xs">
-                Add URLs of images or videos as evidence
+                Select images as evidence to support your report (will be uploaded when you submit)
               </FormDescription>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="https://example.com/evidence.png"
-                  value={evidenceInput}
-                  onChange={(e) => setEvidenceInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addEvidence();
-                    }
-                  }}
+              
+              {/* Upload Button */}
+              <div className="flex items-center gap-3">
+                <input
+                  type="file"
+                  id="evidence-upload"
+                  accept="image/jpeg,image/png,image/jpg,image/webp"
+                  onChange={handleFileSelect}
+                  disabled={isUploading}
+                  className="hidden"
                 />
-                <Button type="button" onClick={addEvidence} variant="secondary" size="sm">
-                  Add
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById("evidence-upload")?.click()}
+                  disabled={isUploading}
+                  className="gap-2"
+                >
+                  <Upload className="h-4 w-4" />
+                  Select Image
                 </Button>
+                <span className="text-xs text-muted-foreground">
+                  Max 10MB • JPG, PNG, WEBP
+                </span>
               </div>
-              {evidences.length > 0 && (
-                <div className="space-y-2 mt-3">
-                  {evidences.map((evidence, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 bg-muted rounded-md text-sm"
-                    >
-                      <span className="truncate flex-1">{evidence}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeEvidence(index)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+
+              {/* Evidence List with Preview */}
+              {selectedFiles.length > 0 && (
+                <div className="space-y-3 mt-4">
+                  <p className="text-sm font-medium">Selected Evidence ({selectedFiles.length})</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {selectedFiles.map((file, index) => {
+                      const previewUrl = URL.createObjectURL(file);
+                      return (
+                        <div
+                          key={index}
+                          className="relative group rounded-lg border bg-muted/30 overflow-hidden"
+                        >
+                          {/* Image Preview */}
+                          <div className="aspect-video relative">
+                            <img
+                              src={previewUrl}
+                              alt={`Evidence ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            {/* Overlay on hover */}
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => window.open(previewUrl, "_blank")}
+                                className="gap-1"
+                              >
+                                <ImageIcon className="h-3 w-3" />
+                                View
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => removeFile(index)}
+                                className="gap-1"
+                              >
+                                <X className="h-3 w-3" />
+                                Remove
+                              </Button>
+                            </div>
+                          </div>
+                          {/* Image Label */}
+                          <div className="p-2 bg-background">
+                            <p className="text-xs text-muted-foreground truncate">
+                              {file.name}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -256,8 +323,8 @@ export function ReportDialog({
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={createReport.isPending}>
-                {createReport.isPending ? "Submitting..." : "Submit Report"}
+              <Button type="submit" disabled={createReport.isPending || isUploading}>
+                {isUploading ? "Uploading..." : createReport.isPending ? "Submitting..." : "Submit Report"}
               </Button>
             </DialogFooter>
           </form>

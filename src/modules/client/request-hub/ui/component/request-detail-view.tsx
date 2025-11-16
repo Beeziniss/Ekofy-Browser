@@ -307,7 +307,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
           contentType={ReportRelatedContentType.Request}
           contentId={request.id}
           reportedUserId={request.requestUserId}
-          reportedUserName={request.title}
+          reportedUserName={request.title || ""}
           open={reportDialogOpen}
           onOpenChange={setReportDialogOpen}
         />

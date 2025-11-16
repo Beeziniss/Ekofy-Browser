@@ -47,10 +47,10 @@ interface ProcessReportDialogProps {
 const processReportFormSchema = z
   .object({
     actionTaken: z.nativeEnum(ReportAction).refine((val) => val !== undefined, {
-      message: "Vui lòng chọn hành động xử lý",
+      message: "Please select an action",
     }),
     status: z.nativeEnum(ReportStatus).refine((val) => val !== undefined, {
-      message: "Vui lòng chọn trạng thái",
+      message: "Please select a status",
     }),
     note: z.string().optional(),
     suspensionDays: z.number().min(1).max(365).optional(),
@@ -168,8 +168,8 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, onSuccess }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="w-full max-w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <DialogTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-blue-500" />
             Process Report
@@ -180,157 +180,161 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, onSuccess }:
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="actionTaken"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Action *</FormLabel>
-                  <Select
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      // Reset status when action changes
-                      form.setValue("status", undefined as unknown as ReportStatus);
-                    }}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select action" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Object.entries(ACTION_LABELS).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {actionTaken && (
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
+            <div className="space-y-6 px-6 py-4 overflow-y-auto flex-1">
               <FormField
                 control={form.control}
-                name="status"
+                name="actionTaken"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <FormLabel>Action *</FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        // Reset status when action changes
+                        form.setValue("status", undefined as unknown as ReportStatus);
+                      }}
+                      value={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
+                          <SelectValue placeholder="Select action" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {getAvailableStatuses(actionTaken).map((status) => (
-                          <SelectItem key={status} value={status}>
-                            {STATUS_LABELS[status]}
+                        {Object.entries(ACTION_LABELS).map(([key, label]) => (
+                          <SelectItem key={key} value={key}>
+                            {label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription className="text-xs">
-                      {actionTaken === ReportAction.NoAction
-                        ? "NoAction: select Dismiss or Reject"
-                        : "Other actions: select Approve"}
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
 
-            {actionTaken === ReportAction.Suspended && (
-              <FormField
-                control={form.control}
-                name="suspensionDays"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Suspension Days *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Enter number of days (1-365)"
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormDescription>How many days to suspend the account</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+              {actionTaken && (
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {getAvailableStatuses(actionTaken).map((status) => (
+                            <SelectItem key={status} value={status}>
+                              {STATUS_LABELS[status]}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription className="text-xs">
+                        {actionTaken === ReportAction.NoAction
+                          ? "NoAction: select Dismiss or Reject"
+                          : "Other actions: select Approve"}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
-            {actionTaken === ReportAction.EntitlementRestriction && (
-              <div className="space-y-4 p-4 border rounded-md bg-muted/30">
-                <div>
-                  <h4 className="text-sm font-semibold mb-2">Select Restrictions</h4>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Select the permissions that the user will be restricted from
-                  </p>
-                  <div className="space-y-3">
-                    {Object.entries(RESTRICTION_ACTION_LABELS)
-                      .filter(([key]) => key !== RestrictionAction.None)
-                      .map(([key, label]) => (
-                        <div key={key} className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id={key}
-                              checked={selectedRestrictionActions.includes(key as RestrictionAction)}
-                              onCheckedChange={(checked) =>
-                                handleRestrictionActionToggle(key as RestrictionAction, checked as boolean)
-                              }
-                            />
-                            <label
-                              htmlFor={key}
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                              {label}
-                            </label>
+              {actionTaken === ReportAction.Suspended && (
+                <FormField
+                  control={form.control}
+                  name="suspensionDays"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Suspension Days *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Enter number of days (1-365)"
+                          {...field}
+                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormDescription>How many days to suspend the account</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {actionTaken === ReportAction.EntitlementRestriction && (
+                <div className="space-y-4 p-5 border-2 rounded-lg bg-muted/20">
+                  <div>
+                    <h4 className="text-sm font-semibold mb-1">Select Restrictions</h4>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Select the permissions that the user will be restricted from
+                    </p>
+                    <div className="space-y-4">
+                      {Object.entries(RESTRICTION_ACTION_LABELS)
+                        .filter(([key]) => key !== RestrictionAction.None)
+                        .map(([key, label]) => (
+                          <div key={key} className="space-y-3 p-3 rounded-md border bg-background/50">
+                            <div className="flex items-center space-x-3">
+                              <Checkbox
+                                id={key}
+                                checked={selectedRestrictionActions.includes(key as RestrictionAction)}
+                                onCheckedChange={(checked) =>
+                                  handleRestrictionActionToggle(key as RestrictionAction, checked as boolean)
+                                }
+                              />
+                              <label
+                                htmlFor={key}
+                                className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {label}
+                              </label>
+                            </div>
+                            {selectedRestrictionActions.includes(key as RestrictionAction) && (
+                              <div className="pl-7 pt-1">
+                                <Textarea
+                                  placeholder="Note for this restriction..."
+                                  className="text-sm resize-none min-h-[80px] w-full"
+                                  value={form.watch(`restrictionNotes.${key}`) || ""}
+                                  onChange={(e) =>
+                                    form.setValue(`restrictionNotes.${key}`, e.target.value)
+                                  }
+                                />
+                              </div>
+                            )}
                           </div>
-                          {selectedRestrictionActions.includes(key as RestrictionAction) && (
-                            <Textarea
-                              placeholder="Note for this restriction..."
-                              className="ml-6 text-xs"
-                              value={form.watch(`restrictionNotes.${key}`) || ""}
-                              onChange={(e) =>
-                                form.setValue(`restrictionNotes.${key}`, e.target.value)
-                              }
-                            />
-                          )}
-                        </div>
-                      ))}
+                        ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-
-            <FormField
-              control={form.control}
-              name="note"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Note</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Add notes about your decision..."
-                      className="min-h-24 resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>Note will be saved for reference purposes</FormDescription>
-                  <FormMessage />
-                </FormItem>
               )}
-            />
 
-            <DialogFooter>
+              <FormField
+                control={form.control}
+                name="note"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Note</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Add notes about your decision..."
+                        className="min-h-24 resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>Note will be saved for reference purposes</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <DialogFooter className="px-6 py-4 border-t bg-muted/20">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>

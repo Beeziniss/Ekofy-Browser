@@ -97,6 +97,7 @@ export const REPORT_DETAIL_QUERY = graphql(`
                 commentType
                 content
                 targetId
+                commenterId
                 user {
                     id
                     fullName
@@ -114,6 +115,11 @@ export const REPORT_DETAIL_QUERY = graphql(`
                     name
                 }
             }
+            request {
+                id
+                title
+                summary
+            }
             description
             priority
             evidences
@@ -124,4 +130,14 @@ export const REPORT_DETAIL_QUERY = graphql(`
 }
 `);
 
+export const QUERY_MODERATOR_REPORTS = graphql(`
+    query QueryModeratorReports($where: UserFilterInput ) {
+        users(where: $where) {
+        items {
+            id
+            fullName
+        }
+    }
+}
+`);
 

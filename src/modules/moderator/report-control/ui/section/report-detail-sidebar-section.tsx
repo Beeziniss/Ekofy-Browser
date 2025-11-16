@@ -1,9 +1,19 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
-import { Calendar, User, AlertTriangle } from "lucide-react";
+import { 
+  Calendar, 
+  User, 
+  AlertTriangle, 
+  Shield, 
+  Clock
+} from "lucide-react";
 import { ReportDetailQueryQuery } from "@/gql/graphql";
+import { useQuery } from "@tanstack/react-query";
+import { moderatorReportsOptions } from "@/gql/options/report-options";
 
 type ReportItem = NonNullable<NonNullable<ReportDetailQueryQuery["reports"]>["items"]>[0];
 
@@ -12,26 +22,32 @@ interface ReportDetailSidebarSectionProps {
 }
 
 export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectionProps) {
+  // Query moderator info if report is assigned
+  const { data: moderatorData } = useQuery(
+    moderatorReportsOptions({ id: { eq: report.assignedModeratorId || "" } })
+  );
+  
+  const assignedModerator = moderatorData?.items?.[0];
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:sticky lg:top-6">
       {/* Reporter Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <User className="h-5 w-5" />
+          <CardTitle className="flex items-center text-base">
             Reporter
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div>
-              <p className="text-sm text-muted-foreground">Name</p>
-              <p className="font-medium">{report.userReporter?.[0]?.fullName || "Unknown"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">User ID</p>
-              <p className="font-mono text-sm">{report.reporterId}</p>
-            </div>
+        <CardContent className="space-y-3">
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Full Name</p>
+            <p className="font-medium">{report.userReporter?.[0]?.fullName || "Unknown"}</p>
+          </div>
+          <Separator />
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Role</p>
+            <Badge variant="secondary" className="text-xs">
+              {report.userReporter?.[0]?.role || "Unknown"}
+            </Badge>
           </div>
         </CardContent>
       </Card>
@@ -39,22 +55,36 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
       {/* Reported User Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <AlertTriangle className="h-5 w-5" />
+          <CardTitle className="flex items-center text-base">
             Reported User
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div>
-              <p className="text-sm text-muted-foreground">Name</p>
-              <p className="font-medium">{report.userReported?.[0]?.fullName || "Unknown"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">User ID</p>
-              <p className="font-mono text-sm">{report.reportedUserId}</p>
-            </div>
+        <CardContent className="space-y-3">
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Full Name</p>
+            <p className="font-medium">{report.userReported?.[0]?.fullName || "Unknown"}</p>
           </div>
+          <Separator />
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Role</p>
+            <Badge variant="secondary" className="text-xs">
+              {report.userReported?.[0]?.role || "Unknown"}
+            </Badge>
+          </div>
+          {report.totalReportsCount && report.totalReportsCount > 1 && (
+            <>
+              <Separator />
+              <div className="bg-orange-50 dark:bg-orange-950/30 rounded-lg p-3 border border-orange-200 dark:border-orange-800">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-orange-600" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Total Reports</p>
+                    <p className="text-lg font-bold text-orange-600">{report.totalReportsCount}</p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 
@@ -62,21 +92,16 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
       {report.assignedModeratorId && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <User className="h-5 w-5" />
+            <CardTitle className="flex items-center text-base">
               Assigned Moderator
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm text-muted-foreground">Moderator ID</p>
-                <p className="font-mono text-sm">{report.assignedModeratorId}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Assigned on</p>
-                <p className="text-sm">{format(new Date(report.createdAt), "PPP")}</p>
-              </div>
+          <CardContent className="space-y-3">
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Full Name</p>
+              <p className="font-medium">
+                {assignedModerator?.fullName || "Loading..."}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -85,26 +110,47 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
       {/* Timeline Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Calendar className="h-5 w-5" />
+          <CardTitle className="flex items-center text-base">
             Timeline
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Created</p>
-              <p className="text-sm font-medium">{format(new Date(report.createdAt), "PPP 'at' p")}</p>
-            </div>
-            {report.updatedAt && (
-              <div>
-                <p className="text-sm text-muted-foreground">Last Updated</p>
-                <p className="text-sm font-medium">{format(new Date(report.updatedAt), "PPP 'at' p")}</p>
-              </div>
-            )}
+          <div className="relative pb-1">
+            <p className="text-[15px] text-muted-foreground mb-1">Created</p>
+            <p className="text-sm font-medium">
+              {format(new Date(report.createdAt), "PPP")}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {format(new Date(report.createdAt), "p")}
+            </p>
           </div>
+          
+          {report.updatedAt && (
+            <div className="relative pb-3">
+              <p className="text-xs text-muted-foreground mb-1">Last Updated</p>
+              <p className="text-sm font-medium">
+                {format(new Date(report.updatedAt), "PPP")}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {format(new Date(report.updatedAt), "p")}
+              </p>
+            </div>
+          )}
+
+          {report.resolvedAt && (
+            <div className="relative pb-3">
+              <p className="text-xl text-muted-foreground mb-1">Resolved</p>
+              <p className="text-sm font-medium">
+                {format(new Date(report.resolvedAt), "PPP")}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {format(new Date(report.resolvedAt), "p")}
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
+
     </div>
   );
 }
