@@ -21,6 +21,8 @@ import { useAuthDialog } from "../context/auth-dialog-context";
 import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 import RequestHubCommentSection from "./comment-section";
 import { StripeAccountRequiredModal } from "@/modules/shared/ui/components/stripe-account-required-modal";
+import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
+import { ReportRelatedContentType } from "@/gql/graphql";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
@@ -34,8 +36,9 @@ interface RequestDetailViewProps {
 
 export function RequestDetailView({ request, onBack, onApply, onContactClient, className }: RequestDetailViewProps) {
   const [showStripeModal, setShowStripeModal] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   // Get auth state and dialog
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const { showAuthDialog } = useAuthDialog();
 
   // Get Stripe account status
@@ -271,6 +274,17 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
                       <MessageCircle className="mr-2 h-4 w-4" />
                       Contact Client
                     </Button>
+
+                    {isAuthenticated && user?.userId !== request.requestUserId && (
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => setReportDialogOpen(true)}
+                      >
+                        <Send className="mr-2 h-4 w-4" />
+                        Report
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -285,6 +299,18 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
         onOpenChange={setShowStripeModal}
         onCancel={() => setShowStripeModal(false)}
       />
+
+      {/* Report Dialog */}
+      {request.requestUserId && (
+        <ReportDialog
+          contentType={ReportRelatedContentType.Request}
+          contentId={request.id}
+          reportedUserId={request.requestUserId}
+          reportedUserName={request.title || ""}
+          open={reportDialogOpen}
+          onOpenChange={setReportDialogOpen}
+        />
+      )}
     </div>
   );
 }

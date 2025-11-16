@@ -6,14 +6,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MessageCircle, Clock, Send, ChevronDown, ChevronUp, SquarePen } from "lucide-react";
-import { RequestsQuery } from "@/gql/graphql";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MessageCircle, Clock, Send, ChevronDown, ChevronUp, SquarePen, MoreVertical, Flag } from "lucide-react";
+import { RequestsQuery, ReportRelatedContentType } from "@/gql/graphql";
 import { requestHubCommentsOptions } from "@/gql/options/client-options";
 import { RequestHubCommentSection, StripeAccountRequiredModal } from "./";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
 import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
+import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
@@ -30,6 +37,7 @@ interface RequestCardProps {
 export function RequestCard({ request, onViewDetails, onApply, onEdit, className, isOwner = false }: RequestCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [showStripeModal, setShowStripeModal] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   // Get auth state and dialog
   const { isAuthenticated } = useAuthStore();
@@ -180,6 +188,26 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
               <p className="text-sm text-white">{formatTimeAgo(request.postCreatedTime)}</p>
             </div>
           </div>
+          
+          {/* Action Menu - Only show report if not owner and authenticated */}
+          {isAuthenticated && !isOwner && request.requestUserId && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40 border-gray-600 bg-gray-800">
+                <DropdownMenuItem
+                  onClick={() => setReportDialogOpen(true)}
+                  className="cursor-pointer text-sm text-gray-200 hover:bg-gray-700"
+                >
+                  <Flag className="mr-2 h-4 w-4" />
+                  Report
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Title */}
@@ -256,6 +284,18 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
         onOpenChange={setShowStripeModal}
         onCancel={() => setShowStripeModal(false)}
       />
+
+      {/* Report Dialog */}
+      {request.requestUserId && (
+        <ReportDialog
+          contentType={ReportRelatedContentType.Request}
+          contentId={request.id}
+          reportedUserId={request.requestUserId}
+          reportedUserName={request.title || "Untitled Request"}
+          open={reportDialogOpen}
+          onOpenChange={setReportDialogOpen}
+        />
+      )}
     </Card>
   );
 }

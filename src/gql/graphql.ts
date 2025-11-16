@@ -6221,6 +6221,28 @@ export type RemoveFromPlaylistMutationVariables = Exact<{
 
 export type RemoveFromPlaylistMutation = { __typename?: 'MutationInitialization', removeFromPlaylist: boolean };
 
+export type ReportMutationMutationVariables = Exact<{
+  request: CreateReportRequestInput;
+}>;
+
+
+export type ReportMutationMutation = { __typename?: 'MutationInitialization', createReport: boolean };
+
+export type ProcessReportMutationVariables = Exact<{
+  request: ProcessReportRequestInput;
+}>;
+
+
+export type ProcessReportMutation = { __typename?: 'MutationInitialization', processReport: boolean };
+
+export type AssignReportToModeratorMutationVariables = Exact<{
+  reportId: Scalars['String']['input'];
+  moderatorId: Scalars['String']['input'];
+}>;
+
+
+export type AssignReportToModeratorMutation = { __typename?: 'MutationInitialization', assignReportToModerator: boolean };
+
 export type UpdateRequestHubCommentMutationVariables = Exact<{
   commentId: Scalars['String']['input'];
   content: Scalars['String']['input'];
@@ -6558,6 +6580,29 @@ export type PlaylistsHomeQueryVariables = Exact<{
 
 
 export type PlaylistsHomeQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, userId: string, isPublic: boolean, checkPlaylistInFavorite: boolean }> | null } | null };
+
+export type ReportQueriesQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ReportFilterInput>;
+}>;
+
+
+export type ReportQueriesQuery = { __typename?: 'QueryInitialization', reports?: { __typename?: 'ReportsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Report', id: string, reportedUserId: string, reporterId: string, reportType: ReportType, status: ReportStatus, relatedContentType?: ReportRelatedContentType | null, relatedContentId?: string | null, assignedModeratorId?: string | null, actionTaken?: ReportAction | null, totalReportsCount: any, createdAt: any, description: string, userReporter: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, userReported: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, track: Array<{ __typename?: 'Track', id: string, name: string }>, comment: Array<{ __typename?: 'Comment', id: string, commentType: CommentType, content: string, targetId: string, user: Array<{ __typename?: 'User', id: string, fullName: string }>, listener: Array<{ __typename?: 'Listener', id: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string }>, track: Array<{ __typename?: 'Track', id: string, name: string }> }> }> | null } | null };
+
+export type ReportDetailQueryQueryVariables = Exact<{
+  where?: InputMaybe<ReportFilterInput>;
+}>;
+
+
+export type ReportDetailQueryQuery = { __typename?: 'QueryInitialization', reports?: { __typename?: 'ReportsCollectionSegment', items?: Array<{ __typename?: 'Report', id: string, reportedUserId: string, reporterId: string, reportType: ReportType, status: ReportStatus, relatedContentType?: ReportRelatedContentType | null, relatedContentId?: string | null, assignedModeratorId?: string | null, actionTaken?: ReportAction | null, totalReportsCount: any, createdAt: any, updatedAt?: any | null, description: string, priority: ReportPriority, evidences: Array<string>, note?: string | null, resolvedAt?: any | null, userReporter: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, userReported: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, track: Array<{ __typename?: 'Track', id: string, name: string }>, comment: Array<{ __typename?: 'Comment', id: string, commentType: CommentType, content: string, targetId: string, commenterId: string, user: Array<{ __typename?: 'User', id: string, fullName: string }>, listener: Array<{ __typename?: 'Listener', id: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string }>, track: Array<{ __typename?: 'Track', id: string, name: string }> }>, request: Array<{ __typename?: 'Request', id: string, title?: string | null, summary?: string | null }> }> | null } | null };
+
+export type QueryModeratorReportsQueryVariables = Exact<{
+  where?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type QueryModeratorReportsQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, fullName: string }> | null } | null };
 
 export type RequestHubThreadCommentsQueryVariables = Exact<{
   targetId: Scalars['String']['input'];
@@ -7356,6 +7401,21 @@ export const RemoveFromPlaylistDocument = new TypedDocumentString(`
   removeFromPlaylist(removeFromPlaylistRequest: $removeFromPlaylistRequest)
 }
     `) as unknown as TypedDocumentString<RemoveFromPlaylistMutation, RemoveFromPlaylistMutationVariables>;
+export const ReportMutationDocument = new TypedDocumentString(`
+    mutation ReportMutation($request: CreateReportRequestInput!) {
+  createReport(request: $request)
+}
+    `) as unknown as TypedDocumentString<ReportMutationMutation, ReportMutationMutationVariables>;
+export const ProcessReportDocument = new TypedDocumentString(`
+    mutation ProcessReport($request: ProcessReportRequestInput!) {
+  processReport(request: $request)
+}
+    `) as unknown as TypedDocumentString<ProcessReportMutation, ProcessReportMutationVariables>;
+export const AssignReportToModeratorDocument = new TypedDocumentString(`
+    mutation AssignReportToModerator($reportId: String!, $moderatorId: String!) {
+  assignReportToModerator(reportId: $reportId, moderatorId: $moderatorId)
+}
+    `) as unknown as TypedDocumentString<AssignReportToModeratorMutation, AssignReportToModeratorMutationVariables>;
 export const UpdateRequestHubCommentDocument = new TypedDocumentString(`
     mutation UpdateRequestHubComment($commentId: String!, $content: String!) {
   updateComment(request: {commentId: $commentId, content: $content})
@@ -8085,6 +8145,144 @@ export const PlaylistsHomeDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PlaylistsHomeQuery, PlaylistsHomeQueryVariables>;
+export const ReportQueriesDocument = new TypedDocumentString(`
+    query ReportQueries($skip: Int, $take: Int, $where: ReportFilterInput) {
+  reports(skip: $skip, take: $take, where: $where) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      reportedUserId
+      reporterId
+      reportType
+      status
+      relatedContentType
+      relatedContentId
+      assignedModeratorId
+      actionTaken
+      totalReportsCount
+      createdAt
+      description
+      userReporter {
+        id
+        fullName
+        role
+      }
+      userReported {
+        id
+        fullName
+        role
+      }
+      track {
+        id
+        name
+      }
+      comment {
+        id
+        commentType
+        content
+        targetId
+        user {
+          id
+          fullName
+        }
+        listener {
+          id
+          displayName
+        }
+        artist {
+          id
+          stageName
+        }
+        track {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ReportQueriesQuery, ReportQueriesQueryVariables>;
+export const ReportDetailQueryDocument = new TypedDocumentString(`
+    query ReportDetailQuery($where: ReportFilterInput) {
+  reports(where: $where) {
+    items {
+      id
+      reportedUserId
+      reporterId
+      reportType
+      status
+      relatedContentType
+      relatedContentId
+      assignedModeratorId
+      actionTaken
+      totalReportsCount
+      createdAt
+      updatedAt
+      userReporter {
+        id
+        fullName
+        role
+      }
+      userReported {
+        id
+        fullName
+        role
+      }
+      track {
+        id
+        name
+      }
+      comment {
+        id
+        commentType
+        content
+        targetId
+        commenterId
+        user {
+          id
+          fullName
+        }
+        listener {
+          id
+          displayName
+        }
+        artist {
+          id
+          stageName
+        }
+        track {
+          id
+          name
+        }
+      }
+      request {
+        id
+        title
+        summary
+      }
+      description
+      priority
+      evidences
+      note
+      resolvedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ReportDetailQueryQuery, ReportDetailQueryQueryVariables>;
+export const QueryModeratorReportsDocument = new TypedDocumentString(`
+    query QueryModeratorReports($where: UserFilterInput) {
+  users(where: $where) {
+    items {
+      id
+      fullName
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<QueryModeratorReportsQuery, QueryModeratorReportsQueryVariables>;
 export const RequestHubThreadCommentsDocument = new TypedDocumentString(`
     query RequestHubThreadComments($targetId: String!) {
   threadedComments(

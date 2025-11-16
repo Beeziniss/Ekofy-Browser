@@ -7,6 +7,8 @@ interface ArtistInfoSectionProps {
 }
 
 const ArtistInfoSection = ({ followerCount, followingCount, artistData }: ArtistInfoSectionProps) => {
+  const artist = artistData.artists?.items?.[0];
+
   return (
     <div>
       <div className="grid grid-cols-3">
@@ -24,7 +26,7 @@ const ArtistInfoSection = ({ followerCount, followingCount, artistData }: Artist
         </div>
       </div>
 
-      <div className="mt-6 text-lg">{artistData.artists?.items?.[0].biography || "No biography available."}</div>
+      <div className="mt-6 text-lg">{artist?.biography || "No biography available."}</div>
     </div>
   );
 };
