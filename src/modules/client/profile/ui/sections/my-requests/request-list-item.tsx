@@ -1,24 +1,34 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, DollarSign, Calendar, Eye, User } from "lucide-react";
-import { RequestsQuery } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
-
-type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
+import { artistDetailOptions } from "@/gql/options/client-options";
 
 interface RequestListItemProps {
-  request: RequestItem;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  request: any;
   className?: string;
 }
 
 export function RequestListItem({ request, className }: RequestListItemProps) {
-  const formatBudget = (budget: { min: number; max: number }, currency: string) => {
+  // Fetch artist data if not included in request and artistId exists
+  const { data: artistData } = useQuery({
+    ...artistDetailOptions(request.artistId || ""),
+    enabled: !!request.artistId && (!request.artist || request.artist.length === 0),
+  });
+
+  // Use artist from request or fetched artist data
+  const artist = request.artist?.[0] || artistData?.artists?.items?.[0];
+  const formatBudget = (budget: { min: number; max: number } | null | undefined, currency: string | null | undefined) => {
+    if (!budget) return "Budget not specified";
+    const currencyStr = currency?.toUpperCase() || "USD";
     const formatCurrency = (amount: number) => {
-      return `${amount.toLocaleString()} ${currency.toUpperCase()}`;
+      return `${amount.toLocaleString()} ${currencyStr}`;
     };
 
     if (budget.min === budget.max) {
@@ -57,7 +67,7 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
             <div className="flex items-start gap-3">
               <div className="flex-1">
                 <h3 className="mb-2 line-clamp-2 text-lg font-semibold text-white">
-                  {request.title}
+                  {request.title || `Request for ${request.artist?.[0]?.stageName || "Service"}`}
                 </h3>
                 {requestStatusBadge(request.status)}
               </div>
@@ -69,16 +79,16 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
             </p>
 
             {/* Artist Info - Only show for direct requests with artist */}
-            {request.artist && request.artist.length > 0 && (
+            {artist && (
               <div className="flex items-center gap-2 text-sm">
                 <User className="h-4 w-4 text-gray-400" />
                 <span className="text-gray-300">
                   To:{" "}
                   <Link
-                    href={`/artist/${request.artist[0].id}`}
+                    href={`/artist/${"userId" in artist && artist.userId ? artist.userId : request.artistId}`}
                     className="hover:text-main-purple font-medium text-white transition-colors"
                   >
-                    {request.artist[0].stageName}
+                    {artist.stageName}
                   </Link>
                 </span>
               </div>

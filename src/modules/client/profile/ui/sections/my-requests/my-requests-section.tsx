@@ -9,13 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { myRequestsOptions } from "@/gql/options/client-options";
-import { RequestStatus as GqlRequestStatus, RequestType as GqlRequestType, RequestsQuery, CurrencyType } from "@/gql/graphql";
+import { listenerRequestsOptions } from "@/gql/options/listener-request-options";
+import { RequestStatus as GqlRequestStatus, RequestType as GqlRequestType } from "@/gql/graphql";
 import { useAuthStore } from "@/store";
 import { RequestListItem } from "./request-list-item";
 import { Card, CardContent } from "@/components/ui/card";
-
-type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
 // Skeleton loader for request list
 function RequestListSkeleton({ count = 3 }: { count?: number }) {
@@ -143,127 +141,6 @@ export default function MyRequestsSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  // MOCK DATA for testing
-  const MOCK_DATA = true;
-  const mockRequests: RequestItem[] = [
-    {
-      __typename: "Request",
-      id: "req-001",
-      requestUserId: user?.userId || "user-123",
-      title: "Need a custom logo design for my startup",
-      titleUnsigned: "need a custom logo design for my startup",
-      summary: "Looking for a professional logo that represents innovation and technology",
-      summaryUnsigned: "looking for a professional logo that represents innovation and technology",
-      detailDescription: "I need a modern, minimalist logo for my tech startup. The logo should incorporate elements of AI and innovation.",
-      budget: { min: 500, max: 1000 },
-      currency: CurrencyType.Usd,
-      deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-      status: GqlRequestStatus.Pending,
-      type: GqlRequestType.DirectRequest,
-      postCreatedTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      requestCreatedTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      artistId: "artist-001",
-      packageId: "pkg-001",
-      requestor: [],
-      artist: [
-        {
-          __typename: "Artist",
-          id: "artist-001",
-          stageName: "Creative Studio Pro",
-          avatarImage: null,
-        },
-      ],
-    },
-    {
-      __typename: "Request",
-      id: "req-002",
-      requestUserId: user?.userId || "user-123",
-      title: "Music production for my upcoming album",
-      titleUnsigned: "music production for my upcoming album",
-      summary: "Need full music production including mixing and mastering",
-      summaryUnsigned: "need full music production including mixing and mastering",
-      detailDescription: "Looking for professional music production services for 10 tracks. Genre: Electronic/Pop.",
-      budget: { min: 2000, max: 5000 },
-      currency: CurrencyType.Usd,
-      deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      status: GqlRequestStatus.Confirmed,
-      type: GqlRequestType.DirectRequest,
-      postCreatedTime: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      requestCreatedTime: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      artistId: "artist-002",
-      packageId: "pkg-002",
-      requestor: [],
-      artist: [
-        {
-          __typename: "Artist",
-          id: "artist-002",
-          stageName: "BeatMaster Productions",
-          avatarImage: null,
-        },
-      ],
-    },
-    {
-      __typename: "Request",
-      id: "req-003",
-      requestUserId: user?.userId || "user-123",
-      title: "Voice over for commercial",
-      titleUnsigned: "voice over for commercial",
-      summary: "Professional voice over needed for 60-second TV commercial",
-      summaryUnsigned: "professional voice over needed for 60 second tv commercial",
-      detailDescription: "Need a clear, professional voice for a tech product commercial. Must sound enthusiastic and trustworthy.",
-      budget: { min: 300, max: 600 },
-      currency: CurrencyType.Usd,
-      deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      status: GqlRequestStatus.Rejected,
-      type: GqlRequestType.DirectRequest,
-      postCreatedTime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      requestCreatedTime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-      artistId: "artist-003",
-      packageId: "pkg-003",
-      requestor: [],
-      artist: [
-        {
-          __typename: "Artist",
-          id: "artist-003",
-          stageName: "VoiceArt Studios",
-          avatarImage: null,
-        },
-      ],
-    },
-    {
-      __typename: "Request",
-      id: "req-004",
-      requestUserId: user?.userId || "user-123",
-      title: "Website redesign project",
-      titleUnsigned: "website redesign project",
-      summary: "Complete website redesign with modern UI/UX",
-      summaryUnsigned: "complete website redesign with modern ui ux",
-      detailDescription: "Looking for a complete website redesign. Need modern, responsive design with excellent UX.",
-      budget: { min: 1500, max: 3000 },
-      currency: CurrencyType.Usd,
-      deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-      status: GqlRequestStatus.Canceled,
-      type: GqlRequestType.DirectRequest,
-      postCreatedTime: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-      requestCreatedTime: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-      artistId: "artist-004",
-      packageId: "pkg-004",
-      requestor: [],
-      artist: [
-        {
-          __typename: "Artist",
-          id: "artist-004",
-          stageName: "Web Design Masters",
-          avatarImage: null,
-        },
-      ],
-    },
-  ];
-
   // Build query filter - only show DIRECT_REQUEST type for listener's private requests
   const skip = (currentPage - 1) * pageSize;
   const where = {
@@ -274,11 +151,10 @@ export default function MyRequestsSection() {
   };
 
   // Fetch requests
-  const { data: requestsData, isLoading } = useQuery(myRequestsOptions(skip, pageSize, where));
+  const { data: requestsData, isLoading } = useQuery(listenerRequestsOptions(skip, pageSize, where));
   
-  // Use mock data or real data
-  const requests = MOCK_DATA ? mockRequests : (requestsData?.items || []);
-  const totalItems = MOCK_DATA ? mockRequests.length : (requestsData?.totalCount || 0);
+  const requests = requestsData?.items || [];
+  const totalItems = requestsData?.totalCount || 0;
   const totalPages = Math.ceil(totalItems / pageSize);
 
   // Reset to first page when filters change
@@ -344,7 +220,7 @@ export default function MyRequestsSection() {
       ) : (
         <>
           <div className="space-y-4">
-            {requests.map((request: RequestItem) => (
+            {requests.map((request) => (
               <RequestListItem key={request.id} request={request} />
             ))}
           </div>

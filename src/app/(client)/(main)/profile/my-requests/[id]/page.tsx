@@ -1,4 +1,4 @@
-import { requestByIdOptions } from "@/gql/options/client-options";
+import { listenerRequestByIdOptions } from "@/gql/options/listener-request-options";
 import RequestDetailSection from "@/modules/client/profile/ui/sections/my-requests/request-detail-section";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -11,7 +11,7 @@ const RequestDetailPage = async ({ params }: PageProps) => {
   const { id } = await params;
 
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(requestByIdOptions(id));
+  void queryClient.prefetchQuery(listenerRequestByIdOptions(id));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

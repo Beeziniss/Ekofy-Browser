@@ -6247,6 +6247,27 @@ export type CreateRequestHubCommentMutationVariables = Exact<{
 
 export type CreateRequestHubCommentMutation = { __typename?: 'MutationInitialization', createComment: boolean };
 
+export type CreatePublicRequestMutationVariables = Exact<{
+  request: RequestCreatingRequestInput;
+}>;
+
+
+export type CreatePublicRequestMutation = { __typename?: 'MutationInitialization', createPublicRequest: boolean };
+
+export type UpdatePublicRequestMutationVariables = Exact<{
+  request: RequestUpdatingRequestInput;
+}>;
+
+
+export type UpdatePublicRequestMutation = { __typename?: 'MutationInitialization', updatePublicRequest: boolean };
+
+export type BlockPublicRequestMutationVariables = Exact<{
+  requestId: Scalars['String']['input'];
+}>;
+
+
+export type BlockPublicRequestMutation = { __typename?: 'MutationInitialization', blockPublicRequest: boolean };
+
 export type CreateExpressConnectedAccountMutationVariables = Exact<{
   returnUrl: Scalars['String']['input'];
   refreshUrl: Scalars['String']['input'];
@@ -6477,6 +6498,24 @@ export type FollowingsQueryVariables = Exact<{
 
 
 export type FollowingsQuery = { __typename?: 'QueryInitialization', followings?: { __typename?: 'FollowingsCollectionSegment', totalCount: number } | null };
+
+export type ListenerRequestsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RequestFilterInput>;
+}>;
+
+
+export type ListenerRequestsQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, deadline: any, status: RequestStatus, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget: { __typename?: 'RequestBudget', min: any, max: any }, artist: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, avatarImage?: string | null }>, artistPackage: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, description?: string | null }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type ListenerRequestByIdQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RequestFilterInput>;
+}>;
+
+
+export type ListenerRequestByIdQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, deadline: any, status: RequestStatus, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget: { __typename?: 'RequestBudget', min: any, max: any }, artist: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, avatarImage?: string | null }>, artistPackage: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type CouponsQueryVariables = Exact<{
   where?: InputMaybe<CouponFilterInput>;
@@ -7325,6 +7364,21 @@ export const CreateRequestHubCommentDocument = new TypedDocumentString(`
   )
 }
     `) as unknown as TypedDocumentString<CreateRequestHubCommentMutation, CreateRequestHubCommentMutationVariables>;
+export const CreatePublicRequestDocument = new TypedDocumentString(`
+    mutation CreatePublicRequest($request: RequestCreatingRequestInput!) {
+  createPublicRequest(request: $request)
+}
+    `) as unknown as TypedDocumentString<CreatePublicRequestMutation, CreatePublicRequestMutationVariables>;
+export const UpdatePublicRequestDocument = new TypedDocumentString(`
+    mutation UpdatePublicRequest($request: RequestUpdatingRequestInput!) {
+  updatePublicRequest(request: $request)
+}
+    `) as unknown as TypedDocumentString<UpdatePublicRequestMutation, UpdatePublicRequestMutationVariables>;
+export const BlockPublicRequestDocument = new TypedDocumentString(`
+    mutation BlockPublicRequest($requestId: String!) {
+  blockPublicRequest(requestId: $requestId)
+}
+    `) as unknown as TypedDocumentString<BlockPublicRequestMutation, BlockPublicRequestMutationVariables>;
 export const CreateExpressConnectedAccountDocument = new TypedDocumentString(`
     mutation CreateExpressConnectedAccount($returnUrl: String!, $refreshUrl: String!) {
   createExpressConnectedAccount(returnUrl: $returnUrl, refreshUrl: $refreshUrl) {
@@ -7838,6 +7892,96 @@ export const FollowingsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<FollowingsQuery, FollowingsQueryVariables>;
+export const ListenerRequestsDocument = new TypedDocumentString(`
+    query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
+  requests(skip: $skip, take: $take, where: $where) {
+    totalCount
+    items {
+      id
+      requestUserId
+      artistId
+      packageId
+      title
+      summary
+      detailDescription
+      requirements
+      type
+      currency
+      deadline
+      status
+      requestCreatedTime
+      updatedAt
+      notes
+      budget {
+        min
+        max
+      }
+      artist {
+        id
+        userId
+        stageName
+        avatarImage
+      }
+      artistPackage {
+        id
+        packageName
+        description
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ListenerRequestsQuery, ListenerRequestsQueryVariables>;
+export const ListenerRequestByIdDocument = new TypedDocumentString(`
+    query ListenerRequestById($skip: Int, $take: Int, $where: RequestFilterInput) {
+  requests(skip: $skip, take: $take, where: $where) {
+    totalCount
+    items {
+      id
+      requestUserId
+      artistId
+      packageId
+      title
+      summary
+      detailDescription
+      requirements
+      type
+      currency
+      deadline
+      status
+      requestCreatedTime
+      updatedAt
+      notes
+      budget {
+        min
+        max
+      }
+      artist {
+        id
+        userId
+        stageName
+        avatarImage
+      }
+      artistPackage {
+        id
+        packageName
+        amount
+        currency
+        estimateDeliveryDays
+        description
+        maxRevision
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ListenerRequestByIdQuery, ListenerRequestByIdQueryVariables>;
 export const CouponsDocument = new TypedDocumentString(`
     query Coupons($where: CouponFilterInput) {
   coupons(where: $where) {

@@ -18,141 +18,15 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { useUpdateRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
-import { requestByIdOptions } from "@/gql/options/client-options";
+import { useChangeRequestStatus } from "@/gql/client-mutation-options/request-hub-mutation-options";
+import { listenerRequestByIdOptions } from "@/gql/options/listener-request-options";
+import { artistDetailOptions } from "@/gql/options/client-options";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
-import { RequestStatus as GqlRequestStatus, RequestType as GqlRequestType, CurrencyType } from "@/gql/graphql";
-import { useAuthStore } from "@/store";
+import { RequestStatus as GqlRequestStatus } from "@/gql/graphql";
 
 interface RequestDetailSectionProps {
   requestId: string;
 }
-
-// MOCK DATA - same as in my-requests-section
-const MOCK_DATA = true;
-
-const getMockRequestById = (id: string, userId: string) => {
-  const mockRequests = [
-    {
-      __typename: "Request" as const,
-      id: "req-001",
-      requestUserId: userId,
-      title: "Need a custom logo design for my startup",
-      titleUnsigned: "need a custom logo design for my startup",
-      summary: "Looking for a professional logo that represents innovation and technology",
-      summaryUnsigned: "looking for a professional logo that represents innovation and technology",
-      detailDescription: "I need a modern, minimalist logo for my tech startup. The logo should incorporate elements of AI and innovation.",
-      budget: { min: 500, max: 1000 },
-      currency: CurrencyType.Usd,
-      deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-      status: GqlRequestStatus.Pending,
-      type: GqlRequestType.DirectRequest,
-      postCreatedTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      requestCreatedTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      artistId: "artist-001",
-      packageId: "pkg-001",
-      requestor: [],
-      artist: [
-        {
-          __typename: "Artist" as const,
-          id: "artist-001",
-          stageName: "Creative Studio Pro",
-          avatarImage: null,
-        },
-      ],
-    },
-    {
-      __typename: "Request" as const,
-      id: "req-002",
-      requestUserId: userId,
-      title: "Music production for my upcoming album",
-      titleUnsigned: "music production for my upcoming album",
-      summary: "Need full music production including mixing and mastering",
-      summaryUnsigned: "need full music production including mixing and mastering",
-      detailDescription: "Looking for professional music production services for 10 tracks. Genre: Electronic/Pop.",
-      budget: { min: 2000, max: 5000 },
-      currency: CurrencyType.Usd,
-      deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      status: GqlRequestStatus.Confirmed,
-      type: GqlRequestType.DirectRequest,
-      postCreatedTime: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      requestCreatedTime: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      artistId: "artist-002",
-      packageId: "pkg-002",
-      requestor: [],
-      artist: [
-        {
-          __typename: "Artist" as const,
-          id: "artist-002",
-          stageName: "BeatMaster Productions",
-          avatarImage: null,
-        },
-      ],
-    },
-    {
-      __typename: "Request" as const,
-      id: "req-003",
-      requestUserId: userId,
-      title: "Professional voice over for commercial",
-      titleUnsigned: "professional voice over for commercial",
-      summary: "Need a deep, authoritative voice for a 30-second commercial",
-      summaryUnsigned: "need a deep authoritative voice for a 30 second commercial",
-      detailDescription: "Looking for a professional voice actor with a deep, authoritative tone for a product commercial.",
-      budget: { min: 300, max: 600 },
-      currency: CurrencyType.Usd,
-      deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      status: GqlRequestStatus.Rejected,
-      type: GqlRequestType.DirectRequest,
-      postCreatedTime: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-      requestCreatedTime: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-      artistId: "artist-003",
-      packageId: "pkg-003",
-      requestor: [],
-      artist: [
-        {
-          __typename: "Artist" as const,
-          id: "artist-003",
-          stageName: "VoiceOver Maestro",
-          avatarImage: null,
-        },
-      ],
-    },
-    {
-      __typename: "Request" as const,
-      id: "req-004",
-      requestUserId: userId,
-      title: "Website redesign and development",
-      titleUnsigned: "website redesign and development",
-      summary: "Complete website overhaul with modern design",
-      summaryUnsigned: "complete website overhaul with modern design",
-      detailDescription: "Need a complete website redesign with responsive design, modern UI/UX, and performance optimization.",
-      budget: { min: 3000, max: 7000 },
-      currency: CurrencyType.Usd,
-      deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
-      status: GqlRequestStatus.Canceled,
-      type: GqlRequestType.DirectRequest,
-      postCreatedTime: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-      requestCreatedTime: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-      artistId: "artist-004",
-      packageId: "pkg-004",
-      requestor: [],
-      artist: [
-        {
-          __typename: "Artist" as const,
-          id: "artist-004",
-          stageName: "WebDev Solutions",
-          avatarImage: null,
-        },
-      ],
-    },
-  ];
-
-  return mockRequests.find((req) => req.id === id);
-};
 
 // Skeleton loader
 function RequestDetailSkeleton() {
@@ -180,33 +54,28 @@ function RequestDetailSkeleton() {
 }
 
 export default function RequestDetailSection({ requestId }: RequestDetailSectionProps) {
-  const { user } = useAuthStore();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const { data: request, isLoading, error } = useQuery(requestByIdOptions(requestId));
-  const updateRequestMutation = useUpdateRequest();
+  const { data: request, isLoading } = useQuery(listenerRequestByIdOptions(requestId));
+  const changeStatusMutation = useChangeRequestStatus();
 
-  // Use mock data if enabled
-  const displayRequest = MOCK_DATA && user?.userId ? getMockRequestById(requestId, user.userId) : request;
-  const isLoadingData = MOCK_DATA ? false : isLoading;
-  const hasError = MOCK_DATA ? !displayRequest : error || !request;
+  // Fetch artist data if not included and artistId exists
+  const { data: artistData } = useQuery({
+    ...artistDetailOptions(request?.artistId || ""),
+    enabled: !!request?.artistId && (!request?.artist || request.artist.length === 0),
+  });
+
+  // Use artist from request or fetched artist data
+  const artist = request?.artist?.[0] || artistData?.artists?.items?.[0];
+  
+  // Get artist package (API returns as array)
+  const artistPackage = request?.artistPackage?.[0] || null;
 
   const handleCancelRequest = async () => {
-    if (!displayRequest) return;
-
-    if (MOCK_DATA) {
-      toast.info("Cancel functionality is not available in mock mode. Set MOCK_DATA = false to use real API.");
-      setShowCancelDialog(false);
-      return;
-    }
+    if (!request) return;
 
     try {
-      await updateRequestMutation.mutateAsync({
-        id: requestId,
-        title: displayRequest.title || "",
-        summary: displayRequest.summary || "",
-        detailDescription: displayRequest.detailDescription || "",
-        budget: displayRequest.budget || { min: 0, max: 0 },
-        deadline: displayRequest.deadline,
+      await changeStatusMutation.mutateAsync({
+        requestId: requestId,
         status: GqlRequestStatus.Canceled,
       });
 
@@ -223,11 +92,11 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
     }
   };
 
-  if (isLoadingData) {
+  if (isLoading) {
     return <RequestDetailSkeleton />;
   }
 
-  if (hasError || !displayRequest) {
+  if (!request) {
     return (
       <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6">
         <Card>
@@ -276,11 +145,11 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
     return `${formatCurrency(budget.min)} - ${formatCurrency(budget.max)}`;
   };
 
-  if (isLoadingData) {
+  if (isLoading) {
     return <RequestDetailSkeleton />;
   }
 
-  if (hasError) {
+  if (!request) {
     return (
       <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6">
         <Card>
@@ -312,29 +181,33 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
         {/* Main Card with all details */}
         <Card>
           <CardHeader>
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between space-y-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+            
             <div className="flex-1">
-              <CardTitle className="mb-2 text-2xl">{displayRequest.title || "Untitled Request"}</CardTitle>
+              <CardTitle className="mb-2 text-2xl">
+                {request.title || `Request for ${request.artist?.[0]?.stageName || "Service"}`}
+              </CardTitle>
               <div className="flex items-center gap-2">
-                {requestStatusBadge(displayRequest.status)}
+                {requestStatusBadge(request.status)}
               </div>
               </div>
             </div>
           </CardHeader>
         <CardContent className="space-y-6">
           {/* Artist Info & Key Information */}
+         
           <div className="space-y-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
             {/* Artist Info */}
-            {displayRequest.artist && displayRequest.artist.length > 0 && (
+            {artist && (
               <div className="flex items-start gap-3 pb-4 border-b border-gray-700">
                 <User className="mt-1 h-5 w-5 text-gray-400" />
                 <div className="flex-1">
                   <p className="text-sm text-gray-400">Sent to</p>
                   <Link
-                    href={`/artist/${displayRequest.artist[0].id}`}
+                    href={`/artist/${"userId" in artist && artist.userId ? artist.userId : request.artistId}`}
                     className="hover:text-main-purple text-lg font-semibold text-white transition-colors"
                   >
-                    {displayRequest.artist[0].stageName}
+                    {artist.stageName}
                   </Link>
                 </div>
               </div>
@@ -346,7 +219,7 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                 <DollarSign className="mt-1 h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">Budget</p>
-                  <p className="text-lg font-semibold text-white">{formatBudget(displayRequest.budget, displayRequest.currency)}</p>
+                  <p className="text-lg font-semibold text-white">{formatBudget(request.budget, request.currency)}</p>
                 </div>
               </div>
 
@@ -355,7 +228,7 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                 <Clock className="mt-1 h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">Deadline</p>
-                  <p className="text-lg font-semibold text-white">{formatDate(displayRequest.deadline)}</p>
+                  <p className="text-lg font-semibold text-white">{formatDate(request.deadline)}</p>
                 </div>
               </div>
 
@@ -365,7 +238,7 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                 <div>
                   <p className="text-sm text-gray-400">Created</p>
                   <p className="text-lg font-semibold text-white">
-                    {formatDateTime(displayRequest.requestCreatedTime || displayRequest.updatedAt)}
+                    {formatDateTime(request.requestCreatedTime || request.updatedAt)}
                   </p>
                 </div>
               </div>
@@ -375,52 +248,103 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                 <FileText className="mt-1 h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">Last Updated</p>
-                  <p className="text-lg font-semibold text-white">{formatDateTime(displayRequest.updatedAt)}</p>
+                  <p className="text-lg font-semibold text-white">{formatDateTime(request.updatedAt)}</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Description Section */}
-          <div className="space-y-4 border-t border-gray-700 pt-6">
+          <div className="space-y-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
             <h3 className="text-lg font-semibold">
               Description
             </h3>
-            {displayRequest.summary && (
+            {request.summary && (
               <div>
                 <h4 className="mb-2 text-sm font-semibold text-gray-400">Summary</h4>
-                <p className="text-white">{displayRequest.summary}</p>
+                <p className="text-white">{request.summary}</p>
               </div>
             )}
-            {displayRequest.detailDescription && (
+            {request.detailDescription && (
               <div>
                 <h4 className="mb-2 text-sm font-semibold text-gray-400">Details</h4>
-                <p className="whitespace-pre-wrap text-white">{displayRequest.detailDescription}</p>
+                <p className="whitespace-pre-wrap text-white">{request.detailDescription}</p>
               </div>
             )}
-            {!displayRequest.summary && !displayRequest.detailDescription && (
+            {!request.summary && !request.detailDescription && (
               <p className="text-gray-400">No description provided</p>
             )}
           </div>
+
+          {/* Package Information Section */}
+          {artistPackage && (
+            <div className="space-y-4 border-t border-gray-700 pt-6">
+              <h3 className="text-lg font-semibold">Package Chosen</h3>
+              <div className="space-y-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+                {/* Package Name */}
+                <div>
+                  <p className="text-sm text-gray-400">Package Name</p>
+                  <p className="text-lg font-semibold text-white">{artistPackage.packageName}</p>
+                </div>
+
+                {/* Package Details - Single Line */}
+                <div className="grid gap-4 grid-cols-3">
+                  {/* Package Amount */}
+                  <div>
+                    <p className="text-sm text-gray-400">Package Price</p>
+                    <p className="text-lg font-semibold text-white">
+                      {artistPackage.amount?.toLocaleString()} {artistPackage.currency?.toUpperCase() || "USD"}
+                    </p>
+                  </div>
+
+                  {/* Estimated Delivery */}
+                  <div>
+                    <p className="text-sm text-gray-400">Estimated Delivery</p>
+                    <p className="text-lg font-semibold text-white">
+                      {artistPackage.estimateDeliveryDays} {artistPackage.estimateDeliveryDays === 1 ? "day" : "days"}
+                    </p>
+                  </div>
+
+                  {/* Max Revisions */}
+                  <div>
+                    <p className="text-sm text-gray-400">Revisions Included</p>
+                    <p className="text-lg font-semibold text-white">
+                      {artistPackage.maxRevision === -1 
+                        ? "Unlimited" 
+                        : artistPackage.maxRevision}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Package Description */}
+                {artistPackage.description && (
+                  <div className="border-t border-gray-700 pt-4">
+                    <p className="text-sm text-gray-400 mb-2">Package Description</p>
+                    <p className="whitespace-pre-wrap text-white">{artistPackage.description}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
-        {displayRequest.status === "CONFIRMED" && (
+        {request.status === "CONFIRMED" && (
           <Button className="primary_gradient text-white hover:opacity-65">
             <MessageSquare className="mr-2 h-4 w-4" />
             Message Artist
           </Button>
         )}
-        {displayRequest.status === "PENDING" && (
+        {request.status === "PENDING" && (
           <Button
             variant="destructive"
             onClick={() => setShowCancelDialog(true)}
-            disabled={updateRequestMutation.isPending}
+            disabled={changeStatusMutation.isPending}
           >
             <XCircle className="mr-2 h-4 w-4" />
-            {updateRequestMutation.isPending ? "Canceling..." : "Cancel Request"}
+            {changeStatusMutation.isPending ? "Canceling..." : "Cancel Request"}
           </Button>
         )}
         <Button variant="outline" asChild>

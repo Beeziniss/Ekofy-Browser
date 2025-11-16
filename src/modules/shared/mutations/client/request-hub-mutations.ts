@@ -1,8 +1,5 @@
-// import { graphql } from "@/gql";
+import { graphql } from "@/gql";
 
-// TODO: These mutations need to be updated to match the new schema
-// Temporarily commented out to allow codegen to succeed
-/*
 export const CREATE_REQUEST_MUTATION = graphql(`
   mutation CreatePublicRequest($request: RequestCreatingRequestInput!) {
     createPublicRequest(request: $request)
@@ -20,4 +17,10 @@ export const BLOCK_REQUEST_MUTATION = graphql(`
     blockPublicRequest(requestId: $requestId)
   }
 `);
-*/
+
+export const CHANGE_REQUEST_STATUS_MUTATION = graphql(`
+  mutation ChangeRequestStatus($request: ChangeStatusRequestInput!) {
+    changeRequestStatus(request: $request)
+  }
+`);
+
