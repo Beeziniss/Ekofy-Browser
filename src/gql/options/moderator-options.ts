@@ -5,7 +5,7 @@ import {
   ModeratorApprovalHistoryDetailQuery,
   ApprovalHistoriesListQuery,
 } from "@/modules/shared/queries/moderator/approval-histories-queries";
-import { PendingArtistPackagesQuery } from "@/modules/shared/queries/artist/artist-packages-queries";
+// import { PendingArtistPackagesQuery } from "@/modules/shared/queries/artist/artist-packages-queries";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
 import {
@@ -14,7 +14,7 @@ import {
   ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType,
   ApprovalHistoryFilterInput,
   ApprovalType,
-  PaginatedDataOfPendingArtistPackageResponseFilterInput,
+  // PaginatedDataOfPendingArtistPackageResponseFilterInput,
 } from "@/gql/graphql";
 import {
   ModeratorGetListUser,
@@ -322,32 +322,32 @@ export const moderatorTrackOriginalFileOptions = (uploadId: string) =>
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 
-export const moderatorPendingPackagesOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") =>
-  queryOptions({
-    queryKey: ["moderator-pending-packages", page, pageSize, searchTerm],
-    queryFn: () => {
-      let where: PaginatedDataOfPendingArtistPackageResponseFilterInput | undefined = undefined;
+// export const moderatorPendingPackagesOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") =>
+//   queryOptions({
+//     queryKey: ["moderator-pending-packages", page, pageSize, searchTerm],
+//     queryFn: () => {
+//       let where: PaginatedDataOfPendingArtistPackageResponseFilterInput | undefined = undefined;
 
-      // Add packageName filter if search term is provided
-      if (searchTerm.trim()) {
-        where = {
-          items: {
-            some: {
-              packageName: { contains: searchTerm },
-            },
-          },
-        };
-      }
+//       // Add packageName filter if search term is provided
+//       if (searchTerm.trim()) {
+//         where = {
+//           items: {
+//             some: {
+//               packageName: { contains: searchTerm },
+//             },
+//           },
+//         };
+//       }
 
-      return execute(PendingArtistPackagesQuery, {
-        pageNumber: page,
-        pageSize: pageSize,
-        where, // Apply search filter if provided
-        artistWhere: {}, // Get all artists
-      });
-    },
-    staleTime: 1 * 60 * 1000, // 1 minute
-  });
+//       return execute(PendingArtistPackagesQuery, {
+//         pageNumber: page,
+//         pageSize: pageSize,
+//         where, // Apply search filter if provided
+//         artistWhere: {}, // Get all artists
+//       });
+//     },
+//     staleTime: 1 * 60 * 1000, // 1 minute
+//   });
 
 // User created by query options for moderator (for track detail)
 export const moderatorUserCreatedByOptions = (userId: string) =>

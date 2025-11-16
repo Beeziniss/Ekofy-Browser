@@ -78,7 +78,7 @@ export const useReActiveUser = () => {
 };
 
 // Export the service package mutations from the artist service package mutation file
-export { useApproveArtistPackage, useRejectArtistPackage } from "./artist-service-package-mutation";
+// export { useApproveArtistPackage, useRejectArtistPackage } from "./artist-service-package-mutation";
 
 // Track mutations with enhanced feedback
 export const useApproveTrackWithFeedback = () => {
