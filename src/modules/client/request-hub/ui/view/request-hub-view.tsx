@@ -252,7 +252,6 @@ export function RequestHubView() {
   return (
     <>
       {renderContent()}
-
       {/* Stripe Account Required Modal */}
       <StripeAccountRequiredModal
         open={showStripeModal}

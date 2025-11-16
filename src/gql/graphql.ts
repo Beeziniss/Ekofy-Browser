@@ -6503,6 +6503,18 @@ export type GetArtistProfileQueryVariables = Exact<{
 
 export type GetArtistProfileQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, avatarImage?: string | null, bannerImage?: string | null, biography?: string | null, isVerified: boolean, createdAt: any, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, gender: UserGender, isLeader: boolean, phoneNumber: string }>, user: Array<{ __typename?: 'User', status: UserStatus }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', addressLine?: string | null } } }> | null } | null };
 
+export type ConversationsQueryVariables = Exact<{
+  where?: InputMaybe<ConversationFilterInput>;
+}>;
+
+
+export type ConversationsQuery = { __typename?: 'QueryInitialization', conversations?: { __typename?: 'ConversationsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Conversation', id: string, userIds: Array<string>, lastMessage?: { __typename?: 'LastMessage', text: string, senderId: string, sentAt: any, isReadBy: Array<string> } | null }> | null } | null };
+
+export type MessagesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MessagesQuery = { __typename?: 'QueryInitialization', messages?: { __typename?: 'MessagesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Message', id: string, conversationId: string, senderId: string, receiverId: string, isRead: boolean, text: string, sentAt: any }> | null } | null };
+
 export type FollowersQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']['input']>;
   artistId?: InputMaybe<Scalars['String']['input']>;
@@ -7929,6 +7941,39 @@ export const GetArtistProfileDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetArtistProfileQuery, GetArtistProfileQueryVariables>;
+export const ConversationsDocument = new TypedDocumentString(`
+    query Conversations($where: ConversationFilterInput) {
+  conversations(where: $where) {
+    items {
+      id
+      userIds
+      lastMessage {
+        text
+        senderId
+        sentAt
+        isReadBy
+      }
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<ConversationsQuery, ConversationsQueryVariables>;
+export const MessagesDocument = new TypedDocumentString(`
+    query Messages {
+  messages {
+    items {
+      id
+      conversationId
+      senderId
+      receiverId
+      isRead
+      text
+      sentAt
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<MessagesQuery, MessagesQueryVariables>;
 export const FollowersDocument = new TypedDocumentString(`
     query Followers($userId: String, $artistId: String) {
   followers(userId: $userId, artistId: $artistId) {

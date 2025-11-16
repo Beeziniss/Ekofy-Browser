@@ -87,8 +87,8 @@ export const useChangeRequestStatus = () => {
 
   return useMutation({
     mutationFn: async ({ requestId, status }: { requestId: string; status: RequestStatus }) => {
-      return await execute(CHANGE_REQUEST_STATUS_MUTATION, { 
-        request: { requestId, status } 
+      return await execute(CHANGE_REQUEST_STATUS_MUTATION, {
+        request: { requestId, status },
       });
     },
     onSuccess: () => {

@@ -58,7 +58,7 @@ const data = {
       name: "Reports",
       url: "/artist/studio/reports",
       icon: AlbumIcon,
-    }
+    },
   ],
 };
 

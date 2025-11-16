@@ -292,7 +292,6 @@ export function MyRequestsView() {
   return (
     <>
       {renderContent()}
-
       {/* Stripe Account Required Modal */}
       <StripeAccountRequiredModal
         open={showStripeModal}
