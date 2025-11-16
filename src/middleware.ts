@@ -18,6 +18,7 @@ export function middleware(request: NextRequest) {
       const authData = JSON.parse(decodedValue);
       user = authData.state?.user;
       isAuthenticated = authData.state?.isAuthenticated || false;
+      request.headers.set("x-user-id", user?.id);
     } catch (error) {
       console.error("Failed to parse auth storage:", error);
     }
