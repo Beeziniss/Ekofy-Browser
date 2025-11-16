@@ -45,12 +45,6 @@ export interface AdminLoginData {
   role: UserRole;
 }
 
-export type IUserCurrent = Base<IUserCurrentData>;
-export type ListenerLoginResponse = Base<ListenerLoginData>;
-export type ArtistLoginResponse = Base<ArtistLoginData>;
-export type ModeratorLoginResponse = Base<ModeratorLoginData>;
-export type AdminLoginResponse = Base<AdminLoginData>;
-
 export interface RegisterListenerData {
   email: string;
   password: string;
@@ -102,5 +96,17 @@ export interface RegisterArtistData {
   };
 }
 
-// export type RegisterListenerDataResponse = Base<RegisterListenerData>;
+export interface RefreshTokenData {
+  tokenType: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
+export type IUserCurrent = Base<IUserCurrentData>;
+export type ListenerLoginResponse = Base<ListenerLoginData>;
+export type ArtistLoginResponse = Base<ArtistLoginData>;
+export type ModeratorLoginResponse = Base<ModeratorLoginData>;
+export type AdminLoginResponse = Base<AdminLoginData>;
 export type RegisterArtistResponse = Base<RegisterArtistData>;
+export type RefreshTokenResponse = Base<RefreshTokenData>;
