@@ -2,7 +2,7 @@ interface ConversationDetailLayoutProps {
   children: React.ReactNode;
 }
 
-const ConversationDetailLayout = ({ children }: ConversationDetailLayoutProps) => {
+const ConversationLayout = ({ children }: ConversationDetailLayoutProps) => {
   return (
     <div className="grid h-[calc(100dvh-64px-48px)] w-full grid-cols-12 gap-6 p-6">
       <div className="bg-main-dark-1 col-span-3 rounded-md px-2 py-6">Conversation List</div>
@@ -12,4 +12,4 @@ const ConversationDetailLayout = ({ children }: ConversationDetailLayoutProps) =
   );
 };
 
-export default ConversationDetailLayout;
+export default ConversationLayout;

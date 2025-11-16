@@ -1,11 +1,11 @@
-/* import { cookies } from "next/headers";
+import { cookies } from "next/headers";
 import { getQueryClient } from "@/providers/get-query-client";
 import { playlistOptions } from "@/gql/options/client-options";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import LibraryView from "@/modules/client/library/ui/views/library-view"; */
+import LibraryView from "@/modules/client/library/ui/views/library-view";
 
 const LibraryPage = async () => {
-  /* const queryClient = getQueryClient();
+  const queryClient = getQueryClient();
 
   const cookiess = await cookies();
   const authStorage = cookiess.get("auth-storage")?.value;
@@ -13,13 +13,13 @@ const LibraryPage = async () => {
 
   if (userId) {
     void queryClient.prefetchInfiniteQuery(playlistOptions(userId, undefined, 11));
-  } */
+  }
 
-  /* <HydrationBoundary state={dehydrate(queryClient)}>
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <LibraryView />
-    </HydrationBoundary> */
-
-  return <div>test</div>;
+    </HydrationBoundary>
+  );
 };
 
 export default LibraryPage;
