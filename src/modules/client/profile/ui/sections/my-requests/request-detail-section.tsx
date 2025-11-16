@@ -1,11 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, DollarSign, User, FileText, MessageSquare } from "lucide-react";
+import { Calendar, Clock, DollarSign, User, FileText, MessageSquare, XCircle } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { useUpdateRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { requestByIdOptions } from "@/gql/options/client-options";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import { RequestStatus as GqlRequestStatus, RequestType as GqlRequestType, CurrencyType } from "@/gql/graphql";
@@ -168,12 +181,47 @@ function RequestDetailSkeleton() {
 
 export default function RequestDetailSection({ requestId }: RequestDetailSectionProps) {
   const { user } = useAuthStore();
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   const { data: request, isLoading, error } = useQuery(requestByIdOptions(requestId));
+  const updateRequestMutation = useUpdateRequest();
 
   // Use mock data if enabled
   const displayRequest = MOCK_DATA && user?.userId ? getMockRequestById(requestId, user.userId) : request;
   const isLoadingData = MOCK_DATA ? false : isLoading;
   const hasError = MOCK_DATA ? !displayRequest : error || !request;
+
+  const handleCancelRequest = async () => {
+    if (!displayRequest) return;
+
+    if (MOCK_DATA) {
+      toast.info("Cancel functionality is not available in mock mode. Set MOCK_DATA = false to use real API.");
+      setShowCancelDialog(false);
+      return;
+    }
+
+    try {
+      await updateRequestMutation.mutateAsync({
+        id: requestId,
+        title: displayRequest.title || "",
+        summary: displayRequest.summary || "",
+        detailDescription: displayRequest.detailDescription || "",
+        budget: displayRequest.budget || { min: 0, max: 0 },
+        deadline: displayRequest.deadline,
+        status: GqlRequestStatus.Canceled,
+      });
+
+      toast.success("Your request has been canceled successfully.");
+
+      setShowCancelDialog(false);
+      // Redirect back to list after a short delay
+      setTimeout(() => {
+        window.location.href = "/profile/my-requests";
+      }, 1000);
+    } catch (error) {
+      console.error("Failed to cancel request:", error);
+      toast.error("Failed to cancel request. Please try again.");
+    }
+  };
 
   if (isLoadingData) {
     return <RequestDetailSkeleton />;
@@ -365,11 +413,43 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
             Message Artist
           </Button>
         )}
+        {displayRequest.status === "PENDING" && (
+          <Button
+            variant="destructive"
+            onClick={() => setShowCancelDialog(true)}
+            disabled={updateRequestMutation.isPending}
+          >
+            <XCircle className="mr-2 h-4 w-4" />
+            {updateRequestMutation.isPending ? "Canceling..." : "Cancel Request"}
+          </Button>
+        )}
         <Button variant="outline" asChild>
           <Link href="/profile/my-requests">Back to My Requests</Link>
         </Button>
       </div>
       </div>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Request?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this request? This action cannot be undone.
+              The artist will be notified that you have canceled the request.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No, Keep Request</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelRequest}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Yes, Cancel Request
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
