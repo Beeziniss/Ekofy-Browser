@@ -226,7 +226,7 @@ export function MyRequestsView() {
               title: editingRequest.title || "",
               summary: editingRequest.summary || "",
               detailDescription: editingRequest.detailDescription || "",
-              budget: editingRequest.budget,
+              budget: editingRequest.budget!,
               deadline: editingRequest.deadline,
             }}
             onSubmit={handleUpdateSubmit}
@@ -292,7 +292,7 @@ export function MyRequestsView() {
   return (
     <>
       {renderContent()}
-      
+
       {/* Stripe Account Required Modal */}
       <StripeAccountRequiredModal
         open={showStripeModal}

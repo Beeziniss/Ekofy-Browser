@@ -4,6 +4,7 @@ import {
   CREATE_REQUEST_MUTATION,
   UPDATE_REQUEST_MUTATION,
   BLOCK_REQUEST_MUTATION,
+  CHANGE_REQUEST_STATUS_MUTATION,
 } from "@/modules/shared/mutations/client/request-hub-mutations";
 import { RequestCreatingRequestInput, RequestUpdatingRequestInput, RequestStatus } from "@/gql/graphql";
 
@@ -72,6 +73,23 @@ export const useDeleteRequest = () => {
         status: RequestStatus.Deleted,
       };
       return await execute(UPDATE_REQUEST_MUTATION, { request: requestInput });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["requests"] });
+      queryClient.invalidateQueries({ queryKey: ["my-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["request"] });
+    },
+  });
+};
+
+export const useChangeRequestStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ requestId, status }: { requestId: string; status: RequestStatus }) => {
+      return await execute(CHANGE_REQUEST_STATUS_MUTATION, { 
+        request: { requestId, status } 
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["requests"] });

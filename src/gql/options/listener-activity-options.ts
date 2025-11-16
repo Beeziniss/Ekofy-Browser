@@ -67,7 +67,7 @@ export function listenerInvoicesOptions(params: { userId: string; page: number; 
 }
 
 // Detail by ID: Payment Transaction (listener)
-export function listenerTransactionByIdOptions(params: { id: string }) {
+export function listenerTransactionByIdOptions(params: { id: string; userId?: string }) {
   const { id } = params;
   const where: PaymentTransactionFilterInput = {
     or: [{ id: { eq: id } }],

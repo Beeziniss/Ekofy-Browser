@@ -23,8 +23,17 @@ export const REQUEST_HUB_QUERY = graphql(`
         currency
         deadline
         status
+        type
         postCreatedTime
+        requestCreatedTime
         updatedAt
+        artistId
+        packageId
+        artist {
+          id
+          stageName
+          avatarImage
+        }
         requestor {
           id
           userId
@@ -48,17 +57,26 @@ export const REQUEST_BY_ID_QUERY = graphql(`
       currency
       deadline
       status
+      type
       postCreatedTime
+      requestCreatedTime
       updatedAt
+      artistId
+      packageId
       budget {
         min
         max
       }
-    requestor {
-      id
-      userId
-      displayName
-    }
+      artist {
+        id
+        stageName
+        avatarImage
+      }
+      requestor {
+        id
+        userId
+        displayName
+      }
     }
   }
 `);
@@ -112,11 +130,20 @@ export const OWN_REQUESTS_QUERY = graphql(`
         currency
         deadline
         status
+        type
         postCreatedTime
+        requestCreatedTime
         updatedAt
+        artistId
+        packageId
         budget {
           min
           max
+        }
+        artist {
+          id
+          stageName
+          avatarImage
         }
         requestor {
           id

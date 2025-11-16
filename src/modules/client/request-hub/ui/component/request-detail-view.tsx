@@ -34,7 +34,7 @@ interface RequestDetailViewProps {
 
 export function RequestDetailView({ request, onBack, onApply, onContactClient, className }: RequestDetailViewProps) {
   const [showStripeModal, setShowStripeModal] = useState(false);
-  
+
   // Get auth state and dialog
   const { isAuthenticated } = useAuthStore();
   const { showAuthDialog } = useAuthDialog();
@@ -201,7 +201,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
 
             {/* Summary */}
             <Card>
-              <CardContent className="py-0 px-6">
+              <CardContent className="px-6 py-0">
                 <h2 className="mb-4 text-lg font-semibold">Summary</h2>
                 <p className="mb-4 leading-relaxed text-white">{request.summary}</p>
               </CardContent>
@@ -209,7 +209,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
 
             {/* Detail Description */}
             <Card>
-              <CardContent className="py-0 px-6">
+              <CardContent className="px-6 py-0">
                 <h2 className="mb-4 text-lg font-semibold">Detailed Description</h2>
                 <div
                   className="prose prose-invert max-w-none leading-relaxed text-white"
@@ -220,7 +220,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
 
             {/* Status */}
             <Card>
-              <CardContent className="py-0 px-6">
+              <CardContent className="px-6 py-0">
                 <h2 className="mb-4 text-lg font-semibold">Request Status</h2>
                 <Badge variant={getStatusVariant(request.status)} className="px-3 py-1 text-sm">
                   {formatStatus(request.status)}
@@ -239,13 +239,13 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
             <div className="sticky top-20">
               {/* Budget */}
               <Card>
-                <CardContent className="py-0 px-6">
+                <CardContent className="px-6 py-0">
                   <div className="mb-2 flex items-center text-gray-500">
                     <DollarSign className="mr-1 h-4 w-4" />
                     <span className="text-sm">Budget</span>
                   </div>
                   <p className="mb-4 text-2xl font-bold text-purple-600">
-                    {formatBudget(request.budget, request.currency)}
+                    {formatBudget(request!.budget!, request.currency)}
                   </p>
 
                   <div className="mb-6 space-y-3">

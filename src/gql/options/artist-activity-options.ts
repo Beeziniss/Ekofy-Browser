@@ -55,7 +55,7 @@ export function artistPayoutsOptions(params: { userId: string; page: number; pag
 export function artistTransactionByIdOptions(params: { id: string }) {
   const { id } = params;
   const where: PaymentTransactionFilterInput = {
-    or: [{ id: { eq: id } }],
+    id: { eq: id },
   };
   const take = 1;
   const skip = 0;

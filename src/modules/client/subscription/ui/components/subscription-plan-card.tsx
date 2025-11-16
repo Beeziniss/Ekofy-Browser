@@ -43,8 +43,8 @@ export function SubscriptionPlanCard({
   });
 
   const hasOpenTransaction =
-    openTransactionData?.transactions?.items && openTransactionData.transactions.items.length > 0;
-  const openTransaction = hasOpenTransaction ? openTransactionData?.transactions?.items?.[0] : null;
+    openTransactionData?.paymentTransactions?.items && openTransactionData.paymentTransactions.items.length > 0;
+  const openTransaction = hasOpenTransaction ? openTransactionData?.paymentTransactions?.items?.[0] : null;
 
   // Check if this plan is the user's current active plan
   const isCurrentPlan = userActiveSubscription?.subscription?.[0]?.tier === subscription.tier;

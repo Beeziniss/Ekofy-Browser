@@ -17,3 +17,10 @@ export const BLOCK_REQUEST_MUTATION = graphql(`
     blockPublicRequest(requestId: $requestId)
   }
 `);
+
+export const CHANGE_REQUEST_STATUS_MUTATION = graphql(`
+  mutation ChangeRequestStatus($request: ChangeStatusRequestInput!) {
+    changeRequestStatus(request: $request)
+  }
+`);
+
