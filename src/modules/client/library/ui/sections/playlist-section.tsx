@@ -65,7 +65,7 @@ const PlaylistSectionSuspense = () => {
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
   // This will only run when the component is rendered (i.e., when user is authenticated)
-  const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } = useSuspenseInfiniteQuery(
+  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useSuspenseInfiniteQuery(
     playlistOptions(user!.userId, debouncedSearchQuery, 11),
   );
 
@@ -90,7 +90,7 @@ const PlaylistSectionSuspense = () => {
       <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {debouncedSearchQuery === "" && <PlaylistCreate />}
 
-        <PlaylistList data={data} isPending={isPending} />
+        <PlaylistList data={data} />
       </div>
 
       <div className="flex items-center justify-center">
