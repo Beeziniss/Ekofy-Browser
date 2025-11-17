@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -62,7 +63,7 @@ const processReportFormSchema = z
     (data) => {
       // Validate status based on actionTaken
       if (data.actionTaken === ReportAction.NoAction) {
-        return [ReportStatus.Dismissed, ReportStatus.Rejected].includes(data.status);
+        return [ReportStatus.Rejected].includes(data.status);
       } else {
         return data.status === ReportStatus.Approved;
       }
@@ -91,7 +92,7 @@ const STATUS_LABELS: Record<ReportStatus, string> = {
   [ReportStatus.UnderReview]: "Under Review",
   [ReportStatus.Approved]: "Approved",
   [ReportStatus.Rejected]: "Rejected",
-  [ReportStatus.Dismissed]: "Dismissed",
+  [ReportStatus.Restored]: "Restored",
   [ReportStatus.Escalated]: "Escalated",
 };
 
@@ -109,6 +110,38 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
   const [selectedRestrictionActions, setSelectedRestrictionActions] = useState<RestrictionAction[]>([]);
   const processReport = useProcessReport();
 
+  // Get available restriction actions based on relatedContentType
+  const getAvailableRestrictionActions = (): RestrictionAction[] => {
+    if (!relatedContentType) {
+      // For user reports (no related content), all restrictions are available
+      return [
+        RestrictionAction.Comment,
+        RestrictionAction.CreateRequest,
+        RestrictionAction.CreateDirectRequest,
+        RestrictionAction.UploadTrack,
+        RestrictionAction.Report
+      ];
+    }
+
+    // For content-related reports, restrict based on content type
+    switch (relatedContentType) {
+      case ReportRelatedContentType.Comment:
+        return [RestrictionAction.Comment];
+      case ReportRelatedContentType.Request:
+        return [RestrictionAction.CreateRequest, RestrictionAction.CreateDirectRequest];
+      case ReportRelatedContentType.Track:
+        return [RestrictionAction.UploadTrack];
+      default:
+        return [
+          RestrictionAction.Comment,
+          RestrictionAction.CreateRequest,
+          RestrictionAction.CreateDirectRequest,
+          RestrictionAction.UploadTrack,
+          RestrictionAction.Report
+        ];
+    }
+  };
+
   // Get available actions based on relatedContentType
   const getAvailableActions = (): ReportAction[] => {
     if (relatedContentType && [
@@ -116,20 +149,24 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
       ReportRelatedContentType.Comment,
       ReportRelatedContentType.Request
     ].includes(relatedContentType)) {
-      // For content-related reports, only content removal is available
-      return [ReportAction.ContentRemoval];
+      // For content-related reports, NoAction, Warning, Entitlement Restriction, and Content Removal are available
+      return [ReportAction.NoAction, ReportAction.Warning, ReportAction.EntitlementRestriction ,ReportAction.ContentRemoval];
     }
     // For user reports (no related content), all other actions are available
     return [
       ReportAction.NoAction,
       ReportAction.Warning,
-      // ReportAction.Suspended,
+      ReportAction.Suspended,
       ReportAction.EntitlementRestriction,
-      // ReportAction.PermanentBan
+      ReportAction.PermanentBan
     ];
   };
 
   const availableActions = getAvailableActions();
+  const availableRestrictionActions = getAvailableRestrictionActions();
+
+  // Auto-select restriction action if only one is available
+  const autoSelectRestriction = availableRestrictionActions.length === 1;
 
   const form = useForm<ProcessReportFormValues>({
     resolver: zodResolver(processReportFormSchema),
@@ -138,16 +175,23 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
       status: undefined,
       note: "",
       suspensionDays: undefined,
-      restrictionActions: [],
+      restrictionActions: autoSelectRestriction ? availableRestrictionActions : [],
       restrictionNotes: {},
     },
   });
+
+  // Initialize selected restriction actions if auto-selecting
+  React.useEffect(() => {
+    if (autoSelectRestriction && selectedRestrictionActions.length === 0) {
+      setSelectedRestrictionActions(availableRestrictionActions);
+    }
+  }, [autoSelectRestriction, availableRestrictionActions, selectedRestrictionActions.length]);
 
   const actionTaken = form.watch("actionTaken");
 
   const getAvailableStatuses = (action: ReportAction | undefined): ReportStatus[] => {
     if (action === ReportAction.NoAction) {
-      return [ReportStatus.Dismissed, ReportStatus.Rejected];
+      return [ReportStatus.Rejected];
     }
     return [ReportStatus.Approved];
   };
@@ -165,7 +209,7 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
         actionTaken: data.actionTaken,
         status: data.status,
         note: data.note || undefined,
-        suspensionDays: data.actionTaken === ReportAction.Suspended ? data.suspensionDays : undefined,
+        suspensionDays: (data.actionTaken === ReportAction.Suspended || data.actionTaken === ReportAction.EntitlementRestriction) ? data.suspensionDays : undefined,
         restrictionActionDetails:
           data.actionTaken === ReportAction.EntitlementRestriction ? restrictionActionDetails : [],
       });
@@ -279,7 +323,7 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
                 />
               )}
 
-              {actionTaken === ReportAction.Suspended && (
+              {(actionTaken === ReportAction.Suspended || actionTaken === ReportAction.EntitlementRestriction) && (
                 <FormField
                   control={form.control}
                   name="suspensionDays"
@@ -294,7 +338,11 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
                           onChange={(e) => field.onChange(parseInt(e.target.value))}
                         />
                       </FormControl>
-                      <FormDescription>How many days to suspend the account</FormDescription>
+                      <FormDescription>
+                        {actionTaken === ReportAction.Suspended 
+                          ? "How many days to suspend the account" 
+                          : "Duration of the restriction in days"}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -309,39 +357,46 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
                       Select the permissions that the user will be restricted from
                     </p>
                     <div className="space-y-4">
-                      {Object.entries(RESTRICTION_ACTION_LABELS)
-                        .filter(([key]) => key !== RestrictionAction.None)
-                        .map(([key, label]) => (
-                          <div key={key} className="space-y-3 p-3 rounded-md border bg-background/50">
+                      {availableRestrictionActions.map((action) => {
+                        const label = RESTRICTION_ACTION_LABELS[action];
+                        return (
+                          <div key={action} className="space-y-3 p-3 rounded-md border bg-background/50">
                             <div className="flex items-center space-x-3">
                               <Checkbox
-                                id={key}
-                                checked={selectedRestrictionActions.includes(key as RestrictionAction)}
+                                id={action}
+                                checked={selectedRestrictionActions.includes(action)}
+                                disabled={autoSelectRestriction}
                                 onCheckedChange={(checked) =>
-                                  handleRestrictionActionToggle(key as RestrictionAction, checked as boolean)
+                                  handleRestrictionActionToggle(action, checked as boolean)
                                 }
                               />
                               <label
-                                htmlFor={key}
-                                className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                htmlFor={action}
+                                className={`text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                                  autoSelectRestriction ? 'text-muted-foreground' : ''
+                                }`}
                               >
                                 {label}
+                                {autoSelectRestriction && (
+                                  <span className="ml-2 text-xs text-muted-foreground">(Auto-selected)</span>
+                                )}
                               </label>
                             </div>
-                            {selectedRestrictionActions.includes(key as RestrictionAction) && (
+                            {selectedRestrictionActions.includes(action) && (
                               <div className="pl-7 pt-1">
                                 <Textarea
-                                  placeholder="Note for this restriction..."
+                                  placeholder={`Note for ${label.toLowerCase()} restriction...`}
                                   className="text-sm resize-none min-h-[80px] w-full"
-                                  value={form.watch(`restrictionNotes.${key}`) || ""}
+                                  value={form.watch(`restrictionNotes.${action}`) || ""}
                                   onChange={(e) =>
-                                    form.setValue(`restrictionNotes.${key}`, e.target.value)
+                                    form.setValue(`restrictionNotes.${action}`, e.target.value)
                                   }
                                 />
                               </div>
                             )}
                           </div>
-                        ))}
+                        );
+                      })}
                     </div>
                   </div>
                 </div>

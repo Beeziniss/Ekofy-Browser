@@ -100,8 +100,8 @@ export function ReportFilters({ onFiltersChange, className }: ReportFiltersProps
                 <SelectItem value={ReportStatus.Approved}>
                   Approved
                 </SelectItem>
-                <SelectItem value={ReportStatus.Dismissed}>
-                  Dismissed
+                <SelectItem value={ReportStatus.Restored}>
+                  Restored
                 </SelectItem>
                 <SelectItem value={ReportStatus.Rejected}>
                   Rejected

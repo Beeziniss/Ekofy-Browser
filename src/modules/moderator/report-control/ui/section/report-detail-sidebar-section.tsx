@@ -4,12 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
-import { 
-  AlertTriangle, 
-} from "lucide-react";
 import { ReportDetailQueryQuery } from "@/gql/graphql";
-import { useQuery } from "@tanstack/react-query";
-import { moderatorReportsOptions } from "@/gql/options/report-options";
 
 type ReportItem = NonNullable<NonNullable<ReportDetailQueryQuery["reports"]>["items"]>[0];
 
@@ -18,12 +13,8 @@ interface ReportDetailSidebarSectionProps {
 }
 
 export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectionProps) {
-  // Query moderator info if report is assigned
-  const { data: moderatorData } = useQuery(
-    moderatorReportsOptions({ id: { eq: report.assignedModeratorId || "" } })
-  );
   
-  const assignedModerator = moderatorData?.items?.[0];
+  // const assignedModerator = moderatorData?.items?.[0];
   return (
     <div className="space-y-4 lg:sticky lg:top-6">
       {/* Reporter Card */}
@@ -36,7 +27,7 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
         <CardContent className="space-y-3">
           <div>
             <p className="text-xs text-muted-foreground mb-1">Full Name</p>
-            <p className="font-medium">{report.userReporter?.[0]?.fullName || "Unknown"}</p>
+            <p className="font-medium">{report.nicknameReporter || "Unknown"}</p>
           </div>
           <Separator />
           <div>
@@ -58,7 +49,7 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
         <CardContent className="space-y-3">
           <div>
             <p className="text-xs text-muted-foreground mb-1">Full Name</p>
-            <p className="font-medium">{report.userReported?.[0]?.fullName || "Unknown"}</p>
+            <p className="font-medium">{report.nicknameReported || "Unknown"}</p>
           </div>
           <Separator />
           <div>
@@ -67,12 +58,11 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
               {report.userReported?.[0]?.role || "Unknown"}
             </Badge>
           </div>
-          {report.totalReportsCount && report.totalReportsCount > 1 && (
+          {report.totalReportsCount && report.totalReportsCount > 0 && (
             <>
               <Separator />
               <div className="bg-orange-50 dark:bg-orange-950/30 rounded-lg p-3 border border-orange-200 dark:border-orange-800">
                 <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-orange-600" />
                   <div>
                     <p className="text-xs text-muted-foreground">Total Reports</p>
                     <p className="text-lg font-bold text-orange-600">{report.totalReportsCount}</p>
@@ -96,7 +86,7 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
             <div>
               <p className="text-xs text-muted-foreground mb-1">Full Name</p>
               <p className="font-medium">
-                {assignedModerator?.fullName || "Loading..."}
+                {report.userAssignedTo?.[0]?.fullName || "Loading..."}
               </p>
             </div>
           </CardContent>
