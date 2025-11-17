@@ -17,6 +17,7 @@ export const TrackCommentsQuery = graphql(`
             email
             isVerified
             role
+            avatar
             userId
             listener {
               avatarImage
@@ -54,6 +55,7 @@ export const TrackCommentsQuery = graphql(`
             email
             isVerified
             role
+            avatar
             userId
             listener {
               avatarImage
@@ -101,6 +103,7 @@ export const TrackCommentRepliesQuery = graphql(`
           email
           isVerified
           role
+          avatar
           userId
           listener {
             avatarImage

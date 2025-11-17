@@ -12,6 +12,7 @@ import { ReportFiltersSection } from "../section/report-filters-section";
 import { ReportTableSection } from "../section/report-table-section";
 import { ReportPaginationSection } from "../section/report-pagination-section";
 import { ProcessReportDialog } from "../components/process-report-dialog";
+import { RestoreUserDialog } from "../components/restore-user-dialog";
 
 export function ReportListView() {
   const [page, setPage] = useState(1);
@@ -21,6 +22,8 @@ export function ReportListView() {
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
   const [selectedReportType, setSelectedReportType] = useState<ReportRelatedContentType | null>(null);
   const [processDialogOpen, setProcessDialogOpen] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [selectedReportForRestore, setSelectedReportForRestore] = useState<{ id: string; userName?: string } | null>(null);
   const pageSize = 10;
   const { user } = useAuthStore();
   const assignReport = useAssignReportToModerator();
@@ -91,6 +94,20 @@ export function ReportListView() {
     refetch();
   };
 
+  const handleRestoreUser = async (reportId: string) => {
+    const report = reports.find(r => r.id === reportId);
+    setSelectedReportForRestore({
+      id: reportId,
+      userName: report?.nicknameReported || undefined
+    });
+    setRestoreDialogOpen(true);
+  };
+
+  const handleRestoreSuccess = () => {
+    refetch();
+    setSelectedReportForRestore(null);
+  };
+
   return (
     <>
       <ReportControlLayout>
@@ -110,6 +127,8 @@ export function ReportListView() {
           isAssigning={assignReport.isPending}
           onAssignToMe={handleAssignToMe}
           onProcess={handleProcess}
+          onRestoreUser={handleRestoreUser}
+          isRestoring={false}
         />
 
         <ReportPaginationSection
@@ -128,6 +147,16 @@ export function ReportListView() {
           reportId={selectedReportId}
           relatedContentType={selectedReportType}
           onSuccess={handleProcessSuccess}
+        />
+      )}
+
+      {selectedReportForRestore && (
+        <RestoreUserDialog
+          open={restoreDialogOpen}
+          onOpenChange={setRestoreDialogOpen}
+          reportId={selectedReportForRestore.id}
+          reportedUserName={selectedReportForRestore.userName}
+          onSuccess={handleRestoreSuccess}
         />
       )}
     </>

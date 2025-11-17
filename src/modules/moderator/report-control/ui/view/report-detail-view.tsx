@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ProcessReportDialog } from "../components/process-report-dialog";
+import { RestoreUserDialog } from "../components/restore-user-dialog";
 import { ReportDetailLayout } from "../layout/report-detail-layout";
 import { ReportDetailHeaderSection } from "../section/report-detail-header-section";
 import { ReportDetailInfoSection } from "../section/report-detail-info-section";
@@ -20,6 +21,7 @@ interface ReportDetailViewProps {
 
 export function ReportDetailView({ reportId }: ReportDetailViewProps) {
   const [processDialogOpen, setProcessDialogOpen] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const { user } = useAuthStore();
   const assignReport = useAssignReportToModerator();
 
@@ -69,6 +71,15 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
     refetch(); // Refetch to update the UI after processing
   };
 
+  // Handle restore user
+  const handleRestoreUser = () => {
+    setRestoreDialogOpen(true);
+  };
+
+  const handleRestoreSuccess = () => {
+    refetch(); // Refetch to update the UI after restoring
+  };
+
   return (
     <>
       <ReportDetailLayout
@@ -79,6 +90,8 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
             isAssigning={assignReport.isPending}
             onProcessClick={handleProcessClick}
             onAssignClick={handleAssignToMe}
+            onRestoreClick={handleRestoreUser}
+            isRestoring={false}
           />
         }
         mainContent={<ReportDetailInfoSection report={report} />}
@@ -92,6 +105,15 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
         open={processDialogOpen}
         onOpenChange={setProcessDialogOpen}
         onSuccess={handleProcessSuccess}
+      />
+
+      {/* Restore User Dialog */}
+      <RestoreUserDialog
+        reportId={report.id}
+        reportedUserName={report.nicknameReported}
+        open={restoreDialogOpen}
+        onOpenChange={setRestoreDialogOpen}
+        onSuccess={handleRestoreSuccess}
       />
     </>
   );

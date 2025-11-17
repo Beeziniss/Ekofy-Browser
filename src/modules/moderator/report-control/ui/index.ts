@@ -16,3 +16,4 @@ export { ReportDetailLayout } from "./layout/report-detail-layout";
 
 // Components
 export { ProcessReportDialog } from "./components/process-report-dialog";
+export { RestoreUserDialog } from "./components/restore-user-dialog";

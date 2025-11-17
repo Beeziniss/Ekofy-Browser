@@ -113,7 +113,7 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
                   <SelectItem value={ReportStatus.Pending}>Pending</SelectItem>
                   <SelectItem value={ReportStatus.UnderReview}>Under Review</SelectItem>
                   <SelectItem value={ReportStatus.Approved}>Approved</SelectItem>
-                  <SelectItem value={ReportStatus.Dismissed}>Dismissed</SelectItem>
+                  <SelectItem value={ReportStatus.Restored}>Restored</SelectItem>
                   <SelectItem value={ReportStatus.Rejected}>Rejected</SelectItem>
                 </SelectContent>
               </Select>

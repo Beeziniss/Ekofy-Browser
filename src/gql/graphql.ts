@@ -49,6 +49,12 @@ export type AddToPlaylistRequestInput = {
   trackId: Scalars['String']['input'];
 };
 
+export type AddTrackToAlbumRequestInput = {
+  albumId?: InputMaybe<Scalars['String']['input']>;
+  albumName?: InputMaybe<Scalars['String']['input']>;
+  trackId: Scalars['String']['input'];
+};
+
 export type Address = {
   __typename?: 'Address';
   addressLine?: Maybe<Scalars['String']['output']>;
@@ -106,6 +112,72 @@ export type AggregationLevelOperationFilterInput = {
   nin?: InputMaybe<Array<AggregationLevel>>;
 };
 
+export type Album = {
+  __typename?: 'Album';
+  artists: Array<Artist>;
+  checkAlbumInFavorite: Scalars['Boolean']['output'];
+  contributingArtists: Array<ContributingArtist>;
+  coverImage: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  isVisible: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  nameUnsigned: Scalars['String']['output'];
+  releaseInfo: ReleaseInfo;
+  thumbnailImage?: Maybe<Scalars['String']['output']>;
+  trackIds: Array<Scalars['String']['output']>;
+  tracks?: Maybe<TracksCollectionSegment>;
+  type: AlbumType;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+
+export type AlbumArtistsArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type AlbumTracksArgs = {
+  order?: InputMaybe<Array<TrackSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TrackFilterInput>;
+};
+
+export type AlbumFilterInput = {
+  and?: InputMaybe<Array<AlbumFilterInput>>;
+  contributingArtists?: InputMaybe<ListFilterInputTypeOfContributingArtistFilterInput>;
+  coverImage?: InputMaybe<StringOperationFilterInput>;
+  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  description?: InputMaybe<StringOperationFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  isVisible?: InputMaybe<BooleanOperationFilterInput>;
+  name?: InputMaybe<StringOperationFilterInput>;
+  nameUnsigned?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<AlbumFilterInput>>;
+  releaseInfo?: InputMaybe<ReleaseInfoFilterInput>;
+  thumbnailImage?: InputMaybe<StringOperationFilterInput>;
+  trackIds?: InputMaybe<ListStringOperationFilterInput>;
+  type?: InputMaybe<AlbumTypeOperationFilterInput>;
+  updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
+};
+
+export type AlbumSortInput = {
+  coverImage?: InputMaybe<SortEnumType>;
+  createdAt?: InputMaybe<SortEnumType>;
+  description?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  isVisible?: InputMaybe<SortEnumType>;
+  name?: InputMaybe<SortEnumType>;
+  nameUnsigned?: InputMaybe<SortEnumType>;
+  releaseInfo?: InputMaybe<ReleaseInfoSortInput>;
+  thumbnailImage?: InputMaybe<SortEnumType>;
+  type?: InputMaybe<SortEnumType>;
+  updatedAt?: InputMaybe<SortEnumType>;
+};
+
 export enum AlbumType {
   Album = 'ALBUM',
   Compilation = 'COMPILATION',
@@ -115,6 +187,23 @@ export enum AlbumType {
   Single = 'SINGLE',
   Soundtrack = 'SOUNDTRACK'
 }
+
+export type AlbumTypeOperationFilterInput = {
+  eq?: InputMaybe<AlbumType>;
+  in?: InputMaybe<Array<AlbumType>>;
+  neq?: InputMaybe<AlbumType>;
+  nin?: InputMaybe<Array<AlbumType>>;
+};
+
+/** A segment of a collection. */
+export type AlbumsCollectionSegment = {
+  __typename?: 'AlbumsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Album>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 /** Defines when a policy shall be executed. */
 export enum ApplyPolicy {
@@ -904,6 +993,7 @@ export type CommentTypeOperationFilterInput = {
 export type CommenterInfo = {
   __typename?: 'CommenterInfo';
   artist?: Maybe<ArtistInfo>;
+  avatar: Scalars['String']['output'];
   email: Scalars['String']['output'];
   fullName: Scalars['String']['output'];
   isVerified: Scalars['Boolean']['output'];
@@ -912,12 +1002,32 @@ export type CommenterInfo = {
   userId: Scalars['String']['output'];
 };
 
+export type ContributingArtist = {
+  __typename?: 'ContributingArtist';
+  artistId: Scalars['String']['output'];
+  role: ArtistRole;
+};
+
+export type ContributingArtistFilterInput = {
+  and?: InputMaybe<Array<ContributingArtistFilterInput>>;
+  artistId?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<ContributingArtistFilterInput>>;
+  role?: InputMaybe<ArtistRoleOperationFilterInput>;
+};
+
+export type ContributingArtistInput = {
+  artistId: Scalars['String']['input'];
+  role: ArtistRole;
+};
+
 export type Conversation = {
   __typename?: 'Conversation';
   createdAt: Scalars['DateTime']['output'];
   deletedFor: Array<DeletedForEntry>;
   id: Scalars['String']['output'];
   lastMessage?: Maybe<LastMessage>;
+  otherProfileConversation: ConversationResponse;
+  ownerProfileConversation: ConversationResponse;
   requestHubId?: Maybe<Scalars['String']['output']>;
   status: ConversationStatus;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -935,6 +1045,12 @@ export type ConversationFilterInput = {
   status?: InputMaybe<ConversationStatusOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
   userIds?: InputMaybe<ListStringOperationFilterInput>;
+};
+
+export type ConversationResponse = {
+  __typename?: 'ConversationResponse';
+  avatar: Scalars['String']['output'];
+  nickname: Scalars['String']['output'];
 };
 
 export type ConversationSortInput = {
@@ -1079,6 +1195,18 @@ export type CreateAdminRequestInput = {
   email: Scalars['String']['input'];
   fullName: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+export type CreateAlbumRequestInput = {
+  artistInfos: Array<ContributingArtistInput>;
+  coverImage?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  isVisible: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  releaseInfo: ReleaseInfoInput;
+  thumbnailImage?: InputMaybe<Scalars['String']['input']>;
+  trackIds: Array<Scalars['String']['input']>;
+  type: AlbumType;
 };
 
 export type CreateArtistPackageRequestInput = {
@@ -1545,6 +1673,16 @@ export type EscrowCommissionPolicySortInput = {
 };
 
 /** A segment of a collection. */
+export type FavoriteAlbumsCollectionSegment = {
+  __typename?: 'FavoriteAlbumsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Album>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
 export type FavoritePlaylistsCollectionSegment = {
   __typename?: 'FavoritePlaylistsCollectionSegment';
   /** A flattened list of the items. */
@@ -1812,6 +1950,12 @@ export enum KeyTag {
   Delete = 'DELETE'
 }
 
+export type KeyValuePairOfStringAndInt32 = {
+  __typename?: 'KeyValuePairOfStringAndInt32';
+  key: Scalars['String']['output'];
+  value: Scalars['Int']['output'];
+};
+
 export type KeyValuePairOfStringAndStringInput = {
   key: Scalars['String']['input'];
   value: Scalars['String']['input'];
@@ -1922,6 +2066,13 @@ export type ListFilterInputTypeOfArtistMemberFilterInput = {
   any?: InputMaybe<Scalars['Boolean']['input']>;
   none?: InputMaybe<ArtistMemberFilterInput>;
   some?: InputMaybe<ArtistMemberFilterInput>;
+};
+
+export type ListFilterInputTypeOfContributingArtistFilterInput = {
+  all?: InputMaybe<ContributingArtistFilterInput>;
+  any?: InputMaybe<Scalars['Boolean']['input']>;
+  none?: InputMaybe<ContributingArtistFilterInput>;
+  some?: InputMaybe<ContributingArtistFilterInput>;
 };
 
 export type ListFilterInputTypeOfDeletedForEntryFilterInput = {
@@ -2312,9 +2463,11 @@ export type MutationInitialization = {
   __typename?: 'MutationInitialization';
   activateSubscription: Scalars['Boolean']['output'];
   addConversationFromRequestHub: Scalars['Boolean']['output'];
+  addToFavoriteAlbum: Scalars['Boolean']['output'];
   addToFavoritePlaylist: Scalars['Boolean']['output'];
   addToFavoriteTrack: Scalars['Boolean']['output'];
   addToPlaylist: Scalars['Boolean']['output'];
+  addTrackToAlbum: Scalars['Boolean']['output'];
   approveArtistRegistration: Scalars['Boolean']['output'];
   approveTrackUploadRequest: Scalars['Boolean']['output'];
   assignReportToModerator: Scalars['Boolean']['output'];
@@ -2326,6 +2479,7 @@ export type MutationInitialization = {
   computeArtistRevenueByArtistId: ArtistRevenueResponse;
   computePlatformRevenue: PlatformRevenue;
   createAdmin: Scalars['Boolean']['output'];
+  createAlbum: Scalars['Boolean']['output'];
   createArtistPackage: Scalars['Boolean']['output'];
   createBillingPortalConfiguration: Scalars['Boolean']['output'];
   createCategory: Scalars['Boolean']['output'];
@@ -2348,15 +2502,18 @@ export type MutationInitialization = {
   createSubscriptionCheckoutSession: CheckoutSessionResponse;
   createSubscriptionPlan: Scalars['Boolean']['output'];
   deactiveEntitlement: Scalars['Boolean']['output'];
+  deleteAlbum: Scalars['Boolean']['output'];
   deleteArtistPackage: Scalars['Boolean']['output'];
   deleteComment: Scalars['Boolean']['output'];
   deleteCoupon: Scalars['Boolean']['output'];
   deletePlaylist: Scalars['Boolean']['output'];
+  deleteReport: Scalars['Boolean']['output'];
   deleteUserManual: Scalars['Boolean']['output'];
   deprecateCoupon: Scalars['Boolean']['output'];
   downgradeEscrowCommissionPolicyVersion: Scalars['Boolean']['output'];
   downgradeRoyaltyPolicyVersion: Scalars['Boolean']['output'];
   entitlementUserCount: Scalars['Long']['output'];
+  escalateReport: Scalars['Boolean']['output'];
   followUser: Scalars['Boolean']['output'];
   initialize: Scalars['String']['output'];
   processReport: Scalars['Boolean']['output'];
@@ -2366,6 +2523,9 @@ export type MutationInitialization = {
   rejectArtistRegistration: Scalars['Boolean']['output'];
   rejectTrackUploadRequest: Scalars['Boolean']['output'];
   removeFromPlaylist: Scalars['Boolean']['output'];
+  removeTrackFromAlbum: Scalars['Boolean']['output'];
+  restoreContent: Scalars['Boolean']['output'];
+  restoreUser: Scalars['Boolean']['output'];
   resumeSubscription: Scalars['Boolean']['output'];
   seedEntitlements: Scalars['Boolean']['output'];
   seedEscrowCommissionPolicyData: Scalars['Boolean']['output'];
@@ -2384,6 +2544,7 @@ export type MutationInitialization = {
   updateListenerProfile: Scalars['Boolean']['output'];
   updatePlaylist: Scalars['Boolean']['output'];
   updatePublicRequest: Scalars['Boolean']['output'];
+  updateReportPriority: Scalars['Boolean']['output'];
   updateRoyaltyPolicy: Scalars['Boolean']['output'];
   updateSubscriptionPlan: Scalars['Boolean']['output'];
   uploadTrack: Scalars['Boolean']['output'];
@@ -2402,6 +2563,12 @@ export type MutationInitializationAddConversationFromRequestHubArgs = {
 };
 
 
+export type MutationInitializationAddToFavoriteAlbumArgs = {
+  albumId: Scalars['String']['input'];
+  isAdding: Scalars['Boolean']['input'];
+};
+
+
 export type MutationInitializationAddToFavoritePlaylistArgs = {
   isAdding: Scalars['Boolean']['input'];
   playlistId: Scalars['String']['input'];
@@ -2416,6 +2583,11 @@ export type MutationInitializationAddToFavoriteTrackArgs = {
 
 export type MutationInitializationAddToPlaylistArgs = {
   addToPlaylistRequest: AddToPlaylistRequestInput;
+};
+
+
+export type MutationInitializationAddTrackToAlbumArgs = {
+  addTrackToAlbumRequest: AddTrackToAlbumRequestInput;
 };
 
 
@@ -2462,6 +2634,11 @@ export type MutationInitializationComputeArtistRevenueByArtistIdArgs = {
 
 export type MutationInitializationCreateAdminArgs = {
   createAdminRequest: CreateAdminRequestInput;
+};
+
+
+export type MutationInitializationCreateAlbumArgs = {
+  createAlbumRequest: CreateAlbumRequestInput;
 };
 
 
@@ -2577,6 +2754,11 @@ export type MutationInitializationDeactiveEntitlementArgs = {
 };
 
 
+export type MutationInitializationDeleteAlbumArgs = {
+  albumId: Scalars['String']['input'];
+};
+
+
 export type MutationInitializationDeleteArtistPackageArgs = {
   artistPackageId: Scalars['String']['input'];
 };
@@ -2594,6 +2776,11 @@ export type MutationInitializationDeleteCouponArgs = {
 
 export type MutationInitializationDeletePlaylistArgs = {
   playlistId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationDeleteReportArgs = {
+  reportId: Scalars['String']['input'];
 };
 
 
@@ -2619,6 +2806,11 @@ export type MutationInitializationDowngradeRoyaltyPolicyVersionArgs = {
 
 export type MutationInitializationEntitlementUserCountArgs = {
   code: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationEscalateReportArgs = {
+  reportId: Scalars['String']['input'];
 };
 
 
@@ -2662,6 +2854,21 @@ export type MutationInitializationRejectTrackUploadRequestArgs = {
 
 export type MutationInitializationRemoveFromPlaylistArgs = {
   removeFromPlaylistRequest: RemoveFromPlaylistRequestInput;
+};
+
+
+export type MutationInitializationRemoveTrackFromAlbumArgs = {
+  removeTrackFromAlbumRequest: RemoveTrackFromAlbumRequestInput;
+};
+
+
+export type MutationInitializationRestoreContentArgs = {
+  reportId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationRestoreUserArgs = {
+  reportId: Scalars['String']['input'];
 };
 
 
@@ -2754,6 +2961,12 @@ export type MutationInitializationUpdatePlaylistArgs = {
 
 export type MutationInitializationUpdatePublicRequestArgs = {
   request: RequestUpdatingRequestInput;
+};
+
+
+export type MutationInitializationUpdateReportPriorityArgs = {
+  priority: Scalars['String']['input'];
+  reportId: Scalars['String']['input'];
 };
 
 
@@ -3482,11 +3695,13 @@ export type QueryAudioFingerprintResponse = {
 
 export type QueryInitialization = {
   __typename?: 'QueryInitialization';
+  albums?: Maybe<AlbumsCollectionSegment>;
   approvalHistories?: Maybe<ApprovalHistoriesCollectionSegment>;
   artistPackages?: Maybe<ArtistPackagesCollectionSegment>;
   artistPackagesInConversation?: Maybe<ArtistPackagesInConversationCollectionSegment>;
   artists?: Maybe<ArtistsCollectionSegment>;
   categories?: Maybe<CategoriesCollectionSegment>;
+  checkAlbumInFavorite: Scalars['Boolean']['output'];
   commentDepth: Scalars['Int']['output'];
   commentReplies: CommentRepliesResponse;
   commentThread: Array<CommentResponse>;
@@ -3495,6 +3710,7 @@ export type QueryInitialization = {
   coupons?: Maybe<CouponsCollectionSegment>;
   entitlements?: Maybe<EntitlementsCollectionSegment>;
   escrowCommissionPolicies?: Maybe<EscrowCommissionPoliciesCollectionSegment>;
+  favoriteAlbums?: Maybe<FavoriteAlbumsCollectionSegment>;
   favoritePlaylists?: Maybe<FavoritePlaylistsCollectionSegment>;
   favoriteTracks?: Maybe<FavoriteTracksCollectionSegment>;
   followers?: Maybe<FollowersCollectionSegment>;
@@ -3527,11 +3743,13 @@ export type QueryInitialization = {
   recommendedTracksByTrackId?: Maybe<RecommendedTracksByTrackIdCollectionSegment>;
   recordings?: Maybe<RecordingsCollectionSegment>;
   refundTransactions?: Maybe<RefundTransactionsCollectionSegment>;
+  reportStatistics: ReportStatisticsResponse;
   reports?: Maybe<ReportsCollectionSegment>;
   requestDetailById?: Maybe<Request>;
   requests?: Maybe<RequestsCollectionSegment>;
   royaltyPolicies?: Maybe<RoyaltyPoliciesCollectionSegment>;
   royaltyReports?: Maybe<RoyaltyReportsCollectionSegment>;
+  searchAlbums?: Maybe<SearchAlbumsCollectionSegment>;
   searchArtists?: Maybe<SearchArtistsCollectionSegment>;
   searchListeners?: Maybe<SearchListenersCollectionSegment>;
   searchPlaylists?: Maybe<SearchPlaylistsCollectionSegment>;
@@ -3547,6 +3765,14 @@ export type QueryInitialization = {
   userSubscriptions?: Maybe<UserSubscriptionsCollectionSegment>;
   users?: Maybe<UsersCollectionSegment>;
   works?: Maybe<WorksCollectionSegment>;
+};
+
+
+export type QueryInitializationAlbumsArgs = {
+  order?: InputMaybe<Array<AlbumSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<AlbumFilterInput>;
 };
 
 
@@ -3588,6 +3814,11 @@ export type QueryInitializationCategoriesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<CategoryFilterInput>;
+};
+
+
+export type QueryInitializationCheckAlbumInFavoriteArgs = {
+  albumId: Scalars['String']['input'];
 };
 
 
@@ -3644,6 +3875,14 @@ export type QueryInitializationEscrowCommissionPoliciesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<EscrowCommissionPolicyFilterInput>;
+};
+
+
+export type QueryInitializationFavoriteAlbumsArgs = {
+  order?: InputMaybe<Array<AlbumSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<AlbumFilterInput>;
 };
 
 
@@ -3908,6 +4147,15 @@ export type QueryInitializationRoyaltyReportsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<RoyaltyReportFilterInput>;
+};
+
+
+export type QueryInitializationSearchAlbumsArgs = {
+  name: Scalars['String']['input'];
+  order?: InputMaybe<Array<AlbumSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<AlbumFilterInput>;
 };
 
 
@@ -4237,6 +4485,13 @@ export type ReleaseInfoFilterInput = {
   releasedAt?: InputMaybe<DateTimeOperationFilterInput>;
 };
 
+export type ReleaseInfoInput = {
+  isRelease: Scalars['Boolean']['input'];
+  releaseDate?: InputMaybe<Scalars['DateTime']['input']>;
+  releaseStatus: ReleaseStatus;
+  releasedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
 export type ReleaseInfoSortInput = {
   isRelease?: InputMaybe<SortEnumType>;
   releaseDate?: InputMaybe<SortEnumType>;
@@ -4264,6 +4519,11 @@ export type RemoveFromPlaylistRequestInput = {
   trackId: Scalars['String']['input'];
 };
 
+export type RemoveTrackFromAlbumRequestInput = {
+  albumId: Scalars['String']['input'];
+  trackId: Scalars['String']['input'];
+};
+
 export type Report = {
   __typename?: 'Report';
   actionTaken?: Maybe<ReportAction>;
@@ -4274,6 +4534,8 @@ export type Report = {
   evidences: Array<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   isDeleted: Scalars['Boolean']['output'];
+  nicknameReported: Scalars['String']['output'];
+  nicknameReporter: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
   priority: ReportPriority;
   relatedContentId?: Maybe<Scalars['String']['output']>;
@@ -4287,6 +4549,7 @@ export type Report = {
   totalReportsCount: Scalars['Long']['output'];
   track: Array<Track>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userAssignedTo: Array<User>;
   userReported: Array<User>;
   userReporter: Array<User>;
 };
@@ -4307,6 +4570,12 @@ export type ReportRequestArgs = {
 export type ReportTrackArgs = {
   order?: InputMaybe<Array<TrackSortInput>>;
   where?: InputMaybe<TrackFilterInput>;
+};
+
+
+export type ReportUserAssignedToArgs = {
+  order?: InputMaybe<Array<UserSortInput>>;
+  where?: InputMaybe<UserFilterInput>;
 };
 
 
@@ -4395,12 +4664,24 @@ export type ReportSortInput = {
   updatedAt?: InputMaybe<SortEnumType>;
 };
 
+export type ReportStatisticsResponse = {
+  __typename?: 'ReportStatisticsResponse';
+  pendingReports: Scalars['Int']['output'];
+  rejectedReports: Scalars['Int']['output'];
+  reportsByPriority: Array<KeyValuePairOfStringAndInt32>;
+  reportsByType: Array<KeyValuePairOfStringAndInt32>;
+  resolvedReports: Scalars['Int']['output'];
+  topReportedUsers: Array<TopReportedUserResponse>;
+  totalReports: Scalars['Int']['output'];
+  underReviewReports: Scalars['Int']['output'];
+};
+
 export enum ReportStatus {
   Approved = 'APPROVED',
-  Dismissed = 'DISMISSED',
   Escalated = 'ESCALATED',
   Pending = 'PENDING',
   Rejected = 'REJECTED',
+  Restored = 'RESTORED',
   UnderReview = 'UNDER_REVIEW'
 }
 
@@ -4828,6 +5109,16 @@ export type RoyaltySplitFilterInput = {
 };
 
 /** A segment of a collection. */
+export type SearchAlbumsCollectionSegment = {
+  __typename?: 'SearchAlbumsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Album>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
 export type SearchArtistsCollectionSegment = {
   __typename?: 'SearchArtistsCollectionSegment';
   /** A flattened list of the items. */
@@ -5178,6 +5469,13 @@ export type ThreadedCommentsResponse = {
   pageSize: Scalars['Int']['output'];
   threads: Array<CommentThread>;
   totalThreads: Scalars['Int']['output'];
+};
+
+export type TopReportedUserResponse = {
+  __typename?: 'TopReportedUserResponse';
+  reportCount: Scalars['Int']['output'];
+  userId: Scalars['String']['output'];
+  userName: Scalars['String']['output'];
 };
 
 export type TopTrackInfo = {
@@ -6141,6 +6439,13 @@ export type AssignReportToModeratorMutationVariables = Exact<{
 
 export type AssignReportToModeratorMutation = { __typename?: 'MutationInitialization', assignReportToModerator: boolean };
 
+export type RestoreUserMutationVariables = Exact<{
+  reportId: Scalars['String']['input'];
+}>;
+
+
+export type RestoreUserMutation = { __typename?: 'MutationInitialization', restoreUser: boolean };
+
 export type UpdateRequestHubCommentMutationVariables = Exact<{
   commentId: Scalars['String']['input'];
   content: Scalars['String']['input'];
@@ -6476,14 +6781,14 @@ export type ReportQueriesQueryVariables = Exact<{
 }>;
 
 
-export type ReportQueriesQuery = { __typename?: 'QueryInitialization', reports?: { __typename?: 'ReportsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Report', id: string, reportedUserId: string, reporterId: string, reportType: ReportType, status: ReportStatus, relatedContentType?: ReportRelatedContentType | null, relatedContentId?: string | null, assignedModeratorId?: string | null, actionTaken?: ReportAction | null, totalReportsCount: any, createdAt: any, description: string, userReporter: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, userReported: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, track: Array<{ __typename?: 'Track', id: string, name: string }>, comment: Array<{ __typename?: 'Comment', id: string, commentType: CommentType, content: string, targetId: string, user: Array<{ __typename?: 'User', id: string, fullName: string }>, listener: Array<{ __typename?: 'Listener', id: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string }>, track: Array<{ __typename?: 'Track', id: string, name: string }> }> }> | null } | null };
+export type ReportQueriesQuery = { __typename?: 'QueryInitialization', reports?: { __typename?: 'ReportsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Report', id: string, reportedUserId: string, reporterId: string, reportType: ReportType, status: ReportStatus, relatedContentType?: ReportRelatedContentType | null, relatedContentId?: string | null, assignedModeratorId?: string | null, actionTaken?: ReportAction | null, totalReportsCount: any, createdAt: any, description: string, priority: ReportPriority, nicknameReporter: string, nicknameReported: string, userReporter: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, userReported: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, userAssignedTo: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, track: Array<{ __typename?: 'Track', id: string, name: string }>, comment: Array<{ __typename?: 'Comment', id: string, commentType: CommentType, content: string, targetId: string, user: Array<{ __typename?: 'User', id: string, fullName: string }>, listener: Array<{ __typename?: 'Listener', id: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string }>, track: Array<{ __typename?: 'Track', id: string, name: string }> }> }> | null } | null };
 
 export type ReportDetailQueryQueryVariables = Exact<{
   where?: InputMaybe<ReportFilterInput>;
 }>;
 
 
-export type ReportDetailQueryQuery = { __typename?: 'QueryInitialization', reports?: { __typename?: 'ReportsCollectionSegment', items?: Array<{ __typename?: 'Report', id: string, reportedUserId: string, reporterId: string, reportType: ReportType, status: ReportStatus, relatedContentType?: ReportRelatedContentType | null, relatedContentId?: string | null, assignedModeratorId?: string | null, actionTaken?: ReportAction | null, totalReportsCount: any, createdAt: any, updatedAt?: any | null, description: string, priority: ReportPriority, evidences: Array<string>, note?: string | null, resolvedAt?: any | null, userReporter: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, userReported: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, track: Array<{ __typename?: 'Track', id: string, name: string }>, comment: Array<{ __typename?: 'Comment', id: string, commentType: CommentType, content: string, targetId: string, commenterId: string, user: Array<{ __typename?: 'User', id: string, fullName: string }>, listener: Array<{ __typename?: 'Listener', id: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string }>, track: Array<{ __typename?: 'Track', id: string, name: string }> }>, request: Array<{ __typename?: 'Request', id: string, title?: string | null, summary?: string | null }> }> | null } | null };
+export type ReportDetailQueryQuery = { __typename?: 'QueryInitialization', reports?: { __typename?: 'ReportsCollectionSegment', items?: Array<{ __typename?: 'Report', id: string, reportedUserId: string, reporterId: string, reportType: ReportType, status: ReportStatus, relatedContentType?: ReportRelatedContentType | null, relatedContentId?: string | null, assignedModeratorId?: string | null, actionTaken?: ReportAction | null, totalReportsCount: any, createdAt: any, updatedAt?: any | null, nicknameReporter: string, nicknameReported: string, description: string, priority: ReportPriority, evidences: Array<string>, note?: string | null, resolvedAt?: any | null, userReporter: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, userReported: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, userAssignedTo: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole }>, track: Array<{ __typename?: 'Track', id: string, name: string }>, comment: Array<{ __typename?: 'Comment', id: string, commentType: CommentType, content: string, targetId: string, commenterId: string, user: Array<{ __typename?: 'User', id: string, fullName: string }>, listener: Array<{ __typename?: 'Listener', id: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string }>, track: Array<{ __typename?: 'Track', id: string, name: string }> }>, request: Array<{ __typename?: 'Request', id: string, title?: string | null, summary?: string | null }> }> | null } | null };
 
 export type QueryModeratorReportsQueryVariables = Exact<{
   where?: InputMaybe<UserFilterInput>;
@@ -6497,14 +6802,14 @@ export type RequestHubThreadCommentsQueryVariables = Exact<{
 }>;
 
 
-export type RequestHubThreadCommentsQuery = { __typename?: 'QueryInitialization', threadedComments: { __typename?: 'ThreadedCommentsResponse', totalThreads: number, threads: Array<{ __typename?: 'CommentThread', totalReplies: number, rootComment: { __typename?: 'CommentResponse', id: string, content: string, createdAt: any, replyCount: any, commenterId: string, commentType: CommentType, isDeleted: boolean, isEdited: boolean, depth: number, targetId: string, threadPath: Array<string>, threadUpdatedAt: any, totalRepliesCount: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }, replies: Array<{ __typename?: 'CommentResponse', id: string, content: string, createdAt: any, replyCount: any, commenterId: string, commentType: CommentType, isDeleted: boolean, isEdited: boolean, depth: number, targetId: string, threadPath: Array<string>, threadUpdatedAt: any, totalRepliesCount: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }> }> } };
+export type RequestHubThreadCommentsQuery = { __typename?: 'QueryInitialization', threadedComments: { __typename?: 'ThreadedCommentsResponse', totalThreads: number, threads: Array<{ __typename?: 'CommentThread', totalReplies: number, rootComment: { __typename?: 'CommentResponse', id: string, content: string, createdAt: any, replyCount: any, commenterId: string, commentType: CommentType, isDeleted: boolean, isEdited: boolean, depth: number, targetId: string, threadPath: Array<string>, threadUpdatedAt: any, totalRepliesCount: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, avatar: string, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }, replies: Array<{ __typename?: 'CommentResponse', id: string, content: string, createdAt: any, replyCount: any, commenterId: string, commentType: CommentType, isDeleted: boolean, isEdited: boolean, depth: number, targetId: string, threadPath: Array<string>, threadUpdatedAt: any, totalRepliesCount: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, avatar: string, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }> }> } };
 
 export type RequestHubCommentThreadRepliesQueryVariables = Exact<{
   rootCommentId: Scalars['String']['input'];
 }>;
 
 
-export type RequestHubCommentThreadRepliesQuery = { __typename?: 'QueryInitialization', commentReplies: { __typename?: 'CommentRepliesResponse', replies: Array<{ __typename?: 'CommentResponse', id: string, content: string, createdAt: any, commenterId: string, commentType: CommentType, depth: number, isDeleted: boolean, isEdited: boolean, replyCount: any, targetId: string, threadPath: Array<string>, totalRepliesCount: any, threadUpdatedAt: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }> } };
+export type RequestHubCommentThreadRepliesQuery = { __typename?: 'QueryInitialization', commentReplies: { __typename?: 'CommentRepliesResponse', replies: Array<{ __typename?: 'CommentResponse', id: string, content: string, createdAt: any, commenterId: string, commentType: CommentType, depth: number, isDeleted: boolean, isEdited: boolean, replyCount: any, targetId: string, threadPath: Array<string>, totalRepliesCount: any, threadUpdatedAt: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, avatar: string, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }> } };
 
 export type RequestsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -6580,14 +6885,14 @@ export type TrackThreadCommentsQueryVariables = Exact<{
 }>;
 
 
-export type TrackThreadCommentsQuery = { __typename?: 'QueryInitialization', threadedComments: { __typename?: 'ThreadedCommentsResponse', totalThreads: number, threads: Array<{ __typename?: 'CommentThread', totalReplies: number, rootComment: { __typename?: 'CommentResponse', id: string, content: string, createdAt: any, replyCount: any, commenterId: string, commentType: CommentType, isDeleted: boolean, isEdited: boolean, depth: number, targetId: string, threadPath: Array<string>, threadUpdatedAt: any, totalRepliesCount: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }, replies: Array<{ __typename?: 'CommentResponse', id: string, content: string, createdAt: any, replyCount: any, commenterId: string, commentType: CommentType, isDeleted: boolean, isEdited: boolean, depth: number, targetId: string, threadPath: Array<string>, threadUpdatedAt: any, totalRepliesCount: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }> }> } };
+export type TrackThreadCommentsQuery = { __typename?: 'QueryInitialization', threadedComments: { __typename?: 'ThreadedCommentsResponse', totalThreads: number, threads: Array<{ __typename?: 'CommentThread', totalReplies: number, rootComment: { __typename?: 'CommentResponse', id: string, content: string, createdAt: any, replyCount: any, commenterId: string, commentType: CommentType, isDeleted: boolean, isEdited: boolean, depth: number, targetId: string, threadPath: Array<string>, threadUpdatedAt: any, totalRepliesCount: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, avatar: string, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }, replies: Array<{ __typename?: 'CommentResponse', id: string, content: string, createdAt: any, replyCount: any, commenterId: string, commentType: CommentType, isDeleted: boolean, isEdited: boolean, depth: number, targetId: string, threadPath: Array<string>, threadUpdatedAt: any, totalRepliesCount: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, avatar: string, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }> }> } };
 
 export type TrackCommentRepliesQueryVariables = Exact<{
   rootCommentId: Scalars['String']['input'];
 }>;
 
 
-export type TrackCommentRepliesQuery = { __typename?: 'QueryInitialization', commentReplies: { __typename?: 'CommentRepliesResponse', replies: Array<{ __typename?: 'CommentResponse', id: string, content: string, createdAt: any, commenterId: string, commentType: CommentType, depth: number, isDeleted: boolean, isEdited: boolean, replyCount: any, targetId: string, threadPath: Array<string>, totalRepliesCount: any, threadUpdatedAt: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }> } };
+export type TrackCommentRepliesQuery = { __typename?: 'QueryInitialization', commentReplies: { __typename?: 'CommentRepliesResponse', replies: Array<{ __typename?: 'CommentResponse', id: string, content: string, createdAt: any, commenterId: string, commentType: CommentType, depth: number, isDeleted: boolean, isEdited: boolean, replyCount: any, targetId: string, threadPath: Array<string>, totalRepliesCount: any, threadUpdatedAt: any, commenter: { __typename?: 'CommenterInfo', fullName: string, email: string, isVerified: boolean, role: UserRole, avatar: string, userId: string, listener?: { __typename?: 'ListenerInfo', avatarImage?: string | null, displayName: string, followerCount: any, id: string, isVerified: boolean } | null, artist?: { __typename?: 'ArtistInfo', avatarImage?: string | null, stageName: string, followerCount: any, id: string, isVerified: boolean, popularity: any } | null } }> } };
 
 export type TrackListHomeQueryVariables = Exact<{
   take: Scalars['Int']['input'];
@@ -7294,6 +7599,11 @@ export const AssignReportToModeratorDocument = new TypedDocumentString(`
   assignReportToModerator(reportId: $reportId, moderatorId: $moderatorId)
 }
     `) as unknown as TypedDocumentString<AssignReportToModeratorMutation, AssignReportToModeratorMutationVariables>;
+export const RestoreUserDocument = new TypedDocumentString(`
+    mutation RestoreUser($reportId: String!) {
+  restoreUser(reportId: $reportId)
+}
+    `) as unknown as TypedDocumentString<RestoreUserMutation, RestoreUserMutationVariables>;
 export const UpdateRequestHubCommentDocument = new TypedDocumentString(`
     mutation UpdateRequestHubComment($commentId: String!, $content: String!) {
   updateComment(request: {commentId: $commentId, content: $content})
@@ -8010,12 +8320,20 @@ export const ReportQueriesDocument = new TypedDocumentString(`
       totalReportsCount
       createdAt
       description
+      priority
+      nicknameReporter
+      nicknameReported
       userReporter {
         id
         fullName
         role
       }
       userReported {
+        id
+        fullName
+        role
+      }
+      userAssignedTo {
         id
         fullName
         role
@@ -8066,12 +8384,19 @@ export const ReportDetailQueryDocument = new TypedDocumentString(`
       totalReportsCount
       createdAt
       updatedAt
+      nicknameReporter
+      nicknameReported
       userReporter {
         id
         fullName
         role
       }
       userReported {
+        id
+        fullName
+        role
+      }
+      userAssignedTo {
         id
         fullName
         role
@@ -8144,6 +8469,7 @@ export const RequestHubThreadCommentsDocument = new TypedDocumentString(`
           email
           isVerified
           role
+          avatar
           userId
           listener {
             avatarImage
@@ -8181,6 +8507,7 @@ export const RequestHubThreadCommentsDocument = new TypedDocumentString(`
           email
           isVerified
           role
+          avatar
           userId
           listener {
             avatarImage
@@ -8229,6 +8556,7 @@ export const RequestHubCommentThreadRepliesDocument = new TypedDocumentString(`
         email
         isVerified
         role
+        avatar
         userId
         listener {
           avatarImage
@@ -8499,6 +8827,7 @@ export const TrackThreadCommentsDocument = new TypedDocumentString(`
           email
           isVerified
           role
+          avatar
           userId
           listener {
             avatarImage
@@ -8536,6 +8865,7 @@ export const TrackThreadCommentsDocument = new TypedDocumentString(`
           email
           isVerified
           role
+          avatar
           userId
           listener {
             avatarImage
@@ -8584,6 +8914,7 @@ export const TrackCommentRepliesDocument = new TypedDocumentString(`
         email
         isVerified
         role
+        avatar
         userId
         listener {
           avatarImage

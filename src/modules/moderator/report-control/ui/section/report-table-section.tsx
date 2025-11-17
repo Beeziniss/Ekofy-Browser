@@ -19,33 +19,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import { ReportStatus, ReportRelatedContentType, ReportQueriesQuery } from "@/gql/graphql";
+import { ReportStatus, ReportRelatedContentType, ReportQueriesQuery, ReportAction } from "@/gql/graphql";
 import { REPORT_TYPE_LABELS, CONTENT_TYPE_LABELS } from "@/types/report";
-import { UserCheck, Eye, MoreHorizontal, FileCheck } from "lucide-react";
+import { UserCheck, Eye, MoreHorizontal, FileCheck, RotateCcw } from "lucide-react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { moderatorReportsOptions } from "@/gql/options/report-options";
 
 type ReportItem = NonNullable<NonNullable<ReportQueriesQuery["reports"]>["items"]>[0];
-
-// Component to display moderator name
-function ModeratorCell({ assignedModeratorId }: { assignedModeratorId?: string | null }) {
-  const { data: moderatorData } = useQuery(
-    moderatorReportsOptions({ id: { eq: assignedModeratorId || "" } })
-  );
-  
-  const moderator = moderatorData?.items?.[0];
-  
-  if (!assignedModeratorId) {
-    return <span className="text-sm text-muted-foreground">Not assigned</span>;
-  }
-  
-  return (
-    <span className="text-sm font-medium">
-      {moderator?.fullName || "Loading..."}
-    </span>
-  );
-}
 
 const STATUS_CONFIG: Record<ReportStatus, {
   label: string;
@@ -67,8 +46,8 @@ const STATUS_CONFIG: Record<ReportStatus, {
     label: "Rejected",
     className: "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700",
   },
-  [ReportStatus.Dismissed]: {
-    label: "Dismissed",
+  [ReportStatus.Restored]: {
+    label: "Restored",
     className: "bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-800/30 dark:text-gray-400 dark:border-gray-700",
   },
   [ReportStatus.Escalated]: {
@@ -84,6 +63,8 @@ interface ReportTableSectionProps {
   isAssigning: boolean;
   onAssignToMe: (reportId: string) => void;
   onProcess: (reportId: string) => void;
+  onRestoreUser?: (reportId: string) => void;
+  isRestoring?: boolean;
 }
 
 export function ReportTableSection({
@@ -93,6 +74,8 @@ export function ReportTableSection({
   isAssigning,
   onAssignToMe,
   onProcess,
+  onRestoreUser,
+  isRestoring = false,
 }: ReportTableSectionProps) {
   return (
     <div className="border rounded-md">
@@ -104,6 +87,7 @@ export function ReportTableSection({
             <TableHead>Reported User</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Assigned User</TableHead>
+            <TableHead>Priority</TableHead>
             <TableHead>Created Date</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -135,15 +119,31 @@ export function ReportTableSection({
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>{report.userReporter?.[0]?.fullName || "N/A"}</TableCell>
-                <TableCell>{report.userReported?.[0]?.fullName || "N/A"}</TableCell>
+                <TableCell>{report.nicknameReporter || "N/A"}</TableCell>
+                <TableCell>{report.nicknameReported || "N/A"}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className={STATUS_CONFIG[report.status].className}>
                     {STATUS_CONFIG[report.status].label}
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <ModeratorCell assignedModeratorId={report.assignedModeratorId} />
+                  {report.userAssignedTo?.[0]?.fullName || "Not assigned"}
+                </TableCell>
+                <TableCell>
+                  {report.priority && (
+                    <Badge 
+                    variant="outline" 
+                    className={`${
+                      report.priority === 'HIGH' 
+                      ? 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400' 
+                      : report.priority === 'MEDIUM'
+                      ? 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400'
+                      : 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400'
+                    }`}
+                    >
+                    <span className="font-semibold">{report.priority}</span>
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell>
                   {format(new Date(report.createdAt), "dd/MM/yyyy HH:mm", { locale: vi })}
@@ -189,6 +189,24 @@ export function ReportTableSection({
                             >
                               <FileCheck className="h-4 w-4" />
                               Process Report
+                            </DropdownMenuItem>
+                          </>
+                        )}
+
+                      {/* Show Restore User button for reports with Suspended or PermanentBan actions */}
+                      {onRestoreUser && 
+                        report.actionTaken && 
+                        (report.actionTaken === ReportAction.Suspended || report.actionTaken === ReportAction.PermanentBan) &&
+                        report.status === ReportStatus.Approved && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => onRestoreUser(report.id)}
+                              disabled={isRestoring}
+                              className="flex items-center gap-2"
+                            >
+                              <RotateCcw className="h-4 w-4" />
+                              {isRestoring ? "Restoring..." : "Restore User"}
                             </DropdownMenuItem>
                           </>
                         )}

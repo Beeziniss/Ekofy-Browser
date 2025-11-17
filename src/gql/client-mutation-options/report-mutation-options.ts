@@ -4,6 +4,7 @@ import {
   REPORT_MUTATION,
   PROCESS_REPORT,
   ASSIGN_REPORT_TO_MODERATOR,
+  RESTORE_USER,
 } from "@/modules/shared/mutations/client/report-mutations";
 import { CreateReportRequestInput, ProcessReportRequestInput } from "../graphql";
 
@@ -65,6 +66,26 @@ export const useAssignReportToModerator = () => {
       
       // Invalidate specific report detail
       queryClient.invalidateQueries({ queryKey: ["report-detail", variables.reportId] });
+    },
+  });
+};
+
+// Restore user from a report
+export const useRestoreUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (reportId: string) => {
+      const result = await execute(RESTORE_USER, { reportId });
+      return result.restoreUser;
+    },
+    onSuccess: (_, reportId) => {
+      // Invalidate reports lists
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
+      queryClient.invalidateQueries({ queryKey: ["reports-infinite"] });
+      queryClient.invalidateQueries({ queryKey: ["reports-by-status"] });
+      queryClient.invalidateQueries({ queryKey: ["assigned-reports"] });
+      // Invalidate specific report detail
+      queryClient.invalidateQueries({ queryKey: ["report-detail", reportId] });
     },
   });
 };
