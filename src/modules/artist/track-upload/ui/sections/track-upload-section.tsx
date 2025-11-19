@@ -50,11 +50,14 @@ const TrackUploadSection = () => {
         // Check if the song recognition found a match (potential copyright issue)
         if (
           recognitionResult.status !== "success" ||
-          recognitionResult.result.apple_music ||
-          recognitionResult.result.spotify ||
-          recognitionResult.result.deezer ||
-          recognitionResult.result.napster
+          recognitionResult.result !== null ||
+          recognitionResult.result?.apple_music ||
+          recognitionResult.result?.spotify ||
+          recognitionResult.result?.deezer ||
+          recognitionResult.result?.napster
         ) {
+          console.log(recognitionResult);
+
           // Stop loading state on copyright issue
           setUploading(false);
           if (recognitionResult.result) {
