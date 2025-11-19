@@ -29,6 +29,8 @@ import {
   SubscriptionCreateCheckoutSessionMutation,
   SubscriptionResumeMutation,
 } from "@/modules/shared/mutations/client/subscription-mutations";
+import { parseGraphQLError } from "@/utils/graphql-error-utils";
+import { toast } from "sonner";
 
 // PLAYLIST MUTATIONS
 export const createPlaylistMutationOptions = mutationOptions({
@@ -112,6 +114,10 @@ export const createRequestHubCommentMutationOptions = mutationOptions({
     content: string;
     parentCommentId?: string;
   }) => await execute(RequestHubCommentCreateMutation, input),
+  onError: (error: unknown) => {
+    const graphqlError = parseGraphQLError(error, "Cannot create comment");
+    toast.error(graphqlError.detail);
+  },
 });
 
 export const updateRequestHubCommentMutationOptions = mutationOptions({

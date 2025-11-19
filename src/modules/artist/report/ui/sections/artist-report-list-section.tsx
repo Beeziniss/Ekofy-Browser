@@ -55,10 +55,10 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
 
   if (error) {
     return (
-      <Card className="border-red-200 bg-red-50">
+      <Card className="bg-main-card-bg border-red-500/20">
         <CardContent className="p-6">
-          <p className="text-red-600">An error occurred while loading the report list.</p>
-          <Button onClick={() => refetch()} className="mt-4">
+          <p className="text-red-400">An error occurred while loading the report list.</p>
+          <Button onClick={() => refetch()} className="mt-4 primary_gradient">
             <RefreshCw className="h-4 w-4 mr-2" />
             Try again
           </Button>
@@ -71,41 +71,41 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
     <div className={className}>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold text-primary-gradient">
             My Reports
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-main-grey mt-1">
             Manage the reports you have sent ({totalCount} reports)
           </p>
         </div>
       </div>
 
       {/* Filters */}
-      <Card className="mb-6 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
+      <Card className="mb-6 border-main-grey-dark-bg/30">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-purple-700">
+          <CardTitle className="flex items-center gap-2 text-main-white">
             <Filter className="h-5 w-5" />
             Filters
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-purple-700">Search</label>
+              <label className="text-sm font-medium text-main-white">Search</label>
               <div className="relative">
-                <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
+                <Search className="h-4 w-4 absolute left-3 top-3 text-main-grey" />
                 <Input
                   placeholder="Search by description or ID..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-main-dark-bg-1 border-main-grey-dark-bg/50 text-main-white"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-purple-700">Status</label>
+              <label className="text-sm font-medium text-main-white">Status</label>
               <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ReportStatus | "ALL")}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-main-dark-bg-1 border-main-grey-dark-bg/50 text-main-white">
                   <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
@@ -118,17 +118,6 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-purple-700">Actions</label>
-              <Button 
-                onClick={() => refetch()}
-                variant="outline"
-                className="w-full border-purple-300 text-purple-700 hover:bg-purple-50"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -136,57 +125,61 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
       {/* Reports List */}
       <div className="space-y-4">
         {isLoading ? (
-          <Card>
+          <Card className="border-main-grey-dark-bg/30">
             <CardContent className="p-8">
               <div className="flex items-center justify-center">
-                <RefreshCw className="h-8 w-8 animate-spin text-purple-500" />
-                <span className="ml-2 text-purple-600">Loading...</span>
+                <RefreshCw className="h-8 w-8 animate-spin text-main-white" />
+                <span className="ml-2 text-main-white">Loading...</span>
               </div>
             </CardContent>
           </Card>
         ) : filteredReports.length === 0 ? (
-          <Card className="border-purple-200">
+          <Card className="border-main-grey-dark-bg/30">
             <CardContent className="p-8 text-center">
-              <p className="text-gray-500">No reports found.</p>
+              <p className="text-main-grey">No reports found.</p>
             </CardContent>
           </Card>
         ) : (
           filteredReports.map((report) => (
             <Card
               key={report.id}
-              className="hover:shadow-lg transition-all duration-200 border-purple-200 hover:border-purple-300"
+              className="border-main-grey-dark-bg/30 hover:border-main-blue/50 transition-all duration-200"
             >
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-3">
-                      <span className="font-mono text-sm text-purple-600 bg-purple-100 px-2 py-1 rounded">
+                      <span className="font-mono text-sm text-main-blue bg-main-blue/10 px-2 py-1 rounded border border-main-blue/30">
                         #{report.id.slice(-8).toUpperCase()}
                       </span>
-                      <ArtistReportStatusBadge status={report.status} />
+                      <ArtistReportStatusBadge status={report.status as ReportStatus} />
                     </div>
                     
-                    <h3 className="font-semibold text-lg text-gray-900">
+                    <h3 className="font-semibold text-lg text-main-white">
                       {REPORT_TYPE_LABELS[report.reportType]}
                     </h3>
                     
-                    <p className="text-gray-600 line-clamp-2">
+                    <p className="text-main-grey line-clamp-2">
                       {report.description}
                     </p>
                     
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-4 text-sm text-main-grey-dark-1">
                       <span>
                         Created at: {format(new Date(report.createdAt), "dd/MM/yyyy HH:mm", { locale: vi })}
                       </span>
-                      {report.userReported?.[0] && (
+                      {report.nicknameReported ? (
                         <span>
-                          Report: {report.userReported[0].fullName}
+                          Report: {report.nicknameReported}
+                        </span>
+                      ) : (
+                        <span>
+                          Report: Unknown
                         </span>
                       )}
                     </div>
                   </div>
                   
-                  <Button asChild className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                  <Button asChild className="primary_gradient hover:opacity-90 transition-opacity text-white">
                     <Link href={`/artist/studio/reports/${report.id}`}>
                       View details
                     </Link>
@@ -201,7 +194,7 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
       {/* Pagination */}
       {totalCount > take && (
         <div className="flex items-center justify-between mt-6">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-main-grey">
             Showing {skip + 1} - {Math.min(skip + take, totalCount)} of {totalCount} reports
           </div>
           <div className="flex items-center gap-2">
@@ -209,7 +202,7 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
               variant="outline"
               onClick={handlePrevPage}
               disabled={!hasPrev}
-              className="border-purple-300 text-purple-700"
+              className="border-main-grey-dark-bg/50 text-main-white hover:bg-main-dark-bg-1"
             >
               Previous
             </Button>
@@ -217,7 +210,7 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
               variant="outline"
               onClick={handleNextPage}
               disabled={!hasNext}
-              className="border-purple-300 text-purple-700"
+              className="border-main-grey-dark-bg/50 text-main-white hover:bg-main-dark-bg-1"
             >
               Next
             </Button>

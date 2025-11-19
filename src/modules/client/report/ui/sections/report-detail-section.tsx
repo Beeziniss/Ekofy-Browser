@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   AlertCircle,
-  Calendar,
-  User,
+  // Calendar,
+  // User,
   Clock,
   FileText,
   ArrowLeft,
@@ -123,7 +123,7 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
     <div className={className}>
       <div className="mb-6">
         <Button asChild variant="outline" size="sm">
-          <Link href="/reports">
+          <Link href="/profile/reports">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to list
           </Link>
@@ -173,9 +173,18 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
                 <div>
                   <h3 className="font-medium mb-2">Reported User:</h3>
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{report.userReported[0].fullName}</span>
+                    <span className="text-sm">{report.nicknameReported}</span>
                     <Badge variant="outline">{report.userReported[0].role}</Badge>
+                  </div>
+                </div>
+              )}
+
+              {report.assignedModeratorId && (
+                <div>
+                  <h3 className="font-medium mb-2">Assigned Moderator:</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">{report.userAssignedTo[0].fullName}</span>
+                    <Badge variant="outline">{report.userAssignedTo[0].role}</Badge>
                   </div>
                 </div>
               )}
@@ -246,7 +255,6 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
           <CardContent>
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">Created at:</span>
                 <span>{format(createdAt, "dd/MM/yyyy HH:mm", { locale: vi })}</span>
               </div>
@@ -255,7 +263,6 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
                 <>
                   <Separator />
                   <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">Last updated:</span>
                     <span>{format(updatedAt, "dd/MM/yyyy HH:mm", { locale: vi })}</span>
                   </div>
@@ -266,7 +273,6 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
                 <>
                   <Separator />
                   <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">Resolution time:</span>
                     <span>{format(resolvedAt, "dd/MM/yyyy HH:mm", { locale: vi })}</span>
                   </div>

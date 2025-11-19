@@ -1066,6 +1066,7 @@ export enum ConversationStatus {
   Cancelled = 'CANCELLED',
   Completed = 'COMPLETED',
   InProgress = 'IN_PROGRESS',
+  None = 'NONE',
   Pending = 'PENDING'
 }
 
@@ -1257,8 +1258,8 @@ export type CreateCommentRequestInput = {
 };
 
 export type CreateConversationRequestInput = {
-  requestHubId?: InputMaybe<Scalars['String']['input']>;
-  userIds: Array<Scalars['String']['input']>;
+  otherUserId: Scalars['String']['input'];
+  requestHubId: Scalars['String']['input'];
 };
 
 export type CreateCouponRequestInput = {
@@ -2463,6 +2464,7 @@ export type MutationInitialization = {
   __typename?: 'MutationInitialization';
   activateSubscription: Scalars['Boolean']['output'];
   addConversationFromRequestHub: Scalars['Boolean']['output'];
+  addConversationGeneral: Scalars['String']['output'];
   addToFavoriteAlbum: Scalars['Boolean']['output'];
   addToFavoritePlaylist: Scalars['Boolean']['output'];
   addToFavoriteTrack: Scalars['Boolean']['output'];
@@ -2560,6 +2562,11 @@ export type MutationInitializationActivateSubscriptionArgs = {
 
 export type MutationInitializationAddConversationFromRequestHubArgs = {
   request: CreateConversationRequestInput;
+};
+
+
+export type MutationInitializationAddConversationGeneralArgs = {
+  otherUserId: Scalars['String']['input'];
 };
 
 
@@ -3087,6 +3094,16 @@ export type OneOffTypeOperationFilterInput = {
   in?: InputMaybe<Array<OneOffType>>;
   neq?: InputMaybe<OneOffType>;
   nin?: InputMaybe<Array<OneOffType>>;
+};
+
+/** A segment of a collection. */
+export type OwnPlaylistsCollectionSegment = {
+  __typename?: 'OwnPlaylistsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Playlist>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 /** A segment of a collection. */
@@ -3727,6 +3744,7 @@ export type QueryInitialization = {
   metadataWorkUploadRequest: WorkTempRequest;
   monthlyStreamCounts?: Maybe<MonthlyStreamCountsCollectionSegment>;
   originalFileTrackUploadRequest: Scalars['String']['output'];
+  ownPlaylists?: Maybe<OwnPlaylistsCollectionSegment>;
   ownRequests?: Maybe<OwnRequestsCollectionSegment>;
   packageOrders?: Maybe<PackageOrdersCollectionSegment>;
   paymentTransactions?: Maybe<PaymentTransactionsCollectionSegment>;
@@ -3994,6 +4012,14 @@ export type QueryInitializationMonthlyStreamCountsArgs = {
 
 export type QueryInitializationOriginalFileTrackUploadRequestArgs = {
   trackId: Scalars['String']['input'];
+};
+
+
+export type QueryInitializationOwnPlaylistsArgs = {
+  order?: InputMaybe<Array<PlaylistSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PlaylistFilterInput>;
 };
 
 
@@ -4528,6 +4554,7 @@ export type Report = {
   __typename?: 'Report';
   actionTaken?: Maybe<ReportAction>;
   assignedModeratorId?: Maybe<Scalars['String']['output']>;
+  backgroundJobId?: Maybe<Scalars['String']['output']>;
   comment: Array<Comment>;
   createdAt: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
@@ -4603,6 +4630,7 @@ export type ReportFilterInput = {
   actionTaken?: InputMaybe<NullableOfReportActionOperationFilterInput>;
   and?: InputMaybe<Array<ReportFilterInput>>;
   assignedModeratorId?: InputMaybe<StringOperationFilterInput>;
+  backgroundJobId?: InputMaybe<StringOperationFilterInput>;
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
   description?: InputMaybe<StringOperationFilterInput>;
   evidences?: InputMaybe<ListStringOperationFilterInput>;
@@ -4647,6 +4675,7 @@ export enum ReportRelatedContentType {
 export type ReportSortInput = {
   actionTaken?: InputMaybe<SortEnumType>;
   assignedModeratorId?: InputMaybe<SortEnumType>;
+  backgroundJobId?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
   description?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
@@ -4904,10 +4933,10 @@ export type Restriction = {
 
 export enum RestrictionAction {
   Comment = 'COMMENT',
-  CreateDirectRequest = 'CREATE_DIRECT_REQUEST',
-  CreateRequest = 'CREATE_REQUEST',
+  CreatePublicRequest = 'CREATE_PUBLIC_REQUEST',
   None = 'NONE',
   Report = 'REPORT',
+  SendRequest = 'SEND_REQUEST',
   UploadTrack = 'UPLOAD_TRACK'
 }
 

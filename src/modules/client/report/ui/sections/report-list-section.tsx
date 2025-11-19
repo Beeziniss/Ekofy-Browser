@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useUserReports, usePrefetchUserReports } from "../../hooks";
+import { useUserReports } from "../../hooks";
 import { ReportListItem, ReportFilters, ReportEmptyState } from "../components";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle, ChevronLeft, ChevronRight } from "lucide-react";
@@ -28,7 +28,6 @@ export function ReportListSection({ className }: ReportListSectionProps) {
   const skip = currentPage * take;
 
   const { data, isLoading, error } = useUserReports(skip, take, filters);
-  const { prefetchDetail } = usePrefetchUserReports();
 
   const reports = data?.items || [];
   const hasNextPage = data?.pageInfo.hasNextPage || false;
@@ -50,10 +49,6 @@ export function ReportListSection({ className }: ReportListSectionProps) {
   const handleFiltersChange = (newFilters: ReportListFilters) => {
     setFilters(newFilters);
     setCurrentPage(0); // Reset to first page when filters change
-  };
-
-  const handleReportHover = (reportId: string) => {
-    prefetchDetail?.(reportId);
   };
 
   if (isLoading) {
@@ -85,15 +80,11 @@ export function ReportListSection({ className }: ReportListSectionProps) {
         <>
           <div className="space-y-4 mb-6">
             {reports.map((report) => (
-              <div
+              <ReportListItem
                 key={report.id}
-                onMouseEnter={() => handleReportHover(report.id)}
-              >
-                <ReportListItem
-                  report={report}
-                  href={`/reports/${report.id}`}
-                />
-              </div>
+                report={report}
+                href={`/profile/reports/${report.id}`}
+              />
             ))}
           </div>
 
