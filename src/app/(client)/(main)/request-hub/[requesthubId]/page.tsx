@@ -27,11 +27,6 @@ const RequestDetailPage = () => {
     toast.info("Application feature coming soon!");
   };
 
-  const handleContactClient = () => {
-    console.log("Contact client");
-    toast.info("Contact feature coming soon!");
-  };
-
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -59,12 +54,7 @@ const RequestDetailPage = () => {
 
   return (
     <AuthDialogProvider>
-      <RequestDetailView
-        request={request}
-        onBack={handleBack}
-        onApply={handleApply}
-        onContactClient={handleContactClient}
-      />
+      <RequestDetailView request={request} onBack={handleBack} onApply={handleApply} />
     </AuthDialogProvider>
   );
 };
