@@ -12,6 +12,8 @@ import {
   QueryInitializationRequestDetailByIdArgs,
   QueryInitializationSearchRequestsArgs,
   QueryInitializationOwnRequestsArgs,
+  ConversationFilterInput,
+  MessageFilterInput,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -37,6 +39,7 @@ import {
   TrackListHomeQuery,
   USER_QUERY_FOR_REQUESTS,
 } from "@/modules/shared/queries/client";
+import { ConversationMessagesQuery, ConversationQuery } from "@/modules/shared/queries/client/conversation-queries";
 
 // PROFILE QUERIES
 export const listenerProfileOptions = (userId: string, enabled: boolean = true) =>
@@ -328,4 +331,39 @@ export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: R
       };
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+
+// CONVERSATION QUERIES
+export const conversationListOptions = (userId: string) =>
+  queryOptions({
+    queryKey: ["conversation-list"],
+    queryFn: async () => {
+      const where: ConversationFilterInput = {
+        userIds: { some: { eq: userId } },
+      };
+
+      const result = await execute(ConversationQuery, { where });
+      return result;
+    },
+  });
+
+export const conversationDetailOptions = (coversationId: string) =>
+  queryOptions({
+    queryKey: ["conversation-detail", coversationId],
+    queryFn: async () => {
+      const where: ConversationFilterInput = { id: { eq: coversationId } };
+      const result = await execute(ConversationQuery, { where });
+      return result;
+    },
+  });
+
+export const conversationMessagesOptions = (conversationId: string) =>
+  queryOptions({
+    queryKey: ["conversation-messages", conversationId],
+    queryFn: async () => {
+      const where: MessageFilterInput = { conversationId: { eq: conversationId } };
+      const result = await execute(ConversationMessagesQuery, { where });
+
+      return result;
+    },
   });

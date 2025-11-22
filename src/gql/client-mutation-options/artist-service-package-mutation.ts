@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { execute } from "../execute";
 import {
-  approveArtistPackageMutation,
-  rejectArtistPackageMutation,
+  // approveArtistPackageMutation,
+  // rejectArtistPackageMutation,
   createArtistPackageMutation,
   updateArtistPackageMutation,
   deleteArtistPackageMutation,
@@ -10,39 +10,39 @@ import {
 } from "@/modules/shared/mutations/artist/artist-packages-mutation";
 import { ArtistPackageStatus } from "@/gql/graphql";
 
-// Approve Artist Package
-export const useApproveArtistPackage = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (packageId: string) => {
-      const result = await execute(approveArtistPackageMutation, { id: packageId });
-      return result;
-    },
-    onSuccess: () => {
-      // Invalidate all related queries
-      queryClient.invalidateQueries({ queryKey: ["moderator-pending-packages"] });
-      queryClient.invalidateQueries({ queryKey: ["pending-packages"] });
-      queryClient.invalidateQueries({ queryKey: ["artist-packages"] });
-    },
-  });
-};
+// // Approve Artist Package
+// export const useApproveArtistPackage = () => {
+//   const queryClient = useQueryClient();
+//   return useMutation({
+//     mutationFn: async (packageId: string) => {
+//       const result = await execute(approveArtistPackageMutation, { id: packageId });
+//       return result;
+//     },
+//     onSuccess: () => {
+//       // Invalidate all related queries
+//       queryClient.invalidateQueries({ queryKey: ["moderator-pending-packages"] });
+//       queryClient.invalidateQueries({ queryKey: ["pending-packages"] });
+//       queryClient.invalidateQueries({ queryKey: ["artist-packages"] });
+//     },
+//   });
+// };
 
-// Reject Artist Package
-export const useRejectArtistPackage = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (packageId: string) => {
-      const result = await execute(rejectArtistPackageMutation, { id: packageId });
-      return result;
-    },
-    onSuccess: () => {
-      // Invalidate all related queries
-      queryClient.invalidateQueries({ queryKey: ["moderator-pending-packages"] });
-      queryClient.invalidateQueries({ queryKey: ["pending-packages"] });
-      queryClient.invalidateQueries({ queryKey: ["artist-packages"] });
-    },
-  });
-};
+// // Reject Artist Package
+// export const useRejectArtistPackage = () => {
+//   const queryClient = useQueryClient();
+//   return useMutation({
+//     mutationFn: async (packageId: string) => {
+//       const result = await execute(rejectArtistPackageMutation, { id: packageId });
+//       return result;
+//     },
+//     onSuccess: () => {
+//       // Invalidate all related queries
+//       queryClient.invalidateQueries({ queryKey: ["moderator-pending-packages"] });
+//       queryClient.invalidateQueries({ queryKey: ["pending-packages"] });
+//       queryClient.invalidateQueries({ queryKey: ["artist-packages"] });
+//     },
+//   });
+// };
 
 // Create Artist Package
 export const useCreateArtistPackage = () => {

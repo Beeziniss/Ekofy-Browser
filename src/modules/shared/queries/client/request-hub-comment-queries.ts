@@ -17,6 +17,7 @@ export const RequestHubCommentThreadsQuery = graphql(`
             email
             isVerified
             role
+            avatar
             userId
             listener {
               avatarImage
@@ -54,6 +55,7 @@ export const RequestHubCommentThreadsQuery = graphql(`
             email
             isVerified
             role
+            avatar
             userId
             listener {
               avatarImage
@@ -101,6 +103,7 @@ export const RequestHubCommentThreadRepliesQuery = graphql(`
           email
           isVerified
           role
+          avatar
           userId
           listener {
             avatarImage

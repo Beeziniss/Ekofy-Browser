@@ -21,6 +21,11 @@ import { useAuthDialog } from "../context/auth-dialog-context";
 import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 import RequestHubCommentSection from "./comment-section";
 import { StripeAccountRequiredModal } from "@/modules/shared/ui/components/stripe-account-required-modal";
+import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
+import { ReportRelatedContentType } from "@/gql/graphql";
+import { useMutation } from "@tanstack/react-query";
+import { addConversationFromRequestHubMutationOptions } from "@/gql/options/client-mutation-options";
+import { useRouter } from "next/navigation";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
@@ -28,18 +33,18 @@ interface RequestDetailViewProps {
   request: RequestItem;
   onBack: () => void;
   onApply: () => void;
-  onContactClient: () => void;
   className?: string;
 }
 
-export function RequestDetailView({ request, onBack, onApply, onContactClient, className }: RequestDetailViewProps) {
-  const [showStripeModal, setShowStripeModal] = useState(false);
-  // Get auth state and dialog
-  const { isAuthenticated } = useAuthStore();
+export function RequestDetailView({ request, onBack, onApply, className }: RequestDetailViewProps) {
+  const router = useRouter();
   const { showAuthDialog } = useAuthDialog();
-
-  // Get Stripe account status
+  const { isAuthenticated, user } = useAuthStore();
+  const [showStripeModal, setShowStripeModal] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const { isArtist, hasStripeAccount } = useStripeAccountStatus();
+
+  const { mutateAsync: addConversation } = useMutation(addConversationFromRequestHubMutationOptions);
 
   // Format status from GraphQL enum to display text
   const formatStatus = (status: string) => {
@@ -138,7 +143,7 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
     }
   };
 
-  const handleContactClient = () => {
+  const handleContactClient = async () => {
     if (!isAuthenticated) {
       showAuthDialog("contact", request.title || "Untitled Request");
       return;
@@ -152,7 +157,9 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
 
     // Only allow artists to contact client
     if (isArtist) {
-      onContactClient();
+      const conversationId = await addConversation({ requestHubId: request.id, otherUserId: request.requestUserId });
+
+      router.push(`/conversations/${conversationId}`);
     }
   };
 
@@ -271,6 +278,13 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
                       <MessageCircle className="mr-2 h-4 w-4" />
                       Contact Client
                     </Button>
+
+                    {isAuthenticated && user?.userId !== request.requestUserId && (
+                      <Button variant="outline" className="w-full" onClick={() => setReportDialogOpen(true)}>
+                        <Send className="mr-2 h-4 w-4" />
+                        Report
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -285,6 +299,18 @@ export function RequestDetailView({ request, onBack, onApply, onContactClient, c
         onOpenChange={setShowStripeModal}
         onCancel={() => setShowStripeModal(false)}
       />
+
+      {/* Report Dialog */}
+      {request.requestUserId && (
+        <ReportDialog
+          contentType={ReportRelatedContentType.Request}
+          contentId={request.id}
+          reportedUserId={request.requestUserId}
+          reportedUserName={request.title || ""}
+          open={reportDialogOpen}
+          onOpenChange={setReportDialogOpen}
+        />
+      )}
     </div>
   );
 }

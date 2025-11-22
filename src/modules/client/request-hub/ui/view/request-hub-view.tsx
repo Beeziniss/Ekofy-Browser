@@ -114,28 +114,6 @@ export function RequestHubView() {
     setEditingRequest(null);
   };
 
-  const handleContactClient = () => {
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-      toast.info("Please sign in to contact clients");
-      return;
-    }
-
-    // Check if user is artist and has stripe account
-    if (isArtist && !hasStripeAccount) {
-      setShowStripeModal(true);
-      return;
-    }
-
-    // Only allow artists to contact client
-    if (isArtist) {
-      console.log("Contact client");
-      toast.info("Contact feature coming soon!");
-    } else {
-      toast.info("Only artists can contact clients");
-    }
-  };
-
   const handleCreateSubmit = async (data: CreateRequestData) => {
     try {
       await createRequestMutation.mutateAsync(data);
@@ -212,7 +190,6 @@ export function RequestHubView() {
             request={selectedRequest}
             onBack={handleBackToList}
             onApply={() => handleApply(selectedRequest.id)}
-            onContactClient={handleContactClient}
           />
         ) : null;
       case "view":

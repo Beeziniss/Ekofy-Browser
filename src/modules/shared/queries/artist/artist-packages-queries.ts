@@ -58,33 +58,33 @@ export const ServicePackageDetailQuery = graphql(`
 `)
 
 // Query for pending packages
-export const PendingArtistPackagesQuery = graphql(`
-  query PendingArtistPackages($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPendingArtistPackageResponseFilterInput, $artistWhere: ArtistFilterInput) {
-    pendingArtistPackages(pageNumber: $pageNumber, pageSize: $pageSize, where: $where) {
-      totalCount
-      items {
-        id
-        artistId
-        packageName
-        amount
-        currency
-        estimateDeliveryDays
-        description
-        status
-        requestedAt
-        timeToLive
-        serviceDetails {
-          key
-          value
-        }
-      }
-    }
-    artists(where: $artistWhere) {
-      items {
-        stageName
-        userId
-        id
-      }
-    }
-  }
-`)
+// export const PendingArtistPackagesQuery = graphql(`
+//   query PendingArtistPackages($pageNumber: Int!, $pageSize: Int!, $where: PaginatedDataOfPendingArtistPackageResponseFilterInput, $artistWhere: ArtistFilterInput) {
+//     pendingArtistPackages(pageNumber: $pageNumber, pageSize: $pageSize, where: $where) {
+//       totalCount
+//       items {
+//         id
+//         artistId
+//         packageName
+//         amount
+//         currency
+//         estimateDeliveryDays
+//         description
+//         status
+//         requestedAt
+//         timeToLive
+//         serviceDetails {
+//           key
+//           value
+//         }
+//       }
+//     }
+//     artists(where: $artistWhere) {
+//       items {
+//         stageName
+//         userId
+//         id
+//       }
+//     }
+//   }
+// `)

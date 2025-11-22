@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import { Search, X } from "lucide-react";
 import ServicePackageList from "../component/service-package-list/service-package-list";
-import PendingPackageList from "../component/service-package-list/pending-package-list";
+// import PendingPackageList from "../component/service-package-list/pending-package-list";
 import DeleteConfirmModal from "../component/delete-package-service/delete-confirm-modal";
-import { artistPackagesOptions, pendingPackagesOptions } from "@/gql/options/artist-options";
+import { artistPackagesOptions } from "@/gql/options/artist-options";
 import { usePackageOperations } from "../../hooks/use-package-operations";
 import { ArtistPackageStatus } from "@/gql/graphql";
 import { useAuthStore } from "@/store";
@@ -25,13 +25,13 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
   onEditPackage,
   onViewDetail,
 }) => {
-  const [currentView, setCurrentView] = useState<"packages" | "pending">("packages");
+  // const [currentView, setCurrentView] = useState<"packages" | "pending">("packages");
   const [artistId, setArtistId] = useState<string>("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [packageToDelete, setPackageToDelete] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pendingCurrentPage, setPendingCurrentPage] = useState<number>(1);
+  // const [pendingCurrentPage, setPendingCurrentPage] = useState<number>(1);
   const pageSize = 10;
   const { user } = useAuthStore();
 
@@ -56,10 +56,10 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
   });
 
   // Query for pending packages using options with search and pagination
-  const { data: pendingData, isLoading: pendingLoading } = useQuery({
-    ...pendingPackagesOptions(artistId, pendingCurrentPage, pageSize, searchTerm),
-    enabled: !!artistId && currentView === "pending",
-  });
+  // const { data: pendingData, isLoading: pendingLoading } = useQuery({
+  //   ...pendingPackagesOptions(artistId, pendingCurrentPage, pageSize, searchTerm),
+  //   enabled: !!artistId && currentView === "pending",
+  // });
 
   const handleStatusChange = (packageId: string, status: ArtistPackageStatus) => {
     changePackageStatus(packageId, status);
@@ -89,44 +89,44 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
     setCurrentPage(1); // Reset to first page when searching
-    setPendingCurrentPage(1);
+    // setPendingCurrentPage(1);
   };
 
   const handleClearSearch = () => {
     setSearchTerm("");
     setCurrentPage(1);
-    setPendingCurrentPage(1);
+    // setPendingCurrentPage(1);
   };
 
-  const handleViewChange = (view: "packages" | "pending") => {
-    setCurrentView(view);
-    setSearchTerm(""); // Clear search when switching views
-    setCurrentPage(1);
-    setPendingCurrentPage(1);
-  };
+  // const handleViewChange = (view: "packages" | "pending") => {
+  //   setCurrentView(view);
+  //   setSearchTerm(""); // Clear search when switching views
+  //   setCurrentPage(1);
+  //   setPendingCurrentPage(1);
+  // };
 
   const handlePageChange = (page: number) => {
-    if (currentView === "packages") {
+    // if (currentView === "packages") {
       setCurrentPage(page);
-    } else {
-      setPendingCurrentPage(page);
-    }
+    // } else {
+    //   setPendingCurrentPage(page);
+    // }
   };
 
-  const handleCancelPendingPackage = (packageId: string) => {
-    // This would typically call a cancel pending package mutation
-    console.log("Cancel pending package:", packageId);
-    // TODO: Implement cancel pending package functionality
-  };
+  // const handleCancelPendingPackage = (packageId: string) => {
+  //   // This would typically call a cancel pending package mutation
+  //   console.log("Cancel pending package:", packageId);
+  //   // TODO: Implement cancel pending package functionality
+  // };
 
   const packages = useMemo(() => packagesData?.artistPackages?.items || [], [packagesData]);
-  const pendingPackages = useMemo(() => pendingData?.pendingArtistPackages?.items || [], [pendingData]);
-  const artists = useMemo(() => pendingData?.artists?.items || [], [pendingData]);
+  // const pendingPackages = useMemo(() => pendingData?.pendingArtistPackages?.items || [], [pendingData]);
+  // const artists = useMemo(() => pendingData?.artists?.items || [], [pendingData]);
   // Pagination calculations
   const totalPackagesCount = packagesData?.artistPackages?.totalCount || 0;
-  const totalPendingCount = pendingData?.pendingArtistPackages?.totalCount || 0;
+  // const totalPendingCount = pendingData?.pendingArtistPackages?.totalCount || 0;
   const totalPackagesPages = Math.ceil(totalPackagesCount / pageSize);
-  const totalPendingPages = Math.ceil(totalPendingCount / pageSize);
+  // const totalPendingPages = Math.ceil(totalPendingCount / pageSize);
 
   return (
     <div className="mx-auto max-w-7xl p-6">
@@ -135,7 +135,7 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="text-white">Artist Service Packages</CardTitle>
             <div className="flex items-center space-x-4">
-              {currentView === "packages" ? (
+              {/* {currentView === "packages" ? (
                 <>
                   <Button
                     variant="outline"
@@ -143,11 +143,11 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
                     className="border-gray-600 text-gray-300 hover:text-white"
                   >
                     Pending list
-                  </Button>
+                  </Button> */}
                   <Button onClick={onCreatePackage} className="bg-purple-600 text-white hover:bg-purple-700">
                     + Add Package
                   </Button>
-                </>
+                {/* </>
               ) : (
                 <Button
                   variant="outline"
@@ -156,17 +156,17 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
                 >
                   Package list
                 </Button>
-              )}
+              )} */}
             </div>
           </div>
-          {(currentView === "packages" || currentView === "pending") && (
+          {/* {(currentView === "packages" || currentView === "pending") && ( */}
             <div className="mt-4 flex items-center space-x-4">
               <div className="relative max-w-md flex-1">
                 <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                 <Input
                   type="text"
                   placeholder={
-                    currentView === "packages" ? "Search packages by name..." : "Search pending packages by name..."
+                    /* currentView === "packages" ? */ "Search packages by name..." /* : "Search pending packages by name..." */
                   }
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
@@ -183,7 +183,7 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
               </div>
               {searchTerm && <div className="text-sm text-gray-400">Searching for: &ldquo;{searchTerm}&rdquo;</div>}
             </div>
-          )}
+          {/* )} */}
         </CardHeader>
 
         <CardContent>
@@ -191,7 +191,7 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
             <div className="py-8 text-center">
               <p className="text-red-400">Artist ID not found. Please log in again.</p>
             </div>
-          ) : currentView === "packages" ? (
+          ) : /* currentView === "packages" ? ( */
             packagesLoading ? (
               <div className="py-8 text-center">
                 <p className="text-gray-400">Loading packages...</p>
@@ -224,7 +224,7 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
                 />
               </>
             )
-          ) : pendingLoading ? (
+          /* ) : pendingLoading ? (
             <div className="py-8 text-center">
               <p className="text-gray-400">Loading pending packages...</p>
             </div>
@@ -232,8 +232,8 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
             <>
               <PendingPackageList packages={pendingPackages} artists={artists} onCancel={handleCancelPendingPackage} />
 
-              {/* Pagination for Pending Packages */}
-              <CustomPagination
+              {/* Pagination for Pending Packages */
+              /* <CustomPagination
                 currentPage={pendingCurrentPage}
                 totalPages={totalPendingPages}
                 totalCount={totalPendingCount}
@@ -243,7 +243,7 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
                 className="mt-6"
               />
             </>
-          )}
+          ) */}
         </CardContent>
       </Card>
 

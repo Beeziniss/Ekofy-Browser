@@ -21,10 +21,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2 } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2, Flag } from "lucide-react";
 import React, { useState } from "react";
 import RequestHubCommentReply from "./request-hub-comment-reply";
-import { CommentThread, CommentType } from "@/gql/graphql";
+import { CommentThread, CommentType, ReportRelatedContentType } from "@/gql/graphql";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createRequestHubCommentMutationOptions,
@@ -34,6 +34,7 @@ import {
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
 import { useAuthDialog } from "../context/auth-dialog-context";
+import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
 
 interface RequestHubCommentUserProps {
   thread: Omit<CommentThread, "hasMoreReplies" | "lastActivity">;
@@ -48,6 +49,7 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubComme
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   const queryClient = useQueryClient();
   const { user, isAuthenticated } = useAuthStore();
@@ -180,8 +182,8 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubComme
             </span>
           </div>
 
-          {/* Actions dropdown for comment owner */}
-          {isOwner && (
+          {/* Actions dropdown */}
+          {isAuthenticated && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-gray-500 hover:text-gray-300">
@@ -189,20 +191,32 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubComme
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-32 border-gray-600 bg-gray-800">
-                <DropdownMenuItem
-                  onClick={handleEditComment}
-                  className="cursor-pointer text-xs text-gray-200 hover:bg-gray-700"
-                >
-                  <Edit className="mr-2 h-3 w-3" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="cursor-pointer text-xs text-red-400 hover:bg-gray-700 focus:text-red-400"
-                >
-                  <Trash2 className="mr-2 h-3 w-3" />
-                  Delete
-                </DropdownMenuItem>
+                {isOwner ? (
+                  <>
+                    <DropdownMenuItem
+                      onClick={handleEditComment}
+                      className="cursor-pointer text-xs text-gray-200 hover:bg-gray-700"
+                    >
+                      <Edit className="mr-2 h-3 w-3" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setShowDeleteDialog(true)}
+                      className="cursor-pointer text-xs text-red-400 hover:bg-gray-700 focus:text-red-400"
+                    >
+                      <Trash2 className="mr-2 h-3 w-3" />
+                      Delete
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem
+                    onClick={() => setReportDialogOpen(true)}
+                    className="cursor-pointer text-xs text-gray-200 hover:bg-gray-700"
+                  >
+                    <Flag className="mr-2 h-3 w-3" />
+                    Report
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -359,6 +373,22 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubComme
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Report Dialog */}
+        {comment.commenterId && (
+          <ReportDialog
+            contentType={ReportRelatedContentType.Comment}
+            contentId={comment.id}
+            reportedUserId={comment.commenterId}
+            reportedUserName={
+              comment.commenter?.listener?.displayName ||
+              comment.commenter?.artist?.stageName ||
+              `User ${comment.commenterId.slice(-4)}`
+            }
+            open={reportDialogOpen}
+            onOpenChange={setReportDialogOpen}
+          />
+        )}
       </div>
     </div>
   );
