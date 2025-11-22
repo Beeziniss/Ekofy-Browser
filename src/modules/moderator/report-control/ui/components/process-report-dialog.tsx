@@ -13,22 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -100,13 +86,19 @@ const STATUS_LABELS: Record<ReportStatus, string> = {
 const RESTRICTION_ACTION_LABELS: Record<RestrictionAction, string> = {
   [RestrictionAction.None]: "None",
   [RestrictionAction.Comment]: "Comment",
-  [RestrictionAction.CreateRequest]: "Create Public Request",
-  [RestrictionAction.CreateDirectRequest]: "Create Private Request",
+  [RestrictionAction.SendRequest]: "Send Request",
+  [RestrictionAction.CreatePublicRequest]: "Create Public Request",
   [RestrictionAction.UploadTrack]: "Upload Track",
   [RestrictionAction.Report]: "Report",
 };
 
-export function ProcessReportDialog({ open, onOpenChange, reportId, relatedContentType, onSuccess }: ProcessReportDialogProps) {
+export function ProcessReportDialog({
+  open,
+  onOpenChange,
+  reportId,
+  relatedContentType,
+  onSuccess,
+}: ProcessReportDialogProps) {
   const [selectedRestrictionActions, setSelectedRestrictionActions] = useState<RestrictionAction[]>([]);
   const processReport = useProcessReport();
 
@@ -116,10 +108,10 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
       // For user reports (no related content), all restrictions are available
       return [
         RestrictionAction.Comment,
-        RestrictionAction.CreateRequest,
-        RestrictionAction.CreateDirectRequest,
+        RestrictionAction.SendRequest,
+        RestrictionAction.CreatePublicRequest,
         RestrictionAction.UploadTrack,
-        RestrictionAction.Report
+        RestrictionAction.Report,
       ];
     }
 
@@ -128,29 +120,35 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
       case ReportRelatedContentType.Comment:
         return [RestrictionAction.Comment];
       case ReportRelatedContentType.Request:
-        return [RestrictionAction.CreateRequest, RestrictionAction.CreateDirectRequest];
+        return [RestrictionAction.SendRequest, RestrictionAction.CreatePublicRequest];
       case ReportRelatedContentType.Track:
         return [RestrictionAction.UploadTrack];
       default:
         return [
           RestrictionAction.Comment,
-          RestrictionAction.CreateRequest,
-          RestrictionAction.CreateDirectRequest,
+          RestrictionAction.SendRequest,
+          RestrictionAction.CreatePublicRequest,
           RestrictionAction.UploadTrack,
-          RestrictionAction.Report
+          RestrictionAction.Report,
         ];
     }
   };
 
   // Get available actions based on relatedContentType
   const getAvailableActions = (): ReportAction[] => {
-    if (relatedContentType && [
-      ReportRelatedContentType.Track,
-      ReportRelatedContentType.Comment,
-      ReportRelatedContentType.Request
-    ].includes(relatedContentType)) {
+    if (
+      relatedContentType &&
+      [ReportRelatedContentType.Track, ReportRelatedContentType.Comment, ReportRelatedContentType.Request].includes(
+        relatedContentType,
+      )
+    ) {
       // For content-related reports, NoAction, Warning, Entitlement Restriction, and Content Removal are available
-      return [ReportAction.NoAction, ReportAction.Warning, ReportAction.EntitlementRestriction ,ReportAction.ContentRemoval];
+      return [
+        ReportAction.NoAction,
+        ReportAction.Warning,
+        ReportAction.EntitlementRestriction,
+        ReportAction.ContentRemoval,
+      ];
     }
     // For user reports (no related content), all other actions are available
     return [
@@ -158,7 +156,7 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
       ReportAction.Warning,
       ReportAction.Suspended,
       ReportAction.EntitlementRestriction,
-      ReportAction.PermanentBan
+      ReportAction.PermanentBan,
     ];
   };
 
@@ -209,7 +207,10 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
         actionTaken: data.actionTaken,
         status: data.status,
         note: data.note || undefined,
-        suspensionDays: (data.actionTaken === ReportAction.Suspended || data.actionTaken === ReportAction.EntitlementRestriction) ? data.suspensionDays : undefined,
+        suspensionDays:
+          data.actionTaken === ReportAction.Suspended || data.actionTaken === ReportAction.EntitlementRestriction
+            ? data.suspensionDays
+            : undefined,
         restrictionActionDetails:
           data.actionTaken === ReportAction.EntitlementRestriction ? restrictionActionDetails : [],
       });
@@ -235,20 +236,18 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90vh] flex flex-col p-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b">
+      <DialogContent className="flex max-h-[90vh] w-full max-w-[calc(100%-2rem)] flex-col p-0 sm:max-w-6xl">
+        <DialogHeader className="border-b px-6 pt-6 pb-4">
           <DialogTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-blue-500" />
             Process Report
           </DialogTitle>
-          <DialogDescription>
-            Select the appropriate action and status to process this report.
-          </DialogDescription>
+          <DialogDescription>Select the appropriate action and status to process this report.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
-            <div className="space-y-6 px-6 py-4 overflow-y-auto flex-1">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 flex-col overflow-hidden">
+            <div className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
               <FormField
                 control={form.control}
                 name="actionTaken"
@@ -277,14 +276,14 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
                       </SelectContent>
                     </Select>
                     <FormDescription className="text-xs">
-                      {relatedContentType && [
+                      {relatedContentType &&
+                      [
                         ReportRelatedContentType.Track,
-                        ReportRelatedContentType.Comment, 
-                        ReportRelatedContentType.Request
-                      ].includes(relatedContentType) 
+                        ReportRelatedContentType.Comment,
+                        ReportRelatedContentType.Request,
+                      ].includes(relatedContentType)
                         ? "Content-related reports: Only Content Removal is available"
-                        : "User reports: All actions except Content Removal are available"
-                      }
+                        : "User reports: All actions except Content Removal are available"}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -339,8 +338,8 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
                         />
                       </FormControl>
                       <FormDescription>
-                        {actionTaken === ReportAction.Suspended 
-                          ? "How many days to suspend the account" 
+                        {actionTaken === ReportAction.Suspended
+                          ? "How many days to suspend the account"
                           : "Duration of the restriction in days"}
                       </FormDescription>
                       <FormMessage />
@@ -350,47 +349,43 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
               )}
 
               {actionTaken === ReportAction.EntitlementRestriction && (
-                <div className="space-y-4 p-5 border-2 rounded-lg bg-muted/20">
+                <div className="bg-muted/20 space-y-4 rounded-lg border-2 p-5">
                   <div>
-                    <h4 className="text-sm font-semibold mb-1">Select Restrictions</h4>
-                    <p className="text-xs text-muted-foreground mb-4">
+                    <h4 className="mb-1 text-sm font-semibold">Select Restrictions</h4>
+                    <p className="text-muted-foreground mb-4 text-xs">
                       Select the permissions that the user will be restricted from
                     </p>
                     <div className="space-y-4">
                       {availableRestrictionActions.map((action) => {
                         const label = RESTRICTION_ACTION_LABELS[action];
                         return (
-                          <div key={action} className="space-y-3 p-3 rounded-md border bg-background/50">
+                          <div key={action} className="bg-background/50 space-y-3 rounded-md border p-3">
                             <div className="flex items-center space-x-3">
                               <Checkbox
                                 id={action}
                                 checked={selectedRestrictionActions.includes(action)}
                                 disabled={autoSelectRestriction}
-                                onCheckedChange={(checked) =>
-                                  handleRestrictionActionToggle(action, checked as boolean)
-                                }
+                                onCheckedChange={(checked) => handleRestrictionActionToggle(action, checked as boolean)}
                               />
                               <label
                                 htmlFor={action}
-                                className={`text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
-                                  autoSelectRestriction ? 'text-muted-foreground' : ''
+                                className={`cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                                  autoSelectRestriction ? "text-muted-foreground" : ""
                                 }`}
                               >
                                 {label}
                                 {autoSelectRestriction && (
-                                  <span className="ml-2 text-xs text-muted-foreground">(Auto-selected)</span>
+                                  <span className="text-muted-foreground ml-2 text-xs">(Auto-selected)</span>
                                 )}
                               </label>
                             </div>
                             {selectedRestrictionActions.includes(action) && (
-                              <div className="pl-7 pt-1">
+                              <div className="pt-1 pl-7">
                                 <Textarea
                                   placeholder={`Note for ${label.toLowerCase()} restriction...`}
-                                  className="text-sm resize-none min-h-[80px] w-full"
+                                  className="min-h-[80px] w-full resize-none text-sm"
                                   value={form.watch(`restrictionNotes.${action}`) || ""}
-                                  onChange={(e) =>
-                                    form.setValue(`restrictionNotes.${action}`, e.target.value)
-                                  }
+                                  onChange={(e) => form.setValue(`restrictionNotes.${action}`, e.target.value)}
                                 />
                               </div>
                             )}
@@ -422,7 +417,7 @@ export function ProcessReportDialog({ open, onOpenChange, reportId, relatedConte
               />
             </div>
 
-            <DialogFooter className="px-6 py-4 border-t bg-muted/20">
+            <DialogFooter className="bg-muted/20 border-t px-6 py-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>

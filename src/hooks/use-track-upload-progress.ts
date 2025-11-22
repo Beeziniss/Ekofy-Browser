@@ -99,6 +99,7 @@ export const useTrackUploadProgress = (): UseTrackUploadProgressReturn => {
       setError(err instanceof Error ? err.message : "Failed to connect");
       setIsConnected(false);
     }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connection]);
 
   const stopConnection = useCallback(async () => {
