@@ -1066,6 +1066,7 @@ export enum ConversationStatus {
   Cancelled = 'CANCELLED',
   Completed = 'COMPLETED',
   InProgress = 'IN_PROGRESS',
+  None = 'NONE',
   Pending = 'PENDING'
 }
 
@@ -1257,8 +1258,8 @@ export type CreateCommentRequestInput = {
 };
 
 export type CreateConversationRequestInput = {
-  requestHubId?: InputMaybe<Scalars['String']['input']>;
-  userIds: Array<Scalars['String']['input']>;
+  otherUserId: Scalars['String']['input'];
+  requestHubId: Scalars['String']['input'];
 };
 
 export type CreateCouponRequestInput = {
@@ -2328,7 +2329,9 @@ export type Message = {
   id: Scalars['String']['output'];
   isRead: Scalars['Boolean']['output'];
   receiverId: Scalars['String']['output'];
+  receiverProfileMessages: MessageResponse;
   senderId: Scalars['String']['output'];
+  senderProfileMessages: MessageResponse;
   sentAt: Scalars['DateTime']['output'];
   text: Scalars['String']['output'];
 };
@@ -2346,6 +2349,12 @@ export type MessageFilterInput = {
   text?: InputMaybe<StringOperationFilterInput>;
 };
 
+export type MessageResponse = {
+  __typename?: 'MessageResponse';
+  avatar: Scalars['String']['output'];
+  nickname: Scalars['String']['output'];
+};
+
 export type MessageSortInput = {
   conversationId?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
@@ -2356,14 +2365,26 @@ export type MessageSortInput = {
   text?: InputMaybe<SortEnumType>;
 };
 
-/** A segment of a collection. */
-export type MessagesCollectionSegment = {
-  __typename?: 'MessagesCollectionSegment';
-  /** A flattened list of the items. */
-  items?: Maybe<Array<Message>>;
+/** A connection to a list of items. */
+export type MessagesConnection = {
+  __typename?: 'MessagesConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<MessagesEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Message>>;
   /** Information to aid in pagination. */
-  pageInfo: CollectionSegmentInfo;
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
   totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type MessagesEdge = {
+  __typename?: 'MessagesEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Message;
 };
 
 export type Metadata = {
@@ -2462,7 +2483,8 @@ export enum MoodType {
 export type MutationInitialization = {
   __typename?: 'MutationInitialization';
   activateSubscription: Scalars['Boolean']['output'];
-  addConversationFromRequestHub: Scalars['Boolean']['output'];
+  addConversationFromRequestHub: Scalars['String']['output'];
+  addConversationGeneral: Scalars['String']['output'];
   addToFavoriteAlbum: Scalars['Boolean']['output'];
   addToFavoritePlaylist: Scalars['Boolean']['output'];
   addToFavoriteTrack: Scalars['Boolean']['output'];
@@ -2560,6 +2582,11 @@ export type MutationInitializationActivateSubscriptionArgs = {
 
 export type MutationInitializationAddConversationFromRequestHubArgs = {
   request: CreateConversationRequestInput;
+};
+
+
+export type MutationInitializationAddConversationGeneralArgs = {
+  otherUserId: Scalars['String']['input'];
 };
 
 
@@ -3090,6 +3117,16 @@ export type OneOffTypeOperationFilterInput = {
 };
 
 /** A segment of a collection. */
+export type OwnPlaylistsCollectionSegment = {
+  __typename?: 'OwnPlaylistsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Playlist>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
 export type OwnRequestsCollectionSegment = {
   __typename?: 'OwnRequestsCollectionSegment';
   /** A flattened list of the items. */
@@ -3252,6 +3289,19 @@ export type PackageOrdersCollectionSegment = {
   /** Information to aid in pagination. */
   pageInfo: CollectionSegmentInfo;
   totalCount: Scalars['Int']['output'];
+};
+
+/** Information about pagination in a connection. */
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  /** When paginating forwards, the cursor to continue. */
+  endCursor?: Maybe<Scalars['String']['output']>;
+  /** Indicates whether more edges exist following the set defined by the clients arguments. */
+  hasNextPage: Scalars['Boolean']['output'];
+  /** Indicates whether more edges exist prior the set defined by the clients arguments. */
+  hasPreviousPage: Scalars['Boolean']['output'];
+  /** When paginating backwards, the cursor to continue. */
+  startCursor?: Maybe<Scalars['String']['output']>;
 };
 
 export type PaginatedDataOfCombinedUploadRequest = {
@@ -3721,12 +3771,13 @@ export type QueryInitialization = {
   isCommentInThread: Scalars['Boolean']['output'];
   legalPolicies?: Maybe<LegalPoliciesCollectionSegment>;
   listeners?: Maybe<ListenersCollectionSegment>;
-  messages?: Maybe<MessagesCollectionSegment>;
+  messages?: Maybe<MessagesConnection>;
   metadataRecordingUploadRequest: RecordingTempRequest;
   metadataTrackUploadRequest: TrackTempRequest;
   metadataWorkUploadRequest: WorkTempRequest;
   monthlyStreamCounts?: Maybe<MonthlyStreamCountsCollectionSegment>;
   originalFileTrackUploadRequest: Scalars['String']['output'];
+  ownPlaylists?: Maybe<OwnPlaylistsCollectionSegment>;
   ownRequests?: Maybe<OwnRequestsCollectionSegment>;
   packageOrders?: Maybe<PackageOrdersCollectionSegment>;
   paymentTransactions?: Maybe<PaymentTransactionsCollectionSegment>;
@@ -3962,9 +4013,11 @@ export type QueryInitializationListenersArgs = {
 
 
 export type QueryInitializationMessagesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   order?: InputMaybe<Array<MessageSortInput>>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<MessageFilterInput>;
 };
 
@@ -3994,6 +4047,14 @@ export type QueryInitializationMonthlyStreamCountsArgs = {
 
 export type QueryInitializationOriginalFileTrackUploadRequestArgs = {
   trackId: Scalars['String']['input'];
+};
+
+
+export type QueryInitializationOwnPlaylistsArgs = {
+  order?: InputMaybe<Array<PlaylistSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PlaylistFilterInput>;
 };
 
 
@@ -4528,6 +4589,7 @@ export type Report = {
   __typename?: 'Report';
   actionTaken?: Maybe<ReportAction>;
   assignedModeratorId?: Maybe<Scalars['String']['output']>;
+  backgroundJobId?: Maybe<Scalars['String']['output']>;
   comment: Array<Comment>;
   createdAt: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
@@ -4603,6 +4665,7 @@ export type ReportFilterInput = {
   actionTaken?: InputMaybe<NullableOfReportActionOperationFilterInput>;
   and?: InputMaybe<Array<ReportFilterInput>>;
   assignedModeratorId?: InputMaybe<StringOperationFilterInput>;
+  backgroundJobId?: InputMaybe<StringOperationFilterInput>;
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
   description?: InputMaybe<StringOperationFilterInput>;
   evidences?: InputMaybe<ListStringOperationFilterInput>;
@@ -4647,6 +4710,7 @@ export enum ReportRelatedContentType {
 export type ReportSortInput = {
   actionTaken?: InputMaybe<SortEnumType>;
   assignedModeratorId?: InputMaybe<SortEnumType>;
+  backgroundJobId?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
   description?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
@@ -4904,10 +4968,10 @@ export type Restriction = {
 
 export enum RestrictionAction {
   Comment = 'COMMENT',
-  CreateDirectRequest = 'CREATE_DIRECT_REQUEST',
-  CreateRequest = 'CREATE_REQUEST',
+  CreatePublicRequest = 'CREATE_PUBLIC_REQUEST',
   None = 'NONE',
   Report = 'REPORT',
+  SendRequest = 'SEND_REQUEST',
   UploadTrack = 'UPLOAD_TRACK'
 }
 
@@ -6374,6 +6438,20 @@ export type UpdateArtistProfileMutationVariables = Exact<{
 
 export type UpdateArtistProfileMutation = { __typename?: 'MutationInitialization', updateArtistProfile: boolean };
 
+export type AddConversationGeneralMutationVariables = Exact<{
+  otherUserId: Scalars['String']['input'];
+}>;
+
+
+export type AddConversationGeneralMutation = { __typename?: 'MutationInitialization', addConversationGeneral: string };
+
+export type AddConversationFromRequestHubMutationVariables = Exact<{
+  createConversationRequestInput: CreateConversationRequestInput;
+}>;
+
+
+export type AddConversationFromRequestHubMutation = { __typename?: 'MutationInitialization', addConversationFromRequestHub: string };
+
 export type PlaylistFavoriteMutationVariables = Exact<{
   playlistId: Scalars['String']['input'];
   isAdding: Scalars['Boolean']['input'];
@@ -6701,12 +6779,14 @@ export type ConversationsQueryVariables = Exact<{
 }>;
 
 
-export type ConversationsQuery = { __typename?: 'QueryInitialization', conversations?: { __typename?: 'ConversationsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Conversation', id: string, userIds: Array<string>, lastMessage?: { __typename?: 'LastMessage', text: string, senderId: string, sentAt: any, isReadBy: Array<string> } | null }> | null } | null };
+export type ConversationsQuery = { __typename?: 'QueryInitialization', conversations?: { __typename?: 'ConversationsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Conversation', id: string, userIds: Array<string>, ownerProfileConversation: { __typename?: 'ConversationResponse', avatar: string, nickname: string }, otherProfileConversation: { __typename?: 'ConversationResponse', avatar: string, nickname: string }, lastMessage?: { __typename?: 'LastMessage', text: string, senderId: string, sentAt: any, isReadBy: Array<string> } | null }> | null } | null };
 
-export type MessagesQueryVariables = Exact<{ [key: string]: never; }>;
+export type MessagesQueryVariables = Exact<{
+  where?: InputMaybe<MessageFilterInput>;
+}>;
 
 
-export type MessagesQuery = { __typename?: 'QueryInitialization', messages?: { __typename?: 'MessagesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Message', id: string, conversationId: string, senderId: string, receiverId: string, isRead: boolean, text: string, sentAt: any }> | null } | null };
+export type MessagesQuery = { __typename?: 'QueryInitialization', messages?: { __typename?: 'MessagesConnection', totalCount: number, edges?: Array<{ __typename?: 'MessagesEdge', cursor: string, node: { __typename?: 'Message', id: string, conversationId: string, senderId: string, receiverId: string, isRead: boolean, text: string, sentAt: any, deletedForIds: Array<string>, senderProfileMessages: { __typename?: 'MessageResponse', avatar: string, nickname: string } } }> | null } | null };
 
 export type FollowersQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']['input']>;
@@ -7554,6 +7634,16 @@ export const UpdateArtistProfileDocument = new TypedDocumentString(`
   updateArtistProfile(updateArtistRequest: $updateArtistRequest)
 }
     `) as unknown as TypedDocumentString<UpdateArtistProfileMutation, UpdateArtistProfileMutationVariables>;
+export const AddConversationGeneralDocument = new TypedDocumentString(`
+    mutation AddConversationGeneral($otherUserId: String!) {
+  addConversationGeneral(otherUserId: $otherUserId)
+}
+    `) as unknown as TypedDocumentString<AddConversationGeneralMutation, AddConversationGeneralMutationVariables>;
+export const AddConversationFromRequestHubDocument = new TypedDocumentString(`
+    mutation AddConversationFromRequestHub($createConversationRequestInput: CreateConversationRequestInput!) {
+  addConversationFromRequestHub(request: $createConversationRequestInput)
+}
+    `) as unknown as TypedDocumentString<AddConversationFromRequestHubMutation, AddConversationFromRequestHubMutationVariables>;
 export const PlaylistFavoriteDocument = new TypedDocumentString(`
     mutation PlaylistFavorite($playlistId: String!, $isAdding: Boolean!) {
   addToFavoritePlaylist(playlistId: $playlistId, isAdding: $isAdding)
@@ -8101,6 +8191,14 @@ export const ConversationsDocument = new TypedDocumentString(`
     items {
       id
       userIds
+      ownerProfileConversation {
+        avatar
+        nickname
+      }
+      otherProfileConversation {
+        avatar
+        nickname
+      }
       lastMessage {
         text
         senderId
@@ -8113,16 +8211,24 @@ export const ConversationsDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<ConversationsQuery, ConversationsQueryVariables>;
 export const MessagesDocument = new TypedDocumentString(`
-    query Messages {
-  messages {
-    items {
-      id
-      conversationId
-      senderId
-      receiverId
-      isRead
-      text
-      sentAt
+    query Messages($where: MessageFilterInput) {
+  messages(where: $where, last: 10) {
+    edges {
+      cursor
+      node {
+        id
+        conversationId
+        senderId
+        receiverId
+        isRead
+        text
+        sentAt
+        deletedForIds
+        senderProfileMessages {
+          avatar
+          nickname
+        }
+      }
     }
     totalCount
   }
