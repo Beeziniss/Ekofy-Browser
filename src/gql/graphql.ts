@@ -318,7 +318,7 @@ export type Artist = {
   legalDocuments: Array<LegalDocument>;
   members: Array<ArtistMember>;
   netEarnings: Scalars['Decimal']['output'];
-  popularity: Scalars['Long']['output'];
+  popularity: Scalars['Decimal']['output'];
   refundAmount: Scalars['Decimal']['output'];
   royaltyEarnings: Scalars['Decimal']['output'];
   serviceRevenue: Scalars['Decimal']['output'];
@@ -362,7 +362,7 @@ export type ArtistFilterInput = {
   legalDocuments?: InputMaybe<ListFilterInputTypeOfLegalDocumentFilterInput>;
   members?: InputMaybe<ListFilterInputTypeOfArtistMemberFilterInput>;
   or?: InputMaybe<Array<ArtistFilterInput>>;
-  popularity?: InputMaybe<LongOperationFilterInput>;
+  popularity?: InputMaybe<DecimalOperationFilterInput>;
   refundAmount?: InputMaybe<DecimalOperationFilterInput>;
   royaltyEarnings?: InputMaybe<DecimalOperationFilterInput>;
   serviceRevenue?: InputMaybe<DecimalOperationFilterInput>;
@@ -379,7 +379,7 @@ export type ArtistInfo = {
   followerCount: Scalars['Long']['output'];
   id: Scalars['String']['output'];
   isVerified: Scalars['Boolean']['output'];
-  popularity: Scalars['Long']['output'];
+  popularity: Scalars['Decimal']['output'];
   stageName: Scalars['String']['output'];
 };
 
@@ -2538,7 +2538,12 @@ export type MutationInitialization = {
   escalateReport: Scalars['Boolean']['output'];
   followUser: Scalars['Boolean']['output'];
   initialize: Scalars['String']['output'];
+  processArtistDiscovery: Scalars['Boolean']['output'];
+  processArtistEngagement: Scalars['Boolean']['output'];
   processReport: Scalars['Boolean']['output'];
+  processTrackDiscovery: Scalars['Boolean']['output'];
+  processTrackEngagementMetric: Scalars['Boolean']['output'];
+  processTrackStreamingMetric: Scalars['Boolean']['output'];
   reactiveEntitlement: Scalars['Boolean']['output'];
   refund: Scalars['Boolean']['output'];
   registerArtistManual: Scalars['Boolean']['output'];
@@ -2846,8 +2851,38 @@ export type MutationInitializationFollowUserArgs = {
 };
 
 
+export type MutationInitializationProcessArtistDiscoveryArgs = {
+  actionType: PopularityActionType;
+  artistId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationProcessArtistEngagementArgs = {
+  actionType: PopularityActionType;
+  artistId: Scalars['String']['input'];
+};
+
+
 export type MutationInitializationProcessReportArgs = {
   request: ProcessReportRequestInput;
+};
+
+
+export type MutationInitializationProcessTrackDiscoveryArgs = {
+  actionType: PopularityActionType;
+  trackId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationProcessTrackEngagementMetricArgs = {
+  actionType: PopularityActionType;
+  trackId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationProcessTrackStreamingMetricArgs = {
+  actionType: PopularityActionType;
+  trackId: Scalars['String']['input'];
 };
 
 
@@ -3713,6 +3748,24 @@ export enum PolicyType {
   Privacy = 'PRIVACY',
   Royalty = 'ROYALTY',
   Terms = 'TERMS'
+}
+
+export enum PopularityActionType {
+  AddToPlaylist = 'ADD_TO_PLAYLIST',
+  ClickFromRecommendation = 'CLICK_FROM_RECOMMENDATION',
+  Comment = 'COMMENT',
+  CompleteStreaming = 'COMPLETE_STREAMING',
+  Favorite = 'FAVORITE',
+  Follow = 'FOLLOW',
+  RemoveFromPlaylist = 'REMOVE_FROM_PLAYLIST',
+  RepeatStreaming = 'REPEAT_STREAMING',
+  Search = 'SEARCH',
+  SearchResultClick = 'SEARCH_RESULT_CLICK',
+  Share = 'SHARE',
+  SkipStreaming = 'SKIP_STREAMING',
+  Streaming = 'STREAMING',
+  Unfavorite = 'UNFAVORITE',
+  Unfollow = 'UNFOLLOW'
 }
 
 export type ProcessReportRequestInput = {
@@ -5569,13 +5622,13 @@ export type Track = {
   featuredArtists?: Maybe<FeaturedArtistsCollectionSegment>;
   id: Scalars['String']['output'];
   isExplicit: Scalars['Boolean']['output'];
-  isMonetized: Scalars['Boolean']['output'];
   legalDocuments: Array<LegalDocument>;
   lyrics?: Maybe<Scalars['String']['output']>;
   mainArtistIds: Array<Scalars['String']['output']>;
   mainArtists?: Maybe<MainArtistsCollectionSegment>;
   name: Scalars['String']['output'];
   nameUnsigned: Scalars['String']['output'];
+  popularity: Scalars['Decimal']['output'];
   previewVideo?: Maybe<Scalars['String']['output']>;
   releaseInfo: ReleaseInfo;
   restriction: Restriction;
@@ -5626,13 +5679,13 @@ export type TrackFilterInput = {
   featuredArtistIds?: InputMaybe<ListStringOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   isExplicit?: InputMaybe<BooleanOperationFilterInput>;
-  isMonetized?: InputMaybe<BooleanOperationFilterInput>;
   legalDocuments?: InputMaybe<ListFilterInputTypeOfLegalDocumentFilterInput>;
   lyrics?: InputMaybe<StringOperationFilterInput>;
   mainArtistIds?: InputMaybe<ListStringOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   nameUnsigned?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<TrackFilterInput>>;
+  popularity?: InputMaybe<DecimalOperationFilterInput>;
   previewVideo?: InputMaybe<StringOperationFilterInput>;
   releaseInfo?: InputMaybe<ReleaseInfoFilterInput>;
   restriction?: InputMaybe<RestrictionFilterInput>;
@@ -5655,10 +5708,10 @@ export type TrackSortInput = {
   favoriteCount?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   isExplicit?: InputMaybe<SortEnumType>;
-  isMonetized?: InputMaybe<SortEnumType>;
   lyrics?: InputMaybe<SortEnumType>;
   name?: InputMaybe<SortEnumType>;
   nameUnsigned?: InputMaybe<SortEnumType>;
+  popularity?: InputMaybe<SortEnumType>;
   previewVideo?: InputMaybe<SortEnumType>;
   releaseInfo?: InputMaybe<ReleaseInfoSortInput>;
   restriction?: InputMaybe<RestrictionSortInput>;
