@@ -115,7 +115,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         <Image
           src={playlist.coverImage || "https://placehold.co/280"}
           alt={playlist.name}
-          className="h-full w-full rounded-md object-cover"
+          className="aspect-square h-full w-full rounded-md object-cover"
           width={300}
           height={300}
           unoptimized
