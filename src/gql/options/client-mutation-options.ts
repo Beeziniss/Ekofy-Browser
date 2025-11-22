@@ -20,6 +20,7 @@ import { execute } from "../execute";
 import {
   CommentType,
   CreateCommentRequestInput,
+  CreateConversationRequestInput,
   CreateSubscriptionCheckoutSessionRequestInput,
   UpdateListenerRequestInput,
 } from "../graphql";
@@ -29,6 +30,10 @@ import {
   SubscriptionCreateCheckoutSessionMutation,
   SubscriptionResumeMutation,
 } from "@/modules/shared/mutations/client/subscription-mutations";
+import {
+  AddConversationFromRequestHubMutation,
+  AddConversationGeneralMutation,
+} from "@/modules/shared/mutations/client/coversation-mutation";
 
 // PLAYLIST MUTATIONS
 export const createPlaylistMutationOptions = mutationOptions({
@@ -159,4 +164,16 @@ export const subscriptionCancelMutationOptions = mutationOptions({
 export const subscriptionResumeMutationOptions = mutationOptions({
   mutationKey: ["subscription-resume"],
   mutationFn: async () => await execute(SubscriptionResumeMutation),
+});
+
+// CONVERSATION MUTATIONS
+export const addConversationGeneralMutationOptions = mutationOptions({
+  mutationKey: ["add-conversation-general"],
+  mutationFn: async (otherUserId: string) => await execute(AddConversationGeneralMutation, { otherUserId }),
+});
+
+export const addConversationFromRequestHubMutationOptions = mutationOptions({
+  mutationKey: ["add-conversation-from-request-hub"],
+  mutationFn: async (createConversationRequestInput: CreateConversationRequestInput) =>
+    await execute(AddConversationFromRequestHubMutation, { createConversationRequestInput }),
 });

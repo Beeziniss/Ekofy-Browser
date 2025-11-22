@@ -26,16 +26,19 @@ import {
   ListMusicIcon,
   LucideIcon,
   MailIcon,
+  MessageCircleIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useArtistFollow } from "@/hooks/use-artist-follow";
 import { useAuthStore } from "@/store";
 import { useAuthAction } from "@/hooks/use-auth-action";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { addConversationGeneralMutationOptions } from "@/gql/options/client-mutation-options";
 
 const activeItemStyles = "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
 
@@ -52,10 +55,11 @@ interface ArtistOptionsSectionProps {
 }
 
 const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProps) => {
+  const router = useRouter();
   const route = usePathname();
   const { user, isAuthenticated } = useAuthStore();
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  
+
   const artist = artistData.artists?.items?.[0];
 
   const mainNavItems: NavItem[] = [
@@ -81,17 +85,23 @@ const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProp
     },
   ];
 
+  const { handleFollowToggle } = useArtistFollow({
+    artistId,
+  });
+  const { mutateAsync: addConversation } = useMutation(addConversationGeneralMutationOptions);
+
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
   const handleCopyLink = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
     toast.success("Copied!");
   };
 
-  const { handleFollowToggle } = useArtistFollow({
-    artistId,
-  });
+  const handleChatWithArtist = async () => {
+    const conversationId = await addConversation(artist!.userId!);
 
-  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
+    router.push(`/conversations/${conversationId}`);
+  };
 
   return (
     <div className="flex items-center justify-between px-6 py-4">
@@ -141,6 +151,17 @@ const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProp
             {artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing ? "Following" : "Follow"}
           </Button>
         )}
+        <TooltipButton content="Chat with Artist" side="top">
+          <Button
+            variant="reaction"
+            className="text-sm font-bold"
+            onClick={() => {
+              executeWithAuth(() => handleChatWithArtist(), "chat");
+            }}
+          >
+            <MessageCircleIcon className={"inline-block size-4"} />
+          </Button>
+        </TooltipButton>
         <TooltipButton content="Contact Artist" side="top">
           <Link href={`mailto:${artistData.artists?.items?.[0].email}`} target="_blank">
             <Button variant="reaction" className="text-sm font-bold">
