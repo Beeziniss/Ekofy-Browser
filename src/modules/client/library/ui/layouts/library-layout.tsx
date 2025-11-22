@@ -3,6 +3,8 @@
 import { useAuthStore } from "@/store";
 import LibNavigationMenu from "../components/lib-navigation-menu";
 import UnauthenticatedMessage from "../components/unauthenticated-message";
+import { usePrefetchInfiniteQuery } from "@tanstack/react-query";
+import { playlistOptions } from "@/gql/options/client-options";
 
 interface LibraryLayoutProps {
   children: React.ReactNode;
@@ -10,6 +12,8 @@ interface LibraryLayoutProps {
 
 const LibraryLayout = ({ children }: LibraryLayoutProps) => {
   const { user, isAuthenticated } = useAuthStore();
+
+  usePrefetchInfiniteQuery(playlistOptions(user?.userId ?? "", undefined, 12));
 
   if (!isAuthenticated || !user) {
     return (
