@@ -47,8 +47,8 @@ const STATUS_CONFIG: Record<ReportStatus, {
     className: "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700",
     icon: XCircle,
   },
-  [ReportStatus.Dismissed]: {
-    label: "Dismissed",
+  [ReportStatus.Restored]: {
+    label: "Restored",
     className: "bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-800/30 dark:text-gray-400 dark:border-gray-700",
     icon: XCircle,
   },

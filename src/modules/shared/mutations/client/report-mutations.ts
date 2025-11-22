@@ -17,3 +17,9 @@ export const ASSIGN_REPORT_TO_MODERATOR = graphql(`
      assignReportToModerator(reportId: $reportId, moderatorId: $moderatorId)
     }
 `);
+
+export const RESTORE_USER = graphql(`
+    mutation RestoreUser($reportId: String!) {
+     restoreUser(reportId: $reportId)
+    }
+`);

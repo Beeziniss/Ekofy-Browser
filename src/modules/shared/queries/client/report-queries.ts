@@ -21,12 +21,20 @@ export const REPORT_QUERIES = graphql(`
             totalReportsCount
             createdAt
             description
+            priority
+            nicknameReporter
+            nicknameReported
             userReporter {
                 id
                 fullName
                 role
             }
             userReported {
+                id
+                fullName
+                role
+            }
+            userAssignedTo {
                 id
                 fullName
                 role
@@ -78,12 +86,19 @@ export const REPORT_DETAIL_QUERY = graphql(`
             totalReportsCount
             createdAt
             updatedAt
+            nicknameReporter
+            nicknameReported
             userReporter {
                 id
                 fullName
                 role
             }
             userReported {
+                id
+                fullName
+                role
+            }
+            userAssignedTo {
                 id
                 fullName
                 role
@@ -140,4 +155,3 @@ export const QUERY_MODERATOR_REPORTS = graphql(`
     }
 }
 `);
-

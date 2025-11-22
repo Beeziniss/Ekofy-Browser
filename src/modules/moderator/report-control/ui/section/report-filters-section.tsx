@@ -16,7 +16,7 @@ const STATUS_LABELS: Record<ReportStatus, string> = {
   [ReportStatus.UnderReview]: "Under Review",
   [ReportStatus.Approved]: "Approved",
   [ReportStatus.Rejected]: "Rejected",
-  [ReportStatus.Dismissed]: "Dismissed",
+  [ReportStatus.Restored]: "Restored",
   [ReportStatus.Escalated]: "Escalated",
 };
 

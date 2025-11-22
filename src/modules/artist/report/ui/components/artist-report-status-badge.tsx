@@ -25,8 +25,8 @@ const statusConfig = {
     variant: "secondary" as const,
     className: "bg-emerald-100 text-emerald-800 hover:bg-emerald-200",
   },
-  [ReportStatus.Dismissed]: {
-    label: "Dismissed",
+  [ReportStatus.Restored]: {
+    label: "Restored",
     variant: "secondary" as const,
     className: "bg-rose-100 text-rose-800 hover:bg-rose-200",
   },
