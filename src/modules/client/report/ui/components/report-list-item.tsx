@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Calendar, User, AlertCircle } from "lucide-react";
+import { Eye, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -43,6 +43,8 @@ interface ReportItem {
   createdAt: string | number | Date;
   description: string;
   userReported?: UserReportedData[];
+  nicknameReported?: string;
+  nicknameReporter?: string;
   track?: TrackData[];
   comment?: CommentData[];
   request?: RequestData[];
@@ -70,8 +72,8 @@ export function ReportListItem({ report, href }: ReportListItemProps) {
     if (report.request && report.request.length > 0) {
       return `Request: ${report.request[0].title}`;
     }
-    if (report.userReported && report.userReported.length > 0) {
-      return `User: ${report.userReported[0].fullName}`;
+    if (report.nicknameReported) {
+      return `Reported by: ${report.nicknameReporter || "Unknown"}`;
     }
     return "Unknown content";
   };
@@ -105,15 +107,13 @@ export function ReportListItem({ report, href }: ReportListItemProps) {
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
                 <span>
                   {format(createdAt, "dd/MM/yyyy HH:mm", { locale: vi })}
                 </span>
               </div>
-              {report.userReported && report.userReported.length > 0 && (
+              {report.nicknameReported && (
                 <div className="flex items-center gap-1">
-                  <User className="h-3 w-3" />
-                  <span>Reported: {report.userReported[0].fullName}</span>
+                  <span>Reported: {report.nicknameReported || "Unknown"}</span>
                 </div>
               )}
             </div>

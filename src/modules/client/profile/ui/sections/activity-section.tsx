@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { ChevronRightIcon, CreditCardIcon, ReceiptIcon, ReceiptTextIcon, ClipboardListIcon } from "lucide-react";
+import { ChevronRightIcon, CreditCardIcon, ReceiptIcon, ReceiptTextIcon, ClipboardListIcon, Flag } from "lucide-react";
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
 const activityItems = [
@@ -26,8 +26,8 @@ const activityItems = [
   },
   {
     title: "Report",
-    href: "/reports",
-    icon: ClipboardListIcon,
+    href: "/profile/reports",
+    icon: Flag,
   }
 ];
 

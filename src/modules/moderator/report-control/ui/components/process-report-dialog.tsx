@@ -86,8 +86,8 @@ const STATUS_LABELS: Record<ReportStatus, string> = {
 const RESTRICTION_ACTION_LABELS: Record<RestrictionAction, string> = {
   [RestrictionAction.None]: "None",
   [RestrictionAction.Comment]: "Comment",
-  [RestrictionAction.SendRequest]: "Send Request",
   [RestrictionAction.CreatePublicRequest]: "Create Public Request",
+  [RestrictionAction.SendRequest]: "Create Private Request",
   [RestrictionAction.UploadTrack]: "Upload Track",
   [RestrictionAction.Report]: "Report",
 };
@@ -108,8 +108,8 @@ export function ProcessReportDialog({
       // For user reports (no related content), all restrictions are available
       return [
         RestrictionAction.Comment,
-        RestrictionAction.SendRequest,
         RestrictionAction.CreatePublicRequest,
+        RestrictionAction.SendRequest,
         RestrictionAction.UploadTrack,
         RestrictionAction.Report,
       ];
@@ -120,14 +120,14 @@ export function ProcessReportDialog({
       case ReportRelatedContentType.Comment:
         return [RestrictionAction.Comment];
       case ReportRelatedContentType.Request:
-        return [RestrictionAction.SendRequest, RestrictionAction.CreatePublicRequest];
+        return [RestrictionAction.CreatePublicRequest, RestrictionAction.SendRequest];
       case ReportRelatedContentType.Track:
         return [RestrictionAction.UploadTrack];
       default:
         return [
           RestrictionAction.Comment,
-          RestrictionAction.SendRequest,
           RestrictionAction.CreatePublicRequest,
+          RestrictionAction.SendRequest,
           RestrictionAction.UploadTrack,
           RestrictionAction.Report,
         ];
