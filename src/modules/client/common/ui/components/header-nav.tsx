@@ -25,7 +25,7 @@ const navBarItems: ClientNavbarProps[] = [
     href: "/library",
     label: "Library",
     activeStyle: "border-b-main-white text-main-white",
-    useStartsWith: true,
+    useStartsWith: false,
     requireAuth: false,
   },
   {

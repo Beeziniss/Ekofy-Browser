@@ -21,7 +21,7 @@ import { getUserInitials } from "@/utils/format-shorten-name";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { artistOptions, listenerOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
-import { AudioLines, Bell, LogOut, MicVocalIcon, Settings, User } from "lucide-react";
+import { AudioLines, Bell, LogOut, MessageCircleIcon, MicVocalIcon, Settings, User } from "lucide-react";
 
 interface ProfileLink {
   label: string;
@@ -37,15 +37,14 @@ const AuthButton = () => {
   // Logout mutation
   const { mutate: logout } = useMutation({
     mutationFn: authApi.general.logout,
-    onSuccess: () => {
-      clearUserData();
-      queryClient.clear();
-      router.replace("/");
-    },
     onError: (error) => {
       console.error("Logout failed:", error);
       // Still clear local data even if server logout fails
+    },
+    onSettled: () => {
+      router.replace("/");
       clearUserData();
+      queryClient.clear();
     },
   });
 
@@ -140,17 +139,15 @@ const AuthButton = () => {
       {isAuthenticated ? (
         // Signed in
         <div className="flex items-center gap-x-4">
-          <Button
-            variant={"ghost"}
-            size={"iconSm"}
-            className="text-main-white rounded-full duration-0 hover:brightness-90"
-          >
-            {hasNotification ? (
-              <Image src={"/bell-active.svg"} alt="Notification Bell Active" width={24} height={24} />
-            ) : (
-              <Bell className="size-6" />
-            )}
-          </Button>
+          <Link href={"/conversations"}>
+            <MessageCircleIcon className="text-main-white hover:text-main-grey size-5" />
+          </Link>
+
+          {hasNotification ? (
+            <Image src={"/bell-active.svg"} alt="Notification Bell Active" width={20} height={20} />
+          ) : (
+            <Bell className="text-main-white hover:text-main-grey size-5 cursor-pointer" />
+          )}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

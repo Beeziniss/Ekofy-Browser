@@ -16,7 +16,18 @@ import { EkofyLogoTextLg } from "@/assets/icons";
 interface WarningAuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  action: "play" | "favorite" | "comment" | "follow" | "playlist" | "apply" | "contact" | "reply" | "post" | "edit";
+  action:
+    | "play"
+    | "favorite"
+    | "comment"
+    | "follow"
+    | "playlist"
+    | "apply"
+    | "contact"
+    | "reply"
+    | "post"
+    | "edit"
+    | "chat";
   trackName?: string;
 }
 
@@ -43,6 +54,8 @@ export function WarningAuthDialog({ open, onOpenChange, action, trackName }: War
         return "post requests";
       case "edit":
         return "edit your content";
+      case "chat":
+        return "chat with artists";
       default:
         return "use this feature";
     }
@@ -70,6 +83,8 @@ export function WarningAuthDialog({ open, onOpenChange, action, trackName }: War
         return "Sign up to post requests";
       case "edit":
         return "Sign up to edit your content";
+      case "chat":
+        return "Sign up to chat with artists";
       default:
         return "Sign up to continue";
     }

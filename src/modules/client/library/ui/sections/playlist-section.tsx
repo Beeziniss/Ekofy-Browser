@@ -1,6 +1,3 @@
-"use client";
-
-import { useAuthStore } from "@/store";
 import { Suspense, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { Input } from "@/components/ui/input";
@@ -12,10 +9,14 @@ import InfiniteScroll from "@/modules/shared/ui/components/infinite-scroll";
 import PlaylistCreate from "../../../playlist/ui/components/playlist-create";
 import PlaylistList from "@/modules/client/playlist/ui/components/playlist-list";
 
-const PlaylistSection = () => {
+interface PlaylistSectionProps {
+  userId: string;
+}
+
+const PlaylistSection = ({ userId }: PlaylistSectionProps) => {
   return (
     <Suspense fallback={<PlaylistSectionSkeleton />}>
-      <PlaylistSectionSuspense />
+      <PlaylistSectionSuspense userId={userId} />
     </Suspense>
   );
 };
@@ -59,14 +60,13 @@ const PlaylistSectionSkeleton = () => {
   );
 };
 
-const PlaylistSectionSuspense = () => {
-  const { user } = useAuthStore();
+const PlaylistSectionSuspense = ({ userId }: PlaylistSectionProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
   // This will only run when the component is rendered (i.e., when user is authenticated)
   const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useSuspenseInfiniteQuery(
-    playlistOptions(user!.userId, debouncedSearchQuery, 11),
+    playlistOptions(userId, debouncedSearchQuery, 11),
   );
 
   return (

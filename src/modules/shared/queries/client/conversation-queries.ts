@@ -6,6 +6,14 @@ export const ConversationQuery = graphql(`
       items {
         id
         userIds
+        ownerProfileConversation {
+          avatar
+          nickname
+        }
+        otherProfileConversation {
+          avatar
+          nickname
+        }
         lastMessage {
           text
           senderId
@@ -19,16 +27,24 @@ export const ConversationQuery = graphql(`
 `);
 
 export const ConversationMessagesQuery = graphql(`
-  query Messages {
-    messages {
-      items {
-        id
-        conversationId
-        senderId
-        receiverId
-        isRead
-        text
-        sentAt
+  query Messages($where: MessageFilterInput) {
+    messages(where: $where, last: 10) {
+      edges {
+        cursor
+        node {
+          id
+          conversationId
+          senderId
+          receiverId
+          isRead
+          text
+          sentAt
+          deletedForIds
+          senderProfileMessages {
+            avatar
+            nickname
+          }
+        }
       }
       totalCount
     }

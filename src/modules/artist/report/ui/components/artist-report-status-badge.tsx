@@ -54,10 +54,7 @@ export function ArtistReportStatusBadge({ status, className }: ArtistReportStatu
   }
 
   return (
-    <Badge
-      variant={config.variant}
-      className={cn(config.className, className)}
-    >
+    <Badge variant={config.variant} className={cn(config.className, className)}>
       {config.label.toUpperCase()}
     </Badge>
   );
