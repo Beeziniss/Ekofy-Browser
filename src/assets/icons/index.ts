@@ -12,5 +12,6 @@ export { default as EkofyLogoTextLg } from "./ekofy-logo-text-lg.svg";
 export { default as SparklesColorful } from "./sparkles-colorful.svg";
 export { default as TrackUploadCloud } from "./track-upload-cloud.svg";
 export { default as TrackXls } from "./track-xl.svg";
+export { default as BellActive } from "./bell-active.svg";
 
 export { default as Crown } from "./crown.svg";

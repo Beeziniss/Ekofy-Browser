@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store";
 import { Message } from "@/gql/graphql";
 import { MessageDeletedData } from "@/hooks/use-conversation-signalr";
+import ConversationInfo from "../components/conversation-info";
 
 interface ConversationDetailViewProps {
   conversationId: string;
@@ -31,6 +32,8 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
   const [messages, setMessages] = useState<Omit<Message, "receiverProfileMessages">[]>([]);
   // Track if user is manually scrolling to avoid auto-scroll interruptions
   const [isUserScrolling, setIsUserScrolling] = useState(false);
+  // Track if conversation info panel is shown
+  const [showConversationInfo, setShowConversationInfo] = useState(false);
 
   // Use the SignalR hook
   const {
@@ -107,23 +110,15 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
   useEffect(() => {
     // Handle received messages
     const handleMessageReceived = (message: Message) => {
-      // Only invalidate conversation list to update last message
       queryClient.invalidateQueries({ queryKey: ["conversation-list"] });
       queryClient.invalidateQueries({ queryKey: ["conversation-messages", message.conversationId] });
+
+      // Force scroll to bottom after sending message
+      setTimeout(() => scrollToBottom(true), 100);
     };
 
     // Handle sent messages
     const handleMessageSent = (message: Message) => {
-      /* console.log(message, "===================");
-
-      setMessages((prev) => {
-        // Prevent duplicates by checking if message already exists
-        if (prev.some((msg) => msg.id === message.id)) {
-          return prev;
-        }
-        return [...prev, message];
-      }); */
-      // Only invalidate conversation list to update last message
       queryClient.invalidateQueries({ queryKey: ["conversation-list"] });
       queryClient.invalidateQueries({ queryKey: ["conversation-messages", message.conversationId] });
     };
@@ -147,7 +142,7 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
     onMessageSent(handleMessageSent);
     onException(handleException);
     onMessageDeleted(handleMessageDeleted);
-  }, [conversationId, queryClient, onMessageReceived, onMessageSent, onException, onMessageDeleted]);
+  }, [conversationId, queryClient, onMessageReceived, onMessageSent, onException, onMessageDeleted, scrollToBottom]);
 
   const sendMessage = async () => {
     if (isConnected && newMessage.trim() && conversation?.conversations?.items?.[0]) {
@@ -179,79 +174,100 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
   };
 
   return (
-    <div className="flex h-full w-full flex-col">
-      <div className="border-main-grey-1 flex items-center justify-between border-b p-3">
-        <div className="flex flex-col">
-          <div className="flex items-center gap-x-3">
-            <div className="size-2 rounded-full bg-emerald-500" />
-            <span className="text-sm font-semibold">
-              {conversation?.conversations?.items?.[0].otherProfileConversation.nickname}
-            </span>
-          </div>
-          {/* <div className="text-muted-foreground text-sm">Last seen: 5 minutes ago</div> */}
-        </div>
-
-        <Button variant={"ghost"} size={"iconMd"} className="shrink-0">
-          <EllipsisIcon className="text-main-white size-5" />
-        </Button>
-      </div>
-
+    <>
       <div
-        ref={messagesContainerRef}
-        className="messages-scroll flex min-h-0 flex-1 flex-col space-y-4 overflow-y-auto scroll-smooth px-3 pt-2"
-        onScroll={handleScroll}
+        className={`bg-main-dark-1 relative ${showConversationInfo ? "col-span-6" : "col-span-9"} flex h-full flex-col overflow-hidden rounded-md transition-all duration-300`}
       >
-        {messages.map((msg) => (
-          <ConversationItem key={`${msg.id}-${msg.sentAt}`} message={msg} userId={user?.userId || ""} />
-        ))}
-        <div ref={bottomRef} className="h-1" /> {/* auto-scroll anchor with minimal height */}
+        <div className="flex h-full w-full flex-col">
+          <div className="border-main-grey-1 flex items-center justify-between border-b p-3">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-x-3">
+                <div className="size-2 rounded-full bg-emerald-500" />
+                <span className="text-sm font-semibold">
+                  {conversation?.conversations?.items?.[0].otherProfileConversation.nickname}
+                </span>
+              </div>
+              {/* <div className="text-muted-foreground text-sm">Last seen: 5 minutes ago</div> */}
+            </div>
+
+            <Button
+              variant={"ghost"}
+              size={"iconMd"}
+              className="shrink-0"
+              onClick={() => setShowConversationInfo(!showConversationInfo)}
+            >
+              <EllipsisIcon className="text-main-white size-5" />
+            </Button>
+          </div>
+
+          <div
+            ref={messagesContainerRef}
+            className="messages-scroll flex min-h-0 flex-1 flex-col space-y-4 overflow-y-auto scroll-smooth px-3 pt-2"
+            onScroll={handleScroll}
+          >
+            {messages.map((msg) => (
+              <ConversationItem key={`${msg.id}-${msg.sentAt}`} message={msg} userId={user?.userId || ""} />
+            ))}
+            <div ref={bottomRef} className="h-1" /> {/* auto-scroll anchor with minimal height */}
+          </div>
+
+          <div className="px-3 pb-3">
+            <InputGroup>
+              <InputGroupTextarea
+                placeholder="Ask, Search or Chat..."
+                className="max-h-48"
+                autoFocus
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                  }
+                }}
+              />
+              <InputGroupAddon align="block-end">
+                <InputGroupButton variant="outline" className="rounded-full" size="icon-xs">
+                  <PlusIcon />
+                </InputGroupButton>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <InputGroupButton variant="ghost">
+                      <SmileIcon className="size-5" />
+                    </InputGroupButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="top" align="start" className="[--radius:0.95rem]">
+                    <DropdownMenuItem>Auto</DropdownMenuItem>
+                    <DropdownMenuItem>Agent</DropdownMenuItem>
+                    <DropdownMenuItem>Manual</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <InputGroupButton
+                  variant="default"
+                  className="ml-auto rounded-full"
+                  size="icon-xs"
+                  onClick={sendMessage}
+                  disabled={!newMessage.trim()}
+                >
+                  <ArrowUpIcon />
+                  <span className="sr-only">Send</span>
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
+        </div>
       </div>
 
-      <div className="px-3 pb-3">
-        <InputGroup>
-          <InputGroupTextarea
-            placeholder="Ask, Search or Chat..."
-            className="max-h-48"
-            autoFocus
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
+      {showConversationInfo && (
+        <div className="bg-main-dark-1 col-span-3 h-full overflow-hidden rounded-md px-4 py-6 transition-all duration-300">
+          <ConversationInfo
+            avatarImage={conversation?.conversations?.items?.[0].otherProfileConversation.avatar}
+            otherUserId={conversation?.conversations?.items?.[0].userIds.find((id) => id !== user?.userId) || ""}
+            nickname={conversation?.conversations?.items?.[0].otherProfileConversation.nickname}
           />
-          <InputGroupAddon align="block-end">
-            <InputGroupButton variant="outline" className="rounded-full" size="icon-xs">
-              <PlusIcon />
-            </InputGroupButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <InputGroupButton variant="ghost">
-                  <SmileIcon className="size-5" />
-                </InputGroupButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" align="start" className="[--radius:0.95rem]">
-                <DropdownMenuItem>Auto</DropdownMenuItem>
-                <DropdownMenuItem>Agent</DropdownMenuItem>
-                <DropdownMenuItem>Manual</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <InputGroupButton
-              variant="default"
-              className="ml-auto rounded-full"
-              size="icon-xs"
-              onClick={sendMessage}
-              disabled={!newMessage.trim()}
-            >
-              <ArrowUpIcon />
-              <span className="sr-only">Send</span>
-            </InputGroupButton>
-          </InputGroupAddon>
-        </InputGroup>
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 

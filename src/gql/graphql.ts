@@ -7041,6 +7041,13 @@ export type TrackDetailQueryVariables = Exact<{
 
 export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
 
+export type UserBasicInfoQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type UserBasicInfoQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', email: string, phoneNumber?: string | null }> | null } | null };
+
 export type ListenerQueryVariables = Exact<{
   userId: Scalars['String']['input'];
 }>;
@@ -8240,7 +8247,7 @@ export const GetArtistProfileDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<GetArtistProfileQuery, GetArtistProfileQueryVariables>;
 export const ConversationsDocument = new TypedDocumentString(`
     query Conversations($where: ConversationFilterInput) {
-  conversations(where: $where) {
+  conversations(where: $where, order: {lastMessage: {sentAt: DESC}}) {
     items {
       id
       userIds
@@ -8419,7 +8426,7 @@ export const EntitlementsDocument = new TypedDocumentString(`
 export const PlaylistsDocument = new TypedDocumentString(`
     query Playlists($userId: String!, $name: String, $take: Int, $skip: Int) {
   playlists(
-    where: {or: {name: {contains: $name}, nameUnsigned: {contains: $name}}, userId: {eq: $userId}}
+    where: {or: [{name: {contains: $name}}, {nameUnsigned: {contains: $name}}], userId: {eq: $userId}}
     order: {createdAt: DESC}
     take: $take
     skip: $skip
@@ -9151,6 +9158,16 @@ export const TrackDetailDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TrackDetailQuery, TrackDetailQueryVariables>;
+export const UserBasicInfoDocument = new TypedDocumentString(`
+    query UserBasicInfo($userId: String!) {
+  users(where: {id: {eq: $userId}}) {
+    items {
+      email
+      phoneNumber
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<UserBasicInfoQuery, UserBasicInfoQueryVariables>;
 export const ListenerDocument = new TypedDocumentString(`
     query Listener($userId: String!) {
   listeners(where: {userId: {eq: $userId}, isVisible: {eq: true}}) {

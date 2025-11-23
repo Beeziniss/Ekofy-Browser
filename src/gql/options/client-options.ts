@@ -38,10 +38,25 @@ import {
   TrackDetailViewQuery,
   TrackListHomeQuery,
   USER_QUERY_FOR_REQUESTS,
+  UserBasicInfoQuery,
 } from "@/modules/shared/queries/client";
 import { ConversationMessagesQuery, ConversationQuery } from "@/modules/shared/queries/client/conversation-queries";
 
 // PROFILE QUERIES
+export const userBasicInfoOptions = (userId: string) =>
+  queryOptions({
+    queryKey: ["user-basic-info", userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const result = await execute(UserBasicInfoQuery, {
+        userId,
+      });
+      return result.users?.items?.[0] || null;
+    },
+    retry: 0,
+    enabled: !!userId,
+  });
+
 export const listenerProfileOptions = (userId: string, enabled: boolean = true) =>
   queryOptions({
     queryKey: ["listener-profile", userId],
