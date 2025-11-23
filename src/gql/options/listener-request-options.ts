@@ -1,32 +1,13 @@
-import { queryOptions } from "@tanstack/react-query";
 import { execute } from "@/gql/execute";
-import { 
-  LISTENER_REQUESTS_QUERY, 
-  LISTENER_REQUEST_BY_ID_QUERY 
-} from "@/modules/shared/queries/client/listener-request-queries";
-import type { 
-  RequestFilterInput,
-  QueryInitializationRequestsArgs
-} from "@/gql/graphql";
+import { queryOptions } from "@tanstack/react-query";
 
-/**
- * Helper function to convert request deadlines from string to Date
- */
-const convertRequestDeadlines = <T extends { deadline?: string | null }>(requests: T[]) => {
-  return requests.map((request) => ({
-    ...request,
-    deadline: request.deadline ? new Date(request.deadline) : null,
-  }));
-};
+import type { RequestFilterInput, QueryInitializationRequestsArgs } from "@/gql/graphql";
+import { RequestQuery, RequestsQuery } from "@/modules/shared/queries/client/request-queries";
 
 /**
  * Query options for fetching listener's request history
  */
-export const listenerRequestsOptions = (
-  skip: number = 0, 
-  take: number = 20, 
-  where?: RequestFilterInput
-) =>
+export const requestsOptions = (skip: number = 0, take: number = 20, where?: RequestFilterInput) =>
   queryOptions({
     queryKey: ["listener-requests", skip, take, where],
     queryFn: async () => {
@@ -35,16 +16,13 @@ export const listenerRequestsOptions = (
         take,
         where,
       };
-      const result = await execute(LISTENER_REQUESTS_QUERY, variables);
+      const result = await execute(RequestsQuery, variables);
       const requests = result.requests || {
         items: [],
         pageInfo: { hasNextPage: false, hasPreviousPage: false },
         totalCount: 0,
       };
-      return {
-        ...requests,
-        items: convertRequestDeadlines(requests.items || []),
-      };
+      return requests;
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
@@ -52,7 +30,7 @@ export const listenerRequestsOptions = (
 /**
  * Query options for fetching a single request by ID
  */
-export const listenerRequestByIdOptions = (id: string) =>
+export const requestOptions = (id: string) =>
   queryOptions({
     queryKey: ["listener-request", id],
     queryFn: async () => {
@@ -60,16 +38,13 @@ export const listenerRequestByIdOptions = (id: string) =>
         skip: 0,
         take: 1,
         where: {
-          id: { eq: id }
-        }
+          id: { eq: id },
+        },
       };
-      const result = await execute(LISTENER_REQUEST_BY_ID_QUERY, variables);
+      const result = await execute(RequestQuery, variables);
       const request = result.requests?.items?.[0];
       if (!request) return null;
-      return {
-        ...request,
-        deadline: request.deadline ? new Date(request.deadline) : null,
-      };
+      return request;
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
   });

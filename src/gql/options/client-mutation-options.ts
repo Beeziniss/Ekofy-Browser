@@ -21,6 +21,8 @@ import {
   CommentType,
   CreateCommentRequestInput,
   CreateConversationRequestInput,
+  CreateDirectRequestInput,
+  CreatePaymentCheckoutSessionRequestInput,
   CreateSubscriptionCheckoutSessionRequestInput,
   UpdateListenerRequestInput,
 } from "../graphql";
@@ -34,6 +36,8 @@ import {
   AddConversationFromRequestHubMutation,
   AddConversationGeneralMutation,
 } from "@/modules/shared/mutations/client/coversation-mutation";
+import { ServiceCreateCheckoutSessionMutation } from "@/modules/shared/mutations/client/service-mutation";
+import { SendRequestMutation } from "@/modules/shared/mutations/client/request-mutation";
 
 // PLAYLIST MUTATIONS
 export const createPlaylistMutationOptions = mutationOptions({
@@ -176,4 +180,18 @@ export const addConversationFromRequestHubMutationOptions = mutationOptions({
   mutationKey: ["add-conversation-from-request-hub"],
   mutationFn: async (createConversationRequestInput: CreateConversationRequestInput) =>
     await execute(AddConversationFromRequestHubMutation, { createConversationRequestInput }),
+});
+
+// SERVICE MUTATIONS
+export const serviceCreateCheckoutSessionMutationOptions = mutationOptions({
+  mutationKey: ["service-create-checkout-session"],
+  mutationFn: async (createPaymentCheckoutSessionInput: CreatePaymentCheckoutSessionRequestInput) =>
+    await execute(ServiceCreateCheckoutSessionMutation, { createPaymentCheckoutSessionInput }),
+});
+
+// REQUEST MUTATIONS
+export const sendRequestMutationOptions = mutationOptions({
+  mutationKey: ["send-request"],
+  mutationFn: async (input: { request: CreateDirectRequestInput; isDirect: boolean }) =>
+    await execute(SendRequestMutation, { ...input }),
 });

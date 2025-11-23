@@ -1,30 +1,42 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+// import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Clock, DollarSign, Calendar, Eye, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { FragmentType, useFragment } from "@/gql";
+import { Card, CardContent } from "@/components/ui/card";
+import { Clock, Calendar, Eye, User } from "lucide-react";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
-import { artistDetailOptions } from "@/gql/options/client-options";
+import { Request, RequestArtistFragmentDoc, RequestArtistPackageFragmentDoc } from "@/gql/graphql";
 
 interface RequestListItemProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  request: any;
+  request: Omit<Request, "requestor" | "artist" | "artistPackage"> & {
+    // Explicitly say: "The artist field looks like this fragment"
+    artist: FragmentType<typeof RequestArtistFragmentDoc>[];
+
+    // Do the same for other fragments if needed
+    artistPackage: FragmentType<typeof RequestArtistPackageFragmentDoc>[];
+  };
   className?: string;
 }
 
 export function RequestListItem({ request, className }: RequestListItemProps) {
   // Fetch artist data if not included in request and artistId exists
-  const { data: artistData } = useQuery({
+  /* const { data: artistData } = useQuery({
     ...artistDetailOptions(request.artistId || ""),
     enabled: !!request.artistId && (!request.artist || request.artist.length === 0),
-  });
+  }); */
 
   // Use artist from request or fetched artist data
-  const artist = request.artist?.[0] || artistData?.artists?.items?.[0];
-  const formatBudget = (budget: { min: number; max: number } | null | undefined, currency: string | null | undefined) => {
+  // const artist = request.artist?.[0] || artistData?.artists?.items?.[0];
+
+  const artist = useFragment(RequestArtistFragmentDoc, request.artist);
+
+  /* const formatBudget = (
+    budget: { min: number; max: number } | null | undefined,
+    currency: string | null | undefined,
+  ) => {
     if (!budget) return "Budget not specified";
     const currencyStr = currency?.toUpperCase() || "USD";
     const formatCurrency = (amount: number) => {
@@ -35,7 +47,7 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
       return formatCurrency(budget.min);
     }
     return `${formatCurrency(budget.min)} - ${formatCurrency(budget.max)}`;
-  };
+  }; */
 
   const formatDateTime = (dateString: string | Date) => {
     const date = typeof dateString === "string" ? new Date(dateString) : dateString;
@@ -67,16 +79,14 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
             <div className="flex items-start gap-3">
               <div className="flex-1">
                 <h3 className="mb-2 line-clamp-2 text-lg font-semibold text-white">
-                  {request.title || `Request for ${request.artist?.[0]?.stageName || "Service"}`}
+                  {request.title || `Request for ${artist?.[0].stageName || "Service"}`}
                 </h3>
                 {requestStatusBadge(request.status)}
               </div>
             </div>
 
             {/* Summary or Detail Description */}
-            <p className="line-clamp-2 text-sm text-gray-400">
-              {request.summary || request.detailDescription || "No description provided"}
-            </p>
+            <p className="line-clamp-2 text-sm text-gray-400">{request.requirements || "No description provided"}</p>
 
             {/* Artist Info - Only show for direct requests with artist */}
             {artist && (
@@ -85,28 +95,33 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
                 <span className="text-gray-300">
                   To:{" "}
                   <Link
-                    href={`/artist/${"userId" in artist && artist.userId ? artist.userId : request.artistId}`}
+                    href={`/artists/${"userId" in artist && artist.userId ? artist.userId : request.artistId}`}
                     className="hover:text-main-purple font-medium text-white transition-colors"
                   >
-                    {artist.stageName}
+                    {artist?.[0].stageName}
                   </Link>
                 </span>
               </div>
             )}
 
             {/* Meta Information */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
-              <div className="flex items-center gap-1">
+            <div className="text-main-white flex flex-wrap items-center gap-4 text-sm">
+              {/* <div className="flex items-center gap-1">
                 <DollarSign className="h-4 w-4" />
                 <span className="text-white">Budget: {formatBudget(request.budget, request.currency)}</span>
-              </div>
+              </div> */}
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
                 <span>Deadline: {formatDate(request.deadline)}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                <span>Created: {request.requestCreatedTime ? formatDateTime(request.requestCreatedTime) : formatDateTime(request.updatedAt)}</span>
+                <span>
+                  Created:{" "}
+                  {request.requestCreatedTime
+                    ? formatDateTime(request.requestCreatedTime)
+                    : formatDateTime(request.updatedAt)}
+                </span>
               </div>
             </div>
           </div>
@@ -118,6 +133,10 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
                 <Eye className="mr-1 h-4 w-4" />
                 View Details
               </Link>
+            </Button>
+
+            <Button variant={"ekofy"} size={"sm"}>
+              Confirm Payment
             </Button>
           </div>
         </div>

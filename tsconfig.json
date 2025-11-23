@@ -19,19 +19,14 @@
       },
       {
         "name": "@0no-co/graphqlsp",
-        "schema": "./schema.graphql"
+        "schema": "./schema.graphql",
+        "shouldCheckForColocatedFragments": false
       }
     ],
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "svgr.d.ts",
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
+  "include": ["svgr.d.ts", "next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

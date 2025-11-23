@@ -14,6 +14,8 @@ import {
   QueryInitializationOwnRequestsArgs,
   ConversationFilterInput,
   MessageFilterInput,
+  ArtistPackageFilterInput,
+  ArtistPackageStatus,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -231,10 +233,24 @@ export const followingOptions = ({ artistId, userId }: { artistId?: string; user
   });
 
 // SERVICE PACKAGE QUERIES
-export const servicePackageOptions = (artistId: string) =>
+export const servicePackageOptions = ({ artistId, serviceId }: { artistId?: string; serviceId?: string }) =>
   queryOptions({
     queryKey: ["service-packages", artistId],
-    queryFn: async () => await execute(ArtistPackageQuery, { artistId }),
+    queryFn: async () => {
+      const where: ArtistPackageFilterInput = {
+        status: { eq: ArtistPackageStatus.Enabled },
+      };
+
+      if (artistId) {
+        where.artistId = { eq: artistId };
+      }
+
+      if (serviceId) {
+        where.id = { eq: serviceId };
+      }
+
+      return await execute(ArtistPackageQuery, { where });
+    },
   });
 
 // Helper function to convert deadline string to Date
