@@ -1,8 +1,8 @@
 import { graphql } from "@/gql";
 
 export const ArtistPackageQuery = graphql(`
-  query ArtistPackages($artistId: String!) {
-    artistPackages(where: { status: { eq: ENABLED }, artistId: { eq: $artistId } }) {
+  query ArtistPackages($where: ArtistPackageFilterInput!) {
+    artistPackages(where: $where) {
       items {
         id
         artistId
@@ -10,6 +10,15 @@ export const ArtistPackageQuery = graphql(`
         currency
         packageName
         description
+        serviceDetails {
+          value
+        }
+        artist {
+          id
+          avatarImage
+          stageName
+          biography
+        }
       }
     }
   }

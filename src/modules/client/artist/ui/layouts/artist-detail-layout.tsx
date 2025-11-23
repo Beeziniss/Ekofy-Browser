@@ -20,7 +20,7 @@ const ArtistDetailLayout = ({ children }: ArtistDetailLayoutProps) => {
   const { data: followingData } = useSuspenseQuery(followingOptions({ artistId }));
 
   return (
-    <div className="w-full">
+    <div className="w-full pb-10">
       <ArtistAvatarSection artistData={data} />
       <ArtistOptionsSection artistData={data} artistId={artistId} />
 

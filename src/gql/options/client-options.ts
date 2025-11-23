@@ -14,6 +14,8 @@ import {
   QueryInitializationOwnRequestsArgs,
   ConversationFilterInput,
   MessageFilterInput,
+  ArtistPackageFilterInput,
+  ArtistPackageStatus,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -38,10 +40,25 @@ import {
   TrackDetailViewQuery,
   TrackListHomeQuery,
   USER_QUERY_FOR_REQUESTS,
+  UserBasicInfoQuery,
 } from "@/modules/shared/queries/client";
 import { ConversationMessagesQuery, ConversationQuery } from "@/modules/shared/queries/client/conversation-queries";
 
 // PROFILE QUERIES
+export const userBasicInfoOptions = (userId: string) =>
+  queryOptions({
+    queryKey: ["user-basic-info", userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const result = await execute(UserBasicInfoQuery, {
+        userId,
+      });
+      return result.users?.items?.[0] || null;
+    },
+    retry: 0,
+    enabled: !!userId,
+  });
+
 export const listenerProfileOptions = (userId: string, enabled: boolean = true) =>
   queryOptions({
     queryKey: ["listener-profile", userId],
@@ -216,10 +233,24 @@ export const followingOptions = ({ artistId, userId }: { artistId?: string; user
   });
 
 // SERVICE PACKAGE QUERIES
-export const servicePackageOptions = (artistId: string) =>
+export const servicePackageOptions = ({ artistId, serviceId }: { artistId?: string; serviceId?: string }) =>
   queryOptions({
     queryKey: ["service-packages", artistId],
-    queryFn: async () => await execute(ArtistPackageQuery, { artistId }),
+    queryFn: async () => {
+      const where: ArtistPackageFilterInput = {
+        status: { eq: ArtistPackageStatus.Enabled },
+      };
+
+      if (artistId) {
+        where.artistId = { eq: artistId };
+      }
+
+      if (serviceId) {
+        where.id = { eq: serviceId };
+      }
+
+      return await execute(ArtistPackageQuery, { where });
+    },
   });
 
 // Helper function to convert deadline string to Date

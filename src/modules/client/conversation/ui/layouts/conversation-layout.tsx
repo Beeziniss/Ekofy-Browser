@@ -10,10 +10,7 @@ const ConversationLayout = ({ children }: ConversationDetailLayoutProps) => {
       <div className="bg-main-dark-1 col-span-3 flex h-full flex-col overflow-hidden rounded-md py-6">
         <ConversationList />
       </div>
-      <div className="bg-main-dark-1 relative col-span-6 flex h-full flex-col overflow-hidden rounded-md">
-        {children}
-      </div>
-      <div className="bg-main-dark-1 col-span-3 h-full overflow-hidden rounded-md px-2 py-6">Conversation Info</div>
+      {children}
     </div>
   );
 };

@@ -28,11 +28,12 @@ export default function SharedPaymentTransactionsTable({
 
   const queryOptions =
     source === "listener"
-      ? listenerTransactionsOptions({ userId: user!.userId, page, pageSize })
-      : artistTransactionsOptions({ userId: user!.userId, page, pageSize });
+      ? listenerTransactionsOptions({ userId: user?.userId || "", page, pageSize })
+      : artistTransactionsOptions({ userId: user?.userId || "", page, pageSize });
 
   const { data, isLoading, isError } = useQuery({
     ...queryOptions,
+    enabled: !!user?.userId, // Only run query if user exists
   });
 
   const transactionData = data?.paymentTransactions?.items || [];

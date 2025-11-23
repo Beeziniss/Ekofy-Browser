@@ -15,7 +15,7 @@ const ConversationList = () => {
   }
 
   if (!conversationList || conversationList?.conversations?.totalCount === 0) {
-    return <div>No Conversations available</div>;
+    return <div className="px-4">No Conversations available</div>;
   }
 
   return (
@@ -28,7 +28,7 @@ const ConversationList = () => {
         <SearchIcon className="text-main-white hover:text-main-link size-5" />
       </div>
 
-      <div className="flex min-h-0 flex-1 w-full flex-col gap-y-1 overflow-y-auto px-2">
+      <div className="flex min-h-0 w-full flex-1 flex-col gap-y-1 overflow-y-auto px-2">
         {conversationList.conversations?.items?.map((conversation) => (
           <ConversationCard key={conversation.id} conversation={conversation} />
         ))}

@@ -59,7 +59,7 @@ const ArtistServiceSectionSkeleton = () => {
 };
 
 const ArtistServiceSectionSuspense = ({ artistId }: ArtistServiceSectionProps) => {
-  const { data } = useSuspenseQuery(servicePackageOptions(artistId));
+  const { data } = useSuspenseQuery(servicePackageOptions({ artistId }));
 
   const servicePackages = data?.artistPackages?.items || [];
 

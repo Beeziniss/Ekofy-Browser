@@ -30,8 +30,16 @@ export function middleware(request: NextRequest) {
   }
 
   // Restrict access to /profile routes for artist, moderator, and admin roles
+  // Also prevent unauthenticated listeners from accessing profile routes
   if (pathname.startsWith("/profile")) {
-    if (isAuthenticated && user && [UserRole.ARTIST, UserRole.MODERATOR, UserRole.ADMIN].includes(user.role)) {
+    // If user is not authenticated, redirect to sign-in page
+    if (!isAuthenticated || !user) {
+      url.pathname = "/sign-in";
+      return NextResponse.redirect(url);
+    }
+
+    // If authenticated user is artist, moderator, or admin, redirect to unauthorized
+    if ([UserRole.ARTIST, UserRole.MODERATOR, UserRole.ADMIN].includes(user.role)) {
       url.pathname = "/unauthorized";
       return NextResponse.redirect(url);
     }
@@ -129,7 +137,15 @@ export function middleware(request: NextRequest) {
   }
 
   // Prevent authenticated users from accessing ANY login pages (regardless of role)
-  const authPagePatterns = [/^\/admin\/login$/, /^\/moderator\/login$/, /^\/artist\/login$/, /^\/artist\/sign-up$/];
+  const authPagePatterns = [
+    /^\/admin\/login$/,
+    /^\/moderator\/login$/,
+    /^\/artist\/login$/,
+    /^\/artist\/sign-up$/,
+    /^\/login$/,
+    /^\/sign-in$/,
+    /^\/sign-up$/,
+  ];
 
   const isAuthPage = authPagePatterns.some((pattern) => pattern.test(pathname));
 

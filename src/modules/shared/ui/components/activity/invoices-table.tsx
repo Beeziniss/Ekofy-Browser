@@ -32,8 +32,8 @@ export default function SharedInvoicesTable({
     isPending: isListenerPending,
     isError: isListenerError,
   } = useQuery({
-    ...listenerInvoicesOptions({ userId: user!.userId, page, pageSize }),
-    enabled: source === "listener",
+    ...listenerInvoicesOptions({ userId: user?.userId || "", page, pageSize }),
+    enabled: source === "listener" && !!user?.userId,
   });
 
   const {
@@ -41,8 +41,8 @@ export default function SharedInvoicesTable({
     isPending: isArtistPending,
     isError: isArtistError,
   } = useQuery({
-    ...artistInvoicesOptions({ userId: user!.userId, page, pageSize }),
-    enabled: source === "artist",
+    ...artistInvoicesOptions({ userId: user?.userId || "", page, pageSize }),
+    enabled: source === "artist" && !!user?.userId,
   });
 
   const items = listenerData?.invoices?.items || artistData?.invoices?.items || [];
