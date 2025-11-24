@@ -1330,7 +1330,6 @@ export type CreatePaymentCheckoutSessionRequestInput = {
   isSavePaymentMethod: Scalars['Boolean']['input'];
   packageId: Scalars['String']['input'];
   requestId: Scalars['String']['input'];
-  requirementFiles: Array<Scalars['String']['input']>;
   successUrl: Scalars['String']['input'];
 };
 
@@ -6883,7 +6882,7 @@ export type OrderPackageQueryVariables = Exact<{
 }>;
 
 
-export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, deadline: any, package: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }> }> | null } | null };
+export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, artistPackageId: string, deadline: any, package: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }> }> | null } | null };
 
 export type CouponsQueryVariables = Exact<{
   where?: InputMaybe<CouponFilterInput>;
@@ -8398,6 +8397,7 @@ export const OrderPackageDocument = new TypedDocumentString(`
       id
       status
       clientId
+      artistPackageId
       deadline
       package {
         id

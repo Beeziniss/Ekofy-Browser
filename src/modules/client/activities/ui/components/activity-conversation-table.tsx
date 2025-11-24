@@ -32,9 +32,9 @@ const statusBadgeVariants = {
 };
 
 const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: "USD",
+    currency: "VND",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
@@ -76,7 +76,7 @@ const ActivityConversationTable = ({
               orders.map((order) => (
                 <TableRow key={order.id}>
                   {/* Client */}
-                  <TableCell>
+                  <TableCell className="w-80 max-w-80">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
                         <AvatarImage
@@ -92,31 +92,31 @@ const ActivityConversationTable = ({
                   </TableCell>
 
                   {/* Package */}
-                  <TableCell>
+                  <TableCell className="line-clamp-1">
                     <span className="text-sm">{order.package?.[0]?.packageName || "Unknown Package"}</span>
                   </TableCell>
 
                   {/* Deadline */}
-                  <TableCell>
+                  <TableCell className="w-52">
                     <span className="text-muted-foreground text-sm">{formatDate(order.deadline)}</span>
                   </TableCell>
 
                   {/* Amount/Total */}
-                  <TableCell>
+                  <TableCell className="w-44">
                     <span className="text-sm font-medium">{formatCurrency(order.package?.[0]?.amount || 0)}</span>
                   </TableCell>
 
                   {/* Status */}
-                  <TableCell>
+                  <TableCell className="w-28">
                     <Badge variant="outline" className={`${statusBadgeVariants[order.status] || ""} capitalize`}>
                       {order.status}
                     </Badge>
                   </TableCell>
 
                   {/* Actions */}
-                  <TableCell>
+                  <TableCell className="w-20">
                     <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/client/activities/orders/${order.id}`}>View</Link>
+                      <Link href={`/orders/${order.id}/details`}>View</Link>
                     </Button>
                   </TableCell>
                 </TableRow>
