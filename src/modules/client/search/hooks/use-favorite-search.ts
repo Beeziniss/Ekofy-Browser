@@ -1,9 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { favoriteTrackMutationOptions, playlistFavoriteMutationOptions } from "@/gql/options/client-mutation-options";
+import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
+import { PopularityActionType } from "@/gql/graphql";
 
 export const useFavoriteSearch = () => {
   const queryClient = useQueryClient();
+  const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
 
   // Track favorite mutation
   const { mutate: favoriteTrack, isPending: isFavoriteTrackPending } = useMutation({
@@ -45,7 +48,15 @@ export const useFavoriteSearch = () => {
     if (!track?.id) return;
 
     const isAdding = !track.checkTrackInFavorite;
-    favoriteTrack({ trackId: track.id, isAdding });
+    favoriteTrack({ trackId: track.id, isAdding }, {
+      onSuccess: () => {
+        // Track popularity
+        trackEngagementPopularity({
+          trackId: track.id,
+          actionType: isAdding ? PopularityActionType.Favorite : PopularityActionType.Unfavorite,
+        });
+      },
+    });
   };
 
   const handleFavoritePlaylist = (playlist: { id: string; name: string; checkPlaylistInFavorite: boolean }) => {

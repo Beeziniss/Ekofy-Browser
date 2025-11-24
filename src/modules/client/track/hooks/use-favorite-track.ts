@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-options";
-import { TrackDetailQuery } from "@/gql/graphql";
+import { TrackDetailQuery, PopularityActionType } from "@/gql/graphql";
+import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
 
 export const useFavoriteTrack = () => {
   const queryClient = useQueryClient();
+  const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
 
   const { mutate: favoriteTrack, ...rest } = useMutation({
     ...favoriteTrackMutationOptions,
@@ -107,6 +109,11 @@ export const useFavoriteTrack = () => {
           toast.success(
             isAdding ? `${trackDetail.name} added to favorites!` : `${trackDetail.name} removed from favorites!`,
           );
+          // Track popularity
+          trackEngagementPopularity({
+            trackId: trackDetail.id,
+            actionType: isAdding ? PopularityActionType.Favorite : PopularityActionType.Unfavorite,
+          });
         },
       },
     );

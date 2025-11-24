@@ -14,8 +14,9 @@ import { SendIcon, UserIcon } from "lucide-react";
 import TrackCommentUser from "../components/track-comment-user";
 import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { createTrackCommentMutationOptions } from "@/gql/options/client-mutation-options";
-import { ArtistQuery, CommentType, ListenerQuery } from "@/gql/graphql";
+import { ArtistQuery, CommentType, ListenerQuery, PopularityActionType } from "@/gql/graphql";
 import { trackCommentsOptions } from "@/gql/options/client-options";
+import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
 import { useState } from "react";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { useAuthAction } from "@/hooks/use-auth-action";
@@ -31,6 +32,7 @@ const TrackCommentSection = ({ trackId, listenerData, artistData }: TrackComment
   const [comment, setComment] = useState("");
   const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth, isAuthenticated } =
     useAuthAction();
+  const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
 
   const { data: commentsData } = useSuspenseQuery(trackCommentsOptions(trackId));
   const { mutate: createComment, isPending } = useMutation({
@@ -39,6 +41,11 @@ const TrackCommentSection = ({ trackId, listenerData, artistData }: TrackComment
       // Invalidate and refetch comments after successful creation
       queryClient.invalidateQueries({
         queryKey: ["track-comments", trackId],
+      });
+      // Track popularity for comment
+      trackEngagementPopularity({
+        trackId,
+        actionType: PopularityActionType.Comment,
       });
     },
   });

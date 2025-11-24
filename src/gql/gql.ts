@@ -50,6 +50,10 @@ type Documents = {
     "\n  mutation deletePlaylist($playlistId: String!) {\n    deletePlaylist(playlistId: $playlistId)\n  }\n": typeof types.DeletePlaylistDocument,
     "\n  mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {\n    addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n": typeof types.AddToPlaylistDocument,
     "\n  mutation RemoveFromPlaylist($removeFromPlaylistRequest: RemoveFromPlaylistRequestInput!) {\n    removeFromPlaylist(removeFromPlaylistRequest: $removeFromPlaylistRequest)\n  }\n": typeof types.RemoveFromPlaylistDocument,
+    "\n    mutation ProcessTrackEngagementPopularity($trackId: String!, $actionType: PopularityActionType! ) {\n        processTrackEngagementMetric(trackId: $trackId, actionType: $actionType)\n    }\n": typeof types.ProcessTrackEngagementPopularityDocument,
+    "\n    mutation ProcessTrackDiscoveryPopularity($trackId: String!, $actionType: PopularityActionType! ) {\n        processTrackDiscovery(trackId: $trackId, actionType: $actionType)\n    }\n": typeof types.ProcessTrackDiscoveryPopularityDocument,
+    "\n    mutation ProcessArtistEngagementPopularity($artistId: String!, $actionType: PopularityActionType! ) {\n        processArtistEngagement(artistId: $artistId, actionType: $actionType)\n    }\n": typeof types.ProcessArtistEngagementPopularityDocument,
+    "\n    mutation ProcessArtistDiscoveryPopularity($artistId: String!, $actionType: PopularityActionType! ) {\n        processArtistDiscovery(artistId: $artistId, actionType: $actionType)\n    }\n": typeof types.ProcessArtistDiscoveryPopularityDocument,
     "\n    mutation ReportMutation($request: CreateReportRequestInput!) {\n     createReport(request: $request)\n    }\n": typeof types.ReportMutationDocument,
     "\n    mutation ProcessReport($request: ProcessReportRequestInput!) {\n     processReport(request: $request)\n    }\n": typeof types.ProcessReportDocument,
     "\n    mutation AssignReportToModerator($reportId: String!, $moderatorId: String!) {\n     assignReportToModerator(reportId: $reportId, moderatorId: $moderatorId)\n    }\n": typeof types.AssignReportToModeratorDocument,
@@ -180,6 +184,10 @@ const documents: Documents = {
     "\n  mutation deletePlaylist($playlistId: String!) {\n    deletePlaylist(playlistId: $playlistId)\n  }\n": types.DeletePlaylistDocument,
     "\n  mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {\n    addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)\n  }\n": types.AddToPlaylistDocument,
     "\n  mutation RemoveFromPlaylist($removeFromPlaylistRequest: RemoveFromPlaylistRequestInput!) {\n    removeFromPlaylist(removeFromPlaylistRequest: $removeFromPlaylistRequest)\n  }\n": types.RemoveFromPlaylistDocument,
+    "\n    mutation ProcessTrackEngagementPopularity($trackId: String!, $actionType: PopularityActionType! ) {\n        processTrackEngagementMetric(trackId: $trackId, actionType: $actionType)\n    }\n": types.ProcessTrackEngagementPopularityDocument,
+    "\n    mutation ProcessTrackDiscoveryPopularity($trackId: String!, $actionType: PopularityActionType! ) {\n        processTrackDiscovery(trackId: $trackId, actionType: $actionType)\n    }\n": types.ProcessTrackDiscoveryPopularityDocument,
+    "\n    mutation ProcessArtistEngagementPopularity($artistId: String!, $actionType: PopularityActionType! ) {\n        processArtistEngagement(artistId: $artistId, actionType: $actionType)\n    }\n": types.ProcessArtistEngagementPopularityDocument,
+    "\n    mutation ProcessArtistDiscoveryPopularity($artistId: String!, $actionType: PopularityActionType! ) {\n        processArtistDiscovery(artistId: $artistId, actionType: $actionType)\n    }\n": types.ProcessArtistDiscoveryPopularityDocument,
     "\n    mutation ReportMutation($request: CreateReportRequestInput!) {\n     createReport(request: $request)\n    }\n": types.ReportMutationDocument,
     "\n    mutation ProcessReport($request: ProcessReportRequestInput!) {\n     processReport(request: $request)\n    }\n": types.ProcessReportDocument,
     "\n    mutation AssignReportToModerator($reportId: String!, $moderatorId: String!) {\n     assignReportToModerator(reportId: $reportId, moderatorId: $moderatorId)\n    }\n": types.AssignReportToModeratorDocument,
@@ -415,6 +423,22 @@ export function graphql(source: "\n  mutation AddToPlaylist($addToPlaylistReques
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation RemoveFromPlaylist($removeFromPlaylistRequest: RemoveFromPlaylistRequestInput!) {\n    removeFromPlaylist(removeFromPlaylistRequest: $removeFromPlaylistRequest)\n  }\n"): typeof import('./graphql').RemoveFromPlaylistDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation ProcessTrackEngagementPopularity($trackId: String!, $actionType: PopularityActionType! ) {\n        processTrackEngagementMetric(trackId: $trackId, actionType: $actionType)\n    }\n"): typeof import('./graphql').ProcessTrackEngagementPopularityDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation ProcessTrackDiscoveryPopularity($trackId: String!, $actionType: PopularityActionType! ) {\n        processTrackDiscovery(trackId: $trackId, actionType: $actionType)\n    }\n"): typeof import('./graphql').ProcessTrackDiscoveryPopularityDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation ProcessArtistEngagementPopularity($artistId: String!, $actionType: PopularityActionType! ) {\n        processArtistEngagement(artistId: $artistId, actionType: $actionType)\n    }\n"): typeof import('./graphql').ProcessArtistEngagementPopularityDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation ProcessArtistDiscoveryPopularity($artistId: String!, $actionType: PopularityActionType! ) {\n        processArtistDiscovery(artistId: $artistId, actionType: $actionType)\n    }\n"): typeof import('./graphql').ProcessArtistDiscoveryPopularityDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

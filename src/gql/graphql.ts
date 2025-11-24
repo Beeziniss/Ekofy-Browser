@@ -1330,7 +1330,6 @@ export type CreatePaymentCheckoutSessionRequestInput = {
   isSavePaymentMethod: Scalars['Boolean']['input'];
   packageId: Scalars['String']['input'];
   requestId: Scalars['String']['input'];
-  requirementFiles: Array<Scalars['String']['input']>;
   successUrl: Scalars['String']['input'];
 };
 
@@ -6552,6 +6551,38 @@ export type RemoveFromPlaylistMutationVariables = Exact<{
 
 export type RemoveFromPlaylistMutation = { __typename?: 'MutationInitialization', removeFromPlaylist: boolean };
 
+export type ProcessTrackEngagementPopularityMutationVariables = Exact<{
+  trackId: Scalars['String']['input'];
+  actionType: PopularityActionType;
+}>;
+
+
+export type ProcessTrackEngagementPopularityMutation = { __typename?: 'MutationInitialization', processTrackEngagementMetric: boolean };
+
+export type ProcessTrackDiscoveryPopularityMutationVariables = Exact<{
+  trackId: Scalars['String']['input'];
+  actionType: PopularityActionType;
+}>;
+
+
+export type ProcessTrackDiscoveryPopularityMutation = { __typename?: 'MutationInitialization', processTrackDiscovery: boolean };
+
+export type ProcessArtistEngagementPopularityMutationVariables = Exact<{
+  artistId: Scalars['String']['input'];
+  actionType: PopularityActionType;
+}>;
+
+
+export type ProcessArtistEngagementPopularityMutation = { __typename?: 'MutationInitialization', processArtistEngagement: boolean };
+
+export type ProcessArtistDiscoveryPopularityMutationVariables = Exact<{
+  artistId: Scalars['String']['input'];
+  actionType: PopularityActionType;
+}>;
+
+
+export type ProcessArtistDiscoveryPopularityMutation = { __typename?: 'MutationInitialization', processArtistDiscovery: boolean };
+
 export type ReportMutationMutationVariables = Exact<{
   request: CreateReportRequestInput;
 }>;
@@ -7795,6 +7826,26 @@ export const RemoveFromPlaylistDocument = new TypedDocumentString(`
   removeFromPlaylist(removeFromPlaylistRequest: $removeFromPlaylistRequest)
 }
     `) as unknown as TypedDocumentString<RemoveFromPlaylistMutation, RemoveFromPlaylistMutationVariables>;
+export const ProcessTrackEngagementPopularityDocument = new TypedDocumentString(`
+    mutation ProcessTrackEngagementPopularity($trackId: String!, $actionType: PopularityActionType!) {
+  processTrackEngagementMetric(trackId: $trackId, actionType: $actionType)
+}
+    `) as unknown as TypedDocumentString<ProcessTrackEngagementPopularityMutation, ProcessTrackEngagementPopularityMutationVariables>;
+export const ProcessTrackDiscoveryPopularityDocument = new TypedDocumentString(`
+    mutation ProcessTrackDiscoveryPopularity($trackId: String!, $actionType: PopularityActionType!) {
+  processTrackDiscovery(trackId: $trackId, actionType: $actionType)
+}
+    `) as unknown as TypedDocumentString<ProcessTrackDiscoveryPopularityMutation, ProcessTrackDiscoveryPopularityMutationVariables>;
+export const ProcessArtistEngagementPopularityDocument = new TypedDocumentString(`
+    mutation ProcessArtistEngagementPopularity($artistId: String!, $actionType: PopularityActionType!) {
+  processArtistEngagement(artistId: $artistId, actionType: $actionType)
+}
+    `) as unknown as TypedDocumentString<ProcessArtistEngagementPopularityMutation, ProcessArtistEngagementPopularityMutationVariables>;
+export const ProcessArtistDiscoveryPopularityDocument = new TypedDocumentString(`
+    mutation ProcessArtistDiscoveryPopularity($artistId: String!, $actionType: PopularityActionType!) {
+  processArtistDiscovery(artistId: $artistId, actionType: $actionType)
+}
+    `) as unknown as TypedDocumentString<ProcessArtistDiscoveryPopularityMutation, ProcessArtistDiscoveryPopularityMutationVariables>;
 export const ReportMutationDocument = new TypedDocumentString(`
     mutation ReportMutation($request: CreateReportRequestInput!) {
   createReport(request: $request)
