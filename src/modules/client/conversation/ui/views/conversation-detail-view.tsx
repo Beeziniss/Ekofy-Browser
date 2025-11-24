@@ -31,7 +31,7 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
-  const [showConversationInfo, setShowConversationInfo] = useState(false);
+  const [showConversationInfo, setShowConversationInfo] = useState(true);
   const [messages, setMessages] = useState<Omit<Message, "receiverProfileMessages">[]>([]);
 
   const isArtist = user?.role === UserRole.ARTIST;

@@ -14,10 +14,24 @@ export const OrderPackageQuery = graphql(`
         clientId
         artistPackageId
         deadline
+        createdAt
+        revisionCount
+        deliveries {
+          notes
+          revisionNumber
+          deliveredAt
+          deliveryFileUrl
+          clientFeedback
+        }
         package {
           id
-          packageName
           amount
+          packageName
+          estimateDeliveryDays
+          maxRevision
+          serviceDetails {
+            value
+          }
         }
         client {
           displayName

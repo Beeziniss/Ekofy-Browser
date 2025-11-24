@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import { PackageOrderStatus, OrderPackageQuery } from "@/gql/graphql";
-import { format } from "date-fns";
 import { getUserInitials } from "@/utils/format-shorten-name";
+import { formatCurrency } from "@/utils/format-currency";
+import { formatDate } from "@/utils/format-date";
 
 type OrderItem = NonNullable<NonNullable<OrderPackageQuery["packageOrders"]>["items"]>[number];
 
@@ -31,24 +32,6 @@ const statusBadgeVariants = {
   [PackageOrderStatus.Refund]: "bg-purple-500/20 text-purple-400 border-purple-500/30",
 };
 
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
-
-const formatDate = (dateString: string): string => {
-  try {
-    const date = new Date(dateString);
-    return format(date, "MMM dd, yyyy");
-  } catch {
-    return "Invalid date";
-  }
-};
-
 const ActivityConversationTable = ({
   orders,
   totalCount,
@@ -63,12 +46,12 @@ const ActivityConversationTable = ({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Client</TableHead>
+              <TableHead className="w-80 max-w-80">Client</TableHead>
               <TableHead>Package</TableHead>
-              <TableHead>Deadline</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead></TableHead>
+              <TableHead className="w-52">Deadline</TableHead>
+              <TableHead className="w-44">Total</TableHead>
+              <TableHead className="w-28">Status</TableHead>
+              <TableHead className="w-20"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
