@@ -34,9 +34,9 @@ const ConversationInfo = ({ otherUserId, avatarImage, nickname, isArtist }: Conv
           </div>
 
           <Link href={`/activities/conversation/${otherUserId}`}>
-            <div className="bg-main-card-bg space-y-3 rounded-lg p-4">
+            <div className="bg-main-card-bg hover:bg-main-purple/10 space-y-3 rounded-lg p-2 transition-colors">
               <div className="flex items-center space-x-3">
-                <div className="flex size-10 items-center justify-center rounded-md bg-purple-600">
+                <div className="flex size-12 items-center justify-center rounded-md bg-purple-600">
                   <span className="text-sm font-semibold text-white">S</span>
                 </div>
                 <div className="flex-1">
@@ -45,7 +45,7 @@ const ConversationInfo = ({ otherUserId, avatarImage, nickname, isArtist }: Conv
                     {Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date(orderPackageData.deadline))}
                   </p>
                 </div>
-                <ArrowUpRightIcon className="text-main-grey size-4" />
+                <ArrowUpRightIcon className="text-main-grey size-6" />
               </div>
             </div>
           </Link>

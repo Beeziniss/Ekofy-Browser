@@ -2,13 +2,16 @@
 
 // import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FragmentType, useFragment } from "@/gql";
 import { Card, CardContent } from "@/components/ui/card";
-import { Clock, Calendar, Eye, User } from "lucide-react";
+import { Clock, Calendar, User, DollarSign } from "lucide-react";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
-import { Request, RequestArtistFragmentDoc, RequestArtistPackageFragmentDoc } from "@/gql/graphql";
+import { Request, RequestArtistFragmentDoc, RequestArtistPackageFragmentDoc, RequestStatus } from "@/gql/graphql";
+import { serviceCreateCheckoutSessionMutationOptions } from "@/gql/options/client-mutation-options";
+import { toast } from "sonner";
 
 interface RequestListItemProps {
   request: Omit<Request, "requestor" | "artist" | "artistPackage"> & {
@@ -33,7 +36,43 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
 
   const artist = useFragment(RequestArtistFragmentDoc, request.artist);
 
-  /* const formatBudget = (
+  // Payment mutation
+  const createCheckoutSessionMutation = useMutation(serviceCreateCheckoutSessionMutationOptions);
+
+  const handlePayment = async () => {
+    if (!request.packageId) {
+      toast.error("Package information is missing for this request.");
+      return;
+    }
+
+    try {
+      const result = await createCheckoutSessionMutation.mutateAsync({
+        packageId: request.packageId,
+        requestId: request.id,
+        deadline: request.deadline,
+        deliveries: [], // Empty array as requested
+        conversationId: null,
+        // successUrl: `${window.location.origin}/profile/my-requests/${request.id}?payment=success`,
+        // cancelUrl: `${window.location.origin}/profile/my-requests/${request.id}?payment=cancelled`,
+        successUrl: `${window.location.origin}`,
+        cancelUrl: `${window.location.origin}`,
+        isReceiptEmail: true, // Default to true for receipt email
+        isSavePaymentMethod: false, // Default to false for saving payment method
+      });
+
+      // Navigate to the payment URL
+      if (result.createPaymentCheckoutSession?.url) {
+        window.location.href = result.createPaymentCheckoutSession.url;
+      } else {
+        toast.error("Failed to create payment session. Please try again.");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("Failed to initiate payment. Please try again.");
+    }
+  };
+
+  const formatBudget = (
     budget: { min: number; max: number } | null | undefined,
     currency: string | null | undefined,
   ) => {
@@ -47,7 +86,7 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
       return formatCurrency(budget.min);
     }
     return `${formatCurrency(budget.min)} - ${formatCurrency(budget.max)}`;
-  }; */
+  };
 
   const formatDateTime = (dateString: string | Date) => {
     const date = typeof dateString === "string" ? new Date(dateString) : dateString;
@@ -106,10 +145,12 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
 
             {/* Meta Information */}
             <div className="text-main-white flex flex-wrap items-center gap-4 text-sm">
-              {/* <div className="flex items-center gap-1">
-                <DollarSign className="h-4 w-4" />
-                <span className="text-white">Budget: {formatBudget(request.budget, request.currency)}</span>
-              </div> */}
+              {request.budget && (
+                <div className="flex items-center gap-1">
+                  <DollarSign className="h-4 w-4" />
+                  <span className="text-white">Budget: {formatBudget(request.budget, request.currency)}</span>
+                </div>
+              )}
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
                 <span>Deadline: {formatDate(request.deadline)}</span>
@@ -127,16 +168,21 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
           </div>
 
           {/* Right Section - Action Buttons */}
-          <div className="flex gap-2 md:flex-col md:items-end">
-            <Button variant="outline" size="sm" asChild className="flex-1 md:flex-none">
-              <Link href={`/profile/my-requests/${request.id}`}>
-                <Eye className="mr-1 h-4 w-4" />
-                View Details
-              </Link>
-            </Button>
+          <div className="flex items-center gap-2">
+            {/* Show payment button only for confirmed requests with package */}
+            {request.status === RequestStatus.Confirmed && request.packageId && (
+              <Button
+                variant={"ekofy"}
+                size={"sm"}
+                onClick={handlePayment}
+                disabled={createCheckoutSessionMutation.isPending}
+              >
+                {createCheckoutSessionMutation.isPending ? "Processing..." : "Confirm Payment"}
+              </Button>
+            )}
 
-            <Button variant={"ekofy"} size={"sm"}>
-              Confirm Payment
+            <Button variant="outline" size="sm" asChild className="flex-1 md:flex-none">
+              <Link href={`/profile/my-requests/${request.id}`}>View Details</Link>
             </Button>
           </div>
         </div>
