@@ -6,6 +6,7 @@ import { SearchArtistItem } from "@/types/search";
 import { toast } from "sonner";
 import { useAuthAction } from "@/hooks/use-auth-action";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
+import { useRouter } from "next/navigation";
 
 interface SearchArtistSectionProps {
   artists: SearchArtistItem[];
@@ -81,20 +82,16 @@ interface ArtistCardProps {
 
 const ArtistCard = ({ artist }: ArtistCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
+  const router = useRouter();
 
   // Auth action hooks
   const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
 
   const handleArtistClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    executeWithAuth(
-      () => {
-        // Navigate to artist detail page
-        window.location.href = `/artist/${artist.id}`;
-      },
-      "follow",
-      artist.stageName,
-    );
+    e.stopPropagation();
+    // Navigate to artist detail page without auth check for viewing
+    router.push(`/artists/${artist.id}`);
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
