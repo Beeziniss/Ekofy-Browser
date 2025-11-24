@@ -51,7 +51,7 @@ export function MyRequestsView() {
   };
 
   const { data: requestsData, isLoading } = useQuery(myRequestsOptions(skip, pageSize, where));
-  const requests = requestsData?.items || [];
+  const requests: RequestItem[] = requestsData?.items || [];
   const totalItems = requestsData?.totalCount || 0;
   const totalPages = Math.ceil(totalItems / pageSize);
 
@@ -139,7 +139,7 @@ export function MyRequestsView() {
         summary: data.summary,
         detailDescription: data.detailDescription,
         budget: data.budget,
-        deadline: data.deadline instanceof Date ? data.deadline.toISOString() : data.deadline,
+        duration: data.duration,
         // Convert local enum to GraphQL enum if status exists
         ...(data.status && {
           status:
@@ -175,8 +175,7 @@ export function MyRequestsView() {
         summary: editingRequest.summary,
         detailDescription: editingRequest.detailDescription,
         budget: editingRequest.budget,
-        deadline:
-          editingRequest.deadline instanceof Date ? editingRequest.deadline.toISOString() : editingRequest.deadline,
+        duration: editingRequest.duration,
       };
 
       await deleteRequestMutation.mutateAsync(deleteInput);
@@ -227,7 +226,7 @@ export function MyRequestsView() {
               summary: editingRequest.summary || "",
               detailDescription: editingRequest.detailDescription || "",
               budget: editingRequest.budget!,
-              deadline: editingRequest.deadline,
+              duration: editingRequest.duration,
             }}
             onSubmit={handleUpdateSubmit}
             onCancel={handleCancel}

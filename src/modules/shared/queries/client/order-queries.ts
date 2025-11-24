@@ -13,7 +13,7 @@ export const OrderPackageQuery = graphql(`
         status
         clientId
         artistPackageId
-        deadline
+        duration
         createdAt
         revisionCount
         deliveries {

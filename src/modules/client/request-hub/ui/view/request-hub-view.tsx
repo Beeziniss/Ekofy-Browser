@@ -134,7 +134,7 @@ export function RequestHubView() {
         summary: data.summary,
         detailDescription: data.detailDescription,
         budget: data.budget,
-        deadline: data.deadline instanceof Date ? data.deadline.toISOString() : data.deadline,
+        duration: data.duration,
         // Convert local enum to GraphQL enum if status exists
         ...(data.status && {
           status:
@@ -178,7 +178,7 @@ export function RequestHubView() {
               summary: editingRequest.summary || "",
               detailDescription: editingRequest.detailDescription || "",
               budget: editingRequest.budget!,
-              deadline: editingRequest.deadline,
+              duration: editingRequest.duration,
             }}
             onSubmit={handleUpdateSubmit}
             onCancel={handleCancel}

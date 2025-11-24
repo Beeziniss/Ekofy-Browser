@@ -64,7 +64,7 @@ export const GET_PENDING_ARTIST_REQUEST_DETAILS = graphql(`
             updatedAt
             type
             currency
-            deadline
+            duration
             status
             requestCreatedTime
             notes

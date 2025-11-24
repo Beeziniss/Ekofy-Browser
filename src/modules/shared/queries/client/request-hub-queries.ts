@@ -21,7 +21,7 @@ export const REQUEST_HUB_QUERY = graphql(`
           max
         }
         currency
-        deadline
+        duration
         status
         type
         postCreatedTime
@@ -55,7 +55,7 @@ export const REQUEST_BY_ID_QUERY = graphql(`
       summaryUnsigned
       detailDescription
       currency
-      deadline
+      duration
       status
       type
       postCreatedTime
@@ -97,7 +97,7 @@ export const SEARCH_REQUESTS_QUERY = graphql(`
         summaryUnsigned
         detailDescription
         currency
-        deadline
+        duration
         status
         postCreatedTime
         updatedAt
@@ -128,7 +128,7 @@ export const OWN_REQUESTS_QUERY = graphql(`
         summaryUnsigned
         detailDescription
         currency
-        deadline
+        duration
         status
         type
         postCreatedTime
