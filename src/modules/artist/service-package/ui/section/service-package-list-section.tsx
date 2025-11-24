@@ -17,13 +17,13 @@ import { useAuthStore } from "@/store";
 interface ServicePackageListSectionProps {
   onCreatePackage: () => void;
   onEditPackage: (packageId: string) => void;
-  onViewDetail: (packageId: string) => void;
+  // onViewDetail: (packageId: string) => void;
 }
 
 const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
   onCreatePackage,
   onEditPackage,
-  onViewDetail,
+  // onViewDetail,
 }) => {
   // const [currentView, setCurrentView] = useState<"packages" | "pending">("packages");
   const [artistId, setArtistId] = useState<string>("");
@@ -209,7 +209,7 @@ const ServicePackageListSection: React.FC<ServicePackageListSectionProps> = ({
                   packages={packages}
                   onEdit={onEditPackage}
                   onDelete={handleDeletePackage}
-                  onViewDetail={onViewDetail}
+                  // onViewDetail={onViewDetail}
                   onStatusChange={handleStatusChange}
                 />
                 {/* Pagination for Packages */}

@@ -6764,7 +6764,7 @@ export type GetPendingArtistRequestQueryVariables = Exact<{
 }>;
 
 
-export type GetPendingArtistRequestQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, requestCreatedTime?: any | null, type: RequestType, status: RequestStatus, postCreatedTime?: any | null, currency: CurrencyType, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, userId: string }>, artistPackage: Array<{ __typename?: 'ArtistPackage', artistId: string, id: string, packageName: string }> }> | null } | null };
+export type GetPendingArtistRequestQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, requestCreatedTime?: any | null, type: RequestType, status: RequestStatus, postCreatedTime?: any | null, currency: CurrencyType, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, userId: string }>, artistPackage: Array<{ __typename?: 'ArtistPackage', artistId: string, id: string, packageName: string, amount: any, currency: CurrencyType }> }> | null } | null };
 
 export type RequestPendingDetailByIdQueryVariables = Exact<{
   where?: InputMaybe<RequestFilterInput>;
@@ -8037,6 +8037,8 @@ export const GetPendingArtistRequestDocument = new TypedDocumentString(`
         artistId
         id
         packageName
+        amount
+        currency
       }
     }
   }
