@@ -58,7 +58,7 @@ export interface RequestCreatingRequestInput {
   summary: string;
   detailDescription: string;
   budget: RequestBudget;
-  deadline: Date;
+  duration: number;
 }
 
 export interface RequestUpdatingRequestInput {
@@ -67,7 +67,7 @@ export interface RequestUpdatingRequestInput {
   summary: string;
   detailDescription: string;
   budget: RequestBudget;
-  deadline: Date;
+  duration: number;
   status?: RequestStatus;
 }
 

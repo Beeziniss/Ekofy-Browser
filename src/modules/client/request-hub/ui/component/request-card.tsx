@@ -228,7 +228,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
           </Badge>
         </div>
 
-        {/* Budget and Deadline */}
+        {/* Budget and Duration */}
         <div className="mb-4 flex items-center justify-between text-sm">
           <div className="flex items-center">
             <p className="mr-1 text-white">Budget:</p>

@@ -28,7 +28,7 @@ export function EditRequestSection({ initialData, onSubmit, onCancel, onDelete }
     }
   };
 
-  // Convert deadline to Date if it's a string
+  // Convert duration to number if needed
   const processedInitialData = {
     ...initialData,
   };

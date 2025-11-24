@@ -56,7 +56,11 @@ const parseCurrency = (value: string): number => {
 
 interface RequestFormProps {
   mode: "create" | "edit";
-  initialData?: Partial<CreateRequestData> & { id?: string; budget?: RequestBudget | number; deadline?: Date | string };
+  initialData?: Partial<CreateRequestData> & { 
+    id?: string; 
+    budget?: RequestBudget | number; 
+    duration?: number;
+  };
   onSubmit: (data: CreateRequestData | UpdateRequestData) => void;
   onCancel?: () => void;
   onDelete?: () => void;
@@ -81,7 +85,13 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
       : "",
   );
 
-  const [duration, setDuration] = useState<number>(initialData?.duration ? Number(initialData.duration) : 1);
+  const [duration, setDuration] = useState<number>(() => {
+    if (initialData?.duration !== undefined && initialData?.duration !== null) {
+      const parsedDuration = Number(initialData.duration);
+      return !isNaN(parsedDuration) && parsedDuration > 0 ? parsedDuration : 1;
+    }
+    return 1;
+  });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [budgetError, setBudgetError] = useState("");
   const [durationError, setDurationError] = useState("");
@@ -129,9 +139,9 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
       return;
     }
 
-    // Validation: deadline is required
-    if (!duration || duration < 5) {
-      setDurationError("Please select a deadline");
+    // Validation: duration is required
+    if (!duration || duration < 0) {
+      setDurationError("Please indicate a valid duration of at least 1 day.");
       return;
     }
 
