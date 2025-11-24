@@ -106,6 +106,7 @@ export function PendingRequestTable({
         <TableHeader>
           <TableRow>
             <TableHead>Title</TableHead>
+            <TableHead>Type</TableHead>
             <TableHead>Requestor</TableHead>
             <TableHead>Package</TableHead>
             <TableHead>Budget</TableHead>
@@ -132,7 +133,10 @@ export function PendingRequestTable({
               <TableRow key={request.id}>
                 <TableCell>
                   <div className="font-medium">{request.title}</div>
-                  <div className="text-muted-foreground text-sm">{request.type}</div>
+                  {/* <div className="text-muted-foreground text-sm">{request.type}</div> */}
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">{request.type || "N/A"}</div>
                 </TableCell>
                 <TableCell>
                   <div className="font-medium">{request.requestor[0]?.displayName || "Unknown"}</div>
@@ -146,13 +150,24 @@ export function PendingRequestTable({
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    {new Intl.NumberFormat("vi-VN").format(request.budget?.min)} {request.currency}
-                    {request.budget?.min !== request.budget?.max && (
+                  {request.budget ? (
+                    <>
+                    {new Intl.NumberFormat("vi-VN").format(request.budget.min)} {request.currency}
+                    {request.budget.min !== request.budget.max && (
                       <>
-                        {" - "}
-                        {new Intl.NumberFormat("vi-VN").format(request.budget?.max)} {request.currency}
+                      {" - "}
+                      {new Intl.NumberFormat("vi-VN").format(request.budget.max)} {request.currency}
                       </>
                     )}
+                    </>
+                  ) : request.artistPackage && request.artistPackage[0] ? (
+                    <>
+                    {new Intl.NumberFormat("vi-VN").format(request.artistPackage[0].amount)}{" "}
+                    {request.artistPackage[0].currency}
+                    </>
+                  ) : (
+                    <span className="text-muted-foreground">N/A</span>
+                  )}
                   </div>
                 </TableCell>
                 <TableCell>

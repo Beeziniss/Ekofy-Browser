@@ -5,6 +5,7 @@ import Image from "next/image";
 import { SearchArtistItem } from "@/types/search";
 import { toast } from "sonner";
 import { useSearchAuth } from "../../hooks/use-search-auth";
+import { useRouter } from "next/navigation";
 
 interface ArtistCardAllProps {
   artist: SearchArtistItem;
@@ -13,10 +14,11 @@ interface ArtistCardAllProps {
 export const ArtistCardAll = ({ artist }: ArtistCardAllProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
   const { executeWithAuth } = useSearchAuth();
+  const router = useRouter();
 
   const handleArtistClick = () => {
-    // TODO: Navigate to artist detail page when implemented
-    console.log(`Navigate to artist: ${artist.stageName} (${artist.id})`);
+    // Navigate to artist detail page
+    router.push(`/artists/${artist.id}`);
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {

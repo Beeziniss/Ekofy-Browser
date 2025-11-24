@@ -37,6 +37,8 @@ export const GET_PENDING_ARTIST_REQUEST = graphql(`
                 artistId
                 id
                 packageName
+                amount
+                currency
             }
         }
       }

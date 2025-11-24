@@ -29,6 +29,37 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Landing page should only be accessible to guests (non-authenticated users)
+  // Redirect authenticated users back to their previous page or home
+  if (pathname === "/landing" && isAuthenticated && user) {
+    const referer = request.headers.get("referer");
+    const currentOrigin = url.origin;
+    
+    // Check if referer exists and is from the same origin (internal navigation)
+    if (referer && referer.startsWith(currentOrigin)) {
+      const refererPath = new URL(referer).pathname;
+      
+      // Prevent redirect loop - if they came from landing, go to home
+      if (refererPath !== "/landing") {
+        url.pathname = refererPath;
+        return NextResponse.redirect(url);
+      }
+    }
+    
+    // Default: redirect to appropriate dashboard based on role
+    const dashboardPath =
+      user.role === UserRole.ADMIN
+        ? "/admin/user-management"
+        : user.role === UserRole.MODERATOR
+          ? "/moderator/track-approval"
+          : user.role === UserRole.ARTIST
+            ? "/artist/studio"
+            : "/"; // Listener goes to home
+    
+    url.pathname = dashboardPath;
+    return NextResponse.redirect(url);
+  }
+
   // Restrict access to /profile routes for artist, moderator, and admin roles
   // Also prevent unauthenticated listeners from accessing profile routes
   if (pathname.startsWith("/profile")) {

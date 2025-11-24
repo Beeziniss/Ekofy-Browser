@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import PackageServiceLayout from "../layout/package-service-layout";
 import ServicePackageListSection from "../section/service-package-list-section";
 import CreatePackageServiceSection from "../section/create-package-service-section";
@@ -12,7 +12,7 @@ import DeleteConfirmModal from "../component/delete-package-service/delete-confi
 type ViewMode = "list" | "create" | "edit" | "detail";
 
 const ServicePackageServiceView = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -26,10 +26,10 @@ const ServicePackageServiceView = () => {
     setViewMode("edit");
   };
 
-  const handleViewDetail = (packageId: string) => {
-    // Navigate to detail page instead of changing local state
-    router.push(`/artist/studio/service-package/${packageId}`);
-  };
+  // const handleViewDetail = (packageId: string) => {
+  //   // Navigate to detail page instead of changing local state
+  //   router.push(`/artist/studio/service-package/${packageId}`);
+  // };
 
   const handleDeletePackage = () => {
     setDeleteModalOpen(true);
@@ -85,7 +85,7 @@ const ServicePackageServiceView = () => {
           <ServicePackageListSection
             onCreatePackage={handleCreatePackage}
             onEditPackage={handleEditPackage}
-            onViewDetail={handleViewDetail}
+            // onViewDetail={handleViewDetail}
           />
         );
     }

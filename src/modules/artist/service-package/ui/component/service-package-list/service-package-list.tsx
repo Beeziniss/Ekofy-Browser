@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Edit, ChevronDown, ChevronUp, Eye, Trash2, Clock, RotateCcw } from "lucide-react";
+import { Edit, ChevronDown, ChevronUp, Trash2, Clock, RotateCcw } from "lucide-react";
 import { ArtistPackageStatus, ArtistPackage, Metadata } from "@/gql/graphql";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { usePackageUtils } from "../../../hooks";
@@ -14,11 +14,11 @@ interface ServicePackageListProps {
   packages: Omit<ArtistPackage, "artist" | "review">[];
   onEdit: (packageId: string) => void;
   onDelete: (packageId: string) => void;
-  onViewDetail: (packageId: string) => void;
+  // onViewDetail: (packageId: string) => void;
   onStatusChange: (packageId: string, status: ArtistPackageStatus) => void;
 }
 
-const ServicePackageList = ({ packages, onEdit, onDelete, onViewDetail, onStatusChange }: ServicePackageListProps) => {
+const ServicePackageList = ({ packages, onEdit, onDelete, onStatusChange }: ServicePackageListProps) => {
   const [expandedItems, setExpandedItems] = React.useState<Set<string>>(new Set());
   const { formatRevisionText } = usePackageUtils();
 
@@ -89,7 +89,7 @@ const ServicePackageList = ({ packages, onEdit, onDelete, onViewDetail, onStatus
                   )}
                 </div>
 
-                <Button
+                {/* <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onViewDetail(pkg.id)}
@@ -97,7 +97,7 @@ const ServicePackageList = ({ packages, onEdit, onDelete, onViewDetail, onStatus
                   title="View Details"
                 >
                   <Eye className="h-4 w-4" />
-                </Button>
+                </Button> */}
                 <Button
                   variant="outline"
                   size="sm"

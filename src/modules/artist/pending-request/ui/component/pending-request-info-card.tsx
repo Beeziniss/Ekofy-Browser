@@ -104,7 +104,7 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
               )}
               {request?.[0]?.artistPackage[0].estimateDeliveryDays && (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-main-white">Delivery Time:</span>
+                  <span className="text-sm text-main-white">Estimated Delivery Time By Artist:</span>
                   <span className="text-sm font-medium">{request?.[0]?.artistPackage[0].estimateDeliveryDays} days</span>
                 </div>
               )}
@@ -116,6 +116,7 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
         <div>
           <h3 className="text-sm font-semibold mb-3 text-main-white">Budget & Timeline</h3>
           <div className="bg-main-dark-bg rounded-lg p-4 space-y-2">
+            {request?.[0]?.budget &&
             <div className="flex items-center justify-between">
               <span className="text-sm text-main-white">Requested Budget:</span>
                 <span className="text-sm font-medium">
@@ -128,11 +129,12 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
                 )}
                 </span>
             </div>
+    }
             <div className="flex items-center justify-between">
               <span className="text-sm text-main-white">Created:</span>
-              <span className="text-sm font-medium">
-                {format(new Date(request?.[0]?.requestCreatedTime), "dd/MM/yyyy HH:mm")}
-              </span>
+                <span className="text-sm font-medium">
+                {format(new Date(request?.[0]?.requestCreatedTime), "dd/MM/yyyy hh:mm a")}
+                </span>
             </div>
             {request?.[0]?.deadline && (
               <div className="flex items-center justify-between">
