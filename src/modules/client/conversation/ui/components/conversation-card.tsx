@@ -19,7 +19,7 @@ const ConversationCard = ({ conversation }: ConversationCardProps) => {
     >
       <div className="flex items-center gap-x-3">
         <Avatar className="size-12">
-          <AvatarImage src={otherUserProfile?.avatar || "/default-avatar.png"} alt="User Avatar" />
+          <AvatarImage src={otherUserProfile?.avatar || undefined} alt="User Avatar" />
           <AvatarFallback>{getUserInitials(otherUserProfile?.nickname)}</AvatarFallback>
         </Avatar>
 

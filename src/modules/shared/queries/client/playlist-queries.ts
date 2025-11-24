@@ -3,7 +3,7 @@ import { graphql } from "@/gql";
 export const PlaylistsPersonalQuery = graphql(`
   query Playlists($userId: String!, $name: String, $take: Int, $skip: Int) {
     playlists(
-      where: { or: { name: { contains: $name }, nameUnsigned: { contains: $name } }, userId: { eq: $userId } }
+      where: { or: [{ name: { contains: $name } }, { nameUnsigned: { contains: $name } }], userId: { eq: $userId } }
       order: { createdAt: DESC }
       take: $take
       skip: $skip

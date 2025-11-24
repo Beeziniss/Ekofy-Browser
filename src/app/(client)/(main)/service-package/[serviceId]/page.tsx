@@ -1,20 +1,22 @@
-import { getQueryClient } from "@/providers/get-query-client";
 import { servicePackageOptions } from "@/gql/options/client-options";
+import ServicePackageView from "@/modules/client/service-package/ui/views/service-package-view";
+import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import ArtistDetailServiceView from "@/modules/client/artist/ui/views/artist-detail-service-view";
 
 interface PageProps {
-  params: Promise<{ artistId: string }>;
+  params: Promise<{ serviceId: string }>;
 }
 
 const Page = async ({ params }: PageProps) => {
-  const { artistId } = await params;
+  const { serviceId } = await params;
+
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(servicePackageOptions({ artistId }));
+  void queryClient.prefetchQuery(servicePackageOptions({ serviceId }));
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ArtistDetailServiceView artistId={artistId} />
+      <ServicePackageView serviceId={serviceId} />
     </HydrationBoundary>
   );
 };

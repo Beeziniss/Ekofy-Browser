@@ -28,7 +28,7 @@ const ConversationItem = React.memo(({ message, userId }: ConversationItemProps)
           <div className="mt-1 rounded-lg bg-blue-600 px-3 py-2 text-sm break-words text-white">{message.text}</div>
         </div>
         <Avatar className="size-8">
-          <AvatarImage src={message?.senderProfileMessages.avatar || "/default-avatar.png"} alt="User Avatar" />
+          <AvatarImage src={message?.senderProfileMessages.avatar || undefined} alt="User Avatar" />
           <AvatarFallback>{getUserInitials(message?.senderProfileMessages.nickname)}</AvatarFallback>
         </Avatar>
       </div>
@@ -39,7 +39,7 @@ const ConversationItem = React.memo(({ message, userId }: ConversationItemProps)
   return (
     <div className="flex items-start gap-x-2">
       <Avatar className="size-8">
-        <AvatarImage src={message?.senderProfileMessages.avatar || "/default-avatar.png"} alt="User Avatar" />
+        <AvatarImage src={message?.senderProfileMessages.avatar || undefined} alt="User Avatar" />
         <AvatarFallback>{getUserInitials(message?.senderProfileMessages.nickname)}</AvatarFallback>
       </Avatar>
       <div className="flex max-w-[70%] flex-col">

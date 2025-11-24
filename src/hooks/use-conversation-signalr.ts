@@ -138,7 +138,8 @@ export const useConversationSignalR = (): UseConversationSignalRReturn => {
       setError(err instanceof Error ? err.message : "Failed to connect");
       setIsConnected(false);
     }
-  }, [accessToken, connection?.state]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const stopConnection = useCallback(async () => {
     if (connection) {
@@ -151,7 +152,8 @@ export const useConversationSignalR = (): UseConversationSignalRReturn => {
         console.error("Error stopping SignalR chat connection:", err);
       }
     }
-  }, [connection]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sendMessage = useCallback(
     async (messageRequest: ChatMessageRequest) => {

@@ -6623,6 +6623,21 @@ export type BlockPublicRequestMutationVariables = Exact<{
 
 export type BlockPublicRequestMutation = { __typename?: 'MutationInitialization', blockPublicRequest: boolean };
 
+export type SendRequestMutationVariables = Exact<{
+  request: CreateDirectRequestInput;
+  isDirect: Scalars['Boolean']['input'];
+}>;
+
+
+export type SendRequestMutation = { __typename?: 'MutationInitialization', sendRequest: boolean };
+
+export type ServiceCreateCheckoutSessionMutationVariables = Exact<{
+  createPaymentCheckoutSessionInput: CreatePaymentCheckoutSessionRequestInput;
+}>;
+
+
+export type ServiceCreateCheckoutSessionMutation = { __typename?: 'MutationInitialization', createPaymentCheckoutSession: { __typename?: 'CheckoutSessionResponse', id: string, url: string } };
+
 export type CreateExpressConnectedAccountMutationVariables = Exact<{
   returnUrl: Scalars['String']['input'];
   refreshUrl: Scalars['String']['input'];
@@ -6857,24 +6872,6 @@ export type FollowingsQueryVariables = Exact<{
 
 export type FollowingsQuery = { __typename?: 'QueryInitialization', followings?: { __typename?: 'FollowingsCollectionSegment', totalCount: number } | null };
 
-export type ListenerRequestsQueryVariables = Exact<{
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<RequestFilterInput>;
-}>;
-
-
-export type ListenerRequestsQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, deadline: any, status: RequestStatus, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, avatarImage?: string | null }>, artistPackage: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, description?: string | null }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
-
-export type ListenerRequestByIdQueryVariables = Exact<{
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<RequestFilterInput>;
-}>;
-
-
-export type ListenerRequestByIdQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, deadline: any, status: RequestStatus, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, avatarImage?: string | null }>, artistPackage: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
-
 export type CouponsQueryVariables = Exact<{
   where?: InputMaybe<CouponFilterInput>;
 }>;
@@ -6986,6 +6983,40 @@ export type UsersForRequestsQueryVariables = Exact<{
 
 export type UsersForRequestsQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, fullName: string, gender: UserGender }> | null } | null };
 
+export type RequestArtistFragment = { __typename?: 'Artist', id: string, userId: string, stageName: string } & { ' $fragmentName'?: 'RequestArtistFragment' };
+
+export type RequestArtistPackageFragment = { __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number } & { ' $fragmentName'?: 'RequestArtistPackageFragment' };
+
+export type ListenerRequestsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RequestFilterInput>;
+}>;
+
+
+export type ListenerRequestsQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, deadline: any, status: RequestStatus, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<(
+        { __typename?: 'Artist' }
+        & { ' $fragmentRefs'?: { 'RequestArtistFragment': RequestArtistFragment } }
+      )>, artistPackage: Array<(
+        { __typename?: 'ArtistPackage' }
+        & { ' $fragmentRefs'?: { 'RequestArtistPackageFragment': RequestArtistPackageFragment } }
+      )> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type ListenerRequestByIdQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RequestFilterInput>;
+}>;
+
+
+export type ListenerRequestByIdQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, deadline: any, status: RequestStatus, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<(
+        { __typename?: 'Artist' }
+        & { ' $fragmentRefs'?: { 'RequestArtistFragment': RequestArtistFragment } }
+      )>, artistPackage: Array<(
+        { __typename?: 'ArtistPackage' }
+        & { ' $fragmentRefs'?: { 'RequestArtistPackageFragment': RequestArtistPackageFragment } }
+      )> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
 export type GetListenerTransactionsQueryVariables = Exact<{
   where?: InputMaybe<PaymentTransactionFilterInput>;
   order?: InputMaybe<Array<PaymentTransactionSortInput> | PaymentTransactionSortInput>;
@@ -7007,11 +7038,11 @@ export type GetListenerInvoicesQueryVariables = Exact<{
 export type GetListenerInvoicesQuery = { __typename?: 'QueryInitialization', invoices?: { __typename?: 'InvoicesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Invoice', id: string, amount: any, currency: string, email: string, to: string, from: string, paidAt: any, paymentTransactionId: string }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type ArtistPackagesQueryVariables = Exact<{
-  artistId: Scalars['String']['input'];
+  where: ArtistPackageFilterInput;
 }>;
 
 
-export type ArtistPackagesQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, artistId: string, amount: any, currency: CurrencyType, packageName: string, description?: string | null }> | null } | null };
+export type ArtistPackagesQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, artistId: string, amount: any, currency: CurrencyType, packageName: string, description?: string | null, serviceDetails: Array<{ __typename?: 'Metadata', value: string }>, artist: Array<{ __typename?: 'Artist', id: string, avatarImage?: string | null, stageName: string, biography?: string | null }> }> | null } | null };
 
 export type TrackThreadCommentsQueryVariables = Exact<{
   targetId: Scalars['String']['input'];
@@ -7040,6 +7071,13 @@ export type TrackDetailQueryVariables = Exact<{
 
 
 export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
+
+export type UserBasicInfoQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type UserBasicInfoQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', email: string, phoneNumber?: string | null }> | null } | null };
 
 export type ListenerQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -7225,7 +7263,24 @@ export class TypedDocumentString<TResult, TVariables>
     return this.value;
   }
 }
-
+export const RequestArtistFragmentDoc = new TypedDocumentString(`
+    fragment RequestArtist on Artist {
+  id
+  userId
+  stageName
+}
+    `, {"fragmentName":"RequestArtist"}) as unknown as TypedDocumentString<RequestArtistFragment, unknown>;
+export const RequestArtistPackageFragmentDoc = new TypedDocumentString(`
+    fragment RequestArtistPackage on ArtistPackage {
+  id
+  packageName
+  amount
+  currency
+  estimateDeliveryDays
+  description
+  maxRevision
+}
+    `, {"fragmentName":"RequestArtistPackage"}) as unknown as TypedDocumentString<RequestArtistPackageFragment, unknown>;
 export const UsersDocument = new TypedDocumentString(`
     query Users($where: UserFilterInput) {
   users(where: $where) {
@@ -7779,6 +7834,21 @@ export const BlockPublicRequestDocument = new TypedDocumentString(`
   blockPublicRequest(requestId: $requestId)
 }
     `) as unknown as TypedDocumentString<BlockPublicRequestMutation, BlockPublicRequestMutationVariables>;
+export const SendRequestDocument = new TypedDocumentString(`
+    mutation SendRequest($request: CreateDirectRequestInput!, $isDirect: Boolean!) {
+  sendRequest(request: $request, isDirectRequest: $isDirect)
+}
+    `) as unknown as TypedDocumentString<SendRequestMutation, SendRequestMutationVariables>;
+export const ServiceCreateCheckoutSessionDocument = new TypedDocumentString(`
+    mutation ServiceCreateCheckoutSession($createPaymentCheckoutSessionInput: CreatePaymentCheckoutSessionRequestInput!) {
+  createPaymentCheckoutSession(
+    createPaymentCheckoutSessionRequest: $createPaymentCheckoutSessionInput
+  ) {
+    id
+    url
+  }
+}
+    `) as unknown as TypedDocumentString<ServiceCreateCheckoutSessionMutation, ServiceCreateCheckoutSessionMutationVariables>;
 export const CreateExpressConnectedAccountDocument = new TypedDocumentString(`
     mutation CreateExpressConnectedAccount($returnUrl: String!, $refreshUrl: String!) {
   createExpressConnectedAccount(returnUrl: $returnUrl, refreshUrl: $refreshUrl) {
@@ -8242,7 +8312,7 @@ export const GetArtistProfileDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<GetArtistProfileQuery, GetArtistProfileQueryVariables>;
 export const ConversationsDocument = new TypedDocumentString(`
     query Conversations($where: ConversationFilterInput) {
-  conversations(where: $where) {
+  conversations(where: $where, order: {lastMessage: {sentAt: DESC}}) {
     items {
       id
       userIds
@@ -8303,96 +8373,6 @@ export const FollowingsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<FollowingsQuery, FollowingsQueryVariables>;
-export const ListenerRequestsDocument = new TypedDocumentString(`
-    query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
-  requests(skip: $skip, take: $take, where: $where) {
-    totalCount
-    items {
-      id
-      requestUserId
-      artistId
-      packageId
-      title
-      summary
-      detailDescription
-      requirements
-      type
-      currency
-      deadline
-      status
-      requestCreatedTime
-      updatedAt
-      notes
-      budget {
-        min
-        max
-      }
-      artist {
-        id
-        userId
-        stageName
-        avatarImage
-      }
-      artistPackage {
-        id
-        packageName
-        description
-      }
-    }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<ListenerRequestsQuery, ListenerRequestsQueryVariables>;
-export const ListenerRequestByIdDocument = new TypedDocumentString(`
-    query ListenerRequestById($skip: Int, $take: Int, $where: RequestFilterInput) {
-  requests(skip: $skip, take: $take, where: $where) {
-    totalCount
-    items {
-      id
-      requestUserId
-      artistId
-      packageId
-      title
-      summary
-      detailDescription
-      requirements
-      type
-      currency
-      deadline
-      status
-      requestCreatedTime
-      updatedAt
-      notes
-      budget {
-        min
-        max
-      }
-      artist {
-        id
-        userId
-        stageName
-        avatarImage
-      }
-      artistPackage {
-        id
-        packageName
-        amount
-        currency
-        estimateDeliveryDays
-        description
-        maxRevision
-      }
-    }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<ListenerRequestByIdQuery, ListenerRequestByIdQueryVariables>;
 export const CouponsDocument = new TypedDocumentString(`
     query Coupons($where: CouponFilterInput) {
   coupons(where: $where) {
@@ -8421,7 +8401,7 @@ export const EntitlementsDocument = new TypedDocumentString(`
 export const PlaylistsDocument = new TypedDocumentString(`
     query Playlists($userId: String!, $name: String, $take: Int, $skip: Int) {
   playlists(
-    where: {or: {name: {contains: $name}, nameUnsigned: {contains: $name}}, userId: {eq: $userId}}
+    where: {or: [{name: {contains: $name}}, {nameUnsigned: {contains: $name}}], userId: {eq: $userId}}
     order: {createdAt: DESC}
     take: $take
     skip: $skip
@@ -8914,6 +8894,108 @@ export const UsersForRequestsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<UsersForRequestsQuery, UsersForRequestsQueryVariables>;
+export const ListenerRequestsDocument = new TypedDocumentString(`
+    query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
+  requests(skip: $skip, take: $take, where: $where) {
+    totalCount
+    items {
+      id
+      requestUserId
+      artistId
+      packageId
+      title
+      summary
+      detailDescription
+      requirements
+      type
+      currency
+      deadline
+      status
+      requestCreatedTime
+      updatedAt
+      notes
+      budget {
+        min
+        max
+      }
+      artist {
+        ...RequestArtist
+      }
+      artistPackage {
+        ...RequestArtistPackage
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    fragment RequestArtist on Artist {
+  id
+  userId
+  stageName
+}
+fragment RequestArtistPackage on ArtistPackage {
+  id
+  packageName
+  amount
+  currency
+  estimateDeliveryDays
+  description
+  maxRevision
+}`) as unknown as TypedDocumentString<ListenerRequestsQuery, ListenerRequestsQueryVariables>;
+export const ListenerRequestByIdDocument = new TypedDocumentString(`
+    query ListenerRequestById($skip: Int, $take: Int, $where: RequestFilterInput) {
+  requests(skip: $skip, take: $take, where: $where) {
+    totalCount
+    items {
+      id
+      requestUserId
+      artistId
+      packageId
+      title
+      summary
+      detailDescription
+      requirements
+      type
+      currency
+      deadline
+      status
+      requestCreatedTime
+      updatedAt
+      notes
+      budget {
+        min
+        max
+      }
+      artist {
+        ...RequestArtist
+      }
+      artistPackage {
+        ...RequestArtistPackage
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    fragment RequestArtist on Artist {
+  id
+  userId
+  stageName
+}
+fragment RequestArtistPackage on ArtistPackage {
+  id
+  packageName
+  amount
+  currency
+  estimateDeliveryDays
+  description
+  maxRevision
+}`) as unknown as TypedDocumentString<ListenerRequestByIdQuery, ListenerRequestByIdQueryVariables>;
 export const GetListenerTransactionsDocument = new TypedDocumentString(`
     query GetListenerTransactions($where: PaymentTransactionFilterInput, $order: [PaymentTransactionSortInput!], $skip: Int, $take: Int) {
   paymentTransactions(where: $where, order: $order, skip: $skip, take: $take) {
@@ -8958,8 +9040,8 @@ export const GetListenerInvoicesDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<GetListenerInvoicesQuery, GetListenerInvoicesQueryVariables>;
 export const ArtistPackagesDocument = new TypedDocumentString(`
-    query ArtistPackages($artistId: String!) {
-  artistPackages(where: {status: {eq: ENABLED}, artistId: {eq: $artistId}}) {
+    query ArtistPackages($where: ArtistPackageFilterInput!) {
+  artistPackages(where: $where) {
     items {
       id
       artistId
@@ -8967,6 +9049,15 @@ export const ArtistPackagesDocument = new TypedDocumentString(`
       currency
       packageName
       description
+      serviceDetails {
+        value
+      }
+      artist {
+        id
+        avatarImage
+        stageName
+        biography
+      }
     }
   }
 }
@@ -9153,6 +9244,16 @@ export const TrackDetailDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TrackDetailQuery, TrackDetailQueryVariables>;
+export const UserBasicInfoDocument = new TypedDocumentString(`
+    query UserBasicInfo($userId: String!) {
+  users(where: {id: {eq: $userId}}) {
+    items {
+      email
+      phoneNumber
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<UserBasicInfoQuery, UserBasicInfoQueryVariables>;
 export const ListenerDocument = new TypedDocumentString(`
     query Listener($userId: String!) {
   listeners(where: {userId: {eq: $userId}, isVisible: {eq: true}}) {
