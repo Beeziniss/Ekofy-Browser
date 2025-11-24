@@ -16,6 +16,7 @@ import {
   MessageFilterInput,
   ArtistPackageFilterInput,
   ArtistPackageStatus,
+  PackageOrderFilterInput,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -43,6 +44,7 @@ import {
   UserBasicInfoQuery,
 } from "@/modules/shared/queries/client";
 import { ConversationMessagesQuery, ConversationQuery } from "@/modules/shared/queries/client/conversation-queries";
+import { OrderPackageQuery } from "@/modules/shared/queries/client/order-queries";
 
 // PROFILE QUERIES
 export const userBasicInfoOptions = (userId: string) =>
@@ -397,4 +399,35 @@ export const conversationMessagesOptions = (conversationId: string) =>
 
       return result;
     },
+  });
+
+// ORDER PACKAGE QUERIES
+export const orderPackageOptions = ({
+  skip = 0,
+  take = 10,
+  userId,
+}: {
+  skip?: number;
+  take?: number;
+  userId: string;
+}) =>
+  queryOptions({
+    queryKey: ["order-packages", skip, take, userId],
+    queryFn: async () => {
+      const where: PackageOrderFilterInput = { clientId: { eq: userId } };
+
+      const result = await execute(OrderPackageQuery, { where, skip, take });
+      return result;
+    },
+  });
+
+export const orderPackageDetailOptions = (orderId: string) =>
+  queryOptions({
+    queryKey: ["order-package-detail", orderId],
+    queryFn: async () => {
+      const where: PackageOrderFilterInput = { id: { eq: orderId } };
+      const result = await execute(OrderPackageQuery, { where });
+      return result.packageOrders?.items?.[0] || null;
+    },
+    enabled: !!orderId,
   });

@@ -14,7 +14,7 @@ const ConversationCard = ({ conversation }: ConversationCardProps) => {
 
   return (
     <Link
-      href={`/conversations/${conversation.id}`}
+      href={`/inbox/${conversation.id}`}
       className="text-main-white hover:bg-main-grey-1 flex w-full cursor-pointer items-center justify-between rounded-md p-2 transition-colors"
     >
       <div className="flex items-center gap-x-3">
