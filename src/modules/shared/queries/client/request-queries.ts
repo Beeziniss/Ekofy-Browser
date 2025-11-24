@@ -39,7 +39,7 @@ export const RequestsQuery = graphql(`
         requirements
         type
         currency
-        deadline
+        duration
         status
         requestCreatedTime
         updatedAt
@@ -81,7 +81,7 @@ export const RequestQuery = graphql(`
         requirements
         type
         currency
-        deadline
+        duration
         status
         requestCreatedTime
         updatedAt

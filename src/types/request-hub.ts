@@ -33,7 +33,7 @@ export interface CreateRequestData {
   summary: string;
   detailDescription: string;
   budget: RequestBudget;
-  deadline: Date;
+  duration: number;
 }
 
 export interface UpdateRequestData {
@@ -42,7 +42,7 @@ export interface UpdateRequestData {
   summary: string;
   detailDescription: string;
   budget: RequestBudget;
-  deadline: Date;
+  duration: number;
   status?: RequestStatus;
 }
 

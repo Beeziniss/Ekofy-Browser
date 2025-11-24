@@ -10,7 +10,7 @@ interface EditRequestSectionProps {
     summary: string;
     detailDescription: string;
     budget: RequestBudget;
-    deadline: Date | string;
+    duration: number;
   };
   onSubmit: (data: UpdateRequestData) => void;
   onCancel?: () => void;
@@ -31,7 +31,6 @@ export function EditRequestSection({ initialData, onSubmit, onCancel, onDelete }
   // Convert deadline to Date if it's a string
   const processedInitialData = {
     ...initialData,
-    deadline: typeof initialData.deadline === "string" ? new Date(initialData.deadline) : initialData.deadline,
   };
 
   return (

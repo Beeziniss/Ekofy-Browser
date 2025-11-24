@@ -4,11 +4,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+// import { Calendar } from "@/components/ui/calendar";
+// import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+// import { CalendarIcon } from "lucide-react";
+// import { format } from "date-fns";
+// import { cn } from "@/lib/utils";
 import { Editor } from "@/modules/shared/ui/components/editor";
 import { DeleteConfirmModal } from "./delete-confirm-modal";
 import { useAuthStore } from "@/store";
@@ -81,11 +81,10 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
       : "",
   );
 
-  const [deadline, setDeadline] = useState<Date | undefined>(
-    initialData?.deadline ? new Date(initialData.deadline) : undefined,
-  );
+  const [duration, setDuration] = useState<number>(initialData?.duration ? Number(initialData.duration) : 1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [budgetError, setBudgetError] = useState("");
+  const [durationError, setDurationError] = useState("");
   // const [attachments, setAttachments] = useState<File[]>([]);
   // const [isDragOver, setIsDragOver] = useState(false);
 
@@ -131,8 +130,8 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
     }
 
     // Validation: deadline is required
-    if (!deadline) {
-      alert("Please select a deadline");
+    if (!duration || duration < 5) {
+      setDurationError("Please select a deadline");
       return;
     }
 
@@ -148,7 +147,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         summary,
         detailDescription,
         budget,
-        deadline,
+        duration,
       };
       onSubmit(updateData);
     } else {
@@ -157,7 +156,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         summary,
         detailDescription,
         budget,
-        deadline,
+        duration,
       };
       onSubmit(createData);
     }
@@ -288,7 +287,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
           </p>
         </div>
 
-        <div>
+        {/* <div>
           <label className="mb-2 block text-sm font-medium">Deadline</label>
           <Popover>
             <PopoverTrigger asChild>
@@ -314,6 +313,30 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
             </PopoverContent>
           </Popover>
           <p className="mt-1 text-xs text-gray-500">Deadline must be at least 5 days from today</p>
+        </div> */}
+
+        <div>
+          <label className="mb-2 block text-sm font-medium">Duration (days)</label>
+          {durationError && (
+            <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{durationError}</div>
+          )}
+          <Input
+            type="number"
+            value={duration}
+            onChange={(e) => {
+              const newDuration = parseInt(e.target.value, 10);
+              if (!isNaN(newDuration) && newDuration >= 1) {
+                setDuration(newDuration);
+                setDurationError("");
+              } else {
+              setDurationError("Duration must be at least 1 day.");
+              }
+            }}
+            placeholder="Enter duration in days"
+            className="w-full"
+            required
+          />
+          <p className="mt-1 text-xs text-gray-500">Duration must be at least 1 day.</p>
         </div>
 
         {/* <div>
