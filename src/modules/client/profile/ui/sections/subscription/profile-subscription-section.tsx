@@ -31,6 +31,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { addDays, isWithinInterval } from "date-fns";
 
 const ProfileSubscriptionSection = () => {
   return (
@@ -136,13 +137,15 @@ const ProfileSubscriptionSectionSuspense = () => {
   const canResumeSubscription = () => {
     if (!userSubscription?.periodEnd || !userSubscription?.cancelAtEndOfPeriod) return false;
 
-    const periodEndDate = new Date(userSubscription.periodEnd);
-    const currentDate = new Date();
-    const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
-    const timeDiff = periodEndDate.getTime() - currentDate.getTime();
+    const now = new Date();
+    const endDate = new Date(userSubscription.periodEnd);
 
-    return timeDiff <= threeDaysInMs && timeDiff > 0;
+    return isWithinInterval(endDate, {
+      start: now,
+      end: addDays(now, 3),
+    });
   };
+
   const handleCancelConfirm = () => {
     cancelSubscription();
     setCancelDialogOpen(false);
@@ -186,7 +189,7 @@ const ProfileSubscriptionSectionSuspense = () => {
     );
   }
 
-  console.log(userSubscription);
+  console.log(JSON.stringify(userSubscription, null, 2));
 
   return (
     <>
