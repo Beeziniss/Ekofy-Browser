@@ -18,6 +18,7 @@ import { useAuthStore } from "@/store";
 import { Message } from "@/gql/graphql";
 import { MessageDeletedData } from "@/hooks/use-conversation-signalr";
 import ConversationInfo from "../components/conversation-info";
+import { UserRole } from "@/types/role";
 
 interface ConversationDetailViewProps {
   conversationId: string;
@@ -28,12 +29,12 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
   const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState("");
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
-  const [messages, setMessages] = useState<Omit<Message, "receiverProfileMessages">[]>([]);
-  // Track if user is manually scrolling to avoid auto-scroll interruptions
   const [isUserScrolling, setIsUserScrolling] = useState(false);
-  // Track if conversation info panel is shown
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [showConversationInfo, setShowConversationInfo] = useState(false);
+  const [messages, setMessages] = useState<Omit<Message, "receiverProfileMessages">[]>([]);
+
+  const isArtist = user?.role === UserRole.ARTIST;
 
   // Use the SignalR hook
   const {
@@ -264,6 +265,7 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
             avatarImage={conversation?.conversations?.items?.[0].otherProfileConversation.avatar}
             otherUserId={conversation?.conversations?.items?.[0].userIds.find((id) => id !== user?.userId) || ""}
             nickname={conversation?.conversations?.items?.[0].otherProfileConversation.nickname}
+            isArtist={isArtist}
           />
         </div>
       )}

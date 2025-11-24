@@ -159,7 +159,7 @@ export function RequestDetailView({ request, onBack, onApply, className }: Reque
     if (isArtist) {
       const conversationId = await addConversation({ requestHubId: request.id, otherUserId: request.requestUserId });
 
-      router.push(`/conversations/${conversationId}`);
+      router.push(`/inbox/${conversationId}`);
     }
   };
 

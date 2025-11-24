@@ -6,6 +6,7 @@ export const UserBasicInfoQuery = graphql(`
       items {
         email
         phoneNumber
+        createdAt
       }
     }
   }
@@ -15,11 +16,15 @@ export const ListenerQuery = graphql(`
   query Listener($userId: String!) {
     listeners(where: { userId: { eq: $userId }, isVisible: { eq: true } }) {
       items {
+        id
         userId
         displayName
         avatarImage
+        email
+        createdAt
         user {
           fullName
+          phoneNumber
         }
       }
     }
@@ -30,14 +35,17 @@ export const ArtistQuery = graphql(`
   query Artist($userId: String!) {
     artists(where: { userId: { eq: $userId }, isVisible: { eq: true } }) {
       items {
+        id
         userId
         stageName
         avatarImage
+        followerCount
+        createdAt
         user {
           fullName
+          phoneNumber
           checkUserFollowing
         }
-        followerCount
       }
     }
   }

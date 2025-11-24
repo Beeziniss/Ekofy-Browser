@@ -1,0 +1,148 @@
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CustomPagination } from "@/components/ui/custom-pagination";
+import { PackageOrderStatus, OrderPackageQuery } from "@/gql/graphql";
+import { format } from "date-fns";
+import { getUserInitials } from "@/utils/format-shorten-name";
+
+type OrderItem = NonNullable<NonNullable<OrderPackageQuery["packageOrders"]>["items"]>[number];
+
+interface ActivityConversationTableProps {
+  orders: OrderItem[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+}
+
+const statusBadgeVariants = {
+  [PackageOrderStatus.Paid]: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  [PackageOrderStatus.InProgress]: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+  [PackageOrderStatus.Dispersed]: "bg-green-500/20 text-green-400 border-green-500/30",
+  [PackageOrderStatus.Cancelled]: "bg-red-500/20 text-red-400 border-red-500/30",
+  [PackageOrderStatus.Disputed]: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+  [PackageOrderStatus.Refund]: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+};
+
+const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+const formatDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return format(date, "MMM dd, yyyy");
+  } catch {
+    return "Invalid date";
+  }
+};
+
+const ActivityConversationTable = ({
+  orders,
+  totalCount,
+  totalPages,
+  currentPage,
+  pageSize,
+  onPageChange,
+}: ActivityConversationTableProps) => {
+  return (
+    <div className="space-y-6">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Client</TableHead>
+              <TableHead>Package</TableHead>
+              <TableHead>Deadline</TableHead>
+              <TableHead>Total</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {orders.length > 0 ? (
+              orders.map((order) => (
+                <TableRow key={order.id}>
+                  {/* Client */}
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={order.client?.[0]?.avatarImage || undefined}
+                          alt={order.client?.[0]?.displayName || "Client"}
+                        />
+                        <AvatarFallback className="text-xs">
+                          {order.client?.[0]?.displayName ? getUserInitials(order.client[0].displayName) : "CL"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm font-medium">{order.client?.[0]?.displayName || "Unknown Client"}</span>
+                    </div>
+                  </TableCell>
+
+                  {/* Package */}
+                  <TableCell>
+                    <span className="text-sm">{order.package?.[0]?.packageName || "Unknown Package"}</span>
+                  </TableCell>
+
+                  {/* Deadline */}
+                  <TableCell>
+                    <span className="text-muted-foreground text-sm">{formatDate(order.deadline)}</span>
+                  </TableCell>
+
+                  {/* Amount/Total */}
+                  <TableCell>
+                    <span className="text-sm font-medium">{formatCurrency(order.package?.[0]?.amount || 0)}</span>
+                  </TableCell>
+
+                  {/* Status */}
+                  <TableCell>
+                    <Badge variant="outline" className={`${statusBadgeVariants[order.status] || ""} capitalize`}>
+                      {order.status}
+                    </Badge>
+                  </TableCell>
+
+                  {/* Actions */}
+                  <TableCell>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href={`/client/activities/orders/${order.id}`}>View</Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} className="text-muted-foreground py-8 text-center">
+                  No orders found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {totalPages > 1 && (
+        <CustomPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          pageSize={pageSize}
+          onPageChange={onPageChange}
+        />
+      )}
+    </div>
+  );
+};
+
+export default ActivityConversationTable;

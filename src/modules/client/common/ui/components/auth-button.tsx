@@ -153,8 +153,8 @@ const AuthButton = () => {
       {isAuthenticated ? (
         // Signed in
         <div className="flex items-center">
-          <TooltipButton content="To Inbox page" side="bottom">
-            <Link href={"/conversations"} className="group p-2">
+          <TooltipButton content="Inbox" side="bottom">
+            <Link href={"/inbox"} className="group p-2">
               <MessageCircleIcon className="text-main-white group-hover:text-main-grey size-5" />
             </Link>
           </TooltipButton>
@@ -165,22 +165,24 @@ const AuthButton = () => {
             onMarkAsRead={markAsRead}
             onClearNotifications={clearNotifications}
           >
-            <div className="group relative cursor-pointer">
-              {unreadCount > 0 ? (
-                <div className="relative">
-                  <BellActive className="size-5" />
-                  {/* {unreadCount > 0 && (
-                    <div className="absolute -top-1 -right-1 flex h-4 w-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </div>
-                  )} */}
-                </div>
-              ) : (
-                <div className="p-2">
-                  <Bell className="text-main-white group-hover:text-main-grey size-5" />
-                </div>
-              )}
-            </div>
+            <TooltipButton content="Notifications" side="bottom">
+              <div className="group relative cursor-pointer">
+                {unreadCount > 0 ? (
+                  <div className="relative">
+                    <BellActive className="size-5" />
+                    {/* {unreadCount > 0 && (
+                      <div className="absolute -top-1 -right-1 flex h-4 w-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </div>
+                    )} */}
+                  </div>
+                ) : (
+                  <div className="p-2">
+                    <Bell className="text-main-white group-hover:text-main-grey size-5" />
+                  </div>
+                )}
+              </div>
+            </TooltipButton>
           </NotificationPopover>
 
           <DropdownMenu>

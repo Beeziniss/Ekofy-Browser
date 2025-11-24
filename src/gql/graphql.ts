@@ -317,10 +317,10 @@ export type Artist = {
   isVisible: Scalars['Boolean']['output'];
   legalDocuments: Array<LegalDocument>;
   members: Array<ArtistMember>;
-  netEarnings: Scalars['Decimal']['output'];
+  netRevenue: Scalars['Decimal']['output'];
   popularity: Scalars['Decimal']['output'];
-  refundAmount: Scalars['Decimal']['output'];
   royaltyEarnings: Scalars['Decimal']['output'];
+  serviceEarnings: Scalars['Decimal']['output'];
   serviceRevenue: Scalars['Decimal']['output'];
   stageName: Scalars['String']['output'];
   stageNameUnsigned: Scalars['String']['output'];
@@ -361,10 +361,11 @@ export type ArtistFilterInput = {
   isVisible?: InputMaybe<BooleanOperationFilterInput>;
   legalDocuments?: InputMaybe<ListFilterInputTypeOfLegalDocumentFilterInput>;
   members?: InputMaybe<ListFilterInputTypeOfArtistMemberFilterInput>;
+  netRevenue?: InputMaybe<DecimalOperationFilterInput>;
   or?: InputMaybe<Array<ArtistFilterInput>>;
   popularity?: InputMaybe<DecimalOperationFilterInput>;
-  refundAmount?: InputMaybe<DecimalOperationFilterInput>;
   royaltyEarnings?: InputMaybe<DecimalOperationFilterInput>;
+  serviceEarnings?: InputMaybe<DecimalOperationFilterInput>;
   serviceRevenue?: InputMaybe<DecimalOperationFilterInput>;
   stageName?: InputMaybe<StringOperationFilterInput>;
   stageNameUnsigned?: InputMaybe<StringOperationFilterInput>;
@@ -502,8 +503,9 @@ export type ArtistRegistrationApprovalRequestInput = {
 export type ArtistRevenueResponse = {
   __typename?: 'ArtistRevenueResponse';
   grossRevenue: Scalars['Decimal']['output'];
-  refundAmount: Scalars['Decimal']['output'];
+  netRevenue: Scalars['Decimal']['output'];
   royaltyEarnings: Scalars['Decimal']['output'];
+  serviceEarnings: Scalars['Decimal']['output'];
   serviceRevenue: Scalars['Decimal']['output'];
 };
 
@@ -534,9 +536,10 @@ export type ArtistSortInput = {
   identityCard?: InputMaybe<IdentityCardSortInput>;
   isVerified?: InputMaybe<SortEnumType>;
   isVisible?: InputMaybe<SortEnumType>;
+  netRevenue?: InputMaybe<SortEnumType>;
   popularity?: InputMaybe<SortEnumType>;
-  refundAmount?: InputMaybe<SortEnumType>;
   royaltyEarnings?: InputMaybe<SortEnumType>;
+  serviceEarnings?: InputMaybe<SortEnumType>;
   serviceRevenue?: InputMaybe<SortEnumType>;
   stageName?: InputMaybe<SortEnumType>;
   stageNameUnsigned?: InputMaybe<SortEnumType>;
@@ -1028,7 +1031,7 @@ export type Conversation = {
   lastMessage?: Maybe<LastMessage>;
   otherProfileConversation: ConversationResponse;
   ownerProfileConversation: ConversationResponse;
-  requestHubId?: Maybe<Scalars['String']['output']>;
+  requestId?: Maybe<Scalars['String']['output']>;
   status: ConversationStatus;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   userIds: Array<Scalars['String']['output']>;
@@ -1041,7 +1044,7 @@ export type ConversationFilterInput = {
   id?: InputMaybe<StringOperationFilterInput>;
   lastMessage?: InputMaybe<LastMessageFilterInput>;
   or?: InputMaybe<Array<ConversationFilterInput>>;
-  requestHubId?: InputMaybe<StringOperationFilterInput>;
+  requestId?: InputMaybe<StringOperationFilterInput>;
   status?: InputMaybe<ConversationStatusOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
   userIds?: InputMaybe<ListStringOperationFilterInput>;
@@ -1057,7 +1060,7 @@ export type ConversationSortInput = {
   createdAt?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   lastMessage?: InputMaybe<LastMessageSortInput>;
-  requestHubId?: InputMaybe<SortEnumType>;
+  requestId?: InputMaybe<SortEnumType>;
   status?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
 };
@@ -1065,6 +1068,7 @@ export type ConversationSortInput = {
 export enum ConversationStatus {
   Cancelled = 'CANCELLED',
   Completed = 'COMPLETED',
+  ConfirmedPayment = 'CONFIRMED_PAYMENT',
   InProgress = 'IN_PROGRESS',
   None = 'NONE',
   Pending = 'PENDING'
@@ -1319,13 +1323,13 @@ export type CreateMomoPaymentRequestInput = {
 
 export type CreatePaymentCheckoutSessionRequestInput = {
   cancelUrl: Scalars['String']['input'];
-  conversationId: Scalars['String']['input'];
+  conversationId?: InputMaybe<Scalars['String']['input']>;
   deadline: Scalars['DateTime']['input'];
   deliveries: Array<PackageOrderDeliveryInput>;
   isReceiptEmail: Scalars['Boolean']['input'];
   isSavePaymentMethod: Scalars['Boolean']['input'];
   packageId: Scalars['String']['input'];
-  requestHubId: Scalars['String']['input'];
+  requestId: Scalars['String']['input'];
   requirementFiles: Array<Scalars['String']['input']>;
   successUrl: Scalars['String']['input'];
 };
@@ -6872,6 +6876,15 @@ export type FollowingsQueryVariables = Exact<{
 
 export type FollowingsQuery = { __typename?: 'QueryInitialization', followings?: { __typename?: 'FollowingsCollectionSegment', totalCount: number } | null };
 
+export type OrderPackageQueryVariables = Exact<{
+  where?: InputMaybe<PackageOrderFilterInput>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, deadline: any, package: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }> }> | null } | null };
+
 export type CouponsQueryVariables = Exact<{
   where?: InputMaybe<CouponFilterInput>;
 }>;
@@ -7077,21 +7090,21 @@ export type UserBasicInfoQueryVariables = Exact<{
 }>;
 
 
-export type UserBasicInfoQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', email: string, phoneNumber?: string | null }> | null } | null };
+export type UserBasicInfoQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', email: string, phoneNumber?: string | null, createdAt: any }> | null } | null };
 
 export type ListenerQueryVariables = Exact<{
   userId: Scalars['String']['input'];
 }>;
 
 
-export type ListenerQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', userId: string, displayName: string, avatarImage?: string | null, user: Array<{ __typename?: 'User', fullName: string }> }> | null } | null };
+export type ListenerQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, avatarImage?: string | null, email: string, createdAt: any, user: Array<{ __typename?: 'User', fullName: string, phoneNumber?: string | null }> }> | null } | null };
 
 export type ArtistQueryVariables = Exact<{
   userId: Scalars['String']['input'];
 }>;
 
 
-export type ArtistQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', userId: string, stageName: string, avatarImage?: string | null, followerCount: any, user: Array<{ __typename?: 'User', fullName: string, checkUserFollowing: boolean }> }> | null } | null };
+export type ArtistQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, avatarImage?: string | null, followerCount: any, createdAt: any, user: Array<{ __typename?: 'User', fullName: string, phoneNumber?: string | null, checkUserFollowing: boolean }> }> | null } | null };
 
 export type ArtistListQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -8373,6 +8386,32 @@ export const FollowingsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<FollowingsQuery, FollowingsQueryVariables>;
+export const OrderPackageDocument = new TypedDocumentString(`
+    query OrderPackage($where: PackageOrderFilterInput, $take: Int, $skip: Int) {
+  packageOrders(where: $where, take: $take, skip: $skip, order: {createdAt: DESC}) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    totalCount
+    items {
+      id
+      status
+      clientId
+      deadline
+      package {
+        id
+        packageName
+        amount
+      }
+      client {
+        displayName
+        avatarImage
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<OrderPackageQuery, OrderPackageQueryVariables>;
 export const CouponsDocument = new TypedDocumentString(`
     query Coupons($where: CouponFilterInput) {
   coupons(where: $where) {
@@ -9250,6 +9289,7 @@ export const UserBasicInfoDocument = new TypedDocumentString(`
     items {
       email
       phoneNumber
+      createdAt
     }
   }
 }
@@ -9258,11 +9298,15 @@ export const ListenerDocument = new TypedDocumentString(`
     query Listener($userId: String!) {
   listeners(where: {userId: {eq: $userId}, isVisible: {eq: true}}) {
     items {
+      id
       userId
       displayName
       avatarImage
+      email
+      createdAt
       user {
         fullName
+        phoneNumber
       }
     }
   }
@@ -9272,14 +9316,17 @@ export const ArtistDocument = new TypedDocumentString(`
     query Artist($userId: String!) {
   artists(where: {userId: {eq: $userId}, isVisible: {eq: true}}) {
     items {
+      id
       userId
       stageName
       avatarImage
+      followerCount
+      createdAt
       user {
         fullName
+        phoneNumber
         checkUserFollowing
       }
-      followerCount
     }
   }
 }
