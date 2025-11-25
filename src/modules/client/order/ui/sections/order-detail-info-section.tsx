@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { PackageOrderStatus } from "@/gql/graphql";
 import { orderPackageDetailOptions } from "@/gql/options/client-options";
+import { calculateDeadline } from "@/utils/calculate-deadline";
 import { formatCurrency } from "@/utils/format-currency";
 import { formatDate } from "@/utils/format-date";
 import { useQuery } from "@tanstack/react-query";
@@ -12,7 +13,7 @@ import { useParams } from "next/navigation";
 const statusBadgeVariants = {
   [PackageOrderStatus.Paid]: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   [PackageOrderStatus.InProgress]: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  [PackageOrderStatus.Dispersed]: "bg-green-500/20 text-green-400 border-green-500/30",
+  [PackageOrderStatus.Completed]: "bg-green-500/20 text-green-400 border-green-500/30",
   [PackageOrderStatus.Cancelled]: "bg-red-500/20 text-red-400 border-red-500/30",
   [PackageOrderStatus.Disputed]: "bg-orange-500/20 text-orange-400 border-orange-500/30",
   [PackageOrderStatus.Refund]: "bg-purple-500/20 text-purple-400 border-purple-500/30",
@@ -27,6 +28,14 @@ const OrderDetailInfoSection = () => {
   if (!orderPackageDetail || !packageData) {
     return <div className="bg-main-grey-1 rounded-md p-3">No order available.</div>;
   }
+
+  const finalDeadline = calculateDeadline(
+    orderPackageDetail.startedAt,
+    orderPackageDetail.duration || 0,
+    orderPackageDetail.freezedTime,
+  );
+
+  const deadlineDisplay = formatDate(finalDeadline.toISOString());
 
   return (
     <div className="flex flex-col gap-y-6">
@@ -46,7 +55,7 @@ const OrderDetailInfoSection = () => {
           <div className="mt-3 flex flex-col gap-y-2">
             <div className="flex items-center justify-between">
               <span>Deadline</span>
-              <span className="font-medium">{formatDate(orderPackageDetail.deadline)}</span>
+              <span className="font-medium">{deadlineDisplay}</span>
             </div>
             <div className="flex items-center justify-between">
               <span>Total Price</span>

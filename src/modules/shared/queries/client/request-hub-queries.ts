@@ -55,9 +55,9 @@ export const REQUEST_BY_ID_QUERY = graphql(`
       summaryUnsigned
       detailDescription
       currency
-      duration
       status
       type
+      duration
       postCreatedTime
       requestCreatedTime
       updatedAt
@@ -94,10 +94,10 @@ export const SEARCH_REQUESTS_QUERY = graphql(`
         title
         titleUnsigned
         summary
+        duration
         summaryUnsigned
         detailDescription
         currency
-        duration
         status
         postCreatedTime
         updatedAt
@@ -128,9 +128,9 @@ export const OWN_REQUESTS_QUERY = graphql(`
         summaryUnsigned
         detailDescription
         currency
-        duration
         status
         type
+        duration
         postCreatedTime
         requestCreatedTime
         updatedAt

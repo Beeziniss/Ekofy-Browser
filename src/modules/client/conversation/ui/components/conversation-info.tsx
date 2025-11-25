@@ -5,6 +5,8 @@ import { orderPackageOptions, userBasicInfoOptions } from "@/gql/options/client-
 import { ArrowUpRightIcon, ClockFadingIcon, MailIcon, PhoneIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
+import { calculateDeadline } from "@/utils/calculate-deadline";
+import { formatDate } from "@/utils/format-date";
 
 interface ConversationInfoProps {
   otherUserId: string;
@@ -18,6 +20,14 @@ const ConversationInfo = ({ otherUserId, avatarImage, nickname, isArtist }: Conv
   const { data: orderPackage } = useQuery(orderPackageOptions({ userId: otherUserId, skip: 0, take: 1 }));
 
   const orderPackageData = orderPackage?.packageOrders?.items?.[0];
+
+  const finalDeadline = calculateDeadline(
+    orderPackageData?.startedAt,
+    orderPackageData?.duration || 0,
+    orderPackageData?.freezedTime,
+  );
+
+  const deadlineDisplay = formatDate(finalDeadline.toISOString());
 
   return (
     <div className="flex h-full w-full flex-col space-y-6 overflow-y-auto">
@@ -41,9 +51,7 @@ const ConversationInfo = ({ otherUserId, avatarImage, nickname, isArtist }: Conv
                 </div>
                 <div className="flex-1">
                   <p className="text-main-white text-sm font-medium">{orderPackageData.package[0].packageName}</p>
-                  <p className="text-main-grey text-xs">
-                    {Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date(orderPackageData.deadline))}
-                  </p>
+                  <p className="text-main-grey text-xs">{deadlineDisplay}</p>
                 </div>
                 <ArrowUpRightIcon className="text-main-grey size-6" />
               </div>
@@ -86,12 +94,7 @@ const ConversationInfo = ({ otherUserId, avatarImage, nickname, isArtist }: Conv
                 <div className="text-main-grey flex items-center space-x-3">
                   <ClockFadingIcon className="size-5" />
                   <span className="text-sm">
-                    Joined:{" "}
-                    <strong>
-                      {new Date(userInfo.createdAt).toLocaleDateString("en-US", {
-                        dateStyle: "medium",
-                      })}
-                    </strong>
+                    Joined: <strong>{formatDate(userInfo.createdAt)}</strong>
                   </span>
                 </div>
               )}

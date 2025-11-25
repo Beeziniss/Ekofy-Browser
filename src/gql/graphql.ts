@@ -3177,18 +3177,21 @@ export type OwnRequestsCollectionSegment = {
 
 export type PackageOrder = {
   __typename?: 'PackageOrder';
+  approvedAutoJobId?: Maybe<Scalars['String']['output']>;
   artistFeePercentage: Scalars['Decimal']['output'];
   artistPackageId: Scalars['String']['output'];
-  backgroundJobId?: Maybe<Scalars['String']['output']>;
   client: Array<Listener>;
   clientId: Scalars['String']['output'];
   completedAt?: Maybe<Scalars['DateTime']['output']>;
   conversationId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   deliveries: Array<PackageOrderDelivery>;
+  disputedAt?: Maybe<Scalars['DateTime']['output']>;
   duration: Scalars['Int']['output'];
+  freezedTime: Scalars['TimeSpan']['output'];
   id: Scalars['String']['output'];
   isEscrowReleased: Scalars['Boolean']['output'];
+  overdueJobId?: Maybe<Scalars['String']['output']>;
   package: Array<ArtistPackage>;
   paymentTransaction: Array<PaymentTransaction>;
   paymentTransactionId: Scalars['String']['output'];
@@ -3198,6 +3201,7 @@ export type PackageOrder = {
   requirements: Scalars['String']['output'];
   review?: Maybe<Review>;
   revisionCount: Scalars['Int']['output'];
+  startedAt?: Maybe<Scalars['DateTime']['output']>;
   status: PackageOrderStatus;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -3258,24 +3262,28 @@ export type PackageOrderDeliveryInput = {
 
 export type PackageOrderFilterInput = {
   and?: InputMaybe<Array<PackageOrderFilterInput>>;
+  approvedAutoJobId?: InputMaybe<StringOperationFilterInput>;
   artistFeePercentage?: InputMaybe<DecimalOperationFilterInput>;
   artistPackageId?: InputMaybe<StringOperationFilterInput>;
-  backgroundJobId?: InputMaybe<StringOperationFilterInput>;
   clientId?: InputMaybe<StringOperationFilterInput>;
   completedAt?: InputMaybe<DateTimeOperationFilterInput>;
   conversationId?: InputMaybe<StringOperationFilterInput>;
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
   deliveries?: InputMaybe<ListFilterInputTypeOfPackageOrderDeliveryFilterInput>;
+  disputedAt?: InputMaybe<DateTimeOperationFilterInput>;
   duration?: InputMaybe<IntOperationFilterInput>;
+  freezedTime?: InputMaybe<TimeSpanOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   isEscrowReleased?: InputMaybe<BooleanOperationFilterInput>;
   or?: InputMaybe<Array<PackageOrderFilterInput>>;
+  overdueJobId?: InputMaybe<StringOperationFilterInput>;
   paymentTransactionId?: InputMaybe<StringOperationFilterInput>;
   platformFeePercentage?: InputMaybe<DecimalOperationFilterInput>;
   providerId?: InputMaybe<StringOperationFilterInput>;
   requirements?: InputMaybe<StringOperationFilterInput>;
   review?: InputMaybe<ReviewFilterInput>;
   revisionCount?: InputMaybe<IntOperationFilterInput>;
+  startedAt?: InputMaybe<DateTimeOperationFilterInput>;
   status?: InputMaybe<PackageOrderStatusOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
 };
@@ -3287,29 +3295,33 @@ export type PackageOrderRefundRequestInput = {
 };
 
 export type PackageOrderSortInput = {
+  approvedAutoJobId?: InputMaybe<SortEnumType>;
   artistFeePercentage?: InputMaybe<SortEnumType>;
   artistPackageId?: InputMaybe<SortEnumType>;
-  backgroundJobId?: InputMaybe<SortEnumType>;
   clientId?: InputMaybe<SortEnumType>;
   completedAt?: InputMaybe<SortEnumType>;
   conversationId?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
+  disputedAt?: InputMaybe<SortEnumType>;
   duration?: InputMaybe<SortEnumType>;
+  freezedTime?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   isEscrowReleased?: InputMaybe<SortEnumType>;
+  overdueJobId?: InputMaybe<SortEnumType>;
   paymentTransactionId?: InputMaybe<SortEnumType>;
   platformFeePercentage?: InputMaybe<SortEnumType>;
   providerId?: InputMaybe<SortEnumType>;
   requirements?: InputMaybe<SortEnumType>;
   review?: InputMaybe<ReviewSortInput>;
   revisionCount?: InputMaybe<SortEnumType>;
+  startedAt?: InputMaybe<SortEnumType>;
   status?: InputMaybe<SortEnumType>;
   updatedAt?: InputMaybe<SortEnumType>;
 };
 
 export enum PackageOrderStatus {
   Cancelled = 'CANCELLED',
-  Dispersed = 'DISPERSED',
+  Completed = 'COMPLETED',
   Disputed = 'DISPUTED',
   InProgress = 'IN_PROGRESS',
   Paid = 'PAID',
@@ -5595,6 +5607,21 @@ export type ThreadedCommentsResponse = {
   totalThreads: Scalars['Int']['output'];
 };
 
+export type TimeSpanOperationFilterInput = {
+  eq?: InputMaybe<Scalars['TimeSpan']['input']>;
+  gt?: InputMaybe<Scalars['TimeSpan']['input']>;
+  gte?: InputMaybe<Scalars['TimeSpan']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['TimeSpan']['input']>>>;
+  lt?: InputMaybe<Scalars['TimeSpan']['input']>;
+  lte?: InputMaybe<Scalars['TimeSpan']['input']>;
+  neq?: InputMaybe<Scalars['TimeSpan']['input']>;
+  ngt?: InputMaybe<Scalars['TimeSpan']['input']>;
+  ngte?: InputMaybe<Scalars['TimeSpan']['input']>;
+  nin?: InputMaybe<Array<InputMaybe<Scalars['TimeSpan']['input']>>>;
+  nlt?: InputMaybe<Scalars['TimeSpan']['input']>;
+  nlte?: InputMaybe<Scalars['TimeSpan']['input']>;
+};
+
 export type TopReportedUserResponse = {
   __typename?: 'TopReportedUserResponse';
   reportCount: Scalars['Int']['output'];
@@ -6786,7 +6813,7 @@ export type GetPendingArtistRequestQueryVariables = Exact<{
 }>;
 
 
-export type GetPendingArtistRequestQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, requestCreatedTime?: any | null, type: RequestType, status: RequestStatus, postCreatedTime?: any | null, currency: CurrencyType, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, userId: string }>, artistPackage: Array<{ __typename?: 'ArtistPackage', artistId: string, id: string, packageName: string, amount: any, currency: CurrencyType }> }> | null } | null };
+export type GetPendingArtistRequestQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, requestCreatedTime?: any | null, type: RequestType, status: RequestStatus, duration: number, postCreatedTime?: any | null, currency: CurrencyType, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, userId: string }>, artistPackage: Array<{ __typename?: 'ArtistPackage', artistId: string, id: string, packageName: string, amount: any, currency: CurrencyType }> }> | null } | null };
 
 export type RequestPendingDetailByIdQueryVariables = Exact<{
   where?: InputMaybe<RequestFilterInput>;
@@ -6886,7 +6913,7 @@ export type OrderPackageQueryVariables = Exact<{
 }>;
 
 
-export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, artistPackageId: string, duration: number, createdAt: any, revisionCount: number, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }> }> | null } | null };
+export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, requirements: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }> }> | null } | null };
 
 export type CouponsQueryVariables = Exact<{
   where?: InputMaybe<CouponFilterInput>;
@@ -6971,7 +6998,7 @@ export type RequestDetailByIdQueryVariables = Exact<{
 }>;
 
 
-export type RequestDetailByIdQuery = { __typename?: 'QueryInitialization', requestDetailById?: { __typename?: 'Request', id: string, requestUserId: string, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, currency: CurrencyType, duration: number, status: RequestStatus, type: RequestType, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, artistId?: string | null, packageId?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }>, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }> } | null };
+export type RequestDetailByIdQuery = { __typename?: 'QueryInitialization', requestDetailById?: { __typename?: 'Request', id: string, requestUserId: string, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, currency: CurrencyType, status: RequestStatus, type: RequestType, duration: number, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, artistId?: string | null, packageId?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }>, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }> } | null };
 
 export type SearchRequestsQueryVariables = Exact<{
   searchTerm: Scalars['String']['input'];
@@ -6981,7 +7008,7 @@ export type SearchRequestsQueryVariables = Exact<{
 }>;
 
 
-export type SearchRequestsQuery = { __typename?: 'QueryInitialization', searchRequests?: { __typename?: 'SearchRequestsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, currency: CurrencyType, duration: number, status: RequestStatus, postCreatedTime?: any | null, updatedAt?: any | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null }> | null } | null };
+export type SearchRequestsQuery = { __typename?: 'QueryInitialization', searchRequests?: { __typename?: 'SearchRequestsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, title?: string | null, titleUnsigned?: string | null, summary?: string | null, duration: number, summaryUnsigned?: string | null, detailDescription?: string | null, currency: CurrencyType, status: RequestStatus, postCreatedTime?: any | null, updatedAt?: any | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null }> | null } | null };
 
 export type OwnRequestsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -6990,7 +7017,7 @@ export type OwnRequestsQueryVariables = Exact<{
 }>;
 
 
-export type OwnRequestsQuery = { __typename?: 'QueryInitialization', ownRequests?: { __typename?: 'OwnRequestsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, currency: CurrencyType, duration: number, status: RequestStatus, type: RequestType, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, artistId?: string | null, packageId?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }>, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }> }> | null } | null };
+export type OwnRequestsQuery = { __typename?: 'QueryInitialization', ownRequests?: { __typename?: 'OwnRequestsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, currency: CurrencyType, status: RequestStatus, type: RequestType, duration: number, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, artistId?: string | null, packageId?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }>, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }> }> | null } | null };
 
 export type UsersForRequestsQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -8103,6 +8130,7 @@ export const GetPendingArtistRequestDocument = new TypedDocumentString(`
       requestCreatedTime
       type
       status
+      duration
       budget {
         min
         max
@@ -8402,9 +8430,12 @@ export const OrderPackageDocument = new TypedDocumentString(`
       status
       clientId
       artistPackageId
-      duration
       createdAt
       revisionCount
+      duration
+      startedAt
+      freezedTime
+      requirements
       deliveries {
         notes
         revisionNumber
@@ -8838,9 +8869,9 @@ export const RequestDetailByIdDocument = new TypedDocumentString(`
     summaryUnsigned
     detailDescription
     currency
-    duration
     status
     type
+    duration
     postCreatedTime
     requestCreatedTime
     updatedAt
@@ -8881,10 +8912,10 @@ export const SearchRequestsDocument = new TypedDocumentString(`
       title
       titleUnsigned
       summary
+      duration
       summaryUnsigned
       detailDescription
       currency
-      duration
       status
       postCreatedTime
       updatedAt
@@ -8914,9 +8945,9 @@ export const OwnRequestsDocument = new TypedDocumentString(`
       summaryUnsigned
       detailDescription
       currency
-      duration
       status
       type
+      duration
       postCreatedTime
       requestCreatedTime
       updatedAt

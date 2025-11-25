@@ -1,14 +1,5 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { servicePackageOptions } from "@/gql/options/client-options";
-import { sendRequestMutationOptions } from "@/gql/options/client-mutation-options";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getUserInitials } from "@/utils/format-shorten-name";
-import { PackageXIcon, CalendarIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -17,25 +8,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { Suspense, useState } from "react";
+import { PackageXIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { getUserInitials } from "@/utils/format-shorten-name";
+import { servicePackageOptions } from "@/gql/options/client-options";
 import type { CreateDirectRequestInput, CurrencyType } from "@/gql/graphql";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { sendRequestMutationOptions } from "@/gql/options/client-mutation-options";
+import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 interface ServicePackageSectionProps {
   serviceId: string;
 }
 
 const subscribeFormSchema = z.object({
-  deadline: z
+  /* deadline: z
     .date({
       message: "Please select a deadline.",
     })
@@ -48,7 +43,7 @@ const subscribeFormSchema = z.object({
       {
         message: "Deadline must be at least 5 days from today.",
       },
-    ),
+    ), */
   requirements: z.string().optional(),
 });
 
@@ -109,7 +104,6 @@ function SubscribeDialog({ open, onOpenChange, servicePackage }: SubscribeDialog
       const requestInput: CreateDirectRequestInput = {
         artistId: servicePackage.artist[0].id,
         packageId: servicePackage.id,
-        deadline: data.deadline.toISOString(),
         requirements: data.requirements || undefined,
         // publicRequestId is ignored as mentioned in the requirements
       };
@@ -152,7 +146,7 @@ function SubscribeDialog({ open, onOpenChange, servicePackage }: SubscribeDialog
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
+            {/* <FormField
               control={form.control}
               name="deadline"
               render={({ field }) => (
@@ -190,7 +184,7 @@ function SubscribeDialog({ open, onOpenChange, servicePackage }: SubscribeDialog
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormField
               control={form.control}
@@ -214,11 +208,7 @@ function SubscribeDialog({ open, onOpenChange, servicePackage }: SubscribeDialog
               <Button type="button" variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={sendRequestMutation.isPending}
-                className="bg-main-purple hover:bg-main-purple/90"
-              >
+              <Button type="submit" disabled={sendRequestMutation.isPending} variant={"ekofy"}>
                 {sendRequestMutation.isPending ? "Sending..." : "Send Request"}
               </Button>
             </DialogFooter>
@@ -269,7 +259,9 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
       </div>
 
       <div className="space-y-2">
-        <div className="text-xl">Here&apos;s what you get from service Remix Track Without Beat:</div>
+        <div className="text-xl">
+          Here&apos;s what you get from service <strong>{servicePackage?.packageName}</strong>:
+        </div>
         <ul className="text-main-white space-y-2 font-medium">
           {servicePackage?.serviceDetails?.map((detail, index) => (
             <li key={index} className="flex items-center gap-x-2">
@@ -287,12 +279,11 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
           className="!rounded-sm text-base"
           onClick={() => setSubscribeDialogOpen(true)}
         >
-          <span>Subscribe Now</span>
-          <Separator orientation="vertical" className="bg-main-white/80 mx-3 h-6" />
-          {/* {servicePackage?.amount} */}
+          <span>Contact Now</span>
+          {/* <Separator orientation="vertical" className="bg-main-white/80 mx-3 h-6" />
           <span>
             {Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(servicePackage?.amount || 0)}
-          </span>
+          </span> */}
         </Button>
 
         <div>

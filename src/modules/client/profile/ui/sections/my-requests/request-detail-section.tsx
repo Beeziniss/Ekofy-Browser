@@ -128,16 +128,6 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
     });
   };
 
-  const formatDate = (dateString?: string | Date | null) => {
-    if (!dateString) return "N/A";
-    const date = dateString instanceof Date ? dateString : new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   /* const formatBudget = (budget?: { min: number; max: number } | null, currency?: string | null) => {
     if (!budget) return "N/A";
     const formatCurrency = (amount: number) => {
@@ -229,8 +219,8 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                 <div className="flex items-start gap-3">
                   <Clock className="mt-1 h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="text-sm text-gray-400">Deadline</p>
-                    <p className="text-lg font-semibold text-white">{formatDate(request.deadline)}</p>
+                    <p className="text-sm text-gray-400">Duration</p>
+                    <p className="text-lg font-semibold text-white">{request.duration} days</p>
                   </div>
                 </div>
 
