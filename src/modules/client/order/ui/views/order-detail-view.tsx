@@ -6,7 +6,7 @@ interface OrderDetailViewProps {
 
 const OrderDetailView = ({ orderId }: OrderDetailViewProps) => {
   return (
-    <div className="bg-main-grey-1 w-full rounded-md p-4">
+    <div className="w-full">
       <OrderDetailSection orderId={orderId} />
     </div>
   );

@@ -54,9 +54,9 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="text-xl">{request?.[0]?.title}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">{request?.[0]?.type}</p>
+            <p className="text-muted-foreground mt-1 text-sm">{request?.[0]?.type}</p>
           </div>
-          <Badge 
+          <Badge
             className={`${STATUS_CONFIG[request?.[0]?.status as RequestStatus]?.className} border font-semibold transition-colors`}
           >
             {STATUS_CONFIG[request?.[0]?.status as RequestStatus]?.label}
@@ -66,15 +66,15 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
       <CardContent className="space-y-8">
         {/* Requestor Information */}
         <div>
-          <h3 className="text-sm font-semibold mb-3 text-main-white">Requestor</h3>
-          <div className="bg-main-dark-bg rounded-lg p-4 space-y-2">
+          <h3 className="text-main-white mb-3 text-sm font-semibold">Requestor</h3>
+          <div className="bg-main-dark-bg space-y-2 rounded-lg p-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-main-white">Name:</span>
-              <span className="text-sm font-medium">{request?.[0]?.requestor?.[0]?.displayName || 'Unknown'}</span>
+              <span className="text-main-white text-sm">Name:</span>
+              <span className="text-sm font-medium">{request?.[0]?.requestor?.[0]?.displayName || "Unknown"}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-main-white">Email:</span>
-              <span className="text-sm font-medium">{request?.[0]?.requestor?.[0]?.email || 'No email'}</span>
+              <span className="text-main-white text-sm">Email:</span>
+              <span className="text-sm font-medium">{request?.[0]?.requestor?.[0]?.email || "No email"}</span>
             </div>
           </div>
         </div>
@@ -82,30 +82,34 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
         {/* Package Information */}
         {request?.[0]?.artistPackage && request?.[0]?.artistPackage[0] && (
           <div>
-            <h3 className="text-sm font-semibold mb-3 text-main-white">Package Details</h3>
-            <div className="bg-main-dark-bg rounded-lg p-4 space-y-2">
+            <h3 className="text-main-white mb-3 text-sm font-semibold">Package Details</h3>
+            <div className="bg-main-dark-bg space-y-2 rounded-lg p-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-main-white">Package Name:</span>
+                <span className="text-main-white text-sm">Package Name:</span>
                 <span className="text-sm font-medium">{request?.[0]?.artistPackage[0].packageName}</span>
               </div>
               {request?.[0]?.artistPackage[0].amount && (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-main-white">Price:</span>
-                    <span className="text-sm font-medium">
-                    {new Intl.NumberFormat('vi-VN').format(request?.[0]?.artistPackage[0].amount)} {request?.[0]?.artistPackage[0].currency}
-                    </span>
+                  <span className="text-main-white text-sm">Price:</span>
+                  <span className="text-sm font-medium">
+                    {new Intl.NumberFormat("vi-VN").format(request?.[0]?.artistPackage[0].amount)}{" "}
+                    {request?.[0]?.artistPackage[0].currency}
+                  </span>
                 </div>
               )}
-              {request?.[0]?.artistPackage[0].maxRevision !== undefined && request?.[0]?.artistPackage[0].maxRevision !== null && (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-main-white">Max Revisions:</span>
-                  <span className="text-sm font-medium">{request?.[0]?.artistPackage[0].maxRevision}</span>
-                </div>
-              )}
+              {request?.[0]?.artistPackage[0].maxRevision !== undefined &&
+                request?.[0]?.artistPackage[0].maxRevision !== null && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-main-white text-sm">Max Revisions:</span>
+                    <span className="text-sm font-medium">{request?.[0]?.artistPackage[0].maxRevision}</span>
+                  </div>
+                )}
               {request?.[0]?.artistPackage[0].estimateDeliveryDays && (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-main-white">Estimated Delivery Time By Artist:</span>
-                  <span className="text-sm font-medium">{request?.[0]?.artistPackage[0].estimateDeliveryDays} days</span>
+                  <span className="text-main-white text-sm">Estimated Delivery Time By Artist:</span>
+                  <span className="text-sm font-medium">
+                    {request?.[0]?.artistPackage[0].estimateDeliveryDays} days
+                  </span>
                 </div>
               )}
             </div>
@@ -114,70 +118,66 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
 
         {/* Budget & Timeline */}
         <div>
-          <h3 className="text-sm font-semibold mb-3 text-main-white">Budget & Timeline</h3>
-          <div className="bg-main-dark-bg rounded-lg p-4 space-y-2">
-            {request?.[0]?.budget &&
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-main-white">Requested Budget:</span>
-                <span className="text-sm font-medium">
-                {new Intl.NumberFormat('vi-VN').format(request?.[0]?.budget?.min)} {request?.[0]?.currency}
-                {request?.[0]?.budget?.min !== request?.[0]?.budget?.max && (
-                  <>
-                  {" - "}
-                  {new Intl.NumberFormat('vi-VN').format(request?.[0]?.budget?.max)} {request?.[0]?.currency}
-                  </>
-                )}
-                </span>
-            </div>
-    }
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-main-white">Created:</span>
-                <span className="text-sm font-medium">
-                {format(new Date(request?.[0]?.requestCreatedTime), "dd/MM/yyyy hh:mm a")}
-                </span>
-            </div>
-            {request?.[0]?.deadline && (
+          <h3 className="text-main-white mb-3 text-sm font-semibold">Budget & Timeline</h3>
+          <div className="bg-main-dark-bg space-y-2 rounded-lg p-4">
+            {request?.[0]?.budget && (
               <div className="flex items-center justify-between">
-                <span className="text-sm text-main-white">Deadline:</span>
+                <span className="text-main-white text-sm">Requested Budget:</span>
                 <span className="text-sm font-medium">
-                  {format(new Date(request?.[0]?.deadline), "dd/MM/yyyy")}
+                  {new Intl.NumberFormat("vi-VN").format(request?.[0]?.budget?.min)} {request?.[0]?.currency}
+                  {request?.[0]?.budget?.min !== request?.[0]?.budget?.max && (
+                    <>
+                      {" - "}
+                      {new Intl.NumberFormat("vi-VN").format(request?.[0]?.budget?.max)} {request?.[0]?.currency}
+                    </>
+                  )}
                 </span>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <span className="text-main-white text-sm">Created:</span>
+              <span className="text-sm font-medium">
+                {format(new Date(request?.[0]?.requestCreatedTime), "dd/MM/yyyy hh:mm a")}
+              </span>
+            </div>
+            {request?.[0]?.duration !== 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-main-white text-sm">Duration:</span>
+                <span className="text-sm font-medium">{request?.[0]?.duration} days</span>
               </div>
             )}
           </div>
         </div>
-            <Separator />
-          {/* Summary */}
-          <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-sm font-medium">Summary</h3>
-          </div>
-          <div className="prose prose-sm max-w-none mb-4">
-            <p className="text-xl text-muted-foreground whitespace-pre-wrap">
-              {request?.[0]?.summary || "No summary provided"}
-            </p>
-          </div>
-            <Separator />
-          {/* Description */}
-          <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-sm font-medium">Description</h3>
-          </div>
-          <div className="prose prose-sm max-w-none">
-            <p className="text-xl text-muted-foreground whitespace-pre-wrap">
-              {request?.[0]?.detailDescription || "No description provided"}
-            </p>
-          </div>
+        <Separator />
+        {/* Summary */}
+        <div className="mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-medium">Summary</h3>
+        </div>
+        <div className="prose prose-sm mb-4 max-w-none">
+          <p className="text-muted-foreground text-xl whitespace-pre-wrap">
+            {request?.[0]?.summary || "No summary provided"}
+          </p>
+        </div>
+        <Separator />
+        {/* Description */}
+        <div className="mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-medium">Description</h3>
+        </div>
+        <div className="prose prose-sm max-w-none">
+          <p className="text-muted-foreground text-xl whitespace-pre-wrap">
+            {request?.[0]?.detailDescription || "No description provided"}
+          </p>
+        </div>
 
         {/* Notes */}
         {request?.[0]?.notes && (
           <>
             <Separator />
-            <div className="flex items-center gap-2 mb-3">
+            <div className="mb-3 flex items-center gap-2">
               <h3 className="text-sm font-medium">Notes</h3>
             </div>
             <div className="prose prose-sm max-w-none">
-              <p className="text-xl text-muted-foreground whitespace-pre-wrap">
-                {request?.[0]?.notes}
-              </p>
+              <p className="text-muted-foreground text-xl whitespace-pre-wrap">{request?.[0]?.notes}</p>
             </div>
           </>
         )}

@@ -1,17 +1,16 @@
 "use client";
 
-// import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FragmentType, useFragment } from "@/gql";
+import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, Calendar, User, DollarSign } from "lucide-react";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
-import { Request, RequestArtistFragmentDoc, RequestArtistPackageFragmentDoc, RequestStatus } from "@/gql/graphql";
 import { serviceCreateCheckoutSessionMutationOptions } from "@/gql/options/client-mutation-options";
-import { toast } from "sonner";
+import { Request, RequestArtistFragmentDoc, RequestArtistPackageFragmentDoc, RequestStatus } from "@/gql/graphql";
 
 interface RequestListItemProps {
   request: Omit<Request, "requestor" | "artist" | "artistPackage"> & {
@@ -25,16 +24,8 @@ interface RequestListItemProps {
 }
 
 export function RequestListItem({ request, className }: RequestListItemProps) {
-  // Fetch artist data if not included in request and artistId exists
-  /* const { data: artistData } = useQuery({
-    ...artistDetailOptions(request.artistId || ""),
-    enabled: !!request.artistId && (!request.artist || request.artist.length === 0),
-  }); */
-
-  // Use artist from request or fetched artist data
-  // const artist = request.artist?.[0] || artistData?.artists?.items?.[0];
-
   const artist = useFragment(RequestArtistFragmentDoc, request.artist);
+  // const artistPackage = useFragment(RequestArtistPackageFragmentDoc, request.artistPackage);
 
   // Payment mutation
   const createCheckoutSessionMutation = useMutation(serviceCreateCheckoutSessionMutationOptions);
@@ -49,7 +40,8 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
       const result = await createCheckoutSessionMutation.mutateAsync({
         packageId: request.packageId,
         requestId: request.id,
-        deadline: request.deadline,
+        duration: request.duration || 0,
+        requirements: request.requirements || "",
         deliveries: [], // Empty array as requested
         conversationId: null,
         // successUrl: `${window.location.origin}/profile/my-requests/${request.id}?payment=success`,
@@ -99,15 +91,6 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
     });
   };
 
-  const formatDate = (dateString: string | Date) => {
-    const date = typeof dateString === "string" ? new Date(dateString) : dateString;
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   return (
     <Card className={cn("w-full transition-shadow hover:shadow-md", className)}>
       <CardContent className="p-6">
@@ -153,7 +136,7 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
               )}
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                <span>Deadline: {formatDate(request.deadline)}</span>
+                <span>Duration: {request.duration} days</span>
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />

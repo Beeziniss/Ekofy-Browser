@@ -146,7 +146,7 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Delivery time <span className="text-red-500">*</span>
+                        Delivery days <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input

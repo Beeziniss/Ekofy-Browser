@@ -256,14 +256,14 @@ export const servicePackageOptions = ({ artistId, serviceId }: { artistId?: stri
   });
 
 // Helper function to convert deadline string to Date
-const convertRequestDeadlines = <T extends { deadline?: string | Date }>(items: T[] | null | undefined): T[] => {
-  return (
-    items?.map((item) => ({
-      ...item,
-      deadline: item.deadline ? (typeof item.deadline === "string" ? new Date(item.deadline) : item.deadline) : null,
-    })) || []
-  );
-};
+// const convertRequestDeadlines = <T extends { deadline?: string | Date }>(items: T[] | null | undefined): T[] => {
+//   return (
+//     items?.map((item) => ({
+//       ...item,
+//       deadline: item.deadline ? (typeof item.deadline === "string" ? new Date(item.deadline) : item.deadline) : null,
+//     })) || []
+//   );
+// };
 
 // REQUEST HUB QUERIES
 export const requestHubOptions = (skip: number = 0, take: number = 20, where?: RequestFilterInput) =>
@@ -279,7 +279,7 @@ export const requestHubOptions = (skip: number = 0, take: number = 20, where?: R
       };
       return {
         ...requests,
-        items: convertRequestDeadlines(requests.items),
+        items: requests.items,
       };
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -295,7 +295,7 @@ export const requestByIdOptions = (requestId: string) =>
       if (!request) return null;
       return {
         ...request,
-        deadline: request.deadline ? new Date(request.deadline) : null,
+        duration: request.duration,
       };
     },
     enabled: !!requestId,
@@ -325,7 +325,7 @@ export const searchRequestsOptions = (
       };
       return {
         ...requests,
-        items: convertRequestDeadlines(requests.items),
+        items: requests.items,
       };
     },
     enabled: !!searchTerm.trim(),
@@ -360,7 +360,7 @@ export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: R
       };
       return {
         ...requests,
-        items: convertRequestDeadlines(requests.items),
+        items: requests.items,
       };
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -405,16 +405,31 @@ export const conversationMessagesOptions = (conversationId: string) =>
 export const orderPackageOptions = ({
   skip = 0,
   take = 10,
-  userId,
+  currentUserId,
+  otherUserId,
+  isArtist,
 }: {
   skip?: number;
   take?: number;
-  userId: string;
+  currentUserId?: string;
+  otherUserId?: string;
+  isArtist?: boolean;
 }) =>
   queryOptions({
-    queryKey: ["order-packages", skip, take, userId],
+    queryKey: ["order-packages", skip, take, currentUserId, otherUserId, isArtist],
     queryFn: async () => {
-      const where: PackageOrderFilterInput = { clientId: { eq: userId } };
+      const where: PackageOrderFilterInput = {};
+
+      if (isArtist) {
+        where.providerId = { eq: currentUserId };
+        where.clientId = { eq: otherUserId };
+      } else {
+        where.clientId = { eq: currentUserId };
+
+        if (otherUserId) {
+          where.providerId = { eq: otherUserId };
+        }
+      }
 
       const result = await execute(OrderPackageQuery, { where, skip, take });
       return result;
