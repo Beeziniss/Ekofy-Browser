@@ -9,6 +9,8 @@ import {
   AdminLoginResponse,
   RegisterListenerData,
   RefreshTokenResponse,
+  ForgotPasswordRequestData,
+  ResetPasswordRequestData,
 } from "@/types/auth";
 import { formatServiceError } from "@/utils/signup-utils";
 
@@ -175,6 +177,28 @@ export const authApi = {
       } catch (error) {
         if (isAxiosError(error)) {
           throw new Error(error.response?.data?.message || "Failed to resend OTP");
+        }
+        throw error;
+      }
+    },
+    forgotPassword: async (data: ForgotPasswordRequestData) => {
+      try {
+        const response = await axiosInstance.post(`/api/authentication/forgot-password`, data);
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(error.response?.data?.message || "Failed to send forgot password request");
+        }
+        throw error;
+      }
+    },
+    resetPassword: async (data: ResetPasswordRequestData) => {
+      try {
+        const response = await axiosInstance.post(`/api/authentication/reset-password`, data);
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(error.response?.data?.message || "Failed to reset password");
         }
         throw error;
       }

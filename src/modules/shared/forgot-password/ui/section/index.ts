@@ -1,0 +1,1 @@
+export { default as ForgotPasswordSection } from "./forgot-password-section";

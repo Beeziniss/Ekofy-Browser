@@ -1052,7 +1052,9 @@ export type ConversationFilterInput = {
 
 export type ConversationResponse = {
   __typename?: 'ConversationResponse';
+  artistId?: Maybe<Scalars['String']['output']>;
   avatar: Scalars['String']['output'];
+  listenerId?: Maybe<Scalars['String']['output']>;
   nickname: Scalars['String']['output'];
 };
 
@@ -1506,6 +1508,10 @@ export type DecimalOperationFilterInput = {
   nin?: InputMaybe<Array<InputMaybe<Scalars['Decimal']['input']>>>;
   nlt?: InputMaybe<Scalars['Decimal']['input']>;
   nlte?: InputMaybe<Scalars['Decimal']['input']>;
+};
+
+export type DeleteCategoryRequestInput = {
+  categoryId: Scalars['String']['input'];
 };
 
 export type DeleteCommentRequestInput = {
@@ -2545,6 +2551,7 @@ export type MutationInitialization = {
   entitlementUserCount: Scalars['Long']['output'];
   escalateReport: Scalars['Boolean']['output'];
   followUser: Scalars['Boolean']['output'];
+  hardDeleteCategory: Scalars['Boolean']['output'];
   initialize: Scalars['String']['output'];
   processArtistDiscovery: Scalars['Boolean']['output'];
   processArtistEngagement: Scalars['Boolean']['output'];
@@ -2569,6 +2576,7 @@ export type MutationInitialization = {
   seedRoyaltyPolicyData: Scalars['Boolean']['output'];
   sendRedoRequest: Scalars['Boolean']['output'];
   sendRequest: Scalars['Boolean']['output'];
+  softDeleteCategory: Scalars['Boolean']['output'];
   submitDelivery: Scalars['Boolean']['output'];
   switchStatusByRequestor: Scalars['Boolean']['output'];
   testGenrateMonthlyRoyaltyReportsAynsc: Scalars['Boolean']['output'];
@@ -2577,6 +2585,7 @@ export type MutationInitialization = {
   unfollowUser: Scalars['Boolean']['output'];
   updateArtistPackage: Scalars['Boolean']['output'];
   updateArtistProfile: Scalars['Boolean']['output'];
+  updateCategory: Scalars['Boolean']['output'];
   updateComment: Scalars['Boolean']['output'];
   updateConversationStatus: Scalars['Boolean']['output'];
   updateEscrowCommissionPolicy: Scalars['Boolean']['output'];
@@ -2884,6 +2893,11 @@ export type MutationInitializationFollowUserArgs = {
 };
 
 
+export type MutationInitializationHardDeleteCategoryArgs = {
+  deleteCategoryRequest: DeleteCategoryRequestInput;
+};
+
+
 export type MutationInitializationProcessArtistDiscoveryArgs = {
   actionType: PopularityActionType;
   artistId: Scalars['String']['input'];
@@ -3006,6 +3020,11 @@ export type MutationInitializationSendRequestArgs = {
 };
 
 
+export type MutationInitializationSoftDeleteCategoryArgs = {
+  categoryId: Scalars['String']['input'];
+};
+
+
 export type MutationInitializationSubmitDeliveryArgs = {
   request: SubmitDeliveryRequestInput;
 };
@@ -3045,6 +3064,11 @@ export type MutationInitializationUpdateArtistPackageArgs = {
 
 export type MutationInitializationUpdateArtistProfileArgs = {
   updateArtistRequest: UpdateArtistRequestInput;
+};
+
+
+export type MutationInitializationUpdateCategoryArgs = {
+  updateCategoryRequest: UpdateCategoryRequestInput;
 };
 
 
@@ -3122,11 +3146,151 @@ export type MutationInitializationUpsertTopTrackCountArgs = {
   trackId: Scalars['String']['input'];
 };
 
+export type Notification = {
+  __typename?: 'Notification';
+  action: NotificationActionType;
+  actor: Array<User>;
+  actorId: Scalars['String']['output'];
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  isRead: Scalars['Boolean']['output'];
+  readAt?: Maybe<Scalars['DateTime']['output']>;
+  relatedId?: Maybe<Scalars['String']['output']>;
+  relatedType?: Maybe<NotificationRelatedType>;
+  targetId: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+
+export type NotificationActorArgs = {
+  order?: InputMaybe<Array<UserSortInput>>;
+  where?: InputMaybe<UserFilterInput>;
+};
+
+export enum NotificationActionType {
+  Comment = 'COMMENT',
+  Follow = 'FOLLOW',
+  Like = 'LIKE',
+  Mention = 'MENTION',
+  Message = 'MESSAGE',
+  OrderCompleted = 'ORDER_COMPLETED',
+  OrderCreated = 'ORDER_CREATED',
+  OrderDeadline = 'ORDER_DEADLINE',
+  Other = 'OTHER',
+  Release = 'RELEASE',
+  Reply = 'REPLY',
+  Report = 'REPORT',
+  RequestApproved = 'REQUEST_APPROVED',
+  RequestCreated = 'REQUEST_CREATED',
+  RequestRejected = 'REQUEST_REJECTED',
+  Review = 'REVIEW'
+}
+
+export type NotificationActionTypeOperationFilterInput = {
+  eq?: InputMaybe<NotificationActionType>;
+  in?: InputMaybe<Array<NotificationActionType>>;
+  neq?: InputMaybe<NotificationActionType>;
+  nin?: InputMaybe<Array<NotificationActionType>>;
+};
+
+export type NotificationFilterInput = {
+  action?: InputMaybe<NotificationActionTypeOperationFilterInput>;
+  actorId?: InputMaybe<StringOperationFilterInput>;
+  and?: InputMaybe<Array<NotificationFilterInput>>;
+  content?: InputMaybe<StringOperationFilterInput>;
+  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  isRead?: InputMaybe<BooleanOperationFilterInput>;
+  or?: InputMaybe<Array<NotificationFilterInput>>;
+  readAt?: InputMaybe<DateTimeOperationFilterInput>;
+  relatedId?: InputMaybe<StringOperationFilterInput>;
+  relatedType?: InputMaybe<NullableOfNotificationRelatedTypeOperationFilterInput>;
+  targetId?: InputMaybe<StringOperationFilterInput>;
+  url?: InputMaybe<StringOperationFilterInput>;
+};
+
+export enum NotificationRelatedType {
+  Album = 'ALBUM',
+  Comment = 'COMMENT',
+  Message = 'MESSAGE',
+  Order = 'ORDER',
+  Playlist = 'PLAYLIST',
+  Request = 'REQUEST',
+  Review = 'REVIEW',
+  Track = 'TRACK'
+}
+
+export type NotificationSortInput = {
+  action?: InputMaybe<SortEnumType>;
+  actorId?: InputMaybe<SortEnumType>;
+  content?: InputMaybe<SortEnumType>;
+  createdAt?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  isRead?: InputMaybe<SortEnumType>;
+  readAt?: InputMaybe<SortEnumType>;
+  relatedId?: InputMaybe<SortEnumType>;
+  relatedType?: InputMaybe<SortEnumType>;
+  targetId?: InputMaybe<SortEnumType>;
+  url?: InputMaybe<SortEnumType>;
+};
+
+/** A connection to a list of items. */
+export type NotificationsConnection = {
+  __typename?: 'NotificationsConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<NotificationsEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Notification>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type NotificationsEdge = {
+  __typename?: 'NotificationsEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Notification;
+};
+
+/** A connection to a list of items. */
+export type NotificationsForUserConnection = {
+  __typename?: 'NotificationsForUserConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<NotificationsForUserEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Notification>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type NotificationsForUserEdge = {
+  __typename?: 'NotificationsForUserEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Notification;
+};
+
 export type NullableOfAggregationLevelOperationFilterInput = {
   eq?: InputMaybe<AggregationLevel>;
   in?: InputMaybe<Array<InputMaybe<AggregationLevel>>>;
   neq?: InputMaybe<AggregationLevel>;
   nin?: InputMaybe<Array<InputMaybe<AggregationLevel>>>;
+};
+
+export type NullableOfNotificationRelatedTypeOperationFilterInput = {
+  eq?: InputMaybe<NotificationRelatedType>;
+  in?: InputMaybe<Array<InputMaybe<NotificationRelatedType>>>;
+  neq?: InputMaybe<NotificationRelatedType>;
+  nin?: InputMaybe<Array<InputMaybe<NotificationRelatedType>>>;
 };
 
 export type NullableOfReportActionOperationFilterInput = {
@@ -3902,6 +4066,8 @@ export type QueryInitialization = {
   metadataTrackUploadRequest: TrackTempRequest;
   metadataWorkUploadRequest: WorkTempRequest;
   monthlyStreamCounts?: Maybe<MonthlyStreamCountsCollectionSegment>;
+  notifications?: Maybe<NotificationsConnection>;
+  notificationsForUser?: Maybe<NotificationsForUserConnection>;
   originalFileTrackUploadRequest: Scalars['String']['output'];
   ownPlaylists?: Maybe<OwnPlaylistsCollectionSegment>;
   ownRequests?: Maybe<OwnRequestsCollectionSegment>;
@@ -4168,6 +4334,27 @@ export type QueryInitializationMonthlyStreamCountsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<MonthlyStreamCountFilterInput>;
+};
+
+
+export type QueryInitializationNotificationsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<NotificationSortInput>>;
+  where?: InputMaybe<NotificationFilterInput>;
+};
+
+
+export type QueryInitializationNotificationsForUserArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<NotificationSortInput>>;
+  userId: Scalars['String']['input'];
+  where?: InputMaybe<NotificationFilterInput>;
 };
 
 
@@ -5893,6 +6080,16 @@ export type UpdateArtistRequestInput = {
   gender?: InputMaybe<UserGender>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
   stageName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateCategoryRequestInput = {
+  aliases?: InputMaybe<Array<Scalars['String']['input']>>;
+  categoryId: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  isVisible?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  popularity?: InputMaybe<Scalars['Int']['input']>;
+  type?: InputMaybe<CategoryType>;
 };
 
 export type UpdateEntitlementRequestInput = {
