@@ -263,6 +263,7 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
         <div className="bg-main-dark-1 col-span-3 h-full overflow-hidden rounded-md px-4 py-6 transition-all duration-300">
           <ConversationInfo
             avatarImage={conversation?.conversations?.items?.[0].otherProfileConversation.avatar}
+            currentUserId={user?.userId || ""}
             otherUserId={conversation?.conversations?.items?.[0].userIds.find((id) => id !== user?.userId) || ""}
             nickname={conversation?.conversations?.items?.[0].otherProfileConversation.nickname}
             isArtist={isArtist}

@@ -2486,6 +2486,7 @@ export enum MoodType {
 
 export type MutationInitialization = {
   __typename?: 'MutationInitialization';
+  acceptRequestByArtist: Scalars['Boolean']['output'];
   activateSubscription: Scalars['Boolean']['output'];
   addConversationFromRequestHub: Scalars['String']['output'];
   addConversationGeneral: Scalars['String']['output'];
@@ -2495,6 +2496,7 @@ export type MutationInitialization = {
   addToPlaylist: Scalars['Boolean']['output'];
   addTrackToAlbum: Scalars['Boolean']['output'];
   approveArtistRegistration: Scalars['Boolean']['output'];
+  approveDelivery: Scalars['Boolean']['output'];
   approveTrackUploadRequest: Scalars['Boolean']['output'];
   assignReportToModerator: Scalars['Boolean']['output'];
   banUser: Scalars['Boolean']['output'];
@@ -2523,6 +2525,7 @@ export type MutationInitialization = {
   createPlaylist: Scalars['Boolean']['output'];
   createPublicRequest: Scalars['Boolean']['output'];
   createReport: Scalars['Boolean']['output'];
+  createReview: Scalars['Boolean']['output'];
   createRoyaltyPolicy: Scalars['Boolean']['output'];
   createSubscription: Scalars['Boolean']['output'];
   createSubscriptionCheckoutSession: CheckoutSessionResponse;
@@ -2534,6 +2537,7 @@ export type MutationInitialization = {
   deleteCoupon: Scalars['Boolean']['output'];
   deletePlaylist: Scalars['Boolean']['output'];
   deleteReport: Scalars['Boolean']['output'];
+  deleteReviewHard: Scalars['Boolean']['output'];
   deleteUserManual: Scalars['Boolean']['output'];
   deprecateCoupon: Scalars['Boolean']['output'];
   downgradeEscrowCommissionPolicyVersion: Scalars['Boolean']['output'];
@@ -2550,6 +2554,7 @@ export type MutationInitialization = {
   processTrackStreamingMetric: Scalars['Boolean']['output'];
   reactiveEntitlement: Scalars['Boolean']['output'];
   refund: Scalars['Boolean']['output'];
+  refundPartially: Scalars['Boolean']['output'];
   registerArtistManual: Scalars['Boolean']['output'];
   rejectArtistRegistration: Scalars['Boolean']['output'];
   rejectTrackUploadRequest: Scalars['Boolean']['output'];
@@ -2562,7 +2567,10 @@ export type MutationInitialization = {
   seedEscrowCommissionPolicyData: Scalars['Boolean']['output'];
   seedMonthlyStreamCountByTrackId: Scalars['Boolean']['output'];
   seedRoyaltyPolicyData: Scalars['Boolean']['output'];
+  sendRedoRequest: Scalars['Boolean']['output'];
   sendRequest: Scalars['Boolean']['output'];
+  submitDelivery: Scalars['Boolean']['output'];
+  switchStatusByRequestor: Scalars['Boolean']['output'];
   testGenrateMonthlyRoyaltyReportsAynsc: Scalars['Boolean']['output'];
   testTransferMoneyToArtist: TransferResponse;
   unbanUser: Scalars['Boolean']['output'];
@@ -2576,11 +2584,17 @@ export type MutationInitialization = {
   updatePlaylist: Scalars['Boolean']['output'];
   updatePublicRequest: Scalars['Boolean']['output'];
   updateReportPriority: Scalars['Boolean']['output'];
+  updateReview: Scalars['Boolean']['output'];
   updateRoyaltyPolicy: Scalars['Boolean']['output'];
   updateSubscriptionPlan: Scalars['Boolean']['output'];
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
   upsertTopTrackCount: Scalars['Boolean']['output'];
+};
+
+
+export type MutationInitializationAcceptRequestByArtistArgs = {
+  packageOrderId: Scalars['String']['input'];
 };
 
 
@@ -2629,6 +2643,11 @@ export type MutationInitializationAddTrackToAlbumArgs = {
 
 export type MutationInitializationApproveArtistRegistrationArgs = {
   request: ArtistRegistrationApprovalRequestInput;
+};
+
+
+export type MutationInitializationApproveDeliveryArgs = {
+  packageOrderId: Scalars['String']['input'];
 };
 
 
@@ -2765,6 +2784,11 @@ export type MutationInitializationCreateReportArgs = {
 };
 
 
+export type MutationInitializationCreateReviewArgs = {
+  createReviewRequest: CreateReviewRequestInput;
+};
+
+
 export type MutationInitializationCreateRoyaltyPolicyArgs = {
   createRoyalPolicyRequest: CreateRoyalPolicyRequestInput;
 };
@@ -2817,6 +2841,11 @@ export type MutationInitializationDeletePlaylistArgs = {
 
 export type MutationInitializationDeleteReportArgs = {
   reportId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationDeleteReviewHardArgs = {
+  reviewId: Scalars['String']['input'];
 };
 
 
@@ -2902,6 +2931,11 @@ export type MutationInitializationRefundArgs = {
 };
 
 
+export type MutationInitializationRefundPartiallyArgs = {
+  request: PackageOrderRefundRequestInput;
+};
+
+
 export type MutationInitializationRegisterArtistManualArgs = {
   createArtistRequest: CreateArtistRequestInput;
 };
@@ -2961,9 +2995,24 @@ export type MutationInitializationSeedRoyaltyPolicyDataArgs = {
 };
 
 
+export type MutationInitializationSendRedoRequestArgs = {
+  request: RedoRequestInput;
+};
+
+
 export type MutationInitializationSendRequestArgs = {
   isDirectRequest?: Scalars['Boolean']['input'];
   request: CreateDirectRequestInput;
+};
+
+
+export type MutationInitializationSubmitDeliveryArgs = {
+  request: SubmitDeliveryRequestInput;
+};
+
+
+export type MutationInitializationSwitchStatusByRequestorArgs = {
+  request: ChangeOrderStatusRequestInput;
 };
 
 
@@ -3033,6 +3082,11 @@ export type MutationInitializationUpdatePublicRequestArgs = {
 export type MutationInitializationUpdateReportPriorityArgs = {
   priority: Scalars['String']['input'];
   reportId: Scalars['String']['input'];
+};
+
+
+export type MutationInitializationUpdateReviewArgs = {
+  updateReviewRequest: UpdateReviewRequestInput;
 };
 
 

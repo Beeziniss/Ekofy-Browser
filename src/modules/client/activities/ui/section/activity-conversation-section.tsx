@@ -79,7 +79,9 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
   const skip = (currentPage - 1) * pageSize;
 
   const { data: listenerData } = useSuspenseQuery(listenerOptions(userId, userId));
-  const { data: orderData } = useSuspenseQuery(orderPackageOptions({ userId, skip, take: pageSize }));
+  const { data: orderData } = useSuspenseQuery(
+    orderPackageOptions({ currentUserId: userId, skip, take: pageSize, isArtist: false }),
+  );
 
   const orders = orderData?.packageOrders?.items || [];
   const totalCount = orderData?.packageOrders?.totalCount || 0;

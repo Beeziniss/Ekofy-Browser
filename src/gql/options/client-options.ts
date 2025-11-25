@@ -405,16 +405,31 @@ export const conversationMessagesOptions = (conversationId: string) =>
 export const orderPackageOptions = ({
   skip = 0,
   take = 10,
-  userId,
+  currentUserId,
+  otherUserId,
+  isArtist,
 }: {
   skip?: number;
   take?: number;
-  userId: string;
+  currentUserId?: string;
+  otherUserId?: string;
+  isArtist?: boolean;
 }) =>
   queryOptions({
-    queryKey: ["order-packages", skip, take, userId],
+    queryKey: ["order-packages", skip, take, currentUserId, otherUserId, isArtist],
     queryFn: async () => {
-      const where: PackageOrderFilterInput = { clientId: { eq: userId } };
+      const where: PackageOrderFilterInput = {};
+
+      if (isArtist) {
+        where.providerId = { eq: currentUserId };
+        where.clientId = { eq: otherUserId };
+      } else {
+        where.clientId = { eq: currentUserId };
+
+        if (otherUserId) {
+          where.providerId = { eq: otherUserId };
+        }
+      }
 
       const result = await execute(OrderPackageQuery, { where, skip, take });
       return result;
