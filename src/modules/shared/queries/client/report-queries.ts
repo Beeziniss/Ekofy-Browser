@@ -2,7 +2,7 @@ import { graphql } from "@/gql";
 
 export const REPORT_QUERIES = graphql(`
     query ReportQueries($skip: Int, $take: Int, $where: ReportFilterInput) {
-        reports(skip: $skip, take: $take, where: $where) {
+        reports(skip: $skip, take: $take, where: $where, order: { createdAt: DESC }) {
             totalCount
         pageInfo {
             hasNextPage

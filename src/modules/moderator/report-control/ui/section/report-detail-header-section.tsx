@@ -15,7 +15,9 @@ interface ReportDetailHeaderSectionProps {
   onProcessClick: () => void;
   onAssignClick: () => void;
   onRestoreClick?: () => void;
+  onRestoreContentClick?: () => void;
   isRestoring?: boolean;
+  isRestoringContent?: boolean;
 }
 
 export function ReportDetailHeaderSection({ 
@@ -25,7 +27,9 @@ export function ReportDetailHeaderSection({
   onProcessClick,
   onAssignClick,
   onRestoreClick,
-  isRestoring = false
+  onRestoreContentClick,
+  isRestoring = false,
+  isRestoringContent = false
 }: ReportDetailHeaderSectionProps) {
   // Check if user can process: must be assigned to current user and status is pending/under review
   const canProcess = 
@@ -35,13 +39,23 @@ export function ReportDetailHeaderSection({
   // Check if report is not assigned yet
   const canAssign = !report.assignedModeratorId;
   
-  // Check if already processed
-  const isProcessed = report.status === ReportStatus.Approved || report.status === ReportStatus.Rejected;
+  // Check if already processed (including Restored status)
+  const isProcessed = report.status === ReportStatus.Approved || 
+    report.status === ReportStatus.Rejected || 
+    report.status === ReportStatus.Restored;
   
-  // Check if can restore user: must have Suspended or PermanentBan action and be Approved
+  // Check if can restore user: must have Suspended, PermanentBan, or EntitlementRestriction action and be Approved
   const canRestore = onRestoreClick && 
     report.actionTaken && 
-    (report.actionTaken === ReportAction.Suspended || report.actionTaken === ReportAction.PermanentBan) &&
+    (report.actionTaken === ReportAction.Suspended || 
+     report.actionTaken === ReportAction.PermanentBan || 
+     report.actionTaken === ReportAction.EntitlementRestriction) &&
+    report.status === ReportStatus.Approved;
+
+  // Check if can restore content: must have ContentRemoval action and be Approved
+  const canRestoreContent = onRestoreContentClick &&
+    report.actionTaken &&
+    report.actionTaken === ReportAction.ContentRemoval &&
     report.status === ReportStatus.Approved;
 
   return (
@@ -106,9 +120,23 @@ export function ReportDetailHeaderSection({
                 {isRestoring ? "Restoring..." : "Restore User"}
               </Button>
             )}
+
+            {/* Show Restore Content button for processed reports with ContentRemoval/EntitlementRestriction on Track */}
+            {canRestoreContent && (
+              <Button 
+                onClick={onRestoreContentClick}
+                size="lg"
+                variant="outline"
+                className="gap-2"
+                disabled={isRestoringContent}
+              >
+                <RotateCcw className="h-5 w-5" />
+                {isRestoringContent ? "Restoring..." : "Restore Content"}
+              </Button>
+            )}
             
             {/* Show badge if assigned to someone else */}
-            {!canAssign && !canProcess && !isProcessed && !canRestore && (
+            {!canAssign && !canProcess && !isProcessed && !canRestore && !canRestoreContent && (
               <Badge 
                 variant="outline" 
                 className="text-sm px-4 py-2"
@@ -118,12 +146,12 @@ export function ReportDetailHeaderSection({
             )}
             
             {/* Show badge if already processed and can't restore */}
-            {isProcessed && !canRestore && (
+            {isProcessed && !canRestore && !canRestoreContent && (
               <Badge 
                 variant="outline" 
                 className="text-sm px-4 py-2"
               >
-                Already Processed
+                {report.status === ReportStatus.Restored ? "Already Restored" : "Already Processed"}
               </Badge>
             )}
           </div>
