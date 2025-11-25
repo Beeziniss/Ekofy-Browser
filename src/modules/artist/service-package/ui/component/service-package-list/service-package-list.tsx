@@ -131,7 +131,7 @@ const ServicePackageList = ({ packages, onEdit, onDelete, onStatusChange }: Serv
             <CardDescription className="flex items-center gap-4 text-gray-400">
               <span className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {pkg.estimateDeliveryDays} days
+                {pkg.estimateDeliveryDays} day{pkg.estimateDeliveryDays > 1 ? "s" : ""}
               </span>
               <span className="flex items-center gap-1">
                 <RotateCcw className="h-3 w-3" />

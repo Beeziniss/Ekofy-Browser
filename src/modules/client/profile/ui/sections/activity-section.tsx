@@ -3,35 +3,39 @@ import Link from "next/link";
 import { ChevronRightIcon, CreditCardIcon, ReceiptIcon, ReceiptTextIcon, ClipboardListIcon, Flag } from "lucide-react";
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
-const activityItems = [
-  {
-    title: "Request History",
-    href: "/profile/my-requests",
-    icon: ClipboardListIcon,
-  },
-  {
-    title: "Payment History",
-    href: "/profile/payment-history",
-    icon: CreditCardIcon,
-  },
-  {
-    title: "Invoices",
-    href: "/profile/invoices",
-    icon: ReceiptIcon,
-  },
-  {
-    title: "Order History",
-    href: "/profile/order-history",
-    icon: ReceiptTextIcon,
-  },
-  {
-    title: "Report",
-    href: "/profile/reports",
-    icon: Flag,
-  }
-];
+interface ActivitySectionProps {
+  userId?: string;
+}
 
-const ActivitySection = () => {
+const ActivitySection = ({ userId }: ActivitySectionProps) => {
+  const activityItems = [
+    {
+      title: "Request History",
+      href: "/profile/my-requests",
+      icon: ClipboardListIcon,
+    },
+    {
+      title: "Payment History",
+      href: "/profile/payment-history",
+      icon: CreditCardIcon,
+    },
+    {
+      title: "Invoices",
+      href: "/profile/invoices",
+      icon: ReceiptIcon,
+    },
+    {
+      title: "Order History",
+      href: `/activities/conversation/${userId}`,
+      icon: ReceiptTextIcon,
+    },
+    {
+      title: "Report",
+      href: "/profile/reports",
+      icon: Flag,
+    },
+  ];
+
   return (
     <div className="rounded-md bg-[#2a2a2a] pb-3">
       <div className="flex items-end p-4">
