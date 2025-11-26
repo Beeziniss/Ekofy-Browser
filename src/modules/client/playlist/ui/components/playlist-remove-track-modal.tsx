@@ -11,6 +11,8 @@ import {
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeFromPlaylistMutationOptions } from "@/gql/options/client-mutation-options";
+import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
+import { PopularityActionType } from "@/gql/graphql";
 
 interface PlaylistRemoveTrackModalProps {
   open: boolean;
@@ -30,6 +32,7 @@ const PlaylistRemoveTrackModal = ({
   onSuccess,
 }: PlaylistRemoveTrackModalProps) => {
   const queryClient = useQueryClient();
+  const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
 
   const { mutate: removeFromPlaylist, isPending: isRemovingFromPlaylist } = useMutation({
     ...removeFromPlaylistMutationOptions,
@@ -44,6 +47,11 @@ const PlaylistRemoveTrackModal = ({
       onSuccess?.();
       // Don't close modal after successful removal
       toast.success("Track removed from playlist successfully!");
+      // Track popularity for remove from playlist
+      trackEngagementPopularity({
+        trackId,
+        actionType: PopularityActionType.RemoveFromPlaylist,
+      });
     },
     onError: (error) => {
       console.error("Failed to remove track from playlist:", error);

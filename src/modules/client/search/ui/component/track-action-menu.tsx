@@ -18,6 +18,8 @@ import { playlistBriefOptions, checkTrackInPlaylistOptions } from "@/gql/options
 import { addToPlaylistMutationOptions, removeFromPlaylistMutationOptions } from "@/gql/options/client-mutation-options";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
+import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
+import { PopularityActionType } from "@/gql/graphql";
 import Image from "next/image";
 import { useFavoriteSearch } from "../../hooks/use-favorite-search";
 import { useAuthAction } from "@/hooks/use-auth-action";
@@ -45,6 +47,7 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
 
   // Auth action hooks
   const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
+  const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
 
   // Favorite hooks
   const { handleFavoriteTrack } = useFavoriteSearch();
@@ -68,6 +71,11 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
       queryClient.invalidateQueries({ queryKey: ["playlist-detail-tracklist"] });
       queryClient.invalidateQueries({ queryKey: ["check-track-in-playlist", track.id] });
       toast.success("Track added to playlist successfully!");
+      // Track popularity
+      trackEngagementPopularity({
+        trackId: track.id,
+        actionType: PopularityActionType.AddToPlaylist,
+      });
     },
     onError: (error) => {
       console.error("Failed to add track to playlist:", error);
@@ -82,6 +90,11 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({
       queryClient.invalidateQueries({ queryKey: ["playlist-detail-tracklist"] });
       queryClient.invalidateQueries({ queryKey: ["check-track-in-playlist", track.id] });
       toast.success("Track removed from playlist successfully!");
+      // Track popularity
+      trackEngagementPopularity({
+        trackId: track.id,
+        actionType: PopularityActionType.RemoveFromPlaylist,
+      });
     },
     onError: (error) => {
       console.error("Failed to remove track from playlist:", error);

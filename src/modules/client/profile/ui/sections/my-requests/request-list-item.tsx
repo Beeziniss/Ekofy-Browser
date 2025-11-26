@@ -108,7 +108,10 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
             </div>
 
             {/* Summary or Detail Description */}
-            <p className="line-clamp-2 text-sm text-gray-400">{request.requirements || "No description provided"}</p>
+            <p
+              className="line-clamp-2 text-sm text-gray-400"
+              dangerouslySetInnerHTML={{ __html: request.requirements || "No description provided" }}
+            ></p>
 
             {/* Artist Info - Only show for direct requests with artist */}
             {artist && (

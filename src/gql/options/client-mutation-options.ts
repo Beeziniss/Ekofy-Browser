@@ -24,6 +24,8 @@ import {
   CreateDirectRequestInput,
   CreatePaymentCheckoutSessionRequestInput,
   CreateSubscriptionCheckoutSessionRequestInput,
+  RedoRequestInput,
+  SubmitDeliveryRequestInput,
   UpdateListenerRequestInput,
 } from "../graphql";
 import { mutationOptions } from "@tanstack/react-query";
@@ -40,6 +42,12 @@ import {
 } from "@/modules/shared/mutations/client/coversation-mutation";
 import { ServiceCreateCheckoutSessionMutation } from "@/modules/shared/mutations/client/service-mutation";
 import { SendRequestMutation } from "@/modules/shared/mutations/client/request-mutation";
+import {
+  AcceptRequestByArtistMutation,
+  ApproveDeliveryMutation,
+  SendRedoRequestMutation,
+  SubmitDeliveryMutation,
+} from "@/modules/shared/mutations/client/order-mutation";
 
 // PLAYLIST MUTATIONS
 export const createPlaylistMutationOptions = mutationOptions({
@@ -200,4 +208,25 @@ export const sendRequestMutationOptions = mutationOptions({
   mutationKey: ["send-request"],
   mutationFn: async (input: { request: CreateDirectRequestInput; isDirect: boolean }) =>
     await execute(SendRequestMutation, { ...input }),
+});
+
+// ORDER MUTATIONS
+export const acceptRequestByArtistMutationOptions = mutationOptions({
+  mutationKey: ["accept-request-by-artist"],
+  mutationFn: async (packageOrderId: string) => await execute(AcceptRequestByArtistMutation, { packageOrderId }),
+});
+
+export const submitDeliveryMutationOptions = mutationOptions({
+  mutationKey: ["submit-delivery"],
+  mutationFn: async (request: SubmitDeliveryRequestInput) => await execute(SubmitDeliveryMutation, { request }),
+});
+
+export const sendRedoRequestMutationOptions = mutationOptions({
+  mutationKey: ["send-redo-request"],
+  mutationFn: async (request: RedoRequestInput) => await execute(SendRedoRequestMutation, { request }),
+});
+
+export const approveDeliveryMutationOptions = mutationOptions({
+  mutationKey: ["approve-delivery"],
+  mutationFn: async (packageOrderId: string) => await execute(ApproveDeliveryMutation, { packageOrderId }),
 });

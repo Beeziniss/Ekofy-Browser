@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/utils/format-date";
 import { formatCurrency } from "@/utils/format-currency";
 import { getUserInitials } from "@/utils/format-shorten-name";
 import { calculateDeadline } from "@/utils/calculate-deadline";
@@ -11,11 +12,10 @@ import { CustomPagination } from "@/components/ui/custom-pagination";
 import { PackageOrderStatus, OrderPackageQuery } from "@/gql/graphql";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatDate } from "date-fns";
 
 type OrderItem = NonNullable<NonNullable<OrderPackageQuery["packageOrders"]>["items"]>[number];
 
-interface ActivityConversationTableProps {
+interface ActivityOrderTableProps {
   orders: OrderItem[];
   totalCount: number;
   totalPages: number;
@@ -33,14 +33,14 @@ const statusBadgeVariants = {
   [PackageOrderStatus.Refund]: "bg-purple-500/20 text-purple-400 border-purple-500/30",
 };
 
-const ActivityConversationTable = ({
+const ActivityOrderTable = ({
   orders,
   totalCount,
   totalPages,
   currentPage,
   pageSize,
   onPageChange,
-}: ActivityConversationTableProps) => {
+}: ActivityOrderTableProps) => {
   return (
     <div className="space-y-6">
       <div className="rounded-md border">
@@ -60,7 +60,7 @@ const ActivityConversationTable = ({
               orders.map((order) => {
                 const finalDeadline = calculateDeadline(order.startedAt, order.duration || 0, order.freezedTime);
 
-                const deadlineDisplay = formatDate(new Date(finalDeadline), "PPp");
+                const deadlineDisplay = formatDate(finalDeadline.toISOString());
 
                 return (
                   <TableRow key={order.id}>
@@ -89,7 +89,9 @@ const ActivityConversationTable = ({
 
                     {/* Deadline */}
                     <TableCell className="w-52">
-                      <span className="text-muted-foreground text-sm">{deadlineDisplay}</span>
+                      <span className="text-muted-foreground text-sm">
+                        {order.startedAt !== null ? deadlineDisplay : "N/A"}
+                      </span>
                     </TableCell>
 
                     {/* Amount/Total */}
@@ -137,4 +139,4 @@ const ActivityConversationTable = ({
   );
 };
 
-export default ActivityConversationTable;
+export default ActivityOrderTable;

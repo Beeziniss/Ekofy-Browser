@@ -422,13 +422,12 @@ export const orderPackageOptions = ({
 
       if (isArtist) {
         where.providerId = { eq: currentUserId };
-        where.clientId = { eq: otherUserId };
+
+        if (otherUserId) where.clientId = { eq: otherUserId };
       } else {
         where.clientId = { eq: currentUserId };
 
-        if (otherUserId) {
-          where.providerId = { eq: otherUserId };
-        }
+        if (otherUserId) where.providerId = { eq: otherUserId };
       }
 
       const result = await execute(OrderPackageQuery, { where, skip, take });

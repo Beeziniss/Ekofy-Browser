@@ -6,6 +6,7 @@ import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
 import { calculateDeadline } from "@/utils/calculate-deadline";
 import { formatDate } from "@/utils/format-date";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ConversationInfoRequestsProps {
   currentUserId: string;
@@ -14,11 +15,27 @@ interface ConversationInfoRequestsProps {
 }
 
 const ConversationInfoRequests = ({ currentUserId, otherUserId, isArtist }: ConversationInfoRequestsProps) => {
-  const { data: orderPackage } = useQuery(
-    orderPackageOptions({ currentUserId, otherUserId, skip: 0, take: 1, isArtist }),
-  );
-  const orderPackageData = orderPackage?.packageOrders?.items?.[0];
+  const {
+    data: orderPackage,
+    isPending,
+    isLoading,
+    isFetching,
+  } = useQuery(orderPackageOptions({ currentUserId, otherUserId, skip: 0, take: 1, isArtist }));
 
+  if (isPending || isLoading || isFetching) {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-[28px] w-48 rounded-md" />
+          <Skeleton className="h-6 w-24 rounded-md" />
+        </div>
+
+        <Skeleton className="h-16 w-full rounded-md" />
+      </div>
+    );
+  }
+
+  const orderPackageData = orderPackage?.packageOrders?.items?.[0];
   if (!orderPackageData) {
     return null;
   }
@@ -42,7 +59,7 @@ const ConversationInfoRequests = ({ currentUserId, otherUserId, isArtist }: Conv
         </Link>
       </div>
 
-      <Link href={`/activities/conversation/${otherUserId}`}>
+      <Link href={`/activities/conversation/${isArtist ? otherUserId : currentUserId}`}>
         <div className="bg-main-card-bg hover:bg-main-purple/10 space-y-3 rounded-lg p-2 transition-colors">
           <div className="flex items-center space-x-3">
             <div className="flex size-12 items-center justify-center rounded-md bg-purple-600">

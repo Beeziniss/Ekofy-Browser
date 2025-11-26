@@ -9,6 +9,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { playlistBriefOptions, checkTrackInPlaylistOptions } from "@/gql/options/client-options";
 import { addToPlaylistMutationOptions, removeFromPlaylistMutationOptions } from "@/gql/options/client-mutation-options";
 import { toast } from "sonner";
+import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
+import { PopularityActionType } from "@/gql/graphql";
 import { SearchIcon, PlusIcon, LockIcon, CheckIcon } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +27,7 @@ const PlaylistAddModal = ({ open, onOpenChange, trackId, trigger }: PlaylistAddM
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const { user, isAuthenticated } = useAuthStore();
+  const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
 
   const { data: playlistsData, isLoading } = useQuery({
     ...playlistBriefOptions(user?.userId || ""),
@@ -47,6 +50,11 @@ const PlaylistAddModal = ({ open, onOpenChange, trackId, trigger }: PlaylistAddM
       });
       // Don't close modal after successful addition
       toast.success("Track added to playlist successfully!");
+      // Track popularity for add to playlist
+      trackEngagementPopularity({
+        trackId,
+        actionType: PopularityActionType.AddToPlaylist,
+      });
     },
     onError: (error) => {
       console.error("Failed to add track to playlist:", error);
