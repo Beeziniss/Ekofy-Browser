@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { 
-  uploadCCCDImage, 
-  uploadArtistImage, 
+import {
+  uploadCCCDImage,
+  uploadArtistImage,
   validateImageFile,
-  CloudinaryUploadResponse 
+  CloudinaryUploadResponse,
 } from "@/utils/cloudinary-utils";
 
 interface UseCloudinaryUploadState {
@@ -30,117 +30,113 @@ export const useCloudinaryUpload = (): UseCloudinaryUploadState & UseCloudinaryU
   });
 
   const uploadCCCD = async (
-    file: File, 
-    side: "front" | "back", 
-    artistId?: string
+    file: File,
+    side: "front" | "back",
+    artistId?: string,
   ): Promise<CloudinaryUploadResponse | null> => {
     // Validate file first
     if (!validateImageFile(file, 10)) {
       return null;
     }
 
-    setState(prev => ({ 
-      ...prev, 
-      isUploading: true, 
-      uploadProgress: 0, 
-      error: null 
+    setState((prev) => ({
+      ...prev,
+      isUploading: true,
+      uploadProgress: 0,
+      error: null,
     }));
 
-    try {      
+    try {
       // Simulate progress for UX
-      setState(prev => ({ ...prev, uploadProgress: 25 }));
-      
+      setState((prev) => ({ ...prev, uploadProgress: 25 }));
+
       const result = await uploadCCCDImage(file, side, artistId);
-      
-      setState(prev => ({ ...prev, uploadProgress: 100 }));
-      
+
+      setState((prev) => ({ ...prev, uploadProgress: 100 }));
+
       // Store result
       const imageKey = `cccd_${side}`;
-      setState(prev => ({ 
-        ...prev, 
+      setState((prev) => ({
+        ...prev,
         uploadedImages: {
           ...prev.uploadedImages,
-          [imageKey]: result
+          [imageKey]: result,
         },
         isUploading: false,
-        uploadProgress: 0
+        uploadProgress: 0,
       }));
 
-      toast.success(`Upload CCCD ${side === "front" ? "mặt trước" : "mặt sau"} thành công!`);
-            
-      return result;
+      toast.success(`Upload CCCD ${side === "front" ? "front" : "back"} successful!`);
 
+      return result;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Upload failed";
-      
-      setState(prev => ({ 
-        ...prev, 
-        isUploading: false, 
+
+      setState((prev) => ({
+        ...prev,
+        isUploading: false,
         uploadProgress: 0,
-        error: errorMessage 
+        error: errorMessage,
       }));
 
-      toast.error(`Lỗi upload CCCD: ${errorMessage}`);      
+      toast.error(`Error upload CCCD: ${errorMessage}`);
       return null;
     }
   };
 
   const uploadProfile = async (
-    file: File, 
-    artistId: string, 
-    type: "avatar" | "banner"
+    file: File,
+    artistId: string,
+    type: "avatar" | "banner",
   ): Promise<CloudinaryUploadResponse | null> => {
     // Validate file first
-    if (!validateImageFile(file, 5)) { // Smaller limit for profile images
+    if (!validateImageFile(file, 5)) {
+      // Smaller limit for profile images
       return null;
     }
 
-    setState(prev => ({ 
-      ...prev, 
-      isUploading: true, 
-      uploadProgress: 0, 
-      error: null 
+    setState((prev) => ({
+      ...prev,
+      isUploading: true,
+      uploadProgress: 0,
+      error: null,
     }));
 
-    try {      
-      setState(prev => ({ ...prev, uploadProgress: 25 }));
-      
+    try {
+      setState((prev) => ({ ...prev, uploadProgress: 25 }));
+
       const result = await uploadArtistImage(file, artistId, type);
-      
-      setState(prev => ({ ...prev, uploadProgress: 100 }));
-      
+
+      setState((prev) => ({ ...prev, uploadProgress: 100 }));
+
       // Store result
-      setState(prev => ({ 
-        ...prev, 
+      setState((prev) => ({
+        ...prev,
         uploadedImages: {
           ...prev.uploadedImages,
-          [type]: result
+          [type]: result,
         },
         isUploading: false,
-        uploadProgress: 0
+        uploadProgress: 0,
       }));
-
-      toast.success(`Upload ${type === "avatar" ? "ảnh đại diện" : "ảnh bìa"} thành công!`);
-            
       return result;
-
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Upload failed";
-      
-      setState(prev => ({ 
-        ...prev, 
-        isUploading: false, 
+
+      setState((prev) => ({
+        ...prev,
+        isUploading: false,
         uploadProgress: 0,
-        error: errorMessage 
+        error: errorMessage,
       }));
 
-      toast.error(`Lỗi upload ${type}: ${errorMessage}`);      
+      toast.error(`Error uploading ${type}: ${errorMessage}`);
       return null;
     }
   };
 
   const clearError = () => {
-    setState(prev => ({ ...prev, error: null }));
+    setState((prev) => ({ ...prev, error: null }));
   };
 
   const resetUpload = () => {

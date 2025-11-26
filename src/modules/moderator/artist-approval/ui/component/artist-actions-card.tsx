@@ -15,7 +15,7 @@ interface ArtistActionsCardProps {
 
 export function ArtistActionsCard({
   artistName,
-  userId,
+  // userId,
   onApprove,
   onReject,
   // onCancel,
@@ -44,7 +44,7 @@ export function ArtistActionsCard({
 
   return (
     <>
-      <div className="flex justify-end space-x-4 mt-8">
+      <div className="mt-8 flex justify-end space-x-4">
         {/* <Button
           variant="outline"
           onClick={onCancel}
@@ -53,18 +53,10 @@ export function ArtistActionsCard({
         >
           Cancel
         </Button> */}
-        <Button
-          onClick={handleReject}
-          disabled={isLoading}
-          className="bg-red-600 hover:bg-red-700 text-white"
-        >
+        <Button onClick={handleReject} disabled={isLoading} className="bg-red-600 text-white hover:bg-red-700">
           Reject
         </Button>
-        <Button
-          onClick={handleApprove}
-          disabled={isLoading}
-          className="bg-green-600 hover:bg-green-700 text-white"
-        >
+        <Button onClick={handleApprove} disabled={isLoading} className="bg-green-600 text-white hover:bg-green-700">
           Approve
         </Button>
       </div>

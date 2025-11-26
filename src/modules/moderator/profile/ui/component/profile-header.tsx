@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
 import { UserProfile } from "@/types/profile";
@@ -24,26 +24,26 @@ const ProfileHeader = ({ userProfile, onEditClick }: ProfileHeaderProps) => {
   // const displayName = userProfile.email.split("@")[0].replace(".", " ").replace(/\b\w/g, l => l.toUpperCase());
 
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className="mb-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <Avatar className="h-16 w-16">
           {/* <AvatarImage src="/placeholder-avatar.png" alt={displayName} /> */}
-          <AvatarFallback className="text-lg font-semibold bg-gradient-to-br from-purple-400 to-blue-600 text-white">
+          <AvatarFallback className="bg-gradient-to-br from-purple-400 to-blue-600 text-lg font-semibold text-white">
             {getInitials(userProfile.email)}
           </AvatarFallback>
         </Avatar>
-        
+
         <div>
           <h1 className="text-2xl font-bold text-white">{userProfile.fullName}</h1>
           <p className="text-gray-400">{userProfile.email}</p>
         </div>
       </div>
 
-      <Button 
+      <Button
         onClick={onEditClick}
         variant="destructive"
         size="lg"
-        className="flex items-center gap-2 primary_gradient hover:opacity-60"
+        className="primary_gradient flex items-center gap-2 hover:opacity-60"
       >
         <Edit className="h-4 w-4" />
         Edit

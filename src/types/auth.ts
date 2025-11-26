@@ -45,12 +45,6 @@ export interface AdminLoginData {
   role: UserRole;
 }
 
-export type IUserCurrent = Base<IUserCurrentData>;
-export type ListenerLoginResponse = Base<ListenerLoginData>;
-export type ArtistLoginResponse = Base<ArtistLoginData>;
-export type ModeratorLoginResponse = Base<ModeratorLoginData>;
-export type AdminLoginResponse = Base<AdminLoginData>;
-
 export interface RegisterListenerData {
   email: string;
   password: string;
@@ -60,7 +54,7 @@ export interface RegisterListenerData {
   gender: string;
   displayName: string;
 }
-    
+
 export interface RegisterArtistData {
   email: string;
   password: string;
@@ -73,7 +67,7 @@ export interface RegisterArtistData {
   // Artist specific
   stageName?: string;
   artistType: ArtistType;
-  
+
   // Members (for groups)
   members: {
     fullName: string;
@@ -81,7 +75,7 @@ export interface RegisterArtistData {
     phoneNumber: string;
     gender: UserGender;
   }[];
-  
+
   // Identity card information
   identityCard: {
     number: string;
@@ -102,5 +96,28 @@ export interface RegisterArtistData {
   };
 }
 
-// export type RegisterListenerDataResponse = Base<RegisterListenerData>;
+export interface RefreshTokenData {
+  tokenType: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
+export interface ForgotPasswordRequestData {
+  email: string;
+}
+
+export interface ResetPasswordRequestData {
+  email: string;
+  otpCode: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export type IUserCurrent = Base<IUserCurrentData>;
+export type ListenerLoginResponse = Base<ListenerLoginData>;
+export type ArtistLoginResponse = Base<ArtistLoginData>;
+export type ModeratorLoginResponse = Base<ModeratorLoginData>;
+export type AdminLoginResponse = Base<AdminLoginData>;
 export type RegisterArtistResponse = Base<RegisterArtistData>;
+export type RefreshTokenResponse = Base<RefreshTokenData>;

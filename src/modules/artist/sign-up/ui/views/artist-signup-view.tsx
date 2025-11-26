@@ -1,9 +1,9 @@
 "use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
-import { 
+import React from "react";
+// import { useRouter } from 'next/navigation';
+import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
+import {
   ArtistSignUpFormSection,
   // ArtistOTPVerificationSection, // Commented out as OTP is no longer used
   ArtistCCCDVerificationSection,
@@ -11,21 +11,21 @@ import {
   ArtistTypeSelectionSection,
   ArtistMembersSection,
   ArtistImageSection,
-} from '../sections';
+} from "../sections";
 
-import ArtistAuthLayout from '../layouts/artist-signup-layout';
+import ArtistAuthLayout from "../layouts/artist-signup-layout";
 
 const ArtistSignUpView = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const { currentStep, goToPreviousStep } = useArtistSignUpStore();
 
   // Navigation after successful registration completion
-  const handleRegistrationSuccess = () => {    
-    // Navigate to artist dashboard or success page
-    setTimeout(() => {
-      router.push('/artist/login'); // or wherever you want to redirect after successful registration
-    }, 1500);
-  };
+  // const handleRegistrationSuccess = () => {
+  //   // Navigate to artist dashboard or success page
+  //   setTimeout(() => {
+  //     router.push('/artist/login'); // or wherever you want to redirect after successful registration
+  //   }, 1500);
+  // };
 
   // Handle back navigation
   const handleBack = () => {
@@ -35,61 +35,61 @@ const ArtistSignUpView = () => {
   // Render component based on current step
   const renderStepComponent = () => {
     switch (currentStep) {
-      case 'form':
+      case "form":
         return (
           <ArtistAuthLayout>
-            <ArtistSignUpFormSection 
+            <ArtistSignUpFormSection
               onNext={() => {}} // Handled by store
             />
             <ArtistImageSection />
           </ArtistAuthLayout>
         );
-      
-      case 'cccd':
+
+      case "cccd":
         return (
-          <ArtistCCCDVerificationSection 
+          <ArtistCCCDVerificationSection
             onNext={() => {}} // Handled by store
             onBack={handleBack}
           />
         );
-      
-      case 'type':
+
+      case "type":
         return (
-          <ArtistTypeSelectionSection 
+          <ArtistTypeSelectionSection
             onNext={() => {}} // Handled by store
             onBack={handleBack}
           />
         );
-      
-      case 'identity':
+
+      case "identity":
         return (
-          <ArtistIdentitySection 
+          <ArtistIdentitySection
             onNext={() => {}} // Handled by store
             onBack={handleBack}
           />
         );
-      
-      case 'members':
+
+      case "members":
         return (
-          <ArtistMembersSection 
+          <ArtistMembersSection
             onNext={() => {}} // Handled by store
             onBack={handleBack}
           />
         );
-      
+
       // OTP step is no longer used
       // case 'otp':
       //   return (
-      //     <ArtistOTPVerificationSection 
+      //     <ArtistOTPVerificationSection
       //       onNext={handleRegistrationSuccess} // Final step navigation
       //       onBack={handleBack}
       //     />
       //   );
-      
+
       default:
         return (
-         <ArtistAuthLayout>
-            <ArtistSignUpFormSection 
+          <ArtistAuthLayout>
+            <ArtistSignUpFormSection
               onNext={() => {}} // Handled by store
             />
             <ArtistImageSection />
@@ -98,11 +98,7 @@ const ArtistSignUpView = () => {
     }
   };
 
-  return (
-    <>
-      {renderStepComponent()}
-    </>
-  );
+  return <>{renderStepComponent()}</>;
 };
 
 export default ArtistSignUpView;

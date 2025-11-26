@@ -35,7 +35,7 @@ export interface FPTAIData {
   };
   type_new?: string;
   type?: string;
-  
+
   // Back side data
   features?: string;
   features_prob?: string;
@@ -67,7 +67,7 @@ export interface ParsedCCCDData {
   placeOfOrigin: string;
   address: string;
   validUntil: string;
-  
+
   // Address breakdown
   addressEntities: {
     province: string;
@@ -75,7 +75,7 @@ export interface ParsedCCCDData {
     ward: string;
     street: string;
   };
-  
+
   // Back side info
   issueDate?: string;
   issueLocation?: string;
@@ -102,7 +102,7 @@ export const fptAIService = {
     try {
       const response = await axios.post(FPT_AI_URL, formData, {
         headers: {
-          "api_key": API_KEY,
+          api_key: API_KEY,
           "Content-Type": "multipart/form-data",
         },
       });
@@ -110,7 +110,7 @@ export const fptAIService = {
       return response.data;
     } catch (error) {
       console.error("FPT AI Error:", error);
-      throw new Error("Không thể đọc thông tin CCCD. Vui lòng thử lại.");
+      throw new Error("Unable to read ID card information. Please try again.");
     }
   },
 
@@ -120,16 +120,19 @@ export const fptAIService = {
    * @param backResponse - Response from back side analysis (optional)
    * @returns Structured CCCD data
    */
-  parseCCCDResponse: (
-    frontResponse?: FPTAIResponse,
-    backResponse?: FPTAIResponse
-  ): ParsedCCCDData | null => {
+  parseCCCDResponse: (frontResponse?: FPTAIResponse, backResponse?: FPTAIResponse): ParsedCCCDData | null => {
+    console.log("🔍 Parsing FPT AI responses:", { frontResponse, backResponse }); // Debug log
+
     if (!frontResponse?.data?.[0]) {
+      console.log("❌ No front response data found");
       return null;
     }
 
     const frontData = frontResponse.data[0];
     const backData = backResponse?.data?.[0];
+
+    console.log("📄 Front data:", frontData);
+    console.log("📄 Back data:", backData);
 
     // Convert sex format
     const convertSex = (sex: string): string => {
@@ -138,14 +141,14 @@ export const fptAIService = {
       return "Other";
     };
 
-    // Format date from DD/MM/YYYY to ISO string
+    // Format date to keep DD/MM/YYYY format (no conversion to ISO)
     const formatDate = (dateStr: string): string => {
       if (!dateStr) return "";
-      const [day, month, year] = dateStr.split("/");
-      return new Date(`${year}-${month}-${day}`).toISOString();
+      // Keep original DD/MM/YYYY format instead of converting to ISO
+      return dateStr;
     };
 
-    return {
+    const result = {
       id: frontData.id || "",
       name: frontData.name || "",
       dateOfBirth: formatDate(frontData.dob || ""),
@@ -164,6 +167,9 @@ export const fptAIService = {
       issueLocation: backData?.issue_loc || "",
       features: backData?.features || "",
     };
+
+    console.log("✅ Parsed result:", result);
+    return result;
   },
 
   /**

@@ -2,23 +2,9 @@ import { graphql } from "@/gql";
 import PlaylistTrackList from "../sections/playlist-track-list";
 import PlaylistInfoSection from "../sections/playlist-info-section";
 
-export const AddToPlaylistMutation = graphql(`
-  mutation AddToPlaylist($addToPlaylistRequest: AddToPlaylistRequestInput!) {
-    addToPlaylist(addToPlaylistRequest: $addToPlaylistRequest)
-  }
-`);
-
-export const RemoveFromPlaylistMutation = graphql(`
-  mutation RemoveFromPlaylist(
-    $addToPlaylistRequest: AddToPlaylistRequestInput!
-  ) {
-    removeFromPlaylist(addToPlaylistRequest: $addToPlaylistRequest)
-  }
-`);
-
 export const PlaylistBriefQuery = graphql(`
-  query PlaylistBrief {
-    playlists {
+  query PlaylistBrief($userId: String!) {
+    playlists(where: { userId: { eq: $userId } }) {
       items {
         id
         name
@@ -54,7 +40,13 @@ export const PlaylistDetailQuery = graphql(`
         }
         userId
         tracks {
-          id
+          items {
+            id
+          }
+          totalCount
+        }
+        tracksInfo {
+          trackId
         }
         createdAt
         updatedAt
@@ -69,11 +61,22 @@ export const PlaylistDetailTrackListQuery = graphql(`
       items {
         id
         tracks {
-          id
-          name
+          items {
+            id
+            name
+            coverImage
+            isExplicit
+            mainArtistIds
+            mainArtists {
+              items {
+                stageName
+              }
+            }
+          }
         }
         tracksInfo {
           trackId
+          addedTime
         }
       }
     }

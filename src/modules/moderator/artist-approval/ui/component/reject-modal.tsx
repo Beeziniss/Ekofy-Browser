@@ -35,19 +35,19 @@ export function RejectModal({ isOpen, onClose, onConfirm, isLoading = false, art
   };
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-gray-900 border-gray-700 text-white">
+      <DialogContent className="border-gray-700 bg-gray-900 text-white">
         <DialogHeader>
           <DialogTitle className="text-white">Reject Artist Registration</DialogTitle>
           <DialogDescription className="text-gray-300">
             Please provide a reason for rejecting this artist registration.
           </DialogDescription>
         </DialogHeader>
-        
-        <div className="py-4 space-y-4">
+
+        <div className="space-y-4 py-4">
           <p className="text-gray-300">
             You are about to reject <span className="font-semibold text-white">{artistName}</span> as an artist.
           </p>
-          
+
           <div className="space-y-2">
             <Label htmlFor="rejection-reason" className="text-white">
               Rejection Reason <span className="text-red-400">*</span>
@@ -57,7 +57,7 @@ export function RejectModal({ isOpen, onClose, onConfirm, isLoading = false, art
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Please explain why this registration is being rejected..."
-              className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 min-h-[100px]"
+              className="min-h-[100px] border-gray-600 bg-gray-800 text-white placeholder-gray-400"
               disabled={isLoading}
             />
           </div>
@@ -68,7 +68,7 @@ export function RejectModal({ isOpen, onClose, onConfirm, isLoading = false, art
             variant="outline"
             onClick={handleClose}
             disabled={isLoading}
-            className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+            className="border-gray-600 bg-transparent text-gray-300 hover:bg-gray-800 hover:text-white"
           >
             Cancel
           </Button>
@@ -82,6 +82,5 @@ export function RejectModal({ isOpen, onClose, onConfirm, isLoading = false, art
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

@@ -21,13 +21,7 @@ interface PlaylistDeleteModalProps {
   onSuccess?: () => void;
 }
 
-const PlaylistDeleteModal = ({
-  open,
-  onOpenChange,
-  playlistId,
-  playlistName,
-  onSuccess,
-}: PlaylistDeleteModalProps) => {
+const PlaylistDeleteModal = ({ open, onOpenChange, playlistId, playlistName, onSuccess }: PlaylistDeleteModalProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -56,8 +50,8 @@ const PlaylistDeleteModal = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the
-            playlist &ldquo;{playlistName}&rdquo; and remove all its content.
+            This action cannot be undone. This will permanently delete the playlist &ldquo;{playlistName}&rdquo; and
+            remove all its content.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

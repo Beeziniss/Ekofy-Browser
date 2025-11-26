@@ -9,19 +9,9 @@ export const useCountStore = create<CountStore>()(
       count: 0,
 
       // Actions
-      increment: (qty: number) =>
-        set(
-          (state) => ({ count: state.count + qty }),
-          false,
-          "count/increment",
-        ),
+      increment: (qty: number) => set((state) => ({ count: state.count + qty }), false, "count/increment"),
 
-      decrement: (qty: number) =>
-        set(
-          (state) => ({ count: state.count - qty }),
-          false,
-          "count/decrement",
-        ),
+      decrement: (qty: number) => set((state) => ({ count: state.count - qty }), false, "count/decrement"),
 
       reset: () => set({ count: 0 }, false, "count/reset"),
     }),

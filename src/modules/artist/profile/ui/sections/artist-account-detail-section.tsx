@@ -1,16 +1,41 @@
 import React from "react";
 import DetailItem from "@/modules/client/profile/ui/components/detail-item";
 
-const accountFields = [
-  { title: "Stage name", value: "A Nguyen" },
-  { title: "Created date", value: "2024-01-15" },
-  { title: "Membership status", value: "Active" },
-  { title: "Account verification", value: "Verified" },
-];
+interface ArtistAccountDetailSectionProps {
+  data?: {
+    stageName?: string;
+  };
+  createdAt?: string;
+  userStatus?: string;
+  artistType?: string;
+  membershipStatus?: string;
+}
 
-export default function ArtistAccountDetailSection() {
+export default function ArtistAccountDetailSection({
+  data,
+  createdAt,
+  userStatus,
+  artistType,
+  membershipStatus,
+}: ArtistAccountDetailSectionProps) {
+  const humanize = (value?: string | null) =>
+    value
+      ? value
+          .replaceAll("_", " ")
+          .toLowerCase()
+          .replace(/\b\w/g, (c) => c.toUpperCase())
+      : "-";
+
+  const accountFields = [
+    { title: "Stage name", value: data?.stageName || "-" },
+    { title: "Created date", value: createdAt || "-" },
+    { title: "Artist type", value: humanize(artistType) },
+    { title: "Membership status", value: membershipStatus || "-" },
+    { title: "Account status", value: humanize(userStatus) },
+  ];
+
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <div className="flex items-end justify-between gap-x-3">
         <h2 className="text-xl font-bold">Account Details</h2>
       </div>

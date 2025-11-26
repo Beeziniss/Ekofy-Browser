@@ -1,19 +1,16 @@
 "use client";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import {
   LayoutDashboardIcon,
   ShieldCheck,
   Flag,
-  UserCheck,
+  // UserCheck,
   UserRoundCheck,
-  Settings,
+  // Settings,
+  // LayoutPanelLeft,
+  AudioLines,
+  // PackageCheck,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
@@ -35,7 +32,7 @@ const data = {
     {
       name: "Track Approval",
       url: "/moderator/track-approval",
-      icon: UserCheck,
+      icon: AudioLines,
     },
     {
       name: "Report Control",
@@ -47,6 +44,21 @@ const data = {
       url: "/moderator/artist-approval",
       icon: UserRoundCheck,
     },
+    {
+      name: "User Management",
+      url: "/moderator/user-management",
+      icon: LayoutDashboardIcon,
+    },
+    {
+      name: "Approval Histories",
+      url: "/moderator/approval-histories",
+      icon: ShieldCheck,
+    },
+    // {
+    //   name: "Approval Service Packages",
+    //   url: "/moderator/approval-service-packages",
+    //   icon: PackageCheck,
+    // },
   ],
 };
 

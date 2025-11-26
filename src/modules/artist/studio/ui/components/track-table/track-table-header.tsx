@@ -1,16 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,8 +81,7 @@ const TrackTableHeader = ({
     const currentSortOrder = searchParams.get("sortOrder") || "desc";
 
     // Toggle sort order if same column, otherwise default to desc
-    const newSortOrder =
-      currentSortBy === sortBy && currentSortOrder === "desc" ? "asc" : "desc";
+    const newSortOrder = currentSortBy === sortBy && currentSortOrder === "desc" ? "asc" : "desc";
 
     // onSort?.(sortBy, newSortOrder);
     updateURLParams({ sortBy, sortOrder: newSortOrder });
@@ -115,9 +108,7 @@ const TrackTableHeader = ({
         <span className="text-main-white text-sm">
           {totalTracks} track{totalTracks !== 1 ? "s" : ""}
           {serverTotalCount && totalTracks !== serverTotalCount && (
-            <span className="text-main-grey ml-1">
-              (of {serverTotalCount} total)
-            </span>
+            <span className="text-main-grey ml-1">of {serverTotalCount} total</span>
           )}
         </span>
       </div>
@@ -136,16 +127,8 @@ const TrackTableHeader = ({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              className="text-main-grey-dark-1 flex items-center gap-2 hover:text-white"
-            >
-              <svg
-                className="size-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+            <Button variant="outline" className="text-main-grey-dark-1 flex items-center gap-2 hover:text-white">
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -158,37 +141,22 @@ const TrackTableHeader = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => handleSort("releaseDate")}
-              className="flex items-center justify-between"
-            >
+            <DropdownMenuItem onClick={() => handleSort("releaseDate")} className="flex items-center justify-between">
               Date
               {currentSortBy === "releaseDate" && (
-                <span className="text-xs">
-                  {currentSortOrder === "desc" ? "↓" : "↑"}
-                </span>
+                <span className="text-xs">{currentSortOrder === "desc" ? "↓" : "↑"}</span>
               )}
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleSort("streamCount")}
-              className="flex items-center justify-between"
-            >
+            <DropdownMenuItem onClick={() => handleSort("streamCount")} className="flex items-center justify-between">
               Streams
               {currentSortBy === "streamCount" && (
-                <span className="text-xs">
-                  {currentSortOrder === "desc" ? "↓" : "↑"}
-                </span>
+                <span className="text-xs">{currentSortOrder === "desc" ? "↓" : "↑"}</span>
               )}
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleSort("favoriteCount")}
-              className="flex items-center justify-between"
-            >
+            <DropdownMenuItem onClick={() => handleSort("favoriteCount")} className="flex items-center justify-between">
               Favorites
               {currentSortBy === "favoriteCount" && (
-                <span className="text-xs">
-                  {currentSortOrder === "desc" ? "↓" : "↑"}
-                </span>
+                <span className="text-xs">{currentSortOrder === "desc" ? "↓" : "↑"}</span>
               )}
             </DropdownMenuItem>
           </DropdownMenuContent>

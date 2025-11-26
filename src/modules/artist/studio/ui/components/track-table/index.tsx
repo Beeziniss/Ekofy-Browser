@@ -11,14 +11,7 @@ import {
   OnChangeFn,
 } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
 import Image from "next/image";
 import {
@@ -30,13 +23,7 @@ import {
   MessageSquareTextIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Pagination,
   PaginationContent,
@@ -58,7 +45,7 @@ export interface Track {
   isExplicit: boolean;
   releaseInfo: {
     releaseDate?: string;
-    isReleased: boolean;
+    isRelease: boolean;
   };
 }
 
@@ -94,10 +81,7 @@ const TrackTable = ({
       id: "select",
       header: ({ table }) => (
         <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
+          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
           className="border-main-white"
@@ -141,9 +125,7 @@ const TrackTable = ({
               >
                 {track.name}
               </Link>
-              <div className="text-main-grey truncate text-sm">
-                Track Author name
-              </div>
+              <div className="text-main-grey truncate text-sm">Track Author name</div>
             </div>
           </div>
         );
@@ -153,7 +135,7 @@ const TrackTable = ({
       accessorKey: "releaseInfo.isReleased",
       header: "Privacy",
       cell: ({ row }) => {
-        const isReleased = row.original.releaseInfo.isReleased;
+        const isReleased = row.original.releaseInfo.isRelease;
         return (
           <div className="flex items-center gap-2">
             {isReleased ? (
@@ -161,9 +143,7 @@ const TrackTable = ({
             ) : (
               <LockIcon className="text-main-white size-4" />
             )}
-            <span className="text-main-white text-sm">
-              {isReleased ? "Public" : "Private"}
-            </span>
+            <span className="text-main-white text-sm">{isReleased ? "Public" : "Private"}</span>
           </div>
         );
       },
@@ -190,13 +170,8 @@ const TrackTable = ({
       header: "Streams",
       cell: ({ row }) => {
         const streamCount = row.original.streamCount;
-        const formattedCount =
-          streamCount >= 1000
-            ? `${Math.floor(streamCount / 1000)}K`
-            : streamCount.toString();
-        return (
-          <span className="text-main-white text-sm">{formattedCount}</span>
-        );
+        const formattedCount = streamCount >= 1000 ? `${Math.floor(streamCount / 1000)}K` : streamCount.toString();
+        return <span className="text-main-white text-sm">{formattedCount}</span>;
       },
     },
     {
@@ -207,9 +182,7 @@ const TrackTable = ({
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-1">
               <HeartIcon className="text-main-grey-dark-1 size-4" />
-              <span className="text-main-grey-dark-1 text-sm">
-                {row.original.favoriteCount || "—"}
-              </span>
+              <span className="text-main-grey-dark-1 text-sm">{row.original.favoriteCount || "—"}</span>
             </div>
             <div className="flex items-center gap-1">
               <MessageSquareTextIcon className="text-main-grey-dark-1 size-4" />
@@ -262,11 +235,7 @@ const TrackTable = ({
       for (let i = 1; i <= totalPages; i++) {
         items.push(
           <PaginationItem key={i}>
-            <PaginationLink
-              onClick={() => onPageChange?.(i)}
-              isActive={currentPage === i}
-              className="cursor-pointer"
-            >
+            <PaginationLink onClick={() => onPageChange?.(i)} isActive={currentPage === i} className="cursor-pointer">
               {i}
             </PaginationLink>
           </PaginationItem>,
@@ -276,11 +245,7 @@ const TrackTable = ({
       // Show first page
       items.push(
         <PaginationItem key={1}>
-          <PaginationLink
-            onClick={() => onPageChange?.(1)}
-            isActive={currentPage === 1}
-            className="cursor-pointer"
-          >
+          <PaginationLink onClick={() => onPageChange?.(1)} isActive={currentPage === 1} className="cursor-pointer">
             1
           </PaginationLink>
         </PaginationItem>,
@@ -303,11 +268,7 @@ const TrackTable = ({
         if (i !== 1 && i !== totalPages) {
           items.push(
             <PaginationItem key={i}>
-              <PaginationLink
-                onClick={() => onPageChange?.(i)}
-                isActive={currentPage === i}
-                className="cursor-pointer"
-              >
+              <PaginationLink onClick={() => onPageChange?.(i)} isActive={currentPage === i} className="cursor-pointer">
                 {i}
               </PaginationLink>
             </PaginationItem>,
@@ -352,12 +313,7 @@ const TrackTable = ({
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead key={header.id} className="text-main-white">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 );
               })}
@@ -367,15 +323,9 @@ const TrackTable = ({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className="border-gray-800"
-              >
+              <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="border-gray-800">
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+                  <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                 ))}
               </TableRow>
             ))
@@ -398,10 +348,7 @@ const TrackTable = ({
         <div className="flex items-center gap-4">
           <div className="flex shrink-0 items-center gap-2">
             <span className="text-main-grey text-sm">Rows per page:</span>
-            <Select
-              value={pageSize.toString()}
-              onValueChange={(value) => onPageSizeChange?.(parseInt(value))}
-            >
+            <Select value={pageSize.toString()} onValueChange={(value) => onPageSizeChange?.(parseInt(value))}>
               <SelectTrigger className="h-8 w-[70px]">
                 <SelectValue />
               </SelectTrigger>
@@ -427,9 +374,7 @@ const TrackTable = ({
 
                 <PaginationItem>
                   <PaginationNext
-                    onClick={() =>
-                      onPageChange?.(Math.min(totalPages, currentPage + 1))
-                    }
+                    onClick={() => onPageChange?.(Math.min(totalPages, currentPage + 1))}
                     className={`cursor-pointer ${!hasNextPage ? "pointer-events-none opacity-50" : ""}`}
                   />
                 </PaginationItem>

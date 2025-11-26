@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
-import { RegisterArtistData, RegisterArtistResponse } from "@/types/auth";
+import { RegisterArtistData } from "@/types/auth";
 import { useAuthStore } from "@/store";
 import { setUserInfoToLocalStorage } from "@/utils/auth-utils";
 import { toast } from "sonner";
@@ -10,29 +10,29 @@ import { User } from "@/gql/graphql";
 import { mapGraphQLUserRoleToLocal } from "@/utils/signup-utils";
 
 // Simple error formatter for artist signup
-const formatArtistSignUpError = (error: any): string => {
+const formatArtistSignUpError = (error: unknown): string => {
   if (isAxiosError(error)) {
     const response = error.response;
     const data = response?.data;
-    
+
     // Use detail if available, otherwise fallback to generic message
     if (data?.detail) {
       return data.detail;
     }
-    
+
     // Fallback based on status
     if (response?.status === 409) {
-      return "Dữ liệu đã tồn tại trong hệ thống.";
+      return "An account with this email already exists.";
     }
-    
-    return error.message || "Đã xảy ra lỗi. Vui lòng thử lại.";
+
+    return error.message || "An error occurred. Please try again.";
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }
-  
-  return "Đã xảy ra lỗi. Vui lòng thử lại.";
+
+  return "An error occurred. Please try again.";
 };
 
 interface ArtistSignUpResponse {
@@ -43,6 +43,7 @@ interface ArtistSignUpResponse {
 
 const useArtistSignUp = (onNavigate?: () => void) => {
   const { setUserData, setAuthenticated, setLoading } = useAuthStore();
+  const { resetForm, clearSessionData } = useArtistSignUpStore();
   // Removed currentStep as OTP is no longer used
   // const { currentStep } = useArtistSignUpStore();
 
@@ -59,10 +60,7 @@ const useArtistSignUp = (onNavigate?: () => void) => {
     mutationFn: async (registerData: RegisterArtistData) => {
       setLoading(true);
       try {
-        // Send raw RegisterArtistData directly to API - no wrapping needed
-        console.log("🚀 Sending registration data:", registerData);
-        
-        const response = await authApi.artist.register(registerData as any); // Cast to avoid type mismatch
+        const response = await authApi.artist.register(registerData); // Cast to avoid type mismatch
         return response;
       } catch (error) {
         throw new Error(formatArtistSignUpError(error));
@@ -73,9 +71,9 @@ const useArtistSignUp = (onNavigate?: () => void) => {
     onSuccess: async (data: ArtistSignUpResponse) => {
       try {
         // Show success message immediately
-        const message = data?.message || "Đăng ký nghệ sĩ thành công! Chúng tôi sẽ liên hệ với bạn trong vòng 48 giờ.";
+        const message = data?.message || "Artist registration successful! We will contact you within 48 hours.";
         toast.success(message);
-        
+
         // If user data is returned, store it (some APIs return user data immediately)
         if (data?.user) {
           // Map GraphQL User to IUserLocalStorage format
@@ -85,19 +83,22 @@ const useArtistSignUp = (onNavigate?: () => void) => {
             artistId: undefined, // Will be set by auth system
             listenerId: undefined, // Will be set by auth system
           };
-          
+
           await setUserInfoToLocalStorage(userData);
           setUserData(userData);
           setAuthenticated(true);
-        }        
-        
+        }
+
         // Always redirect to login after successful registration (no OTP needed)
         setTimeout(() => {
+          // Clear state before navigation
+          resetForm();
+          clearSessionData();
+
           if (onNavigate) {
             onNavigate();
           }
         }, 2000); // Give user time to read the success message
-        
       } catch (error) {
         console.error("Failed to process artist sign-up success:", error);
       }
@@ -107,6 +108,8 @@ const useArtistSignUp = (onNavigate?: () => void) => {
       const errorMessage = formatArtistSignUpError(error);
       toast.error(errorMessage);
       setAuthenticated(false);
+      // Clear sensitive session data on error for security
+      clearSessionData();
     },
   });
 

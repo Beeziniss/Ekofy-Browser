@@ -1,11 +1,10 @@
+import { useAudioStore } from "@/store";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
+import { PauseButton, PlayButton } from "@/assets/icons";
 import { formatMilliseconds } from "@/utils/format-milliseconds";
-import { useAudioStore } from "@/store";
 import { Repeat, Shuffle, SkipBack, SkipForward } from "lucide-react";
-import Image from "next/image";
-import { toast } from "sonner";
+import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
 
 const PlayerControl = () => {
   const {
@@ -36,9 +35,7 @@ const PlayerControl = () => {
         <Button
           variant="ghost"
           size="iconXs"
-          className={`text-main-white hover:text-main-grey ${
-            isShuffling ? "text-main-purple" : ""
-          }`}
+          className={`text-main-white hover:text-main-grey ${isShuffling ? "text-main-purple" : ""}`}
           disabled={!currentTrack}
           onClick={toggleShuffle}
         >
@@ -63,27 +60,10 @@ const PlayerControl = () => {
           variant="ghost"
           size="iconMd"
           className="text-main-white duration-0 hover:brightness-90"
-          onClick={() => {
-            togglePlayPause();
-            toast.success(isPlaying ? "Paused" : "Playing");
-          }}
+          onClick={togglePlayPause}
           disabled={!currentTrack}
         >
-          {isPlaying ? (
-            <Image
-              src={"/pause-button.svg"}
-              alt="Ekofy Pause Button"
-              width={32}
-              height={32}
-            />
-          ) : (
-            <Image
-              src={"/play-button.svg"}
-              alt="Ekofy Play Button"
-              width={32}
-              height={32}
-            />
-          )}
+          {isPlaying ? <PauseButton className="size-8" /> : <PlayButton className="size-8" />}
         </Button>
       </TooltipButton>
 
@@ -103,9 +83,7 @@ const PlayerControl = () => {
         <Button
           variant="ghost"
           size="iconXs"
-          className={`text-main-white hover:text-main-grey ${
-            isRepeating ? "text-main-purple" : ""
-          }`}
+          className={`text-main-white hover:text-main-grey ${isRepeating ? "text-main-purple" : ""}`}
           onClick={toggleRepeat}
           disabled={!currentTrack}
         >
@@ -114,7 +92,7 @@ const PlayerControl = () => {
       </TooltipButton>
 
       <span
-        className={`text-xs font-semibold ${!currentTrack ? "pointer-events-none opacity-50" : "text-main-white"}`}
+        className={`flex w-11 min-w-11 justify-center text-xs font-semibold ${!currentTrack ? "pointer-events-none opacity-50" : "text-main-white"}`}
       >
         {formatMilliseconds(currentTime)}
       </span>
@@ -129,7 +107,7 @@ const PlayerControl = () => {
       />
 
       <span
-        className={`text-xs font-semibold ${!currentTrack ? "pointer-events-none opacity-50" : "text-main-white"}`}
+        className={`flex w-11 min-w-11 justify-center text-xs font-semibold ${!currentTrack ? "pointer-events-none opacity-50" : "text-main-white"}`}
       >
         {formatMilliseconds(duration)}
       </span>

@@ -32,19 +32,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body
-        className={`${beVietNamPro.variable} ${poppins.variable} bg-main-dark-bg font-bepro antialiased`}
-      >
+      <body className={`${beVietNamPro.variable} ${poppins.variable} bg-main-dark-bg font-bepro antialiased`}>
         <Providers>{children}</Providers>
         <Toaster
           theme="dark"
           richColors
-          position="bottom-right"
+          position="bottom-center"
           offset={{
             bottom: 60,
             right: 12,
           }}
-          duration={1500}
+          duration={3500}
         />
       </body>
     </html>

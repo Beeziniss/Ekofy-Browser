@@ -1,11 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
 import { useAuthStore } from "@/store";
-import {
-  setUserInfoToLocalStorage,
-  setAccessTokenToLocalStorage,
-  formatAuthError,
-} from "@/utils/auth-utils";
+import { setUserInfoToLocalStorage, setAccessTokenToLocalStorage, formatAuthError } from "@/utils/auth-utils";
 import { ListenerLoginResponse } from "@/types/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -13,6 +9,7 @@ import { useRouter } from "next/navigation";
 interface SignInCredentials {
   email: string;
   password: string;
+  isRememberMe: boolean;
 }
 
 const useSignIn = () => {
@@ -29,9 +26,9 @@ const useSignIn = () => {
     isSuccess,
     reset,
   } = useMutation<ListenerLoginResponse, Error, SignInCredentials>({
-    mutationFn: async ({ email, password }: SignInCredentials) => {
+    mutationFn: async ({ email, password, isRememberMe }: SignInCredentials) => {
       try {
-        const response = await authApi.listener.login(email, password);
+        const response = await authApi.listener.login(email, password, isRememberMe);
         return response;
       } catch (error) {
         throw new Error(formatAuthError(error));

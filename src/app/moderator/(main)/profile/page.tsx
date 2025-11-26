@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { moderatorProfileOptions } from "@/gql/options/moderator-options";
 import ModeratorProfileView from "@/modules/moderator/profile/ui/views/moderator-profile-view";
@@ -8,11 +8,14 @@ import { useAuthStore } from "@/store";
 
 const ProfilePage = () => {
   const queryClient = getQueryClient();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
 
-  const userId = user?.userId || ""; // Get user ID from auth context
+  const userId = user?.userId; // Get user ID from auth context
 
-  void queryClient.prefetchQuery(moderatorProfileOptions(userId));
+  // Only prefetch query if user is authenticated and has userId
+  if (isAuthenticated && userId) {
+    void queryClient.prefetchQuery(moderatorProfileOptions(userId));
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
@@ -22,4 +25,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-

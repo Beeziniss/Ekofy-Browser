@@ -1,17 +1,100 @@
 "use client";
 
+import { toast } from "sonner";
+import { useAuthStore } from "@/store";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateArtistProfileMutationOptions } from "@/gql/options/artist-mutation-options";
+import { useArtistProfile } from "../../../hooks/use-artist-profile";
+
 export default function BiographySection() {
+  const { biography } = useArtistProfile();
+  const [isEditing, setIsEditing] = useState(false);
+  const [value, setValue] = useState("");
+  const { user } = useAuthStore();
+  const userId = user?.userId || "";
+  const qc = useQueryClient();
+
+  const updateProfileMutation = useMutation({
+    ...updateArtistProfileMutationOptions,
+    onSuccess: () => {
+      // Invalidate and refetch profile data
+      qc.invalidateQueries({ queryKey: ["artist-profile", userId] });
+      qc.invalidateQueries({ queryKey: ["artist", userId] });
+      toast.success("Your biography has been updated.");
+      setIsEditing(false);
+    },
+    onError: (error) => {
+      const raw = error instanceof Error ? error.message : String(error);
+      const msg = /401|Unauthorized/i.test(raw)
+        ? "You're not authorized. Please sign in and try again."
+        : /403|AUTH_NOT_AUTHORIZED/i.test(raw)
+          ? "You don't have permission to update this profile."
+          : /Network Error/i.test(raw)
+            ? "Network issue while updating your biography. Please check your connection and retry."
+            : "Couldn't update your biography right now. Please try again in a moment.";
+      console.error("Biography update failed:", raw);
+      toast.error(msg);
+    },
+  });
+
+  useEffect(() => {
+    setValue(biography || "");
+  }, [biography]);
+
+  const onSave = async () => {
+    try {
+      await updateProfileMutation.mutateAsync({
+        biography: value.trim() || null,
+      });
+    } catch (error) {
+      // Error handling is done in the mutation's onError callback
+      console.error("Biography save error:", error);
+    }
+  };
+
   return (
     <div className="w-full">
-      <h2 className="text-xl font-bold">Biography</h2>
-      <p className="mt-3 text-sm leading-6 text-muted-foreground">
-        Emerging from the vibrant indie scene, this artist blends atmospheric synths
-        with emotive vocals to craft immersive soundscapes. Drawing inspiration
-        from late-night city lights and quiet, reflective moments, each release
-        explores themes of growth, connection, and resilience. With a focus on
-        storytelling and sonic texture, the music invites listeners to slow down,
-        breathe, and feel.
-      </p>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">Biography</h2>
+        {!isEditing ? (
+          <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+            Edit
+          </Button>
+        ) : null}
+      </div>
+
+      {!isEditing ? (
+        <p className="text-muted-foreground mt-3 text-sm leading-6 whitespace-pre-wrap">
+          {biography || "No biography provided yet."}
+        </p>
+      ) : (
+        <div className="mt-3 space-y-3">
+          <Textarea
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Write a short biography..."
+            rows={6}
+          />
+          <div className="flex gap-2">
+            <Button size="sm" onClick={onSave}>
+              Save
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setValue(biography || "");
+                setIsEditing(false);
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

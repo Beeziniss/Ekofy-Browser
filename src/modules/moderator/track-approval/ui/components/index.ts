@@ -1,0 +1,16 @@
+export { TrackApprovalTable } from "./track-approval-table";
+export { TrackApprovalFilters } from "./track-approval-filters";
+export { TrackApprovalStats } from "./track-approval-stats";
+export { AudioPlayer } from "./audio-player";
+export { TrackInfoCard } from "./track-info-card";
+export { TrackCategoriesCard } from "./track-categories-card";
+export { TrackCategoriesBadge } from "./track-categories-badge";
+export { ArtistsContributorsCard } from "./artists-contributors-card";
+export { WorkRecordingDetailsCard } from "./work-recording-details-card";
+export { LegalDocumentsCard } from "./legal-documents-card";
+export { TrackDetailSidebar } from "./track-detail-sidebar";
+export { default as ModeratorGlobalAudioPlayer } from "./moderator-global-audio-player";
+export { ModeratorGlobalAudioControls } from "./moderator-global-audio-controls";
+export { SimplePlayButton } from "./simple-play-button";
+export { ApproveTrackDialog } from "./approve-track-dialog";
+export { RejectTrackDialog } from "./reject-track-dialog";

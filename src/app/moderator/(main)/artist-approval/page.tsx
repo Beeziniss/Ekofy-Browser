@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { moderatorArtistsQueryOptions } from "@/gql/options/moderator-options";
 import { ArtistApprovalView } from "@/modules/moderator/artist-approval/ui/views";

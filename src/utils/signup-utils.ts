@@ -2,12 +2,31 @@
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { ArtistSignUpFormData } from "@/store/stores/artist-signup-store";
-import { RegisterArtistData, RegisterArtistResponse } from "@/types/auth";
-import { User, UserRole as GraphQLUserRole } from "@/gql/graphql";
+import { RegisterArtistData } from "@/types/auth";
+import { UserRole as GraphQLUserRole } from "@/gql/graphql";
 import { UserRole } from "@/types/role";
 
-export const formatDate = (date: Date): string => {
-  return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+export const formatDate = (date: Date | undefined | null): string => {
+  // Handle null/undefined cases
+  if (!date) {
+    throw new Error("Date is required");
+  }
+
+  // Handle string dates that might be passed accidentally
+  if (typeof date === "string") {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+      throw new Error("Invalid date string provided");
+    }
+    return parsedDate.toISOString().split("T")[0];
+  }
+
+  // Handle Date objects
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    throw new Error("Invalid date object");
+  }
+
+  return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
 };
 
 export const validateEmail = (email: string): boolean => {
@@ -15,88 +34,39 @@ export const validateEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-/**
- * Validate Vietnamese phone number format
- * @param phoneNumber - Phone number string to validate
- * @returns boolean - true if valid format
- */
-export const isValidPhoneNumber = (phoneNumber: string): boolean => {
-  // Remove all spaces and special characters
-  const cleanPhone = phoneNumber.replace(/\s+/g, '').replace(/[^\d+]/g, '');
-  
-  // Vietnamese phone number patterns:
-  // 1. Mobile: 03x, 05x, 07x, 08x, 09x (10 digits total)
-  // 2. With country code: +84 followed by 9 digits
-  // 3. International format: 84 followed by 9 digits
-  
-  const patterns = [
-    /^0[3-9]\d{8}$/, // 0xxxxxxxxx (10 digits, starts with 03-09)
-    /^\+84[3-9]\d{8}$/, // +84xxxxxxxxx 
-    /^84[3-9]\d{8}$/, // 84xxxxxxxxx
-  ];
-  
-  return patterns.some(pattern => pattern.test(cleanPhone));
-};
-
-/**
- * Format phone number to standard format
- * @param phoneNumber - Phone number to format
- * @returns Formatted phone number
- */
-export const formatPhoneNumber = (phoneNumber: string): string => {
-  const cleanPhone = phoneNumber.replace(/\s+/g, '').replace(/[^\d+]/g, '');
-  
-  // If starts with +84, keep it
-  if (cleanPhone.startsWith('+84')) {
-    return cleanPhone;
-  }
-  
-  // If starts with 84, add +
-  if (cleanPhone.startsWith('84') && cleanPhone.length === 11) {
-    return '+' + cleanPhone;
-  }
-  
-  // If starts with 0, convert to +84
-  if (cleanPhone.startsWith('0') && cleanPhone.length === 10) {
-    return '+84' + cleanPhone.substring(1);
-  }
-  
-  return cleanPhone;
-};
-
 export const validatePassword = (password: string): string[] => {
   const errors: string[] = [];
-  
+
   if (password.length < 6) {
     errors.push("Password must be at least 6 characters long");
   }
-  
+
   if (!/(?=.*[a-z])/.test(password)) {
     errors.push("Password must contain at least 1 lowercase letter");
   }
-  
+
   if (!/(?=.*[A-Z])/.test(password)) {
     errors.push("Password must contain at least 1 uppercase letter");
   }
-  
+
   if (!/(?=.*\d)/.test(password)) {
     errors.push("Password must contain at least 1 number");
   }
-  
+
   return errors;
 };
 
-export const handleAPIError = (error: any): string => {
+export const handleAPIError = (error: unknown): string => {
   if (isAxiosError(error)) {
     const data = error.response?.data;
     // Just return detail if available, otherwise generic message
     return data?.detail || "An error occurred. Please try again.";
   }
-  
-  if (error?.message) {
+
+  if (error instanceof Error && error.message) {
     return error.message;
   }
-  
+
   return "An unknown error occurred";
 };
 
@@ -117,37 +87,33 @@ export const formatServiceError = (error: unknown): string => {
   return "An error occurred. Please try again.";
 };
 
-export const formatSimpleAPIError = (error: any): string => {
+export const formatSimpleAPIError = (error: unknown): string => {
   if (isAxiosError(error)) {
     const response = error.response;
     const data = response?.data;
-    
+
     // Use detail if available, otherwise fallback to generic message
     if (data?.detail) {
       return data.detail;
     }
-    
+
     // Fallback based on status
     if (response?.status === 409) {
       return "The data already exists in the system.";
     }
-    
+
     return error.message || "An error occurred. Please try again.";
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }
-  
+
   return "An error occurred. Please try again.";
 };
 
 // Convert artist signup store data to API format
 export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUpFormData>): RegisterArtistData => {
-  
-  // Debug log
-  console.log("🔄 Converting store data to API format:", formData);
-  
   // Check basic info
   const missingBasicFields = [];
   if (!formData.email) missingBasicFields.push("email");
@@ -159,7 +125,7 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
   if (!formData.phoneNumber) missingBasicFields.push("phoneNumber (should be from ID card section)");
   if (!formData.artistType) missingBasicFields.push("artistType");
   if (!formData.identityCard) missingBasicFields.push("identityCard");
-  
+
   if (missingBasicFields.length > 0) {
     console.error("❌ Missing required fields:", missingBasicFields);
     throw new Error(`Missing required information: ${missingBasicFields.join(", ")}`);
@@ -179,7 +145,7 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
     if (!formData.identityCard.backImage) missingIdFields.push("backImage");
     if (!formData.identityCard.validUntil) missingIdFields.push("validUntil");
   }
-  
+
   if (missingIdFields.length > 0) {
     console.error("❌ Missing ID card fields:", missingIdFields);
     throw new Error(`Missing ID card information: ${missingIdFields.join(", ")}`);
@@ -187,13 +153,13 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
 
   // For Individual artists, use fullName as stageName if not provided
   const finalStageName = formData.stageName || formData.fullName || formData.identityCard!.fullName;
-  
+
   if (!finalStageName) {
     throw new Error("Missing stageName: neither stageName nor fullName is available");
   }
 
   // Handle phone number - could be from form or a default
-  let finalPhoneNumber = formData.phoneNumber;
+  const finalPhoneNumber = formData.phoneNumber;
   if (!finalPhoneNumber) {
     // For now, we'll require phone to be entered separately
     // In future, this could be extracted from CCCD or other sources
@@ -206,22 +172,22 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
     password: formData.password!,
     confirmPassword: formData.confirmPassword!,
     fullName: formData.fullName!,
-    birthDate: formData.birthDate!,
+    birthDate: convertDateToISO(formData.birthDate!), // Convert DD/MM/YYYY to ISO for API
     gender: formData.gender!,
     phoneNumber: finalPhoneNumber || "", // Allow empty for now to see specific API error
     avatarImage: formData.avatarImage, // Optional avatar URL - sử dụng camelCase
     // Artist specific - stageName is required by API
     stageName: finalStageName,
     artistType: formData.artistType!,
-    
+
     // Members (for groups)
     members: formData.members || [],
-    
+
     // Identity card information
     identityCard: {
       number: formData.identityCard!.number!,
       fullName: formData.identityCard!.fullName!,
-      dateOfBirth: formData.identityCard!.dateOfBirth!,
+      dateOfBirth: convertDateToISO(formData.identityCard!.dateOfBirth!), // Convert DD/MM/YYYY to ISO
       gender: formData.identityCard!.gender!,
       placeOfOrigin: formData.identityCard!.placeOfOrigin!,
       nationality: formData.identityCard!.nationality!,
@@ -233,26 +199,10 @@ export const convertArtistStoreDataToAPIFormat = (formData: Partial<ArtistSignUp
       },
       frontImage: formData.identityCard!.frontImage!,
       backImage: formData.identityCard!.backImage!,
-      validUntil: formData.identityCard!.validUntil!,
+      validUntil: convertDateToISO(formData.identityCard!.validUntil!), // Convert DD/MM/YYYY to ISO
     },
   };
-  
-  console.log("✅ Final result before API call:", {
-    hasEmail: !!result.email,
-    hasPassword: !!result.password, 
-    hasConfirmPassword: !!result.confirmPassword,
-    hasFullName: !!result.fullName,
-    hasStageName: !!result.stageName,
-    hasPhoneNumber: !!result.phoneNumber,
-    hasAvatarImage: !!result.avatarImage, // Thêm log cho avatarImage
-    hasIdentityCard: !!result.identityCard,
-    hasIdentityCardFields: {
-      number: !!result.identityCard.number,
-      frontImage: !!result.identityCard.frontImage,
-      backImage: !!result.identityCard.backImage,
-    }
-  });
-  
+
   return result;
 };
 
@@ -270,4 +220,52 @@ export const mapGraphQLUserRoleToLocal = (graphqlRole: GraphQLUserRole): UserRol
     default:
       return UserRole.LISTENER; // fallback
   }
+};
+
+/**
+ * Convert DD/MM/YYYY format to ISO string for API consumption
+ * @param dateString - Date string in DD/MM/YYYY format
+ * @returns ISO date string
+ */
+export const convertDateToISO = (dateString: string): string => {
+  if (!dateString) return "";
+
+  // If already ISO format, return as is
+  if (dateString.includes("T") && dateString.includes("Z")) {
+    return dateString;
+  }
+
+  // If DD/MM/YYYY format, convert to ISO
+  if (dateString.includes("/")) {
+    const [day, month, year] = dateString.split("/");
+    const date = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
+    return formatDate(date);
+  }
+
+  return dateString;
+};
+
+/**
+ * Convert ISO date string back to DD/MM/YYYY format for display
+ * @param isoString - ISO date string
+ * @returns DD/MM/YYYY formatted string
+ */
+export const convertISOToDisplayDate = (isoString: string): string => {
+  if (!isoString) return "";
+
+  // If already DD/MM/YYYY format, return as is
+  if (isoString.includes("/")) {
+    return isoString;
+  }
+
+  // If ISO format, convert to DD/MM/YYYY
+  if (isoString.includes("T") && isoString.includes("Z")) {
+    const date = new Date(isoString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  return isoString;
 };

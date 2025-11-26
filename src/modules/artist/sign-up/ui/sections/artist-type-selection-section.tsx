@@ -1,49 +1,47 @@
 "use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import EkofyLogo from '../../../../../../public/ekofy-logo.svg';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { useArtistSignUpStore } from '@/store/stores/artist-signup-store';
-import { ArtistType } from '@/gql/graphql';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
+import { ArtistType } from "@/gql/graphql";
+import { EkofyLogo } from "@/assets/icons";
 
 interface ArtistTypeSelectionSectionProps {
-  onNext: (data: { type: 'INDIVIDUAL' | 'BAND' }) => void;
+  onNext: (data: { type: "INDIVIDUAL" | "BAND" }) => void;
   onBack: () => void;
-  initialData?: { type: 'INDIVIDUAL' | 'BAND' | null };
+  initialData?: { type: "INDIVIDUAL" | "BAND" | null };
 }
 
 const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeSelectionSectionProps) => {
   const { formData, updateFormData, goToNextStep } = useArtistSignUpStore();
-  
-  const [artistType, setArtistType] = useState<'INDIVIDUAL' | 'BAND' | null>(
-    initialData?.type || 
-    (formData.artistType === "INDIVIDUAL" ? "INDIVIDUAL" : 
-     formData.artistType === "BAND" ? "BAND" : null)
+
+  const [artistType, setArtistType] = useState<"INDIVIDUAL" | "BAND" | null>(
+    initialData?.type ||
+      (formData.artistType === "INDIVIDUAL" ? "INDIVIDUAL" : formData.artistType === "BAND" ? "BAND" : null),
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = () => {
     if (!artistType) {
-      setErrors({ artistType: "Vui lòng chọn loại nghệ sĩ" });
+      setErrors({ artistType: "Please select an artist type" });
       return;
     }
-    
+
     setErrors({});
     // Convert UI type to GraphQL enum
     const graphQLArtistType: ArtistType = artistType === "INDIVIDUAL" ? ArtistType.Individual : ArtistType.Band;
-    
+
     // Update store with artist type
     const typeData = {
       artistType: graphQLArtistType,
     };
-    
+
     updateFormData(typeData);
-    
+
     // Navigate to next step using store
     goToNextStep(typeData);
-    
+
     // Also call the original onNext for backward compatibility
     onNext({ type: artistType });
   };
@@ -57,8 +55,22 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
           <stop offset="100%" stopColor="#AB4EE5" />
         </linearGradient>
       </defs>
-      <circle cx="12" cy="8" r="5" stroke="url(#gradient-user)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M20 21a8 8 0 0 0-16 0" stroke="url(#gradient-user)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle
+        cx="12"
+        cy="8"
+        r="5"
+        stroke="url(#gradient-user)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M20 21a8 8 0 0 0-16 0"
+        stroke="url(#gradient-user)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 
@@ -70,97 +82,106 @@ const ArtistTypeSelectionSection = ({ onNext, onBack, initialData }: ArtistTypeS
           <stop offset="100%" stopColor="#AB4EE5" />
         </linearGradient>
       </defs>
-      <path d="M18 21a8 8 0 0 0-16 0" stroke="url(#gradient-users)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="10" cy="8" r="5" stroke="url(#gradient-users)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" stroke="url(#gradient-users)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path
+        d="M18 21a8 8 0 0 0-16 0"
+        stroke="url(#gradient-users)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle
+        cx="10"
+        cy="8"
+        r="5"
+        stroke="url(#gradient-users)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"
+        stroke="url(#gradient-users)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#121212] px-6 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-[#121212] px-6 py-12">
       <div className="w-full max-w-4xl">
         {/* Back Button */}
-        <button 
-          onClick={onBack}
-          className="flex items-center text-white hover:text-blue-400 transition-colors mb-8"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+        <button onClick={onBack} className="mb-8 flex items-center text-white transition-colors hover:text-blue-400">
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </button>
 
         {/* Logo and Title */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
-            <div className="rounded-full flex items-center justify-center mr-3">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+        <div className="mb-12 text-center">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="mr-3 flex items-center justify-center rounded-full">
+              <EkofyLogo className="size-[60px]" />
             </div>
-            <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
+            <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Choose Your Artist Type</h2>
-          <p className="text-gray-300 text-sm mb-8">
-            Tell us how you bring your music to the stage.
-          </p>
+          <h2 className="mb-4 text-3xl font-bold text-white">Choose Your Artist Type</h2>
+          <p className="mb-8 text-sm text-gray-300">Tell us how you bring your music to the stage.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
           {/* Solo Artist Option */}
-          <div 
-            className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
-              artistType === 'INDIVIDUAL'
-                ? 'border-gradient-input' 
-                : 'border-gray-600 hover:border-gray-500 bg-gray-800/30'
+          <div
+            className={`relative cursor-pointer rounded-lg border-2 p-8 transition-all hover:scale-105 ${
+              artistType === "INDIVIDUAL"
+                ? "border-gray-600 bg-gray-800/30 hover:border-gray-500"
+                : "border-gradient-input"
             }`}
             onClick={() => {
-              setArtistType('INDIVIDUAL');
+              setArtistType("INDIVIDUAL");
               setErrors({});
             }}
           >
             <div className="text-center">
-              <div className="flex justify-center mb-6">
+              <div className="mb-6 flex justify-center">
                 <UserRoundGradient />
               </div>
-              <h3 className="text-white text-xl font-semibold mb-3">Solo Artist</h3>
-              <p className="text-gray-400 text-sm"> 
-                Perform and share your music as an individual creator
-              </p>
+              <h3 className="mb-3 text-xl font-semibold text-white">Solo Artist</h3>
+              <p className="text-sm text-gray-400">Perform and share your music as an individual creator</p>
             </div>
           </div>
 
           {/* Band Option */}
-          <div 
-            className={`relative p-8 border-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
-              artistType === 'BAND'
-                ? 'border-gradient-input' 
-                : 'border-gray-600 hover:border-gray-500 bg-gray-800/30'
+          <div
+            className={`relative cursor-pointer rounded-lg border-2 p-8 transition-all hover:scale-105 ${
+              artistType === "BAND" ? "border-gray-600 bg-gray-800/30 hover:border-gray-500" : "border-gradient-input"
             }`}
             onClick={() => {
-              setArtistType('BAND');
+              setArtistType("BAND");
               setErrors({});
             }}
           >
             <div className="text-center">
-              <div className="flex justify-center mb-6">
+              <div className="mb-6 flex justify-center">
                 <UsersGradient />
               </div>
-              <h3 className="text-white text-xl font-semibold mb-3">Bandp</h3>
-              <p className="text-gray-400 text-sm">
+              <h3 className="mb-3 text-xl font-semibold text-white">Band</h3>
+              <p className="text-sm text-gray-400">
                 Collaborate with your members, release music together, and connect with fans as one.
               </p>
             </div>
           </div>
         </div>
 
-        {errors.artistType && (
-          <p className="text-center text-sm text-red-400 mb-4">{errors.artistType}</p>
-        )}
+        {errors.artistType && <p className="mb-4 text-center text-sm text-red-400">{errors.artistType}</p>}
         <div className="flex justify-end">
           <Button
             type="button"
             onClick={handleSubmit}
-            className="primary_gradient hover:opacity-60 text-white font-medium py-3 px-8 rounded-md transition duration-300 ease-in-out"
+            className="primary_gradient rounded-md px-8 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-60"
             size="lg"
           >
-            Tiếp tục
+            Continue
           </Button>
         </div>
       </div>

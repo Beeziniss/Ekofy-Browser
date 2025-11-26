@@ -1,35 +1,62 @@
 import React from "react";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemTitle,
-} from "@/components/ui/item";
-import { ChevronRightIcon } from "lucide-react";
+import Link from "next/link";
+import { ChevronRightIcon, CreditCardIcon, ReceiptIcon, ReceiptTextIcon, ClipboardListIcon, Flag } from "lucide-react";
+import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
-const ActivitySection = () => {
+interface ActivitySectionProps {
+  userId?: string;
+}
+
+const ActivitySection = ({ userId }: ActivitySectionProps) => {
+  const activityItems = [
+    {
+      title: "Request History",
+      href: "/profile/my-requests",
+      icon: ClipboardListIcon,
+    },
+    {
+      title: "Payment History",
+      href: "/profile/payment-history",
+      icon: CreditCardIcon,
+    },
+    {
+      title: "Invoices",
+      href: "/profile/invoices",
+      icon: ReceiptIcon,
+    },
+    {
+      title: "Order History",
+      href: `/activities/conversation/${userId}`,
+      icon: ReceiptTextIcon,
+    },
+    {
+      title: "Report",
+      href: "/profile/reports",
+      icon: Flag,
+    },
+  ];
+
   return (
-    <div className="pt-0 ">
-      <div className="flex items-end justify-between gap-x-3">
+    <div className="rounded-md bg-[#2a2a2a] pb-3">
+      <div className="flex items-end p-4">
         <h2 className="text-xl font-bold">My Activity</h2>
       </div>
-      <div className="flex flex-col gap-6 pt-8">
-        <Item variant="muted">
-          <ItemContent>
-            <ItemTitle>Payment History</ItemTitle>
-          </ItemContent>
-          <ItemActions>
-            <ChevronRightIcon className="size-8" />
-          </ItemActions>
-        </Item>
-        <Item variant="muted">
-          <ItemContent>
-            <ItemTitle>Order History</ItemTitle>
-          </ItemContent>
-          <ItemActions>
-            <ChevronRightIcon className="size-8" />
-          </ItemActions>
-        </Item>
+      <div className="flex flex-col">
+        {activityItems.map((item) => (
+          <Item asChild variant="subscription" key={item.title} size={"sm"} className="rounded-none">
+            <Link href={item.href} className="no-underline">
+              <ItemMedia variant={"icon"}>
+                <item.icon />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>{item.title}</ItemTitle>
+              </ItemContent>
+              <ItemActions>
+                <ChevronRightIcon className="size-5" />
+              </ItemActions>
+            </Link>
+          </Item>
+        ))}
       </div>
     </div>
   );

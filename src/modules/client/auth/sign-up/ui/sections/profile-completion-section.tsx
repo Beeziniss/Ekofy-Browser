@@ -1,71 +1,97 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import EkofyLogo from '../../../../../../../public/ekofy-logo.svg';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ArrowLeft, Upload, CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { useSignUpStore } from '@/store/stores';
-import useSignUp from '../../hook/use-sign-up';
-import { formatDate } from '@/utils/signup-utils';
-import { toast } from 'sonner';
-import { uploadImageToCloudinary, validateImageFile } from '@/utils/cloudinary-utils';
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ArrowLeft, Upload, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { useSignUpStore } from "@/store/stores";
+import useSignUp from "../../hook/use-sign-up";
+import { formatDate } from "@/utils/signup-utils";
+import { toast } from "sonner";
+import { uploadImageToCloudinary, validateImageFile } from "@/utils/cloudinary-utils";
+import { ClientProfileCompletionSectionProps } from "@/types/listener-auth";
+import { EkofyLogo } from "@/assets/icons";
 
-interface ProfileCompletionSectionProps {
-  onNext: (data?: any) => void;
-  onBack: () => void;
-  initialData?: {
-    displayName: string;
-    dateOfBirth: Date | undefined;
-    gender: string;
-    avatar?: File | null;
+const ProfileCompletionSection = ({ onNext, onBack, initialData }: ClientProfileCompletionSectionProps) => {
+  const {
+    goToPreviousStep,
+    // goToNextStep,
+    formData,
+    updateFormData,
+  } = useSignUpStore();
+
+  // Helper function to normalize date from store
+  const normalizeDateFromStore = (dateValue: Date | string | undefined): Date | undefined => {
+    if (!dateValue) return undefined;
+    if (dateValue instanceof Date) return dateValue;
+    if (typeof dateValue === "string") {
+      const date = new Date(dateValue);
+      return isNaN(date.getTime()) ? undefined : date;
+    }
+    return undefined;
   };
-}
 
-const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileCompletionSectionProps) => {
-  const [displayName, setDisplayName] = useState(initialData?.displayName || '');
-  const [fullName, setFullName] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(initialData?.dateOfBirth);
-  const [gender, setGender] = useState(initialData?.gender || '');
+  // Initialize state from global store or initial data
+  const [displayName, setDisplayName] = useState(initialData?.displayName || formData.displayName || "");
+  const [fullName, setFullName] = useState(initialData?.fullName || formData.fullName || "");
+  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(
+    initialData?.dateOfBirth || normalizeDateFromStore(formData.birthDate),
+  );
+  const [gender, setGender] = useState<"Male" | "Female" | "Other">(
+    (initialData?.gender as "Male" | "Female" | "Other") || (formData.gender as "Male" | "Female" | "Other") || "Male",
+  );
   const [avatar, setAvatar] = useState<File | null>(initialData?.avatar || null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [dateError, setDateError] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(formData.avatarImage || null);
+  const [dateError, setDateError] = useState("");
 
   // Use the signup hook for API calls with auto-navigation to OTP step
-  const { signUp, isLoading: isRegistering, isError, isSuccess, error } = useSignUp(
-    () => {
-      // This callback is called when navigation happens automatically
+  const { signUp, isLoading: isRegistering } = useSignUp(() => {
+    // This callback is called when navigation happens automatically
+    if (dateOfBirth) {
       onNext({ displayName, fullName, dateOfBirth, gender, avatar });
     }
-  );
-  
-  // Use the store for step navigation and form data
-  const { 
-    goToPreviousStep, 
-    goToNextStep, 
-    formData,
-    updateFormData
-  } = useSignUpStore();
+  });
 
-  // Populate fields from store when component mounts
+  // Load data from global state when component mounts or store updates
   useEffect(() => {
     if (formData.displayName) setDisplayName(formData.displayName);
     if (formData.fullName) setFullName(formData.fullName);
-    if (formData.birthDate) setDateOfBirth(formData.birthDate);
-    if (formData.gender) setGender(formData.gender);
+    if (formData.birthDate) {
+      // Handle both Date objects and string dates from localStorage
+      const dateValue = normalizeDateFromStore(formData.birthDate);
+      if (dateValue) {
+        setDateOfBirth(dateValue);
+      }
+    }
+    if (formData.gender) setGender(formData.gender as "Male" | "Female" | "Other");
     // Set avatar URL if exists in store
     if (formData.avatarImage) {
       setAvatarUrl(formData.avatarImage);
       setAvatarPreview(formData.avatarImage);
     }
   }, [formData]);
+
+  // Save profile data to global state on input change
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      updateFormData({
+        displayName,
+        fullName: fullName || displayName,
+        birthDate: dateOfBirth,
+        gender,
+        avatarImage: avatarUrl || undefined,
+      });
+    }, 300); // Debounce to avoid too many updates
+
+    return () => clearTimeout(timeoutId);
+  }, [displayName, fullName, dateOfBirth, gender, avatarUrl, updateFormData]);
 
   useEffect(() => {
     if (avatar) {
@@ -82,49 +108,77 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     // Validate date of birth
     if (!dateOfBirth) {
-      setDateError('Date of birth is required');
+      setDateError("Date of birth is required");
       return;
     }
-    
+
     if (dateOfBirth > new Date()) {
-      setDateError('Date of birth cannot be in the future');
+      setDateError("Date of birth cannot be in the future");
       return;
     }
+
+    // Check if user is at least 13 years old
+    const today = new Date();
+    const age = today.getFullYear() - dateOfBirth.getFullYear();
+    const monthDiff = today.getMonth() - dateOfBirth.getMonth();
+    const dayDiff = today.getDate() - dateOfBirth.getDate();
+
+    // Calculate exact age
+    let exactAge = age;
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      exactAge--;
+    }
+
+    if (exactAge < 13) {
+      setDateError("You must be at least 13 years old to register");
+      return;
+    }
+
     // Clear any previous errors
-    setDateError('');
-    
+    setDateError("");
+
     // Update form data with profile information
-    const profileData = { 
-      displayName, 
+    const profileData = {
+      displayName,
       fullName: fullName || displayName, // Use displayName as fallback
-      birthDate: dateOfBirth, 
+      birthDate: dateOfBirth,
       gender,
-      avatarImage: avatarUrl || undefined // Add avatar URL to store
+      avatarImage: avatarUrl || undefined, // Add avatar URL to store
     };
-    
+
     updateFormData(profileData);
-    
+
     // Prepare complete registration data
     const completeData = { ...formData, ...profileData };
-    
+
     // Validate required fields
     if (!completeData.email || !completeData.password || !completeData.confirmPassword) {
       toast.error("Email and password are required");
       return;
     }
-    
+    if (!/^[a-zA-Z\s]+$/.test(completeData.fullName)) {
+      toast.error("Full name can only contain letters and spaces");
+      return;
+    }
     if (!completeData.fullName || !completeData.displayName) {
       toast.error("Full name is required");
       return;
     }
-    
+
     if (!completeData.birthDate || !completeData.gender) {
       toast.error("Date of birth and gender are required");
       return;
     }
-    
+
+    // Additional validation for birthDate to ensure it's a valid Date object
+    if (!(completeData.birthDate instanceof Date) || isNaN(completeData.birthDate.getTime())) {
+      toast.error("Please select a valid date of birth");
+      return;
+    }
+
     // Format data for API
     const registerData = {
       email: completeData.email,
@@ -136,7 +190,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
       displayName: completeData.displayName,
       avatarImage: avatarUrl, // Add avatar image URL
     };
-    
+
     try {
       await signUp(registerData);
       // Success handling is done in useEffect
@@ -154,10 +208,32 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date && date > new Date()) {
-      setDateError('Date of birth cannot be in the future');
+      setDateError("Date of birth cannot be in the future");
       return;
     }
-    setDateError('');
+
+    // Check age validation on date selection
+    if (date) {
+      const today = new Date();
+      const age = today.getFullYear() - date.getFullYear();
+      const monthDiff = today.getMonth() - date.getMonth();
+      const dayDiff = today.getDate() - date.getDate();
+
+      // Calculate exact age
+      let exactAge = age;
+      if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+        exactAge--;
+      }
+
+      if (exactAge < 13) {
+        setDateError("You must be at least 13 years old to register");
+      } else {
+        setDateError("");
+      }
+    } else {
+      setDateError("");
+    }
+
     setDateOfBirth(date);
   };
 
@@ -183,18 +259,18 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
     try {
       // Upload to Cloudinary
       const uploadResult = await uploadImageToCloudinary(file, {
-        folder: 'listener-avatars',
-        tags: ['listener', 'avatar']
+        folder: "listener-avatars",
+        tags: ["listener", "avatar"],
       });
 
       setAvatarUrl(uploadResult.secure_url);
-      toast.success('Tải ảnh lên thành công!');
-      
+      toast.success("Image uploaded successfully!");
+
       // Store avatar URL in form data immediately
       updateFormData({ avatarImage: uploadResult.secure_url });
     } catch (error) {
-      console.error('Error uploading avatar:', error);
-      toast.error('Lỗi khi tải ảnh lên. Vui lòng thử lại.');
+      console.error("Error uploading avatar:", error);
+      toast.error("Failed to upload avatar. Please try again.");
       setAvatar(null);
       setAvatarUrl(null);
     } finally {
@@ -203,48 +279,46 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#121212] px-6 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-[#121212] px-6 py-12">
       <div className="w-full max-w-4xl">
         {/* Back Button */}
-        <button 
+        <button
           onClick={handleBack}
-          className="flex items-center text-white hover:text-blue-400 transition-colors mb-8"
+          className="mb-8 flex items-center text-white transition-colors hover:text-blue-400"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </button>
 
         {/* Logo and Title - Centered */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
-            <div className="rounded-full flex items-center justify-center mr-3">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+        <div className="mb-12 text-center">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="mr-3 flex items-center justify-center rounded-full">
+              <EkofyLogo className="size-[60px]" />
             </div>
-            <h1 className="text-4xl font-bold text-primary-gradient">Ekofy</h1>
+            <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Welcome</h2>
-          <p className="text-gray-300 text-sm">
-            We need further information to complete the registration process.
-          </p>
+          <h2 className="mb-4 text-3xl font-bold text-white">Welcome</h2>
+          <p className="text-sm text-gray-300">We need further information to complete the registration process.</p>
         </div>
 
-        <div className="flex gap-16 items-start justify-center">
+        <div className="flex items-start justify-center gap-16">
           {/* Avatar Upload Section */}
           <div className="flex-shrink-0">
             <div className="relative">
-              <div className="w-64 h-64 border-2 border-dashed border-gray-600 rounded-lg flex flex-col items-center justify-center bg-gray-800/30">
+              <div className="flex h-64 w-64 flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-600 bg-gray-800/30">
                 {avatarPreview ? (
-                  <div className="w-full h-full relative">
+                  <div className="relative h-full w-full">
                     <Image
                       src={avatarPreview}
                       width={1000}
                       height={1000}
                       alt="Avatar preview"
-                      className="w-full h-full object-cover rounded-lg"
+                      className="h-full w-full rounded-lg object-cover"
                     />
                     {avatarUploading && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-                        <div className="text-white text-sm">Đang tải lên...</div>
+                      <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-lg bg-black">
+                        <div className="text-sm text-white">Uploading...</div>
                       </div>
                     )}
                     {/* Clear button */}
@@ -256,17 +330,17 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                         setAvatarPreview(null);
                         updateFormData({ avatarImage: undefined });
                       }}
-                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs text-white hover:bg-red-600"
                     >
                       ×
                     </button>
                   </div>
                 ) : (
                   <>
-                    <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-3">
-                      <Upload className="w-6 h-6 text-gray-400" />
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-700">
+                      <Upload className="h-6 w-6 text-gray-400" />
                     </div>
-                    <p className="text-white text-sm font-medium">Add avatar image</p>
+                    <p className="text-sm font-medium text-white">Add avatar image</p>
                   </>
                 )}
               </div>
@@ -275,61 +349,74 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                 accept="image/*"
                 onChange={handleAvatarUpload}
                 disabled={avatarUploading}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
               />
             </div>
-            <p className="text-gray-400 text-xs mt-3 max-w-64 text-center">
-              Upload a high-quality image that represents you.<br />
+            <p className="mt-3 max-w-64 text-center text-xs text-gray-400">
+              Upload a high-quality image that represents you.
+              <br />
               Recommended size 1500x1500px, JPG or PNG, under 5MB
             </p>
           </div>
 
           {/* Form Section */}
-          <div className="flex-1 max-w-sm">
+          <div className="max-w-sm flex-1">
             {/* Profile Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Full Name Field */}
               <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-white mb-2">
+                <label htmlFor="fullName" className="mb-2 block text-sm font-medium text-white">
                   Full name*
                 </label>
                 <Input
                   id="fullName"
                   type="text"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  maxLength={50}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= 50) {
+                      setFullName(value);
+                    }
+                  }}
                   placeholder="Enter your full name"
                   required
-                  className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
+                  className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
                 />
               </div>
 
               {/* Display Name Field */}
               <div>
-                <label htmlFor="displayName" className="block text-sm font-medium text-white mb-2">
+                <label htmlFor="displayName" className="mb-2 block text-sm font-medium text-white">
                   Display name*
                 </label>
                 <Input
                   id="displayName"
                   type="text"
                   value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
+                  maxLength={50}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= 50) {
+                      setDisplayName(value);
+                    }
+                  }}
                   placeholder="Enter your display name"
                   required
-                  className="w-full border-gradient-input text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50 h-12"
+                  className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
                 />
               </div>
 
               {/* Date of Birth Field */}
               <div>
-                <label htmlFor="dateOfBirth" className="block text-sm font-medium text-white mb-2">
+                <label htmlFor="dateOfBirth" className="mb-2 block text-sm font-medium text-white">
                   Date of Birth*
                 </label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className={`w-full border-gradient-input text-white hover:bg-gray-800 justify-start text-left font-normal h-12 ${
+                      className={`border-gradient-input h-12 w-full justify-start text-left font-normal text-white hover:bg-gray-800 ${
                         !dateOfBirth && "text-gray-400"
                       } ${dateError && "border-red-500"}`}
                     >
@@ -337,7 +424,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                       {dateOfBirth ? format(dateOfBirth, "dd/MM/yyyy") : "DD/MM/YYYY"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 border-gradient-input" align="start">
+                  <PopoverContent className="border-gradient-input w-auto p-0" align="start">
                     <Calendar
                       mode="single"
                       selected={dateOfBirth}
@@ -354,11 +441,15 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                         caption_label: "text-sm font-medium text-white hidden",
                         caption_dropdowns: "flex justify-center gap-2",
                         vhidden: "hidden",
-                        dropdown: "bg-gray-700 border border-gray-600 text-white rounded px-3 py-1 text-sm min-w-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600",
-                        dropdown_month: "bg-gray-700 border border-gray-600 text-white rounded px-3 py-1 text-sm min-w-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600",
-                        dropdown_year: "bg-gray-700 border border-gray-600 text-white rounded px-3 py-1 text-sm min-w-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600",
+                        dropdown:
+                          "bg-gray-700 border border-gray-600 text-white rounded px-3 py-1 text-sm min-w-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600",
+                        dropdown_month:
+                          "bg-gray-700 border border-gray-600 text-white rounded px-3 py-1 text-sm min-w-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600",
+                        dropdown_year:
+                          "bg-gray-700 border border-gray-600 text-white rounded px-3 py-1 text-sm min-w-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600",
                         nav: "space-x-1 flex items-center",
-                        nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-white hover:bg-gray-700 rounded",
+                        nav_button:
+                          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-white hover:bg-gray-700 rounded",
                         nav_button_previous: "absolute left-1",
                         nav_button_next: "absolute right-1",
                         table: "w-full border-collapse space-y-1 mt-4",
@@ -378,24 +469,32 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                     />
                   </PopoverContent>
                 </Popover>
-                {dateError && (
-                  <p className="text-red-400 text-xs mt-1">{dateError}</p>
-                )}
+                {dateError && <p className="mt-1 text-xs text-red-400">{dateError}</p>}
               </div>
 
               {/* Gender Field */}
               <div>
-                <label htmlFor="gender" className="block text-sm font-medium text-white mb-2">
+                <label htmlFor="gender" className="mb-2 block text-sm font-medium text-white">
                   Gender*
                 </label>
-                <Select value={gender} onValueChange={setGender} required>
-                  <SelectTrigger className="w-full border-gradient-input text-white h-12">
+                <Select
+                  value={gender}
+                  onValueChange={(value) => setGender(value as "Male" | "Female" | "Other")}
+                  required
+                >
+                  <SelectTrigger className="border-gradient-input h-12 w-full text-white">
                     <SelectValue placeholder="Gender" className="text-gray-400" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
-                    <SelectItem value="Male" className="text-white hover:bg-gray-700">Male</SelectItem>
-                    <SelectItem value="Female" className="text-white hover:bg-gray-700">Female</SelectItem>
-                    <SelectItem value="Other" className="text-white hover:bg-gray-700">Other</SelectItem>
+                  <SelectContent className="border-gray-700 bg-gray-800">
+                    <SelectItem value="Male" className="text-white hover:bg-gray-700">
+                      Male
+                    </SelectItem>
+                    <SelectItem value="Female" className="text-white hover:bg-gray-700">
+                      Female
+                    </SelectItem>
+                    <SelectItem value="Other" className="text-white hover:bg-gray-700">
+                      Other
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -405,10 +504,10 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ProfileComple
                 <Button
                   type="submit"
                   disabled={isRegistering || avatarUploading}
-                  className="w-full primary_gradient hover:opacity-90 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out"
+                  className="primary_gradient w-full rounded-md px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-90 disabled:opacity-50"
                   size="lg"
                 >
-                  {avatarUploading ? "Đang tải ảnh..." : isRegistering ? "Creating Account..." : "Create Account"}
+                  {avatarUploading ? "Uploading avatar..." : isRegistering ? "Creating Account..." : "Create Account"}
                 </Button>
               </div>
             </form>

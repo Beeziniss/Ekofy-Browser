@@ -1,8 +1,6 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import EkofyLogo from "../../../../../../../public/ekofy-logo.svg";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,33 +8,36 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Eye, EyeOff } from "lucide-react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import useSignIn from "../../hook/use-sign-in";
+import { EkofyLogo } from "@/assets/icons";
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  rememberMe: z.boolean(),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .max(50, "Email must be less than 50 characters")
+    .email("Please enter a valid email address"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .max(50, "Password must be less than 50 characters"),
+  isRememberMe: z.boolean(),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginFormSection = () => {
   const { signIn, isLoading } = useSignIn();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: false,
+      isRememberMe: false,
     },
   });
 
@@ -44,6 +45,7 @@ const LoginFormSection = () => {
     signIn({
       email: data.email,
       password: data.password,
+      isRememberMe: data.isRememberMe,
     });
   };
 
@@ -54,7 +56,7 @@ const LoginFormSection = () => {
         <div className="text-center">
           <div className="mb-6 flex items-center justify-center">
             <div className="mr-3 flex items-center justify-center rounded-full">
-              <Image src={EkofyLogo} alt="Logo" width={60} height={60} />
+              <EkofyLogo className="size-[60px]" />
             </div>
             <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
           </div>
@@ -70,7 +72,7 @@ const LoginFormSection = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="block text-sm font-medium text-white">
+                  <FormLabel className="text-sm font-medium text-white">
                     Email <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
@@ -78,11 +80,12 @@ const LoginFormSection = () => {
                       type="email"
                       disabled={isLoading}
                       placeholder="Enter your email"
+                      maxLength={50}
                       className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage className="text-sm text-red-400" />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -93,19 +96,33 @@ const LoginFormSection = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="block text-sm font-medium text-white">
+                  <FormLabel className="text-sm font-medium text-white">
                     Password <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      type="password"
-                      placeholder="Enter your password"
-                      className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        disabled={isLoading}
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        maxLength={50}
+                        className="border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white focus:outline-none"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-400 hover:text-white" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-gray-400 hover:text-white" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
-                  <FormMessage className="text-sm text-red-400" />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -114,26 +131,19 @@ const LoginFormSection = () => {
             <div className="flex items-center justify-between">
               <FormField
                 control={form.control}
-                name="rememberMe"
+                name="isRememberMe"
                 render={({ field }) => (
-                  <FormItem className="flex items-center space-x-3">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
-                      />
-                    </FormControl>
-                    <FormLabel className="cursor-pointer text-sm text-white">
-                      Remember me
-                    </FormLabel>
-                  </FormItem>
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+                    />
+                    <label className="cursor-pointer text-sm text-white">Remember me</label>
+                  </div>
                 )}
               />
-              <Link
-                href="#"
-                className="text-sm text-white underline transition-colors hover:text-blue-400"
-              >
+              <Link href="/forgot-password" className="text-sm text-white underline transition-colors hover:text-blue-400">
                 Forgot your password?
               </Link>
             </div>
@@ -152,13 +162,8 @@ const LoginFormSection = () => {
 
         {/* Sign Up Link */}
         <div className="mt-6 text-center">
-          <span className="text-sm text-white">
-            Don&apos;t have an account?{" "}
-          </span>
-          <Link
-            href="/sign-up"
-            className="font-medium text-white underline transition-colors hover:text-blue-400"
-          >
+          <span className="text-sm text-white">Don&apos;t have an account? </span>
+          <Link href="/sign-up" className="font-medium text-white underline transition-colors hover:text-blue-400">
             Sign up for Ekofy.
           </Link>
         </div>

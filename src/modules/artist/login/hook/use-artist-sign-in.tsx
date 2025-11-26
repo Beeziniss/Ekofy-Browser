@@ -1,11 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
 import { useAuthStore } from "@/store";
-import {
-  setUserInfoToLocalStorage,
-  setAccessTokenToLocalStorage,
-  formatAuthError,
-} from "@/utils/auth-utils";
+import { setUserInfoToLocalStorage, setAccessTokenToLocalStorage, formatAuthError } from "@/utils/auth-utils";
 import { ArtistLoginResponse } from "@/types/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -13,6 +9,7 @@ import { useRouter } from "next/navigation";
 interface ArtistSignInCredentials {
   email: string;
   password: string;
+  isRememberMe: boolean;
 }
 
 const useArtistSignIn = () => {
@@ -29,9 +26,9 @@ const useArtistSignIn = () => {
     isSuccess,
     reset,
   } = useMutation<ArtistLoginResponse, Error, ArtistSignInCredentials>({
-    mutationFn: async ({ email, password }: ArtistSignInCredentials) => {
+    mutationFn: async ({ email, password, isRememberMe }: ArtistSignInCredentials) => {
       try {
-        const response = await authApi.artist.login(email, password);
+        const response = await authApi.artist.login(email, password, isRememberMe);
         return response;
       } catch (error) {
         throw new Error(formatAuthError(error));
