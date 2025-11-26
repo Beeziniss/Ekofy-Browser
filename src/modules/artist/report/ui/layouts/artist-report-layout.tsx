@@ -10,9 +10,7 @@ interface ArtistReportLayoutProps {
 export function ArtistReportLayout({ children }: ArtistReportLayoutProps) {
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto p-6 space-y-6">
-        {children}
-      </div>
+      <div className="container mx-auto space-y-6 p-6">{children}</div>
     </div>
   );
 }

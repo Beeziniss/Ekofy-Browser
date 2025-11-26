@@ -21,9 +21,7 @@ interface ReportListSectionProps {
 
 export function ReportListSection({ className }: ReportListSectionProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [filters, setFilters] = useState<ReportListFilters>(
-    {}
-  );
+  const [filters, setFilters] = useState<ReportListFilters>({});
   const take = 10;
   const skip = currentPage * take;
 
@@ -61,7 +59,7 @@ export function ReportListSection({ className }: ReportListSectionProps) {
 
   if (error) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <p className="text-destructive">An error occurred while loading reports.</p>
       </div>
     );
@@ -69,54 +67,35 @@ export function ReportListSection({ className }: ReportListSectionProps) {
 
   return (
     <div className={className}>
-      <ReportFilters
-        onFiltersChange={handleFiltersChange}
-        className="mb-6"
-      />
+      <ReportFilters onFiltersChange={handleFiltersChange} className="mb-6" />
 
       {reports.length === 0 ? (
         <ReportEmptyState />
       ) : (
         <>
-          <div className="space-y-4 mb-6">
+          <div className="mb-6 space-y-4">
             {reports.map((report) => (
-              <ReportListItem
-                key={report.id}
-                report={report}
-                href={`/profile/reports/${report.id}`}
-              />
+              <ReportListItem key={report.id} report={report} href={`/profile/reports/${report.id}`} />
             ))}
           </div>
 
           {/* Pagination */}
           <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
+            <div className="text-muted-foreground text-sm">
               Showing {skip + 1} - {Math.min(skip + take, totalCount)} of {totalCount} reports
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePreviousPage}
-                disabled={!hasPreviousPage}
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" />
+              <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={!hasPreviousPage}>
+                <ChevronLeft className="mr-1 h-4 w-4" />
                 Previous
               </Button>
-              
-              <span className="px-3 py-1 text-sm">
-                Page {currentPage + 1}
-              </span>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleNextPage}
-                disabled={!hasNextPage}
-              >
+
+              <span className="px-3 py-1 text-sm">Page {currentPage + 1}</span>
+
+              <Button variant="outline" size="sm" onClick={handleNextPage} disabled={!hasNextPage}>
                 Next
-                <ChevronRight className="h-4 w-4 ml-1" />
+                <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </div>
           </div>

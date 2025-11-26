@@ -27,8 +27,8 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
         <Card className="bg-main-card-bg border-main-grey-dark-bg/30">
           <CardContent className="p-8">
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-2 border-main-purple border-t-transparent"></div>
-              <span className="ml-3 text-main-white">Loading report details...</span>
+              <div className="border-main-purple h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"></div>
+              <span className="text-main-white ml-3">Loading report details...</span>
             </div>
           </CardContent>
         </Card>
@@ -41,16 +41,16 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
       <div className={className}>
         <Card className="bg-main-card-bg border-red-500/20">
           <CardContent className="p-8 text-center">
-            <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-main-white mb-2">
-              Unable to load report
-            </h3>
-            <p className="text-red-400 mb-4">
-              Report does not exist or you do not have permission to view it.
-            </p>
-            <Button asChild variant="outline" className="border-main-grey-dark-bg/50 text-main-white hover:bg-main-dark-bg-1">
+            <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-400" />
+            <h3 className="text-main-white mb-2 text-lg font-semibold">Unable to load report</h3>
+            <p className="mb-4 text-red-400">Report does not exist or you do not have permission to view it.</p>
+            <Button
+              asChild
+              variant="outline"
+              className="border-main-grey-dark-bg/50 text-main-white hover:bg-main-dark-bg-1"
+            >
               <Link href="/artist/studio/reports">
-                <ArrowLeft className="h-4 w-4 mr-2" />
+                <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to list
               </Link>
             </Button>
@@ -67,54 +67,49 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
   return (
     <div className={className}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <Button asChild variant="ghost" className="mb-4 text-main-white hover:opacity-75">
+          <Button asChild variant="ghost" className="text-main-white mb-4 hover:opacity-75">
             <Link href="/artist/studio/reports">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Back to list
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold text-main-white">
-            Report Details
-          </h1>
-          <p className="text-main-grey mt-1">
-            View detailed information about this report
-          </p>
+          <h1 className="text-main-white text-2xl font-bold">Report Details</h1>
+          <p className="text-main-grey mt-1">View detailed information about this report</p>
         </div>
         <ArtistReportStatusBadge status={report.status} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6 lg:col-span-2">
           {/* Report Info */}
-            <Card className="border-main-grey-dark-bg/30">
-              <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-main-white">
+          <Card className="border-main-grey-dark-bg/30">
+            <CardHeader>
+              <CardTitle className="text-main-white flex items-center gap-2">
                 <FileText className="h-5 w-5" />
                 Report Information
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="font-semibold text-lg mb-2 text-main-white">
-                  {REPORT_TYPE_LABELS[report.reportType]}
-                </h3>
-                <Badge variant="secondary" className="mb-4 bg-main-dark-bg-1 text-main-white border-main-grey-dark-bg/50">
+                <h3 className="text-main-white mb-2 text-lg font-semibold">{REPORT_TYPE_LABELS[report.reportType]}</h3>
+                <Badge
+                  variant="secondary"
+                  className="bg-main-dark-bg-1 text-main-white border-main-grey-dark-bg/50 mb-4"
+                >
                   {report.relatedContentType ? CONTENT_TYPE_LABELS[report.relatedContentType] : "User"}
                 </Badge>
-                <p className="text-main-grey leading-relaxed">
-                  {report.description}
-                </p>
+                <p className="text-main-grey leading-relaxed">{report.description}</p>
               </div>
 
               {report.note && (
                 <>
                   <Separator className="bg-main-grey-dark-bg/30" />
                   <div>
-                    <h4 className="font-medium mb-2 text-main-purple">Note from Moderator:</h4>
-                    <div className="bg-main-dark-bg-1 border-l-4 border-main-purple p-4 rounded">
+                    <h4 className="text-main-purple mb-2 font-medium">Note from Moderator:</h4>
+                    <div className="bg-main-dark-bg-1 border-main-purple rounded border-l-4 p-4">
                       <p className="text-main-white">{report.note}</p>
                     </div>
                   </div>
@@ -127,13 +122,13 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
           {report.evidences && report.evidences.length > 0 && (
             <Card className="bg-main-card-bg border-main-grey-dark-bg/30">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-main-purple">
+                <CardTitle className="text-main-purple flex items-center gap-2">
                   <FileText className="h-5 w-5" />
                   Evidence ({report.evidences.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {report.evidences.map((evidence, index) => (
                     <div key={index} className="space-y-2">
                       <Image
@@ -141,11 +136,16 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
                         alt={`Evidence ${index + 1}`}
                         width={400}
                         height={300}
-                        className="w-full h-48 object-cover rounded-lg border border-main-grey-dark-bg/50"
+                        className="border-main-grey-dark-bg/50 h-48 w-full rounded-lg border object-cover"
                       />
-                      <Button asChild variant="outline" size="sm" className="w-full border-main-grey-dark-bg/50 text-main-white hover:bg-main-dark-bg-1">
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className="border-main-grey-dark-bg/50 text-main-white hover:bg-main-dark-bg-1 w-full"
+                      >
                         <a href={evidence} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-3 w-3 mr-2" />
+                          <ExternalLink className="mr-2 h-3 w-3" />
                           View full size
                         </a>
                       </Button>
@@ -162,27 +162,27 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
           {/* Timeline */}
           <Card className="border-main-grey-dark-bg/30">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-main-white">
+              <CardTitle className="text-main-white flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
                 Timeline
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-main-blue rounded-full mt-2"></div>
+                <div className="bg-main-blue mt-2 h-2 w-2 rounded-full"></div>
                 <div>
-                  <p className="font-medium text-main-white">Report created</p>
-                  <p className="text-sm text-main-grey">
+                  <p className="text-main-white font-medium">Report created</p>
+                  <p className="text-main-grey text-sm">
                     {format(createdDate, "dd/MM/yyyy 'lúc' HH:mm", { locale: vi })}
                   </p>
                 </div>
               </div>
               {updatedDate && (
                 <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-main-blue rounded-full mt-2"></div>
+                  <div className="bg-main-blue mt-2 h-2 w-2 rounded-full"></div>
                   <div>
-                    <p className="font-medium text-main-white">Last updated</p>
-                    <p className="text-sm text-main-grey">
+                    <p className="text-main-white font-medium">Last updated</p>
+                    <p className="text-main-grey text-sm">
                       {format(updatedDate, "dd/MM/yyyy 'lúc' HH:mm", { locale: vi })}
                     </p>
                   </div>
@@ -190,10 +190,10 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
               )}
               {report.resolvedAt && (
                 <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
+                  <div className="mt-2 h-2 w-2 rounded-full bg-green-400"></div>
                   <div>
-                    <p className="font-medium text-main-white">Resolved</p>
-                    <p className="text-sm text-main-grey">
+                    <p className="text-main-white font-medium">Resolved</p>
+                    <p className="text-main-grey text-sm">
                       {format(new Date(report.resolvedAt), "dd/MM/yyyy 'lúc' HH:mm", { locale: vi })}
                     </p>
                   </div>
@@ -206,7 +206,7 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
           {report.nicknameReported && (
             <Card className="border-main-grey-dark-bg/30">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-main-white">
+                <CardTitle className="text-main-white flex items-center gap-2">
                   <User className="h-5 w-5" />
                   Reported Person
                 </CardTitle>
@@ -214,8 +214,10 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-main-white">{report.nicknameReported}</span>
-                    <Badge variant="outline" className="bg-main-dark-bg-1 text-main-white border-main-grey-dark-bg/50">{report.userReported[0].role}</Badge>
+                    <span className="text-main-white text-sm font-medium">{report.nicknameReported}</span>
+                    <Badge variant="outline" className="bg-main-dark-bg-1 text-main-white border-main-grey-dark-bg/50">
+                      {report.userReported[0].role}
+                    </Badge>
                   </div>
                 </div>
               </CardContent>
@@ -226,7 +228,7 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
           {report.assignedModeratorId && (
             <Card className="border-main-grey-dark-bg/30">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-main-white">
+                <CardTitle className="text-main-white flex items-center gap-2">
                   <User className="h-5 w-5" />
                   Assigned Moderator
                 </CardTitle>
@@ -234,8 +236,10 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-main-white">{report.userAssignedTo[0].fullName}</span>
-                    <Badge variant="outline" className="bg-main-dark-bg-1 text-main-white border-main-grey-dark-bg/50">{report.userAssignedTo[0].role}</Badge>
+                    <span className="text-main-white text-sm font-medium">{report.userAssignedTo[0].fullName}</span>
+                    <Badge variant="outline" className="bg-main-dark-bg-1 text-main-white border-main-grey-dark-bg/50">
+                      {report.userAssignedTo[0].role}
+                    </Badge>
                   </div>
                 </div>
               </CardContent>
@@ -245,23 +249,25 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
           {/* Priority */}
           <Card className="border-main-grey-dark-bg/30">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-main-white">
+              <CardTitle className="text-main-white flex items-center gap-2">
                 <AlertCircle className="h-5 w-5" />
                 Priority
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Badge 
-                variant={report.priority === "HIGH" ? "destructive" : 
-                        report.priority === "MEDIUM" ? "default" : "secondary"}
+              <Badge
+                variant={
+                  report.priority === "HIGH" ? "destructive" : report.priority === "MEDIUM" ? "default" : "secondary"
+                }
                 className={
-                  report.priority === "HIGH" ? "bg-red-500/20 text-red-400 border-red-500/50" :
-                  report.priority === "MEDIUM" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/50" :
-                  "bg-main-dark-bg-1 text-main-grey border-main-grey-dark-bg/50"
+                  report.priority === "HIGH"
+                    ? "border-red-500/50 bg-red-500/20 text-red-400"
+                    : report.priority === "MEDIUM"
+                      ? "border-yellow-500/50 bg-yellow-500/20 text-yellow-400"
+                      : "bg-main-dark-bg-1 text-main-grey border-main-grey-dark-bg/50"
                 }
               >
-                {report.priority === "HIGH" ? "Cao" :
-                 report.priority === "MEDIUM" ? "Medium" : "Low"}
+                {report.priority === "HIGH" ? "Cao" : report.priority === "MEDIUM" ? "Medium" : "Low"}
               </Badge>
             </CardContent>
           </Card>
