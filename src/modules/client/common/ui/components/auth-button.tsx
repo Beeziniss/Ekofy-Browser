@@ -21,7 +21,16 @@ import { getUserInitials } from "@/utils/format-shorten-name";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { artistOptions, listenerOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
-import { AudioLines, Bell, LogOut, MessageCircleIcon, MicVocalIcon, Settings, User } from "lucide-react";
+import {
+  AudioLines,
+  Bell,
+  LogOut,
+  MessageCircleIcon,
+  MicVocalIcon,
+  ReceiptTextIcon,
+  Settings,
+  User,
+} from "lucide-react";
 import { useNotificationSignalR } from "@/hooks/use-notification-signalr";
 import { NotificationPopover } from "@/components/notification-popover";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
@@ -119,11 +128,20 @@ const AuthButton = () => {
       className: "text-main-white",
       showForRoles: [UserRole.ARTIST],
     },
+    {
+      type: "link" as const,
+      icon: ReceiptTextIcon,
+      label: "Orders",
+      href: `/activities/order/${user?.userId}`,
+      className: "text-main-white",
+      showForRoles: [UserRole.ARTIST],
+    },
     // Premium/Pro option (available for all)
     {
       type: "button" as const,
       icon: SparklesColorful,
       label: user?.role === UserRole.ARTIST ? "Go Pro" : "Go Premium",
+      href: "/subscription",
       className: "primary_gradient !bg-gradient-to-b bg-clip-text text-base font-semibold text-transparent",
       showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
     },

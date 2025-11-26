@@ -1,27 +1,25 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { ArrowLeftIcon } from "lucide-react";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import ActivityConversationTable from "../components/activity-conversation-table";
-import { listenerOptions, orderPackageOptions } from "@/gql/options/client-options";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orderPackageOptions } from "@/gql/options/client-options";
+import ActivityOrderTable from "../components/activity-order-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Link from "next/link";
 
-interface ActivityConversationSectionProps {
+interface ActivityOrderSectionProps {
   userId: string;
 }
 
-const ActivityConversationSection = ({ userId }: ActivityConversationSectionProps) => {
+const ActivityOrderSection = ({ userId }: ActivityOrderSectionProps) => {
   return (
-    <Suspense fallback={<ActivityConversationSectionSkeleton />}>
-      <ActivityConversationSectionSuspense userId={userId} />
+    <Suspense fallback={<ActivityOrderSectionSkeleton />}>
+      <ActivityOrderSectionSuspense userId={userId} />
     </Suspense>
   );
 };
 
-const ActivityConversationSectionSkeleton = () => {
+const ActivityOrderSectionSkeleton = () => {
   return (
     <div className="flex w-full flex-col gap-y-6">
       <div className="flex w-full items-center justify-between">
@@ -71,14 +69,13 @@ const ActivityConversationSectionSkeleton = () => {
   );
 };
 
-const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSectionProps) => {
+const ActivityOrderSectionSuspense = ({ userId }: ActivityOrderSectionProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const skip = (currentPage - 1) * pageSize;
 
-  const { data: listenerData } = useSuspenseQuery(listenerOptions(userId, userId));
   const { data: orderData } = useSuspenseQuery(
-    orderPackageOptions({ currentUserId: userId, skip, take: pageSize, isArtist: false }),
+    orderPackageOptions({ currentUserId: userId, skip, take: pageSize, isArtist: true }),
   );
 
   const orders = orderData?.packageOrders?.items || [];
@@ -92,18 +89,10 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
   return (
     <div className="flex w-full flex-col gap-y-6">
       <div className="flex w-full items-center justify-between">
-        <h1 className="text-4xl tracking-wide">
-          Orders with <strong>{listenerData.listeners?.items?.[0].displayName}</strong>
-        </h1>
-        <Link
-          href="/profile"
-          className="text-main-white hover:border-main-white flex cursor-pointer items-center gap-x-2 border-b border-transparent pb-0.5 transition-colors"
-        >
-          <ArrowLeftIcon className="w-4" /> Back to profile
-        </Link>
+        <h1 className="text-4xl font-semibold tracking-wide">My Orders</h1>
       </div>
       <div>{totalCount} result found</div>
-      <ActivityConversationTable
+      <ActivityOrderTable
         orders={orders}
         totalCount={totalCount}
         totalPages={totalPages}
@@ -115,4 +104,4 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
   );
 };
 
-export default ActivityConversationSection;
+export default ActivityOrderSection;

@@ -252,7 +252,7 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
               {request.requirements && (
                 <div>
                   <h4 className="mb-2 text-sm font-semibold text-gray-400">Requirements</h4>
-                  <p className="text-white">{request.requirements}</p>
+                  <p className="text-white" dangerouslySetInnerHTML={{ __html: request.requirements }}></p>
                 </div>
               )}
               {!request.requirements && <p className="text-gray-400">No requirements provided</p>}
