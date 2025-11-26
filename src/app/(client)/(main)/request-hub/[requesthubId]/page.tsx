@@ -22,9 +22,8 @@ const RequestDetailPage = () => {
     router.push("/request-hub");
   };
 
-  const handleApply = () => {
-    console.log("Apply to request:", requestId);
-    toast.info("Application feature coming soon!");
+  const handleEdit = (id: string) => {
+    router.push(`/request-hub/${id}/edit`);
   };
 
   if (isLoading) {
@@ -54,7 +53,7 @@ const RequestDetailPage = () => {
 
   return (
     <AuthDialogProvider>
-      <RequestDetailView request={request} onBack={handleBack} onApply={handleApply} />
+      <RequestDetailView request={request} onBack={handleBack} onEdit={handleEdit} />
     </AuthDialogProvider>
   );
 };

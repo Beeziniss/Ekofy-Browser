@@ -12,7 +12,8 @@ import {
   Clock,
   Calendar,
   MessageCircle,
-  Send,
+  SquarePen,
+  Flag,
 } from "lucide-react";
 import { RequestsQuery } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
@@ -26,17 +27,18 @@ import { ReportRelatedContentType } from "@/gql/graphql";
 import { useMutation } from "@tanstack/react-query";
 import { addConversationFromRequestHubMutationOptions } from "@/gql/options/client-mutation-options";
 import { useRouter } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
 interface RequestDetailViewProps {
   request: RequestItem;
   onBack: () => void;
-  onApply: () => void;
+  onEdit?: (id: string) => void;
   className?: string;
 }
 
-export function RequestDetailView({ request, onBack, onApply, className }: RequestDetailViewProps) {
+export function RequestDetailView({ request, onBack, onEdit, className }: RequestDetailViewProps) {
   const router = useRouter();
   const { showAuthDialog } = useAuthDialog();
   const { isAuthenticated, user } = useAuthStore();
@@ -97,43 +99,12 @@ export function RequestDetailView({ request, onBack, onApply, className }: Reque
     return `${formatCurrency(budget.min)} - ${formatCurrency(budget.max)}`;
   };
 
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffMinutes = Math.floor(diffTime / (1000 * 60));
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffMinutes < 60) {
-      return `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`;
-    } else if (diffHours < 24) {
-      const hours = diffHours;
-      const minutes = diffMinutes % 60;
-      return `${hours} hour${hours > 1 ? "s" : ""} ${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-    } else {
-      const days = diffDays;
-      const hours = diffHours % 24;
-      return `${days} day${days > 1 ? "s" : ""} ${hours} hour${hours > 1 ? "s" : ""} ago`;
-    }
-  };
-
-  const handleApply = () => {
+  const handleEdit = () => {
     if (!isAuthenticated) {
-      showAuthDialog("apply", request.title || "Untitled Request");
+      showAuthDialog("edit", request.title || "Untitled Request");
       return;
     }
-
-    // Check if user is artist and has stripe account
-    if (isArtist && !hasStripeAccount) {
-      setShowStripeModal(true);
-      return;
-    }
-
-    // Only allow artists to apply
-    if (isArtist) {
-      onApply();
-    }
+    onEdit?.(request.id);
   };
 
   const handleContactClient = async () => {
@@ -193,7 +164,7 @@ export function RequestDetailView({ request, onBack, onApply, className }: Reque
                   {request.requestor?.[0]?.displayName || `User ${request.requestUserId.slice(-4)}`}
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  <span>Posted {formatTimeAgo(request.postCreatedTime)}</span>
+                  <span>Posted {formatDistanceToNow(new Date(request.postCreatedTime), { addSuffix: true })}</span>
                 </div>
               </div>
             </div>
@@ -257,24 +228,30 @@ export function RequestDetailView({ request, onBack, onApply, className }: Reque
                     <div className="flex items-center text-sm">
                       <Calendar className="mr-2 h-4 w-4 text-gray-400" />
                       <span className="text-gray-500">Posted</span>
-                      <span className="ml-auto font-medium">{formatTimeAgo(request.postCreatedTime)}</span>
+                      <span className="ml-auto font-medium">{formatDistanceToNow(new Date(request.postCreatedTime), { addSuffix: true })}</span>
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <Button className="w-full bg-purple-600 text-white hover:bg-purple-700" onClick={handleApply}>
-                      <Send className="mr-2 h-4 w-4" />
-                      Apply Now
-                    </Button>
+                    {/* Show Edit button if user is the owner */}
+                    {user?.userId === request.requestUserId && onEdit && (
+                      <Button className="primary_gradient w-full text-white hover:opacity-90" onClick={handleEdit}>
+                        <SquarePen className="mr-2 h-4 w-4" />
+                        Edit Request
+                      </Button>
+                    )}
 
-                    <Button variant="outline" className="w-full" onClick={handleContactClient}>
-                      <MessageCircle className="mr-2 h-4 w-4" />
-                      Contact Client
-                    </Button>
+                    {/* Show Contact Client button only for Artists */}
+                    {isArtist && user?.userId !== request.requestUserId && (
+                      <Button variant="outline" className="w-full" onClick={handleContactClient}>
+                        <MessageCircle className="mr-2 h-4 w-4" />
+                        Contact Client
+                      </Button>
+                    )}
 
                     {isAuthenticated && user?.userId !== request.requestUserId && (
                       <Button variant="outline" className="w-full" onClick={() => setReportDialogOpen(true)}>
-                        <Send className="mr-2 h-4 w-4" />
+                        <Flag className="mr-2 h-4 w-4" />
                         Report
                       </Button>
                     )}

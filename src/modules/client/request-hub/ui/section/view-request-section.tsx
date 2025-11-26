@@ -11,7 +11,6 @@ interface ViewRequestSectionProps {
   requests: RequestItem[];
   isLoading?: boolean;
   onViewDetails: (id: string) => void;
-  onApply: (id: string) => void;
   onEdit?: (id: string) => void;
   onSave?: (id: string) => void;
 }
@@ -20,7 +19,6 @@ export function ViewRequestSection({
   requests,
   isLoading = false,
   onViewDetails,
-  onApply,
   onEdit,
   onSave,
 }: ViewRequestSectionProps) {
@@ -49,7 +47,6 @@ export function ViewRequestSection({
             key={request.id}
             request={request}
             onViewDetails={onViewDetails}
-            onApply={onApply}
             onEdit={isOwner ? onEdit : undefined}
             onSave={onSave}
             isOwner={isOwner}

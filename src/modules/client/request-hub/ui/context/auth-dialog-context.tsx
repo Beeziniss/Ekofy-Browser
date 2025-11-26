@@ -5,7 +5,7 @@ import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-d
 
 interface AuthDialogContextType {
   showAuthDialog: (
-    action: "apply" | "contact" | "comment" | "reply" | "favorite" | "post" | "edit",
+    action: "contact" | "comment" | "reply" | "favorite" | "post" | "edit",
     requestTitle?: string,
   ) => void;
 }
@@ -27,12 +27,12 @@ interface AuthDialogProviderProps {
 export const AuthDialogProvider: React.FC<AuthDialogProviderProps> = ({ children }) => {
   const [showWarningDialog, setShowWarningDialog] = useState(false);
   const [warningAction, setWarningAction] = useState<
-    "apply" | "contact" | "comment" | "reply" | "favorite" | "post" | "edit"
-  >("apply");
+    "contact" | "comment" | "reply" | "favorite" | "post" | "edit"
+  >("contact");
   const [requestTitle, setRequestTitle] = useState<string | undefined>();
 
   const showAuthDialog = (
-    action: "apply" | "contact" | "comment" | "reply" | "favorite" | "post" | "edit",
+    action: "contact" | "comment" | "reply" | "favorite" | "post" | "edit",
     requestTitle?: string,
   ) => {
     setWarningAction(action);
