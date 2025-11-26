@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Clock, RotateCcw } from "lucide-react";
 import { ArtistPackage } from "@/gql/graphql";
 import { usePackageUtils } from "../../../hooks";
 
@@ -37,7 +36,7 @@ const UpdatePackageService = ({
   onDelete,
   isLoading = false,
 }: UpdatePackageServiceProps) => {
-  const { formatCurrency, formatRevisionText } = usePackageUtils();
+  const { formattedPrice, formatRevisionText } = usePackageUtils();
   const form = useForm<UpdatePackageFormData>({
     resolver: zodResolver(updatePackageSchema),
     defaultValues: {
@@ -51,6 +50,7 @@ const UpdatePackageService = ({
     onSubmit(data);
   };
 
+  console.log("Package details:", pkg);
   return (
     <div className="mx-auto max-w-7xl p-6">
       <Card className="border-gradient-input">
@@ -91,20 +91,16 @@ const UpdatePackageService = ({
                     <span className="ml-2 text-white">{pkg.status}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400">Amount:</span>
-                    <span className="ml-2 text-white">{formatCurrency(pkg.amount, pkg.currency)}</span>
+                    <span className="text-gray-400">Max Revision:</span>
+                    <span className="ml-2 text-white">{formatRevisionText(pkg.maxRevision || 0)}</span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-gray-400" />
-                      <span className="text-gray-400">Delivery:</span>
-                      <span className="text-white">{pkg.estimateDeliveryDays} days</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <RotateCcw className="h-4 w-4 text-gray-400" />
-                      <span className="text-gray-400">Revisions:</span>
-                      <span className="text-white">{formatRevisionText(pkg.maxRevision || 0)}</span>
-                    </div>
+                  <div>
+                    <span className="text-gray-400">Delivery:</span>
+                    <span className="text-white">{pkg.estimateDeliveryDays} days</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Amount:</span>
+                    <span className="ml-2 text-white">{formattedPrice(pkg.amount.toString())} {pkg.currency}</span>
                   </div>
                   <div>
                     <span className="text-gray-400">Created:</span>
@@ -112,7 +108,7 @@ const UpdatePackageService = ({
                   </div>
                   <div>
                     <span className="text-gray-400">Updated:</span>
-                    <span className="ml-2 text-white">{new Date(pkg.updatedAt).toLocaleDateString()}</span>
+                    <span className="ml-2 text-white">{pkg.updatedAt ? new Date(pkg.updatedAt).toLocaleDateString() : "No Update Provided"}</span>
                   </div>
                 </div>
 

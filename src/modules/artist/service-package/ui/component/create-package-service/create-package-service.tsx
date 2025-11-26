@@ -23,8 +23,8 @@ const serviceDetailSchema = z.object({
 const createPackageSchema = z.object({
   packageName: z.string().min(1, "Package name is required").max(100, "Package name must be at most 100 characters"),
   amount: z.number().min(0, "Amount must be positive").max(1000000000, "Amount is too large"),
-  estimateDeliveryDays: z.number().min(1, "Delivery days must be at least 1").max(365, "Delivery days is too large"),
-  maxRevision: z.number().min(0, "Max revisions must be at least 0").max(100, "Max revisions is too large"),
+  estimateDeliveryDays: z.number().min(1, "Estimate delivery days must be at least 1").max(365, "Estimate delivery days is too large"),
+  maxRevision: z.number().min(1, "Max revisions must be at least 1").max(100, "Max revisions is too large"),
   description: z.string().min(1, "Description is required").max(1000, "Description must be at most 1000 characters"),
   serviceDetails: z.array(serviceDetailSchema).min(1, "At least one service detail is required"),
 });
@@ -40,13 +40,18 @@ interface CreatePackageServiceProps {
 const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreatePackageServiceProps) => {
   const [keyCounter, setKeyCounter] = useState(1); // State to track the key counter
 
+  const formatCurrency = (value: string): string => {
+    const numericValue = value.replace(/\D/g, "");
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
   const form = useForm<CreatePackageFormData>({
     resolver: zodResolver(createPackageSchema),
     defaultValues: {
       packageName: "",
-      amount: 0,
+      amount: 1,
       estimateDeliveryDays: 1,
-      maxRevision: 0,
+      maxRevision: 1,
       description: "",
       serviceDetails: [{ key: "1", value: "" }], // Initialize with a default key
     },
@@ -129,8 +134,12 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
                       <FormControl>
                         <Input
                           {...field}
-                          type="number"
-                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          type="text"
+                          value={formatCurrency(field.value.toString())} // Format the value
+                          onChange={(e) => {
+                            const rawValue = e.target.value.replace(/\./g, ""); // Remove dots before converting
+                            field.onChange(Number(rawValue)); // Update the form value as a number
+                          }}
                           placeholder="Default currency is VND"
                           className="border-gray-600 bg-gray-700 text-white"
                         />
@@ -140,13 +149,14 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
                   )}
                 />
 
+
                 <FormField
                   control={form.control}
                   name="estimateDeliveryDays"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Delivery days <span className="text-red-500">*</span>
+                        Estimate Delivery days <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -295,7 +305,7 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isLoading} className="bg-purple-600 text-white hover:bg-purple-700">
-                  {isLoading ? "Applying..." : "Apply"}
+                  {isLoading ? "Creating..." : "Create"}
                 </Button>
               </div>
             </form>
