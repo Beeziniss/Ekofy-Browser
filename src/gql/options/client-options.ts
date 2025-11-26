@@ -17,6 +17,7 @@ import {
   ArtistPackageFilterInput,
   ArtistPackageStatus,
   PackageOrderFilterInput,
+  CategoryType,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -29,6 +30,7 @@ import {
   GetUserActiveSubscriptionQuery,
   ListenerQuery,
   OWN_REQUESTS_QUERY,
+  PlaylistsFavoriteQuery,
   PlaylistsHomeQuery,
   PlaylistsPersonalQuery,
   REQUEST_BY_ID_QUERY,
@@ -39,12 +41,14 @@ import {
   TrackCommentRepliesQuery,
   TrackCommentsQuery,
   TrackDetailViewQuery,
+  TrackFavoriteQuery,
   TrackListHomeQuery,
   USER_QUERY_FOR_REQUESTS,
   UserBasicInfoQuery,
 } from "@/modules/shared/queries/client";
 import { ConversationMessagesQuery, ConversationQuery } from "@/modules/shared/queries/client/conversation-queries";
 import { OrderPackageQuery } from "@/modules/shared/queries/client/order-queries";
+import { CategoriesChannelQuery } from "@/modules/shared/queries/client/category-queries";
 
 // PROFILE QUERIES
 export const userBasicInfoOptions = (userId: string) =>
@@ -97,7 +101,7 @@ export const userActiveSubscriptionOptions = (userId: string) =>
 // TRACK QUERIES
 export const trackListHomeOptions = queryOptions({
   queryKey: ["tracks-home"],
-  queryFn: async () => await execute(TrackListHomeQuery, { take: 10 }),
+  queryFn: async () => await execute(TrackListHomeQuery, { take: 12 }),
 });
 
 export const trackDetailOptions = (trackId: string) =>
@@ -105,6 +109,12 @@ export const trackDetailOptions = (trackId: string) =>
     queryKey: ["track-detail", trackId],
     queryFn: async () => await execute(TrackDetailViewQuery, { trackId }),
     enabled: !!trackId,
+  });
+
+export const trackFavoriteOptions = (take: number = 12) =>
+  queryOptions({
+    queryKey: ["track-favorite"],
+    queryFn: async () => await execute(TrackFavoriteQuery, { take }),
   });
 
 // PLAYLIST QUERIES
@@ -154,6 +164,12 @@ export const checkTrackInPlaylistOptions = (trackId: string) =>
   queryOptions({
     queryKey: ["check-track-in-playlist", trackId],
     queryFn: async () => await execute(CheckTrackInPlaylistQuery, { trackId }),
+  });
+
+export const playlistsFavoriteOptions = (take: number = 12) =>
+  queryOptions({
+    queryKey: ["playlists-favorite"],
+    queryFn: async () => await execute(PlaylistsFavoriteQuery, { take }),
   });
 
 // TRACK COMMENTS QUERIES
@@ -444,4 +460,15 @@ export const orderPackageDetailOptions = (orderId: string) =>
       return result.packageOrders?.items?.[0] || null;
     },
     enabled: !!orderId,
+  });
+
+// CATEGORY QUERIES
+export const categoriesChannelOptions = (type: CategoryType, take: number) =>
+  queryOptions({
+    queryKey: ["categories-channel", type, take],
+    queryFn: async () => {
+      const result = await execute(CategoriesChannelQuery, { type, take });
+      return result;
+    },
+    enabled: !!type,
   });

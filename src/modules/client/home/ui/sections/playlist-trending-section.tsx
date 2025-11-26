@@ -14,13 +14,23 @@ const PlaylistTrendingSection = () => {
 };
 
 const PlaylistTrendingSkeleton = () => {
-  return <PlaylistCarousel data={{}} isLoading />;
+  return (
+    <div className="w-full space-y-6 px-4">
+      <div className="text-2xl font-semibold">Playlists you&apos;ll love</div>
+      <PlaylistCarousel data={{}} isLoading />
+    </div>
+  );
 };
 
 const PlaylistTrendingSectionSuspense = () => {
   const { data, isPending } = useSuspenseQuery(playlistsHomeOptions);
 
-  return <PlaylistCarousel data={data} isLoading={isPending} />;
+  return (
+    <div className="w-full space-y-6 px-4">
+      <div className="text-2xl font-semibold">Playlists you&apos;ll love</div>
+      <PlaylistCarousel data={data} isLoading={isPending} />
+    </div>
+  );
 };
 
 export default PlaylistTrendingSection;

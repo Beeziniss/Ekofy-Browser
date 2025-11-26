@@ -7211,6 +7211,14 @@ export type GetArtistProfileQueryVariables = Exact<{
 
 export type GetArtistProfileQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, avatarImage?: string | null, bannerImage?: string | null, biography?: string | null, isVerified: boolean, createdAt: any, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, gender: UserGender, isLeader: boolean, phoneNumber: string }>, user: Array<{ __typename?: 'User', status: UserStatus }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', addressLine?: string | null } } }> | null } | null };
 
+export type CategoriesChannelQueryVariables = Exact<{
+  type?: InputMaybe<CategoryType>;
+  take: Scalars['Int']['input'];
+}>;
+
+
+export type CategoriesChannelQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null };
+
 export type ConversationsQueryVariables = Exact<{
   where?: InputMaybe<ConversationFilterInput>;
 }>;
@@ -7281,6 +7289,13 @@ export type PlaylistsHomeQueryVariables = Exact<{
 
 
 export type PlaylistsHomeQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, userId: string, isPublic: boolean, checkPlaylistInFavorite: boolean }> | null } | null };
+
+export type PlaylistsFavoriteQueryVariables = Exact<{
+  take: Scalars['Int']['input'];
+}>;
+
+
+export type PlaylistsFavoriteQuery = { __typename?: 'QueryInitialization', favoritePlaylists?: { __typename?: 'FavoritePlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, userId: string, isPublic: boolean, checkPlaylistInFavorite: boolean }> | null } | null };
 
 export type ReportQueriesQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -7456,6 +7471,13 @@ export type TrackDetailQueryVariables = Exact<{
 
 
 export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
+
+export type TrackFavoriteQueryVariables = Exact<{
+  take: Scalars['Int']['input'];
+}>;
+
+
+export type TrackFavoriteQuery = { __typename?: 'QueryInitialization', favoriteTracks?: { __typename?: 'FavoriteTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
 
 export type UserBasicInfoQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -8751,6 +8773,20 @@ export const GetArtistProfileDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetArtistProfileQuery, GetArtistProfileQueryVariables>;
+export const CategoriesChannelDocument = new TypedDocumentString(`
+    query CategoriesChannel($type: CategoryType, $take: Int!) {
+  categories(
+    where: {isVisible: {eq: true}, type: {eq: $type}}
+    order: {popularity: DESC}
+    take: $take
+  ) {
+    items {
+      id
+      name
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CategoriesChannelQuery, CategoriesChannelQueryVariables>;
 export const ConversationsDocument = new TypedDocumentString(`
     query Conversations($where: ConversationFilterInput) {
   conversations(where: $where, order: {lastMessage: {sentAt: DESC}}) {
@@ -8929,6 +8965,20 @@ export const PlaylistsHomeDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PlaylistsHomeQuery, PlaylistsHomeQueryVariables>;
+export const PlaylistsFavoriteDocument = new TypedDocumentString(`
+    query PlaylistsFavorite($take: Int!) {
+  favoritePlaylists(take: $take, order: {createdAt: DESC}) {
+    items {
+      id
+      name
+      coverImage
+      userId
+      isPublic
+      checkPlaylistInFavorite
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PlaylistsFavoriteQuery, PlaylistsFavoriteQueryVariables>;
 export const ReportQueriesDocument = new TypedDocumentString(`
     query ReportQueries($skip: Int, $take: Int, $where: ReportFilterInput) {
   reports(skip: $skip, take: $take, where: $where) {
@@ -9696,7 +9746,7 @@ export const TrackCommentRepliesDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<TrackCommentRepliesQuery, TrackCommentRepliesQueryVariables>;
 export const TrackListHomeDocument = new TypedDocumentString(`
     query TrackListHome($take: Int!) {
-  tracks(take: $take) {
+  tracks(take: $take, order: {createdAt: DESC}) {
     totalCount
     items {
       id
@@ -9742,6 +9792,26 @@ export const TrackDetailDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TrackDetailQuery, TrackDetailQueryVariables>;
+export const TrackFavoriteDocument = new TypedDocumentString(`
+    query TrackFavorite($take: Int!) {
+  favoriteTracks(take: $take, order: {createdAt: DESC}) {
+    totalCount
+    items {
+      id
+      name
+      coverImage
+      mainArtistIds
+      mainArtists {
+        items {
+          id
+          stageName
+        }
+      }
+      checkTrackInFavorite
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackFavoriteQuery, TrackFavoriteQueryVariables>;
 export const UserBasicInfoDocument = new TypedDocumentString(`
     query UserBasicInfo($userId: String!) {
   users(where: {id: {eq: $userId}}) {
