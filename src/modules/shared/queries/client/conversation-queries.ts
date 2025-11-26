@@ -6,13 +6,16 @@ export const ConversationQuery = graphql(`
       items {
         id
         userIds
+        requestId
         ownerProfileConversation {
           avatar
           nickname
+          artistId
         }
         otherProfileConversation {
           avatar
           nickname
+          artistId
         }
         lastMessage {
           text
