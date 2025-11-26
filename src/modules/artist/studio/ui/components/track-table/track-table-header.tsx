@@ -16,36 +16,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 interface TrackTableHeaderProps {
   totalTracks: number;
   serverTotalCount?: number;
-  // onSearch?: (query: string) => void;
-  // onPrivacyFilter?: (filter: string) => void;
-  // onSort?: (sortBy: string, sortOrder: string) => void;
 }
 
-const TrackTableHeader = ({
-  totalTracks,
-  serverTotalCount,
-  // onSearch,
-  // onPrivacyFilter,
-  // onSort,
-}: TrackTableHeaderProps) => {
+const TrackTableHeader = ({ totalTracks, serverTotalCount }: TrackTableHeaderProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  /* useEffect(() => {
-    // Initialize state from URL params
-    const search = searchParams.get("search") || "";
-    const privacy = searchParams.get("privacy") || "all";
-    const sortBy = searchParams.get("sortBy") || "";
-    const sortOrder = searchParams.get("sortOrder") || "desc";
-
-    setSearchQuery(search);
-    onSearch?.(search);
-    onPrivacyFilter?.(privacy);
-    if (sortBy) {
-      onSort?.(sortBy, sortOrder);
-    }
-  }, [searchParams, onSearch, onPrivacyFilter, onSort]); */
 
   const updateURLParams = (params: { [key: string]: string }) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));

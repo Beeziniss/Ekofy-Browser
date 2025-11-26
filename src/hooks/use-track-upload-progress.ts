@@ -67,29 +67,22 @@ export const useTrackUploadProgress = (): UseTrackUploadProgressReturn => {
       await newConnection.start().then(() => {
         // Set up event listeners
         newConnection.on("ReceiveProgress", (progressData: UploadProgress) => {
-          console.log("=========================FUCK======================");
-          console.log("Progress received:", progressData);
-          console.log("=========================FUCK======================");
-
           setProgress(progressData);
           setError(null);
           setIsCompleted(false);
         });
 
         newConnection.on("ReceiveCompleted", () => {
-          console.log("Upload completed");
           setIsCompleted(true);
           setProgress((prev) => (prev ? { ...prev, percent: 100 } : { percent: 100, stepDescription: "Completed" }));
           setError(null);
         });
 
         newConnection.on("ReceiveFailed", (errorMessage: string) => {
-          console.log("Upload failed:", errorMessage);
           setError(errorMessage);
           setIsCompleted(false);
         });
       });
-      console.log("SignalR connected successfully");
 
       setConnection(newConnection);
       setIsConnected(true);

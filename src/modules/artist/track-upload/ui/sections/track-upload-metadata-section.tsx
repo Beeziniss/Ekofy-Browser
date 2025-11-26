@@ -566,7 +566,7 @@ const TrackUploadMetadataSection = () => {
       // Clear the loading state and current upload, then navigate back to tracks
       setUploading(false);
       clearCurrentUpload();
-      router.push("/artist/studio");
+      router.push("/artist/track-uploading");
     } catch (error) {
       // Clear loading state on upload error
       setUploading(false);
