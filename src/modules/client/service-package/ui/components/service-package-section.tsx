@@ -116,6 +116,7 @@ function SubscribeDialog({ open, onOpenChange, servicePackage }: SubscribeDialog
       toast.success("Subscription request sent successfully!");
       queryClient.invalidateQueries({ queryKey: ["requests"] });
       queryClient.invalidateQueries({ queryKey: ["listener-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["my-requests"] });
       onOpenChange(false);
       form.reset();
     } catch (error) {

@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArtistQuery, TrackDetailQuery, ReportRelatedContentType } from "@/gql/graphql";
+import { ArtistQuery, TrackDetailQuery, ReportRelatedContentType, PopularityActionType } from "@/gql/graphql";
 import { formatNumber } from "@/utils/format-number";
 import { CopyIcon, EllipsisIcon, FlagIcon, HeartIcon, ListPlusIcon, UserIcon } from "lucide-react";
 import { Suspense, useState } from "react";
@@ -21,6 +21,7 @@ import { useFavoriteTrack } from "@/modules/client/track/hooks/use-favorite-trac
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { useAuthAction } from "@/hooks/use-auth-action";
 import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
+import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
 
 interface TrackOwnerSectionProps {
   data: TrackDetailQuery;
@@ -46,6 +47,7 @@ const TrackOwnerSectionSuspense = ({ data, artistData }: TrackOwnerSectionProps)
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth, isAuthenticated } =
     useAuthAction();
+  const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
 
   const { handleFavorite } = useFavoriteTrack();
 
@@ -61,6 +63,11 @@ const TrackOwnerSectionSuspense = ({ data, artistData }: TrackOwnerSectionProps)
       const url = `${window.location.origin}/track/${trackDetail.id}`;
       navigator.clipboard.writeText(url);
       toast.success("Copied!");
+      // Track popularity for share action
+      trackEngagementPopularity({
+        trackId: trackDetail.id,
+        actionType: PopularityActionType.Share,
+      });
     }
   };
 

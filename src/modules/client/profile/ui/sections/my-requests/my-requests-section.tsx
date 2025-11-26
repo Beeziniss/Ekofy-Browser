@@ -133,16 +133,17 @@ export default function MyRequestsSection() {
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearchValue] = useDebounce(searchValue, 300);
   const [statusFilter, setStatusFilter] = useState<GqlRequestStatus | "ALL">("ALL");
+  const [typeFilter, setTypeFilter] = useState<GqlRequestType | "ALL">("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  // Build query filter - only show DIRECT_REQUEST type for listener's private requests
+  // Build query filter
   const skip = (currentPage - 1) * pageSize;
   const where = {
     ...(debouncedSearchValue && { title: { contains: debouncedSearchValue } }),
     ...(statusFilter !== "ALL" && { status: { eq: statusFilter } }),
+    ...(typeFilter !== "ALL" && { type: { eq: typeFilter } }),
     ...(user?.userId && { requestUserId: { eq: user.userId } }),
-    type: { eq: GqlRequestType.DirectRequest },
   };
 
   // Fetch requests
@@ -155,9 +156,9 @@ export default function MyRequestsSection() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchValue, statusFilter]);
+  }, [debouncedSearchValue, statusFilter, typeFilter]);
 
-  const hasFilters = searchValue !== "" || statusFilter !== "ALL";
+  const hasFilters = searchValue !== "" || statusFilter !== "ALL" || typeFilter !== "ALL";
 
   // Check if user is authenticated
   if (!user) {
@@ -187,9 +188,23 @@ export default function MyRequestsSection() {
               />
             </div>
 
-            {/* Status Filter */}
-            <div className="flex items-center gap-2">
+            {/* Filters */}
+            <div className="flex items-center gap-4">
               <Filter className="h-4 w-4 text-gray-400" />
+
+              {/* Type Filter */}
+              <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value as GqlRequestType | "ALL")}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Types</SelectItem>
+                  <SelectItem value={GqlRequestType.DirectRequest}>Direct Request</SelectItem>
+                  <SelectItem value={GqlRequestType.PublicRequest}>Public Request</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Status Filter */}
               <Select
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value as GqlRequestStatus | "ALL")}

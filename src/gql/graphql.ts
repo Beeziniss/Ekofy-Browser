@@ -6793,6 +6793,41 @@ export type AddConversationFromRequestHubMutationVariables = Exact<{
 
 export type AddConversationFromRequestHubMutation = { __typename?: 'MutationInitialization', addConversationFromRequestHub: string };
 
+export type SubmitDeliveryMutationVariables = Exact<{
+  request: SubmitDeliveryRequestInput;
+}>;
+
+
+export type SubmitDeliveryMutation = { __typename?: 'MutationInitialization', submitDelivery: boolean };
+
+export type ApproveDeliveryMutationVariables = Exact<{
+  packageOrderId: Scalars['String']['input'];
+}>;
+
+
+export type ApproveDeliveryMutation = { __typename?: 'MutationInitialization', approveDelivery: boolean };
+
+export type SendRedoRequestMutationVariables = Exact<{
+  request: RedoRequestInput;
+}>;
+
+
+export type SendRedoRequestMutation = { __typename?: 'MutationInitialization', sendRedoRequest: boolean };
+
+export type AcceptRequestByArtistMutationVariables = Exact<{
+  packageOrderId: Scalars['String']['input'];
+}>;
+
+
+export type AcceptRequestByArtistMutation = { __typename?: 'MutationInitialization', acceptRequestByArtist: boolean };
+
+export type SwitchStatusByRequestorMutationVariables = Exact<{
+  request: ChangeOrderStatusRequestInput;
+}>;
+
+
+export type SwitchStatusByRequestorMutation = { __typename?: 'MutationInitialization', switchStatusByRequestor: boolean };
+
 export type PlaylistFavoriteMutationVariables = Exact<{
   playlistId: Scalars['String']['input'];
   isAdding: Scalars['Boolean']['input'];
@@ -6835,6 +6870,38 @@ export type RemoveFromPlaylistMutationVariables = Exact<{
 
 
 export type RemoveFromPlaylistMutation = { __typename?: 'MutationInitialization', removeFromPlaylist: boolean };
+
+export type ProcessTrackEngagementPopularityMutationVariables = Exact<{
+  trackId: Scalars['String']['input'];
+  actionType: PopularityActionType;
+}>;
+
+
+export type ProcessTrackEngagementPopularityMutation = { __typename?: 'MutationInitialization', processTrackEngagementMetric: boolean };
+
+export type ProcessTrackDiscoveryPopularityMutationVariables = Exact<{
+  trackId: Scalars['String']['input'];
+  actionType: PopularityActionType;
+}>;
+
+
+export type ProcessTrackDiscoveryPopularityMutation = { __typename?: 'MutationInitialization', processTrackDiscovery: boolean };
+
+export type ProcessArtistEngagementPopularityMutationVariables = Exact<{
+  artistId: Scalars['String']['input'];
+  actionType: PopularityActionType;
+}>;
+
+
+export type ProcessArtistEngagementPopularityMutation = { __typename?: 'MutationInitialization', processArtistEngagement: boolean };
+
+export type ProcessArtistDiscoveryPopularityMutationVariables = Exact<{
+  artistId: Scalars['String']['input'];
+  actionType: PopularityActionType;
+}>;
+
+
+export type ProcessArtistDiscoveryPopularityMutation = { __typename?: 'MutationInitialization', processArtistDiscovery: boolean };
 
 export type ReportMutationMutationVariables = Exact<{
   request: CreateReportRequestInput;
@@ -6925,6 +6992,20 @@ export type SendRequestMutationVariables = Exact<{
 
 
 export type SendRequestMutation = { __typename?: 'MutationInitialization', sendRequest: boolean };
+
+export type CreateReviewMutationVariables = Exact<{
+  createReviewRequest: CreateReviewRequestInput;
+}>;
+
+
+export type CreateReviewMutation = { __typename?: 'MutationInitialization', createReview: boolean };
+
+export type UpdateReviewMutationVariables = Exact<{
+  updateReviewRequest: UpdateReviewRequestInput;
+}>;
+
+
+export type UpdateReviewMutation = { __typename?: 'MutationInitialization', updateReview: boolean };
 
 export type ServiceCreateCheckoutSessionMutationVariables = Exact<{
   createPaymentCheckoutSessionInput: CreatePaymentCheckoutSessionRequestInput;
@@ -7142,7 +7223,7 @@ export type ConversationsQueryVariables = Exact<{
 }>;
 
 
-export type ConversationsQuery = { __typename?: 'QueryInitialization', conversations?: { __typename?: 'ConversationsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Conversation', id: string, userIds: Array<string>, ownerProfileConversation: { __typename?: 'ConversationResponse', avatar: string, nickname: string }, otherProfileConversation: { __typename?: 'ConversationResponse', avatar: string, nickname: string }, lastMessage?: { __typename?: 'LastMessage', text: string, senderId: string, sentAt: any, isReadBy: Array<string> } | null }> | null } | null };
+export type ConversationsQuery = { __typename?: 'QueryInitialization', conversations?: { __typename?: 'ConversationsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Conversation', id: string, userIds: Array<string>, requestId?: string | null, ownerProfileConversation: { __typename?: 'ConversationResponse', avatar: string, nickname: string, artistId?: string | null }, otherProfileConversation: { __typename?: 'ConversationResponse', avatar: string, nickname: string, artistId?: string | null }, lastMessage?: { __typename?: 'LastMessage', text: string, senderId: string, sentAt: any, isReadBy: Array<string> } | null }> | null } | null };
 
 export type MessagesQueryVariables = Exact<{
   where?: InputMaybe<MessageFilterInput>;
@@ -7174,7 +7255,7 @@ export type OrderPackageQueryVariables = Exact<{
 }>;
 
 
-export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, requirements: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }> }> | null } | null };
+export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, providerId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, requirements: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }> }> | null } | null };
 
 export type CouponsQueryVariables = Exact<{
   where?: InputMaybe<CouponFilterInput>;
@@ -7290,6 +7371,13 @@ export type UsersForRequestsQuery = { __typename?: 'QueryInitialization', users?
 export type RequestArtistFragment = { __typename?: 'Artist', id: string, userId: string, stageName: string } & { ' $fragmentName'?: 'RequestArtistFragment' };
 
 export type RequestArtistPackageFragment = { __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number } & { ' $fragmentName'?: 'RequestArtistPackageFragment' };
+
+export type CheckPublicRequestExistenceQueryVariables = Exact<{
+  publicRequestId: Scalars['String']['input'];
+}>;
+
+
+export type CheckPublicRequestExistenceQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', items?: Array<{ __typename?: 'Request', type: RequestType }> | null } | null };
 
 export type ListenerRequestsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -8056,6 +8144,31 @@ export const AddConversationFromRequestHubDocument = new TypedDocumentString(`
   addConversationFromRequestHub(request: $createConversationRequestInput)
 }
     `) as unknown as TypedDocumentString<AddConversationFromRequestHubMutation, AddConversationFromRequestHubMutationVariables>;
+export const SubmitDeliveryDocument = new TypedDocumentString(`
+    mutation SubmitDelivery($request: SubmitDeliveryRequestInput!) {
+  submitDelivery(request: $request)
+}
+    `) as unknown as TypedDocumentString<SubmitDeliveryMutation, SubmitDeliveryMutationVariables>;
+export const ApproveDeliveryDocument = new TypedDocumentString(`
+    mutation ApproveDelivery($packageOrderId: String!) {
+  approveDelivery(packageOrderId: $packageOrderId)
+}
+    `) as unknown as TypedDocumentString<ApproveDeliveryMutation, ApproveDeliveryMutationVariables>;
+export const SendRedoRequestDocument = new TypedDocumentString(`
+    mutation SendRedoRequest($request: RedoRequestInput!) {
+  sendRedoRequest(request: $request)
+}
+    `) as unknown as TypedDocumentString<SendRedoRequestMutation, SendRedoRequestMutationVariables>;
+export const AcceptRequestByArtistDocument = new TypedDocumentString(`
+    mutation AcceptRequestByArtist($packageOrderId: String!) {
+  acceptRequestByArtist(packageOrderId: $packageOrderId)
+}
+    `) as unknown as TypedDocumentString<AcceptRequestByArtistMutation, AcceptRequestByArtistMutationVariables>;
+export const SwitchStatusByRequestorDocument = new TypedDocumentString(`
+    mutation SwitchStatusByRequestor($request: ChangeOrderStatusRequestInput!) {
+  switchStatusByRequestor(request: $request)
+}
+    `) as unknown as TypedDocumentString<SwitchStatusByRequestorMutation, SwitchStatusByRequestorMutationVariables>;
 export const PlaylistFavoriteDocument = new TypedDocumentString(`
     mutation PlaylistFavorite($playlistId: String!, $isAdding: Boolean!) {
   addToFavoritePlaylist(playlistId: $playlistId, isAdding: $isAdding)
@@ -8086,6 +8199,26 @@ export const RemoveFromPlaylistDocument = new TypedDocumentString(`
   removeFromPlaylist(removeFromPlaylistRequest: $removeFromPlaylistRequest)
 }
     `) as unknown as TypedDocumentString<RemoveFromPlaylistMutation, RemoveFromPlaylistMutationVariables>;
+export const ProcessTrackEngagementPopularityDocument = new TypedDocumentString(`
+    mutation ProcessTrackEngagementPopularity($trackId: String!, $actionType: PopularityActionType!) {
+  processTrackEngagementMetric(trackId: $trackId, actionType: $actionType)
+}
+    `) as unknown as TypedDocumentString<ProcessTrackEngagementPopularityMutation, ProcessTrackEngagementPopularityMutationVariables>;
+export const ProcessTrackDiscoveryPopularityDocument = new TypedDocumentString(`
+    mutation ProcessTrackDiscoveryPopularity($trackId: String!, $actionType: PopularityActionType!) {
+  processTrackDiscovery(trackId: $trackId, actionType: $actionType)
+}
+    `) as unknown as TypedDocumentString<ProcessTrackDiscoveryPopularityMutation, ProcessTrackDiscoveryPopularityMutationVariables>;
+export const ProcessArtistEngagementPopularityDocument = new TypedDocumentString(`
+    mutation ProcessArtistEngagementPopularity($artistId: String!, $actionType: PopularityActionType!) {
+  processArtistEngagement(artistId: $artistId, actionType: $actionType)
+}
+    `) as unknown as TypedDocumentString<ProcessArtistEngagementPopularityMutation, ProcessArtistEngagementPopularityMutationVariables>;
+export const ProcessArtistDiscoveryPopularityDocument = new TypedDocumentString(`
+    mutation ProcessArtistDiscoveryPopularity($artistId: String!, $actionType: PopularityActionType!) {
+  processArtistDiscovery(artistId: $artistId, actionType: $actionType)
+}
+    `) as unknown as TypedDocumentString<ProcessArtistDiscoveryPopularityMutation, ProcessArtistDiscoveryPopularityMutationVariables>;
 export const ReportMutationDocument = new TypedDocumentString(`
     mutation ReportMutation($request: CreateReportRequestInput!) {
   createReport(request: $request)
@@ -8148,6 +8281,16 @@ export const SendRequestDocument = new TypedDocumentString(`
   sendRequest(request: $request, isDirectRequest: $isDirect)
 }
     `) as unknown as TypedDocumentString<SendRequestMutation, SendRequestMutationVariables>;
+export const CreateReviewDocument = new TypedDocumentString(`
+    mutation CreateReview($createReviewRequest: CreateReviewRequestInput!) {
+  createReview(createReviewRequest: $createReviewRequest)
+}
+    `) as unknown as TypedDocumentString<CreateReviewMutation, CreateReviewMutationVariables>;
+export const UpdateReviewDocument = new TypedDocumentString(`
+    mutation UpdateReview($updateReviewRequest: UpdateReviewRequestInput!) {
+  updateReview(updateReviewRequest: $updateReviewRequest)
+}
+    `) as unknown as TypedDocumentString<UpdateReviewMutation, UpdateReviewMutationVariables>;
 export const ServiceCreateCheckoutSessionDocument = new TypedDocumentString(`
     mutation ServiceCreateCheckoutSession($createPaymentCheckoutSessionInput: CreatePaymentCheckoutSessionRequestInput!) {
   createPaymentCheckoutSession(
@@ -8626,13 +8769,16 @@ export const ConversationsDocument = new TypedDocumentString(`
     items {
       id
       userIds
+      requestId
       ownerProfileConversation {
         avatar
         nickname
+        artistId
       }
       otherProfileConversation {
         avatar
         nickname
+        artistId
       }
       lastMessage {
         text
@@ -8695,6 +8841,7 @@ export const OrderPackageDocument = new TypedDocumentString(`
       id
       status
       clientId
+      providerId
       artistPackageId
       createdAt
       revisionCount
@@ -9248,6 +9395,15 @@ export const UsersForRequestsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<UsersForRequestsQuery, UsersForRequestsQueryVariables>;
+export const CheckPublicRequestExistenceDocument = new TypedDocumentString(`
+    query CheckPublicRequestExistence($publicRequestId: String!) {
+  requests(skip: 0, take: 1, where: {id: {eq: $publicRequestId}}) {
+    items {
+      type
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CheckPublicRequestExistenceQuery, CheckPublicRequestExistenceQueryVariables>;
 export const ListenerRequestsDocument = new TypedDocumentString(`
     query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
   requests(skip: $skip, take: $take, where: $where) {

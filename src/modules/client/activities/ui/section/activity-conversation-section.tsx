@@ -1,13 +1,13 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import ActivityConversationTable from "../components/activity-conversation-table";
 import { listenerOptions, orderPackageOptions } from "@/gql/options/client-options";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import Link from "next/link";
 
 interface ActivityConversationSectionProps {
   userId: string;
@@ -72,8 +72,6 @@ const ActivityConversationSectionSkeleton = () => {
 };
 
 const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSectionProps) => {
-  const router = useRouter();
-
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const skip = (currentPage - 1) * pageSize;
@@ -97,12 +95,12 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
         <h1 className="text-4xl tracking-wide">
           Orders with <strong>{listenerData.listeners?.items?.[0].displayName}</strong>
         </h1>
-        <div
+        <Link
+          href="/profile"
           className="text-main-white hover:border-main-white flex cursor-pointer items-center gap-x-2 border-b border-transparent pb-0.5 transition-colors"
-          onClick={() => router.back()}
         >
-          <ArrowLeftIcon className="w-4" /> Back
-        </div>
+          <ArrowLeftIcon className="w-4" /> Back to profile
+        </Link>
       </div>
       <div>{totalCount} result found</div>
       <ActivityConversationTable

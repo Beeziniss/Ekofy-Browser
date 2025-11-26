@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/utils/format-date";
 import { formatCurrency } from "@/utils/format-currency";
 import { getUserInitials } from "@/utils/format-shorten-name";
 import { calculateDeadline } from "@/utils/calculate-deadline";
@@ -12,6 +11,7 @@ import { CustomPagination } from "@/components/ui/custom-pagination";
 import { PackageOrderStatus, OrderPackageQuery } from "@/gql/graphql";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatDate } from "date-fns";
 
 type OrderItem = NonNullable<NonNullable<OrderPackageQuery["packageOrders"]>["items"]>[number];
 
@@ -60,7 +60,7 @@ const ActivityConversationTable = ({
               orders.map((order) => {
                 const finalDeadline = calculateDeadline(order.startedAt, order.duration || 0, order.freezedTime);
 
-                const deadlineDisplay = formatDate(finalDeadline.toISOString());
+                const deadlineDisplay = formatDate(new Date(finalDeadline), "PPp");
 
                 return (
                   <TableRow key={order.id}>
@@ -83,7 +83,7 @@ const ActivityConversationTable = ({
                     </TableCell>
 
                     {/* Package */}
-                    <TableCell className="line-clamp-1">
+                    <TableCell className="truncate">
                       <span className="text-sm">{order.package?.[0]?.packageName || "Unknown Package"}</span>
                     </TableCell>
 

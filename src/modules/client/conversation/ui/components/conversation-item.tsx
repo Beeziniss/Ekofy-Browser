@@ -25,7 +25,7 @@ const ConversationItem = React.memo(({ message, userId }: ConversationItemProps)
               })}
             </div>
           </div>
-          <div className="mt-1 rounded-lg bg-blue-600 px-3 py-2 text-sm break-words text-white">{message.text}</div>
+          <div className="bg-main-purple mt-1 rounded-lg px-3 py-2 text-sm break-words text-white">{message.text}</div>
         </div>
         <Avatar className="size-8">
           <AvatarImage src={message?.senderProfileMessages.avatar || undefined} alt="User Avatar" />

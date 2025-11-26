@@ -1,21 +1,169 @@
 "use client";
 
+import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { EllipsisVertical, FileIcon, ArrowUpRightIcon, EyeIcon, Edit } from "lucide-react";
 import { orderPackageDetailOptions } from "@/gql/options/client-options";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import OrderSubmissionDeliveryDialog, { type DeliveryItem } from "../components/order-submission-delivery-dialog";
+import OrderSubmissionSubmitDialog from "../components/order-submission-submit-dialog";
+import OrderSubmissionRevisionDialog from "../components/order-submission-revision-dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { formatDate } from "date-fns";
+import { useAuthStore } from "@/store";
 
 interface OrderSubmissionSectionProps {
   orderId: string;
 }
 
 const OrderSubmissionSection = ({ orderId }: OrderSubmissionSectionProps) => {
+  const { user } = useAuthStore();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { data: orderPackageDetail } = useSuspenseQuery(orderPackageDetailOptions(orderId));
+  const [selectedDelivery, setSelectedDelivery] = useState<DeliveryItem | null>(null);
+  const [isRevisionDialogOpen, setIsRevisionDialogOpen] = useState(false);
+  const [selectedRevisionDelivery, setSelectedRevisionDelivery] = useState<DeliveryItem | null>(null);
 
-  console.log(orderPackageDetail);
+  const deliveries = orderPackageDetail?.deliveries || [];
+
+  const handleViewDetails = (delivery: DeliveryItem) => {
+    setSelectedDelivery(delivery);
+  };
+
+  const handleCloseDetailsDialog = () => {
+    setSelectedDelivery(null);
+  };
+
+  const handleRequestRevision = (delivery: DeliveryItem) => {
+    setSelectedRevisionDelivery(delivery);
+    setIsRevisionDialogOpen(true);
+  };
+
+  const handleCloseRevisionDialog = () => {
+    setIsRevisionDialogOpen(false);
+    setSelectedRevisionDelivery(null);
+  };
 
   return (
-    <div className="bg-main-grey-1 flex flex-col rounded-md p-4">
-      <h3 className="text-xl font-semibold">Order Submission</h3>
-    </div>
+    <Card>
+      <CardContent className="flex flex-col space-y-6 rounded-md">
+        {/* Header with Submit Button */}
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold">Order Submission</h3>
+          {orderPackageDetail?.providerId === user?.userId && (
+            <OrderSubmissionSubmitDialog orderId={orderId} isOpen={isDialogOpen} onOpenChange={setIsDialogOpen} />
+          )}
+
+          <OrderSubmissionDeliveryDialog
+            isOpen={selectedDelivery !== null}
+            onClose={handleCloseDetailsDialog}
+            delivery={selectedDelivery}
+          />
+
+          {selectedRevisionDelivery && (
+            <OrderSubmissionRevisionDialog
+              isOpen={isRevisionDialogOpen}
+              onClose={handleCloseRevisionDialog}
+              packageOrderId={orderId}
+              revisionNumber={selectedRevisionDelivery.revisionNumber || 1}
+            />
+          )}
+        </div>
+        {deliveries.length > 0 ? (
+          <div className="overflow-x-auto rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Revision No.</TableHead>
+                  <TableHead>File</TableHead>
+                  <TableHead>Client Feedback</TableHead>
+                  <TableHead>Delivered at</TableHead>
+                  <TableHead className="w-12"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {deliveries.map((delivery, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="w-32 font-medium">{delivery.revisionNumber || 1}</TableCell>
+                    <TableCell className="w-50">
+                      {delivery.deliveryFileUrl ? (
+                        <div
+                          className="hover:text-main-purple/80 flex w-fit cursor-pointer items-center gap-2 p-2 pl-0 transition-colors"
+                          onClick={() => window.open(delivery.deliveryFileUrl, "_blank")}
+                        >
+                          <FileIcon className="text-main-purple h-4 w-4" />
+                          <span className="text-sm">Delivery File</span>
+                          <ArrowUpRightIcon className="h-4 w-4" />
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">No file</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {delivery.clientFeedback ? (
+                        <div className="max-w-xs truncate" title={delivery.clientFeedback}>
+                          {delivery.clientFeedback}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">No feedback</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="w-44">
+                      {delivery.deliveredAt ? formatDate(new Date(delivery.deliveredAt), "PPp") : "-"}
+                    </TableCell>
+                    <TableCell className="w-12">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <EllipsisVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleViewDetails(delivery)}>
+                            <EyeIcon className="h-4 w-4" />
+                            View Details
+                          </DropdownMenuItem>
+                          {delivery.deliveryFileUrl && (
+                            <DropdownMenuItem
+                              onClick={() => {
+                                // Handle download file action
+                                window.open(delivery.deliveryFileUrl, "_blank");
+                              }}
+                            >
+                              <ArrowUpRightIcon className="h-4 w-4" />
+                              Open File
+                            </DropdownMenuItem>
+                          )}
+                          {orderPackageDetail?.clientId === user?.userId && (
+                            <DropdownMenuItem onClick={() => handleRequestRevision(delivery)}>
+                              <Edit className="h-4 w-4" />
+                              Request Revision
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <div className="border-main-grey text-main-white rounded-md border border-dashed py-8 text-center">
+            <FileIcon className="mx-auto mb-4 h-12 w-12 opacity-80" />
+            <p>No deliveries yet</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
