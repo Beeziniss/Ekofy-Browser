@@ -58,7 +58,7 @@ export function StripeAccountRequiredModal({
             Stripe Account Required
           </DialogTitle>
           <DialogDescription className="text-center text-sm text-muted-foreground">
-            You need a connected Stripe account to apply for music requests and
+            You need a connected Stripe account to apply for uploads track and
             receive payments.
           </DialogDescription>
         </DialogHeader>

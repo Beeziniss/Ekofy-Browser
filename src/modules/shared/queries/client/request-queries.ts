@@ -20,6 +20,16 @@ export const RequestArtistPackageFragment = graphql(`
   }
 `);
 
+export const CheckPublicRequestExistenceQuery = graphql(`
+  query CheckPublicRequestExistence($publicRequestId: String!) {
+    requests(skip: 0, take: 1, where: { id: { eq: $publicRequestId } }) {
+      items {
+        type
+      }
+    }
+  }
+`);
+
 /**
  * Query to fetch listener's own direct requests (request history)
  * This is separate from the request hub and shows requests made directly to artists
