@@ -10,7 +10,7 @@ import {
   // Settings,
   // LayoutPanelLeft,
   AudioLines,
-  // PackageCheck,
+  PackageCheck,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
@@ -54,6 +54,11 @@ const data = {
       url: "/moderator/approval-histories",
       icon: ShieldCheck,
     },
+    {
+      name: "Public Requests",
+      url: "/moderator/public-request",
+      icon: PackageCheck,
+    }
     // {
     //   name: "Approval Service Packages",
     //   url: "/moderator/approval-service-packages",
