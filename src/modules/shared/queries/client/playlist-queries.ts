@@ -38,3 +38,18 @@ export const PlaylistsHomeQuery = graphql(`
     }
   }
 `);
+
+export const PlaylistsFavoriteQuery = graphql(`
+  query PlaylistsFavorite($take: Int!) {
+    favoritePlaylists(take: $take, order: { createdAt: DESC }) {
+      items {
+        id
+        name
+        coverImage
+        userId
+        isPublic
+        checkPlaylistInFavorite
+      }
+    }
+  }
+`);
