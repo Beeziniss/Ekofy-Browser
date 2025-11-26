@@ -186,24 +186,22 @@ const AuthButton = () => {
             onMarkAsRead={markAsRead}
             onClearNotifications={clearNotifications}
           >
-            <TooltipButton content="Notifications" side="bottom">
-              <div className="group relative cursor-pointer">
-                {unreadCount > 0 ? (
-                  <div className="relative">
-                    <BellActive className="size-5" />
-                    {/* {unreadCount > 0 && (
+            <div className="group relative cursor-pointer">
+              {unreadCount > 0 ? (
+                <div className="relative">
+                  <BellActive className="size-5" />
+                  {/* {unreadCount > 0 && (
                       <div className="absolute -top-1 -right-1 flex h-4 w-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                         {unreadCount > 9 ? "9+" : unreadCount}
                       </div>
                     )} */}
-                  </div>
-                ) : (
-                  <div className="p-2">
-                    <Bell className="text-main-white group-hover:text-main-grey size-5" />
-                  </div>
-                )}
-              </div>
-            </TooltipButton>
+                </div>
+              ) : (
+                <div className="p-2">
+                  <Bell className="text-main-white group-hover:text-main-grey size-5" />
+                </div>
+              )}
+            </div>
           </NotificationPopover>
 
           <DropdownMenu>
