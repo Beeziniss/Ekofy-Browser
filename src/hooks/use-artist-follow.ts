@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userFollowMutationOptions, userUnfollowMutationOptions } from "@/gql/options/client-mutation-options";
 import { toast } from "sonner";
-import { ArtistDetailQuery, TrackDetailQuery } from "@/gql/graphql";
+import { ArtistDetailQuery, TrackDetailQuery, PopularityActionType } from "@/gql/graphql";
+import { useProcessArtistEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
 
 interface UseArtistFollowOptions {
   artistId?: string;
@@ -11,6 +12,7 @@ interface UseArtistFollowOptions {
 
 export const useArtistFollow = ({ artistId, trackId, onSuccess }: UseArtistFollowOptions = {}) => {
   const queryClient = useQueryClient();
+  const { mutate: artistEngagementPopularity } = useProcessArtistEngagementPopularity();
 
   const invalidateAllRelatedQueries = (artistId?: string, trackId?: string) => {
     // Invalidate artist-detail queries
@@ -137,8 +139,15 @@ export const useArtistFollow = ({ artistId, trackId, onSuccess }: UseArtistFollo
       console.error("Failed to follow user:", error);
       toast.error("Failed to follow user. Please try again.");
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       onSuccess?.(true);
+      // Track artist engagement popularity for follow
+      if (artistId) {
+        artistEngagementPopularity({
+          artistId,
+          actionType: PopularityActionType.Follow,
+        });
+      }
     },
     onSettled: () => {
       invalidateAllRelatedQueries(artistId, trackId);
@@ -238,8 +247,15 @@ export const useArtistFollow = ({ artistId, trackId, onSuccess }: UseArtistFollo
       console.error("Failed to unfollow user:", error);
       toast.error("Failed to unfollow user. Please try again.");
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       onSuccess?.(false);
+      // Track artist engagement popularity for unfollow
+      if (artistId) {
+        artistEngagementPopularity({
+          artistId,
+          actionType: PopularityActionType.Unfollow,
+        });
+      }
     },
     onSettled: () => {
       invalidateAllRelatedQueries(artistId, trackId);
