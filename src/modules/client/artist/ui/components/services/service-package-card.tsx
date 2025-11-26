@@ -1,6 +1,7 @@
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ChevronsRightIcon } from "lucide-react";
 import { ServicePackage } from "../../sections/services/artist-service-section";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ServicePackageCard = ({ servicePackage }: { servicePackage: ServicePackage }) => {
   const formatPrice = (amount: number, currency: string) => {
@@ -13,7 +14,7 @@ const ServicePackageCard = ({ servicePackage }: { servicePackage: ServicePackage
   };
 
   return (
-    <Card className="group h-fit transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+    <Card className="group h-fit transition-all hover:shadow-lg">
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
           <CardTitle className="group-hover:text-primary text-xl font-bold transition-colors">
@@ -30,10 +31,14 @@ const ServicePackageCard = ({ servicePackage }: { servicePackage: ServicePackage
         </CardDescription>
       </CardHeader>
 
-      <CardFooter className="pt-4">
-        <Button variant="ekofy" className="w-full">
-          Book Service
-        </Button>
+      <CardFooter className="justify-end pt-4">
+        <Link
+          href={`/service-package/${servicePackage.id}`}
+          className="text-main-purple hover:border-main-purple flex items-center gap-x-1 border-b border-transparent font-normal transition-colors"
+        >
+          <span>Detail</span>
+          <ChevronsRightIcon className="size-6" />
+        </Link>
       </CardFooter>
     </Card>
   );

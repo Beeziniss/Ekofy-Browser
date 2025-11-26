@@ -11,7 +11,7 @@ const Page = async ({ params }: PageProps) => {
   const { artistId } = await params;
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(servicePackageOptions(artistId));
+  void queryClient.prefetchQuery(servicePackageOptions({ artistId }));
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ArtistDetailServiceView artistId={artistId} />

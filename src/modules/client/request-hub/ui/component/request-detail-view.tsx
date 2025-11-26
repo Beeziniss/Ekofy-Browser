@@ -117,13 +117,6 @@ export function RequestDetailView({ request, onBack, onApply, className }: Reque
       return `${days} day${days > 1 ? "s" : ""} ${hours} hour${hours > 1 ? "s" : ""} ago`;
     }
   };
-  const formatDeadline = (deadline: string | Date) => {
-    const date = typeof deadline === "string" ? new Date(deadline) : deadline;
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
 
   const handleApply = () => {
     if (!isAuthenticated) {
@@ -157,9 +150,9 @@ export function RequestDetailView({ request, onBack, onApply, className }: Reque
 
     // Only allow artists to contact client
     if (isArtist) {
-      const conversationId = await addConversation({ requestHubId: request.id, otherUserId: request.requestUserId });
+      const conversationId = await addConversation({ requestId: request.id, otherUserId: request.requestUserId });
 
-      router.push(`/conversations/${conversationId}`);
+      router.push(`/inbox/${conversationId}`);
     }
   };
 
@@ -257,8 +250,8 @@ export function RequestDetailView({ request, onBack, onApply, className }: Reque
                   <div className="mb-6 space-y-3">
                     <div className="flex items-center text-sm">
                       <Clock className="mr-2 h-4 w-4 text-gray-400" />
-                      <span className="text-gray-500">Deadline</span>
-                      <span className="ml-auto font-medium">{formatDeadline(request.deadline)}</span>
+                      <span className="text-gray-500">Duration</span>
+                      <span className="ml-auto font-medium">{request.duration} (days)</span>
                     </div>
 
                     <div className="flex items-center text-sm">

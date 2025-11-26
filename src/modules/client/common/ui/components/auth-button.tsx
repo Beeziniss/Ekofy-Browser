@@ -9,19 +9,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
+// import Image from "next/image";
+import { useEffect } from "react";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { SparklesColorful, Crown } from "@/assets/icons";
+import { SparklesColorful, Crown, BellActive } from "@/assets/icons";
 import { authApi } from "@/services/auth-services";
 import { getUserInitials } from "@/utils/format-shorten-name";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { artistOptions, listenerOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
-import { AudioLines, Bell, LogOut, MessageCircleIcon, MicVocalIcon, Settings, User } from "lucide-react";
+import {
+  AudioLines,
+  Bell,
+  LogOut,
+  MessageCircleIcon,
+  MicVocalIcon,
+  ReceiptTextIcon,
+  Settings,
+  User,
+} from "lucide-react";
+import { useNotificationSignalR } from "@/hooks/use-notification-signalr";
+import { NotificationPopover } from "@/components/notification-popover";
+import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
 
 interface ProfileLink {
   label: string;
@@ -31,8 +43,19 @@ interface ProfileLink {
 const AuthButton = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [hasNotification] = useState(false);
   const { isAuthenticated, user, clearUserData } = useAuthStore();
+
+  // Initialize notification SignalR hook
+  const { notifications, unreadCount, markAsRead, clearNotifications, onNotificationReceived } =
+    useNotificationSignalR();
+
+  // Set up notification event handler
+  useEffect(() => {
+    onNotificationReceived((notification) => {
+      // You can add additional logic here like showing a toast notification
+      console.log("New notification received:", notification);
+    });
+  }, [onNotificationReceived]);
 
   // Logout mutation
   const { mutate: logout } = useMutation({
@@ -108,11 +131,20 @@ const AuthButton = () => {
       className: "text-main-white",
       showForRoles: [UserRole.ARTIST],
     },
+    {
+      type: "link" as const,
+      icon: ReceiptTextIcon,
+      label: "Orders",
+      href: `/activities/order/${user?.userId}`,
+      className: "text-main-white",
+      showForRoles: [UserRole.ARTIST],
+    },
     // Premium/Pro option (available for all)
     {
       type: "button" as const,
       icon: SparklesColorful,
       label: user?.role === UserRole.ARTIST ? "Go Pro" : "Go Premium",
+      href: "/subscription",
       className: "primary_gradient !bg-gradient-to-b bg-clip-text text-base font-semibold text-transparent",
       showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
     },
@@ -141,47 +173,71 @@ const AuthButton = () => {
     <>
       {isAuthenticated ? (
         // Signed in
-        <div className="flex items-center gap-x-4">
-          <Link href={"/conversations"}>
-            <MessageCircleIcon className="text-main-white hover:text-main-grey size-5" />
-          </Link>
+        <div className="flex items-center">
+          <TooltipButton content="Inbox" side="bottom">
+            <Link href={"/inbox"} className="group p-2">
+              <MessageCircleIcon className="text-main-white group-hover:text-main-grey size-5" />
+            </Link>
+          </TooltipButton>
 
-          {hasNotification ? (
-            <Image src={"/bell-active.svg"} alt="Notification Bell Active" width={20} height={20} />
-          ) : (
-            <Bell className="text-main-white hover:text-main-grey size-5 cursor-pointer" />
-          )}
+          <NotificationPopover
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onMarkAsRead={markAsRead}
+            onClearNotifications={clearNotifications}
+          >
+            <TooltipButton content="Notifications" side="bottom">
+              <div className="group relative cursor-pointer">
+                {unreadCount > 0 ? (
+                  <div className="relative">
+                    <BellActive className="size-5" />
+                    {/* {unreadCount > 0 && (
+                      <div className="absolute -top-1 -right-1 flex h-4 w-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </div>
+                    )} */}
+                  </div>
+                ) : (
+                  <div className="p-2">
+                    <Bell className="text-main-white group-hover:text-main-grey size-5" />
+                  </div>
+                )}
+              </div>
+            </TooltipButton>
+          </NotificationPopover>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div
-                className={`${userSubscription?.subscription[0].tier === "PREMIUM" || userSubscription?.subscription[0].tier === "PRO" ? "primary_gradient relative flex size-9 items-center justify-center rounded-full p-0.5" : ""}`}
-              >
-                <Avatar className="size-8 cursor-pointer">
-                  <AvatarImage
-                    src={
-                      listenerData?.listeners?.items?.[0].avatarImage ||
-                      artistData?.artists?.items?.[0].avatarImage ||
-                      undefined
-                    }
-                    alt={
-                      listenerData?.listeners?.items?.[0].displayName ||
-                      artistData?.artists?.items?.[0].stageName ||
-                      "User Avatar"
-                    }
-                  />
-                  <AvatarFallback>
-                    {getUserInitials(
-                      listenerData?.listeners?.items?.[0].displayName ||
+              <div className="ml-2">
+                <div
+                  className={`${userSubscription?.subscription[0].tier === "PREMIUM" || userSubscription?.subscription[0].tier === "PRO" ? "primary_gradient relative flex size-9 items-center justify-center rounded-full p-0.5" : ""}`}
+                >
+                  <Avatar className="size-8 cursor-pointer">
+                    <AvatarImage
+                      src={
+                        listenerData?.listeners?.items?.[0].avatarImage ||
+                        artistData?.artists?.items?.[0].avatarImage ||
+                        undefined
+                      }
+                      alt={
+                        listenerData?.listeners?.items?.[0].displayName ||
                         artistData?.artists?.items?.[0].stageName ||
-                        "E",
-                    )}
-                  </AvatarFallback>
-                </Avatar>
-                {(userSubscription?.subscription[0].tier === "PREMIUM" ||
-                  userSubscription?.subscription[0].tier === "PRO") && (
-                  <Crown className="absolute -top-1 -right-1.5 w-3 rotate-45" />
-                )}
+                        "User Avatar"
+                      }
+                    />
+                    <AvatarFallback>
+                      {getUserInitials(
+                        listenerData?.listeners?.items?.[0].displayName ||
+                          artistData?.artists?.items?.[0].stageName ||
+                          "E",
+                      )}
+                    </AvatarFallback>
+                  </Avatar>
+                  {(userSubscription?.subscription[0].tier === "PREMIUM" ||
+                    userSubscription?.subscription[0].tier === "PRO") && (
+                    <Crown className="absolute -top-1 -right-1.5 w-3 rotate-45" />
+                  )}
+                </div>
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="start">

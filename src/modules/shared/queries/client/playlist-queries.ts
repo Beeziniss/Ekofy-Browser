@@ -3,7 +3,7 @@ import { graphql } from "@/gql";
 export const PlaylistsPersonalQuery = graphql(`
   query Playlists($userId: String!, $name: String, $take: Int, $skip: Int) {
     playlists(
-      where: { or: { name: { contains: $name }, nameUnsigned: { contains: $name } }, userId: { eq: $userId } }
+      where: { or: [{ name: { contains: $name } }, { nameUnsigned: { contains: $name } }], userId: { eq: $userId } }
       order: { createdAt: DESC }
       take: $take
       skip: $skip
@@ -27,6 +27,21 @@ export const PlaylistsPersonalQuery = graphql(`
 export const PlaylistsHomeQuery = graphql(`
   query PlaylistsHome($take: Int, $skip: Int) {
     playlists(where: { isPublic: { eq: true } }, order: { createdAt: DESC }, take: $take, skip: $skip) {
+      items {
+        id
+        name
+        coverImage
+        userId
+        isPublic
+        checkPlaylistInFavorite
+      }
+    }
+  }
+`);
+
+export const PlaylistsFavoriteQuery = graphql(`
+  query PlaylistsFavorite($take: Int!) {
+    favoritePlaylists(take: $take, order: { createdAt: DESC }) {
       items {
         id
         name

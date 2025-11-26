@@ -100,7 +100,7 @@ const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProp
   const handleChatWithArtist = async () => {
     const conversationId = await addConversation(artist!.userId!);
 
-    router.push(`/conversations/${conversationId}`);
+    router.push(`/inbox/${conversationId}`);
   };
 
   return (

@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   AlertCircle,
-  Calendar,
-  User,
+  // Calendar,
+  // User,
   Clock,
   FileText,
   ArrowLeft,
@@ -21,10 +21,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { ReportStatusBadge } from "../components/report-status-badge";
-import {
-  REPORT_TYPE_LABELS,
-  CONTENT_TYPE_LABELS,
-} from "@/types/report";
+import { REPORT_TYPE_LABELS, CONTENT_TYPE_LABELS } from "@/types/report";
 
 interface ReportDetailSectionProps {
   reportId: string;
@@ -39,7 +36,7 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
       <div className="flex items-center justify-center py-12">
         <div className="flex flex-col items-center gap-3">
           <LoaderCircle className="h-8 w-8 animate-spin text-blue-600" />
-          <p className="text-sm text-muted-foreground">Loading report information...</p>
+          <p className="text-muted-foreground text-sm">Loading report information...</p>
         </div>
       </div>
     );
@@ -47,22 +44,20 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
 
   if (error || !report) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <div className="flex flex-col items-center gap-4">
           <div className="rounded-full bg-red-100 p-4">
             <AlertCircle className="h-8 w-8 text-red-600" />
           </div>
           <div>
-            <p className="text-destructive text-lg font-medium mb-2">
-              Unable to load report information
-            </p>
-            <p className="text-muted-foreground text-sm mb-4">
+            <p className="text-destructive mb-2 text-lg font-medium">Unable to load report information</p>
+            <p className="text-muted-foreground mb-4 text-sm">
               The report does not exist or you do not have access to it.
             </p>
           </div>
           <Button asChild>
             <Link href="/reports">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Back to list
             </Link>
           </Button>
@@ -74,11 +69,9 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
   const createdAt = new Date(report.createdAt);
   const updatedAt = report.updatedAt ? new Date(report.updatedAt) : null;
   const resolvedAt = report.resolvedAt ? new Date(report.resolvedAt) : null;
-  
+
   const reportTypeLabel = REPORT_TYPE_LABELS[report.reportType];
-  const contentTypeLabel = report.relatedContentType
-    ? CONTENT_TYPE_LABELS[report.relatedContentType]
-    : "User";
+  const contentTypeLabel = report.relatedContentType ? CONTENT_TYPE_LABELS[report.relatedContentType] : "User";
 
   const getTargetInfo = () => {
     if (report.track && report.track.length > 0) {
@@ -123,8 +116,8 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
     <div className={className}>
       <div className="mb-6">
         <Button asChild variant="outline" size="sm">
-          <Link href="/reports">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+          <Link href="/profile/reports">
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to list
           </Link>
         </Button>
@@ -151,7 +144,7 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
           <CardContent>
             <div className="grid gap-4">
               <div>
-                <h3 className="font-medium mb-2">Reported Target:</h3>
+                <h3 className="mb-2 font-medium">Reported Target:</h3>
                 <div className="flex items-center gap-2">
                   <span className="text-sm">{targetInfo.title}</span>
                   {targetInfo.href && (
@@ -163,19 +156,26 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
                   )}
                 </div>
                 {targetInfo.content && (
-                  <p className="text-sm text-muted-foreground mt-2 p-3 bg-muted rounded-lg">
-                    {targetInfo.content}
-                  </p>
+                  <p className="text-muted-foreground bg-muted mt-2 rounded-lg p-3 text-sm">{targetInfo.content}</p>
                 )}
               </div>
 
               {report.userReported && report.userReported.length > 0 && (
                 <div>
-                  <h3 className="font-medium mb-2">Reported User:</h3>
+                  <h3 className="mb-2 font-medium">Reported User:</h3>
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{report.userReported[0].fullName}</span>
+                    <span className="text-sm">{report.nicknameReported}</span>
                     <Badge variant="outline">{report.userReported[0].role}</Badge>
+                  </div>
+                </div>
+              )}
+
+              {report.assignedModeratorId && (
+                <div>
+                  <h3 className="mb-2 font-medium">Assigned Moderator:</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">{report.userAssignedTo[0].fullName}</span>
+                    <Badge variant="outline">{report.userAssignedTo[0].role}</Badge>
                   </div>
                 </div>
               )}
@@ -193,9 +193,7 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm whitespace-pre-wrap">
-                {report.description}
-              </p>
+              <p className="text-sm whitespace-pre-wrap">{report.description}</p>
             </CardContent>
           </Card>
         )}
@@ -210,23 +208,18 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {report.evidences.map((evidence, index) => (
-                  <div
-                    key={index}
-                    className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                  >
+                  <div key={index} className="overflow-hidden rounded-lg border transition-shadow hover:shadow-md">
                     <Image
                       src={evidence}
                       alt={`Evidence ${index + 1}`}
                       width={400}
                       height={192}
-                      className="w-full h-48 object-cover"
+                      className="h-48 w-full object-cover"
                     />
-                    <div className="p-2 bg-muted">
-                      <p className="text-xs text-muted-foreground text-center">
-                        Evidence {index + 1}
-                      </p>
+                    <div className="bg-muted p-2">
+                      <p className="text-muted-foreground text-center text-xs">Evidence {index + 1}</p>
                     </div>
                   </div>
                 ))}
@@ -246,7 +239,6 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
           <CardContent>
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">Created at:</span>
                 <span>{format(createdAt, "dd/MM/yyyy HH:mm", { locale: vi })}</span>
               </div>
@@ -255,7 +247,6 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
                 <>
                   <Separator />
                   <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">Last updated:</span>
                     <span>{format(updatedAt, "dd/MM/yyyy HH:mm", { locale: vi })}</span>
                   </div>
@@ -266,7 +257,6 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
                 <>
                   <Separator />
                   <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">Resolution time:</span>
                     <span>{format(resolvedAt, "dd/MM/yyyy HH:mm", { locale: vi })}</span>
                   </div>
@@ -286,10 +276,8 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="bg-muted p-4 rounded-lg">
-                <p className="text-sm whitespace-pre-wrap">
-                  {report.note}
-                </p>
+              <div className="bg-muted rounded-lg p-4">
+                <p className="text-sm whitespace-pre-wrap">{report.note}</p>
               </div>
             </CardContent>
           </Card>

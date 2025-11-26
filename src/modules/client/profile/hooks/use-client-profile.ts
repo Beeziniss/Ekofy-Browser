@@ -22,12 +22,29 @@ export function useClientProfile() {
   const personal = {
     displayName: listenerData?.displayName || "",
     email: listenerData?.email || "",
-    birthDate: firstUser?.birthDate ? format(new Date(firstUser.birthDate), "yyyy-MM-dd") : undefined,
+    birthDate: firstUser?.birthDate
+      ? (() => {
+          try {
+            const date = new Date(firstUser.birthDate);
+            return isNaN(date.getTime()) ? undefined : format(date, "yyyy-MM-dd");
+          } catch {
+            return undefined;
+          }
+        })()
+      : undefined,
     gender: firstUser?.gender || undefined,
   };
 
   const account = {
-    createdAt: format(new Date(listenerData?.createdAt), "dd-MM-yyyy"),
+    createdAt: (() => {
+      try {
+        if (!listenerData?.createdAt) return "N/A";
+        const date = new Date(listenerData.createdAt);
+        return isNaN(date.getTime()) ? "N/A" : format(date, "dd-MM-yyyy");
+      } catch {
+        return "N/A";
+      }
+    })(),
     // Prefer subscription tier if active; fall back to verification heuristic
     membershipStatus: subscriptionQuery?.data?.subscription[0].name ?? "Free",
   };

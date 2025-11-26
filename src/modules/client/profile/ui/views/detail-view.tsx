@@ -26,7 +26,7 @@ const DetailView = ({ personal, account, userId }: DetailViewProps) => {
       <AccountDetailSection account={account} />
       <SubscriptionSection />
       <SettingsSection />
-      <ActivitySection />
+      <ActivitySection userId={userId} />
     </div>
   );
 };

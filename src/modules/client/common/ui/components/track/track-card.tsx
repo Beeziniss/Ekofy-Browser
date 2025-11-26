@@ -170,7 +170,7 @@ const TrackCard = React.memo(
               alt="Track Name"
               width={280}
               height={280}
-              className="h-full w-full rounded-sm object-cover transition-transform duration-500"
+              className="aspect-square h-full w-full rounded-sm object-cover transition-transform duration-500"
               unoptimized
             />
             <div
@@ -254,7 +254,7 @@ const TrackCard = React.memo(
               artists.length > 0 &&
               artists.map((artist, index) => (
                 <span key={index}>
-                  <Link href="#" className="hover:text-main-purple hover:underline">
+                  <Link href={`/artists/${artist?.id}`} className="hover:text-main-purple hover:underline">
                     {artist?.stageName}
                   </Link>
                   {index < artists.length - 1 && ", "}

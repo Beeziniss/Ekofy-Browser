@@ -14,6 +14,10 @@ import {
   QueryInitializationOwnRequestsArgs,
   ConversationFilterInput,
   MessageFilterInput,
+  ArtistPackageFilterInput,
+  ArtistPackageStatus,
+  PackageOrderFilterInput,
+  CategoryType,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -26,6 +30,7 @@ import {
   GetUserActiveSubscriptionQuery,
   ListenerQuery,
   OWN_REQUESTS_QUERY,
+  PlaylistsFavoriteQuery,
   PlaylistsHomeQuery,
   PlaylistsPersonalQuery,
   REQUEST_BY_ID_QUERY,
@@ -36,12 +41,30 @@ import {
   TrackCommentRepliesQuery,
   TrackCommentsQuery,
   TrackDetailViewQuery,
+  TrackFavoriteQuery,
   TrackListHomeQuery,
   USER_QUERY_FOR_REQUESTS,
+  UserBasicInfoQuery,
 } from "@/modules/shared/queries/client";
 import { ConversationMessagesQuery, ConversationQuery } from "@/modules/shared/queries/client/conversation-queries";
+import { OrderPackageQuery } from "@/modules/shared/queries/client/order-queries";
+import { CategoriesChannelQuery } from "@/modules/shared/queries/client/category-queries";
 
 // PROFILE QUERIES
+export const userBasicInfoOptions = (userId: string) =>
+  queryOptions({
+    queryKey: ["user-basic-info", userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const result = await execute(UserBasicInfoQuery, {
+        userId,
+      });
+      return result.users?.items?.[0] || null;
+    },
+    retry: 0,
+    enabled: !!userId,
+  });
+
 export const listenerProfileOptions = (userId: string, enabled: boolean = true) =>
   queryOptions({
     queryKey: ["listener-profile", userId],
@@ -78,7 +101,7 @@ export const userActiveSubscriptionOptions = (userId: string) =>
 // TRACK QUERIES
 export const trackListHomeOptions = queryOptions({
   queryKey: ["tracks-home"],
-  queryFn: async () => await execute(TrackListHomeQuery, { take: 10 }),
+  queryFn: async () => await execute(TrackListHomeQuery, { take: 12 }),
 });
 
 export const trackDetailOptions = (trackId: string) =>
@@ -86,6 +109,12 @@ export const trackDetailOptions = (trackId: string) =>
     queryKey: ["track-detail", trackId],
     queryFn: async () => await execute(TrackDetailViewQuery, { trackId }),
     enabled: !!trackId,
+  });
+
+export const trackFavoriteOptions = (take: number = 12) =>
+  queryOptions({
+    queryKey: ["track-favorite"],
+    queryFn: async () => await execute(TrackFavoriteQuery, { take }),
   });
 
 // PLAYLIST QUERIES
@@ -135,6 +164,12 @@ export const checkTrackInPlaylistOptions = (trackId: string) =>
   queryOptions({
     queryKey: ["check-track-in-playlist", trackId],
     queryFn: async () => await execute(CheckTrackInPlaylistQuery, { trackId }),
+  });
+
+export const playlistsFavoriteOptions = (take: number = 12) =>
+  queryOptions({
+    queryKey: ["playlists-favorite"],
+    queryFn: async () => await execute(PlaylistsFavoriteQuery, { take }),
   });
 
 // TRACK COMMENTS QUERIES
@@ -216,21 +251,35 @@ export const followingOptions = ({ artistId, userId }: { artistId?: string; user
   });
 
 // SERVICE PACKAGE QUERIES
-export const servicePackageOptions = (artistId: string) =>
+export const servicePackageOptions = ({ artistId, serviceId }: { artistId?: string; serviceId?: string }) =>
   queryOptions({
     queryKey: ["service-packages", artistId],
-    queryFn: async () => await execute(ArtistPackageQuery, { artistId }),
+    queryFn: async () => {
+      const where: ArtistPackageFilterInput = {
+        status: { eq: ArtistPackageStatus.Enabled },
+      };
+
+      if (artistId) {
+        where.artistId = { eq: artistId };
+      }
+
+      if (serviceId) {
+        where.id = { eq: serviceId };
+      }
+
+      return await execute(ArtistPackageQuery, { where });
+    },
   });
 
 // Helper function to convert deadline string to Date
-const convertRequestDeadlines = <T extends { deadline?: string | Date }>(items: T[] | null | undefined): T[] => {
-  return (
-    items?.map((item) => ({
-      ...item,
-      deadline: item.deadline ? (typeof item.deadline === "string" ? new Date(item.deadline) : item.deadline) : null,
-    })) || []
-  );
-};
+// const convertRequestDeadlines = <T extends { deadline?: string | Date }>(items: T[] | null | undefined): T[] => {
+//   return (
+//     items?.map((item) => ({
+//       ...item,
+//       deadline: item.deadline ? (typeof item.deadline === "string" ? new Date(item.deadline) : item.deadline) : null,
+//     })) || []
+//   );
+// };
 
 // REQUEST HUB QUERIES
 export const requestHubOptions = (skip: number = 0, take: number = 20, where?: RequestFilterInput) =>
@@ -246,7 +295,7 @@ export const requestHubOptions = (skip: number = 0, take: number = 20, where?: R
       };
       return {
         ...requests,
-        items: convertRequestDeadlines(requests.items),
+        items: requests.items,
       };
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -262,7 +311,7 @@ export const requestByIdOptions = (requestId: string) =>
       if (!request) return null;
       return {
         ...request,
-        deadline: request.deadline ? new Date(request.deadline) : null,
+        duration: request.duration,
       };
     },
     enabled: !!requestId,
@@ -292,7 +341,7 @@ export const searchRequestsOptions = (
       };
       return {
         ...requests,
-        items: convertRequestDeadlines(requests.items),
+        items: requests.items,
       };
     },
     enabled: !!searchTerm.trim(),
@@ -327,7 +376,7 @@ export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: R
       };
       return {
         ...requests,
-        items: convertRequestDeadlines(requests.items),
+        items: requests.items,
       };
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -366,4 +415,60 @@ export const conversationMessagesOptions = (conversationId: string) =>
 
       return result;
     },
+  });
+
+// ORDER PACKAGE QUERIES
+export const orderPackageOptions = ({
+  skip = 0,
+  take = 10,
+  currentUserId,
+  otherUserId,
+  isArtist,
+}: {
+  skip?: number;
+  take?: number;
+  currentUserId?: string;
+  otherUserId?: string;
+  isArtist?: boolean;
+}) =>
+  queryOptions({
+    queryKey: ["order-packages", skip, take, currentUserId, otherUserId, isArtist],
+    queryFn: async () => {
+      const where: PackageOrderFilterInput = {};
+
+      if (isArtist) {
+        where.providerId = { eq: currentUserId };
+
+        if (otherUserId) where.clientId = { eq: otherUserId };
+      } else {
+        where.clientId = { eq: currentUserId };
+
+        if (otherUserId) where.providerId = { eq: otherUserId };
+      }
+
+      const result = await execute(OrderPackageQuery, { where, skip, take });
+      return result;
+    },
+  });
+
+export const orderPackageDetailOptions = (orderId: string) =>
+  queryOptions({
+    queryKey: ["order-package-detail", orderId],
+    queryFn: async () => {
+      const where: PackageOrderFilterInput = { id: { eq: orderId } };
+      const result = await execute(OrderPackageQuery, { where });
+      return result.packageOrders?.items?.[0] || null;
+    },
+    enabled: !!orderId,
+  });
+
+// CATEGORY QUERIES
+export const categoriesChannelOptions = (type: CategoryType, take: number) =>
+  queryOptions({
+    queryKey: ["categories-channel", type, take],
+    queryFn: async () => {
+      const result = await execute(CategoriesChannelQuery, { type, take });
+      return result;
+    },
+    enabled: !!type,
   });

@@ -103,6 +103,17 @@ export interface RefreshTokenData {
   expiresIn: number;
 }
 
+export interface ForgotPasswordRequestData {
+  email: string;
+}
+
+export interface ResetPasswordRequestData {
+  email: string;
+  otpCode: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export type IUserCurrent = Base<IUserCurrentData>;
 export type ListenerLoginResponse = Base<ListenerLoginData>;
 export type ArtistLoginResponse = Base<ArtistLoginData>;

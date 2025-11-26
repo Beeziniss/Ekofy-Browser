@@ -165,10 +165,10 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
     return `${formatCurrency(budget.min)} - ${formatCurrency(budget.max)}`;
   };
 
-  const formatDeadline = (deadline: string | Date) => {
-    const date = typeof deadline === "string" ? new Date(deadline) : deadline;
-    return date.toLocaleDateString();
-  };
+  // const formatDeadline = (deadline: string | Date) => {
+  //   const date = typeof deadline === "string" ? new Date(deadline) : deadline;
+  //   return date.toLocaleDateString();
+  // };
 
   return (
     <Card className={cn("w-full transition-shadow hover:shadow-md", className)}>
@@ -228,7 +228,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
           </Badge>
         </div>
 
-        {/* Budget and Deadline */}
+        {/* Budget and Duration */}
         <div className="mb-4 flex items-center justify-between text-sm">
           <div className="flex items-center">
             <p className="mr-1 text-white">Budget:</p>
@@ -236,8 +236,8 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
           </div>
           <div className="flex items-center">
             <Clock className="mr-2 h-4 w-4 text-white" />
-            <p className="mr-1 text-white">Deadline:</p>
-            <p className="text-main-purple font-medium">{formatDeadline(request.deadline)}</p>
+            <p className="mr-1 text-white">Duration:</p>
+            <p className="text-main-purple font-medium">{request.duration} (days)</p>
           </div>
         </div>
         {/* Footer with Action Buttons */}

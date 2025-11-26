@@ -143,7 +143,7 @@ const LoginFormSection = () => {
                   </div>
                 )}
               />
-              <Link href="#" className="text-sm text-white underline transition-colors hover:text-blue-400">
+              <Link href="/forgot-password" className="text-sm text-white underline transition-colors hover:text-blue-400">
                 Forgot your password?
               </Link>
             </div>

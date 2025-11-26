@@ -3,15 +3,12 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Calendar, User, AlertCircle } from "lucide-react";
+import { Eye, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { ReportStatusBadge } from "./report-status-badge";
-import {
-  REPORT_TYPE_LABELS,
-  CONTENT_TYPE_LABELS,
-} from "@/types/report";
+import { REPORT_TYPE_LABELS, CONTENT_TYPE_LABELS } from "@/types/report";
 import { ReportType, ReportRelatedContentType, ReportStatus } from "@/gql/graphql";
 
 interface UserReportedData {
@@ -43,6 +40,8 @@ interface ReportItem {
   createdAt: string | number | Date;
   description: string;
   userReported?: UserReportedData[];
+  nicknameReported?: string;
+  nicknameReporter?: string;
   track?: TrackData[];
   comment?: CommentData[];
   request?: RequestData[];
@@ -70,25 +69,23 @@ export function ReportListItem({ report, href }: ReportListItemProps) {
     if (report.request && report.request.length > 0) {
       return `Request: ${report.request[0].title}`;
     }
-    if (report.userReported && report.userReported.length > 0) {
-      return `User: ${report.userReported[0].fullName}`;
+    if (report.nicknameReported) {
+      return `Reported by: ${report.nicknameReporter || "Unknown"}`;
     }
     return "Unknown content";
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="transition-shadow hover:shadow-md">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-muted-foreground" />
+              <AlertCircle className="text-muted-foreground h-4 w-4" />
               <Badge variant="outline">{reportTypeLabel}</Badge>
               <Badge variant="secondary">{contentTypeLabel}</Badge>
             </div>
-            <h3 className="font-medium text-sm text-muted-foreground">
-              {getTargetInfo()}
-            </h3>
+            <h3 className="text-muted-foreground text-sm font-medium">{getTargetInfo()}</h3>
           </div>
           <ReportStatusBadge status={report.status} />
         </div>
@@ -96,31 +93,23 @@ export function ReportListItem({ report, href }: ReportListItemProps) {
 
       <CardContent className="pt-0">
         <div className="space-y-3">
-          {report.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {report.description}
-            </p>
-          )}
+          {report.description && <p className="text-muted-foreground line-clamp-2 text-sm">{report.description}</p>}
 
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="text-muted-foreground flex items-center justify-between text-xs">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                <span>
-                  {format(createdAt, "dd/MM/yyyy HH:mm", { locale: vi })}
-                </span>
+                <span>{format(createdAt, "dd/MM/yyyy HH:mm", { locale: vi })}</span>
               </div>
-              {report.userReported && report.userReported.length > 0 && (
+              {report.nicknameReported && (
                 <div className="flex items-center gap-1">
-                  <User className="h-3 w-3" />
-                  <span>Reported: {report.userReported[0].fullName}</span>
+                  <span>Reported: {report.nicknameReported || "Unknown"}</span>
                 </div>
               )}
             </div>
 
             <Button asChild size="sm" variant="outline">
               <Link href={href}>
-                <Eye className="h-3 w-3 mr-1" />
+                <Eye className="mr-1 h-3 w-3" />
                 Details
               </Link>
             </Button>

@@ -5,6 +5,9 @@ import Image from "next/image";
 import { SearchArtistItem } from "@/types/search";
 import { toast } from "sonner";
 import { useSearchAuth } from "../../hooks/use-search-auth";
+import { useRouter } from "next/navigation";
+import { useProcessArtistDiscoveryPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
+import { PopularityActionType } from "@/gql/graphql";
 
 interface ArtistCardAllProps {
   artist: SearchArtistItem;
@@ -13,10 +16,17 @@ interface ArtistCardAllProps {
 export const ArtistCardAll = ({ artist }: ArtistCardAllProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
   const { executeWithAuth } = useSearchAuth();
+  const router = useRouter();
+  const { mutate: artistDiscoveryPopularity } = useProcessArtistDiscoveryPopularity();
 
   const handleArtistClick = () => {
-    // TODO: Navigate to artist detail page when implemented
-    console.log(`Navigate to artist: ${artist.stageName} (${artist.id})`);
+    // Track search result click
+    artistDiscoveryPopularity({
+      artistId: artist.id,
+      actionType: PopularityActionType.SearchResultClick,
+    });
+    // Navigate to artist detail page
+    router.push(`/artists/${artist.id}`);
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {

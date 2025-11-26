@@ -21,7 +21,11 @@ import {
   CommentType,
   CreateCommentRequestInput,
   CreateConversationRequestInput,
+  CreateDirectRequestInput,
+  CreatePaymentCheckoutSessionRequestInput,
   CreateSubscriptionCheckoutSessionRequestInput,
+  RedoRequestInput,
+  SubmitDeliveryRequestInput,
   UpdateListenerRequestInput,
 } from "../graphql";
 import { mutationOptions } from "@tanstack/react-query";
@@ -30,10 +34,20 @@ import {
   SubscriptionCreateCheckoutSessionMutation,
   SubscriptionResumeMutation,
 } from "@/modules/shared/mutations/client/subscription-mutations";
+import { parseGraphQLError } from "@/utils/graphql-error-utils";
+import { toast } from "sonner";
 import {
   AddConversationFromRequestHubMutation,
   AddConversationGeneralMutation,
 } from "@/modules/shared/mutations/client/coversation-mutation";
+import { ServiceCreateCheckoutSessionMutation } from "@/modules/shared/mutations/client/service-mutation";
+import { SendRequestMutation } from "@/modules/shared/mutations/client/request-mutation";
+import {
+  AcceptRequestByArtistMutation,
+  ApproveDeliveryMutation,
+  SendRedoRequestMutation,
+  SubmitDeliveryMutation,
+} from "@/modules/shared/mutations/client/order-mutation";
 
 // PLAYLIST MUTATIONS
 export const createPlaylistMutationOptions = mutationOptions({
@@ -117,6 +131,10 @@ export const createRequestHubCommentMutationOptions = mutationOptions({
     content: string;
     parentCommentId?: string;
   }) => await execute(RequestHubCommentCreateMutation, input),
+  onError: (error: unknown) => {
+    const graphqlError = parseGraphQLError(error, "Cannot create comment");
+    toast.error(graphqlError.detail);
+  },
 });
 
 export const updateRequestHubCommentMutationOptions = mutationOptions({
@@ -176,4 +194,39 @@ export const addConversationFromRequestHubMutationOptions = mutationOptions({
   mutationKey: ["add-conversation-from-request-hub"],
   mutationFn: async (createConversationRequestInput: CreateConversationRequestInput) =>
     await execute(AddConversationFromRequestHubMutation, { createConversationRequestInput }),
+});
+
+// SERVICE MUTATIONS
+export const serviceCreateCheckoutSessionMutationOptions = mutationOptions({
+  mutationKey: ["service-create-checkout-session"],
+  mutationFn: async (createPaymentCheckoutSessionInput: CreatePaymentCheckoutSessionRequestInput) =>
+    await execute(ServiceCreateCheckoutSessionMutation, { createPaymentCheckoutSessionInput }),
+});
+
+// REQUEST MUTATIONS
+export const sendRequestMutationOptions = mutationOptions({
+  mutationKey: ["send-request"],
+  mutationFn: async (input: { request: CreateDirectRequestInput; isDirect: boolean }) =>
+    await execute(SendRequestMutation, { ...input }),
+});
+
+// ORDER MUTATIONS
+export const acceptRequestByArtistMutationOptions = mutationOptions({
+  mutationKey: ["accept-request-by-artist"],
+  mutationFn: async (packageOrderId: string) => await execute(AcceptRequestByArtistMutation, { packageOrderId }),
+});
+
+export const submitDeliveryMutationOptions = mutationOptions({
+  mutationKey: ["submit-delivery"],
+  mutationFn: async (request: SubmitDeliveryRequestInput) => await execute(SubmitDeliveryMutation, { request }),
+});
+
+export const sendRedoRequestMutationOptions = mutationOptions({
+  mutationKey: ["send-redo-request"],
+  mutationFn: async (request: RedoRequestInput) => await execute(SendRedoRequestMutation, { request }),
+});
+
+export const approveDeliveryMutationOptions = mutationOptions({
+  mutationKey: ["approve-delivery"],
+  mutationFn: async (packageOrderId: string) => await execute(ApproveDeliveryMutation, { packageOrderId }),
 });

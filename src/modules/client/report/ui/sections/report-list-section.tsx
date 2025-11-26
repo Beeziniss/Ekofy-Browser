@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useUserReports, usePrefetchUserReports } from "../../hooks";
+import { useUserReports } from "../../hooks";
 import { ReportListItem, ReportFilters, ReportEmptyState } from "../components";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle, ChevronLeft, ChevronRight } from "lucide-react";
@@ -21,14 +21,11 @@ interface ReportListSectionProps {
 
 export function ReportListSection({ className }: ReportListSectionProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [filters, setFilters] = useState<ReportListFilters>(
-    {}
-  );
+  const [filters, setFilters] = useState<ReportListFilters>({});
   const take = 10;
   const skip = currentPage * take;
 
   const { data, isLoading, error } = useUserReports(skip, take, filters);
-  const { prefetchDetail } = usePrefetchUserReports();
 
   const reports = data?.items || [];
   const hasNextPage = data?.pageInfo.hasNextPage || false;
@@ -52,10 +49,6 @@ export function ReportListSection({ className }: ReportListSectionProps) {
     setCurrentPage(0); // Reset to first page when filters change
   };
 
-  const handleReportHover = (reportId: string) => {
-    prefetchDetail?.(reportId);
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -66,7 +59,7 @@ export function ReportListSection({ className }: ReportListSectionProps) {
 
   if (error) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <p className="text-destructive">An error occurred while loading reports.</p>
       </div>
     );
@@ -74,58 +67,35 @@ export function ReportListSection({ className }: ReportListSectionProps) {
 
   return (
     <div className={className}>
-      <ReportFilters
-        onFiltersChange={handleFiltersChange}
-        className="mb-6"
-      />
+      <ReportFilters onFiltersChange={handleFiltersChange} className="mb-6" />
 
       {reports.length === 0 ? (
         <ReportEmptyState />
       ) : (
         <>
-          <div className="space-y-4 mb-6">
+          <div className="mb-6 space-y-4">
             {reports.map((report) => (
-              <div
-                key={report.id}
-                onMouseEnter={() => handleReportHover(report.id)}
-              >
-                <ReportListItem
-                  report={report}
-                  href={`/reports/${report.id}`}
-                />
-              </div>
+              <ReportListItem key={report.id} report={report} href={`/profile/reports/${report.id}`} />
             ))}
           </div>
 
           {/* Pagination */}
           <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
+            <div className="text-muted-foreground text-sm">
               Showing {skip + 1} - {Math.min(skip + take, totalCount)} of {totalCount} reports
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePreviousPage}
-                disabled={!hasPreviousPage}
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" />
+              <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={!hasPreviousPage}>
+                <ChevronLeft className="mr-1 h-4 w-4" />
                 Previous
               </Button>
-              
-              <span className="px-3 py-1 text-sm">
-                Page {currentPage + 1}
-              </span>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleNextPage}
-                disabled={!hasNextPage}
-              >
+
+              <span className="px-3 py-1 text-sm">Page {currentPage + 1}</span>
+
+              <Button variant="outline" size="sm" onClick={handleNextPage} disabled={!hasNextPage}>
                 Next
-                <ChevronRight className="h-4 w-4 ml-1" />
+                <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </div>
           </div>

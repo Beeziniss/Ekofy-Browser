@@ -2,14 +2,10 @@ import { useMemo } from "react";
 import { ArtistPackage, ArtistPackageStatus } from "@/gql/graphql";
 
 export const usePackageUtils = () => {
-  const formatCurrency = (amount: number, currency: string = "VND"): string => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+  const formattedPrice = (value: string): string => {
+    const numericValue = value.replace(/\D/g, "");
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
 
   const formatDeliveryTime = (days: number): string => {
     if (days === 1) {
@@ -79,7 +75,7 @@ export const usePackageUtils = () => {
     return (pkg: ArtistPackage) => ({
       id: pkg.id,
       name: pkg.packageName,
-      formattedPrice: formatCurrency(pkg.amount),
+      // formattedPrice: formatCurrency(pkg.amount),
       formattedDeliveryTime: formatDeliveryTime(pkg.estimateDeliveryDays),
       formattedRevisions: formatRevisionText(pkg.maxRevision || 0),
       statusColor: getStatusColor(pkg.status),
@@ -113,7 +109,7 @@ export const usePackageUtils = () => {
   };
 
   return {
-    formatCurrency,
+    formattedPrice,
     formatDeliveryTime,
     formatRevisionText,
     getStatusColor,

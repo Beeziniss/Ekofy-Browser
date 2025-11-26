@@ -1,15 +1,41 @@
-import { graphql } from '@/gql';
+import { graphql } from "@/gql";
+
+export const RequestArtistFragment = graphql(`
+  fragment RequestArtist on Artist {
+    id
+    userId
+    stageName
+  }
+`);
+
+export const RequestArtistPackageFragment = graphql(`
+  fragment RequestArtistPackage on ArtistPackage {
+    id
+    packageName
+    amount
+    currency
+    estimateDeliveryDays
+    description
+    maxRevision
+  }
+`);
+
+export const CheckPublicRequestExistenceQuery = graphql(`
+  query CheckPublicRequestExistence($publicRequestId: String!) {
+    requests(skip: 0, take: 1, where: { id: { eq: $publicRequestId } }) {
+      items {
+        type
+      }
+    }
+  }
+`);
 
 /**
  * Query to fetch listener's own direct requests (request history)
  * This is separate from the request hub and shows requests made directly to artists
  */
-export const LISTENER_REQUESTS_QUERY = graphql(`
-  query ListenerRequests(
-    $skip: Int
-    $take: Int
-    $where: RequestFilterInput
-  ) {
+export const RequestsQuery = graphql(`
+  query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
     requests(skip: $skip, take: $take, where: $where) {
       totalCount
       items {
@@ -23,7 +49,7 @@ export const LISTENER_REQUESTS_QUERY = graphql(`
         requirements
         type
         currency
-        deadline
+        duration
         status
         requestCreatedTime
         updatedAt
@@ -33,15 +59,10 @@ export const LISTENER_REQUESTS_QUERY = graphql(`
           max
         }
         artist {
-          id
-          userId
-          stageName
-          avatarImage
+          ...RequestArtist
         }
         artistPackage {
-          id
-          packageName
-          description
+          ...RequestArtistPackage
         }
       }
       pageInfo {
@@ -55,12 +76,8 @@ export const LISTENER_REQUESTS_QUERY = graphql(`
 /**
  * Query to fetch a single request by ID for the detail page
  */
-export const LISTENER_REQUEST_BY_ID_QUERY = graphql(`
-  query ListenerRequestById(
-    $skip: Int
-    $take: Int
-    $where: RequestFilterInput
-  ) {
+export const RequestQuery = graphql(`
+  query ListenerRequestById($skip: Int, $take: Int, $where: RequestFilterInput) {
     requests(skip: $skip, take: $take, where: $where) {
       totalCount
       items {
@@ -74,7 +91,7 @@ export const LISTENER_REQUEST_BY_ID_QUERY = graphql(`
         requirements
         type
         currency
-        deadline
+        duration
         status
         requestCreatedTime
         updatedAt
@@ -84,19 +101,10 @@ export const LISTENER_REQUEST_BY_ID_QUERY = graphql(`
           max
         }
         artist {
-          id
-          userId
-          stageName
-          avatarImage
+          ...RequestArtist
         }
         artistPackage {
-          id
-          packageName
-          amount
-          currency
-          estimateDeliveryDays
-          description
-          maxRevision
+          ...RequestArtistPackage
         }
       }
       pageInfo {

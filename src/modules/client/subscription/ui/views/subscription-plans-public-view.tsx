@@ -82,6 +82,7 @@ export function SubscriptionPlansPublicView() {
   const handleSelectPlan = async (subscriptionCode: string, period: PeriodTime) => {
     try {
       const { createSubscriptionCheckoutSession } = await buySubscription({
+        // TODO: Need to change url if necessary
         successUrl: window.location.origin,
         cancelUrl: window.location.origin,
         isSavePaymentMethod: false,
@@ -103,7 +104,7 @@ export function SubscriptionPlansPublicView() {
         }
 
         // Open checkout in new tab
-        window.open(createSubscriptionCheckoutSession.url, "_blank");
+        window.open(createSubscriptionCheckoutSession.url);
       }
     } catch (error) {
       console.error("Failed to create checkout session:", error);

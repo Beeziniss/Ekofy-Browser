@@ -18,11 +18,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { format } from "date-fns";
 import { Eye, CheckCircle, XCircle, MoreHorizontal } from "lucide-react";
 import { RequestStatus, GetPendingArtistRequestQuery } from "@/gql/graphql";
 import Link from "next/link";
 import { useState } from "react";
+import { formatDate } from "@/utils/format-date";
 
 type PendingRequestItem = NonNullable<NonNullable<GetPendingArtistRequestQuery["requests"]>["items"]>[0];
 
@@ -105,7 +105,8 @@ export function PendingRequestTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
+            {/* <TableHead>Title</TableHead> */}
+            <TableHead>Type</TableHead>
             <TableHead>Requestor</TableHead>
             <TableHead>Package</TableHead>
             <TableHead>Budget</TableHead>
@@ -130,9 +131,11 @@ export function PendingRequestTable({
           ) : (
             requests.map((request) => (
               <TableRow key={request.id}>
-                <TableCell>
+                {/* <TableCell>
                   <div className="font-medium">{request.title}</div>
-                  <div className="text-muted-foreground text-sm">{request.type}</div>
+                </TableCell> */}
+                <TableCell>
+                  <div className="text-sm">{request.type || "N/A"}</div>
                 </TableCell>
                 <TableCell>
                   <div className="font-medium">{request.requestor[0]?.displayName || "Unknown"}</div>
@@ -146,12 +149,23 @@ export function PendingRequestTable({
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    {new Intl.NumberFormat("vi-VN").format(request.budget?.min)} {request.currency}
-                    {request.budget?.min !== request.budget?.max && (
+                    {request.budget ? (
                       <>
-                        {" - "}
-                        {new Intl.NumberFormat("vi-VN").format(request.budget?.max)} {request.currency}
+                        {new Intl.NumberFormat("vi-VN").format(request.budget.min)} {request.currency}
+                        {request.budget.min !== request.budget.max && (
+                          <>
+                            {" - "}
+                            {new Intl.NumberFormat("vi-VN").format(request.budget.max)} {request.currency}
+                          </>
+                        )}
                       </>
+                    ) : request.artistPackage && request.artistPackage[0] ? (
+                      <>
+                        {new Intl.NumberFormat("vi-VN").format(request.artistPackage[0].amount)}{" "}
+                        {request.artistPackage[0].currency}
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">N/A</span>
                     )}
                   </div>
                 </TableCell>
@@ -163,7 +177,7 @@ export function PendingRequestTable({
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <div className="text-sm">{format(new Date(request.requestCreatedTime), "dd/MM/yyyy")}</div>
+                  <div className="text-sm">{formatDate(request.requestCreatedTime)}</div>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end">
@@ -184,7 +198,13 @@ export function PendingRequestTable({
                           <>
                             <DropdownMenuItem
                               onClick={() =>
-                                openConfirmDialog("approve", request.id, request.title || "Untitled Request")
+                                openConfirmDialog(
+                                  "approve",
+                                  request.id,
+                                  request.artistPackage && request.artistPackage[0]
+                                    ? request.artistPackage[0].packageName
+                                    : "Custom Request",
+                                )
                               }
                               className="text-green-600 focus:text-green-600"
                             >
@@ -225,7 +245,12 @@ export function PendingRequestTable({
               {confirmDialog.type === "approve" ? "Approve Request" : "Reject Request"}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to {confirmDialog.type} the request &ldquo;{confirmDialog.requestTitle}&rdquo;?
+              Are you sure you want to {confirmDialog.type} the request with package name{" "}
+              <strong>
+                &quot;
+                {confirmDialog.requestTitle}&quot;
+              </strong>
+              ?
               {confirmDialog.type === "approve"
                 ? " This action will confirm the collaboration and notify the requestor."
                 : " This action cannot be undone and will notify the requestor of the rejection."}

@@ -16,7 +16,7 @@ export const useCreateRequest = () => {
       // Convert Date to ISO string for GraphQL DateTime
       const requestInput = {
         ...request,
-        deadline: request.deadline.toISOString(),
+        duration: request.duration,
       };
       return await execute(CREATE_REQUEST_MUTATION, { request: requestInput });
     },
@@ -35,7 +35,7 @@ export const useUpdateRequest = () => {
       // Convert Date to ISO string for GraphQL DateTime if needed
       const requestInput = {
         ...request,
-        deadline: request.deadline?.toISOString ? request.deadline.toISOString() : request.deadline,
+        duration: request.duration,
       };
       return await execute(UPDATE_REQUEST_MUTATION, { request: requestInput });
     },
@@ -69,7 +69,7 @@ export const useDeleteRequest = () => {
       // Set status to DELETED using UPDATE_REQUEST_MUTATION
       const requestInput = {
         ...request,
-        deadline: request.deadline?.toISOString ? request.deadline.toISOString() : request.deadline,
+        duration: request.duration,
         status: RequestStatus.Deleted,
       };
       return await execute(UPDATE_REQUEST_MUTATION, { request: requestInput });

@@ -2,9 +2,11 @@ import axiosInstance from "@/config/axios-instance";
 import type { TypedDocumentString } from "./graphql";
 import { AxiosError } from "axios";
 import { setAccessTokenToLocalStorage, clearAuthData } from "@/utils/auth-utils";
+import { GraphQLError, GraphQLErrorWithDetails } from "@/types/graphql-error";
+import { getErrorDetailsFromArray } from "@/utils/graphql-error-utils";
 
 // Helper function to check if GraphQL error indicates authentication failure
-function isAuthenticationError(errors: Array<{ extensions?: { code?: string; status?: number } }>): boolean {
+function isAuthenticationError(errors: GraphQLError[]): boolean {
   return errors.some(
     (error) => error.extensions?.code === "AUTH_NOT_AUTHENTICATED" || error.extensions?.status === 401,
   );
@@ -61,7 +63,11 @@ async function executeRequest<TResult, TVariables>(
         return executeRequest(query, variables, true);
       }
 
-      throw new Error(`GraphQL Error: ${result.errors.map((e: { message: string }) => e.message).join(", ")}`);
+      // Create a custom error that preserves GraphQL error details
+      const errorMessage = getErrorDetailsFromArray(result.errors);
+      const graphqlError: GraphQLErrorWithDetails = new Error(errorMessage);
+      graphqlError.graphQLErrors = result.errors;
+      throw graphqlError;
     }
 
     return result.data as TResult;
@@ -86,7 +92,7 @@ async function executeRequest<TResult, TVariables>(
       }
     } else {
       // Handle non-Axios errors
-      throw new Error(`Unknown Error: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(`${error instanceof Error ? error.message : String(error)}`);
     }
   }
 }
@@ -175,7 +181,11 @@ async function executeFileUploadRequest<TResult, TVariables>(
         }
       }
 
-      throw new Error(`GraphQL Error: ${result.errors.map((e: { message: string }) => e.message).join(", ")}`);
+      // Create a custom error that preserves GraphQL error details
+      const errorMessage = getErrorDetailsFromArray(result.errors);
+      const graphqlError: GraphQLErrorWithDetails = new Error(errorMessage);
+      graphqlError.graphQLErrors = result.errors;
+      throw graphqlError;
     }
 
     return result.data as TResult;
@@ -200,7 +210,7 @@ async function executeFileUploadRequest<TResult, TVariables>(
       }
     } else {
       // Handle non-Axios errors
-      throw new Error(`Unknown Error: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(`${error instanceof Error ? error.message : String(error)}`);
     }
   }
 }
