@@ -15,7 +15,7 @@ interface ServicePackageDetailProps {
 }
 
 const ServicePackageDetail: React.FC<ServicePackageDetailProps> = ({ package: pkg, onBack }) => {
-  const { formatCurrency, formatRevisionText, getStatusColor, getStatusText } = usePackageUtils();
+  const { formattedPrice, formatRevisionText, getStatusColor, getStatusText } = usePackageUtils();
 
   return (
     <div className="mx-auto max-w-7xl p-6">
@@ -33,7 +33,7 @@ const ServicePackageDetail: React.FC<ServicePackageDetailProps> = ({ package: pk
               <CardTitle className="text-2xl text-white">{pkg.packageName}</CardTitle>
               <div className="flex items-center space-x-4">
                 <CardDescription className="text-lg font-semibold text-green-400">
-                  {formatCurrency(pkg.amount, pkg.currency)}
+                  {formattedPrice(pkg.amount.toString())} {pkg.currency}
                 </CardDescription>
                 <Badge className={getStatusColor(pkg.status)}>{getStatusText(pkg.status)}</Badge>
               </div>

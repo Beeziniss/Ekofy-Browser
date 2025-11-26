@@ -5275,6 +5275,7 @@ export type Restriction = {
   action?: Maybe<RestrictionAction>;
   expired?: Maybe<Scalars['DateTime']['output']>;
   reason?: Maybe<Scalars['String']['output']>;
+  reportId?: Maybe<Scalars['String']['output']>;
   restrictedAt?: Maybe<Scalars['DateTime']['output']>;
   type: RestrictionType;
 };
@@ -5299,6 +5300,7 @@ export type RestrictionFilterInput = {
   expired?: InputMaybe<DateTimeOperationFilterInput>;
   or?: InputMaybe<Array<RestrictionFilterInput>>;
   reason?: InputMaybe<StringOperationFilterInput>;
+  reportId?: InputMaybe<StringOperationFilterInput>;
   restrictedAt?: InputMaybe<DateTimeOperationFilterInput>;
   type?: InputMaybe<RestrictionTypeOperationFilterInput>;
 };
@@ -5307,6 +5309,7 @@ export type RestrictionSortInput = {
   action?: InputMaybe<SortEnumType>;
   expired?: InputMaybe<SortEnumType>;
   reason?: InputMaybe<SortEnumType>;
+  reportId?: InputMaybe<SortEnumType>;
   restrictedAt?: InputMaybe<SortEnumType>;
   type?: InputMaybe<SortEnumType>;
 };
