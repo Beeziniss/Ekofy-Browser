@@ -1,15 +1,8 @@
 "use client";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trackInsightOptions } from "@/gql/options/artist-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 import Image from "next/image";
 import { Suspense } from "react";
 
@@ -29,9 +22,7 @@ const TrackInsightInfoSkeleton = () => {
   return <div>Loading...</div>;
 };
 
-const TrackInsightInfoSectionSuspense = ({
-  trackId,
-}: TrackInsightInfoSectionProps) => {
+const TrackInsightInfoSectionSuspense = ({ trackId }: TrackInsightInfoSectionProps) => {
   const { data } = useSuspenseQuery(trackInsightOptions(trackId));
 
   const trackData = data?.tracks?.items?.[0];
@@ -65,9 +56,7 @@ const TrackInsightInfoSectionSuspense = ({
         />
 
         <div className="flex flex-col gap-y-1">
-          <p className="text-main-white line-clamp-1 text-2xl font-semibold">
-            {trackData?.name}
-          </p>
+          <p className="text-main-white line-clamp-1 text-2xl font-semibold">{trackData?.name}</p>
           <p className="text-main-grey text-xs">
             {Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(
               new Date(trackData?.releaseInfo?.releaseDate),
