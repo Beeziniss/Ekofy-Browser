@@ -139,7 +139,7 @@ export const useArtistFollow = ({ artistId, trackId, onSuccess }: UseArtistFollo
       console.error("Failed to follow user:", error);
       toast.error("Failed to follow user. Please try again.");
     },
-    onSuccess: (data, variables) => {
+    onSuccess: () => {
       onSuccess?.(true);
       // Track artist engagement popularity for follow
       if (artistId) {
@@ -247,7 +247,7 @@ export const useArtistFollow = ({ artistId, trackId, onSuccess }: UseArtistFollo
       console.error("Failed to unfollow user:", error);
       toast.error("Failed to unfollow user. Please try again.");
     },
-    onSuccess: (data, variables) => {
+    onSuccess: () => {
       onSuccess?.(false);
       // Track artist engagement popularity for unfollow
       if (artistId) {

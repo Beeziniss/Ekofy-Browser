@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import TrackTable, { Track } from "./index";
 import TrackTableHeader from "./track-table-header";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SortingState, Updater } from "@tanstack/react-table";
 
 interface TrackTableWrapperProps {
@@ -61,28 +61,6 @@ const TrackTableWrapper = ({
     }
   }, [searchParams]);
 
-  /* const handleSearch = useCallback(
-    (query: string) => {
-      updateURLParams({ search: query, page: 1 });
-    },
-    [updateURLParams],
-  );
-
-  const handlePrivacyFilter = useCallback(
-    (filter: string) => {
-      updateURLParams({ privacy: filter, page: 1 });
-    },
-    [updateURLParams],
-  );
-
-  const handleSort = useCallback(
-    (newSortBy: string, newSortOrder: string) => {
-      setSorting([{ id: newSortBy, desc: newSortOrder === "desc" }]);
-      updateURLParams({ sortBy: newSortBy, sortOrder: newSortOrder, page: 1 });
-    },
-    [updateURLParams],
-  ); */
-
   const handlePageChange = useCallback(
     (page: number) => {
       updateURLParams({ page });
@@ -118,13 +96,7 @@ const TrackTableWrapper = ({
 
   return (
     <div className="w-full">
-      <TrackTableHeader
-        totalTracks={data.length}
-        serverTotalCount={totalCount}
-        // onSearch={handleSearch}
-        // onPrivacyFilter={handlePrivacyFilter}
-        // onSort={handleSort}
-      />
+      <TrackTableHeader totalTracks={data.length} serverTotalCount={totalCount} />
       <TrackTable
         data={data}
         currentPage={currentPage}

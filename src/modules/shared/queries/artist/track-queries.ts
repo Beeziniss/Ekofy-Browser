@@ -12,9 +12,40 @@ export const TrackListWithFiltersQuery = graphql(`
         favoriteCount
         coverImage
         isExplicit
+        categoryIds
+        checkTrackInFavorite
+        createdAt
+        featuredArtistIds
+        legalDocuments {
+          documentType
+          documentUrl
+          name
+          note
+        }
+        popularity
+        restriction {
+          action
+          expired
+          reason
+          type
+          reportId
+          restrictedAt
+        }
+        syncedLyrics {
+          text
+          time
+        }
+        tags
+        type
+        nameUnsigned
         releaseInfo {
           releaseDate
           isRelease
+        }
+        mainArtists {
+          items {
+            stageName
+          }
         }
       }
       pageInfo {
