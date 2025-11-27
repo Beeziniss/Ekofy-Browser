@@ -23,6 +23,7 @@ type Documents = {
     "\n  mutation CreateModerator($createModeratorRequest: CreateModeratorRequestInput!) {\n    createModerator(createModeratorRequest: $createModeratorRequest)\n  }\n": typeof types.CreateModeratorDocument,
     "\n  mutation BanUser($targetUserId: String!) {\n    banUser(targetUserId: $targetUserId)\n  }\n": typeof types.BanUserDocument,
     "\n  mutation UnbanUser($targetUserId: String!) {\n    unbanUser(targetUserId: $targetUserId)\n  }\n": typeof types.UnbanUserDocument,
+    "\n  query TrackInsightView($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        releaseInfo {\n          releaseDate\n        }\n        streamCount\n        favoriteCount\n      }\n    }\n  }\n": typeof types.TrackInsightViewDocument,
     "\n  query PlaylistBrief($userId: String!) {\n    playlists(where: { userId: { eq: $userId } }) {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n    }\n  }\n": typeof types.PlaylistBriefDocument,
     "\n  query CheckTrackInPlaylist($trackId: String!) {\n    playlists(where: { tracksInfo: { some: { trackId: { eq: $trackId } } } }) {\n      items {\n        id\n      }\n    }\n  }\n": typeof types.CheckTrackInPlaylistDocument,
     "\n  query PlaylistDetail($playlistId: String!) {\n    playlists(where: { id: { eq: $playlistId } }) {\n      items {\n        id\n        name\n        coverImage\n        description\n        isPublic\n        user {\n          id\n          fullName\n        }\n        userId\n        tracks {\n          items {\n            id\n          }\n          totalCount\n        }\n        tracksInfo {\n          trackId\n        }\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": typeof types.PlaylistDetailDocument,
@@ -169,6 +170,7 @@ const documents: Documents = {
     "\n  mutation CreateModerator($createModeratorRequest: CreateModeratorRequestInput!) {\n    createModerator(createModeratorRequest: $createModeratorRequest)\n  }\n": types.CreateModeratorDocument,
     "\n  mutation BanUser($targetUserId: String!) {\n    banUser(targetUserId: $targetUserId)\n  }\n": types.BanUserDocument,
     "\n  mutation UnbanUser($targetUserId: String!) {\n    unbanUser(targetUserId: $targetUserId)\n  }\n": types.UnbanUserDocument,
+    "\n  query TrackInsightView($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        releaseInfo {\n          releaseDate\n        }\n        streamCount\n        favoriteCount\n      }\n    }\n  }\n": types.TrackInsightViewDocument,
     "\n  query PlaylistBrief($userId: String!) {\n    playlists(where: { userId: { eq: $userId } }) {\n      items {\n        id\n        name\n        coverImage\n        isPublic\n      }\n    }\n  }\n": types.PlaylistBriefDocument,
     "\n  query CheckTrackInPlaylist($trackId: String!) {\n    playlists(where: { tracksInfo: { some: { trackId: { eq: $trackId } } } }) {\n      items {\n        id\n      }\n    }\n  }\n": types.CheckTrackInPlaylistDocument,
     "\n  query PlaylistDetail($playlistId: String!) {\n    playlists(where: { id: { eq: $playlistId } }) {\n      items {\n        id\n        name\n        coverImage\n        description\n        isPublic\n        user {\n          id\n          fullName\n        }\n        userId\n        tracks {\n          items {\n            id\n          }\n          totalCount\n        }\n        tracksInfo {\n          trackId\n        }\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": types.PlaylistDetailDocument,
@@ -339,6 +341,10 @@ export function graphql(source: "\n  mutation BanUser($targetUserId: String!) {\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation UnbanUser($targetUserId: String!) {\n    unbanUser(targetUserId: $targetUserId)\n  }\n"): typeof import('./graphql').UnbanUserDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query TrackInsightView($trackId: String!) {\n    tracks(where: { id: { eq: $trackId } }) {\n      items {\n        id\n        name\n        coverImage\n        releaseInfo {\n          releaseDate\n        }\n        streamCount\n        favoriteCount\n      }\n    }\n  }\n"): typeof import('./graphql').TrackInsightViewDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

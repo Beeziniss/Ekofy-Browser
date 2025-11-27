@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { trackFavoriteOptions } from "@/gql/options/client-options";
 import TrackCarousel from "@/modules/client/common/ui/components/track/track-carousel";
+import { useAuthStore } from "@/store";
 
 const TracksYouLoveSection = () => {
   return (
@@ -23,7 +24,16 @@ const TracksYouLoveSkeleton = () => {
 };
 
 const TracksYouLoveSectionSuspense = () => {
-  const { data, isPending } = useSuspenseQuery(trackFavoriteOptions(12));
+  const { isAuthenticated } = useAuthStore();
+  const { data, isPending } = useSuspenseQuery(trackFavoriteOptions(12, isAuthenticated));
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  if (!data || data?.favoriteTracks?.items?.length === 0) {
+    return null;
+  }
 
   // Transform favorite tracks data to match TrackCarousel expected structure
   const transformedData = data?.favoriteTracks

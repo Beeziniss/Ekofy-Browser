@@ -6635,6 +6635,13 @@ export type UnbanUserMutationVariables = Exact<{
 
 export type UnbanUserMutation = { __typename?: 'MutationInitialization', unbanUser: boolean };
 
+export type TrackInsightViewQueryVariables = Exact<{
+  trackId: Scalars['String']['input'];
+}>;
+
+
+export type TrackInsightViewQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, streamCount: any, favoriteCount: any, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null } }> | null } | null };
+
 export type PlaylistBriefQueryVariables = Exact<{
   userId: Scalars['String']['input'];
 }>;
@@ -7920,6 +7927,22 @@ export const UnbanUserDocument = new TypedDocumentString(`
   unbanUser(targetUserId: $targetUserId)
 }
     `) as unknown as TypedDocumentString<UnbanUserMutation, UnbanUserMutationVariables>;
+export const TrackInsightViewDocument = new TypedDocumentString(`
+    query TrackInsightView($trackId: String!) {
+  tracks(where: {id: {eq: $trackId}}) {
+    items {
+      id
+      name
+      coverImage
+      releaseInfo {
+        releaseDate
+      }
+      streamCount
+      favoriteCount
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackInsightViewQuery, TrackInsightViewQueryVariables>;
 export const PlaylistBriefDocument = new TypedDocumentString(`
     query PlaylistBrief($userId: String!) {
   playlists(where: {userId: {eq: $userId}}) {

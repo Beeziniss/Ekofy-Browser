@@ -1,5 +1,6 @@
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
+import { TrackInsightViewQuery } from "@/modules/artist/tracks/ui/views/track-insight-view";
 import {
   ServicePackageServiceViewQuery,
   ServicePackageDetailQuery,
@@ -17,6 +18,12 @@ export const trackListOptions = queryOptions({
   queryKey: ["tracks"],
   queryFn: () => execute(TrackListWithFiltersQuery, { skip: 0, take: 10 }),
 });
+
+export const trackInsightOptions = (trackId: string) =>
+  queryOptions({
+    queryKey: ["track-insight", trackId],
+    queryFn: () => execute(TrackInsightViewQuery, { trackId }),
+  });
 
 // CATEGORIES OPTIONS
 export const categoriesOptions = queryOptions({
