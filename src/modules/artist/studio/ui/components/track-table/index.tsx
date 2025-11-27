@@ -45,6 +45,15 @@ export interface Track {
     releaseDate?: string;
     isRelease: boolean;
   };
+  mainArtists?: {
+    __typename?: "MainArtistsCollectionSegment";
+    items?:
+      | {
+          __typename?: "Artist";
+          stageName: string;
+        }[]
+      | null;
+  } | null;
 }
 
 interface TrackTableProps {
@@ -107,7 +116,9 @@ const TrackTable = ({
             </div>
             <div className="min-w-0">
               <div className="truncate font-medium text-white">{track.name}</div>
-              <div className="text-main-grey truncate text-sm">Track Author name</div>
+              <div className="text-main-grey truncate text-sm">
+                {track.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
+              </div>
             </div>
           </div>
         );
