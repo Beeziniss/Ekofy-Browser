@@ -7,6 +7,7 @@ export interface IUserLocalStorage {
   listenerId?: string;
   artistId?: string;
   role: UserRole;
+  isRememberMe: boolean;
 }
 export interface IUserCurrentData {
   userId: string;
