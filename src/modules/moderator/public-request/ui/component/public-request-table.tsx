@@ -122,10 +122,13 @@ export function PublicRequestCard({ request, onViewDetails }: PublicRequestCardP
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onViewDetails?.(request.id)}>
-                <Eye className="mr-2 h-4 w-4" />
-                View
-              </DropdownMenuItem>
+              {request.status === RequestStatus.Open ? (
+                <DropdownMenuItem onClick={() => onViewDetails?.(request.id)}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View
+                </DropdownMenuItem>
+              ) : null}
+
               {request.status === RequestStatus.Open && (
                 <DropdownMenuItem
                   onClick={handleBlockClick}
@@ -135,6 +138,12 @@ export function PublicRequestCard({ request, onViewDetails }: PublicRequestCardP
                   <Lock className="mr-2 h-4 w-4" />
                   Block
                 </DropdownMenuItem>
+              )}
+
+              {request.status !== RequestStatus.Open && (
+                <div className="text-sm text-main-white px-4 py-2">
+                  No actions available
+                </div>
               )}
             </DropdownMenuContent>
           </DropdownMenu>

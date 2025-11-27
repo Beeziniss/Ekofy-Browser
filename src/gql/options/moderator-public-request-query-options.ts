@@ -23,7 +23,6 @@ export const moderatorPublicRequestsQueryOptions = (
   if (searchQuery && searchQuery.trim()) {
     where.or = [
       { titleUnsigned: { contains: searchQuery.trim() } },
-      { summaryUnsigned: { contains: searchQuery.trim() } },
     ];
   }
 

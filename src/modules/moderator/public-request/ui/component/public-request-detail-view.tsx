@@ -110,15 +110,13 @@ export function PublicRequestDetailView({ request, onBack }: PublicRequestDetail
             </Button>
           )}
           <div className="flex items-center gap-3">
-            <Badge variant={getStatusVariant(request.status)} className="text-sm">
-              {formatStatus(request.status)}
-            </Badge>
             {request.status === RequestStatus.Open && (
               <Button
                 variant="destructive"
                 size="sm"
                 onClick={handleBlockRequest}
                 disabled={blockRequestMutation.isPending}
+
               >
                 <Lock className="mr-2 h-4 w-4" />
                 Block Request
@@ -129,26 +127,31 @@ export function PublicRequestDetailView({ request, onBack }: PublicRequestDetail
 
         {/* Request Information Card */}
         <Card>
-          <CardHeader>
+            <CardHeader>
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <CardTitle className="mb-3 text-2xl text-white">{request.title}</CardTitle>
-                <div className="flex items-center space-x-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarFallback className="bg-gray-200 text-gray-600">
-                      {request.requestor?.[0]?.displayName?.charAt(0).toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium text-white">
-                      {request.requestor?.[0]?.displayName || `User ${request.requestUserId.slice(-4)}`}
-                    </p>
-                    <p className="text-sm text-gray-400">Requestor</p>
-                  </div>
+              <CardTitle className="mb-3 text-2xl text-white flex items-center justify-between">
+                {request.title}
+                <Badge variant={getStatusVariant(request.status)} className="ml-4 text-sm">
+                  Status: {formatStatus(request.status)}
+                </Badge>
+              </CardTitle>
+              <div className="flex items-center space-x-3">
+                <Avatar className="h-12 w-12">
+                <AvatarFallback className="bg-gray-200 text-gray-600">
+                  {request.requestor?.[0]?.displayName?.charAt(0).toUpperCase() || "U"}
+                </AvatarFallback>
+                </Avatar>
+                <div>
+                <p className="font-medium text-white">
+                  {request.requestor?.[0]?.displayName || `User ${request.requestUserId.slice(-4)}`}
+                </p>
+                <p className="text-sm text-gray-400">Requestor</p>
                 </div>
               </div>
+              </div>
             </div>
-          </CardHeader>
+            </CardHeader>
           <CardContent className="space-y-6">
             {/* Summary */}
             <div>
@@ -198,7 +201,9 @@ export function PublicRequestDetailView({ request, onBack }: PublicRequestDetail
                 <h3 className="mb-2 flex items-center text-sm font-semibold text-gray-400">
                   Last Updated
                 </h3>
-                <p className="text-base text-gray-200">{formatDate(request.updatedAt || request.postCreatedTime)}</p>
+                <p className="text-base text-gray-200">
+                  {request.updatedAt ? formatDate(request.updatedAt) : "No provider"}
+                </p>
               </div>
             </div>
           </CardContent>

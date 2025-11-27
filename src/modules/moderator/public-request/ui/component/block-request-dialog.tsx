@@ -33,10 +33,10 @@ export function BlockRequestDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Block Request</AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to block <span className="font-semibold">{requestTitle}</span>? This action will
-            prevent it from being publicly visible.
-          </AlertDialogDescription>
+            <AlertDialogDescription>
+              <strong>Are you sure you want to block <span className="font-semibold">{requestTitle}</span>?</strong> This action will
+              prevent it from being publicly visible and will permanently block this public request. <strong className="text-red-500">This action cannot be undone.</strong>
+            </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
@@ -46,7 +46,7 @@ export function BlockRequestDialog({
               onConfirm();
             }}
             disabled={isLoading}
-            className="bg-red-600 hover:bg-red-700"
+            className="bg-red-600 hover:bg-red-800"
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Block Request

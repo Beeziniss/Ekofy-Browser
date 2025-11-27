@@ -13,7 +13,7 @@ interface RequestSearchProps {
 export function RequestSearch({
   searchQuery,
   onSearchChange,
-  placeholder = "Search by title or summary...",
+  placeholder = "Search by title",
 }: RequestSearchProps) {
   return (
     <div className="relative">
