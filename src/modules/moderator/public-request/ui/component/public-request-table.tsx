@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Eye } from "lucide-react";
+import { Eye, Lock, MoreVertical } from "lucide-react";
 import { RequestsPublicQuery, RequestStatus } from "@/gql/graphql";
 import { BlockRequestDialog } from "./block-request-dialog";
 import { useBlockPublicRequest } from "@/gql/client-mutation-options/public-request-mutation-options";
 import { formatDistanceToNow } from "date-fns";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type RequestItem = NonNullable<NonNullable<RequestsPublicQuery["requests"]>["items"]>[0];
 
@@ -22,7 +23,6 @@ export function PublicRequestCard({ request, onViewDetails }: PublicRequestCardP
   const [showBlockDialog, setShowBlockDialog] = useState(false);
   const blockRequestMutation = useBlockPublicRequest();
 
-  // Format status display
   const formatStatus = (status: RequestStatus) => {
     switch (status) {
       case RequestStatus.Open:
@@ -34,7 +34,6 @@ export function PublicRequestCard({ request, onViewDetails }: PublicRequestCardP
     }
   };
 
-  // Get status variant
   const getStatusVariant = (status: RequestStatus): "default" | "destructive" => {
     switch (status) {
       case RequestStatus.Open:
@@ -46,7 +45,6 @@ export function PublicRequestCard({ request, onViewDetails }: PublicRequestCardP
     }
   };
 
-  // Format budget
   const formatBudget = (budget: { min: number; max: number } | null | undefined, currency: string) => {
     if (!budget) return "N/A";
 
@@ -89,26 +87,22 @@ export function PublicRequestCard({ request, onViewDetails }: PublicRequestCardP
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <span className="text-sm font-medium text-white">
+              <span className="text-sm font-medium text-main-white">
                 {request.requestor?.[0]?.displayName || `User ${request.requestUserId.slice(-4)}`}
-              </span>
-              <span className="text-xs text-gray-500">
-                {formatDistanceToNow(new Date(request.postCreatedTime), { addSuffix: true })}
               </span>
             </div>
           </div>
         </TableCell>
         <TableCell>
-          <div className="max-w-md">
-            <p className="line-clamp-1 font-medium text-white">{request.title}</p>
-            <p className="line-clamp-1 text-sm text-gray-400">{request.summary}</p>
+          <div>
+            <p className="line-clamp-1 font-medium text-main-white">{request.title}</p>
           </div>
         </TableCell>
         <TableCell>
-          <span className="text-sm text-green-500">{formatBudget(request.budget ?? null, request.currency)}</span>
+          <span className="text-sm text-main-white">{formatBudget(request.budget ?? null, request.currency)}</span>
         </TableCell>
         <TableCell className="text-center">
-          <span className="text-sm text-blue-500">{request.duration} days</span>
+          <span className="text-sm text-main-white">{request.duration} days</span>
         </TableCell>
         <TableCell className="text-center">
           <Badge variant={getStatusVariant(request.status)} className="text-xs">
@@ -121,22 +115,29 @@ export function PublicRequestCard({ request, onViewDetails }: PublicRequestCardP
           </span>
         </TableCell>
         <TableCell className="text-right">
-          <div className="flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => onViewDetails?.(request.id)}>
-              <Eye className="mr-1 h-3.5 w-3.5" />
-              View
-            </Button>
-            {request.status === RequestStatus.Open && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleBlockClick}
-                disabled={blockRequestMutation.isPending}
-              >
-                Block
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreVertical className="h-4 w-4" />
               </Button>
-            )}
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onViewDetails?.(request.id)}>
+                <Eye className="mr-2 h-4 w-4" />
+                View
+              </DropdownMenuItem>
+              {request.status === RequestStatus.Open && (
+                <DropdownMenuItem
+                  onClick={handleBlockClick}
+                  disabled={blockRequestMutation.isPending}
+                  className="text-red-500"
+                >
+                  <Lock className="mr-2 h-4 w-4" />
+                  Block
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </TableCell>
       </TableRow>
 

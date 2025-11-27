@@ -1,9 +1,14 @@
 "use client";
 
 import React from "react";
-import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { RequestStatus } from "@/gql/graphql";
-import { cn } from "@/lib/utils";
 
 interface StatusFilterProps {
   selectedStatus: RequestStatus | "ALL";
@@ -11,31 +16,24 @@ interface StatusFilterProps {
 }
 
 const statusOptions = [
-  { label: "All Requests", value: "ALL" as const },
+  { label: "All Status", value: "ALL" as const },
   { label: "Open", value: RequestStatus.Open },
   { label: "Blocked", value: RequestStatus.Blocked },
 ];
 
 export function StatusFilter({ selectedStatus, onStatusChange }: StatusFilterProps) {
   return (
-    <div className="flex flex-wrap gap-2">
-      {statusOptions.map((option) => {
-        const isSelected = selectedStatus === option.value;
-        return (
-          <Button
-            key={option.value}
-            variant={isSelected ? "default" : "outline"}
-            size="sm"
-            onClick={() => onStatusChange(option.value)}
-            className={cn(
-              "transition-colors",
-              isSelected && "bg-gradient-to-r from-[#6366F1] to-[#A855F7] text-white hover:opacity-90"
-            )}
-          >
+    <Select value={selectedStatus} onValueChange={onStatusChange}>
+      <SelectTrigger className="w-full lg:w-48">
+        <SelectValue placeholder="All Status" />
+      </SelectTrigger>
+      <SelectContent>
+        {statusOptions.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
             {option.label}
-          </Button>
-        );
-      })}
-    </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

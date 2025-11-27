@@ -6,10 +6,9 @@ import { useRouter } from "next/navigation";
 import { moderatorPublicRequestsQueryOptions } from "@/gql/options/moderator-public-request-query-options";
 import { PublicRequestLayout } from "../layout/public-request-layout";
 import { PublicRequestListSection } from "../section/public-request-list-section";
+import { PublicRequestPagination } from "../component/public-request-pagination";
 import { RequestStatus } from "@/gql/graphql";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -58,17 +57,10 @@ export function PublicRequestView() {
     router.push(`/moderator/public-request/${id}`);
   };
 
-  // Handle page navigation
-  const handleNextPage = () => {
-    if (hasNextPage) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (hasPreviousPage) {
-      setCurrentPage((prev) => prev - 1);
-    }
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -82,23 +74,15 @@ export function PublicRequestView() {
       <PublicRequestListSection requests={requests} isLoading={isLoading} onViewDetails={handleViewDetails} />
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-between">
-          <p className="text-sm text-gray-400">
-            Page {currentPage} of {totalPages}
-          </p>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={!hasPreviousPage}>
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleNextPage} disabled={!hasNextPage}>
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <div className="mt-6">
+        <PublicRequestPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          hasNextPage={hasNextPage}
+          hasPreviousPage={hasPreviousPage}
+        />
+      </div>
     </PublicRequestLayout>
   );
 }

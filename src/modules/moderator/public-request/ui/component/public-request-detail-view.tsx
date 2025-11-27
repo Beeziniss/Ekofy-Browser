@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ShieldX} from "lucide-react";
+import { ArrowLeft, Lock} from "lucide-react";
 import { RequestPublicDetailByIdQuery, RequestStatus } from "@/gql/graphql";
 import { BlockRequestDialog } from "./block-request-dialog";
 import { useBlockPublicRequest } from "@/gql/client-mutation-options/public-request-mutation-options";
@@ -100,7 +100,7 @@ export function PublicRequestDetailView({ request, onBack }: PublicRequestDetail
 
   return (
     <>
-      <div className="mx-auto max-w-5xl space-y-6">
+      <div className="mx-auto max-w-5xl space-y-6 py-8">
         {/* Header with Back Button */}
         <div className="flex items-center justify-between">
           {onBack && (
@@ -120,7 +120,7 @@ export function PublicRequestDetailView({ request, onBack }: PublicRequestDetail
                 onClick={handleBlockRequest}
                 disabled={blockRequestMutation.isPending}
               >
-                <ShieldX className="mr-2 h-4 w-4" />
+                <Lock className="mr-2 h-4 w-4" />
                 Block Request
               </Button>
             )}

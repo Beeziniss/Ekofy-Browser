@@ -41,11 +41,11 @@ export function PublicRequestListSection({ requests, isLoading, onViewDetails }:
           <TableRow className="border-gray-800 hover:bg-transparent">
             <TableHead className="w-[180px] text-gray-400">Requestor</TableHead>
             <TableHead className="text-gray-400">Title</TableHead>
-            <TableHead className="w-[160px] text-gray-400">Budget</TableHead>
+            <TableHead className="w-[250px] text-gray-400">Budget</TableHead>
             <TableHead className="w-[80px] text-center text-gray-400">Duration</TableHead>
             <TableHead className="w-[90px] text-center text-gray-400">Status</TableHead>
-            <TableHead className="w-[90px] text-center text-gray-400">Posted</TableHead>
-            <TableHead className="w-[160px] text-right text-gray-400">Actions</TableHead>
+            <TableHead className="w-[120px] text-center text-gray-400">Posted</TableHead>
+            <TableHead className="w-[90px] text-right text-gray-400">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
