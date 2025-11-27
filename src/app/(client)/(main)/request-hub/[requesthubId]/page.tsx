@@ -7,7 +7,6 @@ import { requestByIdOptions } from "@/gql/options/client-options";
 import { RequestDetailView } from "@/modules/client/request-hub/ui/component";
 import { AuthDialogProvider } from "@/modules/client/request-hub/ui/context";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { RequestStatus } from "@/gql/graphql";
 
 const RequestDetailPage = () => {
