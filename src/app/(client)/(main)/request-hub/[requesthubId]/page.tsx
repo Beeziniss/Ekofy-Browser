@@ -7,7 +7,6 @@ import { requestByIdOptions } from "@/gql/options/client-options";
 import { RequestDetailView } from "@/modules/client/request-hub/ui/component";
 import { AuthDialogProvider } from "@/modules/client/request-hub/ui/context";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { RequestStatus } from "@/gql/graphql";
 
 const RequestDetailPage = () => {
@@ -22,9 +21,8 @@ const RequestDetailPage = () => {
     router.push("/request-hub");
   };
 
-  const handleApply = () => {
-    console.log("Apply to request:", requestId);
-    toast.info("Application feature coming soon!");
+  const handleEdit = (id: string) => {
+    router.push(`/request-hub/${id}/edit`);
   };
 
   if (isLoading) {
@@ -54,7 +52,7 @@ const RequestDetailPage = () => {
 
   return (
     <AuthDialogProvider>
-      <RequestDetailView request={request} onBack={handleBack} onApply={handleApply} />
+      <RequestDetailView request={request} onBack={handleBack} onEdit={handleEdit} />
     </AuthDialogProvider>
   );
 };

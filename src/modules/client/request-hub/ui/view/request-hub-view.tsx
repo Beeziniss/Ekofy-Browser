@@ -7,33 +7,25 @@ import { requestHubOptions } from "@/gql/options/client-options";
 import { useCreateRequest, useUpdateRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { RequestHubLayout } from "../layout";
 import { CreateRequestSection, ViewRequestSection, EditRequestSection } from "../section";
-import { RequestDetailView, Pagination, StripeAccountRequiredModal } from "../component";
+import { Pagination } from "../component";
 import { CreateRequestData, UpdateRequestData } from "@/types/request-hub";
 import { RequestsQuery, RequestStatus as GqlRequestStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AuthDialogProvider } from "../context/auth-dialog-context";
-import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
-import { useAuthStore } from "@/store";
 
-type RequestHubMode = "view" | "create" | "edit" | "detail";
+type RequestHubMode = "view" | "create" | "edit";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
 export function RequestHubView() {
   const [mode, setMode] = useState<RequestHubMode>("view");
-  const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
   const [editingRequest, setEditingRequest] = useState<RequestItem | null>(null);
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearchValue] = useDebounce(searchValue, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
-  const [showStripeModal, setShowStripeModal] = useState(false);
   const router = useRouter();
-
-  // Auth and Stripe status
-  const { isAuthenticated } = useAuthStore();
-  const { isArtist, hasStripeAccount } = useStripeAccountStatus();
 
   // Fetch requests with pagination
   const { data: requestsData, isLoading } = useQuery(
@@ -81,37 +73,9 @@ export function RequestHubView() {
     }
   };
 
-  const handleApply = (id: string) => {
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-      toast.info("Please sign in to apply for requests");
-      return;
-    }
-
-    // Check if user is artist and has stripe account
-    if (isArtist && !hasStripeAccount) {
-      setShowStripeModal(true);
-      return;
-    }
-
-    // Only allow artists to apply
-    if (isArtist) {
-      console.log("Apply to request:", id);
-      toast.info("Application feature coming soon!");
-    } else {
-      toast.info("Only artists can apply to requests");
-    }
-  };
-
   const handleSave = (id: string) => {
     console.log("Save request:", id);
     toast.info("Bookmark feature coming soon!");
-  };
-
-  const handleBackToList = () => {
-    setMode("view");
-    setSelectedRequest(null);
-    setEditingRequest(null);
   };
 
   const handleCreateSubmit = async (data: CreateRequestData) => {
@@ -184,14 +148,6 @@ export function RequestHubView() {
             onCancel={handleCancel}
           />
         ) : null;
-      case "detail":
-        return selectedRequest ? (
-          <RequestDetailView
-            request={selectedRequest}
-            onBack={handleBackToList}
-            onApply={() => handleApply(selectedRequest.id)}
-          />
-        ) : null;
       case "view":
       default:
         return (
@@ -207,7 +163,6 @@ export function RequestHubView() {
                 requests={filteredRequests}
                 isLoading={isLoading}
                 onViewDetails={handleViewDetails}
-                onApply={handleApply}
                 onEdit={handleEdit}
                 onSave={handleSave}
               />
@@ -226,15 +181,5 @@ export function RequestHubView() {
     }
   };
 
-  return (
-    <>
-      {renderContent()}
-      {/* Stripe Account Required Modal */}
-      <StripeAccountRequiredModal
-        open={showStripeModal}
-        onOpenChange={setShowStripeModal}
-        onCancel={() => setShowStripeModal(false)}
-      />
-    </>
-  );
+  return <>{renderContent()}</>;
 }

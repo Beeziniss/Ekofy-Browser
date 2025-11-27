@@ -101,7 +101,7 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
           <SelectTrigger className="w-[140px] border-gray-600 bg-gray-800 text-gray-200">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent side="bottom" align="end" className="border-gray-600 bg-gray-800">
+          <SelectContent side="bottom" align="end" className="border-gray-600">
             <SelectGroup>
               <SelectLabel className="text-gray-400">Sort Options</SelectLabel>
               <SelectItem value="sort-newest" className="text-gray-200 focus:bg-gray-700">

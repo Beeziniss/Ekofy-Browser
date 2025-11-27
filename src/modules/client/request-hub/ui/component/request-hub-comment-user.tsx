@@ -190,7 +190,7 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubComme
                   <MoreVertical className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-32 border-gray-600 bg-gray-800">
+              <DropdownMenuContent align="end" className="w-32 border-gray-600">
                 {isOwner ? (
                   <>
                     <DropdownMenuItem
@@ -211,7 +211,7 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubComme
                 ) : (
                   <DropdownMenuItem
                     onClick={() => setReportDialogOpen(true)}
-                    className="cursor-pointer text-xs text-gray-200 hover:bg-gray-700"
+                    className="cursor-pointer text-xs text-gray-200"
                   >
                     <Flag className="mr-2 h-3 w-3" />
                     Report
