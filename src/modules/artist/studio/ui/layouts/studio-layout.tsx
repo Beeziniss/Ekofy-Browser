@@ -1,30 +1,14 @@
 "use client";
 
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import React, { useState } from "react";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import StudioSidebar from "../components/studio-sidebar";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { CloudUploadIcon, MessageCircle } from "lucide-react";
-import Link from "next/link";
-import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
-import { StripeAccountRequiredModal } from "@/modules/shared/ui/components/stripe-account-required-modal";
+import ArtistStudioHeader from "../components/artist-studio-header";
 
 interface StudioLayoutProps {
   children: React.ReactNode;
 }
 
 const StudioLayout = ({ children }: StudioLayoutProps) => {
-  const [showStripeAccountModal, setShowStripeAccountModal] = useState(false);
-  const { hasStripeAccount } = useStripeAccountStatus();
-
-  const handleStripeAccount = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    if (!hasStripeAccount) {
-      e.preventDefault(); // Ngăn chặn hành động chuyển hướng
-      setShowStripeAccountModal(true);
-    }
-  };
-
   return (
     <SidebarProvider>
       <StudioSidebar />
@@ -32,11 +16,6 @@ const StudioLayout = ({ children }: StudioLayoutProps) => {
         <ArtistStudioHeader />
         {children}
       </SidebarInset>
-      <StripeAccountRequiredModal
-        open={showStripeAccountModal}
-        onOpenChange={setShowStripeAccountModal}
-        onCancel={() => setShowStripeAccountModal(false)}
-      />
     </SidebarProvider>
   );
 };
