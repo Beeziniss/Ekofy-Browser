@@ -80,7 +80,6 @@ const SearchTrackSectionContent: React.FC<SearchTrackSectionProps> = ({
               <TableRow className="border-b border-gray-700 hover:bg-transparent">
                 <TableHead className="w-12 text-center text-gray-400">#</TableHead>
                 <TableHead className="text-gray-400">Title</TableHead>
-                <TableHead className="text-gray-400">Album</TableHead>
                 <TableHead className="w-20 text-center text-gray-400">
                   <Clock className="mx-auto h-4 w-4" />
                 </TableHead>
@@ -222,19 +221,13 @@ const TrackRow = ({ track, index }: TrackRowProps) => {
         </div>
       </TableCell>
 
-      <TableCell>
-        <p className="truncate text-sm text-gray-400">
-          {track.name} {/* Album name could be added to GraphQL query */}
-        </p>
-      </TableCell>
-
       <TableCell className="text-center">
         <span className="text-sm text-gray-400">{getDuration()}</span>
       </TableCell>
 
       <TableCell className="relative">
         <div className="relative z-10 opacity-0 transition-opacity group-hover:opacity-100">
-          <TrackActionMenu track={track} isVisible={true} />
+          <TrackActionMenu track={track} />
         </div>
       </TableCell>
     </TableRow>

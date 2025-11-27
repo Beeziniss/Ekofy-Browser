@@ -1,9 +1,16 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { MoreHorizontal, Plus, Heart, Share, Flag, Eye } from "lucide-react";
+import React from "react";
+import { Plus, Heart, Share, Flag, Eye, MoreHorizontal } from "lucide-react";
 import { SearchArtistItem, SearchPlaylistItem } from "@/types/search";
 import { useRouter } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface GenericActionMenuProps {
   item: SearchArtistItem | SearchPlaylistItem;
@@ -12,57 +19,7 @@ interface GenericActionMenuProps {
 }
 
 export const GenericActionMenu: React.FC<GenericActionMenuProps> = ({ item, type, className = "" }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [menuPosition, setMenuPosition] = useState<"right" | "left">("right");
-  const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    const handleResize = () => {
-      if (isMenuOpen) {
-        checkMenuPosition();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [isMenuOpen]);
-
-  const handleMenuToggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isMenuOpen) {
-      // Calculate position before opening
-      setTimeout(() => {
-        checkMenuPosition();
-      }, 0);
-    }
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const checkMenuPosition = () => {
-    if (menuRef.current) {
-      const buttonRect = menuRef.current.getBoundingClientRect();
-      const viewportWidth = window.innerWidth;
-      const menuWidth = 200;
-
-      if (buttonRect.right + menuWidth > viewportWidth - 20) {
-        setMenuPosition("left");
-      } else {
-        setMenuPosition("right");
-      }
-    }
-  };
 
   const getMenuItems = () => {
     const commonItems = [
@@ -106,15 +63,6 @@ export const GenericActionMenu: React.FC<GenericActionMenuProps> = ({ item, type
             label: "View Details",
             action: () => {
               router.push(`/playlists/${item.id}`);
-              setIsMenuOpen(false);
-            },
-          },
-          {
-            icon: Eye,
-            label: "View Details",
-            action: () => {
-              router.push(`/playlists/${item.id}`);
-              setIsMenuOpen(false);
             },
           },
           ...commonItems,
@@ -138,39 +86,26 @@ export const GenericActionMenu: React.FC<GenericActionMenuProps> = ({ item, type
   const menuItems = getMenuItems();
 
   return (
-    <div className={`relative ${className}`} ref={menuRef}>
-      {/* Three dots button */}
-      <button
-        onClick={handleMenuToggle}
-        className={`rounded-full p-2 transition-all duration-200 group-hover:opacity-100 hover:bg-gray-700 ${
-          isMenuOpen ? "bg-gray-700 opacity-100" : "opacity-0"
-        }`}
-      >
-        <MoreHorizontal className="h-5 w-5 text-gray-400" />
-      </button>
-
-      {/* Context menu */}
-      {isMenuOpen && (
-        <div
-          className={`absolute top-10 z-[60] min-w-[200px] rounded-lg border border-gray-700 bg-gray-800 py-2 shadow-xl ${
-            menuPosition === "right" ? "right-0" : "left-0"
-          }`}
-        >
+    <div className={`relative ${className}`}>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-10 w-10 rounded-full p-0 opacity-0 transition-opacity group-hover:opacity-100"
+          >
+            <MoreHorizontal className="h-5 w-5 text-gray-400" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[200px]">
           {menuItems.map((menuItem, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                menuItem.action();
-                setIsMenuOpen(false);
-              }}
-              className="flex w-full items-center space-x-3 px-4 py-2.5 text-sm text-white transition-colors hover:bg-gray-700"
-            >
-              <menuItem.icon className="h-4 w-4" />
+            <DropdownMenuItem key={index} onClick={menuItem.action}>
+              <menuItem.icon className="mr-2 h-4 w-4" />
               <span>{menuItem.label}</span>
-            </button>
+            </DropdownMenuItem>
           ))}
-        </div>
-      )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };
