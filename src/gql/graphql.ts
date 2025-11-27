@@ -6767,6 +6767,7 @@ export type UploadTrackMutationVariables = Exact<{
   createTrackRequest: CreateTrackRequestInput;
   createWorkRequest: CreateWorkRequestInput;
   createRecordingRequest: CreateRecordingRequestInput;
+  isTesting: Scalars['Boolean']['input'];
 }>;
 
 
@@ -6931,6 +6932,13 @@ export type RestoreUserMutationVariables = Exact<{
 
 
 export type RestoreUserMutation = { __typename?: 'MutationInitialization', restoreUser: boolean };
+
+export type RestoreContentMutationVariables = Exact<{
+  reportId: Scalars['String']['input'];
+}>;
+
+
+export type RestoreContentMutation = { __typename?: 'MutationInitialization', restoreContent: boolean };
 
 export type UpdateRequestHubCommentMutationVariables = Exact<{
   commentId: Scalars['String']['input'];
@@ -8135,12 +8143,13 @@ export const ChangeRequestStatusDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<ChangeRequestStatusMutation, ChangeRequestStatusMutationVariables>;
 export const UploadTrackDocument = new TypedDocumentString(`
-    mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!) {
+    mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!, $isTesting: Boolean!) {
   uploadTrack(
     file: $file
     createTrackRequest: $createTrackRequest
     createWorkRequest: $createWorkRequest
     createRecordingRequest: $createRecordingRequest
+    isTesting: $isTesting
   )
 }
     `) as unknown as TypedDocumentString<UploadTrackMutation, UploadTrackMutationVariables>;
@@ -8254,6 +8263,11 @@ export const RestoreUserDocument = new TypedDocumentString(`
   restoreUser(reportId: $reportId)
 }
     `) as unknown as TypedDocumentString<RestoreUserMutation, RestoreUserMutationVariables>;
+export const RestoreContentDocument = new TypedDocumentString(`
+    mutation RestoreContent($reportId: String!) {
+  restoreContent(reportId: $reportId)
+}
+    `) as unknown as TypedDocumentString<RestoreContentMutation, RestoreContentMutationVariables>;
 export const UpdateRequestHubCommentDocument = new TypedDocumentString(`
     mutation UpdateRequestHubComment($commentId: String!, $content: String!) {
   updateComment(request: {commentId: $commentId, content: $content})
@@ -9012,7 +9026,7 @@ export const PlaylistsFavoriteDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<PlaylistsFavoriteQuery, PlaylistsFavoriteQueryVariables>;
 export const ReportQueriesDocument = new TypedDocumentString(`
     query ReportQueries($skip: Int, $take: Int, $where: ReportFilterInput) {
-  reports(skip: $skip, take: $take, where: $where) {
+  reports(skip: $skip, take: $take, where: $where, order: {createdAt: DESC}) {
     totalCount
     pageInfo {
       hasNextPage

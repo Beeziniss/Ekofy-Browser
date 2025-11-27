@@ -5,15 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { 
   FileText, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
   Music, 
   MessageSquare, 
   FileQuestion,
   Image as ImageIcon,
   ExternalLink,
-  TrendingUp
 } from "lucide-react";
 import { ReportDetailQueryQuery, ReportStatus, ReportType, ReportRelatedContentType } from "@/gql/graphql";
 import { REPORT_TYPE_LABELS, CONTENT_TYPE_LABELS } from "@/types/report";
@@ -25,37 +21,30 @@ type ReportItem = NonNullable<NonNullable<ReportDetailQueryQuery["reports"]>["it
 const STATUS_CONFIG: Record<ReportStatus, {
   label: string;
   className: string;
-  icon: typeof AlertTriangle;
 }> = {
   [ReportStatus.Pending]: {
     label: "Pending",
     className: "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700",
-    icon: AlertTriangle,
   },
   [ReportStatus.UnderReview]: {
     label: "Under Review",
     className: "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700",
-    icon: FileText,
   },
   [ReportStatus.Approved]: {
     label: "Approved",
     className: "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700",
-    icon: CheckCircle,
   },
   [ReportStatus.Rejected]: {
     label: "Rejected",
     className: "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700",
-    icon: XCircle,
   },
   [ReportStatus.Restored]: {
     label: "Restored",
     className: "bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-800/30 dark:text-gray-400 dark:border-gray-700",
-    icon: XCircle,
   },
   [ReportStatus.Escalated]: {
     label: "Escalated",
     className: "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700",
-    icon: AlertTriangle,
   },
 };
 
@@ -73,7 +62,6 @@ interface ReportDetailInfoSectionProps {
 
 export function ReportDetailInfoSection({ report }: ReportDetailInfoSectionProps) {
   const statusConfig = STATUS_CONFIG[report.status];
-  const StatusIcon = statusConfig.icon;
 
   // Get the actual data from arrays (API returns arrays, not single objects)
   const trackData = report.track?.[0];
@@ -92,7 +80,6 @@ export function ReportDetailInfoSection({ report }: ReportDetailInfoSectionProps
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-2">Status</p>
               <Badge variant="outline" className={`gap-2 px-4 py-2 text-sm ${statusConfig.className}`}>
-                <StatusIcon className="h-4 w-4" />
                 <span className="font-semibold">{statusConfig.label.toUpperCase()}</span>
               </Badge>
             </div>
@@ -111,7 +98,6 @@ export function ReportDetailInfoSection({ report }: ReportDetailInfoSectionProps
                       : 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400'
                   }`}
                 >
-                  <TrendingUp className="h-4 w-4" />
                   <span className="font-semibold">{report.priority}</span>
                 </Badge>
               </div>
@@ -133,7 +119,6 @@ export function ReportDetailInfoSection({ report }: ReportDetailInfoSectionProps
                       : 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400'
                   }`}
                 >
-                  <CheckCircle className="h-4 w-4" />
                   <span className="font-semibold">
                     {report.actionTaken.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </span>

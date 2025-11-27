@@ -13,6 +13,7 @@ import { ReportTableSection } from "../section/report-table-section";
 import { ReportPaginationSection } from "../section/report-pagination-section";
 import { ProcessReportDialog } from "../components/process-report-dialog";
 import { RestoreUserDialog } from "../components/restore-user-dialog";
+import { RestoreContentDialog } from "../components/restore-content-dialog";
 
 export function ReportListView() {
   const [page, setPage] = useState(1);
@@ -23,7 +24,9 @@ export function ReportListView() {
   const [selectedReportType, setSelectedReportType] = useState<ReportRelatedContentType | null>(null);
   const [processDialogOpen, setProcessDialogOpen] = useState(false);
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [restoreContentDialogOpen, setRestoreContentDialogOpen] = useState(false);
   const [selectedReportForRestore, setSelectedReportForRestore] = useState<{ id: string; userName?: string } | null>(null);
+  const [selectedReportForRestoreContent, setSelectedReportForRestoreContent] = useState<{ id: string; contentName?: string; contentType?: string } | null>(null);
   const pageSize = 10;
   const { user } = useAuthStore();
   const assignReport = useAssignReportToModerator();
@@ -36,19 +39,23 @@ export function ReportListView() {
         ? { relatedContentType: { eq: null } }
         : { relatedContentType: { eq: contentTypeFilter } }
     )),
-    ...(searchTerm.trim() && {
-      or: [
-        { description: { contains: searchTerm } },
-        { userReporter: { some: { fullName: { contains: searchTerm } } } },
-        { userReported: { some: { fullName: { contains: searchTerm } } } },
-      ],
-    }),
   };
 
   const skip = (page - 1) * pageSize;
   const { data, isLoading, refetch } = useQuery(reportsOptions(skip, pageSize, where));
 
   const reports = data?.items || [];
+  
+  // Client-side filtering for search term
+  const filteredReports = searchTerm.trim() 
+    ? reports.filter(report => {
+        const searchLower = searchTerm.toLowerCase();
+        const reporterName = report.nicknameReporter?.toLowerCase() || '';
+        const reportedName = report.nicknameReported?.toLowerCase() || '';
+        return reporterName.includes(searchLower) || reportedName.includes(searchLower);
+      })
+    : reports;
+  
   const totalCount = data?.totalCount || 0;
   const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -84,7 +91,7 @@ export function ReportListView() {
   };
 
   const handleProcess = (reportId: string) => {
-    const report = reports.find(r => r.id === reportId);
+    const report = filteredReports.find(r => r.id === reportId);
     setSelectedReportId(reportId);
     setSelectedReportType(report?.relatedContentType || null);
     setProcessDialogOpen(true);
@@ -95,7 +102,7 @@ export function ReportListView() {
   };
 
   const handleRestoreUser = async (reportId: string) => {
-    const report = reports.find(r => r.id === reportId);
+    const report = filteredReports.find(r => r.id === reportId);
     setSelectedReportForRestore({
       id: reportId,
       userName: report?.nicknameReported || undefined
@@ -106,6 +113,21 @@ export function ReportListView() {
   const handleRestoreSuccess = () => {
     refetch();
     setSelectedReportForRestore(null);
+  };
+
+  const handleRestoreContent = async (reportId: string) => {
+    const report = filteredReports.find(r => r.id === reportId);
+    setSelectedReportForRestoreContent({
+      id: reportId,
+      contentName: report?.track?.[0]?.name || undefined,
+      contentType: report?.relatedContentType || undefined
+    });
+    setRestoreContentDialogOpen(true);
+  };
+
+  const handleRestoreContentSuccess = () => {
+    refetch();
+    setSelectedReportForRestoreContent(null);
   };
 
   return (
@@ -121,14 +143,16 @@ export function ReportListView() {
         />
 
         <ReportTableSection
-          reports={reports}
+          reports={filteredReports}
           isLoading={isLoading}
           currentUserId={user?.userId}
           isAssigning={assignReport.isPending}
           onAssignToMe={handleAssignToMe}
           onProcess={handleProcess}
           onRestoreUser={handleRestoreUser}
+          onRestoreContent={handleRestoreContent}
           isRestoring={false}
+          isRestoringContent={false}
         />
 
         <ReportPaginationSection
@@ -157,6 +181,17 @@ export function ReportListView() {
           reportId={selectedReportForRestore.id}
           reportedUserName={selectedReportForRestore.userName}
           onSuccess={handleRestoreSuccess}
+        />
+      )}
+
+      {selectedReportForRestoreContent && (
+        <RestoreContentDialog
+          open={restoreContentDialogOpen}
+          onOpenChange={setRestoreContentDialogOpen}
+          reportId={selectedReportForRestoreContent.id}
+          contentName={selectedReportForRestoreContent.contentName}
+          contentType={selectedReportForRestoreContent.contentType}
+          onSuccess={handleRestoreContentSuccess}
         />
       )}
     </>

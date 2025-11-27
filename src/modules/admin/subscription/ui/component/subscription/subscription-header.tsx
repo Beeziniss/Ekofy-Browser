@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Edit, CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle } from "lucide-react";
 
 interface SubscriptionHeaderProps {
   subscription: {
@@ -40,10 +40,6 @@ export function SubscriptionHeader({ subscription, onBack, onActivate, hasPlans,
             {isActivating ? "Activating..." : "Activate"}
           </Button>
         )}
-        <Button variant="outline">
-          <Edit className="mr-2 h-4 w-4" />
-          Edit Subscription
-        </Button>
       </div>
     </div>
   );

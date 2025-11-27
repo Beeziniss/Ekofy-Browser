@@ -10,35 +10,37 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, RotateCcw } from "lucide-react";
-import { useRestoreUser } from "@/gql/client-mutation-options/report-mutation-options";
+import { useRestoreContent } from "@/gql/client-mutation-options/report-mutation-options";
 import { toast } from "sonner";
 
-interface RestoreUserDialogProps {
+interface RestoreContentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   reportId: string;
-  reportedUserName?: string;
+  contentName?: string;
+  contentType?: string;
   onSuccess?: () => void;
 }
 
-export function RestoreUserDialog({
+export function RestoreContentDialog({
   open,
   onOpenChange,
   reportId,
-  reportedUserName,
+  contentName,
+  contentType = "content",
   onSuccess,
-}: RestoreUserDialogProps) {
-  const restoreUser = useRestoreUser();
+}: RestoreContentDialogProps) {
+  const restoreContent = useRestoreContent();
 
   const onSubmit = async () => {
     try {
-      await restoreUser.mutateAsync(reportId);
-      toast.success("User restored successfully");
+      await restoreContent.mutateAsync(reportId);
+      toast.success(`${contentType} restored successfully`);
       onOpenChange(false);
       onSuccess?.();
     } catch (error) {
-      console.error("Error restoring user:", error);
-      toast.error("Failed to restore user");
+      console.error("Error restoring content:", error);
+      toast.error(`Failed to restore ${contentType}`);
     }
   };
 
@@ -52,11 +54,11 @@ export function RestoreUserDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <RotateCcw className="h-5 w-5 text-green-500" />
-            Restore User
+            Restore {contentType}
           </DialogTitle>
           <DialogDescription>
-            You are about to restore user {reportedUserName ? `"${reportedUserName}"` : ""}. 
-            This will remove any active restrictions or suspensions applied to their account.
+            You are about to restore {contentType.toLowerCase()} {contentName ? `"${contentName}"` : ""}. 
+            This will make the content visible and accessible again on the platform.
           </DialogDescription>
         </DialogHeader>
 
@@ -67,7 +69,7 @@ export function RestoreUserDialog({
               Important Notice
             </p>
             <p className="mt-1 text-yellow-700 dark:text-yellow-300">
-              This action will immediately lift all current restrictions and allow the user to fully access the platform again.
+              This action will immediately restore the content and make it available to all users again.
             </p>
           </div>
         </div>
@@ -77,17 +79,17 @@ export function RestoreUserDialog({
             type="button"
             variant="outline"
             onClick={handleCancel}
-            disabled={restoreUser.isPending}
+            disabled={restoreContent.isPending}
           >
             Cancel
           </Button>
           <Button
             onClick={onSubmit}
-            disabled={restoreUser.isPending}
-            className="gap-2"
+            disabled={restoreContent.isPending}
+            className="gap-2 bg-green-600 hover:bg-green-700 text-white"
           >
             <RotateCcw className="h-4 w-4" />
-            {restoreUser.isPending ? "Restoring..." : "Restore User"}
+            {restoreContent.isPending ? "Restoring..." : `Restore ${contentType}`}
           </Button>
         </DialogFooter>
       </DialogContent>

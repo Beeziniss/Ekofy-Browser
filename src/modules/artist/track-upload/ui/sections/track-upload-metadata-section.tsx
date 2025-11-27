@@ -385,6 +385,7 @@ const TrackUploadMetadataSection = () => {
         newDocs[index].documentFile = file;
         setLegalDocuments(newDocs);
 
+        // TODO: Remove this
         toast.success(`Document "${file.name}" uploaded successfully!`);
       }
     },
@@ -569,7 +570,12 @@ const TrackUploadMetadataSection = () => {
       // Clear the loading state and current upload, then navigate back to tracks
       setUploading(false);
       clearCurrentUpload();
-      router.push("/artist/track-uploading");
+
+      if (data.isTesting) {
+        router.push("/artist/studio/tracks");
+      } else {
+        router.push("/artist/track-uploading");
+      }
     } catch (error) {
       // Clear loading state on upload error
       setUploading(false);

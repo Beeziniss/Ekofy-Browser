@@ -16,6 +16,7 @@ export const trackUploadMutationOptions = mutationOptions({
     createTrackRequest: CreateTrackRequestInput;
     createWorkRequest: CreateWorkRequestInput;
     createRecordingRequest: CreateRecordingRequestInput;
+    isTesting: boolean;
   }) => await executeWithFileUpload(UploadTrackMutation, variables),
 });
 
