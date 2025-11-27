@@ -111,10 +111,11 @@ export const trackDetailOptions = (trackId: string) =>
     enabled: !!trackId,
   });
 
-export const trackFavoriteOptions = (take: number = 12) =>
+export const trackFavoriteOptions = (take: number = 12, isAuthenticated: boolean) =>
   queryOptions({
     queryKey: ["track-favorite"],
     queryFn: async () => await execute(TrackFavoriteQuery, { take }),
+    enabled: isAuthenticated,
   });
 
 // PLAYLIST QUERIES
@@ -166,10 +167,11 @@ export const checkTrackInPlaylistOptions = (trackId: string) =>
     queryFn: async () => await execute(CheckTrackInPlaylistQuery, { trackId }),
   });
 
-export const playlistsFavoriteOptions = (take: number = 12) =>
+export const playlistsFavoriteOptions = (take: number = 12, isAuthenticated: boolean) =>
   queryOptions({
     queryKey: ["playlists-favorite"],
     queryFn: async () => await execute(PlaylistsFavoriteQuery, { take }),
+    enabled: isAuthenticated,
   });
 
 // TRACK COMMENTS QUERIES

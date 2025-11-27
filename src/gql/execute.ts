@@ -51,16 +51,45 @@ async function executeRequest<TResult, TVariables>(
       if (!isRetry && isAuthenticationError(result.errors)) {
         // Import the auth service here to avoid circular dependency
         const { authApi } = await import("@/services/auth-services");
+        const { useAuthStore } = await import("@/store/stores/auth-store");
 
-        // Attempt to refresh the token
+        const user = useAuthStore.getState().user;
+
+        if (!user?.isRememberMe) {
+          // 1. Clear auth data (logging them out locally)
+          clearAuthData();
+
+          // 2. Return null casted as TResult.
+          // This stops execution here, prevents the code from reaching the 'throw' below,
+          // and satisfies the TypeScript compiler.
+          return null as TResult;
+        }
+
+        // NOTE: Version 1
+        /* // Attempt to refresh the token
         const refreshResponse = await authApi.general.refreshToken();
+
         const newAccessToken = refreshResponse.result.accessToken;
 
         // Save the new token to localStorage
         setAccessTokenToLocalStorage(newAccessToken);
 
         // Retry the original request with the new token
-        return executeRequest(query, variables, true);
+        return executeRequest(query, variables, true); */
+
+        // NOTE: Version 2
+        // If we are here, the user HAS "Remember Me", so we try to refresh
+        try {
+          const refreshResponse = await authApi.general.refreshToken();
+          const newAccessToken = refreshResponse.result.accessToken;
+          setAccessTokenToLocalStorage(newAccessToken);
+          return executeRequest(query, variables, true);
+        } catch (error) {
+          console.error(error);
+
+          // If refresh fails, clear data and fall through to error
+          clearAuthData();
+        }
       }
 
       // Create a custom error that preserves GraphQL error details
