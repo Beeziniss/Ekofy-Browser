@@ -39,19 +39,23 @@ export function ReportListView() {
         ? { relatedContentType: { eq: null } }
         : { relatedContentType: { eq: contentTypeFilter } }
     )),
-    ...(searchTerm.trim() && {
-      or: [
-        { description: { contains: searchTerm } },
-        { userReporter: { some: { fullName: { contains: searchTerm } } } },
-        { userReported: { some: { fullName: { contains: searchTerm } } } },
-      ],
-    }),
   };
 
   const skip = (page - 1) * pageSize;
   const { data, isLoading, refetch } = useQuery(reportsOptions(skip, pageSize, where));
 
   const reports = data?.items || [];
+  
+  // Client-side filtering for search term
+  const filteredReports = searchTerm.trim() 
+    ? reports.filter(report => {
+        const searchLower = searchTerm.toLowerCase();
+        const reporterName = report.nicknameReporter?.toLowerCase() || '';
+        const reportedName = report.nicknameReported?.toLowerCase() || '';
+        return reporterName.includes(searchLower) || reportedName.includes(searchLower);
+      })
+    : reports;
+  
   const totalCount = data?.totalCount || 0;
   const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -87,7 +91,7 @@ export function ReportListView() {
   };
 
   const handleProcess = (reportId: string) => {
-    const report = reports.find(r => r.id === reportId);
+    const report = filteredReports.find(r => r.id === reportId);
     setSelectedReportId(reportId);
     setSelectedReportType(report?.relatedContentType || null);
     setProcessDialogOpen(true);
@@ -98,7 +102,7 @@ export function ReportListView() {
   };
 
   const handleRestoreUser = async (reportId: string) => {
-    const report = reports.find(r => r.id === reportId);
+    const report = filteredReports.find(r => r.id === reportId);
     setSelectedReportForRestore({
       id: reportId,
       userName: report?.nicknameReported || undefined
@@ -112,7 +116,7 @@ export function ReportListView() {
   };
 
   const handleRestoreContent = async (reportId: string) => {
-    const report = reports.find(r => r.id === reportId);
+    const report = filteredReports.find(r => r.id === reportId);
     setSelectedReportForRestoreContent({
       id: reportId,
       contentName: report?.track?.[0]?.name || undefined,
@@ -139,7 +143,7 @@ export function ReportListView() {
         />
 
         <ReportTableSection
-          reports={reports}
+          reports={filteredReports}
           isLoading={isLoading}
           currentUserId={user?.userId}
           isAssigning={assignReport.isPending}
