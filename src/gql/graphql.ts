@@ -7584,6 +7584,22 @@ export type PendingArtistRegistrationByIdQueryVariables = Exact<{
 
 export type PendingArtistRegistrationByIdQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrationById: { __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string, requestedAt: any, timeToLive?: any | null, identityCardNumber: string, identityCardDateOfBirth: any, identityCardFullName: string, placeOfOrigin: string, placeOfResidence: string, frontImageUrl?: string | null, backImageUrl?: string | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }> } };
 
+export type RequestsPublicQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RequestFilterInput>;
+}>;
+
+
+export type RequestsPublicQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, currency: CurrencyType, duration: number, status: RequestStatus, type: RequestType, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, artistId?: string | null, packageId?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }>, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }> }> | null } | null };
+
+export type RequestPublicDetailByIdQueryVariables = Exact<{
+  requestId: Scalars['String']['input'];
+}>;
+
+
+export type RequestPublicDetailByIdQuery = { __typename?: 'QueryInitialization', requestDetailById?: { __typename?: 'Request', id: string, requestUserId: string, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, currency: CurrencyType, status: RequestStatus, type: RequestType, duration: number, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, artistId?: string | null, packageId?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }>, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }> } | null };
+
 export type PendingTrackUploadRequestsListQueryVariables = Exact<{
   pageNumber: Scalars['Int']['input'];
   pageSize: Scalars['Int']['input'];
@@ -10134,6 +10150,85 @@ export const PendingArtistRegistrationByIdDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PendingArtistRegistrationByIdQuery, PendingArtistRegistrationByIdQueryVariables>;
+export const RequestsPublicDocument = new TypedDocumentString(`
+    query RequestsPublic($skip: Int, $take: Int, $where: RequestFilterInput) {
+  requests(skip: $skip, take: $take, where: $where) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    totalCount
+    items {
+      id
+      requestUserId
+      title
+      titleUnsigned
+      summary
+      summaryUnsigned
+      detailDescription
+      budget {
+        min
+        max
+      }
+      currency
+      duration
+      status
+      type
+      postCreatedTime
+      requestCreatedTime
+      updatedAt
+      artistId
+      packageId
+      artist {
+        id
+        stageName
+        avatarImage
+      }
+      requestor {
+        id
+        userId
+        displayName
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RequestsPublicQuery, RequestsPublicQueryVariables>;
+export const RequestPublicDetailByIdDocument = new TypedDocumentString(`
+    query RequestPublicDetailById($requestId: String!) {
+  requestDetailById(requestId: $requestId) {
+    id
+    requestUserId
+    title
+    titleUnsigned
+    summary
+    summaryUnsigned
+    detailDescription
+    currency
+    status
+    type
+    duration
+    postCreatedTime
+    requestCreatedTime
+    updatedAt
+    artistId
+    packageId
+    budget {
+      min
+      max
+    }
+    artist {
+      id
+      stageName
+      avatarImage
+    }
+    requestor {
+      id
+      userId
+      displayName
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RequestPublicDetailByIdQuery, RequestPublicDetailByIdQueryVariables>;
 export const PendingTrackUploadRequestsListDocument = new TypedDocumentString(`
     query PendingTrackUploadRequestsList($pageNumber: Int!, $pageSize: Int!) {
   pendingTrackUploadRequests(pageNumber: $pageNumber, pageSize: $pageSize) {

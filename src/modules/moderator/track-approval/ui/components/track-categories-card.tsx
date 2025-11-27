@@ -99,7 +99,6 @@ export function TrackCategoriesCard({ categoryIds, tags }: TrackCategoriesCardPr
           <Separator />
           <div className="space-y-2">
             <h4 className="flex items-center gap-2 font-medium text-sm">
-              <Tag className="h-4 w-4" />
               Tags
             </h4>
             <div className="flex flex-wrap gap-2">
