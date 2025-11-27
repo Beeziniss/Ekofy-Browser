@@ -7,8 +7,11 @@ import { useSearchParams } from "next/navigation";
 import TrackTableWrapper from "../../components/track-table/track-table-wrapper";
 import { TrackFilterInput, TrackSortInput, SortEnumType } from "@/gql/graphql";
 import { TrackListWithFiltersQuery } from "@/modules/shared/queries/artist/track-queries";
+import { useAuthStore } from "@/store";
+import TrackUploadEmpty from "../../components/track-upload/track-upload-empty";
 
 const TrackTableSection = () => {
+  const { user } = useAuthStore();
   const searchParams = useSearchParams();
   const sortBy = searchParams.get("sortBy") || "";
   const searchQuery = searchParams.get("search") || "";
@@ -29,9 +32,16 @@ const TrackTableSection = () => {
       isRelease: { eq: privacyFilter === "public" },
     };
   }
+  if (user?.userId) {
+    where.createdBy = { eq: user.userId };
+  }
 
   // Build order
-  const order: TrackSortInput[] = [];
+  const order: TrackSortInput[] = [
+    {
+      createdAt: SortEnumType.Desc,
+    },
+  ];
   if (sortBy) {
     switch (sortBy) {
       case "releaseDate":
@@ -65,19 +75,32 @@ const TrackTableSection = () => {
       }),
   });
 
+  console.log("hehheahsd");
+
+  // Helper boolean to check if user is filtering (Search OR Privacy filter)
+  const isFiltering = !!searchQuery || privacyFilter !== "all";
+
+  // Helper boolean to check if API returned empty
+  const isDataEmpty = data.tracks?.totalCount === 0;
   return (
     <div className="mt-8">
-      {/* {data.tracks?.totalCount === 0 ? (
+      {/* Only show the "Upload Empty" (Onboarding) screen if:
+        1. The data is empty
+        2. AND the user is NOT currently filtering/searching
+      */}
+      {isDataEmpty && !isFiltering ? (
         <TrackUploadEmpty />
-      ) : ( */}
-      <TrackTableWrapper
-        data={data.tracks?.items || []}
-        totalCount={data.tracks?.totalCount || 0}
-        hasNextPage={data.tracks?.pageInfo?.hasNextPage || false}
-        hasPreviousPage={data.tracks?.pageInfo?.hasPreviousPage || false}
-        pageSize={pageSize}
-      />
-      {/* )} */}
+      ) : (
+        data.tracks && (
+          <TrackTableWrapper
+            data={data.tracks?.items || []}
+            totalCount={data.tracks?.totalCount || 0}
+            hasNextPage={data.tracks?.pageInfo?.hasNextPage || false}
+            hasPreviousPage={data.tracks?.pageInfo?.hasPreviousPage || false}
+            pageSize={pageSize}
+          />
+        )
+      )}
     </div>
   );
 };
