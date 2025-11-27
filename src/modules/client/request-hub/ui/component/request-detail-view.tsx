@@ -243,7 +243,7 @@ export function RequestDetailView({ request, onBack, onEdit, className }: Reques
 
                     {/* Show Contact Client button only for Artists */}
                     {isArtist && user?.userId !== request.requestUserId && (
-                      <Button variant="outline" className="w-full" onClick={handleContactClient}>
+                      <Button variant="ekofy" className="w-full" onClick={handleContactClient}>
                         <MessageCircle className="mr-2 h-4 w-4" />
                         Contact Client
                       </Button>
