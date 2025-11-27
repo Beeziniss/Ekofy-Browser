@@ -70,10 +70,10 @@ export const TrackUploadProgress: React.FC<TrackUploadProgressProps> = ({
         </p>
 
         {/* Connection Status */}
-        <div className="flex items-center gap-2 text-xs">
+        {/* <div className="flex items-center gap-2 text-xs">
           <div className={cn("h-2 w-2 rounded-full", isConnected ? "bg-green-400" : "bg-red-400")} />
           <span className="text-muted-foreground">{isConnected ? "Connected" : "Disconnected"}</span>
-        </div>
+        </div> */}
       </div>
     </div>
   );

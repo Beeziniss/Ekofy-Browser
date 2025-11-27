@@ -83,7 +83,7 @@ export function RequestHubLayout({
               <div className="relative max-w-full flex-1">
                 <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                 <Input
-                  placeholder="Search requests..."
+                  placeholder="Search title, summary requests..."
                   value={searchValue}
                   onChange={(e) => onSearchChange?.(e.target.value)}
                   className="w-full py-2 pr-4 pl-10"

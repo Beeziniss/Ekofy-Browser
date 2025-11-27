@@ -20,7 +20,6 @@ import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AuthDialogProvider } from "../context/auth-dialog-context";
-import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 
 type RequestHubMode = "view" | "create" | "edit" | "detail";
 
@@ -37,9 +36,6 @@ export function MyRequestsView() {
   const [showStripeModal, setShowStripeModal] = useState(false);
   const router = useRouter();
   const { user } = useAuthStore();
-
-  // Stripe account status
-  const { isArtist, hasStripeAccount } = useStripeAccountStatus();
 
   // Fetch requests with pagination
   const skip = (currentPage - 1) * pageSize;
@@ -90,22 +86,6 @@ export function MyRequestsView() {
     if (request) {
       setEditingRequest(request);
       setMode("edit");
-    }
-  };
-
-  const handleApply = (id: string) => {
-    // Check if user is artist and has stripe account
-    if (isArtist && !hasStripeAccount) {
-      setShowStripeModal(true);
-      return;
-    }
-
-    // Only allow artists to apply
-    if (isArtist) {
-      console.log("Apply to request:", id);
-      toast.info("Application feature coming soon!");
-    } else {
-      toast.info("Only artists can apply to requests");
     }
   };
 
@@ -269,7 +249,6 @@ export function MyRequestsView() {
                 requests={displayRequests}
                 isLoading={isLoading}
                 onViewDetails={handleViewDetails}
-                onApply={handleApply}
                 onEdit={handleEdit}
                 onSave={handleSave}
               />

@@ -6,12 +6,14 @@ export const UploadTrackMutation = graphql(`
     $createTrackRequest: CreateTrackRequestInput!
     $createWorkRequest: CreateWorkRequestInput!
     $createRecordingRequest: CreateRecordingRequestInput!
+    $isTesting: Boolean!
   ) {
     uploadTrack(
       file: $file
       createTrackRequest: $createTrackRequest
       createWorkRequest: $createWorkRequest
       createRecordingRequest: $createRecordingRequest
+      isTesting: $isTesting
     )
   }
 `);

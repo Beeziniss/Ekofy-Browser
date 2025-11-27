@@ -6767,6 +6767,7 @@ export type UploadTrackMutationVariables = Exact<{
   createTrackRequest: CreateTrackRequestInput;
   createWorkRequest: CreateWorkRequestInput;
   createRecordingRequest: CreateRecordingRequestInput;
+  isTesting: Scalars['Boolean']['input'];
 }>;
 
 
@@ -6931,6 +6932,13 @@ export type RestoreUserMutationVariables = Exact<{
 
 
 export type RestoreUserMutation = { __typename?: 'MutationInitialization', restoreUser: boolean };
+
+export type RestoreContentMutationVariables = Exact<{
+  reportId: Scalars['String']['input'];
+}>;
+
+
+export type RestoreContentMutation = { __typename?: 'MutationInitialization', restoreContent: boolean };
 
 export type UpdateRequestHubCommentMutationVariables = Exact<{
   commentId: Scalars['String']['input'];
@@ -7195,7 +7203,7 @@ export type TracksWithFiltersQueryVariables = Exact<{
 }>;
 
 
-export type TracksWithFiltersQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean } }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type TracksWithFiltersQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, categoryIds: Array<string>, checkTrackInFavorite: boolean, createdAt: any, featuredArtistIds: Array<string>, popularity: any, tags: Array<string>, type: TrackType, nameUnsigned: string, legalDocuments: Array<{ __typename?: 'LegalDocument', documentType: DocumentType, documentUrl: string, name: string, note: string }>, restriction: { __typename?: 'Restriction', action?: RestrictionAction | null, expired?: any | null, reason?: string | null, type: RestrictionType, reportId?: string | null, restrictedAt?: any | null }, syncedLyrics: Array<{ __typename?: 'SyncedLine', text: string, time: number }>, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type TrackUploadArtistListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8151,12 +8159,13 @@ export const ChangeRequestStatusDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<ChangeRequestStatusMutation, ChangeRequestStatusMutationVariables>;
 export const UploadTrackDocument = new TypedDocumentString(`
-    mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!) {
+    mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!, $isTesting: Boolean!) {
   uploadTrack(
     file: $file
     createTrackRequest: $createTrackRequest
     createWorkRequest: $createWorkRequest
     createRecordingRequest: $createRecordingRequest
+    isTesting: $isTesting
   )
 }
     `) as unknown as TypedDocumentString<UploadTrackMutation, UploadTrackMutationVariables>;
@@ -8270,6 +8279,11 @@ export const RestoreUserDocument = new TypedDocumentString(`
   restoreUser(reportId: $reportId)
 }
     `) as unknown as TypedDocumentString<RestoreUserMutation, RestoreUserMutationVariables>;
+export const RestoreContentDocument = new TypedDocumentString(`
+    mutation RestoreContent($reportId: String!) {
+  restoreContent(reportId: $reportId)
+}
+    `) as unknown as TypedDocumentString<RestoreContentMutation, RestoreContentMutationVariables>;
 export const UpdateRequestHubCommentDocument = new TypedDocumentString(`
     mutation UpdateRequestHubComment($commentId: String!, $content: String!) {
   updateComment(request: {commentId: $commentId, content: $content})
@@ -8724,9 +8738,40 @@ export const TracksWithFiltersDocument = new TypedDocumentString(`
       favoriteCount
       coverImage
       isExplicit
+      categoryIds
+      checkTrackInFavorite
+      createdAt
+      featuredArtistIds
+      legalDocuments {
+        documentType
+        documentUrl
+        name
+        note
+      }
+      popularity
+      restriction {
+        action
+        expired
+        reason
+        type
+        reportId
+        restrictedAt
+      }
+      syncedLyrics {
+        text
+        time
+      }
+      tags
+      type
+      nameUnsigned
       releaseInfo {
         releaseDate
         isRelease
+      }
+      mainArtists {
+        items {
+          stageName
+        }
       }
     }
     pageInfo {
@@ -8997,7 +9042,7 @@ export const PlaylistsFavoriteDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<PlaylistsFavoriteQuery, PlaylistsFavoriteQueryVariables>;
 export const ReportQueriesDocument = new TypedDocumentString(`
     query ReportQueries($skip: Int, $take: Int, $where: ReportFilterInput) {
-  reports(skip: $skip, take: $take, where: $where) {
+  reports(skip: $skip, take: $take, where: $where, order: {createdAt: DESC}) {
     totalCount
     pageInfo {
       hasNextPage

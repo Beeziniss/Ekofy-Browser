@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ProcessReportDialog } from "../components/process-report-dialog";
 import { RestoreUserDialog } from "../components/restore-user-dialog";
+import { RestoreContentDialog } from "../components/restore-content-dialog";
 import { ReportDetailLayout } from "../layout/report-detail-layout";
 import { ReportDetailHeaderSection } from "../section/report-detail-header-section";
 import { ReportDetailInfoSection } from "../section/report-detail-info-section";
@@ -22,6 +23,7 @@ interface ReportDetailViewProps {
 export function ReportDetailView({ reportId }: ReportDetailViewProps) {
   const [processDialogOpen, setProcessDialogOpen] = useState(false);
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [restoreContentDialogOpen, setRestoreContentDialogOpen] = useState(false);
   const { user } = useAuthStore();
   const assignReport = useAssignReportToModerator();
 
@@ -76,6 +78,11 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
     setRestoreDialogOpen(true);
   };
 
+  // Handle restore content
+  const handleRestoreContent = () => {
+    setRestoreContentDialogOpen(true);
+  };
+
   const handleRestoreSuccess = () => {
     refetch(); // Refetch to update the UI after restoring
   };
@@ -91,7 +98,9 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
             onProcessClick={handleProcessClick}
             onAssignClick={handleAssignToMe}
             onRestoreClick={handleRestoreUser}
+            onRestoreContentClick={handleRestoreContent}
             isRestoring={false}
+            isRestoringContent={false}
           />
         }
         mainContent={<ReportDetailInfoSection report={report} />}
@@ -113,6 +122,16 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
         reportedUserName={report.nicknameReported}
         open={restoreDialogOpen}
         onOpenChange={setRestoreDialogOpen}
+        onSuccess={handleRestoreSuccess}
+      />
+
+      {/* Restore Content Dialog */}
+      <RestoreContentDialog
+        reportId={report.id}
+        contentName={report.track?.[0]?.name || undefined}
+        contentType={report.relatedContentType || undefined}
+        open={restoreContentDialogOpen}
+        onOpenChange={setRestoreContentDialogOpen}
         onSuccess={handleRestoreSuccess}
       />
     </>
