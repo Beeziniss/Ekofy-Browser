@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bell, Check, Trash2 } from "lucide-react";
 import { NotificationResponse } from "@/hooks/use-notification-signalr";
 import { formatNotificationTime } from "@/utils/notification-utils";
+import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
 
 interface NotificationPopoverProps {
   notifications: NotificationResponse[];
@@ -34,7 +35,9 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
 
   return (
     <Popover>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <TooltipButton content="Notifications" side="bottom">
+        <PopoverTrigger asChild>{children}</PopoverTrigger>
+      </TooltipButton>
       <PopoverContent className="w-90 p-0" align="end" sideOffset={8}>
         <div className="flex items-center justify-between border-b px-4 py-3">
           <h3 className="text-main-white font-semibold">Notifications</h3>

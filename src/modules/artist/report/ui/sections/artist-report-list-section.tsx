@@ -27,7 +27,7 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
   const { data, isLoading, error, refetch } = useArtistReports(
     skip,
     take,
-    statusFilter && statusFilter !== "ALL" ? { status: { eq: statusFilter } } : undefined
+    statusFilter && statusFilter !== "ALL" ? { status: { eq: statusFilter } } : undefined,
   );
 
   const reports = data?.items || [];
@@ -47,10 +47,9 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
     }
   };
 
-  const filteredReports = reports.filter(report =>
-    search === "" || 
-    report.description.toLowerCase().includes(search.toLowerCase()) ||
-    report.id.includes(search)
+  const filteredReports = reports.filter(
+    (report) =>
+      search === "" || report.description.toLowerCase().includes(search.toLowerCase()) || report.id.includes(search),
   );
 
   if (error) {
@@ -58,8 +57,8 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
       <Card className="bg-main-card-bg border-red-500/20">
         <CardContent className="p-6">
           <p className="text-red-400">An error occurred while loading the report list.</p>
-          <Button onClick={() => refetch()} className="mt-4 primary_gradient">
-            <RefreshCw className="h-4 w-4 mr-2" />
+          <Button onClick={() => refetch()} className="primary_gradient mt-4">
+            <RefreshCw className="mr-2 h-4 w-4" />
             Try again
           </Button>
         </CardContent>
@@ -69,41 +68,37 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
 
   return (
     <div className={className}>
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-primary-gradient">
-            My Reports
-          </h1>
-          <p className="text-main-grey mt-1">
-            Manage the reports you have sent ({totalCount} reports)
-          </p>
+          <h1 className="text-primary-gradient text-2xl font-bold">My Reports</h1>
+          <p className="text-main-grey mt-1">Manage the reports you have sent ({totalCount} reports)</p>
         </div>
       </div>
 
       {/* Filters */}
-      <Card className="mb-6 border-main-grey-dark-bg/30">
+      <Card className="border-main-grey-dark-bg/30 mb-6">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-main-white">
+          <CardTitle className="text-main-white flex items-center gap-2">
             <Filter className="h-5 w-5" />
             Filters
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-main-white">Search</label>
+              <label className="text-main-white text-sm font-medium">Search</label>
               <div className="relative">
-                <Search className="h-4 w-4 absolute left-3 top-3 text-main-grey" />
+                <Search className="text-main-grey absolute top-3 left-3 h-4 w-4" />
                 <Input
                   placeholder="Search by description or ID..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10 bg-main-dark-bg-1 border-main-grey-dark-bg/50 text-main-white"
+                  className="bg-main-dark-bg-1 border-main-grey-dark-bg/50 text-main-white pl-10"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-main-white">Status</label>
+              <label className="text-main-white text-sm font-medium">Status</label>
               <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ReportStatus | "ALL")}>
                 <SelectTrigger className="bg-main-dark-bg-1 border-main-grey-dark-bg/50 text-main-white">
                   <SelectValue placeholder="All statuses" />
@@ -128,8 +123,8 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
           <Card className="border-main-grey-dark-bg/30">
             <CardContent className="p-8">
               <div className="flex items-center justify-center">
-                <RefreshCw className="h-8 w-8 animate-spin text-main-white" />
-                <span className="ml-2 text-main-white">Loading...</span>
+                <RefreshCw className="text-main-white h-8 w-8 animate-spin" />
+                <span className="text-main-white ml-2">Loading...</span>
               </div>
             </CardContent>
           </Card>
@@ -149,40 +144,28 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
                 <div className="flex items-center justify-between">
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-3">
-                      <span className="font-mono text-sm text-main-blue bg-main-blue/10 px-2 py-1 rounded border border-main-blue/30">
+                      <span className="text-main-blue bg-main-blue/10 border-main-blue/30 rounded border px-2 py-1 font-mono text-sm">
                         #{report.id.slice(-8).toUpperCase()}
                       </span>
                       <ArtistReportStatusBadge status={report.status as ReportStatus} />
                     </div>
-                    
-                    <h3 className="font-semibold text-lg text-main-white">
-                      {REPORT_TYPE_LABELS[report.reportType]}
-                    </h3>
-                    
-                    <p className="text-main-grey line-clamp-2">
-                      {report.description}
-                    </p>
-                    
-                    <div className="flex items-center gap-4 text-sm text-main-grey-dark-1">
-                      <span>
-                        Created at: {format(new Date(report.createdAt), "dd/MM/yyyy HH:mm", { locale: vi })}
-                      </span>
+
+                    <h3 className="text-main-white text-lg font-semibold">{REPORT_TYPE_LABELS[report.reportType]}</h3>
+
+                    <p className="text-main-grey line-clamp-2">{report.description}</p>
+
+                    <div className="text-main-grey-dark-1 flex items-center gap-4 text-sm">
+                      <span>Created at: {format(new Date(report.createdAt), "dd/MM/yyyy HH:mm", { locale: vi })}</span>
                       {report.nicknameReported ? (
-                        <span>
-                          Report: {report.nicknameReported}
-                        </span>
+                        <span>Report: {report.nicknameReported}</span>
                       ) : (
-                        <span>
-                          Report: Unknown
-                        </span>
+                        <span>Report: Unknown</span>
                       )}
                     </div>
                   </div>
-                  
-                  <Button asChild className="primary_gradient hover:opacity-90 transition-opacity text-white">
-                    <Link href={`/artist/studio/reports/${report.id}`}>
-                      View details
-                    </Link>
+
+                  <Button asChild className="primary_gradient text-white transition-opacity hover:opacity-90">
+                    <Link href={`/artist/studio/reports/${report.id}`}>View details</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -193,8 +176,8 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
 
       {/* Pagination */}
       {totalCount > take && (
-        <div className="flex items-center justify-between mt-6">
-          <div className="text-sm text-main-grey">
+        <div className="mt-6 flex items-center justify-between">
+          <div className="text-main-grey text-sm">
             Showing {skip + 1} - {Math.min(skip + take, totalCount)} of {totalCount} reports
           </div>
           <div className="flex items-center gap-2">

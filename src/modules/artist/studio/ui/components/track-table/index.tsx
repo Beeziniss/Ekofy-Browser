@@ -10,7 +10,6 @@ import {
   getSortedRowModel,
   OnChangeFn,
 } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
 import Image from "next/image";
@@ -46,6 +45,15 @@ export interface Track {
     releaseDate?: string;
     isRelease: boolean;
   };
+  mainArtists?: {
+    __typename?: "MainArtistsCollectionSegment";
+    items?:
+      | {
+          __typename?: "Artist";
+          stageName: string;
+        }[]
+      | null;
+  } | null;
 }
 
 interface TrackTableProps {
@@ -77,23 +85,12 @@ const TrackTable = ({
 
   const columns: ColumnDef<Track>[] = [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-          className="border-main-white"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="border-main-grey-dark-1"
-        />
-      ),
+      id: "number",
+      header: "No.",
+      cell: ({ row }) => {
+        const rowNumber = (currentPage - 1) * pageSize + row.index + 1;
+        return <span className="text-main-white text-sm font-medium">{rowNumber}</span>;
+      },
       enableSorting: false,
       enableHiding: false,
     },
@@ -119,14 +116,16 @@ const TrackTable = ({
             </div>
             <div className="min-w-0">
               <div className="truncate font-medium text-white">{track.name}</div>
-              <div className="text-main-grey truncate text-sm">Track Author name</div>
+              <div className="text-main-grey truncate text-sm">
+                {track.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
+              </div>
             </div>
           </div>
         );
       },
     },
     {
-      accessorKey: "releaseInfo.isReleased",
+      accessorKey: "isReleased",
       header: "Privacy",
       cell: ({ row }) => {
         const isReleased = row.original.releaseInfo.isRelease;
@@ -319,7 +318,12 @@ const TrackTable = ({
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="border-gray-800">
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                  <TableCell
+                    key={cell.id}
+                    className={`${cell.column.id === "number" ? "w-12" : ""} ${cell.column.id === "isReleased" ? "w-34" : ""} ${cell.column.id === "releaseDate" ? "w-42" : ""} ${cell.column.id === "streamCount" ? "w-28" : ""} ${cell.column.id === "interactions" ? "w-64" : ""} ${cell.column.id === "actions" ? "w-12" : ""}`}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
                 ))}
               </TableRow>
             ))
