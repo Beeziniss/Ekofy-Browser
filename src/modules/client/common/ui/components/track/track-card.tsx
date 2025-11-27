@@ -170,7 +170,7 @@ const TrackCard = React.memo(
               alt="Track Name"
               width={280}
               height={280}
-              className="h-full w-full rounded-sm object-cover transition-transform duration-500"
+              className="aspect-square h-full w-full rounded-sm object-cover transition-transform duration-500"
               unoptimized
             />
             <div

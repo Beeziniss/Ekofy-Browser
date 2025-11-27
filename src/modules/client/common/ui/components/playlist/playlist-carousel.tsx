@@ -15,26 +15,30 @@ const PlaylistCarousel = ({ data, isLoading }: PlaylistCarouselProps) => {
         align: "start",
         watchDrag: false,
       }}
-      className="w-full px-12"
+      className="w-full"
     >
-      <CarouselContent className="-ml-8">
+      <CarouselContent className="-ml-2 md:-ml-4">
         {isLoading &&
           Array.from({ length: 14 }).map((_, index) => (
-            <CarouselItem key={index} className="basis-auto pl-8">
+            <CarouselItem
+              key={index}
+              className="basis-1/2 pl-2 sm:basis-1/3 md:basis-1/4 md:pl-4 lg:basis-1/5 xl:basis-1/6 2xl:basis-[14.28%]"
+            >
               <div className="flex flex-col">
-                <Skeleton className="size-70 rounded-sm text-sm">&nbsp;</Skeleton>
-                <Skeleton className="mt-2 h-5 w-32 rounded-sm text-sm">&nbsp;</Skeleton>
-                <Skeleton className="mt-1 h-4 w-24 rounded-sm text-sm">&nbsp;</Skeleton>
+                <Skeleton className="aspect-square w-full rounded-sm text-sm">&nbsp;</Skeleton>
+                <Skeleton className="mt-2 h-5 w-4/5 rounded-sm text-sm">&nbsp;</Skeleton>
+                <Skeleton className="mt-1 h-4 w-3/5 rounded-sm text-sm">&nbsp;</Skeleton>
               </div>
             </CarouselItem>
           ))}
         {!isLoading &&
           data?.playlists?.items &&
           data.playlists.items.map((playlist) => (
-            <CarouselItem key={playlist.id} className="shrink-0 grow-0 basis-[312px] pl-8">
-              <div className="w-[280px]">
-                <PlaylistCard playlist={playlist} />
-              </div>
+            <CarouselItem
+              key={playlist.id}
+              className="basis-1/2 pl-2 sm:basis-1/3 md:basis-1/4 md:pl-4 lg:basis-1/5 xl:basis-1/6 2xl:basis-[14.28%]"
+            >
+              <PlaylistCard playlist={playlist} />
             </CarouselItem>
           ))}
         {!isLoading && (!data?.playlists?.items || data.playlists.items.length === 0) && (
@@ -43,8 +47,8 @@ const PlaylistCarousel = ({ data, isLoading }: PlaylistCarouselProps) => {
           </div>
         )}
       </CarouselContent>
-      <CarouselPrevious className="left-0 z-20" />
-      <CarouselNext className="right-0 z-20" />
+      <CarouselPrevious className="-top-9 left-[calc(100%-4.5rem)] z-20" />
+      <CarouselNext className="-top-9 right-0 z-20" />
     </Carousel>
   );
 };

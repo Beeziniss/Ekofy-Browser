@@ -75,6 +75,7 @@ const FormSchema = z
     isReleased: z.boolean(),
     releaseDate: z.date().optional(),
     isOriginal: z.boolean(),
+    isTesting: z.boolean(),
     legalDocuments: z.array(z.any()).optional(), // We'll validate this manually
     workSplits: z
       .array(
@@ -241,6 +242,7 @@ const TrackUploadMetadataSection = () => {
       coverImage: undefined,
       isExplicit: false,
       isOriginal: true,
+      isTesting: true,
       legalDocuments: [],
       workSplits: [],
       recordingSplits: [],
@@ -556,6 +558,7 @@ const TrackUploadMetadataSection = () => {
             percentage: split.percentage,
           })),
         } as CreateRecordingRequestInput,
+        isTesting: data.isTesting,
       };
 
       // Execute the upload mutation
@@ -566,7 +569,7 @@ const TrackUploadMetadataSection = () => {
       // Clear the loading state and current upload, then navigate back to tracks
       setUploading(false);
       clearCurrentUpload();
-      router.push("/artist/studio");
+      router.push("/artist/track-uploading");
     } catch (error) {
       // Clear loading state on upload error
       setUploading(false);
@@ -601,6 +604,7 @@ const TrackUploadMetadataSection = () => {
         coverImage: undefined,
         isExplicit: false,
         isOriginal: true,
+        isTesting: true,
         legalDocuments: [],
         workSplits: [],
         recordingSplits: [],
@@ -1361,6 +1365,35 @@ const TrackUploadMetadataSection = () => {
                               </FormControl>
                               <Label htmlFor="original-content-checkbox" className="text-sm font-bold">
                                 Original Content
+                              </Label>
+                            </div>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {/* Original Content */}
+                    <FormField
+                      control={form.control}
+                      name="isTesting"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div>
+                            <p className="text-main-white text-xs font-bold">For Testing Only</p>
+                            <p className="text-main-grey-dark-1 text-xs font-normal">
+                              Please check this if this track is for testing only. This helps us identify test content.
+                            </p>
+
+                            <div className="mt-2 flex items-center gap-x-4">
+                              <FormControl>
+                                <Checkbox
+                                  id="testing-only-checkbox"
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <Label htmlFor="testing-only-checkbox" className="text-sm font-bold">
+                                For Testing Only
                               </Label>
                             </div>
                           </div>

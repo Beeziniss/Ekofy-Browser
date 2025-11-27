@@ -34,15 +34,15 @@ interface ProcessReportDialogProps {
 
 const processReportFormSchema = z
   .object({
-    actionTaken: z.nativeEnum(ReportAction).refine((val) => val !== undefined, {
+    actionTaken: z.enum(ReportAction).refine((val) => val !== undefined, {
       message: "Please select an action",
     }),
-    status: z.nativeEnum(ReportStatus).refine((val) => val !== undefined, {
+    status: z.enum(ReportStatus).refine((val) => val !== undefined, {
       message: "Please select a status",
     }),
     note: z.string().optional(),
     suspensionDays: z.number().min(1).max(365).optional(),
-    restrictionActions: z.array(z.nativeEnum(RestrictionAction)).optional(),
+    restrictionActions: z.array(z.enum(RestrictionAction)).optional(),
     restrictionNotes: z.record(z.string(), z.string()).optional(),
   })
   .refine(
