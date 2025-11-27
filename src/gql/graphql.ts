@@ -6767,6 +6767,7 @@ export type UploadTrackMutationVariables = Exact<{
   createTrackRequest: CreateTrackRequestInput;
   createWorkRequest: CreateWorkRequestInput;
   createRecordingRequest: CreateRecordingRequestInput;
+  isTesting: Scalars['Boolean']['input'];
 }>;
 
 
@@ -8135,12 +8136,13 @@ export const ChangeRequestStatusDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<ChangeRequestStatusMutation, ChangeRequestStatusMutationVariables>;
 export const UploadTrackDocument = new TypedDocumentString(`
-    mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!) {
+    mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!, $isTesting: Boolean!) {
   uploadTrack(
     file: $file
     createTrackRequest: $createTrackRequest
     createWorkRequest: $createWorkRequest
     createRecordingRequest: $createRecordingRequest
+    isTesting: $isTesting
   )
 }
     `) as unknown as TypedDocumentString<UploadTrackMutation, UploadTrackMutationVariables>;
