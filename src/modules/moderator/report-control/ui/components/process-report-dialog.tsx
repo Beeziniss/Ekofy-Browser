@@ -333,8 +333,11 @@ export function ProcessReportDialog({
                         <Input
                           type="number"
                           placeholder="Enter number of days (1-365)"
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                          value={field.value || ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(value === "" ? undefined : parseInt(value));
+                          }}
                         />
                       </FormControl>
                       <FormDescription>

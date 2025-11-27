@@ -26,7 +26,7 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <p className="text-xs text-muted-foreground mb-1">Full Name</p>
+            <p className="text-xs text-muted-foreground mb-1">Nick Name Reporter</p>
             <p className="font-medium">{report.nicknameReporter || "Unknown"}</p>
           </div>
           <Separator />
@@ -48,7 +48,7 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <p className="text-xs text-muted-foreground mb-1">Full Name</p>
+            <p className="text-xs text-muted-foreground mb-1">Nick Name Reported</p>
             <p className="font-medium">{report.nicknameReported || "Unknown"}</p>
           </div>
           <Separator />
@@ -113,7 +113,7 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
           
           {report.updatedAt && (
             <div className="relative pb-3">
-              <p className="text-xs text-muted-foreground mb-1">Last Updated</p>
+              <p className="text-[15px] text-muted-foreground mb-1">Last Updated</p>
               <p className="text-sm font-medium">
                 {format(new Date(report.updatedAt), "PPP")}
               </p>
@@ -125,7 +125,7 @@ export function ReportDetailSidebarSection({ report }: ReportDetailSidebarSectio
 
           {report.resolvedAt && (
             <div className="relative pb-3">
-              <p className="text-xl text-muted-foreground mb-1">Resolved</p>
+              <p className="text-[15px] text-muted-foreground mb-1">Resolved At</p>
               <p className="text-sm font-medium">
                 {format(new Date(report.resolvedAt), "PPP")}
               </p>

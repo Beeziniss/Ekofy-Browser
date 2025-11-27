@@ -157,7 +157,7 @@ export function UserTable({
                   className="flex cursor-pointer items-center gap-2 text-red-400 hover:bg-gray-700 hover:text-red-300"
                 >
                   <UserX className="h-4 w-4" />
-                  Banned
+                  Ban
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem
