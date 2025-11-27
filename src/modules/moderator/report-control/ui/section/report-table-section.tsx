@@ -64,7 +64,9 @@ interface ReportTableSectionProps {
   onAssignToMe: (reportId: string) => void;
   onProcess: (reportId: string) => void;
   onRestoreUser?: (reportId: string) => void;
+  onRestoreContent?: (reportId: string) => void;
   isRestoring?: boolean;
+  isRestoringContent?: boolean;
 }
 
 export function ReportTableSection({
@@ -75,7 +77,9 @@ export function ReportTableSection({
   onAssignToMe,
   onProcess,
   onRestoreUser,
+  onRestoreContent,
   isRestoring = false,
+  isRestoringContent = false,
 }: ReportTableSectionProps) {
   return (
     <div className="border rounded-md">
@@ -180,7 +184,8 @@ export function ReportTableSection({
                       
                       {report.assignedModeratorId === currentUserId &&
                         report.status !== ReportStatus.Approved &&
-                        report.status !== ReportStatus.Rejected && (
+                        report.status !== ReportStatus.Rejected &&
+                        report.status !== ReportStatus.Restored && (
                           <>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
@@ -193,10 +198,12 @@ export function ReportTableSection({
                           </>
                         )}
 
-                      {/* Show Restore User button for reports with Suspended or PermanentBan actions */}
+                      {/* Show Restore User button for reports with Suspended, PermanentBan, or EntitlementRestriction actions */}
                       {onRestoreUser && 
                         report.actionTaken && 
-                        (report.actionTaken === ReportAction.Suspended || report.actionTaken === ReportAction.PermanentBan) &&
+                        (report.actionTaken === ReportAction.Suspended || 
+                         report.actionTaken === ReportAction.PermanentBan ||
+                         report.actionTaken === ReportAction.EntitlementRestriction) &&
                         report.status === ReportStatus.Approved && (
                           <>
                             <DropdownMenuSeparator />
@@ -207,6 +214,24 @@ export function ReportTableSection({
                             >
                               <RotateCcw className="h-4 w-4" />
                               {isRestoring ? "Restoring..." : "Restore User"}
+                            </DropdownMenuItem>
+                          </>
+                        )}
+
+                      {/* Show Restore Content button for reports with ContentRemoval action */}
+                      {onRestoreContent && 
+                        report.actionTaken && 
+                        report.actionTaken === ReportAction.ContentRemoval &&
+                        report.status === ReportStatus.Approved && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => onRestoreContent(report.id)}
+                              disabled={isRestoringContent}
+                              className="flex items-center gap-2"
+                            >
+                              <RotateCcw className="h-4 w-4" />
+                              {isRestoringContent ? "Restoring..." : "Restore Content"}
                             </DropdownMenuItem>
                           </>
                         )}

@@ -34,7 +34,7 @@ const useSignIn = () => {
         throw new Error(formatAuthError(error));
       }
     },
-    onSuccess: async (data) => {
+    onSuccess: async (data, variables) => {
       try {
         // Store tokens and user data in local storage and zustand store
         if (data.result) {
@@ -43,6 +43,7 @@ const useSignIn = () => {
             userId: data.result.userId,
             listenerId: data.result.listenerId,
             role: data.result.role,
+            isRememberMe: variables.isRememberMe,
           };
           setUserInfoToLocalStorage(userInfo);
           setUserData(userInfo, data.result.accessToken);

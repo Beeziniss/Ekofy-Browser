@@ -12,39 +12,34 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MessageCircle, Clock, Send, ChevronDown, ChevronUp, SquarePen, MoreVertical, Flag } from "lucide-react";
+import { MessageCircle, Clock, ChevronDown, ChevronUp, SquarePen, MoreVertical, Flag } from "lucide-react";
 import { RequestsQuery, ReportRelatedContentType } from "@/gql/graphql";
 import { requestHubCommentsOptions } from "@/gql/options/client-options";
-import { RequestHubCommentSection, StripeAccountRequiredModal } from "./";
+import { RequestHubCommentSection } from "./";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
-import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
+import { formatDistanceToNow } from "date-fns";
 
 type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[0];
 
 interface RequestCardProps {
   request: RequestItem;
   onViewDetails?: (id: string) => void;
-  onApply?: (id: string) => void;
   onEdit?: (id: string) => void;
   className?: string;
   onSave?: (id: string) => void;
   isOwner?: boolean;
 }
 
-export function RequestCard({ request, onViewDetails, onApply, onEdit, className, isOwner = false }: RequestCardProps) {
+export function RequestCard({ request, onViewDetails, onEdit, className, isOwner = false }: RequestCardProps) {
   const [showComments, setShowComments] = useState(false);
-  const [showStripeModal, setShowStripeModal] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   // Get auth state and dialog
   const { isAuthenticated } = useAuthStore();
   const { showAuthDialog } = useAuthDialog();
-
-  // Get Stripe account status
-  const { isArtist, hasStripeAccount } = useStripeAccountStatus();
 
   // Fetch comment count for this request
   const { data: commentsData } = useQuery(requestHubCommentsOptions(request.id));
@@ -99,50 +94,12 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
     setShowComments(!showComments);
   };
 
-  const handleApply = () => {
-    if (!isAuthenticated) {
-      showAuthDialog("apply", request.title || "Untitled Request");
-      return;
-    }
-
-    // Check if user is artist and has stripe account
-    if (isArtist && !hasStripeAccount) {
-      setShowStripeModal(true);
-      return;
-    }
-
-    // Only allow artists to apply
-    if (isArtist) {
-      onApply?.(request.id);
-    }
-  };
-
   const handleEdit = () => {
     if (!isAuthenticated) {
       showAuthDialog("edit", request.title || "Untitled Request");
       return;
     }
     onEdit?.(request.id);
-  };
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffMinutes = Math.floor(diffTime / (1000 * 60));
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffMinutes < 60) {
-      return `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`;
-    } else if (diffHours < 24) {
-      const hours = diffHours;
-      const minutes = diffMinutes % 60;
-      return `${hours} hour${hours > 1 ? "s" : ""} ${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-    } else {
-      const days = diffDays;
-      const hours = diffHours % 24;
-      return `${days} day${days > 1 ? "s" : ""} ${hours} hour${hours > 1 ? "s" : ""} ago`;
-    }
   };
 
   const formatBudget = (budget: { min: number; max: number }, currency: string) => {
@@ -185,7 +142,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
               <h4 className="font-medium text-white">
                 {request.requestor?.[0]?.displayName || `User ${request.requestUserId.slice(-4)}`}
               </h4>
-              <p className="text-sm text-white">{formatTimeAgo(request.postCreatedTime)}</p>
+              <p className="text-sm text-white">{formatDistanceToNow(new Date(request.postCreatedTime), { addSuffix: true })}</p>
             </div>
           </div>
           
@@ -197,7 +154,7 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40 border-gray-600 bg-gray-800">
+              <DropdownMenuContent align="end" className="w-40 border-gray-600">
                 <DropdownMenuItem
                   onClick={() => setReportDialogOpen(true)}
                   className="cursor-pointer text-sm text-gray-200 hover:bg-gray-700"
@@ -256,15 +213,10 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
             <Button variant="outline" size="sm" onClick={() => onViewDetails?.(request.id)} className="text-sm">
               View Details
             </Button>
-            {isOwner && onEdit ? (
+            {isOwner && onEdit && (
               <Button size="sm" onClick={handleEdit} className="primary_gradient text-sm text-white hover:opacity-65">
                 <SquarePen className="mr-1 h-3 w-3" />
                 Edit
-              </Button>
-            ) : (
-              <Button size="sm" onClick={handleApply} className="primary_gradient text-sm text-white hover:opacity-65">
-                <Send className="mr-1 h-3 w-3" />
-                Apply Now
               </Button>
             )}
           </div>
@@ -277,13 +229,6 @@ export function RequestCard({ request, onViewDetails, onApply, onEdit, className
           <RequestHubCommentSection requestId={request.id} />
         </div>
       )}
-
-      {/* Stripe Account Required Modal */}
-      <StripeAccountRequiredModal
-        open={showStripeModal}
-        onOpenChange={setShowStripeModal}
-        onCancel={() => setShowStripeModal(false)}
-      />
 
       {/* Report Dialog */}
       {request.requestUserId && (

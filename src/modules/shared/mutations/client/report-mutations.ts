@@ -23,3 +23,9 @@ export const RESTORE_USER = graphql(`
      restoreUser(reportId: $reportId)
     }
 `);
+
+export const RESTORE_CONTENT = graphql(`
+    mutation RestoreContent($reportId: String!) {
+     restoreContent(reportId: $reportId)
+    }
+`);

@@ -32,6 +32,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import Link from "next/link";
 
 export interface Track {
   id: string;
@@ -115,7 +116,12 @@ const TrackTable = ({
               )}
             </div>
             <div className="min-w-0">
-              <div className="truncate font-medium text-white">{track.name}</div>
+              <Link
+                href={`/artist/studio/tracks/insights/${track.id}`}
+                className="text-main-white hover:text-main-purple truncate font-medium hover:underline"
+              >
+                {track.name}
+              </Link>
               <div className="text-main-grey truncate text-sm">
                 {track.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"}
               </div>

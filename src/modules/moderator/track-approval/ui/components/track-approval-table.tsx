@@ -13,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Checkbox } from "@/components/ui/checkbox";
 import { TrackUploadRequestListItem } from "@/types/approval-track";
 import { SimplePlayButton } from "./simple-play-button";
 import { ApproveTrackDialog } from "./approve-track-dialog";
@@ -41,7 +40,6 @@ export function TrackApprovalTable({
   pageSize: number;
   onViewDetailAction: (uploadId: string) => void;
 }) {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [approveDialog, setApproveDialog] = useState<{
     open: boolean;
     uploadId: string;
@@ -104,22 +102,6 @@ export function TrackApprovalTable({
     });
   };
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedItems(data.map((item) => item.id));
-    } else {
-      setSelectedItems([]);
-    }
-  };
-
-  const handleSelectItem = (itemId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedItems([...selectedItems, itemId]);
-    } else {
-      setSelectedItems(selectedItems.filter((id) => id !== itemId));
-    }
-  };
-
   const getTrackTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case "original":
@@ -141,9 +123,7 @@ export function TrackApprovalTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">
-                <Checkbox disabled />
-              </TableHead>
+              <TableHead className="w-12">No.</TableHead>
               <TableHead className="w-12"></TableHead>
               <TableHead>Track</TableHead>
               <TableHead>Artists</TableHead>
@@ -155,9 +135,7 @@ export function TrackApprovalTable({
           <TableBody>
             {Array.from({ length: pageSize }).map((_, index) => (
               <TableRow key={index}>
-                <TableCell>
-                  <Checkbox disabled />
-                </TableCell>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>
                   <div className="bg-muted h-8 w-8 animate-pulse rounded" />
                 </TableCell>
@@ -178,9 +156,6 @@ export function TrackApprovalTable({
                 </TableCell>
                 <TableCell>
                   <div className="bg-muted h-4 w-20 animate-pulse rounded" />
-                </TableCell>
-                <TableCell>
-                  <div className="bg-muted h-6 w-20 animate-pulse rounded" />
                 </TableCell>
                 <TableCell>
                   <div className="bg-muted h-8 w-8 animate-pulse rounded" />
@@ -209,13 +184,7 @@ export function TrackApprovalTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">
-                <Checkbox
-                  checked={selectedItems.length === data.length}
-                  onCheckedChange={handleSelectAll}
-                  aria-label="Select all"
-                />
-              </TableHead>
+              <TableHead className="w-12">No.</TableHead>
               <TableHead className="w-12"></TableHead>
               <TableHead>Track</TableHead>
               <TableHead>Artists</TableHead>
@@ -225,15 +194,9 @@ export function TrackApprovalTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((item: TrackUploadRequestListItem) => (
+            {data.map((item: TrackUploadRequestListItem, index) => (
               <TableRow key={item.id}>
-                <TableCell>
-                  <Checkbox
-                    checked={selectedItems.includes(item.id)}
-                    onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
-                    aria-label={`Select ${item.track.name}`}
-                  />
-                </TableCell>
+                <TableCell>{(currentPage - 1) * pageSize + index + 1}</TableCell>
                 <TableCell>
                   <SimplePlayButton
                     trackId={item.track.id}
@@ -242,7 +205,7 @@ export function TrackApprovalTable({
                       item.mainArtists?.items?.map((artist) => artist.stageName).join(", ") || "Unknown Artist"
                     }
                     trackCoverImage={item.track.coverImage}
-                    uploadId={item.id} // Pass uploadId for audio player
+                    uploadId={item.id}
                     size="md"
                   />
                 </TableCell>
@@ -338,16 +301,13 @@ export function TrackApprovalTable({
         </Table>
       </div>
 
-      {/* Pagination would go here */}
       <div className="text-muted-foreground flex items-center justify-between text-sm">
         <div>
           Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount}{" "}
           tracks
         </div>
-        {/* Add pagination component here */}
       </div>
 
-      {/* Approve Dialog */}
       <ApproveTrackDialog
         open={approveDialog.open}
         onOpenChange={(open) => setApproveDialog({ ...approveDialog, open })}
@@ -357,7 +317,6 @@ export function TrackApprovalTable({
         isLoading={approveMutation.isPending}
       />
 
-      {/* Reject Dialog */}
       <RejectTrackDialog
         open={rejectDialog.open}
         onOpenChange={(open) => setRejectDialog({ ...rejectDialog, open })}

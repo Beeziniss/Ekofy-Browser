@@ -115,7 +115,7 @@ export const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
         <div className="flex items-center justify-end space-x-2">
           <span className="text-sm text-gray-400">{displayDuration}</span>
           <div className="relative z-10 opacity-0 transition-opacity group-hover:opacity-100">
-            <TrackActionMenu track={track} isVisible={false} />
+            <TrackActionMenu track={track} />
           </div>
         </div>
       </TableCell>

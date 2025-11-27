@@ -6635,6 +6635,13 @@ export type UnbanUserMutationVariables = Exact<{
 
 export type UnbanUserMutation = { __typename?: 'MutationInitialization', unbanUser: boolean };
 
+export type TrackInsightViewQueryVariables = Exact<{
+  trackId: Scalars['String']['input'];
+}>;
+
+
+export type TrackInsightViewQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, streamCount: any, favoriteCount: any, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null } }> | null } | null };
+
 export type PlaylistBriefQueryVariables = Exact<{
   userId: Scalars['String']['input'];
 }>;
@@ -6767,6 +6774,7 @@ export type UploadTrackMutationVariables = Exact<{
   createTrackRequest: CreateTrackRequestInput;
   createWorkRequest: CreateWorkRequestInput;
   createRecordingRequest: CreateRecordingRequestInput;
+  isTesting: Scalars['Boolean']['input'];
 }>;
 
 
@@ -6931,6 +6939,13 @@ export type RestoreUserMutationVariables = Exact<{
 
 
 export type RestoreUserMutation = { __typename?: 'MutationInitialization', restoreUser: boolean };
+
+export type RestoreContentMutationVariables = Exact<{
+  reportId: Scalars['String']['input'];
+}>;
+
+
+export type RestoreContentMutation = { __typename?: 'MutationInitialization', restoreContent: boolean };
 
 export type UpdateRequestHubCommentMutationVariables = Exact<{
   commentId: Scalars['String']['input'];
@@ -7569,6 +7584,22 @@ export type PendingArtistRegistrationByIdQueryVariables = Exact<{
 
 export type PendingArtistRegistrationByIdQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrationById: { __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string, requestedAt: any, timeToLive?: any | null, identityCardNumber: string, identityCardDateOfBirth: any, identityCardFullName: string, placeOfOrigin: string, placeOfResidence: string, frontImageUrl?: string | null, backImageUrl?: string | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }> } };
 
+export type RequestsPublicQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RequestFilterInput>;
+}>;
+
+
+export type RequestsPublicQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, currency: CurrencyType, duration: number, status: RequestStatus, type: RequestType, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, artistId?: string | null, packageId?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }>, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }> }> | null } | null };
+
+export type RequestPublicDetailByIdQueryVariables = Exact<{
+  requestId: Scalars['String']['input'];
+}>;
+
+
+export type RequestPublicDetailByIdQuery = { __typename?: 'QueryInitialization', requestDetailById?: { __typename?: 'Request', id: string, requestUserId: string, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, currency: CurrencyType, status: RequestStatus, type: RequestType, duration: number, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, artistId?: string | null, packageId?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }>, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }> } | null };
+
 export type PendingTrackUploadRequestsListQueryVariables = Exact<{
   pageNumber: Scalars['Int']['input'];
   pageSize: Scalars['Int']['input'];
@@ -7912,6 +7943,22 @@ export const UnbanUserDocument = new TypedDocumentString(`
   unbanUser(targetUserId: $targetUserId)
 }
     `) as unknown as TypedDocumentString<UnbanUserMutation, UnbanUserMutationVariables>;
+export const TrackInsightViewDocument = new TypedDocumentString(`
+    query TrackInsightView($trackId: String!) {
+  tracks(where: {id: {eq: $trackId}}) {
+    items {
+      id
+      name
+      coverImage
+      releaseInfo {
+        releaseDate
+      }
+      streamCount
+      favoriteCount
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackInsightViewQuery, TrackInsightViewQueryVariables>;
 export const PlaylistBriefDocument = new TypedDocumentString(`
     query PlaylistBrief($userId: String!) {
   playlists(where: {userId: {eq: $userId}}) {
@@ -8135,12 +8182,13 @@ export const ChangeRequestStatusDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<ChangeRequestStatusMutation, ChangeRequestStatusMutationVariables>;
 export const UploadTrackDocument = new TypedDocumentString(`
-    mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!) {
+    mutation UploadTrack($file: Upload!, $createTrackRequest: CreateTrackRequestInput!, $createWorkRequest: CreateWorkRequestInput!, $createRecordingRequest: CreateRecordingRequestInput!, $isTesting: Boolean!) {
   uploadTrack(
     file: $file
     createTrackRequest: $createTrackRequest
     createWorkRequest: $createWorkRequest
     createRecordingRequest: $createRecordingRequest
+    isTesting: $isTesting
   )
 }
     `) as unknown as TypedDocumentString<UploadTrackMutation, UploadTrackMutationVariables>;
@@ -8254,6 +8302,11 @@ export const RestoreUserDocument = new TypedDocumentString(`
   restoreUser(reportId: $reportId)
 }
     `) as unknown as TypedDocumentString<RestoreUserMutation, RestoreUserMutationVariables>;
+export const RestoreContentDocument = new TypedDocumentString(`
+    mutation RestoreContent($reportId: String!) {
+  restoreContent(reportId: $reportId)
+}
+    `) as unknown as TypedDocumentString<RestoreContentMutation, RestoreContentMutationVariables>;
 export const UpdateRequestHubCommentDocument = new TypedDocumentString(`
     mutation UpdateRequestHubComment($commentId: String!, $content: String!) {
   updateComment(request: {commentId: $commentId, content: $content})
@@ -9012,7 +9065,7 @@ export const PlaylistsFavoriteDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<PlaylistsFavoriteQuery, PlaylistsFavoriteQueryVariables>;
 export const ReportQueriesDocument = new TypedDocumentString(`
     query ReportQueries($skip: Int, $take: Int, $where: ReportFilterInput) {
-  reports(skip: $skip, take: $take, where: $where) {
+  reports(skip: $skip, take: $take, where: $where, order: {createdAt: DESC}) {
     totalCount
     pageInfo {
       hasNextPage
@@ -10097,6 +10150,85 @@ export const PendingArtistRegistrationByIdDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PendingArtistRegistrationByIdQuery, PendingArtistRegistrationByIdQueryVariables>;
+export const RequestsPublicDocument = new TypedDocumentString(`
+    query RequestsPublic($skip: Int, $take: Int, $where: RequestFilterInput) {
+  requests(skip: $skip, take: $take, where: $where) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    totalCount
+    items {
+      id
+      requestUserId
+      title
+      titleUnsigned
+      summary
+      summaryUnsigned
+      detailDescription
+      budget {
+        min
+        max
+      }
+      currency
+      duration
+      status
+      type
+      postCreatedTime
+      requestCreatedTime
+      updatedAt
+      artistId
+      packageId
+      artist {
+        id
+        stageName
+        avatarImage
+      }
+      requestor {
+        id
+        userId
+        displayName
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RequestsPublicQuery, RequestsPublicQueryVariables>;
+export const RequestPublicDetailByIdDocument = new TypedDocumentString(`
+    query RequestPublicDetailById($requestId: String!) {
+  requestDetailById(requestId: $requestId) {
+    id
+    requestUserId
+    title
+    titleUnsigned
+    summary
+    summaryUnsigned
+    detailDescription
+    currency
+    status
+    type
+    duration
+    postCreatedTime
+    requestCreatedTime
+    updatedAt
+    artistId
+    packageId
+    budget {
+      min
+      max
+    }
+    artist {
+      id
+      stageName
+      avatarImage
+    }
+    requestor {
+      id
+      userId
+      displayName
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RequestPublicDetailByIdQuery, RequestPublicDetailByIdQueryVariables>;
 export const PendingTrackUploadRequestsListDocument = new TypedDocumentString(`
     query PendingTrackUploadRequestsList($pageNumber: Int!, $pageSize: Int!) {
   pendingTrackUploadRequests(pageNumber: $pageNumber, pageSize: $pageSize) {

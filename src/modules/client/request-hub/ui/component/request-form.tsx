@@ -4,17 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-// import { Calendar } from "@/components/ui/calendar";
-// import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-// import { CalendarIcon } from "lucide-react";
-// import { format } from "date-fns";
-// import { cn } from "@/lib/utils";
 import { Editor } from "@/modules/shared/ui/components/editor";
 import { DeleteConfirmModal } from "./delete-confirm-modal";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { X } from "lucide-react";
 import { CreateRequestData, UpdateRequestData, RequestBudget } from "@/types/request-hub";
 
 // Helper function to format number with dots
@@ -30,29 +23,6 @@ const formatCurrency = (value: string): string => {
 const parseCurrency = (value: string): number => {
   return parseFloat(value.replace(/\./g, "")) || 0;
 };
-
-// const UploadIcon = () => (
-//   <svg
-//     className="mx-auto h-12 w-12 mb-4"
-//     viewBox="0 0 24 24"
-//     fill="none"
-//     xmlns="http://www.w3.org/2000/svg"
-//   >
-//     <defs>
-//       <linearGradient id="uploadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-//         <stop offset="0%" stopColor="#3B54EA" />
-//         <stop offset="100%" stopColor="#AB4EE5" />
-//       </linearGradient>
-//     </defs>
-//     <path
-//       d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
-//       stroke="url(#uploadGradient)"
-//       strokeWidth="2"
-//       strokeLinecap="round"
-//       strokeLinejoin="round"
-//     />
-//   </svg>
-// );
 
 interface RequestFormProps {
   mode: "create" | "edit";
@@ -95,8 +65,6 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [budgetError, setBudgetError] = useState("");
   const [durationError, setDurationError] = useState("");
-  // const [attachments, setAttachments] = useState<File[]>([]);
-  // const [isDragOver, setIsDragOver] = useState(false);
 
   // Check user role - only listeners can create/edit requests
   const { user } = useAuthStore();
@@ -171,22 +139,6 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
       onSubmit(createData);
     }
   };
-
-  // const handleFileSelect = (files: FileList | null) => {
-  //   if (files) {
-  //     setAttachments(prev => [...prev, ...Array.from(files)]);
-  //   }
-  // };
-
-  // const handleDrop = (e: React.DragEvent) => {
-  //   e.preventDefault();
-  //   setIsDragOver(false);
-  //   handleFileSelect(e.dataTransfer.files);
-  // };
-
-  // const removeAttachment = (index: number) => {
-  //   setAttachments(prev => prev.filter((_, i) => i !== index));
-  // };
 
   return (
     <div className="mx-auto max-w-6xl p-6">
@@ -297,34 +249,6 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
           </p>
         </div>
 
-        {/* <div>
-          <label className="mb-2 block text-sm font-medium">Deadline</label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn("w-full justify-start text-left font-normal", !deadline && "text-muted-foreground")}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {deadline ? format(deadline, "dd/MM/yyyy") : "Select deadline"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={deadline}
-                onSelect={setDeadline}
-                disabled={(date) => date < minDate}
-                captionLayout="dropdown"
-                fromYear={2000}
-                toYear={new Date().getFullYear() + 10}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-          <p className="mt-1 text-xs text-gray-500">Deadline must be at least 5 days from today</p>
-        </div> */}
-
         <div>
           <label className="mb-2 block text-sm font-medium">Duration (days)</label>
           {durationError && (
@@ -348,66 +272,6 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
           />
           <p className="mt-1 text-xs text-gray-500">Duration must be at least 1 day.</p>
         </div>
-
-        {/* <div>
-          <label className="block text-sm font-medium mb-2">Attachment (optional)</label>
-          <Card 
-            className={`border-2 border-dashed transition-colors ${
-              isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-            }`}
-          >
-            <CardContent 
-              className="p-12 text-center"
-              onDragOver={(e) => {
-                e.preventDefault();
-                setIsDragOver(true);
-              }}
-              onDragLeave={(e) => {
-                e.preventDefault();
-                setIsDragOver(false);
-              }}
-              onDrop={handleDrop}
-            >
-              <UploadIcon />
-              <p className="text-sm text-muted-foreground mb-4">
-                Drag and drop audio files to get started
-              </p>
-              <Button 
-                type="button" 
-                onClick={() => {
-                  const input = document.createElement('input');
-                  input.type = 'file';
-                  input.multiple = true;
-                  input.accept = 'audio/*,image/*';
-                  input.onchange = (e) => handleFileSelect((e.target as HTMLInputElement).files);
-                  input.click();
-                }}
-                className="primary_gradient text-white "
-              >
-                Choose files
-              </Button>
-            </CardContent>
-          </Card>
-
-          {attachments.length > 0 && (
-            <div className="mt-4 space-y-2">
-              {attachments.map((file, index) => (
-                <div key={index} className="flex items-center justify-between p-2 bg-gray-100 rounded">
-                  <span className="text-sm">{file.name}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeAttachment(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div> */}
-
         <div className="flex justify-end space-x-4">
           {onCancel && (
             <Button type="button" variant="outline" onClick={onCancel}>
