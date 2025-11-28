@@ -18,6 +18,7 @@ import {
   ArtistPackageStatus,
   PackageOrderFilterInput,
   CategoryType,
+  ConversationStatus,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -385,17 +386,24 @@ export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: R
   });
 
 // CONVERSATION QUERIES
-export const conversationListOptions = (userId: string) =>
+export const conversationListOptions = (userId: string, status?: ConversationStatus) =>
   queryOptions({
-    queryKey: ["conversation-list"],
+    queryKey: ["conversation-list", userId, status],
     queryFn: async () => {
       const where: ConversationFilterInput = {
         userIds: { some: { eq: userId } },
       };
 
+      if (status) {
+        where.status = { eq: status };
+      }
+
       const result = await execute(ConversationQuery, { where });
       return result;
     },
+    staleTime: 3 * 60 * 1000, // 3 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!userId,
   });
 
 export const conversationDetailOptions = (coversationId: string) =>
@@ -426,15 +434,17 @@ export const orderPackageOptions = ({
   currentUserId,
   otherUserId,
   isArtist,
+  conversationId,
 }: {
   skip?: number;
   take?: number;
   currentUserId?: string;
   otherUserId?: string;
   isArtist?: boolean;
+  conversationId?: string;
 }) =>
   queryOptions({
-    queryKey: ["order-packages", skip, take, currentUserId, otherUserId, isArtist],
+    queryKey: ["order-packages", skip, take, currentUserId, otherUserId, isArtist, conversationId],
     queryFn: async () => {
       const where: PackageOrderFilterInput = {};
 
@@ -448,9 +458,16 @@ export const orderPackageOptions = ({
         if (otherUserId) where.providerId = { eq: otherUserId };
       }
 
+      if (conversationId) {
+        where.conversationId = { eq: conversationId };
+      }
+
       const result = await execute(OrderPackageQuery, { where, skip, take });
       return result;
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    enabled: !!(currentUserId && otherUserId),
   });
 
 export const orderPackageDetailOptions = (orderId: string) =>

@@ -7,6 +7,7 @@ export const ConversationQuery = graphql(`
         id
         userIds
         requestId
+        status
         ownerProfileConversation {
           avatar
           nickname

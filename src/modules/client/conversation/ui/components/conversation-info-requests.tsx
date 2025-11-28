@@ -1,12 +1,12 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { orderPackageOptions } from "@/gql/options/client-options";
-import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
-import { calculateDeadline } from "@/utils/calculate-deadline";
+import { ArrowUpRightIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils/format-date";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
+import { calculateDeadline } from "@/utils/calculate-deadline";
+import { orderPackageOptions } from "@/gql/options/client-options";
+import { useMemo, memo } from "react";
 
 interface ConversationInfoRequestsProps {
   currentUserId: string;
@@ -14,39 +14,41 @@ interface ConversationInfoRequestsProps {
   isArtist: boolean;
 }
 
-const ConversationInfoRequests = ({ currentUserId, otherUserId, isArtist }: ConversationInfoRequestsProps) => {
-  const {
-    data: orderPackage,
-    isPending,
-    isLoading,
-    isFetching,
-  } = useQuery(orderPackageOptions({ currentUserId, otherUserId, skip: 0, take: 1, isArtist }));
+const ConversationInfoRequests = memo(({ currentUserId, otherUserId, isArtist }: ConversationInfoRequestsProps) => {
+  // Memoize query options to prevent unnecessary re-renders
+  const queryOptions = useMemo(
+    () => orderPackageOptions({ currentUserId, otherUserId, skip: 0, take: 1, isArtist }),
+    [currentUserId, otherUserId, isArtist],
+  );
 
-  if (isPending || isLoading || isFetching) {
-    return (
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-[28px] w-48 rounded-md" />
-          <Skeleton className="h-6 w-24 rounded-md" />
-        </div>
+  const { data: orderPackage, isPending, isError } = useQuery(queryOptions);
 
-        <Skeleton className="h-16 w-full rounded-md" />
-      </div>
+  // Memoize calculated values to prevent re-calculations (must be before early returns)
+  const deadlineDisplay = useMemo(() => {
+    if (!orderPackage?.packageOrders?.items?.length) return "";
+
+    const orderPackageData = orderPackage.packageOrders.items[0];
+    const rawDeadline = calculateDeadline(
+      orderPackageData?.startedAt,
+      orderPackageData?.duration || 0,
+      orderPackageData?.freezedTime,
     );
+
+    const finalDeadline = rawDeadline instanceof Date && !isNaN(rawDeadline.getTime()) ? rawDeadline : new Date();
+    return formatDate(finalDeadline.toISOString());
+  }, [orderPackage?.packageOrders?.items]);
+
+  // Show skeleton while loading
+  if (isPending) {
+    return <ConversationInfoRequestsSkeleton />;
   }
 
-  const orderPackageData = orderPackage?.packageOrders?.items?.[0];
-  if (!orderPackageData) {
+  // Handle error state
+  if (isError || !orderPackage?.packageOrders?.items?.length) {
     return null;
   }
 
-  const finalDeadline = calculateDeadline(
-    orderPackageData?.startedAt,
-    orderPackageData?.duration || 0,
-    orderPackageData?.freezedTime,
-  );
-
-  const deadlineDisplay = formatDate(finalDeadline.toISOString());
+  const orderPackageData = orderPackage.packageOrders.items[0];
 
   return (
     <div className="space-y-3">
@@ -66,13 +68,27 @@ const ConversationInfoRequests = ({ currentUserId, otherUserId, isArtist }: Conv
               <span className="text-sm font-semibold text-white">S</span>
             </div>
             <div className="flex-1">
-              <p className="text-main-white text-sm font-medium">{orderPackageData.package[0].packageName}</p>
+              <p className="text-main-white text-sm font-medium">{orderPackageData?.package[0].packageName}</p>
               <p className="text-main-grey text-xs">{deadlineDisplay}</p>
             </div>
             <ArrowUpRightIcon className="text-main-grey size-6" />
           </div>
         </div>
       </Link>
+    </div>
+  );
+});
+
+ConversationInfoRequests.displayName = "ConversationInfoRequests";
+
+const ConversationInfoRequestsSkeleton = () => {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-[28px] w-48 rounded-md" />
+        <Skeleton className="h-6 w-24 rounded-md" />
+      </div>
+      <Skeleton className="h-16 w-full rounded-md" />
     </div>
   );
 };
