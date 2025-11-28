@@ -14,10 +14,12 @@ interface ConversationInfoProps {
   avatarImage: string | undefined;
   nickname?: string;
   isArtist: boolean;
+  conversationId?: string;
+  requestId?: string | null;
 }
 
 const ConversationInfo = memo(
-  ({ currentUserId, otherUserId, avatarImage, nickname, isArtist }: ConversationInfoProps) => {
+  ({ currentUserId, otherUserId, avatarImage, nickname, isArtist, conversationId, requestId }: ConversationInfoProps) => {
     const { data: userInfo, isPending } = useQuery(userBasicInfoOptions(otherUserId));
 
     // Use the key prop to force re-mounting when switching users
@@ -30,6 +32,8 @@ const ConversationInfo = memo(
           currentUserId={currentUserId}
           otherUserId={otherUserId}
           isArtist={isArtist}
+          conversationId={conversationId}
+          requestId={requestId}
         />
 
         {/* Profile Information Section */}
