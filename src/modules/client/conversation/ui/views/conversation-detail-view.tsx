@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import ConversationItem from "../components/conversation-item";
 import {
   ArrowUpIcon,
@@ -62,7 +62,9 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
   const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const [expandedPackages, setExpandedPackages] = useState<Set<string>>(new Set());
 
-  const isArtist = user?.role === UserRole.ARTIST;
+  // Memoize derived values to prevent unnecessary re-renders
+  const isArtist = useMemo(() => user?.role === UserRole.ARTIST, [user?.role]);
+  const currentUserId = useMemo(() => user?.userId, [user?.userId]);
 
   // Use the SignalR hook
   const {
@@ -82,7 +84,6 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
   const { data: conversationMessages } = useQuery(conversationMessagesOptions(conversationId));
 
   // Get other user ID for service package query
-  const currentUserId = user?.userId;
   const { data: servicePackages } = useQuery({
     ...servicePackageOptions({
       artistId: conversation?.conversations?.items?.[0].otherProfileConversation!.artistId as string | undefined,
@@ -361,10 +362,12 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
         <div className="bg-main-dark-1 col-span-3 h-full overflow-hidden rounded-md px-4 py-6 transition-all duration-300">
           <ConversationInfo
             avatarImage={conversation?.conversations?.items?.[0].otherProfileConversation.avatar}
-            currentUserId={user?.userId || ""}
-            otherUserId={conversation?.conversations?.items?.[0].userIds.find((id) => id !== user?.userId) || ""}
+            currentUserId={currentUserId || ""}
+            otherUserId={conversation?.conversations?.items?.[0].userIds.find((id) => id !== currentUserId) || ""}
             nickname={conversation?.conversations?.items?.[0].otherProfileConversation.nickname}
             isArtist={isArtist}
+            conversationId={conversationId}
+            requestId={conversation?.conversations?.items?.[0].requestId}
           />
         </div>
       )}

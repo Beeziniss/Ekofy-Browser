@@ -8,6 +8,8 @@ import { listenerOptions, orderPackageOptions } from "@/gql/options/client-optio
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
+import { useAuthStore } from "@/store";
+import { useRouter } from "next/navigation";
 
 interface ActivityConversationSectionProps {
   userId: string;
@@ -75,6 +77,8 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const skip = (currentPage - 1) * pageSize;
+  const { user } = useAuthStore();
+  const router = useRouter();
 
   const { data: listenerData } = useSuspenseQuery(listenerOptions(userId, userId));
   const { data: orderData } = useSuspenseQuery(
@@ -89,18 +93,31 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
     setCurrentPage(page);
   };
 
+  const handleGoBack = () => {
+    router.back();
+  };
+
   return (
     <div className="flex w-full flex-col gap-y-6">
       <div className="flex w-full items-center justify-between">
         <h1 className="text-4xl tracking-wide">
           Orders with <strong>{listenerData.listeners?.items?.[0].displayName}</strong>
         </h1>
-        <Link
-          href="/profile"
-          className="text-main-white hover:border-main-white flex cursor-pointer items-center gap-x-2 border-b border-transparent pb-0.5 transition-colors"
-        >
-          <ArrowLeftIcon className="w-4" /> Back to profile
-        </Link>
+        {user && user.userId === userId ? (
+          <Link
+            href="/profile"
+            className="text-main-white hover:border-main-white flex cursor-pointer items-center gap-x-2 border-b border-transparent pb-0.5 transition-colors"
+          >
+            <ArrowLeftIcon className="w-4" /> Back to profile
+          </Link>
+        ) : (
+          <div
+            onClick={handleGoBack}
+            className="text-main-white hover:border-main-white flex cursor-pointer items-center gap-x-2 border-b border-transparent pb-0.5 transition-colors"
+          >
+            <ArrowLeftIcon className="w-4" /> Back to previous page
+          </div>
+        )}
       </div>
       <div>{totalCount} result found</div>
       <ActivityConversationTable

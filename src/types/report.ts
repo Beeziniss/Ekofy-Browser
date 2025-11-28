@@ -70,6 +70,8 @@ export const REPORT_TYPE_LABELS: Record<ReportType, string> = {
   [ReportType.Spam]: "Spam",
   [ReportType.InappropriateContent]: "Inappropriate Content",
   [ReportType.SelfHarmOrDangerousContent]: "Self-Harm or Dangerous",
+  [ReportType.PrivacyViolation]: "Privacy Violation",
+  [ReportType.UnapprovedUploadedTrack]: "Unapproved Uploaded Track",
   [ReportType.Other]: "Other",
 };
 
