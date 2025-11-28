@@ -285,6 +285,13 @@ export type ApprovalHistorySortInput = {
   targetOwnerId?: InputMaybe<SortEnumType>;
 };
 
+export enum ApprovalPriorityStatus {
+  High = 'HIGH',
+  Low = 'LOW',
+  Medium = 'MEDIUM',
+  Urgent = 'URGENT'
+}
+
 export enum ApprovalType {
   ArtistRegistration = 'ARTIST_REGISTRATION',
   RecordingUpload = 'RECORDING_UPLOAD',
@@ -783,6 +790,7 @@ export type CollectionSegmentInfo = {
 
 export type CombinedUploadRequest = {
   __typename?: 'CombinedUploadRequest';
+  approvalPriority: ApprovalPriorityStatus;
   createdBy: Scalars['String']['output'];
   featuredArtists?: Maybe<FeaturedArtistsCollectionSegment>;
   id: Scalars['String']['output'];
@@ -4423,6 +4431,7 @@ export type QueryInitializationPendingArtistRegistrationsArgs = {
 
 
 export type QueryInitializationPendingTrackUploadRequestByIdArgs = {
+  priority?: InputMaybe<ApprovalPriorityStatus>;
   uploadId: Scalars['String']['input'];
 };
 
@@ -4430,6 +4439,8 @@ export type QueryInitializationPendingTrackUploadRequestByIdArgs = {
 export type QueryInitializationPendingTrackUploadRequestsArgs = {
   pageNumber?: Scalars['Int']['input'];
   pageSize?: Scalars['Int']['input'];
+  priority?: InputMaybe<ApprovalPriorityStatus>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -5077,9 +5088,11 @@ export enum ReportType {
   Impersonation = 'IMPERSONATION',
   InappropriateContent = 'INAPPROPRIATE_CONTENT',
   Other = 'OTHER',
+  PrivacyViolation = 'PRIVACY_VIOLATION',
   ScamOrFraud = 'SCAM_OR_FRAUD',
   SelfHarmOrDangerousContent = 'SELF_HARM_OR_DANGEROUS_CONTENT',
-  Spam = 'SPAM'
+  Spam = 'SPAM',
+  UnapprovedUploadedTrack = 'UNAPPROVED_UPLOADED_TRACK'
 }
 
 export type ReportTypeOperationFilterInput = {
@@ -7239,7 +7252,7 @@ export type ConversationsQueryVariables = Exact<{
 }>;
 
 
-export type ConversationsQuery = { __typename?: 'QueryInitialization', conversations?: { __typename?: 'ConversationsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Conversation', id: string, userIds: Array<string>, requestId?: string | null, ownerProfileConversation: { __typename?: 'ConversationResponse', avatar: string, nickname: string, artistId?: string | null }, otherProfileConversation: { __typename?: 'ConversationResponse', avatar: string, nickname: string, artistId?: string | null }, lastMessage?: { __typename?: 'LastMessage', text: string, senderId: string, sentAt: any, isReadBy: Array<string> } | null }> | null } | null };
+export type ConversationsQuery = { __typename?: 'QueryInitialization', conversations?: { __typename?: 'ConversationsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Conversation', id: string, userIds: Array<string>, requestId?: string | null, status: ConversationStatus, ownerProfileConversation: { __typename?: 'ConversationResponse', avatar: string, nickname: string, artistId?: string | null }, otherProfileConversation: { __typename?: 'ConversationResponse', avatar: string, nickname: string, artistId?: string | null }, lastMessage?: { __typename?: 'LastMessage', text: string, senderId: string, sentAt: any, isReadBy: Array<string> } | null }> | null } | null };
 
 export type MessagesQueryVariables = Exact<{
   where?: InputMaybe<MessageFilterInput>;
@@ -8878,6 +8891,7 @@ export const ConversationsDocument = new TypedDocumentString(`
       id
       userIds
       requestId
+      status
       ownerProfileConversation {
         avatar
         nickname
