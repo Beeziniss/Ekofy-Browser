@@ -18,7 +18,7 @@ import { GraphQLTrack, convertGraphQLTracksToStore } from "@/utils/track-convert
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-options";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
-import { PauseButtonMedium, PlayButtonMedium } from "@/assets/icons";
+import { PauseButtonMedium, PlayButtonMediumRounded } from "@/assets/icons";
 
 type ArtistInfo = {
   id: string;
@@ -38,7 +38,6 @@ const TrackCard = React.memo(
   ({ trackId, coverImage, trackName, artists, trackQueue, checkTrackInFavorite }: TrackCardProps) => {
     const queryClient = useQueryClient();
     const { isAuthenticated } = useAuthStore();
-    const [isHovered, setIsHovered] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showAuthDialog, setShowAuthDialog] = useState(false);
     const [authDialogAction, setAuthDialogAction] = useState<"play" | "favorite">("play");
@@ -155,71 +154,68 @@ const TrackCard = React.memo(
 
     return (
       <div className="w-full rounded-sm">
-        <Link href={`/track/${trackId}`}>
-          <div
-            className="group relative aspect-square w-full overflow-hidden rounded-sm hover:cursor-pointer"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            <Image
-              src={
-                coverImage
-                  ? coverImage
-                  : "https://www.onlandscape.co.uk/wp-content/uploads/2012/01/IMG_6347-square-vertorama.jpg"
-              }
-              alt="Track Name"
-              width={280}
-              height={280}
-              className="aspect-square h-full w-full rounded-sm object-cover transition-transform duration-500"
-              unoptimized
-            />
-            <div
-              className={`absolute top-0 left-0 size-full bg-[#00000080] ${isHovered || isMenuOpen || (globalIsPlaying && isCurrentTrack) ? "opacity-100" : "opacity-0"}`}
-            />
-            <div
-              className={`absolute top-0 left-0 flex size-full items-center justify-center gap-x-2 transition-opacity duration-200 sm:gap-x-4 md:gap-x-6 lg:gap-x-7 ${isHovered || isMenuOpen || (globalIsPlaying && isCurrentTrack) ? "opacity-100" : "opacity-0"}`}
+        <Link
+          href={`/track/${trackId}`}
+          className={`group relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-md transition-opacity after:absolute after:inset-0 after:rounded-md after:bg-black after:content-[''] hover:after:opacity-20 ${isMenuOpen ? "after:opacity-20" : "after:opacity-0"}`}
+        >
+          <Image
+            src={
+              coverImage
+                ? coverImage
+                : "https://www.onlandscape.co.uk/wp-content/uploads/2012/01/IMG_6347-square-vertorama.jpg"
+            }
+            alt="Track Name"
+            width={280}
+            height={280}
+            className="aspect-square h-full w-full rounded-md object-cover"
+            unoptimized
+          />
+
+          <div className="absolute bottom-2 left-2 flex items-center gap-x-2">
+            <Button
+              onClick={handlePlayPauseClick}
+              className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity ${
+                isCurrentTrack && globalIsPlaying
+                  ? "opacity-100"
+                  : `group-hover:opacity-100 ${isMenuOpen ? "opacity-100" : "opacity-0"}`
+              }`}
+            >
+              {/* Show pause button only when this specific track is playing */}
+              {isCurrentTrack && globalIsPlaying ? (
+                <PauseButtonMedium className="size-8 sm:size-10 md:size-12" />
+              ) : (
+                <PlayButtonMediumRounded className="size-8 sm:size-10 md:size-12" />
+              )}
+            </Button>
+
+            <Button
+              onClick={handleFavorite}
+              className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity group-hover:opacity-100 ${isMenuOpen ? "opacity-100" : "opacity-0"}`}
             >
               <Heart
-                onClick={handleFavorite}
-                className={`hover:text-main-grey hover:fill-main-grey size-4 sm:size-5 md:size-6 ${checkTrackInFavorite ? "fill-main-purple text-main-purple" : "text-main-white fill-main-white"}`}
+                className={`size-5 ${checkTrackInFavorite ? "text-main-purple fill-main-purple" : "text-main-dark-bg"}`}
               />
+            </Button>
 
-              <Button
-                variant="ghost"
-                size="iconLg"
-                className="text-main-white rounded-full transition-transform duration-0 hover:scale-105 hover:brightness-90"
-                onClick={handlePlayPauseClick}
-              >
-                {/* Show pause button only when this specific track is playing */}
-                {isCurrentTrack && globalIsPlaying ? (
-                  <PauseButtonMedium className="size-8 sm:size-10 md:size-12" />
-                ) : (
-                  <PlayButtonMedium className="size-8 sm:size-10 md:size-12" />
-                )}
-              </Button>
-
-              <DropdownMenu onOpenChange={setIsMenuOpen}>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="iconMd"
-                    className="text-main-white rounded-full duration-0 hover:brightness-90"
-                  >
-                    <Ellipsis className="text-main-white size-4 sm:size-5 md:size-6" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="start">
-                  <DropdownMenuItem onClick={onCopy}>
-                    <LinkIcon className="text-main-white mr-2 size-4" />
-                    <span className="text-main-white text-sm">Copy link</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <ListPlus className="text-main-white mr-2 size-4" />
-                    <span className="text-main-white text-sm">Add to playlist</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu onOpenChange={setIsMenuOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity group-hover:opacity-100 ${isMenuOpen ? "opacity-100" : "opacity-0"}`}
+                >
+                  <Ellipsis className="text-main-dark-bg size-6" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="right" align="start" className="w-48">
+                <DropdownMenuItem onClick={onCopy}>
+                  <LinkIcon className="text-main-white mr-2 size-4" />
+                  <span className="text-main-white text-sm">Copy link</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <ListPlus className="text-main-white mr-2 size-4" />
+                  <span className="text-main-white text-sm">Add to playlist</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </Link>
 

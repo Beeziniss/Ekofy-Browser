@@ -4,6 +4,8 @@ export { default as PlayButtonLarge } from "./play-button-large.svg";
 export { default as PauseButtonLarge } from "./pause-button-large.svg";
 export { default as PlayButtonMedium } from "./play-button-medium.svg";
 export { default as PauseButtonMedium } from "./pause-button-medium.svg";
+export { default as PlayButtonMediumRounded } from "./play-button-medium-rounded.svg";
+export { default as PlayButtonLargeRounded } from "./play-button-large-rounded.svg";
 
 export { default as EkofyLogo } from "./ekofy-logo.svg";
 export { default as EkofyLogoXs } from "./ekofy-logo-xs.svg";
