@@ -141,3 +141,23 @@ export const adminTransactionsOptions = (
     gcTime: 5 * 60 * 1000, // 5 minutes
   });
 
+/**
+ * Query options for fetching a single transaction by ID (Admin only)
+ */
+export const adminTransactionByIdOptions = (params: { id: string }) =>
+  queryOptions({
+    queryKey: ["admin-transaction", params.id],
+    queryFn: async () => {
+      const where: PaymentTransactionFilterInput = {
+        id: { eq: params.id },
+      };
+      const take = 1;
+      const skip = 0;
+
+      const result = await execute(GetAllTransactionsQuery, { where, skip, take });
+      return result;
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
+
