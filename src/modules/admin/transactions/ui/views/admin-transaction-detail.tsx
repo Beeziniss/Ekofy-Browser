@@ -16,7 +16,7 @@ export function AdminTransactionDetail({ transactionId }: AdminTransactionDetail
   };
 
   return (
-    <TransactionLayout>
+    <TransactionLayout showHeader={false}>
       <TransactionDetailSection referenceId={transactionId} onBack={handleBack} />
     </TransactionLayout>
   );
