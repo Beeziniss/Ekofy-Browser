@@ -8,7 +8,7 @@ import { PaymentTransactionStatus } from "@/gql/graphql";
 
 export function TransactionListSection() {
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [pageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<PaymentTransactionStatus | undefined>(undefined);

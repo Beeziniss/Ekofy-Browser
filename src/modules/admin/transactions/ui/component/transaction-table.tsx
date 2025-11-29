@@ -29,11 +29,10 @@ export function TransactionTable({
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-lg border border-gray-700 bg-gray-800/50">
-        <Table>
+    <div className="space-y-4">
+      <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="border-gray-700 hover:bg-gray-800">
               <TableHead className="text-gray-300">Date</TableHead>
               <TableHead className="text-gray-300">User</TableHead>
               <TableHead className="text-gray-300">Email</TableHead>
@@ -47,13 +46,13 @@ export function TransactionTable({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-400">
+                <TableCell colSpan={8} className="h-24 text-center text-gray-400">
                   Loading transactions...
                 </TableCell>
               </TableRow>
             ) : isError ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-red-400">
+                <TableCell colSpan={8} className="h-24 text-center text-red-400">
                   Failed to load transactions. Please try again.
                 </TableCell>
               </TableRow>
@@ -63,7 +62,7 @@ export function TransactionTable({
                 const user = tx.user && tx.user.length > 0 ? tx.user[0] : null;
                 
                 return (
-                  <TableRow key={tx?.id ?? idx}>
+                  <TableRow key={tx?.id ?? idx} className="border-gray-700 hover:bg-gray-800">
                     <TableCell className="whitespace-nowrap text-gray-300">
                       {tx?.createdAt
                         ? new Date(tx.createdAt as unknown as string).toLocaleDateString("en-US", {
@@ -114,17 +113,17 @@ export function TransactionTable({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="h-24 text-center text-gray-400">
                   No transactions found.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
+        <div className="py-4">
         <CustomPagination
           currentPage={page}
           totalPages={totalPages}
@@ -132,6 +131,7 @@ export function TransactionTable({
           pageSize={pageSize}
           onPageChange={onPageChange}
         />
+        </div>
       )}
     </div>
   );

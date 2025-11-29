@@ -137,7 +137,7 @@ export const adminTransactionsOptions = (
 
       return result;
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 0, // Always refetch when page changes
     gcTime: 5 * 60 * 1000, // 5 minutes
   });
 
