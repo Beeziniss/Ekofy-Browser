@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import { CircleUser, Boxes } from "lucide-react";
+import { CircleUser, Boxes, Receipt } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
 import { NavProjects } from "../nav-projects";
@@ -28,6 +28,11 @@ const data = {
       name: "User Management",
       url: "/admin/user-management",
       icon: CircleUser,
+    },
+    {
+      name: "Transactions",
+      url: "/admin/transactions",
+      icon: Receipt,
     },
   ],
 };
