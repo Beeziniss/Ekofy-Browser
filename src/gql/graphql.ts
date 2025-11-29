@@ -3612,9 +3612,11 @@ export enum PaymentMethodType {
 export type PaymentTransaction = {
   __typename?: 'PaymentTransaction';
   amount: Scalars['Decimal']['output'];
+  artist: Array<Artist>;
   createdAt: Scalars['DateTime']['output'];
   currency: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  listener: Array<Listener>;
   paymentStatus: PaymentTransactionStatus;
   status: TransactionStatus;
   stripeCheckoutSessionId?: Maybe<Scalars['String']['output']>;
@@ -3625,6 +3627,18 @@ export type PaymentTransaction = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   user: Array<User>;
   userId: Scalars['String']['output'];
+};
+
+
+export type PaymentTransactionArtistArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type PaymentTransactionListenerArgs = {
+  order?: InputMaybe<Array<ListenerSortInput>>;
+  where?: InputMaybe<ListenerFilterInput>;
 };
 
 
@@ -4103,7 +4117,10 @@ export type QueryInitialization = {
   searchAlbums?: Maybe<SearchAlbumsCollectionSegment>;
   searchArtists?: Maybe<SearchArtistsCollectionSegment>;
   searchListeners?: Maybe<SearchListenersCollectionSegment>;
+  searchPaymentTransactions?: Maybe<SearchPaymentTransactionsCollectionSegment>;
+  searchPayoutTransactions?: Maybe<SearchPayoutTransactionsCollectionSegment>;
   searchPlaylists?: Maybe<SearchPlaylistsCollectionSegment>;
+  searchRefundTransactions?: Maybe<SearchRefundTransactionsCollectionSegment>;
   searchRequests?: Maybe<SearchRequestsCollectionSegment>;
   searchTracks?: Maybe<SearchTracksCollectionSegment>;
   subscriptionPlans?: Maybe<SubscriptionPlansCollectionSegment>;
@@ -4562,12 +4579,39 @@ export type QueryInitializationSearchListenersArgs = {
 };
 
 
+export type QueryInitializationSearchPaymentTransactionsArgs = {
+  order?: InputMaybe<Array<PaymentTransactionSortInput>>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PaymentTransactionFilterInput>;
+};
+
+
+export type QueryInitializationSearchPayoutTransactionsArgs = {
+  order?: InputMaybe<Array<PayoutTransactionSortInput>>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PayoutTransactionFilterInput>;
+};
+
+
 export type QueryInitializationSearchPlaylistsArgs = {
   name: Scalars['String']['input'];
   order?: InputMaybe<Array<PlaylistSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<PlaylistFilterInput>;
+};
+
+
+export type QueryInitializationSearchRefundTransactionsArgs = {
+  order?: InputMaybe<Array<RefundTransactionSortInput>>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RefundTransactionFilterInput>;
 };
 
 
@@ -5532,10 +5576,40 @@ export type SearchListenersCollectionSegment = {
 };
 
 /** A segment of a collection. */
+export type SearchPaymentTransactionsCollectionSegment = {
+  __typename?: 'SearchPaymentTransactionsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<PaymentTransaction>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
+export type SearchPayoutTransactionsCollectionSegment = {
+  __typename?: 'SearchPayoutTransactionsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<PayoutTransaction>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
 export type SearchPlaylistsCollectionSegment = {
   __typename?: 'SearchPlaylistsCollectionSegment';
   /** A flattened list of the items. */
   items?: Maybe<Array<Playlist>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
+export type SearchRefundTransactionsCollectionSegment = {
+  __typename?: 'SearchRefundTransactionsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<RefundTransaction>>;
   /** Information to aid in pagination. */
   pageInfo: CollectionSegmentInfo;
   totalCount: Scalars['Int']['output'];
@@ -6590,13 +6664,6 @@ export type WorksCollectionSegment = {
   totalCount: Scalars['Int']['output'];
 };
 
-export type UsersQueryVariables = Exact<{
-  where?: InputMaybe<UserFilterInput>;
-}>;
-
-
-export type UsersQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
-
 export type AdminArtistsDetailQueryVariables = Exact<{
   where?: InputMaybe<ArtistFilterInput>;
 }>;
@@ -7125,6 +7192,13 @@ export type RejectArtistRegistrationMutationVariables = Exact<{
 
 export type RejectArtistRegistrationMutation = { __typename?: 'MutationInitialization', rejectArtistRegistration: boolean };
 
+export type AdminProfileQueryVariables = Exact<{
+  where?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type AdminProfileQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus, role: UserRole, createdAt: any, updatedAt?: any | null }> | null } | null };
+
 export type SubscriptionsQueryVariables = Exact<{
   where: SubscriptionFilterInput;
 }>;
@@ -7607,6 +7681,13 @@ export type PendingArtistRegistrationByIdQueryVariables = Exact<{
 
 export type PendingArtistRegistrationByIdQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrationById: { __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string, requestedAt: any, timeToLive?: any | null, identityCardNumber: string, identityCardDateOfBirth: any, identityCardFullName: string, placeOfOrigin: string, placeOfResidence: string, frontImageUrl?: string | null, backImageUrl?: string | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }> } };
 
+export type UsersQueryVariables = Exact<{
+  where?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type UsersQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
+
 export type RequestsPublicQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -7742,24 +7823,6 @@ export const RequestArtistPackageFragmentDoc = new TypedDocumentString(`
   maxRevision
 }
     `, {"fragmentName":"RequestArtistPackage"}) as unknown as TypedDocumentString<RequestArtistPackageFragment, unknown>;
-export const UsersDocument = new TypedDocumentString(`
-    query Users($where: UserFilterInput) {
-  users(where: $where) {
-    items {
-      id
-      email
-      fullName
-      gender
-      birthDate
-      role
-      phoneNumber
-      status
-      createdAt
-      updatedAt
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<UsersQuery, UsersQueryVariables>;
 export const AdminArtistsDetailDocument = new TypedDocumentString(`
     query AdminArtistsDetail($where: ArtistFilterInput) {
   artists(where: $where) {
@@ -8459,6 +8522,24 @@ export const RejectArtistRegistrationDocument = new TypedDocumentString(`
   rejectArtistRegistration(request: $request)
 }
     `) as unknown as TypedDocumentString<RejectArtistRegistrationMutation, RejectArtistRegistrationMutationVariables>;
+export const AdminProfileDocument = new TypedDocumentString(`
+    query AdminProfile($where: UserFilterInput) {
+  users(where: $where) {
+    items {
+      id
+      email
+      fullName
+      gender
+      birthDate
+      phoneNumber
+      status
+      role
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminProfileQuery, AdminProfileQueryVariables>;
 export const SubscriptionsDocument = new TypedDocumentString(`
     query Subscriptions($where: SubscriptionFilterInput!) {
   subscriptions(where: $where, order: {version: DESC}) {
@@ -10206,6 +10287,24 @@ export const PendingArtistRegistrationByIdDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PendingArtistRegistrationByIdQuery, PendingArtistRegistrationByIdQueryVariables>;
+export const UsersDocument = new TypedDocumentString(`
+    query Users($where: UserFilterInput) {
+  users(where: $where) {
+    items {
+      id
+      email
+      fullName
+      gender
+      birthDate
+      role
+      phoneNumber
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<UsersQuery, UsersQueryVariables>;
 export const RequestsPublicDocument = new TypedDocumentString(`
     query RequestsPublic($skip: Int, $take: Int, $where: RequestFilterInput) {
   requests(skip: $skip, take: $take, where: $where) {

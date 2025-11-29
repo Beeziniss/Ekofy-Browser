@@ -1,4 +1,4 @@
-import { GetUserProfileQuery } from "@/modules/admin/profile/ui/views/admin-profile-view";
+import { GetAdminProfileQuery } from "@/modules/shared/queries/admin/admin-profile-queries";
 import { AdminGetListUser, AdminGetStatistics } from "@/modules/admin/user-management/ui/views/admin-user-managenent";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ export const adminProfileOptions = (userId: string) =>
   queryOptions({
     queryKey: ["admin-profile", userId],
     queryFn: async () => {
-      const result = await execute(GetUserProfileQuery, {
+      const result = await execute(GetAdminProfileQuery, {
         where: {
           id: { eq: userId },
         },
@@ -94,7 +94,7 @@ export const adminUserDetailOptions = (userId: string) =>
   queryOptions({
     queryKey: ["admin-user-detail", userId],
     queryFn: async () => {
-      const result = await execute(GetUserProfileQuery, {
+      const result = await execute(GetAdminProfileQuery, {
         where: {
           id: { eq: userId },
         },

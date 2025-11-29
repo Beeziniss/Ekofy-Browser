@@ -7,11 +7,15 @@ import { useRouter } from "next/navigation";
 
 interface TransactionLayoutProps {
   children: ReactNode;
+  title?: string;
+  description?: string;
   showBackButton?: boolean;
 }
 
 export function TransactionLayout({
   children,
+  title = "Transaction Management",
+  description = "View and manage all payment transactions in the system",
   showBackButton = false,
 }: TransactionLayoutProps) {
   const router = useRouter();
@@ -20,7 +24,7 @@ export function TransactionLayout({
     <div className="bg-main-dark-bg min-h-screen text-white">
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
-        <div>
+        <div className="mb-6">
           {showBackButton && (
             <Button variant="ghost" onClick={() => router.back()} className="mb-4 text-gray-400 hover:text-white">
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -28,7 +32,14 @@ export function TransactionLayout({
             </Button>
           )}
           
-          
+          {(title || description) && (
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight md:text-3xl">{title}</h2>
+                {description && <p className="text-muted-foreground mt-1">{description}</p>}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Content */}

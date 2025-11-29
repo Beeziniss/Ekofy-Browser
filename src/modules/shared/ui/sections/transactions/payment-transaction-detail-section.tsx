@@ -13,7 +13,11 @@ interface PaymentTransactionDetailProps {
   title?: string;
   backHref: string;
   backLabel?: string;
-  transaction: Omit<PaymentTransaction, "user" | "userId">;
+  transaction: Pick<PaymentTransaction, 
+    "id" | "amount" | "currency" | "createdAt" | "updatedAt" | 
+    "paymentStatus" | "status" | "stripePaymentMethod" | "stripePaymentId" | 
+    "stripeCheckoutSessionId" | "stripeInvoiceId" | "stripeSubscriptionId"
+  >;
 }
 
 export default function PaymentTransactionDetailSection({
