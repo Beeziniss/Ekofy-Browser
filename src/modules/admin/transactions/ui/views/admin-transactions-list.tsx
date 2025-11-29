@@ -1,7 +1,7 @@
 "use client";
 
-import { TransactionLayout } from "../layout";
-import { TransactionListSection } from "../section";
+import { TransactionLayout } from "../layouts";
+import { TransactionListSection } from "../sections";
 
 export function AdminTransactionsList() {
   return (

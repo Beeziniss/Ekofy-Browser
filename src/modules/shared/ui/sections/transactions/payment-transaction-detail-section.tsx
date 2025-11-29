@@ -60,7 +60,7 @@ export default function PaymentTransactionDetailSection({
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">{title}</h1>
-          <p className="text-muted-foreground text-sm">Reference: {referenceId}</p>
+          {/* <p className="text-muted-foreground text-sm">Transaction ID: {referenceId}</p> */}
         </div>
         <Link
           href={backHref}
@@ -73,7 +73,7 @@ export default function PaymentTransactionDetailSection({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <span>#{transaction.id.slice(-8)}</span>
+            <span>Transaction: #{transaction.id}</span>
             {paymentStatusBadge(transaction.paymentStatus)}
           </CardTitle>
         </CardHeader>

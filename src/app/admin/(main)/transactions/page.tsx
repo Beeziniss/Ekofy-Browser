@@ -1,7 +1,7 @@
 "use client";
 
 import { adminTransactionsOptions } from "@/gql/options/admin-options";
-import { AdminTransactionsList } from "@/modules/admin/transactions/ui/view";
+import { AdminTransactionsList } from "@/modules/admin/transactions/ui/views";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 

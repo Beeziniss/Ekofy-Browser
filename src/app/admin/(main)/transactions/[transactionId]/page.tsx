@@ -1,7 +1,7 @@
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { adminTransactionByIdOptions } from "@/gql/options/admin-options";
-import TransactionDetailSection from "@/modules/admin/transactions/ui/section/transaction-detail-section";
+import { AdminTransactionDetail } from "@/modules/admin/transactions/ui/views/admin-transaction-detail";
 
 interface PageProps {
   params: Promise<{ transactionId: string }>;
@@ -15,7 +15,7 @@ const TransactionDetailPage = async ({ params }: PageProps) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <TransactionDetailSection referenceId={transactionId} />
+      <AdminTransactionDetail transactionId={transactionId} />
     </HydrationBoundary>
   );
 };

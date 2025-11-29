@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminTransactionsOptions } from "@/gql/options/admin-options";
-import { TransactionTable, TransactionFilters } from "../component";
+import { TransactionTable, TransactionFilters } from "../components";
 import { PaymentTransactionStatus } from "@/gql/graphql";
 
 export function TransactionListSection() {
