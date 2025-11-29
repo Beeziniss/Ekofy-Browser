@@ -255,20 +255,18 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Badge
-                variant={
-                  report.priority === "HIGH" ? "destructive" : report.priority === "MEDIUM" ? "default" : "secondary"
-                }
-                className={
-                  report.priority === "HIGH"
-                    ? "border-red-500/50 bg-red-500/20 text-red-400"
-                    : report.priority === "MEDIUM"
-                      ? "border-yellow-500/50 bg-yellow-500/20 text-yellow-400"
-                      : "bg-main-dark-bg-1 text-main-grey border-main-grey-dark-bg/50"
-                }
-              >
-                {report.priority === "HIGH" ? "Cao" : report.priority === "MEDIUM" ? "Medium" : "Low"}
-              </Badge>
+             <Badge 
+                    variant="outline" 
+                    className={`${
+                      report.priority === 'HIGH' 
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' 
+                      : report.priority === 'MEDIUM'
+                      ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400'
+                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                    }`}
+                    >
+                    <span className="font-semibold">{report.priority}</span>
+                    </Badge>
             </CardContent>
           </Card>
         </div>

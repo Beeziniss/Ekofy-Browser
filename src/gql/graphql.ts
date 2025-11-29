@@ -285,13 +285,6 @@ export type ApprovalHistorySortInput = {
   targetOwnerId?: InputMaybe<SortEnumType>;
 };
 
-export enum ApprovalPriorityStatus {
-  High = 'HIGH',
-  Low = 'LOW',
-  Medium = 'MEDIUM',
-  Urgent = 'URGENT'
-}
-
 export enum ApprovalType {
   ArtistRegistration = 'ARTIST_REGISTRATION',
   RecordingUpload = 'RECORDING_UPLOAD',
@@ -790,7 +783,6 @@ export type CollectionSegmentInfo = {
 
 export type CombinedUploadRequest = {
   __typename?: 'CombinedUploadRequest';
-  approvalPriority: ApprovalPriorityStatus;
   createdBy: Scalars['String']['output'];
   featuredArtists?: Maybe<FeaturedArtistsCollectionSegment>;
   id: Scalars['String']['output'];
@@ -4431,7 +4423,6 @@ export type QueryInitializationPendingArtistRegistrationsArgs = {
 
 
 export type QueryInitializationPendingTrackUploadRequestByIdArgs = {
-  priority?: InputMaybe<ApprovalPriorityStatus>;
   uploadId: Scalars['String']['input'];
 };
 
@@ -4439,8 +4430,6 @@ export type QueryInitializationPendingTrackUploadRequestByIdArgs = {
 export type QueryInitializationPendingTrackUploadRequestsArgs = {
   pageNumber?: Scalars['Int']['input'];
   pageSize?: Scalars['Int']['input'];
-  priority?: InputMaybe<ApprovalPriorityStatus>;
-  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -5088,11 +5077,9 @@ export enum ReportType {
   Impersonation = 'IMPERSONATION',
   InappropriateContent = 'INAPPROPRIATE_CONTENT',
   Other = 'OTHER',
-  PrivacyViolation = 'PRIVACY_VIOLATION',
   ScamOrFraud = 'SCAM_OR_FRAUD',
   SelfHarmOrDangerousContent = 'SELF_HARM_OR_DANGEROUS_CONTENT',
-  Spam = 'SPAM',
-  UnapprovedUploadedTrack = 'UNAPPROVED_UPLOADED_TRACK'
+  Spam = 'SPAM'
 }
 
 export type ReportTypeOperationFilterInput = {
@@ -8537,7 +8524,12 @@ export const SubscriptionPlansDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<SubscriptionPlansQuery, SubscriptionPlansQueryVariables>;
 export const ArtistPackagesServiceDocument = new TypedDocumentString(`
     query ArtistPackagesService($skip: Int, $take: Int, $where: ArtistPackageFilterInput) {
-  artistPackages(skip: $skip, take: $take, where: $where) {
+  artistPackages(
+    skip: $skip
+    take: $take
+    where: $where
+    order: {createdAt: DESC}
+  ) {
     totalCount
     items {
       id
@@ -10545,7 +10537,7 @@ export const ModeratorListenerDetailDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<ModeratorListenerDetailQuery, ModeratorListenerDetailQueryVariables>;
 export const ModeratorUsersListDocument = new TypedDocumentString(`
     query ModeratorUsersList($skip: Int, $take: Int, $where: UserFilterInput) {
-  users(skip: $skip, take: $take, where: $where) {
+  users(skip: $skip, take: $take, where: $where, order: {createdAt: DESC}) {
     totalCount
     pageInfo {
       hasNextPage

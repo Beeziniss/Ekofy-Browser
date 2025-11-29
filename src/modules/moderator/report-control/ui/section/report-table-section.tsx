@@ -139,10 +139,10 @@ export function ReportTableSection({
                     variant="outline" 
                     className={`${
                       report.priority === 'HIGH' 
-                      ? 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400' 
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' 
                       : report.priority === 'MEDIUM'
-                      ? 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400'
-                      : 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400'
+                      ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400'
+                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
                     }`}
                     >
                     <span className="font-semibold">{report.priority}</span>

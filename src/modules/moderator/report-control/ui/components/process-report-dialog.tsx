@@ -252,7 +252,7 @@ export function ProcessReportDialog({
                 control={form.control}
                 name="actionTaken"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem>  
                     <FormLabel>Action *</FormLabel>
                     <Select
                       onValueChange={(value) => {
@@ -328,7 +328,7 @@ export function ProcessReportDialog({
                   name="suspensionDays"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Suspension Days *</FormLabel>
+                      <FormLabel>Suspension Days </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
