@@ -7232,6 +7232,17 @@ export type GetAllTransactionsQueryVariables = Exact<{
 
 export type GetAllTransactionsQuery = { __typename?: 'QueryInitialization', paymentTransactions?: { __typename?: 'PaymentTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, updatedAt?: any | null, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null, stripeCheckoutSessionId?: string | null, stripeInvoiceId?: string | null, stripeSubscriptionId?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
+export type SearchTransactionsQueryVariables = Exact<{
+  order?: InputMaybe<Array<PaymentTransactionSortInput> | PaymentTransactionSortInput>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PaymentTransactionFilterInput>;
+}>;
+
+
+export type SearchTransactionsQuery = { __typename?: 'QueryInitialization', searchPaymentTransactions?: { __typename?: 'SearchPaymentTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, updatedAt?: any | null, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null, stripeCheckoutSessionId?: string | null, stripeInvoiceId?: string | null, stripeSubscriptionId?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
 export type ArtistPackagesServiceQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -8658,6 +8669,44 @@ export const GetAllTransactionsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetAllTransactionsQuery, GetAllTransactionsQueryVariables>;
+export const SearchTransactionsDocument = new TypedDocumentString(`
+    query SearchTransactions($order: [PaymentTransactionSortInput!], $searchTerm: String, $skip: Int, $take: Int, $where: PaymentTransactionFilterInput) {
+  searchPaymentTransactions(
+    order: $order
+    searchTerm: $searchTerm
+    skip: $skip
+    take: $take
+    where: $where
+  ) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      updatedAt
+      paymentStatus
+      status
+      stripePaymentMethod
+      stripePaymentId
+      stripeCheckoutSessionId
+      stripeInvoiceId
+      stripeSubscriptionId
+      userId
+      user {
+        id
+        email
+        fullName
+        role
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SearchTransactionsQuery, SearchTransactionsQueryVariables>;
 export const ArtistPackagesServiceDocument = new TypedDocumentString(`
     query ArtistPackagesService($skip: Int, $take: Int, $where: ArtistPackageFilterInput) {
   artistPackages(skip: $skip, take: $take, where: $where) {

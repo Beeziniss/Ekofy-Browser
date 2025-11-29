@@ -2,7 +2,7 @@ import { GetAdminProfileQuery } from "@/modules/shared/queries/admin/admin-profi
 import { AdminGetListUser, AdminGetStatistics } from "@/modules/admin/user-management/ui/views/admin-user-managenent";
 import { execute } from "../execute";
 import { queryOptions } from "@tanstack/react-query";
-import { GetAllTransactionsQuery } from "@/modules/shared/queries/admin/transaction-queries";
+import { GetAllTransactionsQuery, SearchTransactionsQuery } from "@/modules/shared/queries/admin/transaction-queries";
 import {
   PaymentTransactionFilterInput,
   PaymentTransactionSortInput,
@@ -126,14 +126,15 @@ export const adminTransactionsOptions = (
       // Build filter conditions
       const where: PaymentTransactionFilterInput = {
         ...(statusFilter ? { paymentStatus: { eq: statusFilter } } : {}),
-        // Note: To search by user info, you'd need to add user filtering in the backend
-        // or fetch user data separately
       };
 
       // Default sorting: newest first
       const order: PaymentTransactionSortInput[] = [{ createdAt: SortEnumType.Desc }];
 
-      const result = await execute(GetAllTransactionsQuery, { where, order, skip, take });
+      // Use search query if searchTerm is provided, otherwise use regular query
+      const result = searchTerm
+        ? await execute(SearchTransactionsQuery, { order, searchTerm, skip, take, where })
+        : await execute(GetAllTransactionsQuery, { where, order, skip, take });
 
       return result;
     },

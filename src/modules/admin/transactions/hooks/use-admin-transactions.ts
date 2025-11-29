@@ -28,9 +28,11 @@ export function useAdminTransactions() {
   });
 
   // Extract transactions and metadata
-  const transactions = data?.paymentTransactions?.items ?? [];
-  const totalCount = data?.paymentTransactions?.totalCount ?? 0;
-  const pageInfo = data?.paymentTransactions?.pageInfo;
+  // Handle both regular query (paymentTransactions) and search query (searchPaymentTransactions)
+  const transactionData = (data as any)?.searchPaymentTransactions || (data as any)?.paymentTransactions;
+  const transactions = transactionData?.items ?? [];
+  const totalCount = transactionData?.totalCount ?? 0;
+  const pageInfo = transactionData?.pageInfo;
 
   return {
     // Data
