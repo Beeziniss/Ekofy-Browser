@@ -7148,6 +7148,16 @@ export type SubscriptionPlansQueryVariables = Exact<{
 
 export type SubscriptionPlansQuery = { __typename?: 'QueryInitialization', subscriptionPlans?: { __typename?: 'SubscriptionPlansCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'SubscriptionPlan', id: string, subscriptionId: string, stripeProductId: string, stripeProductActive: boolean, stripeProductName: string, stripeProductImages?: Array<string> | null, stripeProductType: string, stripeProductMetadata?: Array<{ __typename?: 'Metadata', key: string, value: string }> | null, subscriptionPlanPrices: Array<{ __typename?: 'SubscriptionPlanPrice', stripePriceId: string, stripePriceActive: boolean, stripePriceUnitAmount: any, stripePriceCurrency: string, stripePriceLookupKey: string, interval: PeriodTime, intervalCount: any }>, subscription: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, version: number, amount: any, currency: CurrencyType, tier: SubscriptionTier, status: SubscriptionStatus, createdAt: any, updatedAt?: any | null }> }> | null } | null };
 
+export type GetAllTransactionsQueryVariables = Exact<{
+  where?: InputMaybe<PaymentTransactionFilterInput>;
+  order?: InputMaybe<Array<PaymentTransactionSortInput> | PaymentTransactionSortInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetAllTransactionsQuery = { __typename?: 'QueryInitialization', paymentTransactions?: { __typename?: 'PaymentTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, updatedAt?: any | null, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null, stripeCheckoutSessionId?: string | null, stripeInvoiceId?: string | null, stripeSubscriptionId?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
 export type ArtistPackagesServiceQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -8535,6 +8545,38 @@ export const SubscriptionPlansDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SubscriptionPlansQuery, SubscriptionPlansQueryVariables>;
+export const GetAllTransactionsDocument = new TypedDocumentString(`
+    query GetAllTransactions($where: PaymentTransactionFilterInput, $order: [PaymentTransactionSortInput!], $skip: Int, $take: Int) {
+  paymentTransactions(where: $where, order: $order, skip: $skip, take: $take) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      updatedAt
+      paymentStatus
+      status
+      stripePaymentMethod
+      stripePaymentId
+      stripeCheckoutSessionId
+      stripeInvoiceId
+      stripeSubscriptionId
+      userId
+      user {
+        id
+        email
+        fullName
+        role
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetAllTransactionsQuery, GetAllTransactionsQueryVariables>;
 export const ArtistPackagesServiceDocument = new TypedDocumentString(`
     query ArtistPackagesService($skip: Int, $take: Int, $where: ArtistPackageFilterInput) {
   artistPackages(skip: $skip, take: $take, where: $where) {
