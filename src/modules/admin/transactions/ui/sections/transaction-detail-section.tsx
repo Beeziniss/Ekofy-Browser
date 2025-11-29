@@ -86,7 +86,6 @@ const TransactionDetailSectionSuspense = ({ referenceId }: TransactionDetailSect
     <div>
       {/* Transaction Detail */}
       <PaymentTransactionDetailSection
-        referenceId={referenceId}
         backHref="/admin/transactions"
         transaction={transactionData}
         title="Transaction Detail"

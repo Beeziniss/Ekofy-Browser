@@ -95,13 +95,11 @@ export function TransactionTable({
                     </TableCell>
                     <TableCell>{paymentStatusBadge(tx.paymentStatus)}</TableCell>
                     <TableCell className="font-mono text-xs text-gray-400">
-                      {tx.stripePaymentId ? (
+                     
                         <span className="truncate max-w-[120px] inline-block">
-                          {tx.stripePaymentId.slice(0, 20)}...
+                          {tx.id.slice(0, 20)}...
                         </span>
-                      ) : (
-                        <span className="truncate max-w-[120px] inline-block">{tx.id.slice(0, 20)}...</span>
-                      )}
+                     
                     </TableCell>
                     <TableCell>
                       <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white" asChild>

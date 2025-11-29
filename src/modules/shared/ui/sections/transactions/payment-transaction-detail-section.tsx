@@ -13,14 +13,12 @@ interface PaymentTransactionDetailProps {
   title?: string;
   backHref: string;
   backLabel?: string;
-  referenceId: string;
   transaction: Omit<PaymentTransaction, "user" | "userId">;
 }
 
 export default function PaymentTransactionDetailSection({
   transaction,
   backHref,
-  referenceId,
   title = "Transaction Detail",
   backLabel = "Back to Payment History",
 }: PaymentTransactionDetailProps) {
@@ -93,6 +91,16 @@ export default function PaymentTransactionDetailSection({
               <dt className="text-muted-foreground text-sm">Payment methods</dt>
               <dd className="flex items-center gap-2 text-sm">
                 {transaction.stripePaymentMethod.map((method, index) => methodBadge(method, index))}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground text-sm">Stripe Transaction ID:</dt>
+              <dd className="text-sm">
+                {transaction.stripePaymentId || (
+                  <span className="text-gray-500 italic">
+                    {transaction.paymentStatus === "UNPAID" ? "Pending payment" : "N/A"}
+                  </span>
+                )}
               </dd>
             </div>
           </dl>
