@@ -10,6 +10,23 @@ const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const lastTrackIdRef = useRef<string | null>(null);
+  const tokenRefreshInProgressRef = useRef<boolean>(false);
+  const lastTokenRefreshAttemptRef = useRef<number>(0);
+
+  const TOKEN_REFRESH_COOLDOWN = 5000; // 5 seconds cooldown
+
+  // Helper function to safely get current playback state
+  const getCurrentPlaybackState = useCallback(() => {
+    if (!audioRef.current) {
+      return { currentTime: 0, wasPlaying: false };
+    }
+
+    return {
+      currentTime: audioRef.current.currentTime || 0,
+      wasPlaying: !audioRef.current.paused && !audioRef.current.ended,
+    };
+  }, []);
+
   const {
     currentTrack,
     isPlaying,
@@ -47,8 +64,8 @@ const AudioPlayer = () => {
         setLoading(true);
         setError(null);
 
-        // Get signed streaming URL
-        const streamingUrl = await streamingApi.getSignedStreamingUrl(trackId);
+        // Get signed streaming URL with automatic token refresh on 401
+        const streamingUrl = await streamingApi.getSignedStreamingUrlWithRetry(trackId);
 
         // Clean up previous HLS instance
         if (hlsRef.current) {
@@ -94,8 +111,115 @@ const AudioPlayer = () => {
             }
           });
 
-          hls.on(Hls.Events.ERROR, (event, data) => {
+          hls.on(Hls.Events.ERROR, async (event, data) => {
             console.error("HLS Error:", data);
+
+            // Handle both fatal and non-fatal 401 errors
+            const isTokenError =
+              data.response?.code === 401 ||
+              data.details === "manifestLoadError" ||
+              data.details === "fragLoadError" || // Common when token expires mid-stream
+              (data.response &&
+                typeof data.response.code === "number" &&
+                data.response.code >= 400 &&
+                data.response.code < 500);
+
+            if (isTokenError) {
+              // Check if token refresh is already in progress or in cooldown
+              const now = Date.now();
+              if (tokenRefreshInProgressRef.current) {
+                console.log("Token refresh already in progress, skipping...");
+                return;
+              }
+
+              if (now - lastTokenRefreshAttemptRef.current < TOKEN_REFRESH_COOLDOWN) {
+                console.log("Token refresh cooldown active, skipping...");
+                return;
+              }
+
+              try {
+                console.log("Token expired. Attempting refresh via refreshSignToken...");
+                tokenRefreshInProgressRef.current = true;
+                lastTokenRefreshAttemptRef.current = now;
+
+                // 1. Capture current playback time to preserve user's position
+                const { currentTime: savedTime, wasPlaying } = getCurrentPlaybackState();
+
+                console.log(`Saving playback position: ${savedTime}s, was playing: ${wasPlaying}`);
+
+                // 2. Get the old token from cache
+                const oldToken = streamingApi.getCachedToken(trackId);
+
+                if (!oldToken) {
+                  throw new Error("No cached token found for refresh");
+                }
+
+                // 3. Call refreshSignToken with the old token
+                const newToken = await streamingApi.refreshSignToken({
+                  trackId,
+                  oldToken,
+                });
+
+                // 4. Construct the new URL with the refreshed token
+                const newStreamingUrl = streamingApi.getStreamingUrl(trackId, newToken);
+
+                console.log("Token refreshed successfully. Reloading source...");
+
+                // 5. Reload the source and seek back to previous position
+                hls.loadSource(newStreamingUrl);
+
+                // 6. Once manifest parses, seek to where we left off
+                hls.once(Hls.Events.MANIFEST_PARSED, () => {
+                  if (audioRef.current) {
+                    console.log(`Restoring playback position to: ${savedTime}s`);
+                    audioRef.current.currentTime = savedTime;
+                    if (wasPlaying) {
+                      audioRef.current.play().catch((playError) => {
+                        console.error("Failed to resume playback:", playError);
+                        setError("Failed to resume playback");
+                      });
+                    }
+                  }
+                  setLoading(false);
+                });
+
+                return; // Don't set error state, let it retry
+              } catch (refreshError) {
+                console.error("Failed to refresh streaming token:", refreshError);
+
+                // Fallback: try force refresh as last resort
+                try {
+                  console.log("Attempting force refresh as fallback...");
+                  const { currentTime: fallbackSavedTime, wasPlaying: fallbackWasPlaying } = getCurrentPlaybackState();
+
+                  const newStreamingUrl = await streamingApi.forceRefreshStreamingUrl(trackId);
+
+                  hls.loadSource(newStreamingUrl);
+
+                  hls.once(Hls.Events.MANIFEST_PARSED, () => {
+                    if (audioRef.current) {
+                      audioRef.current.currentTime = fallbackSavedTime;
+                      if (fallbackWasPlaying) {
+                        audioRef.current.play().catch((playError) => {
+                          console.error("Failed to resume playback after force refresh:", playError);
+                        });
+                      }
+                    }
+                    setLoading(false);
+                  });
+
+                  return;
+                } catch (forceRefreshError) {
+                  console.error("Force refresh also failed:", forceRefreshError);
+                  setError("Session expired. Please retry.");
+                  setLoading(false);
+                }
+              } finally {
+                tokenRefreshInProgressRef.current = false;
+              }
+            }
+
+            // Handle other fatal errors
             if (data.fatal) {
               switch (data.type) {
                 case Hls.ErrorTypes.NETWORK_ERROR:
@@ -129,7 +253,7 @@ const AudioPlayer = () => {
         setLoading(false);
       }
     },
-    [setLoading, setError, isPlaying],
+    [setLoading, setError, isPlaying, getCurrentPlaybackState],
   );
 
   // Handle play/pause
@@ -152,6 +276,10 @@ const AudioPlayer = () => {
   // Load new track when currentTrack changes (but not when just playing/pausing)
   useEffect(() => {
     if (currentTrack?.id && currentTrack.id !== lastTrackIdRef.current) {
+      // Reset token refresh state when track changes
+      tokenRefreshInProgressRef.current = false;
+      lastTokenRefreshAttemptRef.current = 0;
+
       lastTrackIdRef.current = currentTrack.id;
       loadTrack(currentTrack.id);
     }
