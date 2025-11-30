@@ -143,6 +143,11 @@ export function PublicRequestTable({
 
   const columns: ColumnDef<RequestItem>[] = [
     {
+      accessorKey: "No.",
+      header: "No.",
+      cell: ({ row }) => <span className="text-gray-300">{(currentPage - 1) * pageSize + row.index + 1}</span>,
+    },
+    {
       accessorKey: "requestor",
       header: "Requestor",
       cell: ({ row }) => (

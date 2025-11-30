@@ -137,6 +137,11 @@ export function ReportControlTable({
 
   const columns: ColumnDef<ReportItem>[] = [
     {
+      accessorKey: "No.",
+      header: "No.",
+      cell: ({ row }) => <span className="text-gray-300">{(currentPage - 1) * pageSize + row.index + 1}</span>,
+    },
+    {
       accessorKey: "reportType",
       header: "Type",
       cell: ({ row }) => (

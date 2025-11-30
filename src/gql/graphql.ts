@@ -9462,7 +9462,12 @@ export const RequestHubCommentThreadRepliesDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<RequestHubCommentThreadRepliesQuery, RequestHubCommentThreadRepliesQueryVariables>;
 export const RequestsDocument = new TypedDocumentString(`
     query Requests($skip: Int, $take: Int, $where: RequestFilterInput) {
-  requests(skip: $skip, take: $take, where: $where) {
+  requests(
+    skip: $skip
+    take: $take
+    where: $where
+    order: {postCreatedTime: DESC}
+  ) {
     pageInfo {
       hasNextPage
       hasPreviousPage
@@ -9575,7 +9580,12 @@ export const SearchRequestsDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<SearchRequestsQuery, SearchRequestsQueryVariables>;
 export const OwnRequestsDocument = new TypedDocumentString(`
     query OwnRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
-  ownRequests(skip: $skip, take: $take, where: $where) {
+  ownRequests(
+    skip: $skip
+    take: $take
+    where: $where
+    order: {postCreatedTime: DESC}
+  ) {
     pageInfo {
       hasNextPage
       hasPreviousPage
