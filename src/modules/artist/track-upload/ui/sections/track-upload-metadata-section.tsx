@@ -45,6 +45,7 @@ import Image from "next/image";
 import InputTags from "@/components/ui/tags-input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -1016,29 +1017,26 @@ const TrackUploadMetadataSection = () => {
                     <FormItem>
                       <FormLabel className="text-sm font-medium">Privacy</FormLabel>
 
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(value === "true")}
-                          value={field.value ? "true" : "false"}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select privacy setting" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="true">
-                              <EarthIcon className="mr-2 size-4" /> Public
-                            </SelectItem>
-                            <SelectItem value="false">
-                              <LockIcon className="mr-2 size-4" /> Private
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {field.value ? (
+                              <EarthIcon className="text-main-white size-4" />
+                            ) : (
+                              <LockIcon className="text-main-white size-4" />
+                            )}
+                            <span className="text-sm font-medium">{field.value ? "Public" : "Private"}</span>
+                          </div>
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                        </div>
 
-                      <FormDescription className="text-xs text-gray-400">
-                        Public tracks can optionally set a release date (min. 4 days from today). Without a date, they
-                        release immediately as Official. With a date, they remain as NotAnnounced until release.
-                      </FormDescription>
+                        <FormDescription className="text-xs text-gray-400">
+                          Public tracks can optionally set a release date (min. 4 days from today). Without a date, they
+                          release immediately as Official. With a date, they remain as NotAnnounced until release.
+                        </FormDescription>
+                      </div>
 
                       <FormMessage />
                     </FormItem>
