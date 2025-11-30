@@ -31,6 +31,20 @@ export const authApi = {
         throw error;
       }
     },
+    googleLogin: async (googleToken: string, isMobile: boolean): Promise<ListenerLoginResponse> => {
+      try {
+        const response = await axiosInstance.post("/api/authentication/login/listener/google", {
+          googleToken,
+          isMobile,
+        });
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(error.response?.data?.message || error.message);
+        }
+        throw error;
+      }
+    },
     register: async (data: RegisterListenerData) => {
       try {
         const response = await axiosInstance.post("/api/authentication/register/listener", data);
