@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserStatsCards, UserTable, CreateModeratorModal, StatusConfirmModal, CreateModeratorData } from "../component";
+import { UserStatsCards, UserTable, CreateModeratorModal, StatusConfirmModal, CreateModeratorData } from "../components";
 import { adminUsersQueryOptions, adminUsersStatsOptions } from "@/gql/options/admin-options";
 import { UserStatus } from "@/gql/graphql";
 import { execute } from "@/gql/execute";
@@ -136,13 +136,14 @@ export function UserManagementSection() {
     activeUsers: allUsers.filter((user) => user.status === UserStatus.Active).length,
     inactiveUsers: allUsers.filter((user) => user.status === UserStatus.Inactive || user.status === UserStatus.Banned)
       .length,
-    newUsers: allUsers.filter((user) => {
-      const createdDate = new Date(user.createdAt);
-      const today = new Date();
-      const diffTime = Math.abs(today.getTime() - createdDate.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays <= 30;
-    }).length,
+    // Commented out - New User data not working
+    // newUsers: allUsers.filter((user) => {
+    //   const createdDate = new Date(user.createdAt);
+    //   const today = new Date();
+    //   const diffTime = Math.abs(today.getTime() - createdDate.getTime());
+    //   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    //   return diffDays <= 30;
+    // }).length,
   };
 
   return (
@@ -152,7 +153,7 @@ export function UserManagementSection() {
         totalUsers={stats.totalUsers}
         activeUsers={stats.activeUsers}
         inactiveUsers={stats.inactiveUsers}
-        newUsers={stats.newUsers}
+        // newUsers={stats.newUsers} // Commented out - data not working
       />
 
       {/* User Table */}

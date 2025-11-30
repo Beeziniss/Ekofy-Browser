@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { ArtistDetailCard, ArtistTeamMembers, ListenerDetailCard } from "../component";
+import { ArtistDetailCard, ArtistTeamMembers, ListenerDetailCard } from "../components";
 import {
   adminUserDetailOptions,
   adminArtistDetailOptions,
