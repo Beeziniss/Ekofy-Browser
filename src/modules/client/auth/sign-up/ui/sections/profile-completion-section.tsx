@@ -366,7 +366,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ClientProfile
               {/* Full Name Field */}
               <div>
                 <label htmlFor="fullName" className="mb-2 block text-sm font-medium text-white">
-                  Full name*
+                  Full name<span className="text-red-500">*</span>
                 </label>
                 <Input
                   id="fullName"
@@ -388,7 +388,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ClientProfile
               {/* Display Name Field */}
               <div>
                 <label htmlFor="displayName" className="mb-2 block text-sm font-medium text-white">
-                  Display name*
+                  Display name<span className="text-red-500">*</span>
                 </label>
                 <Input
                   id="displayName"
@@ -410,7 +410,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ClientProfile
               {/* Date of Birth Field */}
               <div>
                 <label htmlFor="dateOfBirth" className="mb-2 block text-sm font-medium text-white">
-                  Date of Birth*
+                  Date of Birth<span className="text-red-500">*</span>
                 </label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -475,7 +475,7 @@ const ProfileCompletionSection = ({ onNext, onBack, initialData }: ClientProfile
               {/* Gender Field */}
               <div>
                 <label htmlFor="gender" className="mb-2 block text-sm font-medium text-white">
-                  Gender*
+                  Gender<span className="text-red-500">*</span>
                 </label>
                 <Select
                   value={gender}

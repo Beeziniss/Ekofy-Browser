@@ -134,7 +134,11 @@ const ModeratorLoginFormSection = () => {
                         className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
                       />
                     </FormControl>
-                    <FormLabel htmlFor="remember" className="cursor-pointer text-sm text-white">
+                    <FormLabel 
+                      htmlFor="remember" 
+                      className="cursor-pointer text-sm text-white"
+                      onClick={() => field.onChange(!field.value)}
+                    >
                       Remember me
                     </FormLabel>
                   </FormItem>

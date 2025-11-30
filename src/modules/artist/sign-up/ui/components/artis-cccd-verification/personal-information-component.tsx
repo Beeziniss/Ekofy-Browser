@@ -77,7 +77,7 @@ const PersonalInformationComponent = ({
       </h3>
       <div className="space-y-4">
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">Citizen ID*</label>
+          <label className="mb-2 block text-sm font-medium text-white">Citizen ID<span className="text-red-500">*</span></label>
           <Input
             value={citizenId}
             onChange={(e) => onChange("citizenId", e.target.value)}
@@ -88,7 +88,7 @@ const PersonalInformationComponent = ({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">Full name*</label>
+          <label className="mb-2 block text-sm font-medium text-white">Full name<span className="text-red-500">*</span></label>
           <Input
             value={fullName}
             onChange={(e) => onChange("fullName", e.target.value)}
@@ -100,7 +100,7 @@ const PersonalInformationComponent = ({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-white">Date of Birth*</label>
+            <label className="mb-2 block text-sm font-medium text-white">Date of Birth<span className="text-red-500">*</span></label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -169,7 +169,7 @@ const PersonalInformationComponent = ({
             {errors.dateOfBirth && <p className="mt-2 text-sm text-red-400">{errors.dateOfBirth}</p>}
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-white">Gender*</label>
+            <label className="mb-2 block text-sm font-medium text-white">Gender<span className="text-red-500">*</span></label>
             <Select value={gender} onValueChange={(value) => onChange("gender", value)}>
               <SelectTrigger
                 className={`h-10 w-full rounded-md border ${errors.gender ? "border-gradient-input-error" : "border-gradient-input"} px-3 py-2 text-white`}
@@ -193,7 +193,7 @@ const PersonalInformationComponent = ({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">Place of origin*</label>
+          <label className="mb-2 block text-sm font-medium text-white">Place of origin<span className="text-red-500">*</span></label>
           <Input
             value={placeOfOrigin}
             onChange={(e) => onChange("placeOfOrigin", e.target.value)}
@@ -204,7 +204,7 @@ const PersonalInformationComponent = ({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">Place of residence*</label>
+          <label className="mb-2 block text-sm font-medium text-white">Place of residence<span className="text-red-500">*</span></label>
           <Input
             value={placeOfResidence}
             onChange={(e) => onChange("placeOfResidence", e.target.value)}
@@ -216,7 +216,7 @@ const PersonalInformationComponent = ({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-white">Date of Expiration*</label>
+            <label className="mb-2 block text-sm font-medium text-white">Date of Expiration<span className="text-red-500">*</span></label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -285,7 +285,7 @@ const PersonalInformationComponent = ({
             {errors.dateOfExpiration && <p className="mt-2 text-sm text-red-400">{errors.dateOfExpiration}</p>}
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-white">Phone number*</label>
+            <label className="mb-2 block text-sm font-medium text-white">Phone number<span className="text-red-500">*</span></label>
             <Input
               value={phoneNumber}
               onChange={(e) => onChange("phoneNumber", e.target.value)}

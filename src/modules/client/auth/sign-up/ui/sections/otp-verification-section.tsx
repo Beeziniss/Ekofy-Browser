@@ -136,7 +136,7 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: ClientOTPVerifi
           {/* OTP Field */}
           <div className="flex flex-col items-center space-y-4">
             <label htmlFor="otp" className="block text-sm font-medium text-white">
-              Enter 6-digit verification code
+              Enter 6-digit verification code <span className="text-red-500">*</span>
             </label>
             <InputOTP
               maxLength={6}
