@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TrackDetailQuery } from "@/gql/graphql";
 import { HeartIcon, PlayIcon } from "lucide-react";
 import { formatPlayCount } from "@/utils/format-number";
-import { PauseButtonLarge, PlayButtonLarge } from "@/assets/icons";
+import { PauseButtonLarge, PlayButtonLargeRounded } from "@/assets/icons";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { useAuthAction } from "@/hooks/use-auth-action";
 
@@ -120,7 +120,7 @@ const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
           {isCurrentTrack && globalIsPlaying ? (
             <PauseButtonLarge className="size-16" />
           ) : (
-            <PlayButtonLarge className="size-16" />
+            <PlayButtonLargeRounded className="size-16" />
           )}
         </Button>
       </div>
