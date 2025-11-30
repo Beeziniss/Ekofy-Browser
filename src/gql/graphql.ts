@@ -2598,6 +2598,7 @@ export type MutationInitialization = {
   updateConversationStatus: Scalars['Boolean']['output'];
   updateEscrowCommissionPolicy: Scalars['Boolean']['output'];
   updateListenerProfile: Scalars['Boolean']['output'];
+  updateMetadataTrack: Scalars['Boolean']['output'];
   updatePlaylist: Scalars['Boolean']['output'];
   updatePublicRequest: Scalars['Boolean']['output'];
   updateReportPriority: Scalars['Boolean']['output'];
@@ -3098,6 +3099,11 @@ export type MutationInitializationUpdateEscrowCommissionPolicyArgs = {
 
 export type MutationInitializationUpdateListenerProfileArgs = {
   updateListenerRequest: UpdateListenerRequestInput;
+};
+
+
+export type MutationInitializationUpdateMetadataTrackArgs = {
+  updateTrackRequest: UpdateTrackRequestInput;
 };
 
 
@@ -6258,6 +6264,13 @@ export type UpdateTrackCommentRequestInput = {
   content: Scalars['String']['input'];
 };
 
+export type UpdateTrackRequestInput = {
+  categoryIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  trackId: Scalars['String']['input'];
+};
+
 export type User = {
   __typename?: 'User';
   birthDate: Scalars['DateTime']['output'];
@@ -6266,6 +6279,7 @@ export type User = {
   createdBy?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   fullName: Scalars['String']['output'];
+  fullNameUnsigned: Scalars['String']['output'];
   gender: UserGender;
   id: Scalars['String']['output'];
   isLinkedWithGoogle: Scalars['Boolean']['output'];
@@ -6399,6 +6413,7 @@ export type UserFilterInput = {
   email?: InputMaybe<StringOperationFilterInput>;
   fcmToken?: InputMaybe<StringOperationFilterInput>;
   fullName?: InputMaybe<StringOperationFilterInput>;
+  fullNameUnsigned?: InputMaybe<StringOperationFilterInput>;
   gender?: InputMaybe<UserGenderOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   isLinkedWithGoogle?: InputMaybe<BooleanOperationFilterInput>;
@@ -6451,6 +6466,7 @@ export type UserSortInput = {
   email?: InputMaybe<SortEnumType>;
   fcmToken?: InputMaybe<SortEnumType>;
   fullName?: InputMaybe<SortEnumType>;
+  fullNameUnsigned?: InputMaybe<SortEnumType>;
   gender?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   isLinkedWithGoogle?: InputMaybe<SortEnumType>;

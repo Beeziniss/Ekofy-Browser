@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -29,6 +30,7 @@ export function useAdminTransactions() {
 
   // Extract transactions and metadata
   // Handle both regular query (paymentTransactions) and search query (searchPaymentTransactions)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const transactionData = (data as any)?.searchPaymentTransactions || (data as any)?.paymentTransactions;
   const transactions = transactionData?.items ?? [];
   const totalCount = transactionData?.totalCount ?? 0;
