@@ -64,3 +64,19 @@ export const requestStatusBadge = (status: RequestStatus) => {
       return <Badge className="border-gray-200 bg-gray-100 text-gray-800">{status}</Badge>;
   }
 };
+
+export const activeInactiveStatusBadge = (status: string) => {
+  switch (status) {
+    case "ACTIVE":
+    case "Active":
+      return <Badge className="border-green-200 bg-green-100 text-green-800">Active</Badge>;
+    case "INACTIVE":
+    case "Inactive":
+      return <Badge className="border-yellow-200 bg-yellow-100 text-yellow-800">Inactive</Badge>;
+    case "BANNED":
+    case "Banned":
+      return <Badge className="border-red-200 bg-red-100 text-red-800">Banned</Badge>;
+    default:
+      return <Badge className="border-gray-200 bg-gray-100 text-gray-800">{status}</Badge>;
+  }
+};

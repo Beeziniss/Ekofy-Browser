@@ -3,11 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { subscriptionDetailQueryOptions, subscriptionPlansQueryOptions } from "@/gql/options/subscription-options";
 import { useActivateSubscriptionMutation } from "@/gql/client-mutation-options/subscription-mutation-options";
 import { SubscriptionTier } from "@/gql/graphql";
-import { SubscriptionHeader } from "../component/subscription/subscription-header";
-import { SubscriptionInfoCard } from "../component/subscription/subscription-info-card";
-import { SubscriptionPlansSection } from "../component/subscription-plan/subscription-plans-section";
-import { default as CreateSubscriptionPlanForm } from "../component/subscription-plan/create-subscription-plan-form";
-import { default as EditSubscriptionPlanForm } from "../component/subscription-plan/edit-subscription-plan-form";
+import { SubscriptionHeader } from "../components/subscription/subscription-header";
+import { SubscriptionInfoCard } from "../components/subscription/subscription-info-card";
+import { SubscriptionPlansSection } from "../components/subscription-plan/subscription-plans-section";
+import { default as CreateSubscriptionPlanForm } from "../components/subscription-plan/create-subscription-plan-form";
+import { default as EditSubscriptionPlanForm } from "../components/subscription-plan/edit-subscription-plan-form";
 import type { SubscriptionPlan } from "@/types";
 
 interface SubscriptionDetailSectionProps {

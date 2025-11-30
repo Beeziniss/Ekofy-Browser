@@ -2,7 +2,7 @@ import { use } from "react";
 import { notFound } from "next/navigation";
 import { getQueryClient } from "@/providers/get-query-client";
 import { subscriptionPlanDetailQueryOptions } from "@/gql/options/subscription-options";
-import { AdminSubscriptionPlanDetail } from "@/modules/admin/subscription/ui/view";
+import { AdminSubscriptionPlanDetail } from "@/modules/admin/subscription/ui/views";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 interface SubscriptionPlanDetailPageProps {

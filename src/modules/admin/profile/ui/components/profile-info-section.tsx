@@ -61,6 +61,18 @@ const ProfileInfoSection = ({ userProfile }: ProfileInfoSectionProps) => {
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="email" className="text-white">
+            Email
+          </Label>
+          <Input
+            id="email"
+            value={userProfile.email}
+            readOnly
+            className="border-gray-700 bg-gray-800 text-white"
+          />
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="gender" className="text-white">
             Gender
           </Label>
@@ -117,18 +129,6 @@ const ProfileInfoSection = ({ userProfile }: ProfileInfoSectionProps) => {
           <Input
             id="createdAt"
             value={formatDate(userProfile.createdAt)}
-            readOnly
-            className="border-gray-700 bg-gray-800 text-white"
-          />
-        </div>
-        {/* Ngày cập nhật - Full width */}
-        <div className="space-y-2">
-          <Label htmlFor="updatedAt" className="text-white">
-            Updated At
-          </Label>
-          <Input
-            id="updatedAt"
-            value={userProfile.updatedAt ? formatDate(userProfile.updatedAt) : "Not updated yet"}
             readOnly
             className="border-gray-700 bg-gray-800 text-white"
           />

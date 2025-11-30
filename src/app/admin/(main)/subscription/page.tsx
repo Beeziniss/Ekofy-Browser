@@ -1,7 +1,7 @@
 "use client";
 
 import { subscriptionsQueryOptions } from "@/gql/options/subscription-options";
-import { AdminSubscriptionList } from "@/modules/admin/subscription/ui/view";
+import { AdminSubscriptionList } from "@/modules/admin/subscription/ui/views";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 

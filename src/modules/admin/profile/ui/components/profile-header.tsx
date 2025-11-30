@@ -39,7 +39,8 @@ const ProfileHeader = ({ userProfile, onEditClick }: ProfileHeaderProps) => {
         </div>
       </div>
 
-      <Button
+      {/* Edit button hidden as per requirement */}
+      {/* <Button
         onClick={onEditClick}
         variant="destructive"
         size="lg"
@@ -47,7 +48,7 @@ const ProfileHeader = ({ userProfile, onEditClick }: ProfileHeaderProps) => {
       >
         <Edit className="h-4 w-4" />
         Edit
-      </Button>
+      </Button> */}
     </div>
   );
 };

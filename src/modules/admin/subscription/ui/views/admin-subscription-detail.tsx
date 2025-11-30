@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { SubscriptionDetailSection } from "../section/subscription-detail-section";
-import { SubscriptionLayout } from "../layout/subscription-layout";
+import { SubscriptionDetailSection } from "../sections/subscription-detail-section";
+import { SubscriptionLayout } from "../layouts/subscription-layout";
 
 interface AdminSubscriptionDetailProps {
   subscriptionId: string;
@@ -16,7 +16,7 @@ export function AdminSubscriptionDetail({ subscriptionId }: AdminSubscriptionDet
   };
 
   return (
-    <SubscriptionLayout showCard={false}>
+    <SubscriptionLayout showBackButton={true} showHeader={false}>
       <SubscriptionDetailSection subscriptionId={subscriptionId} onBack={handleBack} />
     </SubscriptionLayout>
   );

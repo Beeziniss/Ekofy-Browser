@@ -6,15 +6,15 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { subscriptionPlanDetailQueryOptions } from "@/gql/options/subscription-options";
-import { SubscriptionLayout } from "../layout/subscription-layout";
-import { PlanDetailHeader } from "../component/subscription-plan/plan-detail-header";
-import { PlanBasicInfo } from "../component/subscription-plan/plan-basic-info";
-import { PlanSubscriptionInfo } from "../component/subscription-plan/plan-subscription-info";
-import { PlanPricingInfo } from "../component/subscription-plan/plan-pricing-info";
-import { PlanImages } from "../component/subscription-plan/plan-images";
-import { PlanMetadata } from "../component/subscription-plan/plan-metadata";
-import { PlanQuickStats } from "../component/subscription-plan/plan-quick-stats";
-import { default as EditSubscriptionPlanForm } from "../component/subscription-plan/edit-subscription-plan-form";
+import { SubscriptionLayout } from "../layouts/subscription-layout";
+import { PlanDetailHeader } from "../components/subscription-plan/plan-detail-header";
+import { PlanBasicInfo } from "../components/subscription-plan/plan-basic-info";
+import { PlanSubscriptionInfo } from "../components/subscription-plan/plan-subscription-info";
+import { PlanPricingInfo } from "../components/subscription-plan/plan-pricing-info";
+import { PlanImages } from "../components/subscription-plan/plan-images";
+import { PlanMetadata } from "../components/subscription-plan/plan-metadata";
+import { PlanQuickStats } from "../components/subscription-plan/plan-quick-stats";
+import { default as EditSubscriptionPlanForm } from "../components/subscription-plan/edit-subscription-plan-form";
 
 interface SubscriptionPlanDetailViewProps {
   subscriptionId: string;
