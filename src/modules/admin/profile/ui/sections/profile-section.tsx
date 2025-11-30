@@ -1,23 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useAuthStore } from "@/store";
-import { adminProfileOptions } from "@/gql/options/admin-options";
-import ProfileHeader from "../component/profile-header";
-import ProfileInfoSection from "../component/profile-info-section";
-import ChangePasswordSection from "../component/change-password-section";
-import EditProfileModal from "../component/edit-profile-modal";
+import ProfileHeader from "../components/profile-header";
+import ProfileInfoSection from "../components/profile-info-section";
+import ChangePasswordSection from "../components/change-password-section";
+import EditProfileModal from "../components/edit-profile-modal";
+import { UserProfile } from "@/types/profile";
 
-const ProfileSection = () => {
+interface ProfileSectionProps {
+  userProfile: UserProfile | null | undefined;
+  personal: {
+    fullName: string;
+    email: string;
+    phoneNumber?: string;
+  };
+  account: {
+    createdAt: string;
+    role: string;
+    status: string;
+  };
+}
+
+const ProfileSection = ({ userProfile }: ProfileSectionProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const { user, isAuthenticated } = useAuthStore();
-
-  // Fetch user profile data
-  const { data: userProfile } = useQuery({
-    ...adminProfileOptions(user?.userId || ""),
-    enabled: isAuthenticated && !!user?.userId,
-  });
 
   const handleEditClick = () => {
     setIsEditModalOpen(true);

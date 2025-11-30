@@ -2598,6 +2598,7 @@ export type MutationInitialization = {
   updateConversationStatus: Scalars['Boolean']['output'];
   updateEscrowCommissionPolicy: Scalars['Boolean']['output'];
   updateListenerProfile: Scalars['Boolean']['output'];
+  updateMetadataTrack: Scalars['Boolean']['output'];
   updatePlaylist: Scalars['Boolean']['output'];
   updatePublicRequest: Scalars['Boolean']['output'];
   updateReportPriority: Scalars['Boolean']['output'];
@@ -3098,6 +3099,11 @@ export type MutationInitializationUpdateEscrowCommissionPolicyArgs = {
 
 export type MutationInitializationUpdateListenerProfileArgs = {
   updateListenerRequest: UpdateListenerRequestInput;
+};
+
+
+export type MutationInitializationUpdateMetadataTrackArgs = {
+  updateTrackRequest: UpdateTrackRequestInput;
 };
 
 
@@ -3612,9 +3618,11 @@ export enum PaymentMethodType {
 export type PaymentTransaction = {
   __typename?: 'PaymentTransaction';
   amount: Scalars['Decimal']['output'];
+  artist: Array<Artist>;
   createdAt: Scalars['DateTime']['output'];
   currency: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  listener: Array<Listener>;
   paymentStatus: PaymentTransactionStatus;
   status: TransactionStatus;
   stripeCheckoutSessionId?: Maybe<Scalars['String']['output']>;
@@ -3625,6 +3633,18 @@ export type PaymentTransaction = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   user: Array<User>;
   userId: Scalars['String']['output'];
+};
+
+
+export type PaymentTransactionArtistArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type PaymentTransactionListenerArgs = {
+  order?: InputMaybe<Array<ListenerSortInput>>;
+  where?: InputMaybe<ListenerFilterInput>;
 };
 
 
@@ -4103,7 +4123,10 @@ export type QueryInitialization = {
   searchAlbums?: Maybe<SearchAlbumsCollectionSegment>;
   searchArtists?: Maybe<SearchArtistsCollectionSegment>;
   searchListeners?: Maybe<SearchListenersCollectionSegment>;
+  searchPaymentTransactions?: Maybe<SearchPaymentTransactionsCollectionSegment>;
+  searchPayoutTransactions?: Maybe<SearchPayoutTransactionsCollectionSegment>;
   searchPlaylists?: Maybe<SearchPlaylistsCollectionSegment>;
+  searchRefundTransactions?: Maybe<SearchRefundTransactionsCollectionSegment>;
   searchRequests?: Maybe<SearchRequestsCollectionSegment>;
   searchTracks?: Maybe<SearchTracksCollectionSegment>;
   subscriptionPlans?: Maybe<SubscriptionPlansCollectionSegment>;
@@ -4562,12 +4585,39 @@ export type QueryInitializationSearchListenersArgs = {
 };
 
 
+export type QueryInitializationSearchPaymentTransactionsArgs = {
+  order?: InputMaybe<Array<PaymentTransactionSortInput>>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PaymentTransactionFilterInput>;
+};
+
+
+export type QueryInitializationSearchPayoutTransactionsArgs = {
+  order?: InputMaybe<Array<PayoutTransactionSortInput>>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PayoutTransactionFilterInput>;
+};
+
+
 export type QueryInitializationSearchPlaylistsArgs = {
   name: Scalars['String']['input'];
   order?: InputMaybe<Array<PlaylistSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<PlaylistFilterInput>;
+};
+
+
+export type QueryInitializationSearchRefundTransactionsArgs = {
+  order?: InputMaybe<Array<RefundTransactionSortInput>>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RefundTransactionFilterInput>;
 };
 
 
@@ -5532,10 +5582,40 @@ export type SearchListenersCollectionSegment = {
 };
 
 /** A segment of a collection. */
+export type SearchPaymentTransactionsCollectionSegment = {
+  __typename?: 'SearchPaymentTransactionsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<PaymentTransaction>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
+export type SearchPayoutTransactionsCollectionSegment = {
+  __typename?: 'SearchPayoutTransactionsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<PayoutTransaction>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
 export type SearchPlaylistsCollectionSegment = {
   __typename?: 'SearchPlaylistsCollectionSegment';
   /** A flattened list of the items. */
   items?: Maybe<Array<Playlist>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A segment of a collection. */
+export type SearchRefundTransactionsCollectionSegment = {
+  __typename?: 'SearchRefundTransactionsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<RefundTransaction>>;
   /** Information to aid in pagination. */
   pageInfo: CollectionSegmentInfo;
   totalCount: Scalars['Int']['output'];
@@ -6184,6 +6264,13 @@ export type UpdateTrackCommentRequestInput = {
   content: Scalars['String']['input'];
 };
 
+export type UpdateTrackRequestInput = {
+  categoryIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  trackId: Scalars['String']['input'];
+};
+
 export type User = {
   __typename?: 'User';
   birthDate: Scalars['DateTime']['output'];
@@ -6192,6 +6279,7 @@ export type User = {
   createdBy?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   fullName: Scalars['String']['output'];
+  fullNameUnsigned: Scalars['String']['output'];
   gender: UserGender;
   id: Scalars['String']['output'];
   isLinkedWithGoogle: Scalars['Boolean']['output'];
@@ -6325,6 +6413,7 @@ export type UserFilterInput = {
   email?: InputMaybe<StringOperationFilterInput>;
   fcmToken?: InputMaybe<StringOperationFilterInput>;
   fullName?: InputMaybe<StringOperationFilterInput>;
+  fullNameUnsigned?: InputMaybe<StringOperationFilterInput>;
   gender?: InputMaybe<UserGenderOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   isLinkedWithGoogle?: InputMaybe<BooleanOperationFilterInput>;
@@ -6377,6 +6466,7 @@ export type UserSortInput = {
   email?: InputMaybe<SortEnumType>;
   fcmToken?: InputMaybe<SortEnumType>;
   fullName?: InputMaybe<SortEnumType>;
+  fullNameUnsigned?: InputMaybe<SortEnumType>;
   gender?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   isLinkedWithGoogle?: InputMaybe<SortEnumType>;
@@ -6589,13 +6679,6 @@ export type WorksCollectionSegment = {
   pageInfo: CollectionSegmentInfo;
   totalCount: Scalars['Int']['output'];
 };
-
-export type UsersQueryVariables = Exact<{
-  where?: InputMaybe<UserFilterInput>;
-}>;
-
-
-export type UsersQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type AdminArtistsDetailQueryVariables = Exact<{
   where?: InputMaybe<ArtistFilterInput>;
@@ -7125,6 +7208,13 @@ export type RejectArtistRegistrationMutationVariables = Exact<{
 
 export type RejectArtistRegistrationMutation = { __typename?: 'MutationInitialization', rejectArtistRegistration: boolean };
 
+export type AdminProfileQueryVariables = Exact<{
+  where?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type AdminProfileQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus, role: UserRole, createdAt: any, updatedAt?: any | null }> | null } | null };
+
 export type SubscriptionsQueryVariables = Exact<{
   where: SubscriptionFilterInput;
 }>;
@@ -7147,6 +7237,27 @@ export type SubscriptionPlansQueryVariables = Exact<{
 
 
 export type SubscriptionPlansQuery = { __typename?: 'QueryInitialization', subscriptionPlans?: { __typename?: 'SubscriptionPlansCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'SubscriptionPlan', id: string, subscriptionId: string, stripeProductId: string, stripeProductActive: boolean, stripeProductName: string, stripeProductImages?: Array<string> | null, stripeProductType: string, stripeProductMetadata?: Array<{ __typename?: 'Metadata', key: string, value: string }> | null, subscriptionPlanPrices: Array<{ __typename?: 'SubscriptionPlanPrice', stripePriceId: string, stripePriceActive: boolean, stripePriceUnitAmount: any, stripePriceCurrency: string, stripePriceLookupKey: string, interval: PeriodTime, intervalCount: any }>, subscription: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, version: number, amount: any, currency: CurrencyType, tier: SubscriptionTier, status: SubscriptionStatus, createdAt: any, updatedAt?: any | null }> }> | null } | null };
+
+export type GetAllTransactionsQueryVariables = Exact<{
+  where?: InputMaybe<PaymentTransactionFilterInput>;
+  order?: InputMaybe<Array<PaymentTransactionSortInput> | PaymentTransactionSortInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetAllTransactionsQuery = { __typename?: 'QueryInitialization', paymentTransactions?: { __typename?: 'PaymentTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, updatedAt?: any | null, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null, stripeCheckoutSessionId?: string | null, stripeInvoiceId?: string | null, stripeSubscriptionId?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type SearchTransactionsQueryVariables = Exact<{
+  order?: InputMaybe<Array<PaymentTransactionSortInput> | PaymentTransactionSortInput>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PaymentTransactionFilterInput>;
+}>;
+
+
+export type SearchTransactionsQuery = { __typename?: 'QueryInitialization', searchPaymentTransactions?: { __typename?: 'SearchPaymentTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, updatedAt?: any | null, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null, stripeCheckoutSessionId?: string | null, stripeInvoiceId?: string | null, stripeSubscriptionId?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type ArtistPackagesServiceQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -7597,6 +7708,13 @@ export type PendingArtistRegistrationByIdQueryVariables = Exact<{
 
 export type PendingArtistRegistrationByIdQuery = { __typename?: 'QueryInitialization', pendingArtistRegistrationById: { __typename?: 'PendingArtistRegistrationResponse', email: string, fullName: string, stageName: string, artistType: ArtistType, gender: UserGender, birthDate: any, phoneNumber: string, avatarImage?: string | null, id: string, requestedAt: any, timeToLive?: any | null, identityCardNumber: string, identityCardDateOfBirth: any, identityCardFullName: string, placeOfOrigin: string, placeOfResidence: string, frontImageUrl?: string | null, backImageUrl?: string | null, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, phoneNumber: string, isLeader: boolean, gender: UserGender }> } };
 
+export type UsersQueryVariables = Exact<{
+  where?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type UsersQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
+
 export type RequestsPublicQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -7732,24 +7850,6 @@ export const RequestArtistPackageFragmentDoc = new TypedDocumentString(`
   maxRevision
 }
     `, {"fragmentName":"RequestArtistPackage"}) as unknown as TypedDocumentString<RequestArtistPackageFragment, unknown>;
-export const UsersDocument = new TypedDocumentString(`
-    query Users($where: UserFilterInput) {
-  users(where: $where) {
-    items {
-      id
-      email
-      fullName
-      gender
-      birthDate
-      role
-      phoneNumber
-      status
-      createdAt
-      updatedAt
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<UsersQuery, UsersQueryVariables>;
 export const AdminArtistsDetailDocument = new TypedDocumentString(`
     query AdminArtistsDetail($where: ArtistFilterInput) {
   artists(where: $where) {
@@ -8449,6 +8549,24 @@ export const RejectArtistRegistrationDocument = new TypedDocumentString(`
   rejectArtistRegistration(request: $request)
 }
     `) as unknown as TypedDocumentString<RejectArtistRegistrationMutation, RejectArtistRegistrationMutationVariables>;
+export const AdminProfileDocument = new TypedDocumentString(`
+    query AdminProfile($where: UserFilterInput) {
+  users(where: $where) {
+    items {
+      id
+      email
+      fullName
+      gender
+      birthDate
+      phoneNumber
+      status
+      role
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminProfileQuery, AdminProfileQueryVariables>;
 export const SubscriptionsDocument = new TypedDocumentString(`
     query Subscriptions($where: SubscriptionFilterInput!) {
   subscriptions(where: $where, order: {version: DESC}) {
@@ -8535,6 +8653,76 @@ export const SubscriptionPlansDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SubscriptionPlansQuery, SubscriptionPlansQueryVariables>;
+export const GetAllTransactionsDocument = new TypedDocumentString(`
+    query GetAllTransactions($where: PaymentTransactionFilterInput, $order: [PaymentTransactionSortInput!], $skip: Int, $take: Int) {
+  paymentTransactions(where: $where, order: $order, skip: $skip, take: $take) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      updatedAt
+      paymentStatus
+      status
+      stripePaymentMethod
+      stripePaymentId
+      stripeCheckoutSessionId
+      stripeInvoiceId
+      stripeSubscriptionId
+      userId
+      user {
+        id
+        email
+        fullName
+        role
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetAllTransactionsQuery, GetAllTransactionsQueryVariables>;
+export const SearchTransactionsDocument = new TypedDocumentString(`
+    query SearchTransactions($order: [PaymentTransactionSortInput!], $searchTerm: String, $skip: Int, $take: Int, $where: PaymentTransactionFilterInput) {
+  searchPaymentTransactions(
+    order: $order
+    searchTerm: $searchTerm
+    skip: $skip
+    take: $take
+    where: $where
+  ) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      updatedAt
+      paymentStatus
+      status
+      stripePaymentMethod
+      stripePaymentId
+      stripeCheckoutSessionId
+      stripeInvoiceId
+      stripeSubscriptionId
+      userId
+      user {
+        id
+        email
+        fullName
+        role
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SearchTransactionsQuery, SearchTransactionsQueryVariables>;
 export const ArtistPackagesServiceDocument = new TypedDocumentString(`
     query ArtistPackagesService($skip: Int, $take: Int, $where: ArtistPackageFilterInput) {
   artistPackages(skip: $skip, take: $take, where: $where) {
@@ -10164,6 +10352,24 @@ export const PendingArtistRegistrationByIdDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PendingArtistRegistrationByIdQuery, PendingArtistRegistrationByIdQueryVariables>;
+export const UsersDocument = new TypedDocumentString(`
+    query Users($where: UserFilterInput) {
+  users(where: $where) {
+    items {
+      id
+      email
+      fullName
+      gender
+      birthDate
+      role
+      phoneNumber
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<UsersQuery, UsersQueryVariables>;
 export const RequestsPublicDocument = new TypedDocumentString(`
     query RequestsPublic($skip: Int, $take: Int, $where: RequestFilterInput) {
   requests(skip: $skip, take: $take, where: $where) {
