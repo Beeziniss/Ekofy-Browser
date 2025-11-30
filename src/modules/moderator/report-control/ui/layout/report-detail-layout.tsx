@@ -10,7 +10,7 @@ interface ReportDetailLayoutProps {
 
 export function ReportDetailLayout({ header, mainContent, sidebar }: ReportDetailLayoutProps) {
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto px-6 py-8 space-y-6">
       {/* Header */}
       {header}
 

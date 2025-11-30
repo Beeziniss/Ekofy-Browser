@@ -8,20 +8,10 @@ import {
   getPaginationRowModel,
   SortingState,
   getSortedRowModel,
-  ColumnFiltersState,
-  getFilteredRowModel,
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,21 +36,11 @@ interface PublicRequestTableProps {
   currentPage: number;
   pageSize: number;
   onPageChange: (page: number) => void;
-  onSearch: (searchTerm: string) => void;
-  onStatusChange: (status: RequestStatus | "ALL") => void;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
-  searchTerm: string;
-  selectedStatus: RequestStatus | "ALL";
   isLoading?: boolean;
   error?: Error | null;
 }
-
-const statusOptions = [
-  { label: "All Status", value: "ALL" as const },
-  { label: "Open", value: RequestStatus.Open },
-  { label: "Blocked", value: RequestStatus.Blocked },
-];
 
 export function PublicRequestTable({
   data,
@@ -68,18 +48,13 @@ export function PublicRequestTable({
   currentPage,
   pageSize,
   onPageChange,
-  onSearch,
-  onStatusChange,
   hasNextPage,
   hasPreviousPage,
-  searchTerm,
-  selectedStatus,
   isLoading = false,
   error = null,
 }: PublicRequestTableProps) {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [blockingRequestId, setBlockingRequestId] = useState<string | null>(null);
   const [showBlockDialog, setShowBlockDialog] = useState(false);
   const blockRequestMutation = useBlockPublicRequest();
@@ -249,47 +224,18 @@ export function PublicRequestTable({
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      columnFilters,
     },
     manualPagination: true,
     pageCount: Math.ceil(totalCount / pageSize),
   });
-
-  const handleSearch = (value: string) => {
-    onSearch(value);
-  };
 
   const blockingRequest = data.find((r) => r.id === blockingRequestId);
 
   return (
     <>
       <div className="space-y-4">
-        {/* Search and Filter */}
-        <div className="flex items-center space-x-2">
-          <Input
-            placeholder="Search by title or requestor..."
-            value={searchTerm}
-            onChange={(event) => handleSearch(event.target.value)}
-            className="max-w-sm border-gray-700 bg-gray-800 text-white placeholder-gray-400"
-          />
-          <Select value={selectedStatus} onValueChange={onStatusChange}>
-            <SelectTrigger className="w-[180px] border-gray-700 bg-gray-800 text-white">
-              <SelectValue placeholder="All Status" />
-            </SelectTrigger>
-            <SelectContent className="border-gray-700 bg-gray-800">
-              {statusOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value} className="text-gray-300 hover:bg-gray-700">
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
         {/* Table */}
         <div className="relative">
           {/* Loading overlay */}

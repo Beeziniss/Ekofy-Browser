@@ -8,20 +8,10 @@ import {
   getPaginationRowModel,
   SortingState,
   getSortedRowModel,
-  ColumnFiltersState,
-  getFilteredRowModel,
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,14 +35,8 @@ interface ReportControlTableProps {
   currentPage: number;
   pageSize: number;
   onPageChange: (page: number) => void;
-  onSearch: (searchTerm: string) => void;
-  onStatusChange: (status: ReportStatus | "all") => void;
-  onContentTypeChange: (contentType: ReportRelatedContentType | "all" | "none") => void;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
-  searchTerm: string;
-  statusFilter: ReportStatus | "all";
-  contentTypeFilter: ReportRelatedContentType | "all" | "none";
   currentUserId?: string;
   isAssigning: boolean;
   onAssignToMe: (reportId: string) => void;
@@ -68,44 +52,29 @@ const STATUS_CONFIG: Record<ReportStatus, {
   className: string;
 }> = {
   [ReportStatus.Pending]: {
-    label: "Pending",
+    label: "PENDING",
     className: "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700",
   },
   [ReportStatus.UnderReview]: {
-    label: "Under Review",
+    label: "UNDER REVIEW",
     className: "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700",
   },
   [ReportStatus.Approved]: {
-    label: "Approved",
+    label: "APPROVED",
     className: "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700",
   },
   [ReportStatus.Rejected]: {
-    label: "Rejected",
+    label: "REJECTED",
     className: "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700",
   },
   [ReportStatus.Restored]: {
-    label: "Restored",
+    label: "RESTORED",
     className: "bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-800/30 dark:text-gray-400 dark:border-gray-700",
   },
   [ReportStatus.Escalated]: {
-    label: "Escalated",
+    label: "ESCALATED",
     className: "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700",
   },
-};
-
-const STATUS_LABELS: Record<ReportStatus, string> = {
-  [ReportStatus.Pending]: "Pending",
-  [ReportStatus.UnderReview]: "Under Review",
-  [ReportStatus.Approved]: "Approved",
-  [ReportStatus.Rejected]: "Rejected",
-  [ReportStatus.Restored]: "Restored",
-  [ReportStatus.Escalated]: "Escalated",
-};
-
-const CONTENT_TYPE_FILTER_LABELS: Partial<Record<ReportRelatedContentType, string>> = {
-  [ReportRelatedContentType.Track]: "Track",
-  [ReportRelatedContentType.Comment]: "Comment", 
-  [ReportRelatedContentType.Request]: "Request",
 };
 
 export function ReportControlTable({
@@ -114,14 +83,8 @@ export function ReportControlTable({
   currentPage,
   pageSize,
   onPageChange,
-  onSearch,
-  onStatusChange,
-  onContentTypeChange,
   hasNextPage,
   hasPreviousPage,
-  searchTerm,
-  statusFilter,
-  contentTypeFilter,
   currentUserId,
   isAssigning,
   onAssignToMe,
@@ -133,7 +96,6 @@ export function ReportControlTable({
 }: ReportControlTableProps) {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const columns: ColumnDef<ReportItem>[] = [
     {
@@ -305,59 +267,15 @@ export function ReportControlTable({
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      columnFilters,
     },
     manualPagination: true,
     pageCount: Math.ceil(totalCount / pageSize),
   });
 
-  const handleSearch = (value: string) => {
-    onSearch(value);
-  };
-
   return (
     <div className="space-y-4">
-      {/* Search and Filters */}
-      <div className="flex items-center space-x-2">
-        <Input
-          placeholder="Search by user name..."
-          value={searchTerm}
-          onChange={(event) => handleSearch(event.target.value)}
-          className="max-w-sm border-gray-700 bg-gray-800 text-white placeholder-gray-400"
-        />
-        <Select value={statusFilter} onValueChange={onStatusChange}>
-          <SelectTrigger className="w-[180px] border-gray-700 bg-gray-800 text-white">
-            <SelectValue placeholder="All Status" />
-          </SelectTrigger>
-          <SelectContent className="border-gray-700 bg-gray-800">
-            <SelectItem value="all" className="text-gray-300 hover:bg-gray-700">All Status</SelectItem>
-            {Object.entries(STATUS_LABELS).map(([key, label]) => (
-              <SelectItem key={key} value={key} className="text-gray-300 hover:bg-gray-700">
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={contentTypeFilter} onValueChange={onContentTypeChange}>
-          <SelectTrigger className="w-[180px] border-gray-700 bg-gray-800 text-white">
-            <SelectValue placeholder="All Types" />
-          </SelectTrigger>
-          <SelectContent className="border-gray-700 bg-gray-800">
-            <SelectItem value="all" className="text-gray-300 hover:bg-gray-700">All Types</SelectItem>
-            <SelectItem value="none" className="text-gray-300 hover:bg-gray-700">User Reports (No Content)</SelectItem>
-            {Object.entries(CONTENT_TYPE_FILTER_LABELS).map(([key, label]) => (
-              <SelectItem key={key} value={key} className="text-gray-300 hover:bg-gray-700">
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
       {/* Table */}
       <div className="relative">
         {/* Loading overlay */}

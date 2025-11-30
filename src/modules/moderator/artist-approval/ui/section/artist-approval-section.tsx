@@ -4,13 +4,27 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArtistApprovalTable } from "../component";
 import { moderatorArtistsQueryOptions } from "@/gql/options/moderator-options";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function ArtistApprovalSection() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchParams.get("search") || "");
   const [isSearching, setIsSearching] = useState(false);
   const pageSize = 10;
+
+  // Sync URL params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (currentPage > 1) params.set("page", currentPage.toString());
+    if (debouncedSearchTerm) params.set("search", debouncedSearchTerm);
+    
+    const queryString = params.toString();
+    router.replace(`/moderator/artist-approval${queryString ? `?${queryString}` : ""}`, { scroll: false });
+  }, [currentPage, debouncedSearchTerm, router]);
 
   // Debounce search term
   useEffect(() => {

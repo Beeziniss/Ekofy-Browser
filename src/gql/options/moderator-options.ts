@@ -31,6 +31,7 @@ import {
   GetCategory,
 } from "@/modules/shared/queries/moderator/track-approval-queries";
 import { QUERY_USER_CREATED_BY } from "@/modules/shared/queries/moderator/track-approval-queries";
+import { ApprovalPriorityStatus } from "@/types/approval-track";
 
 export const moderatorProfileOptions = (userId: string) =>
   queryOptions({
@@ -247,39 +248,52 @@ export const moderatorApprovalHistoryDetailOptions = (historyId: string) =>
   });
 
 // Track approval query options for moderator
-export const moderatorPendingTracksOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") =>
+export const moderatorPendingTracksOptions = (
+  page: number = 1,
+  pageSize: number = 10,
+  searchTerm: string = "",
+  priority: ApprovalPriorityStatus | "ALL" = "ALL"
+) =>
   queryOptions({
-    queryKey: ["moderator-pending-tracks", page, pageSize, searchTerm],
+    queryKey: ["moderator-pending-tracks", page, pageSize, searchTerm, priority],
     queryFn: async () => {
       const variables: {
         pageNumber: number;
         pageSize: number;
-        where?: {
-          items?: {
-            some?: {
-              track?: {
-                name?: { contains: string };
-              };
-            };
-          };
-        };
+        priority?: ApprovalPriorityStatus;
+        // Uncomment when GraphQL supports search
+        // where?: {
+        //   items?: {
+        //     some?: {
+        //       track?: {
+        //         name?: { contains: string };
+        //       };
+        //     };
+        //   };
+        // };
       } = {
         pageNumber: page,
         pageSize,
       };
 
-      // Add track name search filter if provided
-      if (searchTerm.trim()) {
-        variables.where = {
-          items: {
-            some: {
-              track: {
-                name: { contains: searchTerm },
-              },
-            },
-          },
-        };
+      // Add priority filter if not "ALL"
+      if (priority !== "ALL") {
+        variables.priority = priority;
       }
+
+      // TODO: Uncomment when GraphQL supports search functionality
+      // Add track name search filter if provided
+      // if (searchTerm.trim()) {
+      //   variables.where = {
+      //     items: {
+      //       some: {
+      //         track: {
+      //           name: { contains: searchTerm },
+      //         },
+      //       },
+      //     },
+      //   };
+      // }
 
       const result = await execute(PENDING_TRACK_UPLOAD_REQUESTS_QUERY, variables);
       return result;

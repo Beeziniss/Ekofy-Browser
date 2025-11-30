@@ -1,23 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { moderatorPendingTracksOptions } from "@/gql/options/moderator-options";
 import { TrackApprovalTable } from "../components/track-approval-table";
 import { TrackApprovalFilters } from "../components/track-approval-filters";
-// import { TrackApprovalStats } from "../components/track-approval-stats";
-import { useRouter } from "next/navigation";
+import { ApprovalPriorityStatus } from "@/types/approval-track";
+import { useRouter, useSearchParams } from "next/navigation";
+
 export function TrackApprovalSection() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const pageSize = 10;
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
+  // TODO: Uncomment when GraphQL supports search
+  // const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  const searchTerm = ""; // Temporary: search disabled
+  const [priorityFilter, setPriorityFilter] = useState<ApprovalPriorityStatus | "ALL">((searchParams.get("priority") as ApprovalPriorityStatus) || "ALL");
+  const pageSize = 10;
 
-  const { data, isLoading, error } = useQuery(moderatorPendingTracksOptions(currentPage, pageSize, searchTerm));
+  // Sync URL params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (currentPage > 1) params.set("page", currentPage.toString());
+    if (priorityFilter !== "ALL") params.set("priority", priorityFilter);
+    
+    const queryString = params.toString();
+    router.replace(`/moderator/track-approval${queryString ? `?${queryString}` : ""}`, { scroll: false });
+  }, [currentPage, priorityFilter, router]);
 
+  const { data, isLoading, error } = useQuery(
+    moderatorPendingTracksOptions(currentPage, pageSize, searchTerm, priorityFilter)
+  );
+
+  // TODO: Uncomment when GraphQL supports search
+  // const handleSearch = (term: string) => {
+  //   setSearchTerm(term);
+  //   setCurrentPage(1); // Reset to first page when searching
+  // };
   const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setCurrentPage(1); // Reset to first page when searching
+    // Search functionality disabled until backend support
+    console.log("Search disabled:", term);
+  };
+
+  const handlePriorityChange = (priority: ApprovalPriorityStatus | "ALL") => {
+    setPriorityFilter(priority);
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
   const handleViewDetail = (uploadId: string) => {
@@ -40,7 +68,12 @@ export function TrackApprovalSection() {
 
       {/* Filters and Actions */}
       <div className="flex items-center justify-between">
-        <TrackApprovalFilters searchTerm={searchTerm} onSearchChange={handleSearch} />
+        <TrackApprovalFilters
+          searchTerm={searchTerm}
+          onSearchChange={handleSearch}
+          priorityFilter={priorityFilter}
+          onPriorityChange={handlePriorityChange}
+        />
       </div>
 
       {/* Table */}

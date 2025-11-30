@@ -1,22 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { reportsOptions } from "@/gql/options/report-options";
 import { useAuthStore } from "@/store/stores/auth-store";
 import { useAssignReportToModerator } from "@/gql/client-mutation-options/report-mutation-options";
 import { toast } from "sonner";
-import { ReportStatus, ReportRelatedContentType } from "@/gql/graphql";
+import { ReportStatus, ReportRelatedContentType, ReportType } from "@/gql/graphql";
 import { ReportControlTable } from "../components/report-control-table";
 import { ProcessReportDialog } from "../components/process-report-dialog";
 import { RestoreUserDialog } from "../components/restore-user-dialog";
 import { RestoreContentDialog } from "../components/restore-content-dialog";
+import { ReportFiltersSection } from "./report-filters-section";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function ReportControlSection() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
-  const [contentTypeFilter, setContentTypeFilter] = useState<ReportRelatedContentType | "all" | "none">("all");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">((searchParams.get("status") as ReportStatus) || "all");
+  const [contentTypeFilter, setContentTypeFilter] = useState<ReportRelatedContentType | "all" | "none">((searchParams.get("contentType") as ReportRelatedContentType | "none") || "all");
+  const [reportTypeFilter, setReportTypeFilter] = useState<ReportType | "all">((searchParams.get("reportType") as ReportType) || "all");
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
   const [selectedReportType, setSelectedReportType] = useState<ReportRelatedContentType | null>(null);
   const [processDialogOpen, setProcessDialogOpen] = useState(false);
@@ -29,6 +35,19 @@ export function ReportControlSection() {
   const { user } = useAuthStore();
   const assignReport = useAssignReportToModerator();
 
+  // Sync URL params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (currentPage > 1) params.set("page", currentPage.toString());
+    if (searchTerm) params.set("search", searchTerm);
+    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (contentTypeFilter !== "all") params.set("contentType", contentTypeFilter);
+    if (reportTypeFilter !== "all") params.set("reportType", reportTypeFilter);
+    
+    const queryString = params.toString();
+    router.replace(`/moderator/report-control${queryString ? `?${queryString}` : ""}`, { scroll: false });
+  }, [currentPage, searchTerm, statusFilter, contentTypeFilter, reportTypeFilter, router]);
+
   // Build filter
   const where = {
     ...(statusFilter !== "all" && { status: { eq: statusFilter } }),
@@ -37,6 +56,7 @@ export function ReportControlSection() {
         ? { relatedContentType: { eq: null } }
         : { relatedContentType: { eq: contentTypeFilter } }
     )),
+    ...(reportTypeFilter !== "all" && { reportType: { eq: reportTypeFilter } }),
   };
 
   const skip = (currentPage - 1) * pageSize;
@@ -75,6 +95,11 @@ export function ReportControlSection() {
 
   const handleContentTypeChange = (value: ReportRelatedContentType | "all" | "none") => {
     setContentTypeFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handleReportTypeChange = (value: ReportType | "all") => {
+    setReportTypeFilter(value);
     setCurrentPage(1);
   };
 
@@ -145,20 +170,25 @@ export function ReportControlSection() {
   return (
     <>
       <div className="space-y-6">
+        <ReportFiltersSection
+          searchTerm={searchTerm}
+          statusFilter={statusFilter}
+          contentTypeFilter={contentTypeFilter}
+          reportTypeFilter={reportTypeFilter}
+          onSearchChange={handleSearch}
+          onStatusChange={handleStatusChange}
+          onContentTypeChange={handleContentTypeChange}
+          onReportTypeChange={handleReportTypeChange}
+        />
+        
         <ReportControlTable
           data={filteredReports}
           totalCount={totalCount}
           currentPage={currentPage}
           pageSize={pageSize}
           onPageChange={handlePageChange}
-          onSearch={handleSearch}
-          onStatusChange={handleStatusChange}
-          onContentTypeChange={handleContentTypeChange}
           hasNextPage={hasNextPage}
           hasPreviousPage={hasPreviousPage}
-          searchTerm={searchTerm}
-          statusFilter={statusFilter}
-          contentTypeFilter={contentTypeFilter}
           currentUserId={user?.userId}
           isAssigning={assignReport.isPending}
           onAssignToMe={handleAssignToMe}
