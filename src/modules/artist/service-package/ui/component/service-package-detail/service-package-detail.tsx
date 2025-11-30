@@ -8,13 +8,14 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Clock, RotateCcw } from "lucide-react";
 import { ArtistPackage, Metadata } from "@/gql/graphql";
 import { usePackageUtils } from "../../../hooks";
+import { formatDate } from "@/utils/format-date";
 
 interface ServicePackageDetailProps {
   package: Omit<ArtistPackage, "artist" | "review">;
   onBack: () => void;
 }
 
-const ServicePackageDetail: React.FC<ServicePackageDetailProps> = ({ package: pkg, onBack }) => {
+const ServicePackageDetail = ({ package: pkg, onBack }: ServicePackageDetailProps) => {
   const { formattedPrice, formatRevisionText, getStatusColor, getStatusText } = usePackageUtils();
 
   return (
@@ -47,9 +48,7 @@ const ServicePackageDetail: React.FC<ServicePackageDetailProps> = ({ package: pk
                   {formatRevisionText(pkg.maxRevision || 0)}
                 </CardDescription>
               </div>
-              <CardDescription className="text-gray-400">
-                Created: {new Date(pkg.createdAt).toLocaleDateString()}
-              </CardDescription>
+              <CardDescription className="text-gray-400">Created: {formatDate(pkg.createdAt)}</CardDescription>
             </div>
           </div>
         </CardHeader>

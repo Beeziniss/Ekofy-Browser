@@ -417,11 +417,9 @@ export type ArtistPackage = {
   artistId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   currency: CurrencyType;
-  customPackageInfo: CustomArtistPackageInfo;
   description?: Maybe<Scalars['String']['output']>;
   estimateDeliveryDays: Scalars['Int']['output'];
   id: Scalars['String']['output'];
-  isCustom: Scalars['Boolean']['output'];
   isDelete: Scalars['Boolean']['output'];
   maxRevision: Scalars['Int']['output'];
   packageName: Scalars['String']['output'];
@@ -443,11 +441,9 @@ export type ArtistPackageFilterInput = {
   artistId?: InputMaybe<StringOperationFilterInput>;
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
   currency?: InputMaybe<CurrencyTypeOperationFilterInput>;
-  customPackageInfo?: InputMaybe<CustomArtistPackageInfoFilterInput>;
   description?: InputMaybe<StringOperationFilterInput>;
   estimateDeliveryDays?: InputMaybe<IntOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
-  isCustom?: InputMaybe<BooleanOperationFilterInput>;
   isDelete?: InputMaybe<BooleanOperationFilterInput>;
   maxRevision?: InputMaybe<IntOperationFilterInput>;
   or?: InputMaybe<Array<ArtistPackageFilterInput>>;
@@ -462,11 +458,9 @@ export type ArtistPackageSortInput = {
   artistId?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
   currency?: InputMaybe<SortEnumType>;
-  customPackageInfo?: InputMaybe<CustomArtistPackageInfoSortInput>;
   description?: InputMaybe<SortEnumType>;
   estimateDeliveryDays?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
-  isCustom?: InputMaybe<SortEnumType>;
   isDelete?: InputMaybe<SortEnumType>;
   maxRevision?: InputMaybe<SortEnumType>;
   packageName?: InputMaybe<SortEnumType>;
@@ -1293,18 +1287,6 @@ export type CreateCouponRequestInput = {
   status: CouponStatus;
 };
 
-export type CreateCustomArtistPackageRequestInput = {
-  amount: Scalars['Decimal']['input'];
-  artistId: Scalars['String']['input'];
-  clientId: Scalars['String']['input'];
-  conversationId: Scalars['String']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  estimateDeliveryDays: Scalars['Int']['input'];
-  maxRevision: Scalars['Int']['input'];
-  packageName: Scalars['String']['input'];
-  serviceDetails: Array<MetadataInput>;
-};
-
 export type CreateDirectRequestInput = {
   artistId: Scalars['String']['input'];
   packageId: Scalars['String']['input'];
@@ -1496,24 +1478,6 @@ export type CurrencyTypeOperationFilterInput = {
   in?: InputMaybe<Array<CurrencyType>>;
   neq?: InputMaybe<CurrencyType>;
   nin?: InputMaybe<Array<CurrencyType>>;
-};
-
-export type CustomArtistPackageInfo = {
-  __typename?: 'CustomArtistPackageInfo';
-  clientId: Scalars['String']['output'];
-  conversationId?: Maybe<Scalars['String']['output']>;
-};
-
-export type CustomArtistPackageInfoFilterInput = {
-  and?: InputMaybe<Array<CustomArtistPackageInfoFilterInput>>;
-  clientId?: InputMaybe<StringOperationFilterInput>;
-  conversationId?: InputMaybe<StringOperationFilterInput>;
-  or?: InputMaybe<Array<CustomArtistPackageInfoFilterInput>>;
-};
-
-export type CustomArtistPackageInfoSortInput = {
-  clientId?: InputMaybe<SortEnumType>;
-  conversationId?: InputMaybe<SortEnumType>;
 };
 
 export enum CustomerUpdate {
@@ -1824,7 +1788,6 @@ export type FollowingsUserCollectionSegment = {
 
 export enum HistoryActionType {
   Approved = 'APPROVED',
-  Canceled = 'CANCELED',
   Dismissed = 'DISMISSED',
   Rejected = 'REJECTED',
   RequestChange = 'REQUEST_CHANGE'
@@ -2564,7 +2527,6 @@ export type MutationInitialization = {
   createCategory: Scalars['Boolean']['output'];
   createComment: Scalars['Boolean']['output'];
   createCoupon: Scalars['Boolean']['output'];
-  createCustomArtistPackage: Scalars['Boolean']['output'];
   createCustomerPortalSession: Scalars['String']['output'];
   createEntitlement: Scalars['Boolean']['output'];
   createEscrowCommissionPolicy: Scalars['Boolean']['output'];
@@ -2587,7 +2549,6 @@ export type MutationInitialization = {
   deleteArtistPackage: Scalars['Boolean']['output'];
   deleteComment: Scalars['Boolean']['output'];
   deleteCoupon: Scalars['Boolean']['output'];
-  deleteCustomArtistPackage: Scalars['Boolean']['output'];
   deletePlaylist: Scalars['Boolean']['output'];
   deleteReport: Scalars['Boolean']['output'];
   deleteReviewHard: Scalars['Boolean']['output'];
@@ -2635,7 +2596,6 @@ export type MutationInitialization = {
   updateCategory: Scalars['Boolean']['output'];
   updateComment: Scalars['Boolean']['output'];
   updateConversationStatus: Scalars['Boolean']['output'];
-  updateCustomPackage: Scalars['Boolean']['output'];
   updateEscrowCommissionPolicy: Scalars['Boolean']['output'];
   updateListenerProfile: Scalars['Boolean']['output'];
   updateMetadataTrack: Scalars['Boolean']['output'];
@@ -2780,11 +2740,6 @@ export type MutationInitializationCreateCouponArgs = {
 };
 
 
-export type MutationInitializationCreateCustomArtistPackageArgs = {
-  createRequest: CreateCustomArtistPackageRequestInput;
-};
-
-
 export type MutationInitializationCreateCustomerPortalSessionArgs = {
   returnUrl: Scalars['String']['input'];
   version: Scalars['Long']['input'];
@@ -2894,11 +2849,6 @@ export type MutationInitializationDeleteCommentArgs = {
 
 export type MutationInitializationDeleteCouponArgs = {
   couponIds: Array<Scalars['String']['input']>;
-};
-
-
-export type MutationInitializationDeleteCustomArtistPackageArgs = {
-  artistPackageId: Scalars['String']['input'];
 };
 
 
@@ -3020,7 +2970,6 @@ export type MutationInitializationRejectArtistRegistrationArgs = {
 
 
 export type MutationInitializationRejectTrackUploadRequestArgs = {
-  isCancled?: Scalars['Boolean']['input'];
   reasonReject: Scalars['String']['input'];
   uploadId: Scalars['String']['input'];
 };
@@ -3140,11 +3089,6 @@ export type MutationInitializationUpdateCommentArgs = {
 export type MutationInitializationUpdateConversationStatusArgs = {
   conversationId: Scalars['String']['input'];
   status: ConversationStatus;
-};
-
-
-export type MutationInitializationUpdateCustomPackageArgs = {
-  updateRequest: UpdateCustomArtistPackageRequestInput;
 };
 
 
@@ -4459,7 +4403,6 @@ export type QueryInitializationOwnPlaylistsArgs = {
 
 
 export type QueryInitializationOwnRequestsArgs = {
-  order?: InputMaybe<Array<RequestSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<RequestFilterInput>;
@@ -4592,7 +4535,7 @@ export type QueryInitializationRequestDetailByIdArgs = {
 
 
 export type QueryInitializationRequestsArgs = {
-  order?: InputMaybe<Array<RequestSortInput>>;
+  order?: InputMaybe<Array<TrackSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<RequestFilterInput>;
@@ -4680,7 +4623,7 @@ export type QueryInitializationSearchRefundTransactionsArgs = {
 
 export type QueryInitializationSearchRequestsArgs = {
   isIndividual: Scalars['Boolean']['input'];
-  order?: InputMaybe<Array<RequestSortInput>>;
+  order?: InputMaybe<Array<TrackSortInput>>;
   searchTerm: Scalars['String']['input'];
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -6243,16 +6186,6 @@ export type UpdateCategoryRequestInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   popularity?: InputMaybe<Scalars['Int']['input']>;
   type?: InputMaybe<CategoryType>;
-};
-
-export type UpdateCustomArtistPackageRequestInput = {
-  amount?: InputMaybe<Scalars['Decimal']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  estimateDeliveryDays?: InputMaybe<Scalars['Int']['input']>;
-  id: Scalars['String']['input'];
-  maxRevision?: InputMaybe<Scalars['Int']['input']>;
-  packageName?: InputMaybe<Scalars['String']['input']>;
-  serviceDetails?: InputMaybe<Array<MetadataInput>>;
 };
 
 export type UpdateEntitlementRequestInput = {
