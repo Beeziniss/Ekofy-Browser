@@ -51,16 +51,25 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-xl">{request?.[0]?.title}</CardTitle>
-            <p className="text-muted-foreground mt-1 text-sm">{request?.[0]?.type}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <CardTitle className="text-xl">
+              {request?.[0]?.title || "Direct Collaboration Request"}
+            </CardTitle>
           </div>
-          <Badge
-            className={`${STATUS_CONFIG[request?.[0]?.status as RequestStatus]?.className} border font-semibold transition-colors`}
-          >
-            {STATUS_CONFIG[request?.[0]?.status as RequestStatus]?.label}
-          </Badge>
+          <div className="flex flex-col items-end gap-2">
+            <Badge
+              variant="outline"
+              className="bg-muted/50 text-muted-foreground border-muted text-xs font-medium"
+            >
+              {request?.[0]?.type}
+            </Badge>
+            <Badge
+              className={`${STATUS_CONFIG[request?.[0]?.status as RequestStatus]?.className} border font-semibold transition-colors`}
+            >
+              {STATUS_CONFIG[request?.[0]?.status as RequestStatus]?.label}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-8">
@@ -148,27 +157,45 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
             )}
           </div>
         </div>
-        <Separator />
-        {/* Summary */}
-        <div className="mb-3 flex items-center gap-2">
-          <h3 className="text-sm font-medium">Summary</h3>
-        </div>
-        <div className="prose prose-sm mb-4 max-w-none">
-          <p className="text-muted-foreground text-xl whitespace-pre-wrap">
-            {request?.[0]?.summary || "No summary provided"}
-          </p>
-        </div>
-        <Separator />
-        {/* Description */}
-        <div className="mb-3 flex items-center gap-2">
-          <h3 className="text-sm font-medium">Description</h3>
-        </div>
-        <div className="prose prose-sm max-w-none">
-          <p className="text-muted-foreground text-xl whitespace-pre-wrap">
-            {request?.[0]?.detailDescription || "No description provided"}
-          </p>
-        </div>
-
+        {request?.[0]?.requirements && (
+          <>
+            <Separator />
+            <div className="mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-medium">Requirements</h3>
+            </div>
+            <div className="prose prose-sm mb-4 max-w-none">
+              <p className="text-muted-foreground text-xl whitespace-pre-wrap">
+                {request?.[0]?.requirements || "No requirements provided"}
+              </p>
+            </div>
+          </>
+        )}
+        {request?.[0].summary && (
+          <>
+            <Separator />
+            <div className="mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-medium">Summary</h3>
+            </div>
+            <div className="prose prose-sm mb-4 max-w-none">
+              <p className="text-muted-foreground text-xl whitespace-pre-wrap">
+                {request?.[0]?.summary || "No summary provided"}
+              </p>
+            </div>
+          </>
+        )}
+        {request?.[0].detailDescription && (
+          <>
+            <Separator />
+            <div className="mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-medium">Description</h3>
+            </div>
+            <div className="prose prose-sm max-w-none">
+              <p className="text-muted-foreground text-xl whitespace-pre-wrap">
+                {request?.[0]?.detailDescription || "No description provided"}
+              </p>
+            </div>
+          </>
+        )}
         {/* Notes */}
         {request?.[0]?.notes && (
           <>

@@ -1,7 +1,12 @@
+"use client";
+
 import { graphql } from "@/gql";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import TrackInsightInfoSection from "../sections/track-insight-info-section";
+import TrackInsightChartSection from "../sections/track-insight-chart-section";
+import TrackInsightStatsSection from "../sections/track-insight-stats-section";
 
 interface TrackInsightViewProps {
   trackId: string;
@@ -25,6 +30,11 @@ export const TrackInsightViewQuery = graphql(`
 `);
 
 const TrackInsightView = ({ trackId }: TrackInsightViewProps) => {
+  const searchParams = useSearchParams();
+  const timeRange = searchParams.get("timeRange") || "last-7-days";
+  const dateFrom = searchParams.get("dateFrom");
+  const dateTo = searchParams.get("dateTo");
+
   return (
     <div className="w-full space-y-6 px-4 py-8">
       <Link
@@ -35,7 +45,11 @@ const TrackInsightView = ({ trackId }: TrackInsightViewProps) => {
         Back to Tracks
       </Link>
 
-      <TrackInsightInfoSection trackId={trackId} />
+      <TrackInsightInfoSection trackId={trackId} timeRange={timeRange} dateFrom={dateFrom} dateTo={dateTo} />
+
+      <TrackInsightStatsSection trackId={trackId} timeRange={timeRange} dateFrom={dateFrom} dateTo={dateTo} />
+
+      <TrackInsightChartSection trackId={trackId} timeRange={timeRange} dateFrom={dateFrom} dateTo={dateTo} />
     </div>
   );
 };

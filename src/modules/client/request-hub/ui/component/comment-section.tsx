@@ -158,7 +158,7 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
               className={`absolute top-1/2 right-0.5 -translate-y-1/2 border-0 px-3 py-1.5 ${
                 isAuthenticated
                   ? "primary_gradient text-white hover:opacity-70 disabled:cursor-not-allowed"
-                  : "bg-gray-600 text-gray-300 hover:bg-gray-500"
+                  : "primary_gradient text-white hover:opacity-70"
               }`}
             >
               <SendIcon className="mr-1 h-4 w-4" />

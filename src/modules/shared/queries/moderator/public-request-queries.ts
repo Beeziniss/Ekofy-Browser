@@ -2,7 +2,7 @@ import { graphql } from "@/gql";
 
 export const REQUEST_PUBLIC_QUERY = graphql(`
   query RequestsPublic($skip: Int, $take: Int, $where: RequestFilterInput) {
-    requests(skip: $skip, take: $take, where: $where) {
+    requests(skip: $skip, take: $take, where: $where, order: { postCreatedTime: DESC }) {
       pageInfo {
         hasNextPage
         hasPreviousPage

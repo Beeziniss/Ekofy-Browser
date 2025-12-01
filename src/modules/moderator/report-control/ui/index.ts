@@ -4,7 +4,7 @@ export { ReportDetailView } from "./view/report-detail-view";
 
 // Sections
 export { ReportFiltersSection } from "./section/report-filters-section";
-export { ReportTableSection } from "./section/report-table-section";
+// export { ReportTableSection } from "./section/report-table-section";
 export { ReportPaginationSection } from "./section/report-pagination-section";
 export { ReportDetailHeaderSection } from "./section/report-detail-header-section";
 export { ReportDetailInfoSection } from "./section/report-detail-info-section";

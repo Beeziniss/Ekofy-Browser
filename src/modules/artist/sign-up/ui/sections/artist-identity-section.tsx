@@ -357,7 +357,7 @@ const ArtistIdentitySection = ({ onNext, onBack, initialData }: ArtistIdentitySe
           {/* Right Side - Stage Name */}
           <div className="flex h-64 flex-col justify-center">
             <div>
-              <label className="mb-2 block text-sm font-medium text-white">Stage Name*</label>
+              <label className="mb-2 block text-sm font-medium text-white">Stage Name*<span className="text-red-500">*</span></label>
               <Input
                 value={stageName}
                 onChange={(e) => setStageName(e.target.value)}

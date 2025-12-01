@@ -1,5 +1,13 @@
 // Types for Track Approval System
 
+// Approval Priority Status Enum
+export enum ApprovalPriorityStatus {
+  High = "HIGH",
+  Low = "LOW",
+  Medium = "MEDIUM",
+  Urgent = "URGENT",
+}
+
 // Base User type for list view (limited fields)
 export interface UserBasic {
   __typename?: "User";
@@ -19,6 +27,7 @@ export interface UserDetailed extends UserBasic {
 // List view Track Upload Request (used in table)
 export interface TrackUploadRequestListItem {
   id: string;
+  approvalPriority?: ApprovalPriorityStatus | null;
   track: {
     id: string;
     name: string;
@@ -94,6 +103,7 @@ export interface TrackUploadRequestListItem {
 // Detail view Track Upload Request (used in detail page)
 export interface TrackUploadRequest {
   id: string;
+  approvalPriority?: ApprovalPriorityStatus | null;
   track: {
     id: string;
     name: string;

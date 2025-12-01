@@ -72,7 +72,7 @@ export function RejectTrackDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reject-reason">Reason for rejection *</Label>
+            <Label htmlFor="reject-reason">Reason for rejection <span className="text-red-500">*</span></Label>
             <Textarea
               id="reject-reason"
               placeholder="Please explain why this track is being rejected..."

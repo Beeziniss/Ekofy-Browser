@@ -93,9 +93,7 @@ const TransactionDetailSectionSuspense = ({
       </div>
     );
 
-  return (
-    <PaymentTransactionDetailSection referenceId={referenceId} backHref={backHref} transaction={transactionData} />
-  );
+  return <PaymentTransactionDetailSection backHref={backHref} transaction={transactionData} />;
 };
 
 export default TransactionDetailSection;

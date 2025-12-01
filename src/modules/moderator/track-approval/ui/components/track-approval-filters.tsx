@@ -1,41 +1,41 @@
 "use client";
 
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+// TODO: Uncomment when GraphQL supports search
+// import { useState } from "react";
+// import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+// import { Search, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, X } from "lucide-react";
+import { ApprovalPriorityStatus } from "@/types/approval-track";
 
 interface TrackApprovalFiltersProps {
   searchTerm: string;
   onSearchChange: (term: string) => void;
+  priorityFilter: ApprovalPriorityStatus | "ALL";
+  onPriorityChange: (priority: ApprovalPriorityStatus | "ALL") => void;
 }
 
-export function TrackApprovalFilters({ searchTerm, onSearchChange }: TrackApprovalFiltersProps) {
-  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
-  const [trackTypeFilter, setTrackTypeFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("pending");
+export function TrackApprovalFilters({
+  // searchTerm and onSearchChange kept for future search functionality
+  priorityFilter,
+  onPriorityChange,
+}: TrackApprovalFiltersProps) {
+  // TODO: Uncomment when GraphQL supports search
+  // const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearchChange(localSearchTerm);
-  };
+  // const handleSearchSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   onSearchChange(localSearchTerm);
+  // };
 
-  const clearSearch = () => {
-    setLocalSearchTerm("");
-    onSearchChange("");
-  };
-
-  const clearAllFilters = () => {
-    setLocalSearchTerm("");
-    setTrackTypeFilter("all");
-    setStatusFilter("pending");
-    onSearchChange("");
-  };
+  // const clearSearch = () => {
+  //   setLocalSearchTerm("");
+  //   onSearchChange("");
+  // };
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-      {/* Search */}
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
+      {/* TODO: Uncomment when GraphQL supports search functionality
       <form onSubmit={handleSearchSubmit} className="max-w-sm flex-1">
         <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -58,31 +58,32 @@ export function TrackApprovalFilters({ searchTerm, onSearchChange }: TrackApprov
           )}
         </div>
       </form>
+      */}
 
-      {/* Track Type Filter */}
-      <Select value={trackTypeFilter} onValueChange={setTrackTypeFilter}>
-        <SelectTrigger className="w-32">
-          <SelectValue placeholder="Track Type" />
+      {/* Priority Filter */}
+      <Select 
+        value={priorityFilter} 
+        onValueChange={(value) => onPriorityChange(value as ApprovalPriorityStatus | "ALL")}
+      >
+        <SelectTrigger className="w-40">
+          <SelectValue placeholder="Priority" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Types</SelectItem>
-          <SelectItem value="original">Original</SelectItem>
-          <SelectItem value="cover">Cover</SelectItem>
-          <SelectItem value="remix">Remix</SelectItem>
-          <SelectItem value="live">Live</SelectItem>
+          <SelectItem value="ALL">ALL PRIORITY</SelectItem>
+          <SelectItem value={ApprovalPriorityStatus.Urgent}>
+          URGENT
+          </SelectItem>
+          <SelectItem value={ApprovalPriorityStatus.High}>
+          HIGH
+          </SelectItem>
+          <SelectItem value={ApprovalPriorityStatus.Medium}>
+            MEDIUM
+          </SelectItem>
+          <SelectItem value={ApprovalPriorityStatus.Low}>
+            LOW
+          </SelectItem>
         </SelectContent>
       </Select>
-
-      {/* Status Filter */}
-
-      {/* Filter Actions */}
-      <div className="flex items-center gap-2">
-        {(localSearchTerm || trackTypeFilter !== "all" || statusFilter !== "pending") && (
-          <Button variant="ghost" size="sm" onClick={clearAllFilters}>
-            Clear All
-          </Button>
-        )}
-      </div>
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, RefreshCw } from "lucide-react";
 import { useArtistReports } from "../../hooks";
 import { ArtistReportStatusBadge } from "../components/artist-report-status-badge";
-import { ReportStatus } from "@/gql/graphql";
+import { ReportStatus, ReportType } from "@/gql/graphql";
 import { REPORT_TYPE_LABELS } from "@/types/report";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -21,14 +21,14 @@ interface ArtistReportListSectionProps {
 export function ArtistReportListSection({ className }: ArtistReportListSectionProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ReportStatus | "ALL">("ALL");
+  const [reportTypeFilter, setReportTypeFilter] = useState<ReportType | "ALL">("ALL");
   const [skip, setSkip] = useState(0);
   const take = 20;
 
-  const { data, isLoading, error, refetch } = useArtistReports(
-    skip,
-    take,
-    statusFilter && statusFilter !== "ALL" ? { status: { eq: statusFilter } } : undefined,
-  );
+  const { data, isLoading, error, refetch } = useArtistReports(skip, take, {
+    ...(statusFilter && statusFilter !== "ALL" ? { status: { eq: statusFilter } } : {}),
+    ...(reportTypeFilter && reportTypeFilter !== "ALL" ? { reportType: { eq: reportTypeFilter } } : {}),
+  });
 
   const reports = data?.items || [];
   const totalCount = data?.totalCount || 0;
@@ -84,32 +84,56 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end">
+            <div className="flex-1 space-y-2">
               <label className="text-main-white text-sm font-medium">Search</label>
               <div className="relative">
                 <Search className="text-main-grey absolute top-3 left-3 h-4 w-4" />
                 <Input
-                  placeholder="Search by description or ID..."
+                  placeholder="Search by user"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="bg-main-dark-bg-1 border-main-grey-dark-bg/50 text-main-white pl-10"
                 />
               </div>
             </div>
-            <div className="space-y-2">
+            <div className="w-full space-y-2 md:w-[200px]">
               <label className="text-main-white text-sm font-medium">Status</label>
               <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ReportStatus | "ALL")}>
                 <SelectTrigger className="bg-main-dark-bg-1 border-main-grey-dark-bg/50 text-main-white">
-                  <SelectValue placeholder="All statuses" />
+                  <SelectValue placeholder="ALL STATUSES" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">All statuses</SelectItem>
-                  <SelectItem value={ReportStatus.Pending}>Pending</SelectItem>
-                  <SelectItem value={ReportStatus.UnderReview}>Under Review</SelectItem>
-                  <SelectItem value={ReportStatus.Approved}>Approved</SelectItem>
-                  <SelectItem value={ReportStatus.Restored}>Restored</SelectItem>
-                  <SelectItem value={ReportStatus.Rejected}>Rejected</SelectItem>
+                  <SelectItem value="ALL">ALL STATUSES</SelectItem>
+                  <SelectItem value={ReportStatus.Pending}>PENDING</SelectItem>
+                  <SelectItem value={ReportStatus.UnderReview}>UNDER REVIEW</SelectItem>
+                  <SelectItem value={ReportStatus.Approved}>APPROVED</SelectItem>
+                  <SelectItem value={ReportStatus.Restored}>RESTORED</SelectItem>
+                  <SelectItem value={ReportStatus.Rejected}>REJECTED</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full space-y-2 md:w-[200px]">
+              <label className="text-main-white text-sm font-medium">Report Type</label>
+              <Select
+                value={reportTypeFilter}
+                onValueChange={(value) => setReportTypeFilter(value as ReportType | "ALL")}
+              >
+                <SelectTrigger className="bg-main-dark-bg-1 border-main-grey-dark-bg/50 text-main-white">
+                  <SelectValue placeholder="ALL TYPES" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">ALL TYPES</SelectItem>
+                  <SelectItem value={ReportType.Harassment}>HARASSMENT</SelectItem>
+                  <SelectItem value={ReportType.HateSpeech}>HATE SPEECH</SelectItem>
+                  <SelectItem value={ReportType.Impersonation}>IMPERSONATION</SelectItem>
+                  <SelectItem value={ReportType.CopyrightViolation}>COPYRIGHT VIOLATION</SelectItem>
+                  <SelectItem value={ReportType.FakeAccount}>FAKE ACCOUNT</SelectItem>
+                  <SelectItem value={ReportType.ScamOrFraud}>SCAM/FRAUD</SelectItem>
+                  <SelectItem value={ReportType.Spam}>SPAM</SelectItem>
+                  <SelectItem value={ReportType.InappropriateContent}>INAPPROPRIATE CONTENT</SelectItem>
+                  <SelectItem value={ReportType.SelfHarmOrDangerousContent}>SELF-HARM OR DANGEROUS</SelectItem>
+                  <SelectItem value={ReportType.Other}>OTHER</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -157,9 +181,9 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
                     <div className="text-main-grey-dark-1 flex items-center gap-4 text-sm">
                       <span>Created at: {format(new Date(report.createdAt), "dd/MM/yyyy HH:mm", { locale: vi })}</span>
                       {report.nicknameReported ? (
-                        <span>Report: {report.nicknameReported}</span>
+                        <span>Reported: {report.nicknameReported}</span>
                       ) : (
-                        <span>Report: Unknown</span>
+                        <span>Reported: Unknown</span>
                       )}
                     </div>
                   </div>

@@ -1,25 +1,61 @@
 "use client";
 
-import React, { useState } from "react";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  getPaginationRowModel,
+  SortingState,
+  getSortedRowModel,
+} from "@tanstack/react-table";
+import { useState } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { RequestsPublicQuery, RequestStatus } from "@/gql/graphql";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Eye, Lock, MoreVertical } from "lucide-react";
-import { RequestsPublicQuery, RequestStatus } from "@/gql/graphql";
+import { formatDistanceToNow } from "date-fns";
 import { BlockRequestDialog } from "./block-request-dialog";
 import { useBlockPublicRequest } from "@/gql/client-mutation-options/public-request-mutation-options";
-import { formatDistanceToNow } from "date-fns";
-import { TableCell, TableRow } from "@/components/ui/table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type RequestItem = NonNullable<NonNullable<RequestsPublicQuery["requests"]>["items"]>[0];
 
-interface PublicRequestCardProps {
-  request: RequestItem;
-  onViewDetails?: (id: string) => void;
+interface PublicRequestTableProps {
+  data: RequestItem[];
+  totalCount: number;
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  isLoading?: boolean;
+  error?: Error | null;
 }
 
-export function PublicRequestCard({ request, onViewDetails }: PublicRequestCardProps) {
+export function PublicRequestTable({
+  data,
+  totalCount,
+  currentPage,
+  pageSize,
+  onPageChange,
+  hasNextPage,
+  hasPreviousPage,
+  isLoading = false,
+  error = null,
+}: PublicRequestTableProps) {
+  const router = useRouter();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [blockingRequestId, setBlockingRequestId] = useState<string | null>(null);
   const [showBlockDialog, setShowBlockDialog] = useState(false);
   const blockRequestMutation = useBlockPublicRequest();
 
@@ -67,96 +103,233 @@ export function PublicRequestCard({ request, onViewDetails }: PublicRequestCardP
     return `${formatCurrency(budget.min)} - ${formatCurrency(budget.max)}`;
   };
 
-  const handleBlockClick = () => {
+  const handleBlockClick = (requestId: string) => {
+    setBlockingRequestId(requestId);
     setShowBlockDialog(true);
   };
 
   const handleConfirmBlock = async () => {
-    await blockRequestMutation.mutateAsync(request.id);
-    setShowBlockDialog(false);
+    if (blockingRequestId) {
+      await blockRequestMutation.mutateAsync(blockingRequestId);
+      setShowBlockDialog(false);
+      setBlockingRequestId(null);
+    }
   };
 
-  return (
-    <>
-      <TableRow className="border-gray-800">
-        <TableCell>
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-gray-700 text-sm text-gray-300">
-                {request.requestor?.[0]?.displayName?.charAt(0).toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-main-white">
-                {request.requestor?.[0]?.displayName || `User ${request.requestUserId.slice(-4)}`}
-              </span>
-            </div>
-          </div>
-        </TableCell>
-        <TableCell>
-          <div>
-            <p className="line-clamp-1 font-medium text-main-white">{request.title}</p>
-          </div>
-        </TableCell>
-        <TableCell>
-          <span className="text-sm text-main-white">{formatBudget(request.budget ?? null, request.currency)}</span>
-        </TableCell>
-        <TableCell className="text-center">
-          <span className="text-sm text-main-white">{request.duration} days</span>
-        </TableCell>
-        <TableCell className="text-center">
-          <Badge variant={getStatusVariant(request.status)} className="text-xs">
-            {formatStatus(request.status)}
-          </Badge>
-        </TableCell>
-        <TableCell className="text-center">
-          <span className="text-xs text-gray-400">
-            {formatDistanceToNow(new Date(request.postCreatedTime), { addSuffix: true })}
+  const columns: ColumnDef<RequestItem>[] = [
+    {
+      accessorKey: "No.",
+      header: "No.",
+      cell: ({ row }) => <span className="text-gray-300">{(currentPage - 1) * pageSize + row.index + 1}</span>,
+    },
+    {
+      accessorKey: "requestor",
+      header: "Requestor",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback className="bg-gray-700 text-sm text-gray-300">
+              {row.original.requestor?.[0]?.displayName?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-sm font-medium text-gray-300">
+            {row.original.requestor?.[0]?.displayName || `User ${row.original.requestUserId.slice(-4)}`}
           </span>
-        </TableCell>
-        <TableCell className="text-right">
+        </div>
+      ),
+    },
+    {
+      accessorKey: "title",
+      header: "Title",
+      cell: ({ row }) => <span className="font-medium text-gray-300">{row.original.title}</span>,
+    },
+    {
+      accessorKey: "budget",
+      header: "Budget",
+      cell: ({ row }) => (
+        <span className="text-gray-300">{formatBudget(row.original.budget ?? null, row.original.currency)}</span>
+      ),
+    },
+    {
+      accessorKey: "duration",
+      header: "Duration",
+      cell: ({ row }) => <span className="text-gray-300">{row.original.duration} days</span>,
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <Badge variant={getStatusVariant(row.original.status)} className="text-xs">
+          {formatStatus(row.original.status)}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: "postCreatedTime",
+      header: "Posted",
+      cell: ({ row }) => (
+        <span className="text-xs text-gray-400">
+          {formatDistanceToNow(new Date(row.original.postCreatedTime), { addSuffix: true })}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Action",
+      cell: ({ row }) => {
+        return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <MoreVertical className="h-4 w-4" />
+              <Button variant="ghost" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
+                <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {request.status === RequestStatus.Open ? (
-                <DropdownMenuItem onClick={() => onViewDetails?.(request.id)}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  View
-                </DropdownMenuItem>
-              ) : null}
-
-              {request.status === RequestStatus.Open && (
+            <DropdownMenuContent align="end" className="w-48">
+              {row.original.status === RequestStatus.Open && (
                 <DropdownMenuItem
-                  onClick={handleBlockClick}
+                  onClick={() => router.push(`/moderator/public-request/${row.original.id}`)}
+                  className="cursor-pointer text-gray-300 hover:bg-gray-700 hover:text-white"
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Details
+                </DropdownMenuItem>
+              )}
+              {row.original.status === RequestStatus.Open && (
+                <>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem
+                  onClick={() => handleBlockClick(row.original.id)}
                   disabled={blockRequestMutation.isPending}
-                  className="text-red-500"
+                  className="cursor-pointer text-red-400 hover:bg-gray-700 hover:text-red-300"
                 >
                   <Lock className="mr-2 h-4 w-4" />
                   Block
                 </DropdownMenuItem>
+                </>
               )}
-
-              {request.status !== RequestStatus.Open && (
-                <div className="text-sm text-main-white px-4 py-2">
-                  No actions available
-                </div>
+              {row.original.status !== RequestStatus.Open && (
+                <div className="px-2 py-1.5 text-xs text-gray-400">No actions available</div>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-        </TableCell>
-      </TableRow>
+        );
+      },
+    },
+  ];
 
-      <BlockRequestDialog
-        open={showBlockDialog}
-        onOpenChange={setShowBlockDialog}
-        onConfirm={handleConfirmBlock}
-        isLoading={blockRequestMutation.isPending}
-        requestTitle={request.title || "this request"}
-      />
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
+    manualPagination: true,
+    pageCount: Math.ceil(totalCount / pageSize),
+  });
+
+  const blockingRequest = data.find((r) => r.id === blockingRequestId);
+
+  return (
+    <>
+      <div className="space-y-4">
+        {/* Table */}
+        <div className="relative">
+          {/* Loading overlay */}
+          {isLoading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-gray-900/50">
+              <div className="flex items-center space-x-2">
+                <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-white"></div>
+                <span className="text-white">Loading...</span>
+              </div>
+            </div>
+          )}
+
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id} className="border-gray-700 hover:bg-gray-800">
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} className="text-gray-300">
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {error ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    <div className="text-red-400">Error loading requests: {error.message}</div>
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    className="border-gray-700 hover:bg-gray-800"
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center text-gray-400">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex items-center justify-between space-x-2 py-4">
+          <div className="text-sm text-gray-400">
+            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount}{" "}
+            entries
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={!hasPreviousPage || isLoading}
+              className="border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={!hasNextPage || isLoading}
+              className="border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {blockingRequest && (
+        <BlockRequestDialog
+          open={showBlockDialog}
+          onOpenChange={setShowBlockDialog}
+          onConfirm={handleConfirmBlock}
+          isLoading={blockRequestMutation.isPending}
+          requestTitle={blockingRequest.title || "this request"}
+        />
+      )}
     </>
   );
 }

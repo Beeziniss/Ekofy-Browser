@@ -191,7 +191,7 @@ const ArtistMembersSection = ({ onNext, onBack, initialData }: ArtistMembersSect
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* Full Name */}
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-white">Full name*</label>
+                  <label className="mb-2 block text-sm font-medium text-white">Full name<span className="text-red-500">*</span></label>
                   <Input
                     value={member.fullName}
                     onChange={(e) => updateMember(index, "fullName", e.target.value)}
@@ -205,7 +205,7 @@ const ArtistMembersSection = ({ onNext, onBack, initialData }: ArtistMembersSect
 
                 {/* Email */}
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-white">Email*</label>
+                  <label className="mb-2 block text-sm font-medium text-white">Email<span className="text-red-500">*</span></label>
                   <Input
                     type="email"
                     value={member.email}
@@ -220,7 +220,7 @@ const ArtistMembersSection = ({ onNext, onBack, initialData }: ArtistMembersSect
 
                 {/* Phone Number */}
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-white">Phone number*</label>
+                  <label className="mb-2 block text-sm font-medium text-white">Phone number<span className="text-red-500">*</span></label>
                   <Input
                     value={member.phoneNumber}
                     onChange={(e) => updateMember(index, "phoneNumber", e.target.value)}
@@ -234,7 +234,7 @@ const ArtistMembersSection = ({ onNext, onBack, initialData }: ArtistMembersSect
 
                 {/* Gender */}
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-white">Gender*</label>
+                  <label className="mb-2 block text-sm font-medium text-white">Gender<span className="text-red-500">*</span></label>
                   <Select value={member.gender} onValueChange={(value) => updateMember(index, "gender", value)}>
                     <SelectTrigger
                       className={`h-12 w-full rounded-md border ${errors[`member-${index}-gender`] ? "border-gradient-input-error" : "border-gradient-input"} px-3 py-2 text-white`}

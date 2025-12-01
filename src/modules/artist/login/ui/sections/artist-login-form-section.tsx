@@ -165,7 +165,12 @@ const ArtistLoginFormSection = () => {
                 onCheckedChange={(checked) => setRememberMe(!!checked)}
                 className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
               />
-              <label className="cursor-pointer text-sm text-white">Remember me</label>
+              <label 
+                className="cursor-pointer text-sm text-white"
+                onClick={() => setRememberMe(!rememberMe)}
+              >
+                Remember me
+              </label>
             </div>
             <Link href="/forgot-password" className="text-sm text-white underline transition-colors hover:text-blue-400">
               Forgot your password?

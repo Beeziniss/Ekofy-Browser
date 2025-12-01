@@ -2,7 +2,7 @@ import { graphql } from "@/gql";
 
 export const REQUEST_HUB_QUERY = graphql(`
   query Requests($skip: Int, $take: Int, $where: RequestFilterInput) {
-    requests(skip: $skip, take: $take, where: $where) {
+    requests(skip: $skip, take: $take, where: $where, order: { postCreatedTime: DESC }) {
       pageInfo {
         hasNextPage
         hasPreviousPage
@@ -113,7 +113,7 @@ export const SEARCH_REQUESTS_QUERY = graphql(`
 
 export const OWN_REQUESTS_QUERY = graphql(`
   query OwnRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
-    ownRequests(skip: $skip, take: $take, where: $where) {
+    ownRequests(skip: $skip, take: $take, where: $where, order: { postCreatedTime: DESC }) {
       pageInfo {
         hasNextPage
         hasPreviousPage

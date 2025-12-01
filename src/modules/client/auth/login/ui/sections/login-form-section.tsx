@@ -155,7 +155,12 @@ const LoginFormSection = () => {
                       onCheckedChange={field.onChange}
                       className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
                     />
-                    <label className="cursor-pointer text-sm text-white">Remember me</label>
+                    <label 
+                      className="cursor-pointer text-sm text-white"
+                      onClick={() => field.onChange(!field.value)}
+                    >
+                      Remember me
+                    </label>
                   </div>
                 )}
               />
