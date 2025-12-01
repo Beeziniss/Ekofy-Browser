@@ -6878,6 +6878,20 @@ export type SearchPlaylistsQueryVariables = Exact<{
 
 export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', searchPlaylists?: { __typename?: 'SearchPlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, checkPlaylistInFavorite: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
 
+export type CreateRoyaltyPolicyMutationVariables = Exact<{
+  createRoyalPolicyRequest: CreateRoyalPolicyRequestInput;
+}>;
+
+
+export type CreateRoyaltyPolicyMutation = { __typename?: 'MutationInitialization', createRoyaltyPolicy: boolean };
+
+export type UpdateRoyaltyPolicyMutationVariables = Exact<{
+  updateRoyalPolicyRequest: UpdateRoyalPolicyRequestInput;
+}>;
+
+
+export type UpdateRoyaltyPolicyMutation = { __typename?: 'MutationInitialization', updateRoyaltyPolicy: boolean };
+
 export type CreateSubscriptionMutationVariables = Exact<{
   createSubscriptionRequest: CreateSubscriptionRequestInput;
 }>;
@@ -7290,6 +7304,15 @@ export type AdminProfileQueryVariables = Exact<{
 
 
 export type AdminProfileQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus, role: UserRole, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type RoyaltyPoliciesQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RoyaltyPolicyFilterInput>;
+}>;
+
+
+export type RoyaltyPoliciesQuery = { __typename?: 'QueryInitialization', royaltyPolicies?: { __typename?: 'RoyaltyPoliciesCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'RoyaltyPolicy', id: string, ratePerStream: any, currency: CurrencyType, recordingPercentage: any, workPercentage: any, version: any, status: PolicyStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type SubscriptionsQueryVariables = Exact<{
   where: SubscriptionFilterInput;
@@ -8346,6 +8369,16 @@ export const SearchPlaylistsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SearchPlaylistsQuery, SearchPlaylistsQueryVariables>;
+export const CreateRoyaltyPolicyDocument = new TypedDocumentString(`
+    mutation createRoyaltyPolicy($createRoyalPolicyRequest: CreateRoyalPolicyRequestInput!) {
+  createRoyaltyPolicy(createRoyalPolicyRequest: $createRoyalPolicyRequest)
+}
+    `) as unknown as TypedDocumentString<CreateRoyaltyPolicyMutation, CreateRoyaltyPolicyMutationVariables>;
+export const UpdateRoyaltyPolicyDocument = new TypedDocumentString(`
+    mutation updateRoyaltyPolicy($updateRoyalPolicyRequest: UpdateRoyalPolicyRequestInput!) {
+  updateRoyaltyPolicy(updateRoyalPolicyRequest: $updateRoyalPolicyRequest)
+}
+    `) as unknown as TypedDocumentString<UpdateRoyaltyPolicyMutation, UpdateRoyaltyPolicyMutationVariables>;
 export const CreateSubscriptionDocument = new TypedDocumentString(`
     mutation CreateSubscription($createSubscriptionRequest: CreateSubscriptionRequestInput!) {
   createSubscription(createSubscriptionRequest: $createSubscriptionRequest)
@@ -8668,6 +8701,33 @@ export const AdminProfileDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AdminProfileQuery, AdminProfileQueryVariables>;
+export const RoyaltyPoliciesDocument = new TypedDocumentString(`
+    query RoyaltyPolicies($skip: Int, $take: Int, $where: RoyaltyPolicyFilterInput) {
+  royaltyPolicies(
+    skip: $skip
+    take: $take
+    where: $where
+    order: {createdAt: DESC}
+  ) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      ratePerStream
+      currency
+      recordingPercentage
+      workPercentage
+      version
+      status
+      createdAt
+      updatedAt
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<RoyaltyPoliciesQuery, RoyaltyPoliciesQueryVariables>;
 export const SubscriptionsDocument = new TypedDocumentString(`
     query Subscriptions($where: SubscriptionFilterInput!) {
   subscriptions(where: $where, order: {version: DESC}) {
