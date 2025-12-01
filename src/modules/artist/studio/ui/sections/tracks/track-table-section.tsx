@@ -75,8 +75,6 @@ const TrackTableSection = () => {
       }),
   });
 
-  console.log("hehheahsd");
-
   // Helper boolean to check if user is filtering (Search OR Privacy filter)
   const isFiltering = !!searchQuery || privacyFilter !== "all";
 

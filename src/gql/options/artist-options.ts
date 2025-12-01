@@ -11,6 +11,8 @@ import {
   GetArtistProfileQuery,
   TrackListWithFiltersQuery,
   TrackUploadArtistListQuery,
+  TrackUploadPendingRequestDetailQuery,
+  TrackUploadPendingRequestsQuery,
 } from "@/modules/shared/queries/artist";
 import { EngagementQuery } from "@/modules/shared/queries/artist/engagement-queries";
 
@@ -126,3 +128,28 @@ export const engagementOptions = queryOptions({
     return await execute(EngagementQuery, { where, takeTracks: 5 });
   },
 });
+
+// TRACK PENDING QUERIES
+export const trackUploadPendingRequestOptions = ({
+  pageNumber,
+  pageSize,
+  userId,
+}: {
+  pageNumber: number;
+  pageSize: number;
+  userId?: string;
+}) =>
+  queryOptions({
+    queryKey: ["track-upload-pending-requests"],
+    queryFn: async () => {
+      return await execute(TrackUploadPendingRequestsQuery, { pageNumber, pageSize, userId });
+    },
+  });
+
+export const trackUploadPendingRequestDetailOptions = (uploadId: string) =>
+  queryOptions({
+    queryKey: ["track-upload-pending-request-detail", uploadId],
+    queryFn: async () => {
+      return await execute(TrackUploadPendingRequestDetailQuery, { uploadId });
+    },
+  });
