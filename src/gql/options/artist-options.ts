@@ -7,6 +7,7 @@ import {
 } from "@/modules/shared/queries/artist/artist-packages-queries";
 import { ArtistPackageFilterInput, TrackFilterInput } from "@/gql/graphql";
 import {
+  ArtistTrackDetailQuery,
   CategoriesQuery,
   GetArtistProfileQuery,
   TrackListWithFiltersQuery,
@@ -152,4 +153,17 @@ export const trackUploadPendingRequestDetailOptions = (uploadId: string) =>
     queryFn: async () => {
       return await execute(TrackUploadPendingRequestDetailQuery, { uploadId });
     },
+  });
+
+// TRACK OPTIONS
+export const artistTrackDetailOptions = (trackId: string) =>
+  queryOptions({
+    queryKey: ["artist-track-detail", trackId],
+    queryFn: async () => {
+      const where: TrackFilterInput = { id: { eq: trackId } };
+      const result = await execute(ArtistTrackDetailQuery, { where });
+      return result.tracks?.items?.[0] || null;
+    },
+    enabled: !!trackId,
+    retry: 0,
   });

@@ -17,3 +17,9 @@ export const UploadTrackMutation = graphql(`
     )
   }
 `);
+
+export const UpdateTrackMetadataMutation = graphql(`
+  mutation UpdateTrackMetadata($updateTrackRequest: UpdateTrackRequestInput!) {
+    updateMetadataTrack(updateTrackRequest: $updateTrackRequest)
+  }
+`);
