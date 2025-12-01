@@ -2,13 +2,17 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ArrowLeft } from "lucide-react";
 import { useSignUpStore } from "@/store/stores/index";
 import useSignUp from "../../hook/use-sign-up";
 import { toast } from "sonner";
 import { ClientOTPVerificationSectionProps } from "@/types/listener-auth";
 import { EkofyLogo } from "@/assets/icons";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 const OTPVerificationSection = ({ onNext, onBack, initialData }: ClientOTPVerificationSectionProps) => {
   const { completeOTPVerification, goToPreviousStepFromOTP, formData, clearOTPData } = useSignUpStore();
@@ -48,17 +52,11 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: ClientOTPVerifi
     };
   }, [countdown]);
 
-  // Debug log to show what data is available
-  React.useEffect(() => {
-    console.log("OTP Section - Available form data:", formData);
-    console.log("OTP Section - Email available:", formData.email);
-  }, [formData]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!otp || otp.length !== 6 || !/^\d+$/.test(otp)) {
-      toast.error("Please enter a valid 6-digit numeric OTP");
+    if (!otp || otp.length !== 6) {
+      toast.error("Please enter a valid 6-digit OTP");
       return;
     }
 
@@ -76,12 +74,7 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: ClientOTPVerifi
     }
   };
 
-  const handleOTPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Allow only numeric input and limit to 6 characters
-    if (!/^\d*$/.test(value) || value.length > 6) {
-      return;
-    }
+  const handleOTPChange = (value: string) => {
     setOtp(value);
   };
 
@@ -141,20 +134,25 @@ const OTPVerificationSection = ({ onNext, onBack, initialData }: ClientOTPVerifi
         {/* OTP Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* OTP Field */}
-          <div>
-            <label htmlFor="otp" className="mb-2 block text-sm font-medium text-white">
-              OTP*
+          <div className="flex flex-col items-center space-y-4">
+            <label htmlFor="otp" className="block text-sm font-medium text-white">
+              Enter 6-digit verification code <span className="text-red-500">*</span>
             </label>
-            <Input
-              id="otp"
-              type="text"
+            <InputOTP
               maxLength={6}
               value={otp}
               onChange={handleOTPChange}
-              placeholder="Enter your 6-digit OTP"
-              required
-              className="border-gradient-input h-12 w-full text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
-            />
+              pattern="^[0-9]*$"
+            >
+              <InputOTPGroup>
+                <InputOTPSlot index={0} className="h-14 w-14 border-gray-600 bg-gray-800/50 text-xl text-white focus:border-blue-500 focus:ring-blue-500/50" />
+                <InputOTPSlot index={1} className="h-14 w-14 border-gray-600 bg-gray-800/50 text-xl text-white focus:border-blue-500 focus:ring-blue-500/50" />
+                <InputOTPSlot index={2} className="h-14 w-14 border-gray-600 bg-gray-800/50 text-xl text-white focus:border-blue-500 focus:ring-blue-500/50" />
+                <InputOTPSlot index={3} className="h-14 w-14 border-gray-600 bg-gray-800/50 text-xl text-white focus:border-blue-500 focus:ring-blue-500/50" />
+                <InputOTPSlot index={4} className="h-14 w-14 border-gray-600 bg-gray-800/50 text-xl text-white focus:border-blue-500 focus:ring-blue-500/50" />
+                <InputOTPSlot index={5} className="h-14 w-14 border-gray-600 bg-gray-800/50 text-xl text-white focus:border-blue-500 focus:ring-blue-500/50" />
+              </InputOTPGroup>
+            </InputOTP>
           </div>
 
           {/* Resend Code Link */}

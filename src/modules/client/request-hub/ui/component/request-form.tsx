@@ -155,7 +155,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="mb-2 block text-sm font-medium">Title</label>
+          <label className="mb-2 block text-sm font-medium">Title<span className="text-red-500">*</span></label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -166,7 +166,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">Summary</label>
+          <label className="mb-2 block text-sm font-medium">Summary<span className="text-red-500">*</span></label>
           <Textarea
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
@@ -177,7 +177,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">Detailed Description</label>
+          <label className="mb-2 block text-sm font-medium">Detailed Description<span className="text-red-500">*</span></label>
           <Editor
             value={detailDescription}
             onChange={setDetailDescription}
@@ -187,13 +187,13 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">Budget (VND)</label>
+          <label className="mb-2 block text-sm font-medium">Budget (VND)<span className="text-red-500">*</span></label>
           {budgetError && (
             <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{budgetError}</div>
           )}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-xs text-gray-500">Minimum Budget</label>
+              <label className="mb-1 block text-xs text-gray-500">Minimum Budget<span className="text-red-500">*</span></label>
               <Input
                 type="text"
                 value={budgetMin}
@@ -217,7 +217,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-gray-500">Maximum Budget</label>
+              <label className="mb-1 block text-xs text-gray-500">Maximum Budget<span className="text-red-500">*</span></label>
               <Input
                 type="text"
                 value={budgetMax}
@@ -250,7 +250,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">Duration (days)</label>
+          <label className="mb-2 block text-sm font-medium">Duration (days)<span className="text-red-500">*</span></label>
           {durationError && (
             <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{durationError}</div>
           )}

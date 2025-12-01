@@ -2,11 +2,12 @@ import { graphql } from "@/gql";
 
 // Track approval GraphQL queries using proper graphql() function
 export const PENDING_TRACK_UPLOAD_REQUESTS_QUERY = graphql(`
-  query PendingTrackUploadRequestsList($pageNumber: Int!, $pageSize: Int!) {
-    pendingTrackUploadRequests(pageNumber: $pageNumber, pageSize: $pageSize) {
+  query PendingTrackUploadRequestsList($pageNumber: Int!, $pageSize: Int!, $priority: ApprovalPriorityStatus) {
+    pendingTrackUploadRequests(pageNumber: $pageNumber, pageSize: $pageSize, priority: $priority) {
       totalCount
       items {
         id
+        approvalPriority
         track {
           id
           name
@@ -194,6 +195,7 @@ export const PENDING_TRACK_UPLOAD_REQUEST_BY_ID_QUERY = graphql(`
   query PendingTrackUploadRequestById($uploadId: String!) {
     pendingTrackUploadRequestById(uploadId: $uploadId) {
       id
+      approvalPriority
       requestedAt
       createdBy
       track {

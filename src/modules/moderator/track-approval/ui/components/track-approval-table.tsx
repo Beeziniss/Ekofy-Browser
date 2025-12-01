@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TrackUploadRequestListItem } from "@/types/approval-track";
+import { ApprovalPriorityStatus } from "@/types/approval-track";
 import { SimplePlayButton } from "./simple-play-button";
 import { ApproveTrackDialog } from "./approve-track-dialog";
 import { RejectTrackDialog } from "./reject-track-dialog";
@@ -117,6 +118,36 @@ export function TrackApprovalTable({
     }
   };
 
+  const getPriorityBadge = (priority?: ApprovalPriorityStatus | null) => {
+    if (!priority) return null;
+
+    const config = {
+      [ApprovalPriorityStatus.Urgent]: {
+        text: "URGENT",
+        className: "text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+      },
+      [ApprovalPriorityStatus.High]: {
+        text: "HIGH",
+        className: "text-red-800 dark:bg-red-900 dark:text-red-300",
+      },
+      [ApprovalPriorityStatus.Medium]: {
+        text: "MEDIUM",
+        className: "text-orange-800 dark:bg-orange-900 dark:text-orange-300",
+      },
+      [ApprovalPriorityStatus.Low]: {
+        text: "LOW",
+        className: "text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+      },
+    };
+
+    const priorityConfig = config[priority];
+    return (
+      <Badge variant="outline" className={cn("text-xs font-semibold", priorityConfig.className)}>
+        {priorityConfig.text}
+      </Badge>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="rounded-md border">
@@ -128,6 +159,7 @@ export function TrackApprovalTable({
               <TableHead>Track</TableHead>
               <TableHead>Artists</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Priority</TableHead>
               <TableHead>Requested</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
@@ -153,6 +185,9 @@ export function TrackApprovalTable({
                 </TableCell>
                 <TableCell>
                   <div className="bg-muted h-6 w-16 animate-pulse rounded" />
+                </TableCell>
+                <TableCell>
+                  <div className="bg-muted h-6 w-20 animate-pulse rounded" />
                 </TableCell>
                 <TableCell>
                   <div className="bg-muted h-4 w-20 animate-pulse rounded" />
@@ -189,6 +224,7 @@ export function TrackApprovalTable({
               <TableHead>Track</TableHead>
               <TableHead>Artists</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Priority</TableHead>
               <TableHead>Requested</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
@@ -254,6 +290,7 @@ export function TrackApprovalTable({
                     {item.track.type}
                   </Badge>
                 </TableCell>
+                <TableCell>{getPriorityBadge(item.approvalPriority)}</TableCell>
                 <TableCell>
                   <time className="text-muted-foreground text-sm">
                     {formatDistanceToNow(new Date(item.requestedAt), {

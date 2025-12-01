@@ -252,8 +252,8 @@ export function ProcessReportDialog({
                 control={form.control}
                 name="actionTaken"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Action *</FormLabel>
+                  <FormItem>  
+                    <FormLabel>Action <span className="text-red-500">*</span></FormLabel>
                     <Select
                       onValueChange={(value) => {
                         field.onChange(value);
@@ -296,7 +296,7 @@ export function ProcessReportDialog({
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status *</FormLabel>
+                      <FormLabel>Status <span className="text-red-500">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -328,7 +328,7 @@ export function ProcessReportDialog({
                   name="suspensionDays"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Suspension Days *</FormLabel>
+                      <FormLabel>Suspension Days </FormLabel>
                       <FormControl>
                         <Input
                           type="number"

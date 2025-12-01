@@ -133,7 +133,7 @@ const UpdatePackageService = ({
                 name="packageName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Package Name *</FormLabel>
+                    <FormLabel className="text-white">Package Name <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Input
                         {...field}

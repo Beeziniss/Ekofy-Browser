@@ -58,7 +58,7 @@ export function ReportStatusBadge({ status, className }: ReportStatusBadgeProps)
       variant={config.variant}
       className={cn(config.className, className)}
     >
-      {config.label}
+      {config.label.toUpperCase()}
     </Badge>
   );
 }

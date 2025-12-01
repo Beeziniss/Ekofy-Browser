@@ -25,12 +25,12 @@ export function StatusFilter({ selectedStatus, onStatusChange }: StatusFilterPro
   return (
     <Select value={selectedStatus} onValueChange={onStatusChange}>
       <SelectTrigger className="w-full lg:w-48">
-        <SelectValue placeholder="All Status" />
+        <SelectValue placeholder="ALL STATUS" />
       </SelectTrigger>
       <SelectContent>
         {statusOptions.map((option) => (
           <SelectItem key={option.value} value={option.value}>
-            {option.label}
+            {option.label.toUpperCase()}
           </SelectItem>
         ))}
       </SelectContent>

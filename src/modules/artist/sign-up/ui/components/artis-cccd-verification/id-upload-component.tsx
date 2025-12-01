@@ -55,7 +55,7 @@ const IDUploadComponent = ({
       {/* Front Side Upload */}
       <div className="mb-6">
         <label className="mb-2 flex items-center text-sm font-medium text-white">
-          Front side* <Info className="ml-1 h-4 w-4 text-gray-400" />
+          Front side <span className="text-red-500">*</span> <Info className="ml-1 h-4 w-4 text-gray-400" />
         </label>
         <div className="relative">
           <div
@@ -103,7 +103,7 @@ const IDUploadComponent = ({
       {/* Back Side Upload */}
       <div className="mb-6">
         <label className="mb-2 flex items-center text-sm font-medium text-white">
-          Back side* <Info className="ml-1 h-4 w-4 text-gray-400" />
+          Back side<span className="text-red-500">*</span> <Info className="ml-1 h-4 w-4 text-gray-400" />
         </label>
         <div className="relative">
           <div

@@ -114,15 +114,6 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
 
   return (
     <div className={className}>
-      <div className="mb-6">
-        <Button asChild variant="outline" size="sm">
-          <Link href="/profile/reports">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to list
-          </Link>
-        </Button>
-      </div>
-
       <div className="grid gap-6">
         {/* Header Card */}
         <Card>

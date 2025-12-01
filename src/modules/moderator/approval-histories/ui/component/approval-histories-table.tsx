@@ -63,6 +63,11 @@ export function ApprovalHistoriesTable({
 
   const columns: ColumnDef<ApprovalHistoryItem>[] = [
     {
+      accessorKey: "No.",
+      header: "No.",
+      cell: ({ row }) => <span className="text-gray-300">{(currentPage - 1) * pageSize + row.index + 1}</span>,
+    },
+    {
       accessorKey: "email",
       header: "Email",
       cell: ({ row }) => <span className="font-mono text-xs">{row.original.snapshot.Email}</span>,

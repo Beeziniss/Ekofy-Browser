@@ -3,7 +3,7 @@ import { graphql } from "@/gql";
 // Query for listing artist packages
 export const ServicePackageServiceViewQuery = graphql(`
   query ArtistPackagesService($skip: Int, $take: Int, $where: ArtistPackageFilterInput) {
-    artistPackages(skip: $skip, take: $take, where: $where) {
+    artistPackages(skip: $skip, take: $take, where: $where, order: { createdAt: DESC }) {
       totalCount
       items {
         id

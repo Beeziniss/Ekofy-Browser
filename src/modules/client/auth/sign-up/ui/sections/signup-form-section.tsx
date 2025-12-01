@@ -163,7 +163,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
           {/* Email Field */}
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-medium text-white">
-              Email*
+              Email<span className="text-red-500">*</span>
             </label>
             <Input
               id="email"
@@ -193,7 +193,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
           {/* Password Field */}
           <div>
             <label htmlFor="password" className="mb-2 block text-sm font-medium text-white">
-              Password*
+              Password<span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <Input
@@ -236,7 +236,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
           {/* Confirm Password Field */}
           <div>
             <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-white">
-              Confirm Password*
+              Confirm Password<span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <Input
