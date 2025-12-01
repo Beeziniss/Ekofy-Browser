@@ -66,6 +66,18 @@ export const authApi = {
         throw error;
       }
     },
+    linkgoogleAccount: async () => {
+      try {
+        const response = await axiosInstance.patch("/api/authentication/listener/link-google");
+        return response.data;
+      }
+      catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(error.response?.data?.message || error.message);
+        }
+        throw error;
+      }
+    },
   },
   artist: {
     login: async (email: string, password: string, isRememberMe: boolean): Promise<ArtistLoginResponse> => {

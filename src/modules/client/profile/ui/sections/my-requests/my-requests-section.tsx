@@ -214,6 +214,10 @@ export default function MyRequestsSection() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">All Statuses</SelectItem>
+                  <SelectItem value={GqlRequestStatus.Open}>Open</SelectItem>
+                  <SelectItem value={GqlRequestStatus.Closed}>Closed</SelectItem>
+                  <SelectItem value={GqlRequestStatus.Blocked}>Blocked</SelectItem>
+                  <SelectItem value={GqlRequestStatus.Deleted}>Deleted</SelectItem>
                   <SelectItem value={GqlRequestStatus.Pending}>Pending</SelectItem>
                   <SelectItem value={GqlRequestStatus.Confirmed}>Confirmed</SelectItem>
                   <SelectItem value={GqlRequestStatus.Canceled}>Canceled</SelectItem>

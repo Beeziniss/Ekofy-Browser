@@ -1442,6 +1442,8 @@ export type CreateSubscriptionRequestInput = {
 export type CreateTrackRequestInput = {
   categoryIds: Array<Scalars['String']['input']>;
   coverImage: Scalars['String']['input'];
+  createdByArtistId?: InputMaybe<Scalars['String']['input']>;
+  createdByUserId?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   featuredArtistIds: Array<Scalars['String']['input']>;
   isExplicit: Scalars['Boolean']['input'];
@@ -6160,6 +6162,7 @@ export type TrackTempRequest = {
   categoryIds: Array<Scalars['String']['output']>;
   coverImage: Scalars['String']['output'];
   createdBy: Scalars['String']['output'];
+  createdByArtistId?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   featuredArtistIds: Array<Scalars['String']['output']>;
   id: Scalars['String']['output'];
@@ -7630,7 +7633,7 @@ export type ListenerRequestsQueryVariables = Exact<{
 }>;
 
 
-export type ListenerRequestsQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, duration: number, status: RequestStatus, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<(
+export type ListenerRequestsQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, duration: number, status: RequestStatus, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<(
         { __typename?: 'Artist' }
         & { ' $fragmentRefs'?: { 'RequestArtistFragment': RequestArtistFragment } }
       )>, artistPackage: Array<(
@@ -7645,7 +7648,7 @@ export type ListenerRequestByIdQueryVariables = Exact<{
 }>;
 
 
-export type ListenerRequestByIdQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, duration: number, status: RequestStatus, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<(
+export type ListenerRequestByIdQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, duration: number, status: RequestStatus, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<(
         { __typename?: 'Artist' }
         & { ' $fragmentRefs'?: { 'RequestArtistFragment': RequestArtistFragment } }
       )>, artistPackage: Array<(
@@ -7756,7 +7759,7 @@ export type GetListenerProfileQueryVariables = Exact<{
 }>;
 
 
-export type GetListenerProfileQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, createdAt: any, followerCount: any, followingCount: any, isVerified: boolean, user: Array<{ __typename?: 'User', birthDate: any, gender: UserGender }> }> | null } | null };
+export type GetListenerProfileQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string, avatarImage?: string | null, bannerImage?: string | null, createdAt: any, followerCount: any, followingCount: any, isVerified: boolean, user: Array<{ __typename?: 'User', birthDate: any, gender: UserGender, isLinkedWithGoogle: boolean }> }> | null } | null };
 
 export type GetUserActiveSubscriptionQueryVariables = Exact<{
   where?: InputMaybe<UserSubscriptionFilterInput>;
@@ -10049,7 +10052,12 @@ export const CheckPublicRequestExistenceDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<CheckPublicRequestExistenceQuery, CheckPublicRequestExistenceQueryVariables>;
 export const ListenerRequestsDocument = new TypedDocumentString(`
     query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
-  requests(skip: $skip, take: $take, where: $where) {
+  requests(
+    skip: $skip
+    take: $take
+    where: $where
+    order: {postCreatedTime: DESC}
+  ) {
     totalCount
     items {
       id
@@ -10064,6 +10072,7 @@ export const ListenerRequestsDocument = new TypedDocumentString(`
       currency
       duration
       status
+      postCreatedTime
       requestCreatedTime
       updatedAt
       notes
@@ -10115,6 +10124,7 @@ export const ListenerRequestByIdDocument = new TypedDocumentString(`
       currency
       duration
       status
+      postCreatedTime
       requestCreatedTime
       updatedAt
       notes
@@ -10539,6 +10549,7 @@ export const GetListenerProfileDocument = new TypedDocumentString(`
       user {
         birthDate
         gender
+        isLinkedWithGoogle
       }
     }
   }
