@@ -1442,6 +1442,8 @@ export type CreateSubscriptionRequestInput = {
 export type CreateTrackRequestInput = {
   categoryIds: Array<Scalars['String']['input']>;
   coverImage: Scalars['String']['input'];
+  createdByArtistId?: InputMaybe<Scalars['String']['input']>;
+  createdByUserId?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   featuredArtistIds: Array<Scalars['String']['input']>;
   isExplicit: Scalars['Boolean']['input'];
@@ -6160,6 +6162,7 @@ export type TrackTempRequest = {
   categoryIds: Array<Scalars['String']['output']>;
   coverImage: Scalars['String']['output'];
   createdBy: Scalars['String']['output'];
+  createdByArtistId?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   featuredArtistIds: Array<Scalars['String']['output']>;
   id: Scalars['String']['output'];
@@ -6949,6 +6952,13 @@ export type UploadTrackMutationVariables = Exact<{
 
 export type UploadTrackMutation = { __typename?: 'MutationInitialization', uploadTrack: boolean };
 
+export type UpdateTrackMetadataMutationVariables = Exact<{
+  updateTrackRequest: UpdateTrackRequestInput;
+}>;
+
+
+export type UpdateTrackMetadataMutation = { __typename?: 'MutationInitialization', updateMetadataTrack: boolean };
+
 export type UpdateArtistProfileMutationVariables = Exact<{
   updateArtistRequest: UpdateArtistRequestInput;
 }>;
@@ -7432,6 +7442,13 @@ export type TrackUploadPendingRequestDetailQueryVariables = Exact<{
 
 
 export type TrackUploadPendingRequestDetailQuery = { __typename?: 'QueryInitialization', pendingTrackUploadRequestById: { __typename?: 'CombinedUploadRequest', id: string, requestedAt: any, createdBy: string, track: { __typename?: 'TrackTempRequest', id: string, name: string, description?: string | null, type: TrackType, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, coverImage: string, isExplicit: boolean, tags: Array<string>, categoryIds: Array<string>, lyrics?: string | null, previewVideo?: string | null, createdBy: string, requestedAt: any, releaseInfo: { __typename?: 'ReleaseInfo', isRelease: boolean, releaseDate?: any | null, releasedAt?: any | null, releaseStatus: ReleaseStatus }, legalDocuments: Array<{ __typename?: 'LegalDocument', name: string, documentUrl: string, documentType: DocumentType, note: string }> }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string }> | null } | null, recordingUsers?: { __typename?: 'RecordingUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, workUsers?: { __typename?: 'WorkUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, work: { __typename?: 'WorkTempRequest', id: string, description?: string | null }, recording: { __typename?: 'RecordingTempRequest', id: string, description?: string | null } } };
+
+export type ArtistTrackDetailQueryQueryVariables = Exact<{
+  where: TrackFilterInput;
+}>;
+
+
+export type ArtistTrackDetailQueryQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, categoryIds: Array<string>, checkTrackInFavorite: boolean, createdAt: any, featuredArtistIds: Array<string>, popularity: any, tags: Array<string>, type: TrackType, nameUnsigned: string, legalDocuments: Array<{ __typename?: 'LegalDocument', documentType: DocumentType, documentUrl: string, name: string, note: string }>, restriction: { __typename?: 'Restriction', action?: RestrictionAction | null, expired?: any | null, reason?: string | null, type: RestrictionType, reportId?: string | null, restrictedAt?: any | null }, syncedLyrics: Array<{ __typename?: 'SyncedLine', text: string, time: number }>, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null } | null };
 
 export type TrackUploadArtistListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8403,6 +8420,11 @@ export const UploadTrackDocument = new TypedDocumentString(`
   )
 }
     `) as unknown as TypedDocumentString<UploadTrackMutation, UploadTrackMutationVariables>;
+export const UpdateTrackMetadataDocument = new TypedDocumentString(`
+    mutation UpdateTrackMetadata($updateTrackRequest: UpdateTrackRequestInput!) {
+  updateMetadataTrack(updateTrackRequest: $updateTrackRequest)
+}
+    `) as unknown as TypedDocumentString<UpdateTrackMetadataMutation, UpdateTrackMetadataMutationVariables>;
 export const UpdateArtistProfileDocument = new TypedDocumentString(`
     mutation UpdateArtistProfile($updateArtistRequest: UpdateArtistRequestInput!) {
   updateArtistProfile(updateArtistRequest: $updateArtistRequest)
@@ -9309,6 +9331,57 @@ export const TrackUploadPendingRequestDetailDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TrackUploadPendingRequestDetailQuery, TrackUploadPendingRequestDetailQueryVariables>;
+export const ArtistTrackDetailQueryDocument = new TypedDocumentString(`
+    query ArtistTrackDetailQuery($where: TrackFilterInput!) {
+  tracks(where: $where, skip: 0, take: 1) {
+    items {
+      id
+      name
+      description
+      mainArtistIds
+      streamCount
+      favoriteCount
+      coverImage
+      isExplicit
+      categoryIds
+      checkTrackInFavorite
+      createdAt
+      featuredArtistIds
+      legalDocuments {
+        documentType
+        documentUrl
+        name
+        note
+      }
+      popularity
+      restriction {
+        action
+        expired
+        reason
+        type
+        reportId
+        restrictedAt
+      }
+      syncedLyrics {
+        text
+        time
+      }
+      tags
+      type
+      nameUnsigned
+      releaseInfo {
+        releaseDate
+        isRelease
+      }
+      mainArtists {
+        items {
+          stageName
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ArtistTrackDetailQueryQuery, ArtistTrackDetailQueryQueryVariables>;
 export const TrackUploadArtistListDocument = new TypedDocumentString(`
     query TrackUploadArtistList {
   artists(where: {isVisible: {eq: true}}, take: 50) {
