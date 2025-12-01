@@ -7339,14 +7339,14 @@ export type ArtistPackagesServiceQueryVariables = Exact<{
 }>;
 
 
-export type ArtistPackagesServiceQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number, updatedAt?: any | null, createdAt: any, artistId: string, status: ArtistPackageStatus, isDelete: boolean, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type ArtistPackagesServiceQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number, isCustom: boolean, updatedAt?: any | null, createdAt: any, artistId: string, status: ArtistPackageStatus, isDelete: boolean, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }>, customPackageInfo: { __typename?: 'CustomArtistPackageInfo', clientId: string, conversationId?: string | null } }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type ArtistPackagesDetailQueryVariables = Exact<{
   where?: InputMaybe<ArtistPackageFilterInput>;
 }>;
 
 
-export type ArtistPackagesDetailQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number, status: ArtistPackageStatus, isDelete: boolean, createdAt: any, updatedAt?: any | null, artistId: string, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> | null } | null };
+export type ArtistPackagesDetailQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, isCustom: boolean, description?: string | null, maxRevision: number, status: ArtistPackageStatus, isDelete: boolean, createdAt: any, updatedAt?: any | null, artistId: string, customPackageInfo: { __typename?: 'CustomArtistPackageInfo', clientId: string, conversationId?: string | null }, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> | null } | null };
 
 export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8820,6 +8820,11 @@ export const ArtistPackagesServiceDocument = new TypedDocumentString(`
         key
         value
       }
+      customPackageInfo {
+        clientId
+        conversationId
+      }
+      isCustom
       updatedAt
       createdAt
       artistId
@@ -8842,6 +8847,11 @@ export const ArtistPackagesDetailDocument = new TypedDocumentString(`
       amount
       currency
       estimateDeliveryDays
+      customPackageInfo {
+        clientId
+        conversationId
+      }
+      isCustom
       description
       maxRevision
       serviceDetails {
