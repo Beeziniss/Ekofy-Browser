@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 interface TrackTableHeaderProps {
   totalTracks: number;
@@ -90,6 +91,13 @@ const TrackTableHeader = ({ totalTracks, serverTotalCount }: TrackTableHeaderPro
       </div>
 
       <div className="flex items-center gap-3">
+        <Link href="/artist/studio/tracks/pending">
+          <Button variant="outline" className="flex items-center gap-2">
+            <Clock className="size-4" />
+            Pending Requests
+          </Button>
+        </Link>
+
         <Select value={currentPrivacy} onValueChange={handlePrivacyFilter}>
           <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="Privacy" />
