@@ -36,7 +36,7 @@ export const CheckPublicRequestExistenceQuery = graphql(`
  */
 export const RequestsQuery = graphql(`
   query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
-    requests(skip: $skip, take: $take, where: $where) {
+    requests(skip: $skip, take: $take, where: $where, order: { postCreatedTime: DESC }) {
       totalCount
       items {
         id
@@ -51,6 +51,7 @@ export const RequestsQuery = graphql(`
         currency
         duration
         status
+        postCreatedTime
         requestCreatedTime
         updatedAt
         notes
@@ -93,6 +94,7 @@ export const RequestQuery = graphql(`
         currency
         duration
         status
+        postCreatedTime
         requestCreatedTime
         updatedAt
         notes

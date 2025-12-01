@@ -122,6 +122,7 @@ export const GetListenerProfileQuery = graphql(`
         user {
           birthDate
           gender
+          isLinkedWithGoogle
         }
       }
     }

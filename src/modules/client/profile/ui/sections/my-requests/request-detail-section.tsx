@@ -176,10 +176,10 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
         {/* Main Card with all details */}
         <Card>
           <CardHeader>
-            <div className="flex items-start justify-between space-y-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+            <div className="flex items-start justify-between space-y-4 rounded-lg border p-4">
               <div className="flex-1">
                 <CardTitle className="mb-2 text-2xl">
-                  {request.title || `Request for ${artist?.[0].stageName || "Service"}`}
+                  {request.title || `Request for ${artist?.[0].stageName || "Service"}`} - {request.type}
                 </CardTitle>
                 <div className="flex items-center gap-2">{requestStatusBadge(request.status)}</div>
               </div>
@@ -188,7 +188,7 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
           <CardContent className="space-y-6">
             {/* Artist Info & Key Information */}
 
-            <div className="space-y-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+            <div className="space-y-4 rounded-lg border p-4">
               {/* Artist Info */}
               {artist && (
                 <div className="flex items-start gap-3 border-b border-gray-700 pb-4">
@@ -196,10 +196,10 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                   <div className="flex-1">
                     <p className="text-sm text-gray-400">Sent to</p>
                     <Link
-                      href={`/artist/${"userId" in artist && artist.userId ? artist.userId : request.artistId}`}
+                      href={`/artists/${"userId" in artist && artist.userId ? artist.userId : request.artistId}`}
                       className="hover:text-main-purple text-lg font-semibold text-white transition-colors"
                     >
-                      {artist?.[0].stageName}
+                      {artist?.[0]?.stageName || "Unknown Artist"}
                     </Link>
                   </div>
                 </div>
@@ -230,7 +230,7 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                   <div>
                     <p className="text-sm text-gray-400">Created</p>
                     <p className="text-lg font-semibold text-white">
-                      {formatDateTime(request.requestCreatedTime || request.updatedAt)}
+                      {formatDateTime(request.postCreatedTime || request.requestCreatedTime)}
                     </p>
                   </div>
                 </div>
@@ -245,28 +245,57 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                 </div> */}
               </div>
             </div>
-
-            {/* Description Section */}
-            <div className="space-y-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
-              <h3 className="text-lg font-semibold">Requirements</h3>
-              {request.requirements && (
+            {request.summary && (
+            <div className="space-y-4 rounded-lg border p-4">
+              <h3 className="text-lg font-semibold">Summary</h3>
                 <div>
-                  <h4 className="mb-2 text-sm font-semibold text-gray-400">Requirements</h4>
+                  <p className="text-white" dangerouslySetInnerHTML={{ __html: request.summary }}></p>
+                </div>
+
+              {!request.summary && <p className="text-gray-400">No summary provided</p>}
+            </div>
+              )}
+              {request.detailDescription && (
+            <div className="space-y-4 rounded-lg border p-4">
+              <h3 className="text-lg font-semibold">Detail Description</h3>
+                <div>
+                  <p className="text-white" dangerouslySetInnerHTML={{ __html: request.detailDescription }}></p>
+                </div>
+              {!request.detailDescription && <p className="text-gray-400">No detail description provided</p>}
+            </div>
+              )}
+            {/* Description Section */}
+              {request.requirements && (
+            <div className="space-y-4 rounded-lg border p-4">
+              <h3 className="text-lg font-semibold">Requirements</h3>
+                <div>
                   <p className="text-white" dangerouslySetInnerHTML={{ __html: request.requirements }}></p>
                 </div>
-              )}
-              {!request.requirements && <p className="text-gray-400">No requirements provided</p>}
+x              {!request.requirements && <p className="text-gray-400">No requirements provided</p>}
             </div>
+              )}
+
+            {/* Budget */}
+            {request.budget && (
+              <div className="space-y-4 rounded-lg border p-4">
+              <h3 className="text-lg font-semibold">Budget</h3>
+              <div>
+                <p className="text-lg font-semibold text-white">
+                {request.budget.min?.toLocaleString()} - {request.budget.max?.toLocaleString()} {request.currency?.toUpperCase() || "USD"}
+                </p>
+              </div>
+              </div>
+            )}
 
             {/* Package Information Section */}
-            {artistPackage && (
+            {(artistPackage ?? []).length > 0 && (
               <div className="space-y-4 border-t border-gray-700 pt-6">
                 <h3 className="text-lg font-semibold">Package Chosen</h3>
-                <div className="space-y-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+                <div className="space-y-4 rounded-lg border p-4">
                   {/* Package Name */}
                   <div>
                     <p className="text-sm text-gray-400">Package Name</p>
-                    <p className="text-lg font-semibold text-white">{artistPackage?.[0].packageName}</p>
+                    <p className="text-lg font-semibold text-white">{artistPackage?.[0]?.packageName || "Package Name Not Available"}</p>
                   </div>
 
                   {/* Package Details - Single Line */}
@@ -275,8 +304,8 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                     <div>
                       <p className="text-sm text-gray-400">Package Price</p>
                       <p className="text-lg font-semibold text-white">
-                        {artistPackage?.[0].amount?.toLocaleString()}{" "}
-                        {artistPackage?.[0].currency?.toUpperCase() || "USD"}
+                        {artistPackage?.[0]?.amount?.toLocaleString()}{" "}
+                        {artistPackage?.[0]?.currency?.toUpperCase() ||"USD"}
                       </p>
                     </div>
 
@@ -284,8 +313,8 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                     <div>
                       <p className="text-sm text-gray-400">Estimated Delivery</p>
                       <p className="text-lg font-semibold text-white">
-                        {artistPackage?.[0].estimateDeliveryDays}{" "}
-                        {artistPackage?.[0].estimateDeliveryDays === 1 ? "day" : "days"}
+                        {artistPackage?.[0]?.estimateDeliveryDays}{" "}
+                        {artistPackage?.[0]?.estimateDeliveryDays === 1 ? "day" : "days"}
                       </p>
                     </div>
 
@@ -293,16 +322,16 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                     <div>
                       <p className="text-sm text-gray-400">Revisions Included</p>
                       <p className="text-lg font-semibold text-white">
-                        {artistPackage?.[0].maxRevision === -1 ? "Unlimited" : artistPackage?.[0].maxRevision}
+                        {artistPackage?.[0]?.maxRevision === -1 ? "Unlimited" : artistPackage?.[0]?.maxRevision || 0} revisions
                       </p>
                     </div>
                   </div>
 
                   {/* Package Description */}
-                  {artistPackage?.[0].description && (
+                  {artistPackage?.[0]?.description && (
                     <div className="border-t border-gray-700 pt-4">
                       <p className="mb-2 text-sm text-gray-400">Package Description</p>
-                      <p className="whitespace-pre-wrap text-white">{artistPackage?.[0].description}</p>
+                      <p className="whitespace-pre-wrap text-white">{artistPackage?.[0]?.description}</p>
                     </div>
                   )}
                 </div>
@@ -329,9 +358,6 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
               {changeStatusMutation.isPending ? "Canceling..." : "Cancel Request"}
             </Button>
           )}
-          <Button variant="outline" asChild>
-            <Link href="/profile/my-requests">Back to My Requests</Link>
-          </Button>
         </div>
       </div>
 

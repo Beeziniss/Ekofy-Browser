@@ -32,6 +32,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+      </head>
       <body className={`${beVietNamPro.variable} ${poppins.variable} bg-main-dark-bg font-bepro antialiased`}>
         <Providers>{children}</Providers>
         <Toaster
