@@ -17,6 +17,11 @@ export const ServicePackageServiceViewQuery = graphql(`
           key
           value
         }
+        customPackageInfo {
+          clientId
+          conversationId
+        }
+        isCustom
         updatedAt
         createdAt
         artistId
@@ -41,6 +46,11 @@ export const ServicePackageDetailQuery = graphql(`
         amount
         currency
         estimateDeliveryDays
+        customPackageInfo {
+          clientId
+          conversationId
+        }
+        isCustom
         description
         maxRevision
         serviceDetails {
@@ -55,7 +65,7 @@ export const ServicePackageDetailQuery = graphql(`
       }
     }
   }
-`)
+`);
 
 // Query for pending packages
 // export const PendingArtistPackagesQuery = graphql(`

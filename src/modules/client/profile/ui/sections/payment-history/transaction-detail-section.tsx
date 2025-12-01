@@ -79,9 +79,7 @@ const TransactionDetailSectionSuspense = ({
   const transactionData = data?.paymentTransactions?.items?.[0];
   if (!transactionData) return <div className="p-4">Transaction not found.</div>;
 
-  return (
-    <PaymentTransactionDetailSection referenceId={referenceId} backHref={backHref} transaction={transactionData} />
-  );
+  return <PaymentTransactionDetailSection backHref={backHref} transaction={transactionData} />;
 };
 
 export default TransactionDetailSection;

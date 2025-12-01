@@ -49,7 +49,7 @@ export function middleware(request: NextRequest) {
     // Default: redirect to appropriate dashboard based on role
     const dashboardPath =
       user.role === UserRole.ADMIN
-        ? "/admin/user-management"
+        ? "/admin"
         : user.role === UserRole.MODERATOR
           ? "/moderator/track-approval"
           : user.role === UserRole.ARTIST
@@ -96,7 +96,7 @@ export function middleware(request: NextRequest) {
 
   if (isListenerRoute && isAuthenticated && user && [UserRole.MODERATOR, UserRole.ADMIN].includes(user.role)) {
     // Redirect to their appropriate dashboard
-    const dashboardPath = user.role === UserRole.ADMIN ? "/admin/user-management" : "/moderator/track-approval";
+    const dashboardPath = user.role === UserRole.ADMIN ? "/admin" : "/moderator/track-approval";
     url.pathname = dashboardPath;
     return NextResponse.redirect(url);
   }
@@ -150,7 +150,7 @@ export function middleware(request: NextRequest) {
       // Redirect to appropriate dashboard or unauthorized page
       const redirectPath =
         user.role === UserRole.ADMIN
-          ? "/admin/user-management"
+          ? "/admin"
           : user.role === UserRole.MODERATOR
             ? "/moderator/track-approval"
             : user.role === UserRole.ARTIST
@@ -184,7 +184,7 @@ export function middleware(request: NextRequest) {
     // Redirect to appropriate dashboard based on user's role
     const dashboardPath =
       user.role === UserRole.ADMIN
-        ? "/admin/user-management"
+        ? "/admin"
         : user.role === UserRole.MODERATOR
           ? "/moderator/track-approval"
           : user.role === UserRole.ARTIST

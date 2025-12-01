@@ -13,14 +13,16 @@ interface PaymentTransactionDetailProps {
   title?: string;
   backHref: string;
   backLabel?: string;
-  referenceId: string;
-  transaction: Omit<PaymentTransaction, "user" | "userId">;
+  transaction: Pick<PaymentTransaction, 
+    "id" | "amount" | "currency" | "createdAt" | "updatedAt" | 
+    "paymentStatus" | "status" | "stripePaymentMethod" | "stripePaymentId" | 
+    "stripeCheckoutSessionId" | "stripeInvoiceId" | "stripeSubscriptionId"
+  >;
 }
 
 export default function PaymentTransactionDetailSection({
   transaction,
   backHref,
-  referenceId,
   title = "Transaction Detail",
   backLabel = "Back to Payment History",
 }: PaymentTransactionDetailProps) {
@@ -60,7 +62,7 @@ export default function PaymentTransactionDetailSection({
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">{title}</h1>
-          <p className="text-muted-foreground text-sm">Reference: {referenceId}</p>
+          {/* <p className="text-muted-foreground text-sm">Transaction ID: {referenceId}</p> */}
         </div>
         <Link
           href={backHref}
@@ -73,7 +75,7 @@ export default function PaymentTransactionDetailSection({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <span>#{transaction.id.slice(-8)}</span>
+            <span>Transaction: #{transaction.id}</span>
             {paymentStatusBadge(transaction.paymentStatus)}
           </CardTitle>
         </CardHeader>
@@ -93,6 +95,16 @@ export default function PaymentTransactionDetailSection({
               <dt className="text-muted-foreground text-sm">Payment methods</dt>
               <dd className="flex items-center gap-2 text-sm">
                 {transaction.stripePaymentMethod.map((method, index) => methodBadge(method, index))}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground text-sm">Stripe Transaction ID:</dt>
+              <dd className="text-sm">
+                {transaction.stripePaymentId || (
+                  <span className="text-gray-500 italic">
+                    {transaction.paymentStatus === "UNPAID" ? "Pending payment" : "N/A"}
+                  </span>
+                )}
               </dd>
             </div>
           </dl>

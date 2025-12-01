@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTrackUploadProgress } from "@/hooks/use-track-upload-progress";
 import { TrackUploadProgress } from "@/components/track-upload-progress";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { EkofyLogoXs } from "@/assets/icons";
+import TrackUploadSuccessDialog from "@/components/track-upload-success-dialog";
 
 const Page = () => {
   const router = useRouter();
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const {
     progress: signalRProgress,
     isCompleted: signalRCompleted,
@@ -30,17 +32,17 @@ const Page = () => {
     };
   }, [startConnection, stopConnection]);
 
-  // Redirect to successful page when upload is completed
+  // Show success dialog when upload is completed
   useEffect(() => {
     if (signalRCompleted) {
-      // Add a small delay to show the 100% completion before redirecting
+      // Add a small delay to show the 100% completion before showing dialog
       const timer = setTimeout(() => {
-        router.push("/artist/track-uploading/successful");
+        setShowSuccessDialog(true);
       }, 2000);
 
       return () => clearTimeout(timer);
     }
-  }, [signalRCompleted, router]);
+  }, [signalRCompleted]);
 
   const handleCancel = async () => {
     await stopConnection();
@@ -82,6 +84,9 @@ const Page = () => {
           />
         </div>
       </div>
+
+      {/* Success Dialog */}
+      <TrackUploadSuccessDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog} />
     </div>
   );
 };
