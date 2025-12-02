@@ -4,6 +4,8 @@ import SettingsSection from "../sections/settings-section";
 import ActivitySection from "../sections/activity-section";
 import type { UserGender } from "@/gql/graphql";
 import SubscriptionSection from "../sections/subscription-section";
+import OrderSection from "../sections/order-section";
+import SupportSection from "../sections/support-section";
 
 interface DetailViewProps {
   personal: {
@@ -26,7 +28,9 @@ const DetailView = ({ personal, account, userId }: DetailViewProps) => {
       <AccountDetailSection account={account} />
       <SubscriptionSection />
       <SettingsSection />
-      <ActivitySection userId={userId} />
+      <OrderSection userId={userId} />
+      <ActivitySection />
+      <SupportSection />
     </div>
   );
 };

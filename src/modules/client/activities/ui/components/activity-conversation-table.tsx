@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/format-currency";
 import { getUserInitials } from "@/utils/format-shorten-name";
 import { calculateDeadline } from "@/utils/calculate-deadline";
@@ -12,6 +10,7 @@ import { PackageOrderStatus, OrderPackageQuery } from "@/gql/graphql";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate } from "date-fns";
+import OrderActionsDropdown from "@/modules/client/order/ui/components/order-actions-dropdown";
 
 type OrderItem = NonNullable<NonNullable<OrderPackageQuery["packageOrders"]>["items"]>[number];
 
@@ -22,6 +21,7 @@ interface ActivityConversationTableProps {
   currentPage: number;
   pageSize: number;
   onPageChange: (page: number) => void;
+  onStatusChange?: () => void;
 }
 
 const statusBadgeVariants = {
@@ -40,6 +40,7 @@ const ActivityConversationTable = ({
   currentPage,
   pageSize,
   onPageChange,
+  onStatusChange,
 }: ActivityConversationTableProps) => {
   return (
     <div className="space-y-6">
@@ -52,7 +53,7 @@ const ActivityConversationTable = ({
               <TableHead className="w-52">Deadline</TableHead>
               <TableHead className="w-44">Total</TableHead>
               <TableHead className="w-28">Status</TableHead>
-              <TableHead className="w-20"></TableHead>
+              <TableHead className="w-20">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -106,9 +107,7 @@ const ActivityConversationTable = ({
 
                     {/* Actions */}
                     <TableCell className="w-20">
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/orders/${order.id}/details`}>View</Link>
-                      </Button>
+                      <OrderActionsDropdown orderId={order.id} status={order.status} onSuccess={onStatusChange} />
                     </TableCell>
                   </TableRow>
                 );
