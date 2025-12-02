@@ -33,6 +33,8 @@ type Documents = {
     "\n  query SearchPlaylists($skip: Int, $take: Int, $name: String!) {\n    searchPlaylists(skip: $skip, take: $take, name: $name) {\n      totalCount\n      items {\n        id\n        userId\n        name\n        nameUnsigned\n        tracksInfo {\n          trackId\n          addedTime\n        }\n        coverImage\n        isPublic\n        user {\n          id\n          fullName\n        }\n        checkPlaylistInFavorite\n      }\n    }\n  }\n": typeof types.SearchPlaylistsDocument,
     "\n    mutation createRoyaltyPolicy ($createRoyalPolicyRequest: CreateRoyalPolicyRequestInput!) {\n        createRoyaltyPolicy (createRoyalPolicyRequest: $createRoyalPolicyRequest) \n}\n": typeof types.CreateRoyaltyPolicyDocument,
     "\n    mutation updateRoyaltyPolicy ($updateRoyalPolicyRequest: UpdateRoyalPolicyRequestInput!) {\n        updateRoyaltyPolicy (updateRoyalPolicyRequest: $updateRoyalPolicyRequest) \n}\n": typeof types.UpdateRoyaltyPolicyDocument,
+    "\n    mutation DowngradeRoyaltyPolicyVersion ($version: Long) {\n        downgradeRoyaltyPolicyVersion (version: $version) \n}\n": typeof types.DowngradeRoyaltyPolicyVersionDocument,
+    "\n    mutation SwitchToLatestVersion {\n    switchToLatestVersion\n}\n": typeof types.SwitchToLatestVersionDocument,
     "\n  mutation CreateSubscription($createSubscriptionRequest: CreateSubscriptionRequestInput!) {\n    createSubscription(createSubscriptionRequest: $createSubscriptionRequest)\n  }\n": typeof types.CreateSubscriptionDocument,
     "\n  mutation CreateSubscriptionPlan($createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!) {\n    createSubscriptionPlan(createSubScriptionPlanRequest: $createSubScriptionPlanRequest)\n  }\n": typeof types.CreateSubscriptionPlanDocument,
     "\n  mutation ActivateSubscription($subscriptionId: String!) {\n    activateSubscription(subscriptionId: $subscriptionId)\n  }\n": typeof types.ActivateSubscriptionDocument,
@@ -191,6 +193,8 @@ const documents: Documents = {
     "\n  query SearchPlaylists($skip: Int, $take: Int, $name: String!) {\n    searchPlaylists(skip: $skip, take: $take, name: $name) {\n      totalCount\n      items {\n        id\n        userId\n        name\n        nameUnsigned\n        tracksInfo {\n          trackId\n          addedTime\n        }\n        coverImage\n        isPublic\n        user {\n          id\n          fullName\n        }\n        checkPlaylistInFavorite\n      }\n    }\n  }\n": types.SearchPlaylistsDocument,
     "\n    mutation createRoyaltyPolicy ($createRoyalPolicyRequest: CreateRoyalPolicyRequestInput!) {\n        createRoyaltyPolicy (createRoyalPolicyRequest: $createRoyalPolicyRequest) \n}\n": types.CreateRoyaltyPolicyDocument,
     "\n    mutation updateRoyaltyPolicy ($updateRoyalPolicyRequest: UpdateRoyalPolicyRequestInput!) {\n        updateRoyaltyPolicy (updateRoyalPolicyRequest: $updateRoyalPolicyRequest) \n}\n": types.UpdateRoyaltyPolicyDocument,
+    "\n    mutation DowngradeRoyaltyPolicyVersion ($version: Long) {\n        downgradeRoyaltyPolicyVersion (version: $version) \n}\n": types.DowngradeRoyaltyPolicyVersionDocument,
+    "\n    mutation SwitchToLatestVersion {\n    switchToLatestVersion\n}\n": types.SwitchToLatestVersionDocument,
     "\n  mutation CreateSubscription($createSubscriptionRequest: CreateSubscriptionRequestInput!) {\n    createSubscription(createSubscriptionRequest: $createSubscriptionRequest)\n  }\n": types.CreateSubscriptionDocument,
     "\n  mutation CreateSubscriptionPlan($createSubScriptionPlanRequest: CreateSubScriptionPlanRequestInput!) {\n    createSubscriptionPlan(createSubScriptionPlanRequest: $createSubScriptionPlanRequest)\n  }\n": types.CreateSubscriptionPlanDocument,
     "\n  mutation ActivateSubscription($subscriptionId: String!) {\n    activateSubscription(subscriptionId: $subscriptionId)\n  }\n": types.ActivateSubscriptionDocument,
@@ -403,6 +407,14 @@ export function graphql(source: "\n    mutation createRoyaltyPolicy ($createRoya
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    mutation updateRoyaltyPolicy ($updateRoyalPolicyRequest: UpdateRoyalPolicyRequestInput!) {\n        updateRoyaltyPolicy (updateRoyalPolicyRequest: $updateRoyalPolicyRequest) \n}\n"): typeof import('./graphql').UpdateRoyaltyPolicyDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation DowngradeRoyaltyPolicyVersion ($version: Long) {\n        downgradeRoyaltyPolicyVersion (version: $version) \n}\n"): typeof import('./graphql').DowngradeRoyaltyPolicyVersionDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation SwitchToLatestVersion {\n    switchToLatestVersion\n}\n"): typeof import('./graphql').SwitchToLatestVersionDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

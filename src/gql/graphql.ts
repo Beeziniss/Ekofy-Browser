@@ -2628,6 +2628,8 @@ export type MutationInitialization = {
   softDeleteCategory: Scalars['Boolean']['output'];
   submitDelivery: Scalars['Boolean']['output'];
   switchStatusByRequestor: Scalars['Boolean']['output'];
+  switchToLatestVersion: Scalars['Boolean']['output'];
+  testDateComparing: Scalars['Boolean']['output'];
   testGenrateMonthlyRoyaltyReportsAynsc: Scalars['Boolean']['output'];
   testTransferMoneyToArtist: TransferResponse;
   unbanUser: Scalars['Boolean']['output'];
@@ -4181,6 +4183,7 @@ export type QueryInitialization = {
   reportStatistics: ReportStatisticsResponse;
   reports?: Maybe<ReportsCollectionSegment>;
   requestDetailById?: Maybe<Request>;
+  requestHubComments?: Maybe<RequestHubCommentsCollectionSegment>;
   requests?: Maybe<RequestsCollectionSegment>;
   royaltyPolicies?: Maybe<RoyaltyPoliciesCollectionSegment>;
   royaltyReports?: Maybe<RoyaltyReportsCollectionSegment>;
@@ -4198,6 +4201,8 @@ export type QueryInitialization = {
   threadedComments: ThreadedCommentsResponse;
   topTracks: Array<TopTrackResponse>;
   trackBySemanticSearch: Array<Track>;
+  trackComments?: Maybe<TrackCommentsCollectionSegment>;
+  trackDailyMetrics?: Maybe<TrackDailyMetricsCollectionSegment>;
   tracks?: Maybe<TracksCollectionSegment>;
   userEngagement?: Maybe<UserEngagementCollectionSegment>;
   userSubscriptions?: Maybe<UserSubscriptionsCollectionSegment>;
@@ -4599,6 +4604,14 @@ export type QueryInitializationRequestDetailByIdArgs = {
 };
 
 
+export type QueryInitializationRequestHubCommentsArgs = {
+  order?: InputMaybe<Array<CommentSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<CommentFilterInput>;
+};
+
+
 export type QueryInitializationRequestsArgs = {
   order?: InputMaybe<Array<RequestSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -4728,6 +4741,22 @@ export type QueryInitializationThreadedCommentsArgs = {
 
 export type QueryInitializationTrackBySemanticSearchArgs = {
   term: Scalars['String']['input'];
+};
+
+
+export type QueryInitializationTrackCommentsArgs = {
+  order?: InputMaybe<Array<CommentSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<CommentFilterInput>;
+};
+
+
+export type QueryInitializationTrackDailyMetricsArgs = {
+  order?: InputMaybe<Array<TrackDailyMetricSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TrackDailyMetricFilterInput>;
 };
 
 
@@ -5324,6 +5353,16 @@ export type RequestFilterInput = {
   titleUnsigned?: InputMaybe<StringOperationFilterInput>;
   type?: InputMaybe<RequestTypeOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
+};
+
+/** A segment of a collection. */
+export type RequestHubCommentsCollectionSegment = {
+  __typename?: 'RequestHubCommentsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Comment>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type RequestSortInput = {
@@ -6098,6 +6137,62 @@ export type TrackMainArtistsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ArtistFilterInput>;
+};
+
+/** A segment of a collection. */
+export type TrackCommentsCollectionSegment = {
+  __typename?: 'TrackCommentsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Comment>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type TrackDailyMetric = {
+  __typename?: 'TrackDailyMetric';
+  commentCount: Scalars['Long']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  downloadCount: Scalars['Long']['output'];
+  favoriteCount: Scalars['Long']['output'];
+  id: Scalars['String']['output'];
+  streamCount: Scalars['Long']['output'];
+  trackId: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type TrackDailyMetricFilterInput = {
+  and?: InputMaybe<Array<TrackDailyMetricFilterInput>>;
+  commentCount?: InputMaybe<LongOperationFilterInput>;
+  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  downloadCount?: InputMaybe<LongOperationFilterInput>;
+  favoriteCount?: InputMaybe<LongOperationFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<TrackDailyMetricFilterInput>>;
+  streamCount?: InputMaybe<LongOperationFilterInput>;
+  trackId?: InputMaybe<StringOperationFilterInput>;
+  updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
+};
+
+export type TrackDailyMetricSortInput = {
+  commentCount?: InputMaybe<SortEnumType>;
+  createdAt?: InputMaybe<SortEnumType>;
+  downloadCount?: InputMaybe<SortEnumType>;
+  favoriteCount?: InputMaybe<SortEnumType>;
+  id?: InputMaybe<SortEnumType>;
+  streamCount?: InputMaybe<SortEnumType>;
+  trackId?: InputMaybe<SortEnumType>;
+  updatedAt?: InputMaybe<SortEnumType>;
+};
+
+/** A segment of a collection. */
+export type TrackDailyMetricsCollectionSegment = {
+  __typename?: 'TrackDailyMetricsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<TrackDailyMetric>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type TrackFilterInput = {
@@ -6891,6 +6986,18 @@ export type UpdateRoyaltyPolicyMutationVariables = Exact<{
 
 
 export type UpdateRoyaltyPolicyMutation = { __typename?: 'MutationInitialization', updateRoyaltyPolicy: boolean };
+
+export type DowngradeRoyaltyPolicyVersionMutationVariables = Exact<{
+  version?: InputMaybe<Scalars['Long']['input']>;
+}>;
+
+
+export type DowngradeRoyaltyPolicyVersionMutation = { __typename?: 'MutationInitialization', downgradeRoyaltyPolicyVersion: boolean };
+
+export type SwitchToLatestVersionMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SwitchToLatestVersionMutation = { __typename?: 'MutationInitialization', switchToLatestVersion: boolean };
 
 export type CreateSubscriptionMutationVariables = Exact<{
   createSubscriptionRequest: CreateSubscriptionRequestInput;
@@ -8379,6 +8486,16 @@ export const UpdateRoyaltyPolicyDocument = new TypedDocumentString(`
   updateRoyaltyPolicy(updateRoyalPolicyRequest: $updateRoyalPolicyRequest)
 }
     `) as unknown as TypedDocumentString<UpdateRoyaltyPolicyMutation, UpdateRoyaltyPolicyMutationVariables>;
+export const DowngradeRoyaltyPolicyVersionDocument = new TypedDocumentString(`
+    mutation DowngradeRoyaltyPolicyVersion($version: Long) {
+  downgradeRoyaltyPolicyVersion(version: $version)
+}
+    `) as unknown as TypedDocumentString<DowngradeRoyaltyPolicyVersionMutation, DowngradeRoyaltyPolicyVersionMutationVariables>;
+export const SwitchToLatestVersionDocument = new TypedDocumentString(`
+    mutation SwitchToLatestVersion {
+  switchToLatestVersion
+}
+    `) as unknown as TypedDocumentString<SwitchToLatestVersionMutation, SwitchToLatestVersionMutationVariables>;
 export const CreateSubscriptionDocument = new TypedDocumentString(`
     mutation CreateSubscription($createSubscriptionRequest: CreateSubscriptionRequestInput!) {
   createSubscription(createSubscriptionRequest: $createSubscriptionRequest)

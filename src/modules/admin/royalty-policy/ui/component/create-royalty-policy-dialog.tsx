@@ -22,13 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CurrencyType } from "@/gql/graphql";
@@ -40,7 +34,6 @@ const formSchema = z.object({
   ratePerStream: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
     message: "Rate must be a positive number",
   }),
-  currency: z.nativeEnum(CurrencyType),
   recordingPercentage: z
     .string()
     .refine((val) => !isNaN(Number(val)) && Number(val) >= 0 && Number(val) <= 100, {
@@ -55,10 +48,11 @@ const formSchema = z.object({
   (data) => {
     const recording = Number(data.recordingPercentage);
     const work = Number(data.workPercentage);
-    return Math.abs(recording + work - 100) < 0.01; // Allow for floating point precision
+    const total = recording + work;
+    return total <= 100;
   },
   {
-    message: "Recording and Work percentages must total 100%",
+    message: "Total of Recording and Work percentages must not exceed 100%",
     path: ["workPercentage"],
   }
 );
@@ -82,7 +76,6 @@ export function CreateRoyaltyPolicyDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       ratePerStream: "",
-      currency: CurrencyType.Vnd,
       recordingPercentage: "50",
       workPercentage: "50",
     },
@@ -91,14 +84,13 @@ export function CreateRoyaltyPolicyDialog({
   const createMutation = useMutation({
     mutationFn: async (input: {
       ratePerStream: number;
-      currency: CurrencyType;
       recordingPercentage: number;
       workPercentage: number;
     }) => {
       return await execute(CREATE_ROYALTY_POLICY, {
         createRoyalPolicyRequest: {
           ratePerStream: input.ratePerStream,
-          currency: input.currency,
+          currency: CurrencyType.Vnd, // Always use VND
           recordingPercentage: input.recordingPercentage,
           workPercentage: input.workPercentage,
         },
@@ -122,7 +114,6 @@ export function CreateRoyaltyPolicyDialog({
     setIsSubmitting(true);
     createMutation.mutate({
       ratePerStream: Number(values.ratePerStream),
-      currency: values.currency,
       recordingPercentage: Number(values.recordingPercentage),
       workPercentage: Number(values.workPercentage),
     });
@@ -150,35 +141,10 @@ export function CreateRoyaltyPolicyDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="currency"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Currency</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select currency" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value={CurrencyType.Vnd}>VND</SelectItem>
-                      <SelectItem value={CurrencyType.Usd}>USD</SelectItem>
-                      <SelectItem value={CurrencyType.Eur}>EUR</SelectItem>
-                      <SelectItem value={CurrencyType.Gbp}>GBP</SelectItem>
-                      <SelectItem value={CurrencyType.Jpy}>JPY</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="ratePerStream"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Rate Per Stream</FormLabel>
+                  <FormLabel>Rate Per Stream (VND)<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -200,7 +166,7 @@ export function CreateRoyaltyPolicyDialog({
               name="recordingPercentage"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Recording Percentage</FormLabel>
+                  <FormLabel>Recording Percentage<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -209,6 +175,14 @@ export function CreateRoyaltyPolicyDialog({
                       max="100"
                       placeholder="50"
                       {...field}
+                      onInput={(e) => {
+                        const input = e.currentTarget;
+                        if (Number(input.value) > 100) {
+                          input.value = "100";
+                        } else if (Number(input.value) < 0) {
+                          input.value = "0";
+                        }
+                      }}
                       onChange={(e) => {
                         field.onChange(e);
                         handleRecordingChange(e.target.value);
@@ -228,7 +202,7 @@ export function CreateRoyaltyPolicyDialog({
               name="workPercentage"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Work Percentage</FormLabel>
+                  <FormLabel>Work Percentage<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -237,6 +211,14 @@ export function CreateRoyaltyPolicyDialog({
                       max="100"
                       placeholder="50"
                       {...field}
+                      onInput={(e) => {
+                        const input = e.currentTarget;
+                        if (Number(input.value) > 100) {
+                          input.value = "100";
+                        } else if (Number(input.value) < 0) {
+                          input.value = "0";
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormDescription>
@@ -249,8 +231,9 @@ export function CreateRoyaltyPolicyDialog({
 
             <div className="bg-muted rounded-md p-4">
               <p className="text-muted-foreground text-sm">
-                <strong>Note:</strong> Recording and Work percentages must total 100%. The
-                policy will be created in PENDING status and requires activation.
+                <strong>Note:</strong> Currency is set to VND by default. Recording and Work 
+                percentages must not exceed 100% in total. The policy will be created in INACTIVE 
+                status and requires activation.
               </p>
             </div>
 

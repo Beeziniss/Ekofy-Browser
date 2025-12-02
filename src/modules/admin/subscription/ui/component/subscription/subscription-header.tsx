@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -71,7 +70,7 @@ export function SubscriptionHeader({ subscription, onBack, onActivate, hasPlans,
           <AlertDialogHeader>
             <AlertDialogTitle>Activate Subscription</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to activate the subscription "{subscription.name}"? This action will make the subscription active and available to users.
+              Are you sure you want to activate the subscription &quot;{subscription.name}&quot;? This action will make the subscription active and available to users.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -11,3 +11,15 @@ export const UPDATE_ROYALTY_POLICY = graphql(`
         updateRoyaltyPolicy (updateRoyalPolicyRequest: $updateRoyalPolicyRequest) 
 }
 `);
+
+export const DOWN_GRADE_ROYALTY_POLICY_VERSION = graphql(`
+    mutation DowngradeRoyaltyPolicyVersion ($version: Long) {
+        downgradeRoyaltyPolicyVersion (version: $version) 
+}
+`);
+
+export const SWITCH_TO_LASTEST_VERSION = graphql(`
+    mutation SwitchToLatestVersion {
+    switchToLatestVersion
+}
+`);

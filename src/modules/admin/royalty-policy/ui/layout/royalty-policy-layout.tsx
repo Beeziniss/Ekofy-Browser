@@ -21,7 +21,7 @@ export function RoyaltyPolicyLayout({
           </div>
         </div>
 
-        <div className="bg-card text-card-foreground rounded-lg border shadow-sm">
+        <div>
           <div className="p-4 md:p-6">{children}</div>
         </div>
       </div>

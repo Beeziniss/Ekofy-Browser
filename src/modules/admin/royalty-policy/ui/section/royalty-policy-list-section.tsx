@@ -1,33 +1,51 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { Plus, ArrowDownToLine, ArrowUpToLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import { RoyaltyPolicyTable } from "../component/royalty-policy-table";
 import { RoyaltyPolicyFilters } from "../component/royalty-policy-filters";
 import { CreateRoyaltyPolicyDialog } from "../component/create-royalty-policy-dialog";
-import { royaltyPoliciesOptions } from "@/gql/options/royalty-policies-options";
+import { DowngradeVersionDialog } from "../component/downgrade-version-dialog";
+import { SwitchToLatestDialog } from "../component/switch-to-latest-dialog";
+import { royaltyPoliciesOptions, isCurrentVersionLatest, isDowngradeAvailable } from "@/gql/options/royalty-policies-options";
 import {
   CurrencyType,
   PolicyStatus,
   RoyaltyPolicyFilterInput,
-  RoyaltyPoliciesQuery,
 } from "@/gql/graphql";
 
-type RoyaltyPolicy = NonNullable<
-  NonNullable<RoyaltyPoliciesQuery["royaltyPolicies"]>["items"]
->[number];
-
 export function RoyaltyPolicyListSection() {
-  const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Initialize state from URL params
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isDowngradeDialogOpen, setIsDowngradeDialogOpen] = useState(false);
+  const [isSwitchToLatestDialogOpen, setIsSwitchToLatestDialogOpen] = useState(false);
+
   const [filters, setFilters] = useState<{
     search?: string;
     currency?: CurrencyType;
     status?: PolicyStatus;
-  }>({});
+  }>({
+    status: searchParams.get("status") ? (searchParams.get("status") as PolicyStatus) : undefined,
+  });
+
+  // Sync URL params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (currentPage > 1) params.set("page", currentPage.toString());
+    if (filters.status) params.set("status", filters.status);
+
+    const queryString = params.toString();
+    router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
+  }, [currentPage, filters.status, router, pathname]);
 
   const pageSize = 10;
   const skip = (currentPage - 1) * pageSize;
@@ -62,7 +80,7 @@ export function RoyaltyPolicyListSection() {
   const handleFiltersChange = useCallback(
     (newFilters: { search?: string; currency?: CurrencyType; status?: PolicyStatus }) => {
       setFilters(newFilters);
-      setCurrentPage(1); // Reset to first page when filters change
+      setCurrentPage(1);
     },
     []
   );
@@ -75,53 +93,47 @@ export function RoyaltyPolicyListSection() {
     refetch();
   };
 
-  const handleView = (policy: RoyaltyPolicy) => {
-    // TODO: Implement view details
-    console.log("View policy:", policy);
-  };
-
-  const handleEdit = (policy: RoyaltyPolicy) => {
-    // TODO: Implement edit dialog (when mutation is ready)
-    console.log("Edit policy:", policy);
-  };
+  // Check version states
+  const isLatestVersion = isCurrentVersionLatest(policies);
+  const canDowngrade = isDowngradeAvailable(policies);
 
   return (
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <RoyaltyPolicyFilters onFiltersChange={handleFiltersChange} />
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Create Policy
-        </Button>
+        <RoyaltyPolicyFilters 
+          onFiltersChange={handleFiltersChange}
+          initialStatus={filters.status}
+        />
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setIsDowngradeDialogOpen(true)}
+            disabled={!canDowngrade}
+            title={!canDowngrade ? "No previous version available to downgrade to" : "Downgrade to previous version"}
+          >
+            <ArrowDownToLine className="mr-2 h-4 w-4" />
+            Downgrade Version
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => setIsSwitchToLatestDialogOpen(true)}
+            disabled={isLatestVersion}
+            title={isLatestVersion ? "Already on latest version" : "Switch to latest version"}
+          >
+            <ArrowUpToLine className="mr-2 h-4 w-4" />
+            Switch to Latest
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Policy
+          </Button>
+        </div>
       </div>
-
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border p-4">
-          <div className="text-muted-foreground text-sm font-medium">Total Policies</div>
-          <div className="mt-2 text-2xl font-bold">{totalCount}</div>
-        </div>
-        <div className="rounded-lg border p-4">
-          <div className="text-muted-foreground text-sm font-medium">Active Policies</div>
-          <div className="mt-2 text-2xl font-bold">
-            {policies.filter((p: RoyaltyPolicy) => p.status === PolicyStatus.Active).length}
-          </div>
-        </div>
-        <div className="rounded-lg border p-4">
-          <div className="text-muted-foreground text-sm font-medium">Pending Review</div>
-          <div className="mt-2 text-2xl font-bold">
-            {policies.filter((p: RoyaltyPolicy) => p.status === PolicyStatus.Pending).length}
-          </div>
-        </div>
-      </div>
-
       {/* Table */}
       <RoyaltyPolicyTable
         policies={policies}
         isLoading={isLoading}
-        onView={handleView}
-        onEdit={handleEdit}
       />
 
       {/* Pagination */}
@@ -141,6 +153,21 @@ export function RoyaltyPolicyListSection() {
       <CreateRoyaltyPolicyDialog
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
+        onSuccess={handleCreateSuccess}
+      />
+
+      {/* Downgrade Version Dialog */}
+      <DowngradeVersionDialog
+        open={isDowngradeDialogOpen}
+        onOpenChange={setIsDowngradeDialogOpen}
+        onSuccess={handleCreateSuccess}
+        availablePolicies={policies}
+      />
+
+      {/* Switch to Latest Dialog */}
+      <SwitchToLatestDialog
+        open={isSwitchToLatestDialogOpen}
+        onOpenChange={setIsSwitchToLatestDialogOpen}
         onSuccess={handleCreateSuccess}
       />
     </div>
