@@ -96,7 +96,7 @@ const PendingRequestsTableWrapper = ({
 
   return (
     <div className="w-full">
-      <PendingRequestsTableHeader totalRequests={data.length} serverTotalCount={totalCount} />
+      <PendingRequestsTableHeader totalRequests={data.length} />
       <PendingRequestsTable
         data={data}
         currentPage={currentPage}
