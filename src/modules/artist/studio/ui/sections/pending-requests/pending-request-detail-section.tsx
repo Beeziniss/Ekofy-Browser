@@ -1,13 +1,23 @@
 "use client";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { trackUploadPendingRequestDetailOptions } from "@/gql/options/artist-options";
+import { cancelTrackUploadMutationOptions } from "@/gql/options/artist-mutation-options";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 
@@ -17,8 +27,29 @@ interface PendingRequestDetailSectionProps {
 
 export function PendingRequestDetailSection({ uploadId }: PendingRequestDetailSectionProps) {
   const router = useRouter();
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const { data } = useSuspenseQuery(trackUploadPendingRequestDetailOptions(uploadId));
+
+  const cancelMutation = useMutation(cancelTrackUploadMutationOptions);
+
+  const handleCancelRequest = async () => {
+    try {
+      await cancelMutation.mutateAsync({
+        uploadId: uploadId,
+        reasonReject: "Request cancelled by artist",
+        isCancel: true,
+      });
+      setShowCancelDialog(false);
+      router.push("/artist/studio/tracks/pending");
+    } catch (error) {
+      console.error("Failed to cancel request:", error);
+    }
+  };
+
+  const openCancelDialog = () => {
+    setShowCancelDialog(true);
+  };
 
   const request = data.pendingTrackUploadRequestById;
 
@@ -264,30 +295,57 @@ export function PendingRequestDetailSection({ uploadId }: PendingRequestDetailSe
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-center rounded-md bg-yellow-100 p-4 dark:bg-yellow-900">
-                  <Badge
-                    variant="outline"
-                    className="bg-yellow-200 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200"
-                  >
-                    Pending Review
-                  </Badge>
+                <div className="dark:text-yellow flex items-center justify-center rounded-md bg-yellow-100 p-4 dark:bg-yellow-900 dark:text-yellow-400">
+                  Pending Review
                 </div>
 
-                <div className="text-center">
-                  <p className="text-main-grey text-sm">
-                    Your track upload request is currently being reviewed by our moderation team.
+                <p className="text-main-grey text-sm">
+                  Your track upload request is currently being reviewed by our moderation team.
+                </p>
+
+                <div className="text-main-grey text-xs">
+                  <p>
+                    <strong>Request ID:</strong> {request.id}
+                  </p>
+                  <p className="mt-1">
+                    <strong>Submitted:</strong> {new Date(request.requestedAt).toLocaleDateString()}
                   </p>
                 </div>
 
-                <div className="text-main-grey text-center text-xs">
-                  <p>Request ID: {request.id}</p>
-                  <p className="mt-1">Submitted: {new Date(request.requestedAt).toLocaleDateString()}</p>
-                </div>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={openCancelDialog}
+                  disabled={cancelMutation.isPending}
+                  className="w-full"
+                >
+                  Cancel request
+                </Button>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Cancel Confirmation Dialog */}
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-main-white">Cancel Track Upload Request</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel this track upload request? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowCancelDialog(false)} disabled={cancelMutation.isPending}>
+              Keep Request
+            </Button>
+            <Button variant="destructive" onClick={handleCancelRequest} disabled={cancelMutation.isPending}>
+              {cancelMutation.isPending ? "Cancelling..." : "Cancel Request"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,6 +1,15 @@
 "use client";
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, HomeIcon, LogOut, Sparkles } from "lucide-react";
+import {
+  BadgeCheck,
+  Bell,
+  ChevronsUpDown,
+  CreditCard,
+  HomeIcon,
+  LogOut,
+  MessageCircleIcon,
+  Sparkles,
+} from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -97,6 +106,14 @@ export function NavUser({
                 <Link href={"/"}>
                   <HomeIcon />
                   Home
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuItem asChild>
+                <Link href={"/inbox"}>
+                  <MessageCircleIcon />
+                  Inbox
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>

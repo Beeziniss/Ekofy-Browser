@@ -218,10 +218,67 @@ export const TrackUploadPendingRequestDetailQuery = graphql(`
       work {
         id
         description
+        workSplits {
+          userId
+          artistRole
+          percentage
+        }
       }
       recording {
         id
         description
+      }
+    }
+  }
+`);
+
+export const ArtistTrackDetailQuery = graphql(`
+  query ArtistTrackDetailQuery($where: TrackFilterInput!) {
+    tracks(where: $where, skip: 0, take: 1) {
+      items {
+        id
+        name
+        description
+        mainArtistIds
+        streamCount
+        favoriteCount
+        coverImage
+        isExplicit
+        categoryIds
+        checkTrackInFavorite
+        createdAt
+        featuredArtistIds
+        legalDocuments {
+          documentType
+          documentUrl
+          name
+          note
+        }
+        popularity
+        restriction {
+          action
+          expired
+          reason
+          type
+          reportId
+          restrictedAt
+        }
+        syncedLyrics {
+          text
+          time
+        }
+        tags
+        type
+        nameUnsigned
+        releaseInfo {
+          releaseDate
+          isRelease
+        }
+        mainArtists {
+          items {
+            stageName
+          }
+        }
       }
     }
   }

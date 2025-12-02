@@ -1,7 +1,11 @@
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import TrackInsightView from "@/modules/artist/tracks/ui/views/track-insight-view";
-import { trackInsightOptions, trackInsightAnalyticsOptions } from "@/gql/options/artist-options";
+import {
+  trackInsightOptions,
+  trackInsightFavoriteCountOptions,
+  trackInsightFavCountOptions,
+} from "@/gql/options/artist-options";
 
 interface PageProps {
   params: Promise<{ trackId: string }>;
@@ -17,9 +21,10 @@ const Page = async ({ params, searchParams }: PageProps) => {
   const { dateFrom, dateTo } = await searchParams;
   const queryClient = getQueryClient();
 
-  // Prefetch both the basic track insight and analytics data
+  // Prefetch all track insight queries
   void queryClient.prefetchQuery(trackInsightOptions(trackId));
-  void queryClient.prefetchQuery(trackInsightAnalyticsOptions(trackId, dateFrom, dateTo));
+  void queryClient.prefetchQuery(trackInsightFavCountOptions(trackId, dateFrom, dateTo));
+  void queryClient.prefetchQuery(trackInsightFavoriteCountOptions(trackId, dateFrom, dateTo));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

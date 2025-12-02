@@ -1,9 +1,10 @@
 "use client";
 
-import { trackInsightAnalyticsOptions } from "@/gql/options/artist-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { Eye, Heart, DollarSign } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { trackInsightFavCountOptions, trackInsightOptions } from "@/gql/options/artist-options";
 
 interface TrackInsightStatsSectionProps {
   trackId: string;
@@ -24,10 +25,7 @@ const TrackInsightStatsSkeleton = () => {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="bg-main-dark-grey animate-pulse rounded-lg p-6">
-          <div className="mb-4 h-4 w-1/2 rounded bg-gray-600"></div>
-          <div className="h-8 w-3/4 rounded bg-gray-600"></div>
-        </div>
+        <Skeleton key={i} className="h-40 w-full rounded-lg" />
       ))}
     </div>
   );
@@ -41,22 +39,28 @@ interface TrackInsightStatsSectionSuspenseProps {
 }
 
 const TrackInsightStatsSectionSuspense = ({ trackId, dateFrom, dateTo }: TrackInsightStatsSectionSuspenseProps) => {
-  const { data } = useSuspenseQuery(trackInsightAnalyticsOptions(trackId, dateFrom || undefined, dateTo || undefined));
+  // Get the total count first using trackInsightFavCountOptions
+  const { data: totalCountData } = useSuspenseQuery(
+    trackInsightFavCountOptions(trackId, dateFrom || undefined, dateTo || undefined),
+  );
 
-  // Extract track data from engagement query
-  const trackData = data?.userEngagement?.items?.[0]?.tracks?.items?.[0];
+  // Get track basic info for stream count
+  const { data: trackData } = useSuspenseQuery(trackInsightOptions(trackId));
+
+  const track = trackData?.tracks?.items?.[0];
+  const totalFavorites = totalCountData?.userEngagement?.totalCount || 0;
 
   const stats = [
     {
       title: "Stream Count",
-      value: trackData?.streamCount || 0,
+      value: track?.streamCount || 0,
       icon: Eye,
       trend: "+12%",
       trendPositive: true,
     },
     {
       title: "Favorite Count",
-      value: trackData?.favoriteCount || 0,
+      value: totalFavorites,
       icon: Heart,
       trend: "+8%",
       trendPositive: true,

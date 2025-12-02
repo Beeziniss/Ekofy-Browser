@@ -6,6 +6,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TrackInsightInfoSectionProps {
   trackId: string;
@@ -23,7 +24,38 @@ const TrackInsightInfoSection = ({ trackId, timeRange }: TrackInsightInfoSection
 };
 
 const TrackInsightInfoSkeleton = () => {
-  return <div>Loading...</div>;
+  return (
+    <div className="w-full space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-main-white text-2xl font-bold">Track Insights</h1>
+
+        <Select value={"last-7-days"}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Last 7 days" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="last-7-days">Last 7 days</SelectItem>
+            <SelectItem value="last-30-days">Last 30 days</SelectItem>
+            <SelectItem value="last-90-days">Last 90 days</SelectItem>
+            <SelectItem value="last-365-days">Last 365 days</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex items-end gap-x-6">
+        <Skeleton className="h-20 w-20 rounded-md" />
+
+        <div className="flex flex-col gap-y-1">
+          <Skeleton className="h-8 w-48 rounded-md" />
+          <Skeleton className="h-4 w-32 rounded-md" />
+        </div>
+      </div>
+
+      <div className="text-main-white text-center font-semibold">
+        <Skeleton className="mx-auto h-9 w-1/2 rounded-md" />
+      </div>
+    </div>
+  );
 };
 
 interface TrackInsightInfoSectionSuspenseProps {

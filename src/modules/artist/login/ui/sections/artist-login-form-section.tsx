@@ -6,67 +6,46 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import useArtistSignIn from "../../hook/use-artist-sign-in";
 import { EkofyLogo } from "@/assets/icons";
 
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .max(50, "Email must be less than 50 characters")
+    .email("Please enter a valid email address"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .max(50, "Password must be less than 50 characters"),
+  isRememberMe: z.boolean(),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
 const ArtistLoginFormSection = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [customErrors, setCustomErrors] = useState<{ [key: string]: string }>({});
   const { signIn, isLoading } = useArtistSignIn();
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Custom validation function
-  const validateField = (field: string, value: string) => {
-    const errors = { ...customErrors };
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      isRememberMe: false,
+    },
+  });
 
-    if (field === "email") {
-      if (!value) {
-        errors.email = "Email is required";
-      } else if (value.length > 50) {
-        errors.email = "Email must be less than 50 characters";
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-        errors.email = "Please enter a valid email address";
-      } else {
-        delete errors.email;
-      }
-    }
-
-    if (field === "password") {
-      if (!value) {
-        errors.password = "Password is required";
-      } else if (value.length < 6) {
-        errors.password = "Password must be at least 6 characters";
-      } else if (value.length > 50) {
-        errors.password = "Password must be less than 50 characters";
-      } else {
-        delete errors.password;
-      }
-    }
-
-    setCustomErrors(errors);
-    return !errors[field];
-  };
-
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Clear custom errors
-    setCustomErrors({});
-
-    // Validate all fields
-    const emailValid = validateField("email", email);
-    const passwordValid = validateField("password", password);
-
-    if (!emailValid || !passwordValid) {
-      return;
-    }
-
+  const onSubmit = (data: LoginFormData) => {
     signIn({
-      email,
-      password,
-      isRememberMe: rememberMe,
+      email: data.email,
+      password: data.password,
+      isRememberMe: data.isRememberMe,
     });
   };
 
@@ -86,107 +65,100 @@ const ArtistLoginFormSection = () => {
         </div>
 
         {/* Login Form */}
-        <form onSubmit={onSubmit} className="space-y-6">
-          {/* Email Field */}
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Email <span className="text-red-500">*</span>
-            </label>
-            <Input
-              type="email"
-              disabled={isLoading}
-              placeholder="Enter your email"
-              value={email}
-              maxLength={50}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value.length <= 50) {
-                  setEmail(value);
-                  validateField("email", value);
-                } else {
-                  // Show notification that limit is reached
-                  const errors = { ...customErrors };
-                  errors.email = "Email must be less than 50 characters";
-                  setCustomErrors(errors);
-                }
-              }}
-              className={`border-gradient-input h-12 w-full text-white placeholder-gray-400 ${
-                customErrors.email ? "border-red-500" : ""
-              }`}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Email Field */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="block text-sm font-medium text-white">
+                    Email <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      disabled={isLoading}
+                      placeholder="Enter your email"
+                      maxLength={50}
+                      className="border-gradient-input h-12 w-full text-white placeholder-gray-400"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-400" />
+                </FormItem>
+              )}
             />
-            {customErrors.email && <p className="mt-1 text-sm text-red-400">{customErrors.email}</p>}
-          </div>
 
-          {/* Password Field */}
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Password <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <Input
-                type={showPassword ? "text" : "password"}
-                disabled={isLoading}
-                placeholder="Enter your password"
-                value={password}
-                maxLength={50}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value.length <= 50) {
-                    setPassword(value);
-                    validateField("password", value);
-                  } else {
-                    // Show notification that limit is reached
-                    const errors = { ...customErrors };
-                    errors.password = "Password must be less than 50 characters";
-                    setCustomErrors(errors);
-                  }
-                }}
-                className={`border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400 ${
-                  customErrors.password ? "border-red-500" : ""
-                }`}
+            {/* Password Field */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="block text-sm font-medium text-white">
+                    Password <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        disabled={isLoading}
+                        placeholder="Enter your password"
+                        maxLength={50}
+                        className="border-gradient-input h-12 w-full pr-10 text-white placeholder-gray-400"
+                        {...field}
+                      />
+                      <Button
+                        onClick={() => setShowPassword(!showPassword)}
+                        disabled={isLoading}
+                        type="button"
+                        variant={"ghost"}
+                        className="absolute top-1/2 right-2 -translate-y-1/2"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-red-400" />
+                </FormItem>
+              )}
+            />
+
+            {/* Remember Me and Forgot Password */}
+            <div className="flex items-center justify-between">
+              <FormField
+                control={form.control}
+                name="isRememberMe"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-3">
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    <label className="cursor-pointer text-sm text-white" onClick={() => field.onChange(!field.value)}>
+                      Remember me
+                    </label>
+                  </div>
+                )}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                disabled={isLoading}
-                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-white"
+              <Link
+                href="/forgot-password"
+                className="text-sm text-white underline transition-colors hover:text-blue-400"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
+                Forgot your password?
+              </Link>
             </div>
-            {customErrors.password && <p className="mt-1 text-sm text-red-400">{customErrors.password}</p>}
-          </div>
 
-          {/* Remember Me and Forgot Password */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(!!checked)}
-                className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
-              />
-              <label 
-                className="cursor-pointer text-sm text-white"
-                onClick={() => setRememberMe(!rememberMe)}
-              >
-                Remember me
-              </label>
-            </div>
-            <Link href="/forgot-password" className="text-sm text-white underline transition-colors hover:text-blue-400">
-              Forgot your password?
-            </Link>
-          </div>
-
-          {/* Login Button */}
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="primary_gradient w-full rounded-md px-4 py-3 text-base font-semibold text-white transition duration-300 ease-in-out hover:opacity-90 disabled:opacity-50"
-            size="lg"
-          >
-            {isLoading ? "Signing in..." : "Log in"}
-          </Button>
-        </form>
+            {/* Login Button */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="primary_gradient w-full rounded-md px-4 py-3 text-base font-semibold text-white transition duration-300 ease-in-out hover:opacity-90 disabled:opacity-50"
+              size="lg"
+            >
+              {isLoading ? "Signing in..." : "Log in"}
+            </Button>
+          </form>
+        </Form>
 
         {/* Sign Up Link */}
         <div className="mt-6 text-center">

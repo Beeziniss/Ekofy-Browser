@@ -5,8 +5,15 @@ import {
   ServicePackageServiceViewQuery,
   ServicePackageDetailQuery,
 } from "@/modules/shared/queries/artist/artist-packages-queries";
-import { ArtistPackageFilterInput, TrackFilterInput } from "@/gql/graphql";
 import {
+  ArtistPackageFilterInput,
+  TrackFilterInput,
+  UserEngagementAction,
+  UserEngagementFilterInput,
+  UserEngagementTargetType,
+} from "@/gql/graphql";
+import {
+  ArtistTrackDetailQuery,
   CategoriesQuery,
   GetArtistProfileQuery,
   TrackListWithFiltersQuery,
@@ -14,7 +21,7 @@ import {
   TrackUploadPendingRequestDetailQuery,
   TrackUploadPendingRequestsQuery,
 } from "@/modules/shared/queries/artist";
-import { EngagementQuery } from "@/modules/shared/queries/artist/engagement-queries";
+import { TrackEngagementFavCountQuery, TrackEngagementQuery } from "@/modules/shared/queries/artist/engagement-queries";
 
 // TRACK LIST OPTIONS
 export const trackListOptions = queryOptions({
@@ -28,24 +35,84 @@ export const trackInsightOptions = (trackId: string) =>
     queryFn: () => execute(TrackInsightViewQuery, { trackId }),
   });
 
-export const trackInsightAnalyticsOptions = (trackId: string, dateFrom?: string, dateTo?: string) =>
+export const trackInsightFavCountOptions = (trackId: string, dateFrom?: string, dateTo?: string) =>
   queryOptions({
-    queryKey: ["track-insight-analytics", trackId, dateFrom, dateTo],
+    queryKey: ["track-insight-fav-count", trackId, dateFrom, dateTo],
     queryFn: () => {
-      const where: TrackFilterInput = { id: { eq: trackId } };
+      const whereUserEngagement: UserEngagementFilterInput = {
+        action: { eq: UserEngagementAction.Like },
+        targetType: { eq: UserEngagementTargetType.Track },
+        targetId: { eq: trackId },
+      };
 
       // Add date filters if provided
       if (dateFrom) {
-        where.createdAt = { gte: new Date(dateFrom) };
+        whereUserEngagement.createdAt = { gte: new Date(dateFrom) };
       }
       if (dateTo) {
-        where.createdAt = {
-          ...where.createdAt,
+        whereUserEngagement.createdAt = {
+          ...whereUserEngagement.createdAt,
+          lte: new Date(dateTo),
+        };
+      }
+      return execute(TrackEngagementFavCountQuery, { whereEngaement: whereUserEngagement });
+    },
+    enabled: !!trackId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+export const trackInsightFavoriteCountOptions = (trackId: string, dateFrom?: string, dateTo?: string, take?: number) =>
+  queryOptions({
+    queryKey: ["track-insight-favorite-count", trackId, dateFrom, dateTo, take],
+    queryFn: async () => {
+      const whereUserEngagement: UserEngagementFilterInput = {
+        action: { eq: UserEngagementAction.Like },
+        targetType: { eq: UserEngagementTargetType.Track },
+        targetId: { eq: trackId },
+      };
+
+      // Add date filters if provided
+      if (dateFrom) {
+        whereUserEngagement.createdAt = { gte: new Date(dateFrom) };
+      }
+      if (dateTo) {
+        whereUserEngagement.createdAt = {
+          ...whereUserEngagement.createdAt,
           lte: new Date(dateTo),
         };
       }
 
-      return execute(EngagementQuery, { where, takeTracks: 1 });
+      const result = await execute(TrackEngagementQuery, { whereEngaement: whereUserEngagement, take: take || 1000 });
+
+      // Group the engagement data by date (ignoring time)
+      const groupedData = new Map<string, number>();
+
+      if (result.userEngagement?.items) {
+        result.userEngagement.items.forEach((engagement) => {
+          if (engagement.createdAt) {
+            // Extract only date (YYYY-MM-DD) from the datetime
+            const date = new Date(engagement.createdAt);
+            const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+            groupedData.set(dateKey, (groupedData.get(dateKey) || 0) + 1);
+          }
+        });
+      }
+
+      // Convert grouped data to array format for chart consumption
+      const favoritesByDate = Array.from(groupedData.entries())
+        .map(([date, count]) => ({
+          date,
+          count,
+          createdAt: date,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      return {
+        ...result,
+        favoritesByDate,
+        totalCount: result.userEngagement?.totalCount || 0,
+      };
     },
     enabled: !!trackId,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -120,14 +187,14 @@ export const packageDetailOptions = (packageId: string) =>
   });
 
 // ENGAGEMENT OPTIONS
-export const engagementOptions = queryOptions({
+/* export const engagementOptions = queryOptions({
   queryKey: ["engagement"],
   queryFn: async ({}) => {
     const where: TrackFilterInput = {};
 
     return await execute(EngagementQuery, { where, takeTracks: 5 });
   },
-});
+}); */
 
 // TRACK PENDING QUERIES
 export const trackUploadPendingRequestOptions = ({
@@ -152,4 +219,17 @@ export const trackUploadPendingRequestDetailOptions = (uploadId: string) =>
     queryFn: async () => {
       return await execute(TrackUploadPendingRequestDetailQuery, { uploadId });
     },
+  });
+
+// TRACK OPTIONS
+export const artistTrackDetailOptions = (trackId: string) =>
+  queryOptions({
+    queryKey: ["artist-track-detail", trackId],
+    queryFn: async () => {
+      const where: TrackFilterInput = { id: { eq: trackId } };
+      const result = await execute(ArtistTrackDetailQuery, { where });
+      return result.tracks?.items?.[0] || null;
+    },
+    enabled: !!trackId,
+    retry: 0,
   });

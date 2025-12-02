@@ -1,18 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { Search, ArrowLeft } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Search, ArrowLeft } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface PendingRequestsTableHeaderProps {
   totalRequests: number;
-  serverTotalCount?: number;
 }
 
-const PendingRequestsTableHeader = ({ totalRequests, serverTotalCount }: PendingRequestsTableHeaderProps) => {
+const PendingRequestsTableHeader = ({ totalRequests }: PendingRequestsTableHeaderProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,14 +40,15 @@ const PendingRequestsTableHeader = ({ totalRequests, serverTotalCount }: Pending
 
   return (
     <div className="mb-6 space-y-4">
-      <div className="flex items-center gap-4">
-        <Link href="/artist/studio/tracks">
-          <Button variant="ghost" size="sm" className="flex items-center gap-2">
-            <ArrowLeft className="size-4" />
-            Back to Tracks
-          </Button>
-        </Link>
+      <div className="flex w-full items-center justify-between gap-4">
         <h1 className="text-main-white text-2xl font-bold">Pending Upload Requests</h1>
+        <Link
+          href="/artist/studio/tracks"
+          className="hover:border-main-white flex items-center gap-x-2 pb-0.5 text-sm font-normal transition hover:border-b"
+        >
+          <ArrowLeft className="size-4" />
+          Back to Tracks
+        </Link>
       </div>
 
       <div className="flex items-center justify-between">
@@ -67,9 +66,6 @@ const PendingRequestsTableHeader = ({ totalRequests, serverTotalCount }: Pending
 
           <span className="text-main-white text-sm">
             {totalRequests} pending request{totalRequests !== 1 ? "s" : ""}
-            {serverTotalCount && totalRequests !== serverTotalCount && (
-              <span className="text-main-grey ml-1">of {serverTotalCount} total</span>
-            )}
           </span>
         </div>
       </div>

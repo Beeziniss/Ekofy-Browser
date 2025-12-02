@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { EllipsisVertical, FileIcon, ArrowUpRightIcon, EyeIcon, Edit } from "lucide-react";
 import { orderPackageDetailOptions } from "@/gql/options/client-options";
+import { PackageOrderStatus } from "@/gql/graphql";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +33,7 @@ const OrderSubmissionSection = ({ orderId }: OrderSubmissionSectionProps) => {
   const [selectedRevisionDelivery, setSelectedRevisionDelivery] = useState<DeliveryItem | null>(null);
 
   const deliveries = orderPackageDetail?.deliveries || [];
+  const isOrderDisputed = orderPackageDetail?.status === PackageOrderStatus.Disputed;
 
   const handleViewDetails = (delivery: DeliveryItem) => {
     setSelectedDelivery(delivery);
@@ -57,7 +59,7 @@ const OrderSubmissionSection = ({ orderId }: OrderSubmissionSectionProps) => {
         {/* Header with Submit Button */}
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold">Order Submission</h3>
-          {orderPackageDetail?.providerId === user?.userId && (
+          {orderPackageDetail?.providerId === user?.userId && !isOrderDisputed && (
             <OrderSubmissionSubmitDialog orderId={orderId} isOpen={isDialogOpen} onOpenChange={setIsDialogOpen} />
           )}
 
@@ -142,7 +144,7 @@ const OrderSubmissionSection = ({ orderId }: OrderSubmissionSectionProps) => {
                               Open File
                             </DropdownMenuItem>
                           )}
-                          {orderPackageDetail?.clientId === user?.userId && (
+                          {orderPackageDetail?.clientId === user?.userId && !isOrderDisputed && (
                             <DropdownMenuItem onClick={() => handleRequestRevision(delivery)}>
                               <Edit className="h-4 w-4" />
                               Request Revision
@@ -159,7 +161,13 @@ const OrderSubmissionSection = ({ orderId }: OrderSubmissionSectionProps) => {
         ) : (
           <div className="border-main-grey text-main-white rounded-md border border-dashed py-8 text-center">
             <FileIcon className="mx-auto mb-4 h-12 w-12 opacity-80" />
-            <p>No deliveries yet</p>
+            <p>{isOrderDisputed ? "Order is disputed - submissions disabled" : "No deliveries yet"}</p>
+          </div>
+        )}
+
+        {isOrderDisputed && deliveries.length > 0 && (
+          <div className="rounded-md border border-yellow-500/30 bg-yellow-500/10 p-3 text-center text-sm text-yellow-400">
+            ⚠️ This order is disputed. All submission features are disabled.
           </div>
         )}
       </CardContent>

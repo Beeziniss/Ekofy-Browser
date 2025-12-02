@@ -38,10 +38,12 @@ const TrackTableSection = () => {
 
   // Build order
   const order: TrackSortInput[] = [
-    {
+    // TODO: Uncomment if necessary
+    /* {
       createdAt: SortEnumType.Desc,
-    },
+    }, */
   ];
+
   if (sortBy) {
     switch (sortBy) {
       case "releaseDate":
