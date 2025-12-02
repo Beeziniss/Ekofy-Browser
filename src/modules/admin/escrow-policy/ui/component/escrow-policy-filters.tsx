@@ -10,14 +10,14 @@ import {
 } from "@/components/ui/select";
 import { PolicyStatus } from "@/gql/graphql";
 
-interface RoyaltyPolicyFiltersProps {
+interface EscrowPolicyFiltersProps {
   onFiltersChange: (filters: {
     status?: PolicyStatus;
   }) => void;
   initialStatus?: PolicyStatus;
 }
 
-export function RoyaltyPolicyFilters({ onFiltersChange, initialStatus }: RoyaltyPolicyFiltersProps) {
+export function EscrowPolicyFilters({ onFiltersChange, initialStatus }: EscrowPolicyFiltersProps) {
   const [status, setStatus] = useState<PolicyStatus | "ALL">(initialStatus || "ALL");
   const onFiltersChangeRef = useRef(onFiltersChange);
 

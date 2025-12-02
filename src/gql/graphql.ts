@@ -2627,6 +2627,7 @@ export type MutationInitialization = {
   sendRequest: Scalars['Boolean']['output'];
   softDeleteCategory: Scalars['Boolean']['output'];
   submitDelivery: Scalars['Boolean']['output'];
+  switchEscrowCommissionPolicyToLatestVersion: Scalars['Boolean']['output'];
   switchStatusByRequestor: Scalars['Boolean']['output'];
   switchToLatestVersion: Scalars['Boolean']['output'];
   testDateComparing: Scalars['Boolean']['output'];
@@ -4063,8 +4064,7 @@ export type PlaylistsCollectionSegment = {
 
 export enum PolicyStatus {
   Active = 'ACTIVE',
-  Inactive = 'INACTIVE',
-  Pending = 'PENDING'
+  Inactive = 'INACTIVE'
 }
 
 export type PolicyStatusOperationFilterInput = {
@@ -6973,6 +6973,25 @@ export type SearchPlaylistsQueryVariables = Exact<{
 
 export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', searchPlaylists?: { __typename?: 'SearchPlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, checkPlaylistInFavorite: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
 
+export type CreateEscrowCommissionPolicyMutationVariables = Exact<{
+  createRequest: CreateEscrowCommissionPolicyRequestInput;
+}>;
+
+
+export type CreateEscrowCommissionPolicyMutation = { __typename?: 'MutationInitialization', createEscrowCommissionPolicy: boolean };
+
+export type DowngradeEscrowCommissionPolicyVersionMutationVariables = Exact<{
+  version?: InputMaybe<Scalars['Long']['input']>;
+}>;
+
+
+export type DowngradeEscrowCommissionPolicyVersionMutation = { __typename?: 'MutationInitialization', downgradeEscrowCommissionPolicyVersion: boolean };
+
+export type SwitchEscrowCommissionPolicyToLatestVersionMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SwitchEscrowCommissionPolicyToLatestVersionMutation = { __typename?: 'MutationInitialization', switchEscrowCommissionPolicyToLatestVersion: boolean };
+
 export type CreateRoyaltyPolicyMutationVariables = Exact<{
   createRoyalPolicyRequest: CreateRoyalPolicyRequestInput;
 }>;
@@ -7411,6 +7430,15 @@ export type AdminProfileQueryVariables = Exact<{
 
 
 export type AdminProfileQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus, role: UserRole, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type EscrowCommissionPoliciesQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<EscrowCommissionPolicyFilterInput>;
+}>;
+
+
+export type EscrowCommissionPoliciesQuery = { __typename?: 'QueryInitialization', escrowCommissionPolicies?: { __typename?: 'EscrowCommissionPoliciesCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'EscrowCommissionPolicy', id: string, currency: CurrencyType, platformFeePercentage: any, version: any, status: PolicyStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type RoyaltyPoliciesQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -8476,6 +8504,21 @@ export const SearchPlaylistsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SearchPlaylistsQuery, SearchPlaylistsQueryVariables>;
+export const CreateEscrowCommissionPolicyDocument = new TypedDocumentString(`
+    mutation CreateEscrowCommissionPolicy($createRequest: CreateEscrowCommissionPolicyRequestInput!) {
+  createEscrowCommissionPolicy(createRequest: $createRequest)
+}
+    `) as unknown as TypedDocumentString<CreateEscrowCommissionPolicyMutation, CreateEscrowCommissionPolicyMutationVariables>;
+export const DowngradeEscrowCommissionPolicyVersionDocument = new TypedDocumentString(`
+    mutation DowngradeEscrowCommissionPolicyVersion($version: Long) {
+  downgradeEscrowCommissionPolicyVersion(version: $version)
+}
+    `) as unknown as TypedDocumentString<DowngradeEscrowCommissionPolicyVersionMutation, DowngradeEscrowCommissionPolicyVersionMutationVariables>;
+export const SwitchEscrowCommissionPolicyToLatestVersionDocument = new TypedDocumentString(`
+    mutation SwitchEscrowCommissionPolicyToLatestVersion {
+  switchEscrowCommissionPolicyToLatestVersion
+}
+    `) as unknown as TypedDocumentString<SwitchEscrowCommissionPolicyToLatestVersionMutation, SwitchEscrowCommissionPolicyToLatestVersionMutationVariables>;
 export const CreateRoyaltyPolicyDocument = new TypedDocumentString(`
     mutation createRoyaltyPolicy($createRoyalPolicyRequest: CreateRoyalPolicyRequestInput!) {
   createRoyaltyPolicy(createRoyalPolicyRequest: $createRoyalPolicyRequest)
@@ -8818,6 +8861,31 @@ export const AdminProfileDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AdminProfileQuery, AdminProfileQueryVariables>;
+export const EscrowCommissionPoliciesDocument = new TypedDocumentString(`
+    query EscrowCommissionPolicies($skip: Int, $take: Int, $where: EscrowCommissionPolicyFilterInput) {
+  escrowCommissionPolicies(
+    skip: $skip
+    take: $take
+    where: $where
+    order: {createdAt: DESC}
+  ) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      currency
+      platformFeePercentage
+      version
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<EscrowCommissionPoliciesQuery, EscrowCommissionPoliciesQueryVariables>;
 export const RoyaltyPoliciesDocument = new TypedDocumentString(`
     query RoyaltyPolicies($skip: Int, $take: Int, $where: RoyaltyPolicyFilterInput) {
   royaltyPolicies(
