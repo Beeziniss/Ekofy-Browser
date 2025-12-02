@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
 import { useAuthStore } from "@/store";
 import { setUserInfoToLocalStorage, setAccessTokenToLocalStorage, formatAuthError } from "@/utils/auth-utils";
-import { ArtistLoginResponse } from "@/types/auth";
+import { ArtistLoginResponse, IUserLocalStorage } from "@/types/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -34,15 +34,16 @@ const useArtistSignIn = () => {
         throw new Error(formatAuthError(error));
       }
     },
-    onSuccess: async (data) => {
+    onSuccess: async (data, variables) => {
       try {
         // Store tokens and user data in local storage and zustand store
         if (data.result) {
           setAccessTokenToLocalStorage(data.result.accessToken);
-          const userInfo = {
+          const userInfo: IUserLocalStorage = {
             userId: data.result.userId,
             artistId: data.result.artistId,
             role: data.result.role,
+            isRememberMe: variables.isRememberMe,
           };
           setUserInfoToLocalStorage(userInfo);
           setUserData(userInfo, data.result.accessToken);

@@ -62,7 +62,7 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSuccess }) =>
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium">Email Address</FormLabel>
+                  <FormLabel className="text-white font-medium">Email Address<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input
                       type="email"

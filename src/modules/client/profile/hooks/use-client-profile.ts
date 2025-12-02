@@ -33,6 +33,7 @@ export function useClientProfile() {
         })()
       : undefined,
     gender: firstUser?.gender || undefined,
+    isLinkedWithGoogle: firstUser?.isLinkedWithGoogle ?? false,
   };
 
   const account = {

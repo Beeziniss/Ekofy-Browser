@@ -109,13 +109,15 @@ const OrderDetailInfoSection = () => {
         </CardContent>
       </Card>
 
-      {!orderPackageDetail.startedAt && (
+      {!orderPackageDetail.startedAt && orderPackageDetail.status !== PackageOrderStatus.Disputed && (
         <Button variant={"ekofy"} onClick={handleStartWorking} disabled={isPending} size={"lg"}>
           Start Working
         </Button>
       )}
 
-      {orderPackageDetail.clientId === user?.userId && <OrderApproveDelivery orderId={orderId} />}
+      {orderPackageDetail.clientId === user?.userId && orderPackageDetail.status !== PackageOrderStatus.Disputed && (
+        <OrderApproveDelivery orderId={orderId} />
+      )}
     </div>
   );
 };

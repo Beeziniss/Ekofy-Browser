@@ -68,6 +68,11 @@ export function ArtistApprovalTable({
 
   const columns: ColumnDef<ArtistApprovalTableData>[] = [
     {
+      accessorKey: "No.",
+      header: "No.",
+      cell: ({ row }) => <span className="text-gray-300">{(currentPage - 1) * pageSize + row.index + 1}</span>,
+    },
+    {
       accessorKey: "stageName",
       header: "Stage Name",
       cell: ({ row }) => <span className="font-medium text-gray-300">{row.original.stageName}</span>,

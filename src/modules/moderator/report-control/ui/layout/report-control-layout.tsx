@@ -1,31 +1,26 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { AlertTriangle } from "lucide-react";
+import { ReactNode } from "react";
 
 interface ReportControlLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
+  title?: string;
+  description?: string;
 }
 
-export function ReportControlLayout({ children }: ReportControlLayoutProps) {
+export function ReportControlLayout({ children, title = "Report Management", description }: ReportControlLayoutProps) {
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5" />
-            Report Management
-          </CardTitle>
-          <CardDescription>View and process reports from users</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">{children}</CardContent>
-      </Card>
+    <div className="bg-main-dark-bg min-h-screen text-white">
+      <div className="container mx-auto px-6 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="mb-2 text-3xl font-bold text-white">{title}</h1>
+          {description && <p className="text-gray-400">{description}</p>}
+        </div>
+
+        {/* Content */}
+        <div className="space-y-6">{children}</div>
+      </div>
     </div>
   );
 }

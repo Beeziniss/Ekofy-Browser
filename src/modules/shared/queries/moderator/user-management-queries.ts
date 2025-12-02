@@ -82,7 +82,7 @@ export const MODERATOR_LISTENER_DETAIL_QUERY = graphql(`
 
 export const ModeratorGetListUser = graphql(`
   query ModeratorUsersList($skip: Int, $take: Int, $where: UserFilterInput) {
-    users(skip: $skip, take: $take, where: $where) {
+    users(skip: $skip, take: $take, where: $where, order: { createdAt: DESC }) {
       totalCount
       pageInfo {
         hasNextPage

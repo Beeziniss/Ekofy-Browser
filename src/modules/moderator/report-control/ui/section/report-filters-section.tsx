@@ -9,7 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
-import { ReportStatus, ReportRelatedContentType } from "@/gql/graphql";
+import { ReportStatus, ReportRelatedContentType, ReportType } from "@/gql/graphql";
+import { REPORT_TYPE_LABELS } from "@/types/report";
 
 const STATUS_LABELS: Record<ReportStatus, string> = {
   [ReportStatus.Pending]: "Pending",
@@ -31,18 +32,22 @@ interface ReportFiltersSectionProps {
   searchTerm: string;
   statusFilter: ReportStatus | "all";
   contentTypeFilter: ReportRelatedContentType | "all" | "none";
+  reportTypeFilter: ReportType | "all";
   onSearchChange: (value: string) => void;
   onStatusChange: (value: ReportStatus | "all") => void;
   onContentTypeChange: (value: ReportRelatedContentType | "all" | "none") => void;
+  onReportTypeChange: (value: ReportType | "all") => void;
 }
 
 export function ReportFiltersSection({
   searchTerm,
   statusFilter,
   contentTypeFilter,
+  reportTypeFilter,
   onSearchChange,
   onStatusChange,
   onContentTypeChange,
+  onReportTypeChange,
 }: ReportFiltersSectionProps) {
   return (
     <div className="flex flex-col lg:flex-row gap-4">
@@ -60,12 +65,12 @@ export function ReportFiltersSection({
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Status</SelectItem>
-          {Object.entries(STATUS_LABELS).map(([key, label]) => (
+          <SelectItem value="all">ALL STATUS</SelectItem>
+            {Object.entries(STATUS_LABELS).map(([key, label]) => (
             <SelectItem key={key} value={key}>
-              {label}
+              {label.toUpperCase()}
             </SelectItem>
-          ))}
+            ))}
         </SelectContent>
       </Select>
       <Select value={contentTypeFilter} onValueChange={onContentTypeChange}>
@@ -73,11 +78,24 @@ export function ReportFiltersSection({
           <SelectValue placeholder="Filter by content type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Types</SelectItem>
+          <SelectItem value="all">ALL CONTENT TYPE</SelectItem>
           <SelectItem value="none">User Reports (No Content)</SelectItem>
           {Object.entries(CONTENT_TYPE_LABELS).map(([key, label]) => (
             <SelectItem key={key} value={key}>
-              {label}
+              {label.toUpperCase()}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Select value={reportTypeFilter} onValueChange={onReportTypeChange}>
+        <SelectTrigger className="w-full lg:w-48">
+          <SelectValue placeholder="Filter by report type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">ALL REPORT TYPE</SelectItem>
+          {Object.entries(REPORT_TYPE_LABELS).map(([key, label]) => (
+            <SelectItem key={key} value={key}>
+              {label.toUpperCase()}
             </SelectItem>
           ))}
         </SelectContent>

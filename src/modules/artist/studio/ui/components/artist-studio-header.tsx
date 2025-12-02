@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { CloudUploadIcon, MessageCircle } from "lucide-react";
+import { CloudUploadIcon } from "lucide-react";
 import { StripeAccountRequiredModal } from "@/modules/client/request-hub";
 import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
 
@@ -34,10 +34,6 @@ const ArtistStudioHeader = () => {
               <CloudUploadIcon className="size-5" /> Upload
             </Button>
           </Link>
-
-          <Button variant="ghost" size="iconXs">
-            <MessageCircle className="size-4" />
-          </Button>
         </div>
       </header>
 
