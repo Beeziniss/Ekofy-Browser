@@ -21,7 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+
 import { MoreHorizontal, Eye, CreditCard, UserCheck, UserX, Search, Plus } from "lucide-react";
 import { UserStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
@@ -51,8 +51,6 @@ export function UserTable({
   pageSize,
   onPageChange,
   onSearch,
-  hasNextPage,
-  hasPreviousPage,
   searchTerm,
   onStatusChange,
   onCreateModerator,

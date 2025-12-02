@@ -1,4 +1,4 @@
-import { Users, FileText, CreditCard } from "lucide-react";
+import { Users, FileText, CreditCard, DollarSign, Shield } from "lucide-react";
 import { DashboardQuickActionCard } from "../components/dashboard-quick-action-card";
 
 export const DashboardQuickActionsSection = () => {
@@ -24,6 +24,20 @@ export const DashboardQuickActionsSection = () => {
       description: "Manage subscription plans and pricing",
       iconColor: "purple" as const,
     },
+    {
+      href: "/admin/royalty-policy",
+      icon: DollarSign,
+      title: "Royalty Policies",
+      description: "Configure and manage royalty distribution",
+      iconColor: "purple" as const,
+    },
+    {
+      href: "/admin/escrow-policy",
+      icon: Shield,
+      title: "Escrow Policies",
+      description: "Manage escrow terms and conditions",
+      iconColor: "purple" as const,
+    },
   ];
 
   return (
@@ -36,7 +50,7 @@ export const DashboardQuickActionsSection = () => {
         </p>
 
         {/* Quick Actions */}
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ">
           {quickActions.map((action) => (
             <DashboardQuickActionCard
               key={action.href}

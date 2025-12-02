@@ -1,8 +1,6 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Edit } from "lucide-react";
 import { UserProfile } from "@/types/profile";
 
 interface ProfileHeaderProps {
@@ -10,7 +8,7 @@ interface ProfileHeaderProps {
   onEditClick: () => void;
 }
 
-const ProfileHeader = ({ userProfile, onEditClick }: ProfileHeaderProps) => {
+const ProfileHeader = ({ userProfile }: ProfileHeaderProps) => {
   const getInitials = (email: string) => {
     const name = email.split("@")[0];
     return name
