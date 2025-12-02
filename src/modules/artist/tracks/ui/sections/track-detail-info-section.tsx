@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, EyeIcon, HeartIcon, PlayIcon, TagIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TrackDetailInfoSectionProps {
   trackId: string;
@@ -19,19 +20,12 @@ const TrackDetailInfoSection = ({ trackId }: TrackDetailInfoSectionProps) => {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="animate-pulse">
-            <div className="flex gap-6">
-              <div className="h-32 w-32 flex-shrink-0 rounded-lg bg-gray-300" />
-              <div className="flex-1">
-                <div className="mb-4 h-8 w-3/4 rounded bg-gray-300" />
-                <div className="mb-2 h-4 w-1/2 rounded bg-gray-300" />
-                <div className="mb-4 h-4 w-1/3 rounded bg-gray-300" />
-                <div className="flex gap-4">
-                  <div className="h-6 w-20 rounded bg-gray-300" />
-                  <div className="h-6 w-20 rounded bg-gray-300" />
-                  <div className="h-6 w-20 rounded bg-gray-300" />
-                </div>
-              </div>
+          <Skeleton className="mb-4 h-6 w-1/3 rounded-md" />
+          <div className="flex gap-6">
+            <Skeleton className="h-32 w-32 rounded-lg" />
+            <div className="flex-1 space-y-4">
+              <Skeleton className="h-8 w-1/2 rounded-md" />
+              <Skeleton className="h-4 w-1/3 rounded-md" />
             </div>
           </div>
         </CardContent>

@@ -2628,6 +2628,7 @@ export type MutationInitialization = {
   softDeleteCategory: Scalars['Boolean']['output'];
   submitDelivery: Scalars['Boolean']['output'];
   switchStatusByRequestor: Scalars['Boolean']['output'];
+  switchToLatestVersion: Scalars['Boolean']['output'];
   testGenrateMonthlyRoyaltyReportsAynsc: Scalars['Boolean']['output'];
   testTransferMoneyToArtist: TransferResponse;
   unbanUser: Scalars['Boolean']['output'];
@@ -4181,6 +4182,7 @@ export type QueryInitialization = {
   reportStatistics: ReportStatisticsResponse;
   reports?: Maybe<ReportsCollectionSegment>;
   requestDetailById?: Maybe<Request>;
+  requestHubComments?: Maybe<RequestHubCommentsCollectionSegment>;
   requests?: Maybe<RequestsCollectionSegment>;
   royaltyPolicies?: Maybe<RoyaltyPoliciesCollectionSegment>;
   royaltyReports?: Maybe<RoyaltyReportsCollectionSegment>;
@@ -4198,6 +4200,7 @@ export type QueryInitialization = {
   threadedComments: ThreadedCommentsResponse;
   topTracks: Array<TopTrackResponse>;
   trackBySemanticSearch: Array<Track>;
+  trackComments?: Maybe<TrackCommentsCollectionSegment>;
   tracks?: Maybe<TracksCollectionSegment>;
   userEngagement?: Maybe<UserEngagementCollectionSegment>;
   userSubscriptions?: Maybe<UserSubscriptionsCollectionSegment>;
@@ -4599,6 +4602,14 @@ export type QueryInitializationRequestDetailByIdArgs = {
 };
 
 
+export type QueryInitializationRequestHubCommentsArgs = {
+  order?: InputMaybe<Array<CommentSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<CommentFilterInput>;
+};
+
+
 export type QueryInitializationRequestsArgs = {
   order?: InputMaybe<Array<RequestSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -4728,6 +4739,14 @@ export type QueryInitializationThreadedCommentsArgs = {
 
 export type QueryInitializationTrackBySemanticSearchArgs = {
   term: Scalars['String']['input'];
+};
+
+
+export type QueryInitializationTrackCommentsArgs = {
+  order?: InputMaybe<Array<CommentSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<CommentFilterInput>;
 };
 
 
@@ -5324,6 +5343,16 @@ export type RequestFilterInput = {
   titleUnsigned?: InputMaybe<StringOperationFilterInput>;
   type?: InputMaybe<RequestTypeOperationFilterInput>;
   updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
+};
+
+/** A segment of a collection. */
+export type RequestHubCommentsCollectionSegment = {
+  __typename?: 'RequestHubCommentsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Comment>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type RequestSortInput = {
@@ -6098,6 +6127,16 @@ export type TrackMainArtistsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ArtistFilterInput>;
+};
+
+/** A segment of a collection. */
+export type TrackCommentsCollectionSegment = {
+  __typename?: 'TrackCommentsCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<Comment>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type TrackFilterInput = {
@@ -7363,13 +7402,20 @@ export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type CategoriesQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null };
 
-export type EngagementQueryVariables = Exact<{
-  where?: InputMaybe<TrackFilterInput>;
-  takeTracks?: InputMaybe<Scalars['Int']['input']>;
+export type TrackEngagementQueryVariables = Exact<{
+  whereEngaement?: InputMaybe<UserEngagementFilterInput>;
+  take?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type EngagementQuery = { __typename?: 'QueryInitialization', userEngagement?: { __typename?: 'UserEngagementCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'UserEngagement', id: string, actorId: string, targetId: string, tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', favoriteCount: any, streamCount: any }> | null } | null }> | null } | null };
+export type TrackEngagementQuery = { __typename?: 'QueryInitialization', userEngagement?: { __typename?: 'UserEngagementCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'UserEngagement', id: string, actorId: string, targetId: string, targetType: UserEngagementTargetType, action: UserEngagementAction, actorType: UserEngagementTargetType, createdAt: any }> | null } | null };
+
+export type TrackEngagementFavCountQueryVariables = Exact<{
+  whereEngaement?: InputMaybe<UserEngagementFilterInput>;
+}>;
+
+
+export type TrackEngagementFavCountQuery = { __typename?: 'QueryInitialization', userEngagement?: { __typename?: 'UserEngagementCollectionSegment', totalCount: number } | null };
 
 export type GetPendingArtistRequestQueryVariables = Exact<{
   skip: Scalars['Int']['input'];
@@ -8921,24 +8967,29 @@ export const CategoriesDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<CategoriesQuery, CategoriesQueryVariables>;
-export const EngagementDocument = new TypedDocumentString(`
-    query Engagement($where: TrackFilterInput, $takeTracks: Int) {
-  userEngagement(where: {action: {eq: LIKE}, targetType: {eq: TRACK}}) {
+export const TrackEngagementDocument = new TypedDocumentString(`
+    query TrackEngagement($whereEngaement: UserEngagementFilterInput, $take: Int) {
+  userEngagement(where: $whereEngaement, take: $take) {
     totalCount
     items {
       id
       actorId
       targetId
-      tracks(where: $where, take: $takeTracks, order: {createdAt: DESC}) {
-        items {
-          favoriteCount
-          streamCount
-        }
-      }
+      targetType
+      action
+      actorType
+      createdAt
     }
   }
 }
-    `) as unknown as TypedDocumentString<EngagementQuery, EngagementQueryVariables>;
+    `) as unknown as TypedDocumentString<TrackEngagementQuery, TrackEngagementQueryVariables>;
+export const TrackEngagementFavCountDocument = new TypedDocumentString(`
+    query TrackEngagementFavCount($whereEngaement: UserEngagementFilterInput) {
+  userEngagement(where: $whereEngaement) {
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<TrackEngagementFavCountQuery, TrackEngagementFavCountQueryVariables>;
 export const GetPendingArtistRequestDocument = new TypedDocumentString(`
     query GetPendingArtistRequest($skip: Int!, $take: Int!, $where: RequestFilterInput) {
   requests(skip: $skip, take: $take, where: $where) {
