@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import { CircleUser, Boxes, Receipt } from "lucide-react";
+import { CircleUser, Boxes, Receipt, ClipboardList, ScrollText } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
 import { NavProjects } from "../nav-projects";
@@ -34,6 +34,16 @@ const data = {
       url: "/admin/transactions",
       icon: Receipt,
     },
+    {
+      name: "Royalty Policies",
+      url: "/admin/royalty-policy",
+      icon: ClipboardList,
+    },
+    {
+      name: "Escrow Policies",
+      url: "/admin/escrow-policy",
+      icon: ScrollText,
+    }
   ],
 };
 
