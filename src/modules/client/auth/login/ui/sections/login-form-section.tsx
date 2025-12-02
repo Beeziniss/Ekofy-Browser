@@ -150,21 +150,17 @@ const LoginFormSection = () => {
                 name="isRememberMe"
                 render={({ field }) => (
                   <div className="flex items-center space-x-3">
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
-                    />
-                    <label 
-                      className="cursor-pointer text-sm text-white"
-                      onClick={() => field.onChange(!field.value)}
-                    >
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    <label className="cursor-pointer text-sm text-white" onClick={() => field.onChange(!field.value)}>
                       Remember me
                     </label>
                   </div>
                 )}
               />
-              <Link href="/forgot-password" className="text-sm text-white underline transition-colors hover:text-blue-400">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-white underline transition-colors hover:text-blue-400"
+              >
                 Forgot your password?
               </Link>
             </div>

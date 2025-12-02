@@ -14,15 +14,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useState } from "react";
 import Image from "next/image";
 import {
+  ChartLineIcon,
   CircleArrowDownIcon,
   EarthIcon,
   EllipsisVerticalIcon,
+  EyeIcon,
   HeartIcon,
   LockIcon,
   MessageSquareTextIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Pagination,
   PaginationContent,
@@ -200,11 +208,27 @@ const TrackTable = ({
       header: "",
       cell: ({ row }) => {
         return (
-          <Link href={`/artist/studio/tracks/detail/${row.original.id}`}>
-            <Button variant="ghost" className="text-main-white px-2 py-1.5">
-              <EllipsisVerticalIcon className="size-4" />
-            </Button>
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="text-main-white px-2 py-1.5">
+                <EllipsisVerticalIcon className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={`/artist/studio/tracks/insights/${row.original.id}`} className="w-full cursor-pointer">
+                  <ChartLineIcon />
+                  Insights
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/artist/studio/tracks/detail/${row.original.id}`} className="w-full cursor-pointer">
+                  <EyeIcon />
+                  View Detail
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
