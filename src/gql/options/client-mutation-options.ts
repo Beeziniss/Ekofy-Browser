@@ -27,6 +27,7 @@ import {
   RedoRequestInput,
   SubmitDeliveryRequestInput,
   UpdateListenerRequestInput,
+  ChangeOrderStatusRequestInput,
 } from "../graphql";
 import { mutationOptions } from "@tanstack/react-query";
 import {
@@ -47,6 +48,7 @@ import {
   ApproveDeliveryMutation,
   SendRedoRequestMutation,
   SubmitDeliveryMutation,
+  SwitchStatusByRequestorMutation,
 } from "@/modules/shared/mutations/client/order-mutation";
 
 // PLAYLIST MUTATIONS
@@ -229,4 +231,10 @@ export const sendRedoRequestMutationOptions = mutationOptions({
 export const approveDeliveryMutationOptions = mutationOptions({
   mutationKey: ["approve-delivery"],
   mutationFn: async (packageOrderId: string) => await execute(ApproveDeliveryMutation, { packageOrderId }),
+});
+
+export const switchStatusByRequestorMutationOptions = mutationOptions({
+  mutationKey: ["switch-status-by-requestor"],
+  mutationFn: async (request: ChangeOrderStatusRequestInput) =>
+    await execute(SwitchStatusByRequestorMutation, { request }),
 });

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import OrderApproveDelivery from "../components/order-approve-delivery";
+import OrderActionsDropdown from "../components/order-actions-dropdown";
 import { PackageOrderStatus } from "@/gql/graphql";
 import { acceptRequestByArtistMutationOptions } from "@/gql/options/client-mutation-options";
 import { orderPackageDetailOptions } from "@/gql/options/client-options";
@@ -62,7 +63,16 @@ const OrderDetailInfoSection = () => {
       <Card>
         <CardContent className="rounded-md">
           <div className="flex flex-col">
-            <h3 className="mb-2 text-xl font-semibold">Order Details</h3>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-xl font-semibold">Order Details</h3>
+              <OrderActionsDropdown
+                orderId={orderPackageDetail.id}
+                status={orderPackageDetail.status}
+                onSuccess={() => {
+                  // Status has been updated, queries are already invalidated in the component
+                }}
+              />
+            </div>
             <div className="border-input bg-main-purple/20 flex flex-col gap-y-1.5 rounded-md border p-2">
               <div className="text-main-white line-clamp-1 text-base">{packageData?.packageName}</div>
               <Badge
