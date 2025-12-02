@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/services/auth-services";
 import { useAuthStore } from "@/store";
 import { setUserInfoToLocalStorage, setAccessTokenToLocalStorage, formatAuthError } from "@/utils/auth-utils";
-import { ListenerLoginResponse } from "@/types/auth";
+import { IUserLocalStorage, ListenerLoginResponse } from "@/types/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -39,7 +39,7 @@ const useSignIn = () => {
         // Store tokens and user data in local storage and zustand store
         if (data.result) {
           setAccessTokenToLocalStorage(data.result.accessToken);
-          const userInfo = {
+          const userInfo: IUserLocalStorage = {
             userId: data.result.userId,
             listenerId: data.result.listenerId,
             role: data.result.role,

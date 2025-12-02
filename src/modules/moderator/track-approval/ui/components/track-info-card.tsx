@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Music, FileText } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
-import { TrackUploadRequest } from "@/types/approval-track";
+import { ApprovalPriorityStatus, TrackUploadRequest } from "@/types/approval-track";
 import { SimplePlayButton } from "./simple-play-button";
 
 interface TrackInfoCardProps {
@@ -35,6 +35,29 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
     }
+  };
+  const getPriorityDisplay = (priority?: ApprovalPriorityStatus | null) => {
+    if (!priority) {
+      return {
+        className: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300 border-gray-200",
+      };
+    }
+    const config = {
+      [ApprovalPriorityStatus.Urgent]: {
+        className: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+      },
+      [ApprovalPriorityStatus.High]: {
+        className: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+      },
+      [ApprovalPriorityStatus.Medium]: {
+        className: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
+      },
+      [ApprovalPriorityStatus.Low]: {
+        className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+      },
+    };
+
+    return config[priority];
   };
 
   return (
@@ -105,6 +128,17 @@ export function TrackInfoCard({ track, createdByUser, isLoadingUser }: TrackInfo
                 <Badge variant="outline" className={cn(getTrackTypeColor(track.track.type))}>
                   {track.track.type}
                 </Badge>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Priority:</span>
+                {(() => {
+                  const priorityDisplay = getPriorityDisplay(track.approvalPriority);
+                  return (
+                    <Badge variant="outline" className={cn(priorityDisplay.className)}>
+                      {track.approvalPriority || "N/A"}
+                    </Badge>
+                  );
+                })()}
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Explicit:</span>

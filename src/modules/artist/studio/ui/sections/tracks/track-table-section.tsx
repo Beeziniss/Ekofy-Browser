@@ -38,10 +38,12 @@ const TrackTableSection = () => {
 
   // Build order
   const order: TrackSortInput[] = [
-    {
+    // TODO: Uncomment if necessary
+    /* {
       createdAt: SortEnumType.Desc,
-    },
+    }, */
   ];
+
   if (sortBy) {
     switch (sortBy) {
       case "releaseDate":
@@ -74,8 +76,6 @@ const TrackTableSection = () => {
         order: order.length > 0 ? order : undefined,
       }),
   });
-
-  console.log("hehheahsd");
 
   // Helper boolean to check if user is filtering (Search OR Privacy filter)
   const isFiltering = !!searchQuery || privacyFilter !== "all";

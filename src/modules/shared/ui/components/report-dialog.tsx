@@ -191,7 +191,7 @@ export function ReportDialog({
               name="reportType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Reason for Reporting *</FormLabel>
+                  <FormLabel>Reason for Reporting <span className="text-red-500">*</span></FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -218,7 +218,7 @@ export function ReportDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Detailed Description *</FormLabel>
+                  <FormLabel>Detailed Description <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Please describe in detail the issue you encountered..."

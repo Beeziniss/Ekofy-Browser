@@ -5,34 +5,123 @@ import { trackInsightOptions } from "@/gql/options/artist-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TrackInsightInfoSectionProps {
   trackId: string;
+  timeRange: string;
+  dateFrom: string | null;
+  dateTo: string | null;
 }
 
-const TrackInsightInfoSection = ({ trackId }: TrackInsightInfoSectionProps) => {
+const TrackInsightInfoSection = ({ trackId, timeRange }: TrackInsightInfoSectionProps) => {
   return (
     <Suspense fallback={<TrackInsightInfoSkeleton />}>
-      <TrackInsightInfoSectionSuspense trackId={trackId} />
+      <TrackInsightInfoSectionSuspense trackId={trackId} timeRange={timeRange} />
     </Suspense>
   );
 };
 
 const TrackInsightInfoSkeleton = () => {
-  return <div>Loading...</div>;
+  return (
+    <div className="w-full space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-main-white text-2xl font-bold">Track Insights</h1>
+
+        <Select value={"last-7-days"}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Last 7 days" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="last-7-days">Last 7 days</SelectItem>
+            <SelectItem value="last-30-days">Last 30 days</SelectItem>
+            <SelectItem value="last-90-days">Last 90 days</SelectItem>
+            <SelectItem value="last-365-days">Last 365 days</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex items-end gap-x-6">
+        <Skeleton className="h-20 w-20 rounded-md" />
+
+        <div className="flex flex-col gap-y-1">
+          <Skeleton className="h-8 w-48 rounded-md" />
+          <Skeleton className="h-4 w-32 rounded-md" />
+        </div>
+      </div>
+
+      <div className="text-main-white text-center font-semibold">
+        <Skeleton className="mx-auto h-9 w-1/2 rounded-md" />
+      </div>
+    </div>
+  );
 };
 
-const TrackInsightInfoSectionSuspense = ({ trackId }: TrackInsightInfoSectionProps) => {
+interface TrackInsightInfoSectionSuspenseProps {
+  trackId: string;
+  timeRange: string;
+}
+
+const TrackInsightInfoSectionSuspense = ({ trackId, timeRange }: TrackInsightInfoSectionSuspenseProps) => {
   const { data } = useSuspenseQuery(trackInsightOptions(trackId));
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const trackData = data?.tracks?.items?.[0];
+
+  const handleTimeRangeChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("timeRange", value);
+
+    // Calculate date ranges based on selection
+    const now = new Date();
+    let dateFrom: Date;
+
+    switch (value) {
+      case "last-7-days":
+        dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case "last-30-days":
+        dateFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        break;
+      case "last-90-days":
+        dateFrom = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+        break;
+      case "last-365-days":
+        dateFrom = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+        break;
+      default:
+        dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    }
+
+    params.set("dateFrom", dateFrom.toISOString().split("T")[0]);
+    params.set("dateTo", now.toISOString().split("T")[0]);
+
+    router.push(`?${params.toString()}`);
+  };
+
+  const getTimeRangeNumber = (timeRange: string) => {
+    switch (timeRange) {
+      case "last-7-days":
+        return "7";
+      case "last-30-days":
+        return "30";
+      case "last-90-days":
+        return "90";
+      case "last-365-days":
+        return "365";
+      default:
+        return "7";
+    }
+  };
 
   return (
     <div className="w-full space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-main-white text-2xl font-bold">Track Insights</h1>
 
-        <Select>
+        <Select value={timeRange} onValueChange={handleTimeRangeChange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Last 7 days" />
           </SelectTrigger>
@@ -66,7 +155,7 @@ const TrackInsightInfoSectionSuspense = ({ trackId }: TrackInsightInfoSectionPro
       </div>
 
       <div className="text-main-white text-center text-3xl font-semibold">
-        This track got {trackData?.streamCount || 0} streams in the last 7 days
+        This track got {trackData?.streamCount || 0} streams in the last {getTimeRangeNumber(timeRange)} days
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, AlertCircle } from "lucide-react";
+import { Eye } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -77,11 +77,10 @@ export function ReportListItem({ report, href }: ReportListItemProps) {
 
   return (
     <Card className="transition-shadow hover:shadow-md">
-      <CardHeader className="pb-3">
+      <CardHeader>
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <AlertCircle className="text-muted-foreground h-4 w-4" />
               <Badge variant="outline">{reportTypeLabel}</Badge>
               <Badge variant="secondary">{contentTypeLabel}</Badge>
             </div>

@@ -14,15 +14,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useState } from "react";
 import Image from "next/image";
 import {
+  ChartLineIcon,
   CircleArrowDownIcon,
   EarthIcon,
   EllipsisVerticalIcon,
+  EyeIcon,
   HeartIcon,
   LockIcon,
   MessageSquareTextIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Pagination,
   PaginationContent,
@@ -174,7 +182,7 @@ const TrackTable = ({
       },
     },
     {
-      id: "interactions",
+      id: "favoriteCount",
       header: "Interactions",
       cell: ({ row }) => {
         return (
@@ -198,11 +206,29 @@ const TrackTable = ({
     {
       id: "actions",
       header: "",
-      cell: () => {
+      cell: ({ row }) => {
         return (
-          <Button variant="ghost" className="text-main-white px-2 py-1.5">
-            <EllipsisVerticalIcon className="size-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="text-main-white px-2 py-1.5">
+                <EllipsisVerticalIcon className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={`/artist/studio/tracks/insights/${row.original.id}`} className="w-full cursor-pointer">
+                  <ChartLineIcon />
+                  Insights
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/artist/studio/tracks/detail/${row.original.id}`} className="w-full cursor-pointer">
+                  <EyeIcon />
+                  View Detail
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
@@ -326,7 +352,7 @@ const TrackTable = ({
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    className={`${cell.column.id === "number" ? "w-12" : ""} ${cell.column.id === "isReleased" ? "w-34" : ""} ${cell.column.id === "releaseDate" ? "w-42" : ""} ${cell.column.id === "streamCount" ? "w-28" : ""} ${cell.column.id === "interactions" ? "w-64" : ""} ${cell.column.id === "actions" ? "w-12" : ""}`}
+                    className={`${cell.column.id === "number" ? "w-12" : ""} ${cell.column.id === "isReleased" ? "w-34" : ""} ${cell.column.id === "releaseDate" ? "w-42" : ""} ${cell.column.id === "streamCount" ? "w-28" : ""} ${cell.column.id === "favoriteCount" ? "w-64" : ""} ${cell.column.id === "actions" ? "w-12" : ""}`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>

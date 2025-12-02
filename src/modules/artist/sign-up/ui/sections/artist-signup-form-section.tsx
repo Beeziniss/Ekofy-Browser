@@ -235,7 +235,7 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
         {/* Sign Up Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="mb-2 block text-sm font-medium text-white">Email*</label>
+            <label className="mb-2 block text-sm font-medium text-white">Email<span className="text-red-500">*</span></label>
             <Input
               type="email"
               value={email}
@@ -262,7 +262,7 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
 
           <div className="relative">
             <label className="mb-2 flex items-center gap-1 text-sm font-medium text-white">
-              Password*
+              Password<span className="text-red-500">*</span>
               <Link href="#" className="ml-2">
                 <CircleHelp className="h-4 w-4 text-white" />
               </Link>
@@ -341,7 +341,7 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-white">Confirm Password*</label>
+            <label className="mb-2 block text-sm font-medium text-white">Confirm Password<span className="text-red-500">*</span></label>
             <div className="relative">
               <Input
                 type={showConfirmPassword ? "text" : "password"}

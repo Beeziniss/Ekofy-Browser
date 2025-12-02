@@ -24,11 +24,12 @@ import {
   conversationDetailOptions,
   conversationMessagesOptions,
   servicePackageOptions,
+  orderPackageOptions,
 } from "@/gql/options/client-options";
 import { sendRequestMutationOptions } from "@/gql/options/client-mutation-options";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store";
-import { Message, CreateDirectRequestInput } from "@/gql/graphql";
+import { Message, CreateDirectRequestInput, PackageOrderStatus } from "@/gql/graphql";
 import { MessageDeletedData } from "@/hooks/use-conversation-signalr";
 import ConversationInfo from "../components/conversation-info";
 import { UserRole } from "@/types/role";
@@ -90,6 +91,29 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
     }),
     enabled: !!conversation?.conversations?.items?.[0].otherProfileConversation!.artistId,
   });
+
+  // Get order package to check for disputed status
+  const otherUserId = useMemo(
+    () => conversation?.conversations?.items?.[0]?.userIds?.find((id) => id !== currentUserId),
+    [conversation?.conversations?.items, currentUserId],
+  );
+
+  const { data: orderPackage } = useQuery({
+    ...orderPackageOptions({
+      currentUserId: currentUserId || "",
+      otherUserId: otherUserId || "",
+      isArtist,
+      conversationId,
+      skip: 0,
+      take: 1,
+    }),
+    enabled: !!currentUserId && !!otherUserId,
+  });
+
+  // Check if order is disputed
+  const isOrderDisputed = useMemo(() => {
+    return orderPackage?.packageOrders?.items?.[0]?.status === PackageOrderStatus.Disputed;
+  }, [orderPackage?.packageOrders?.items]);
 
   // Send request mutation
   const sendRequestMutation = useMutation(sendRequestMutationOptions);
@@ -187,6 +211,12 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
   }, [conversationId, queryClient, onMessageReceived, onMessageSent, onException, onMessageDeleted, scrollToBottom]);
 
   const sendMessage = async () => {
+    // Don't allow sending messages if order is disputed
+    if (isOrderDisputed) {
+      toast.error("Chat is disabled due to disputed order");
+      return;
+    }
+
     if (isConnected && newMessage.trim() && conversation?.conversations?.items?.[0]) {
       try {
         const conversationData = conversation.conversations.items[0];
@@ -305,10 +335,11 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
           <div className="px-3 pb-3">
             <InputGroup>
               <InputGroupTextarea
-                placeholder="Ask, Search or Chat..."
+                placeholder={isOrderDisputed ? "Chat is disabled due to disputed order" : "Send a message..."}
                 className="max-h-48"
                 autoFocus
                 value={newMessage}
+                disabled={isOrderDisputed}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
@@ -318,12 +349,12 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
                 }}
               />
               <InputGroupAddon align="block-end">
-                <InputGroupButton variant="outline" className="rounded-full" size="icon-xs">
+                <InputGroupButton variant="outline" className="rounded-full" size="icon-xs" disabled={isOrderDisputed}>
                   <PlusIcon />
                 </InputGroupButton>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <InputGroupButton variant="ghost">
+                    <InputGroupButton variant="ghost" disabled={isOrderDisputed}>
                       <SmileIcon className="size-5" />
                     </InputGroupButton>
                   </DropdownMenuTrigger>
@@ -337,7 +368,9 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
                 <InputGroupButton
                   variant={"default"}
                   onClick={() => setShowCreateRequestDialog(true)}
-                  disabled={!currentUserId || !conversation?.conversations?.items?.[0]?.requestId || isArtist}
+                  disabled={
+                    !currentUserId || !conversation?.conversations?.items?.[0]?.requestId || isArtist || isOrderDisputed
+                  }
                 >
                   <BadgeDollarSignIcon className="size-4.5" /> Create request
                 </InputGroupButton>
@@ -347,7 +380,7 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
                   className="ml-auto rounded-full"
                   size="icon-xs"
                   onClick={sendMessage}
-                  disabled={!newMessage.trim()}
+                  disabled={!newMessage.trim() || isOrderDisputed}
                 >
                   <ArrowUpIcon />
                   <span className="sr-only">Send</span>

@@ -22,7 +22,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, UserCheck, UserX, Search } from "lucide-react";
 import { UserRole, UserStatus } from "@/gql/graphql";
 import { ModeratorUserTableData } from "@/types";
@@ -96,23 +95,9 @@ export function ModeratorUserTable({
 
   const columns: ColumnDef<ModeratorUserTableData>[] = [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-          className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="border-gray-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
-        />
-      ),
+      accessorKey: "No.",
+      header: "No.",
+      cell: ({ row }) => <span className="text-gray-300">{(currentPage - 1) * pageSize + row.index + 1}</span>,
       enableSorting: false,
       enableHiding: false,
     },

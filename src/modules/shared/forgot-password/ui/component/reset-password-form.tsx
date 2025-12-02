@@ -88,7 +88,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium">Email Address</FormLabel>
+                  <FormLabel className="text-white font-medium">Email Address<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input
                       type="email"
@@ -107,7 +107,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               name="otpCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium">Verification Code</FormLabel>
+                  <FormLabel className="text-white font-medium">Verification Code<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <div className="flex justify-center">
                       <InputOTP
@@ -138,7 +138,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium">New Password</FormLabel>
+                  <FormLabel className="text-white font-medium">New Password<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -174,7 +174,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium">Confirm New Password</FormLabel>
+                  <FormLabel className="text-white font-medium">Confirm New Password<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input

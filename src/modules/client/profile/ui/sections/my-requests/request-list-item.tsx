@@ -101,18 +101,27 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
             <div className="flex items-start gap-3">
               <div className="flex-1">
                 <h3 className="mb-2 line-clamp-2 text-lg font-semibold text-white">
-                  {request.title || `Request for ${artist?.[0].stageName || "Service"}`}
+                  {request.title || `Request for ${artist?.[0].stageName || "Service"}`} - {request.type}
                 </h3>
                 {requestStatusBadge(request.status)}
               </div>
             </div>
 
-            {/* Summary or Detail Description */}
+            {/* Summary */}
+            {request.summary && (
+              <p
+                className="line-clamp-2 text-sm text-gray-400"
+                dangerouslySetInnerHTML={{ __html: request.summary || "No summary provided" }}
+              ></p>
+             )}
+            
+            {/* Requirements */}
+            {request.requirements && (
             <p
               className="line-clamp-2 text-sm text-gray-400"
-              dangerouslySetInnerHTML={{ __html: request.requirements || "No description provided" }}
+              dangerouslySetInnerHTML={{ __html: request.requirements || "No requirements provided" }}
             ></p>
-
+            )}
             {/* Artist Info - Only show for direct requests with artist */}
             {artist && (
               <div className="flex items-center gap-2 text-sm">
@@ -123,7 +132,7 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
                     href={`/artists/${"userId" in artist && artist.userId ? artist.userId : request.artistId}`}
                     className="hover:text-main-purple font-medium text-white transition-colors"
                   >
-                    {artist?.[0].stageName}
+                    {artist?.[0]?.stageName}
                   </Link>
                 </span>
               </div>
@@ -145,9 +154,9 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
                 <Calendar className="h-4 w-4" />
                 <span>
                   Created:{" "}
-                  {request.requestCreatedTime
-                    ? formatDateTime(request.requestCreatedTime)
-                    : formatDateTime(request.updatedAt)}
+                  {request.postCreatedTime
+                    ? formatDateTime(request.postCreatedTime)
+                    : formatDateTime(request.requestCreatedTime)}
                 </span>
               </div>
             </div>

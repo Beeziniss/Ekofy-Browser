@@ -5,8 +5,13 @@ import {
   CreateTrackRequestInput,
   CreateWorkRequestInput,
   UpdateArtistRequestInput,
+  UpdateTrackRequestInput,
 } from "../graphql";
-import { UploadTrackMutation } from "@/modules/shared/mutations/artist/track-mutation";
+import {
+  CancelTrackUploadMutation,
+  UpdateTrackMetadataMutation,
+  UploadTrackMutation,
+} from "@/modules/shared/mutations/artist/track-mutation";
 import { UpdateArtistProfileMutation } from "@/modules/shared/mutations/artist/user-mutation";
 
 export const trackUploadMutationOptions = mutationOptions({
@@ -26,4 +31,18 @@ export const updateArtistProfileMutationOptions = mutationOptions({
     await execute(UpdateArtistProfileMutation, {
       updateArtistRequest,
     }),
+});
+
+export const updateTrackMetadataMutationOptions = mutationOptions({
+  mutationKey: ["update-track-metadata"],
+  mutationFn: async (updateMetadataTrack: UpdateTrackRequestInput) =>
+    await execute(UpdateTrackMetadataMutation, {
+      updateTrackRequest: updateMetadataTrack,
+    }),
+});
+
+export const cancelTrackUploadMutationOptions = mutationOptions({
+  mutationKey: ["cancel-track-upload"],
+  mutationFn: async (variables: { uploadId: string; reasonReject: string; isCancel: boolean }) =>
+    await execute(CancelTrackUploadMutation, variables),
 });
