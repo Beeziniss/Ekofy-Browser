@@ -19,6 +19,7 @@ import OrderSubmissionRevisionDialog from "../components/order-submission-revisi
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "date-fns";
 import { useAuthStore } from "@/store";
+import { toast } from "sonner";
 
 interface OrderSubmissionSectionProps {
   orderId: string;
@@ -34,6 +35,41 @@ const OrderSubmissionSection = ({ orderId }: OrderSubmissionSectionProps) => {
 
   const deliveries = orderPackageDetail?.deliveries || [];
   const isOrderDisputed = orderPackageDetail?.status === PackageOrderStatus.Disputed;
+
+  // Function to get presigned URL for file access
+  const getFileUrl = async (fileKey: string): Promise<string> => {
+    try {
+      const response = await fetch(`/api/s3/presign?key=${encodeURIComponent(fileKey)}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to get file URL");
+      }
+
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error("Error getting file URL:", error);
+      toast.error("Failed to access file. Please try again.");
+      throw error;
+    }
+  };
+
+  // Function to handle file access (either direct URL or S3 key)
+  const handleFileAccess = async (deliveryFileUrl: string) => {
+    try {
+      // Check if it's a direct URL or an S3 key
+      if (deliveryFileUrl.startsWith("http")) {
+        // Direct URL - open it
+        window.open(deliveryFileUrl, "_blank");
+      } else {
+        // S3 key - get presigned URL first
+        const actualUrl = await getFileUrl(deliveryFileUrl);
+        window.open(actualUrl, "_blank");
+      }
+    } catch {
+      // Error already handled in getFileUrl
+    }
+  };
 
   const handleViewDetails = (delivery: DeliveryItem) => {
     setSelectedDelivery(delivery);
@@ -98,7 +134,7 @@ const OrderSubmissionSection = ({ orderId }: OrderSubmissionSectionProps) => {
                       {delivery.deliveryFileUrl ? (
                         <div
                           className="hover:text-main-purple/80 flex w-fit cursor-pointer items-center gap-2 p-2 pl-0 transition-colors"
-                          onClick={() => window.open(delivery.deliveryFileUrl, "_blank")}
+                          onClick={() => handleFileAccess(delivery.deliveryFileUrl!)}
                         >
                           <FileIcon className="text-main-purple h-4 w-4" />
                           <span className="text-sm">Delivery File</span>
@@ -134,12 +170,7 @@ const OrderSubmissionSection = ({ orderId }: OrderSubmissionSectionProps) => {
                             View Details
                           </DropdownMenuItem>
                           {delivery.deliveryFileUrl && (
-                            <DropdownMenuItem
-                              onClick={() => {
-                                // Handle download file action
-                                window.open(delivery.deliveryFileUrl, "_blank");
-                              }}
-                            >
+                            <DropdownMenuItem onClick={() => handleFileAccess(delivery.deliveryFileUrl!)}>
                               <ArrowUpRightIcon className="h-4 w-4" />
                               Open File
                             </DropdownMenuItem>
