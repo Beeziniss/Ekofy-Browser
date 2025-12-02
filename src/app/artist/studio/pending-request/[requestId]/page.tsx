@@ -15,15 +15,7 @@ const PendingRequestDetailPage = async ({ params }: PendingRequestDetailPageProp
   const { requestId } = await params;
   const queryClient = getQueryClient();
 
-  // Prefetch request details
-  try {
-    await queryClient.prefetchQuery(
-      pendingRequestDetailOptions(requestId)
-    );
-  } catch (error) {
-    // If prefetch fails, the component will handle the error state
-    console.error("Error prefetching request details:", error);
-  }
+  void queryClient.prefetchQuery(pendingRequestDetailOptions(requestId));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

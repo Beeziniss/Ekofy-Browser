@@ -23,3 +23,9 @@ export const UpdateTrackMetadataMutation = graphql(`
     updateMetadataTrack(updateTrackRequest: $updateTrackRequest)
   }
 `);
+
+export const CancelTrackUploadMutation = graphql(`
+  mutation CancelTrackUpload($uploadId: String!, $reasonReject: String!, $isCancel: Boolean!) {
+    rejectTrackUploadRequest(isCancled: $isCancel, reasonReject: $reasonReject, uploadId: $uploadId)
+  }
+`);

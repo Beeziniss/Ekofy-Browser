@@ -218,6 +218,11 @@ export const TrackUploadPendingRequestDetailQuery = graphql(`
       work {
         id
         description
+        workSplits {
+          userId
+          artistRole
+          percentage
+        }
       }
       recording {
         id

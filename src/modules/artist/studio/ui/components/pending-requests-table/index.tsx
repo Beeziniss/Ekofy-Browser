@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel } from "@tanstack/react-table";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import type { ColumnDef, SortingState, OnChangeFn } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -15,7 +21,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { EyeIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -98,21 +103,6 @@ const PendingRequestsTable = ({
 }: PendingRequestsTableProps) => {
   const [rowSelection, setRowSelection] = useState({});
 
-  const getTrackTypeColor = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "original":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "cover":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-      case "remix":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
-      case "live":
-        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-    }
-  };
-
   const columns: ColumnDef<PendingTrackUploadRequest>[] = [
     {
       id: "number",
@@ -125,7 +115,7 @@ const PendingRequestsTable = ({
       enableHiding: false,
     },
     {
-      accessorKey: "track.name",
+      accessorKey: "name",
       header: "Track",
       cell: ({ row }) => {
         const request = row.original;
@@ -155,18 +145,6 @@ const PendingRequestsTable = ({
       },
     },
     {
-      accessorKey: "track.type",
-      header: "Type",
-      cell: ({ row }) => {
-        const trackType = row.original.track.type;
-        return (
-          <Badge variant="secondary" className={getTrackTypeColor(trackType)}>
-            {trackType}
-          </Badge>
-        );
-      },
-    },
-    {
       accessorKey: "requestedAt",
       header: "Requested",
       cell: ({ row }) => {
@@ -176,11 +154,11 @@ const PendingRequestsTable = ({
       },
     },
     {
-      accessorKey: "track.isExplicit",
-      header: "Content",
+      accessorKey: "isExplicit",
+      header: "Explicit",
       cell: ({ row }) => {
         const isExplicit = row.original.track.isExplicit;
-        return <Badge variant={isExplicit ? "destructive" : "outline"}>{isExplicit ? "Explicit" : "Clean"}</Badge>;
+        return <Badge variant={isExplicit ? "destructive" : "ekofy"}>{isExplicit ? "Explicit" : "Clean"}</Badge>;
       },
     },
     {
@@ -190,8 +168,7 @@ const PendingRequestsTable = ({
         const request = row.original;
         return (
           <Link href={`/artist/studio/tracks/pending/${request.id}`}>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <EyeIcon className="size-4" />
+            <Button variant="ghost" size="sm">
               View
             </Button>
           </Link>
@@ -318,10 +295,11 @@ const PendingRequestsTable = ({
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="py-4">
-                    {typeof cell.column.columnDef.cell === "function"
-                      ? cell.column.columnDef.cell(cell.getContext())
-                      : null}
+                  <TableCell
+                    key={cell.id}
+                    className={`${cell.column.id === "number" ? "w-12" : ""} ${cell.column.id === "requestedAt" ? "w-32" : ""} ${cell.column.id === "isExplicit" ? "w-25" : ""} ${cell.column.id === "actions" ? "w-12" : ""}`}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
