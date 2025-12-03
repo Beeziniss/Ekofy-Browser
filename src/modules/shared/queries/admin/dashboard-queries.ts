@@ -235,8 +235,11 @@ export const TRACK_DAILY_METRICS = graphql(`
     trackDailyMetrics(where: $where) {
         items {
             createdAt
+            streamCount
+            downloadCount
+            favoriteCount
+            commentCount
         }
-        totalCount
     }
 }
 `);

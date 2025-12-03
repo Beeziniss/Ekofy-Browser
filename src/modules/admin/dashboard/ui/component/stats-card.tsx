@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 interface StatsCardProps {
   title: string;
   value: string;
-  change: string;
-  changeType: "positive" | "negative" | "neutral";
+  change?: string;
+  changeType?: "positive" | "negative" | "neutral";
   icon: LucideIcon;
   delay?: number;
   subtitle?: string;
@@ -29,21 +29,23 @@ export function StatsCard({ title, value, change, changeType, icon: Icon, delay 
           <Icon className="h-5 w-5 text-primary" />
         </div>
       </div>
-      <div className="mt-4 flex items-center gap-2">
-        <span
-          className={cn(
-            "text-sm font-medium",
-            changeType === "positive" && "text-success",
-            changeType === "negative" && "text-destructive",
-            changeType === "neutral" && "text-muted-foreground"
-          )}
-        >
-          {change}
-        </span>
-        <span className="text-sm text-muted-foreground">
-          {changeType === "neutral" ? "" : "vs last month"}
-        </span>
-      </div>
+      {change && changeType && (
+        <div className="mt-4 flex items-center gap-2">
+          <span
+            className={cn(
+              "text-sm font-medium",
+              changeType === "positive" && "text-success",
+              changeType === "negative" && "text-destructive",
+              changeType === "neutral" && "text-muted-foreground"
+            )}
+          >
+            {change}
+          </span>
+          <span className="text-sm text-muted-foreground">
+            {changeType === "neutral" ? "" : "vs last month"}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

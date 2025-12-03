@@ -7533,7 +7533,7 @@ export type TrackDailyMetricsQueryVariables = Exact<{
 }>;
 
 
-export type TrackDailyMetricsQuery = { __typename?: 'QueryInitialization', trackDailyMetrics?: { __typename?: 'TrackDailyMetricsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'TrackDailyMetric', createdAt: any }> | null } | null };
+export type TrackDailyMetricsQuery = { __typename?: 'QueryInitialization', trackDailyMetrics?: { __typename?: 'TrackDailyMetricsCollectionSegment', items?: Array<{ __typename?: 'TrackDailyMetric', createdAt: any, streamCount: any, downloadCount: any, favoriteCount: any, commentCount: any }> | null } | null };
 
 export type EscrowCommissionPoliciesQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -9219,8 +9219,11 @@ export const TrackDailyMetricsDocument = new TypedDocumentString(`
   trackDailyMetrics(where: $where) {
     items {
       createdAt
+      streamCount
+      downloadCount
+      favoriteCount
+      commentCount
     }
-    totalCount
   }
 }
     `) as unknown as TypedDocumentString<TrackDailyMetricsQuery, TrackDailyMetricsQueryVariables>;
