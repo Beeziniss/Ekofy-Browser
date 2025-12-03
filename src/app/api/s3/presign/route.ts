@@ -9,9 +9,17 @@ const s3 = new S3Client({
   },
 });
 
+/**
+ * Generate a presigned URL for uploading a file to S3
+ * @param request - The incoming request containing file details
+ * @return A JSON response with the presigned upload URL and file key
+ * filePath: orders, legals, nations, ... 
+
+*/
+
 export async function POST(request: Request) {
-  const { fileName, fileType } = await request.json();
-  const key = `orders/${fileName}-${Date.now()}`;
+  const { fileName, fileType, filePath } = await request.json();
+  const key = `${filePath}/${Date.now()}-${fileName}`;
 
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME!,

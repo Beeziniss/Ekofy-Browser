@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { submitDeliveryMutationOptions } from "@/gql/options/client-mutation-options";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { FilePath } from "@/types/file";
 
 const deliveryFormSchema = z.object({
   notes: z.string().optional(),
@@ -83,6 +84,7 @@ const OrderSubmissionSubmitDialog = ({ orderId, isOpen, onOpenChange }: OrderSub
         body: JSON.stringify({
           fileName: file.name,
           fileType: file.type,
+          filePath: FilePath.ORDERS,
         }),
       });
 
