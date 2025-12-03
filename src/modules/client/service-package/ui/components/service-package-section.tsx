@@ -13,7 +13,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Suspense, useState } from "react";
-import { PackageXIcon } from "lucide-react";
+import { ArrowLeftIcon, PackageXIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -240,7 +240,16 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
 
   return (
     <div className="flex flex-col gap-y-8">
-      <h1 className="text-main-white text-4xl font-bold">About The Artist</h1>
+      <div className="flex items-start justify-between">
+        <h1 className="text-main-white text-4xl font-bold">About The Artist</h1>
+
+        <Link
+          href={`/artists/${servicePackage?.artist?.[0].id}/services`}
+          className="hover:border-main-white flex items-center gap-x-2 pb-0.5 text-sm font-normal transition hover:border-b"
+        >
+          <ArrowLeftIcon className="size-4" /> Back to Services
+        </Link>
+      </div>
 
       <div className="flex items-start gap-x-14">
         <Avatar className="size-40">
@@ -260,9 +269,9 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
       </div>
 
       <div className="space-y-2">
-        <div className="text-xl">
-          Here&apos;s what you get from service <strong>{servicePackage?.packageName}</strong>:
-        </div>
+        <h2 className="text-2xl font-semibold">{servicePackage?.packageName}</h2>
+        <p className="text-muted-foreground w-1/2 text-lg">{servicePackage?.description}</p>
+        <div className="text-lg">Here&apos;s what you get:</div>
         <ul className="text-main-white space-y-2 font-medium">
           {servicePackage?.serviceDetails?.map((detail, index) => (
             <li key={index} className="flex items-center gap-x-2">

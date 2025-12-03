@@ -24,7 +24,7 @@ const ArtistDetailLayout = ({ children }: ArtistDetailLayoutProps) => {
       <ArtistAvatarSection artistData={data} />
       <ArtistOptionsSection artistData={data} artistId={artistId} />
 
-      <div className="grid grid-cols-8 px-6">
+      <div className="grid grid-cols-8 gap-x-4 px-6">
         <div className="col-span-6 w-full">{children}</div>
         <div className="col-span-2 w-full">
           <div className="bg-main-purple/20 sticky top-20 rounded-md p-4 shadow">

@@ -14,24 +14,24 @@ const ServicePackageCard = ({ servicePackage }: { servicePackage: ServicePackage
   };
 
   return (
-    <Card className="group h-fit transition-all hover:shadow-lg">
+    <Card className="group flex h-full gap-1 transition-all hover:shadow-lg">
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
           <CardTitle className="group-hover:text-primary text-xl font-bold transition-colors">
             {servicePackage.packageName}
           </CardTitle>
-          <div className="flex items-center gap-1">
-            <span className="text-main-purple/85 text-2xl font-bold">
-              {formatPrice(servicePackage.amount, servicePackage.currency)}
-            </span>
-          </div>
         </div>
         <CardDescription className="line-clamp-2 leading-relaxed">
           {servicePackage.description || "No description available for this service package."}
         </CardDescription>
       </CardHeader>
 
-      <CardFooter className="justify-end pt-4">
+      <CardFooter className="mt-auto items-center justify-between pt-4">
+        <div className="flex items-center gap-1">
+          <span className="text-main-purple/85 text-lg font-bold">
+            {formatPrice(servicePackage.amount, servicePackage.currency)}
+          </span>
+        </div>
         <Link
           href={`/service-package/${servicePackage.id}`}
           className="text-main-purple hover:border-main-purple flex items-center gap-x-1 border-b border-transparent font-normal transition-colors"
