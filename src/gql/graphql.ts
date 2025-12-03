@@ -417,7 +417,7 @@ export type ArtistPackage = {
   artistId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   currency: CurrencyType;
-  customPackageInfo: CustomArtistPackageInfo;
+  customPackageInfo?: Maybe<CustomArtistPackageInfo>;
   description?: Maybe<Scalars['String']['output']>;
   estimateDeliveryDays: Scalars['Int']['output'];
   id: Scalars['String']['output'];
@@ -7447,6 +7447,94 @@ export type AdminProfileQueryVariables = Exact<{
 
 export type AdminProfileQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus, role: UserRole, createdAt: any, updatedAt?: any | null }> | null } | null };
 
+export type PaymentTransactionsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PaymentTransactionFilterInput>;
+  order?: InputMaybe<Array<PaymentTransactionSortInput> | PaymentTransactionSortInput>;
+}>;
+
+
+export type PaymentTransactionsQuery = { __typename?: 'QueryInitialization', paymentTransactions?: { __typename?: 'PaymentTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null, stripeCheckoutSessionId?: string | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type PayoutTransactionsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PayoutTransactionFilterInput>;
+  order?: InputMaybe<Array<PayoutTransactionSortInput> | PayoutTransactionSortInput>;
+}>;
+
+
+export type PayoutTransactionsQuery = { __typename?: 'QueryInitialization', payoutTransactions?: { __typename?: 'PayoutTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PayoutTransaction', id: string, amount: any, currency: string, createdAt: any, status: PayoutTransactionStatus, stripePayoutId: string }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type RefundTransactionsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RefundTransactionFilterInput>;
+  order?: InputMaybe<Array<RefundTransactionSortInput> | RefundTransactionSortInput>;
+}>;
+
+
+export type RefundTransactionsQuery = { __typename?: 'QueryInitialization', refundTransactions?: { __typename?: 'RefundTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'RefundTransaction', id: string, amount: any, currency: CurrencyType, createdAt: any, status: RefundTransactionStatus }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type ListenerDashBoardQueryVariables = Exact<{
+  where?: InputMaybe<ListenerFilterInput>;
+  order?: InputMaybe<Array<ListenerSortInput> | ListenerSortInput>;
+}>;
+
+
+export type ListenerDashBoardQuery = { __typename?: 'QueryInitialization', listeners?: { __typename?: 'ListenersCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Listener', createdAt: any }> | null } | null };
+
+export type ArtistDashBoardQueryVariables = Exact<{
+  where?: InputMaybe<ArtistFilterInput>;
+  order?: InputMaybe<Array<ArtistSortInput> | ArtistSortInput>;
+}>;
+
+
+export type ArtistDashBoardQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', createdAt: any }> | null } | null };
+
+export type TotalTracksDashBoardQueryVariables = Exact<{
+  where?: InputMaybe<TrackFilterInput>;
+  order?: InputMaybe<Array<TrackSortInput> | TrackSortInput>;
+}>;
+
+
+export type TotalTracksDashBoardQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', createdAt: any }> | null } | null };
+
+export type InvoicesDashBoardQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<InvoiceFilterInput>;
+  order?: InputMaybe<Array<InvoiceSortInput> | InvoiceSortInput>;
+}>;
+
+
+export type InvoicesDashBoardQuery = { __typename?: 'QueryInitialization', invoices?: { __typename?: 'InvoicesCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Invoice', id: string, paymentTransactionId: string, paidAt: any, oneOffSnapshot?: { __typename?: 'OneOffSnapshot', packageName: string, packageAmount: any, packageCurrency: CurrencyType } | null, subscriptionSnapshot?: { __typename?: 'SubscriptionSnapshot', subscriptionName: string, subscriptionAmount: any, subscriptionCurrency: CurrencyType, subscriptionTier: SubscriptionTier } | null, transaction: Array<{ __typename?: 'PaymentTransaction', amount: any, currency: string, paymentStatus: PaymentTransactionStatus, stripePaymentMethod: Array<string>, createdAt: any }> }> | null } | null };
+
+export type InvoicesDetailQueryVariables = Exact<{
+  where?: InputMaybe<InvoiceFilterInput>;
+}>;
+
+
+export type InvoicesDetailQuery = { __typename?: 'QueryInitialization', invoices?: { __typename?: 'InvoicesCollectionSegment', items?: Array<{ __typename?: 'Invoice', id: string, userId: string, paymentTransactionId: string, fullName: string, email: string, country: string, amount: any, currency: string, from: string, to: string, originContext?: string | null, paidAt: any, oneOffSnapshot?: { __typename?: 'OneOffSnapshot', packageName: string, packageAmount: any, packageCurrency: CurrencyType, estimateDeliveryDays: number, packageDescription?: string | null, maxRevision: number, artistPackageStatus: ArtistPackageStatus, duration: number, platformFeePercentage: any, artistFeePercentage: any, oneOffType: OneOffType, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> } | null, subscriptionSnapshot?: { __typename?: 'SubscriptionSnapshot', subscriptionName: string, subscriptionDescription?: string | null, subscriptionCode: string, subscriptionVersion: number, subscriptionAmount: any, subscriptionCurrency: CurrencyType, subscriptionTier: SubscriptionTier, subscriptionStatus: SubscriptionStatus, stripeProductId: string, stripeProductActive: boolean, stripeProductName: string, stripeProductImages?: Array<string> | null, stripeProductType: string } | null, transaction: Array<{ __typename?: 'PaymentTransaction', id: string, userId: string, stripeCheckoutSessionId?: string | null, stripeSubscriptionId?: string | null, stripeInvoiceId?: string | null, stripePaymentId?: string | null, stripePaymentMethod: Array<string>, amount: any, currency: string, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, createdAt: any, updatedAt?: any | null, listener: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string }>, artist: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> }> }> | null } | null };
+
+export type PlatformRevenueQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PlatformRevenueFilterInput>;
+  order?: InputMaybe<Array<PlatformRevenueSortInput> | PlatformRevenueSortInput>;
+}>;
+
+
+export type PlatformRevenueQuery = { __typename?: 'QueryInitialization', platformRevenues?: { __typename?: 'PlatformRevenuesCollectionSegment', items?: Array<{ __typename?: 'PlatformRevenue', subscriptionRevenue: any, serviceRevenue: any, grossRevenue: any, royaltyPayoutAmount: any, servicePayoutAmount: any, refundAmount: any, totalPayoutAmount: any, grossDeductions: any, commissionProfit: any, netProfit: any, currency: CurrencyType, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type TrackDailyMetricsQueryVariables = Exact<{
+  where?: InputMaybe<TrackDailyMetricFilterInput>;
+}>;
+
+
+export type TrackDailyMetricsQuery = { __typename?: 'QueryInitialization', trackDailyMetrics?: { __typename?: 'TrackDailyMetricsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'TrackDailyMetric', createdAt: any }> | null } | null };
+
 export type EscrowCommissionPoliciesQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -7516,14 +7604,14 @@ export type ArtistPackagesServiceQueryVariables = Exact<{
 }>;
 
 
-export type ArtistPackagesServiceQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number, isCustom: boolean, updatedAt?: any | null, createdAt: any, artistId: string, status: ArtistPackageStatus, isDelete: boolean, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }>, customPackageInfo: { __typename?: 'CustomArtistPackageInfo', clientId: string, conversationId?: string | null } }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type ArtistPackagesServiceQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, description?: string | null, maxRevision: number, isCustom: boolean, updatedAt?: any | null, createdAt: any, artistId: string, status: ArtistPackageStatus, isDelete: boolean, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }>, customPackageInfo?: { __typename?: 'CustomArtistPackageInfo', clientId: string, conversationId?: string | null } | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type ArtistPackagesDetailQueryVariables = Exact<{
   where?: InputMaybe<ArtistPackageFilterInput>;
 }>;
 
 
-export type ArtistPackagesDetailQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, isCustom: boolean, description?: string | null, maxRevision: number, status: ArtistPackageStatus, isDelete: boolean, createdAt: any, updatedAt?: any | null, artistId: string, customPackageInfo: { __typename?: 'CustomArtistPackageInfo', clientId: string, conversationId?: string | null }, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> | null } | null };
+export type ArtistPackagesDetailQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, isCustom: boolean, description?: string | null, maxRevision: number, status: ArtistPackageStatus, isDelete: boolean, createdAt: any, updatedAt?: any | null, artistId: string, customPackageInfo?: { __typename?: 'CustomArtistPackageInfo', clientId: string, conversationId?: string | null } | null, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> | null } | null };
 
 export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8905,6 +8993,237 @@ export const AdminProfileDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AdminProfileQuery, AdminProfileQueryVariables>;
+export const PaymentTransactionsDocument = new TypedDocumentString(`
+    query PaymentTransactions($skip: Int, $take: Int, $where: PaymentTransactionFilterInput, $order: [PaymentTransactionSortInput!]) {
+  paymentTransactions(skip: $skip, take: $take, where: $where, order: $order) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      paymentStatus
+      status
+      stripePaymentMethod
+      stripePaymentId
+      stripeCheckoutSessionId
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PaymentTransactionsQuery, PaymentTransactionsQueryVariables>;
+export const PayoutTransactionsDocument = new TypedDocumentString(`
+    query PayoutTransactions($skip: Int, $take: Int, $where: PayoutTransactionFilterInput, $order: [PayoutTransactionSortInput!]) {
+  payoutTransactions(skip: $skip, take: $take, where: $where, order: $order) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      status
+      stripePayoutId
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PayoutTransactionsQuery, PayoutTransactionsQueryVariables>;
+export const RefundTransactionsDocument = new TypedDocumentString(`
+    query RefundTransactions($skip: Int, $take: Int, $where: RefundTransactionFilterInput, $order: [RefundTransactionSortInput!]) {
+  refundTransactions(skip: $skip, take: $take, where: $where, order: $order) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      status
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RefundTransactionsQuery, RefundTransactionsQueryVariables>;
+export const ListenerDashBoardDocument = new TypedDocumentString(`
+    query ListenerDashBoard($where: ListenerFilterInput, $order: [ListenerSortInput!]) {
+  listeners(where: $where, order: $order) {
+    totalCount
+    items {
+      createdAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ListenerDashBoardQuery, ListenerDashBoardQueryVariables>;
+export const ArtistDashBoardDocument = new TypedDocumentString(`
+    query ArtistDashBoard($where: ArtistFilterInput, $order: [ArtistSortInput!]) {
+  artists(where: $where, order: $order) {
+    totalCount
+    items {
+      createdAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ArtistDashBoardQuery, ArtistDashBoardQueryVariables>;
+export const TotalTracksDashBoardDocument = new TypedDocumentString(`
+    query TotalTracksDashBoard($where: TrackFilterInput, $order: [TrackSortInput!]) {
+  tracks(where: $where, order: $order) {
+    totalCount
+    items {
+      createdAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TotalTracksDashBoardQuery, TotalTracksDashBoardQueryVariables>;
+export const InvoicesDashBoardDocument = new TypedDocumentString(`
+    query InvoicesDashBoard($skip: Int, $take: Int, $where: InvoiceFilterInput, $order: [InvoiceSortInput!]) {
+  invoices(skip: $skip, take: $take, where: $where, order: $order) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      paymentTransactionId
+      paidAt
+      oneOffSnapshot {
+        packageName
+        packageAmount
+        packageCurrency
+      }
+      subscriptionSnapshot {
+        subscriptionName
+        subscriptionAmount
+        subscriptionCurrency
+        subscriptionTier
+      }
+      transaction {
+        amount
+        currency
+        paymentStatus
+        stripePaymentMethod
+        createdAt
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<InvoicesDashBoardQuery, InvoicesDashBoardQueryVariables>;
+export const InvoicesDetailDocument = new TypedDocumentString(`
+    query InvoicesDetail($where: InvoiceFilterInput) {
+  invoices(where: $where) {
+    items {
+      id
+      userId
+      paymentTransactionId
+      fullName
+      email
+      country
+      amount
+      currency
+      from
+      to
+      originContext
+      paidAt
+      oneOffSnapshot {
+        packageName
+        packageAmount
+        packageCurrency
+        estimateDeliveryDays
+        packageDescription
+        maxRevision
+        artistPackageStatus
+        duration
+        platformFeePercentage
+        artistFeePercentage
+        oneOffType
+        serviceDetails {
+          key
+          value
+        }
+      }
+      subscriptionSnapshot {
+        subscriptionName
+        subscriptionDescription
+        subscriptionCode
+        subscriptionVersion
+        subscriptionAmount
+        subscriptionCurrency
+        subscriptionTier
+        subscriptionStatus
+        stripeProductId
+        stripeProductActive
+        stripeProductName
+        stripeProductImages
+        stripeProductType
+      }
+      transaction {
+        id
+        userId
+        stripeCheckoutSessionId
+        stripeSubscriptionId
+        stripeInvoiceId
+        stripePaymentId
+        stripePaymentMethod
+        amount
+        currency
+        paymentStatus
+        status
+        createdAt
+        updatedAt
+        listener {
+          id
+          userId
+          displayName
+        }
+        artist {
+          id
+          userId
+          stageName
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<InvoicesDetailQuery, InvoicesDetailQueryVariables>;
+export const PlatformRevenueDocument = new TypedDocumentString(`
+    query PlatformRevenue($skip: Int, $take: Int, $where: PlatformRevenueFilterInput, $order: [PlatformRevenueSortInput!]) {
+  platformRevenues(skip: $skip, take: $take, where: $where, order: $order) {
+    items {
+      subscriptionRevenue
+      serviceRevenue
+      grossRevenue
+      royaltyPayoutAmount
+      servicePayoutAmount
+      refundAmount
+      totalPayoutAmount
+      grossDeductions
+      commissionProfit
+      netProfit
+      currency
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PlatformRevenueQuery, PlatformRevenueQueryVariables>;
+export const TrackDailyMetricsDocument = new TypedDocumentString(`
+    query TrackDailyMetrics($where: TrackDailyMetricFilterInput) {
+  trackDailyMetrics(where: $where) {
+    items {
+      createdAt
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<TrackDailyMetricsQuery, TrackDailyMetricsQueryVariables>;
 export const EscrowCommissionPoliciesDocument = new TypedDocumentString(`
     query EscrowCommissionPolicies($skip: Int, $take: Int, $where: EscrowCommissionPolicyFilterInput) {
   escrowCommissionPolicies(

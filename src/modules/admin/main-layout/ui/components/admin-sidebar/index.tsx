@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import { CircleUser, Boxes, Receipt, ClipboardList, ScrollText } from "lucide-react";
+import { CircleUser, Boxes, Receipt, ClipboardList, ScrollText, LayoutDashboard } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
 import { NavProjects } from "../nav-projects";
@@ -19,6 +19,11 @@ const data = {
     role: "Admin Panel",
   },
   projects: [
+    {
+      name: "Dashboard",
+      url: "/admin",
+      icon: LayoutDashboard,
+    },
     {
       name: "Manage Subscription",
       url: "/admin/subscription",
