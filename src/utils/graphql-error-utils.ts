@@ -29,14 +29,77 @@ export class GraphQLErrorHelper {
   }
 
   /**
-   * Get error detail from extensions.detail
+   * Get error detail from extensions.detail or message
    */
   get detail(): string {
+    // Cast error to any to access dynamic properties
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const err = this.error as any;
+
+    // Debug: log the error structure to console
+    console.log("Error object structure:", err);
+
+    // Special case: Check if error has graphQLErrors property (from execute.ts)
+    if (err?.graphQLErrors && Array.isArray(err.graphQLErrors) && err.graphQLErrors[0]?.message) {
+      return err.graphQLErrors[0].message;
+    }
+
+    // Try direct errors array (common GraphQL response format)
+    if (err?.errors && Array.isArray(err.errors) && err.errors[0]?.message) {
+      return err.errors[0].message;
+    }
+
+    // Try nested response.errors
+    if (err?.response?.errors && Array.isArray(err.response.errors) && err.response.errors[0]?.message) {
+      return err.response.errors[0].message;
+    }
+
+    // Try networkError.result.errors (Apollo error format)
+    if (err?.networkError?.result?.errors && Array.isArray(err.networkError.result.errors) && err.networkError.result.errors[0]?.message) {
+      return err.networkError.result.errors[0].message;
+    }
+
+    // Try graphQLErrors array
+    if (err?.graphQLErrors && Array.isArray(err.graphQLErrors) && err.graphQLErrors[0]?.message) {
+      return err.graphQLErrors[0].message;
+    }
+
+    // Try to get message from firstError.message
+    if (this.firstError?.message) {
+      return this.firstError.message;
+    }
+
+    // Try extensions.detail
     const detail = this.firstError?.extensions?.detail;
     if (detail) return detail;
 
-    if (this.error.message) return this.error.message;
-    if (this.error instanceof Error) return this.error.message;
+    // Try error.message - might be JSON string, try to parse it
+    if (this.error.message) {
+      try {
+        // Try to parse as JSON in case it's a stringified error response
+        const parsed = JSON.parse(this.error.message);
+        if (parsed.errors && Array.isArray(parsed.errors) && parsed.errors[0]?.message) {
+          return parsed.errors[0].message;
+        }
+      } catch {
+        // If not JSON, return as is
+      }
+      return this.error.message;
+    }
+    
+    // Try if error is Error instance
+    if (this.error instanceof Error) {
+      // Try to parse message as JSON
+      try {
+        const parsed = JSON.parse(this.error.message);
+        if (parsed.errors && Array.isArray(parsed.errors) && parsed.errors[0]?.message) {
+          return parsed.errors[0].message;
+        }
+      } catch {
+        // If not JSON, return as is
+      }
+      return this.error.message;
+    }
 
     return this.defaultMessage;
   }
@@ -95,9 +158,14 @@ export class GraphQLErrorHelper {
   }
 
   /**
-   * Get the raw error message
+   * Get the raw error message (prioritize errors[0].message)
    */
   get message(): string {
+    // Try to get from firstError.message first
+    if (this.firstError?.message) {
+      return this.firstError.message;
+    }
+    
     return this.error.message || this.defaultMessage;
   }
 
@@ -136,6 +204,76 @@ export class GraphQLErrorHelper {
 }
 
 /**
+ * Enhanced GraphQL Error Access with dynamic property access
+ * Allows accessing any error property like: errors.message, errors.locations, etc.
+ */
+export class GraphQLErrorAccess {
+  private readonly errorHelper: GraphQLErrorHelper;
+  private readonly rawErrors: GraphQLError[];
+
+  constructor(error: unknown, defaultMessage?: string) {
+    this.errorHelper = new GraphQLErrorHelper(error, defaultMessage);
+    this.rawErrors = this.errorHelper.errors;
+  }
+
+  // Helper methods from GraphQLErrorHelper
+  get detail(): string { return this.errorHelper.detail; }
+  get message(): string { return this.errorHelper.message; }
+  get code(): string | undefined { return this.errorHelper.code; }
+  get status(): number | undefined { return this.errorHelper.status; }
+  get details(): string[] { return this.errorHelper.details; }
+  get errors(): GraphQLError[] { return this.errorHelper.errors; }
+  isCode(code: string): boolean { return this.errorHelper.isCode(code); }
+  isStatus(status: number): boolean { return this.errorHelper.isStatus(status); }
+  toString(): string { return this.errorHelper.toString(); }
+
+  // Dynamic property access for first error
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get(property: string): any {
+    const firstError = this.rawErrors[0];
+    if (!firstError) return undefined;
+    
+    // Support nested property access like "locations.0.line"
+    return this.getNestedProperty(firstError, property);
+  }
+
+  // Get property from specific error by index
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getFromError(errorIndex: number, property: string): any {
+    const error = this.rawErrors[errorIndex];
+    if (!error) return undefined;
+    
+    return this.getNestedProperty(error, property);
+  }
+
+  // Get property from all errors as array
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getAll(property: string): any[] {
+    return this.rawErrors.map(error => this.getNestedProperty(error, property)).filter(val => val !== undefined);
+  }
+
+  // Helper to access nested properties
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private getNestedProperty(obj: any, path: string): any {
+    return path.split('.').reduce((current, key) => {
+      if (current && typeof current === 'object') {
+        return current[key];
+      }
+      return undefined;
+    }, obj);
+  }
+
+  // Shorthand access methods
+  get locations() { return this.get('locations'); }
+  get path() { return this.get('path'); }
+  get extensions() { return this.get('extensions'); }
+  
+  // Location specific helpers
+  get line() { return this.get('locations.0.line'); }
+  get column() { return this.get('locations.0.column'); }
+}
+
+/**
  * Parse GraphQL error into helper object for easy access
  * 
  * @example
@@ -150,6 +288,26 @@ export function parseGraphQLError(
   defaultMessage?: string,
 ): GraphQLErrorHelper {
   return new GraphQLErrorHelper(error, defaultMessage);
+}
+
+/**
+ * Parse GraphQL error with enhanced access capabilities
+ * 
+ * @example
+ * const errors = parseGraphQLErrorEnhanced(e);
+ * console.log(errors.message); // Get error message
+ * console.log(errors.get('locations')); // Get locations
+ * console.log(errors.line); // Get line from first location
+ * console.log(errors.column); // Get column from first location
+ * console.log(errors.get('extensions.code')); // Get nested code
+ * console.log(errors.getAll('message')); // Get all messages
+ * console.log(errors.getFromError(1, 'locations')); // Get locations from second error
+ */
+export function parseGraphQLErrorEnhanced(
+  error: unknown,
+  defaultMessage?: string,
+): GraphQLErrorAccess {
+  return new GraphQLErrorAccess(error, defaultMessage);
 }
 
 /**
@@ -170,10 +328,11 @@ export function getErrorDetailsFromArray(
 ): string {
   if (!errors || errors.length === 0) return defaultMessage;
 
-  const details = errors
-    .map((e) => e.extensions?.detail)
-    .filter((detail): detail is string => !!detail);
+  // Try to get message first, then fallback to extensions.detail
+  const messages = errors
+    .map((e) => e.message || e.extensions?.detail)
+    .filter((msg): msg is string => !!msg);
 
-  return details.length > 0 ? details.join(", ") : defaultMessage;
+  return messages.length > 0 ? messages.join(", ") : defaultMessage;
 }
 

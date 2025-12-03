@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Link from "next/link";
 import { useAuthStore } from "@/store";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ActivityConversationSectionProps {
   userId: string;
@@ -79,6 +80,7 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
   const skip = (currentPage - 1) * pageSize;
   const { user } = useAuthStore();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { data: listenerData } = useSuspenseQuery(listenerOptions(userId, userId));
   const { data: orderData } = useSuspenseQuery(
@@ -91,6 +93,13 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleStatusChange = () => {
+    // Refetch the orders data
+    queryClient.invalidateQueries({
+      queryKey: ["order-packages", { currentUserId: userId, skip, take: pageSize, isArtist: false }],
+    });
   };
 
   const handleGoBack = () => {
@@ -127,6 +136,7 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
         currentPage={currentPage}
         pageSize={pageSize}
         onPageChange={handlePageChange}
+        onStatusChange={handleStatusChange}
       />
     </div>
   );
