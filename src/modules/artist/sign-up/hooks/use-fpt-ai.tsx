@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { fptAIService, FPTAIResponse, ParsedCCCDData } from "@/services/fpt-ai-service";
 import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
-import { useCloudinaryUpload } from "./use-cloudinary-upload";
+import { useS3Upload } from "./use-s3-upload";
 import { toast } from "sonner";
 import { UserGender } from "@/gql/graphql";
+import { FilePath } from "@/types/file";
 export const useFPTAI = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [frontResponse, setFrontResponse] = useState<FPTAIResponse | null>(null);
@@ -19,13 +20,8 @@ export const useFPTAI = () => {
     cccdBackProcessed,
   } = useArtistSignUpStore();
 
-  // Cloudinary upload hook
-  const {
-    uploadCCCD,
-    isUploading: isUploadingToCloudinary,
-    uploadProgress,
-    error: uploadError,
-  } = useCloudinaryUpload();
+  // S3 upload hook
+  const { uploadFile, isUploading: isUploadingToS3 } = useS3Upload();
 
   const analyzeFrontSide = async (imageFile: File): Promise<void> => {
     if (!imageFile) {
@@ -37,25 +33,25 @@ export const useFPTAI = () => {
     setProcessingCCCD(true);
 
     try {
-      // Start both FPT AI analysis and Cloudinary upload in parallel
-      const [fptResponse, cloudinaryResult] = await Promise.all([
+      // Start both FPT AI analysis and S3 upload in parallel
+      const [fptResponse, s3Result] = await Promise.all([
         fptAIService.analyzeCCCD(imageFile),
-        uploadCCCD(imageFile, "front"), // Upload to Cloudinary
+        uploadFile(imageFile, FilePath.NATIONS), // Upload to S3
       ]);
 
       if (fptResponse.errorCode !== 0) {
         throw new Error(fptResponse.errorMessage || "Unable to read ID card information");
       }
 
-      if (!cloudinaryResult?.secure_url) {
-        throw new Error("Unable to upload image to Cloudinary");
+      if (!s3Result?.fileKey) {
+        throw new Error("Unable to upload image to S3");
       }
 
       setFrontResponse(fptResponse);
       setCCCDFrontProcessed(true);
 
-      // Use Cloudinary URL
-      const frontImageUrl = cloudinaryResult.secure_url;
+      // Use S3 fileKey
+      const frontImageKey = s3Result.fileKey;
 
       toast.success("Successfully read and uploaded front side of ID card!");
 
@@ -70,10 +66,10 @@ export const useFPTAI = () => {
       if (currentState.cccdBackProcessed && backResponse) {
         // Get existing back image if already stored
         const existingBackImage = currentState.formData.identityCard?.backImage;
-        await parseCompleteData(fptResponse, backResponse, frontImageUrl, existingBackImage);
+        await parseCompleteData(fptResponse, backResponse, frontImageKey, existingBackImage);
       } else {
-        // Store just the front image for now
-        updateIdentityCard({ frontImage: frontImageUrl });
+        // Store just the front image key for now
+        updateIdentityCard({ frontImage: frontImageKey });
       }
     } catch (error) {
       console.error("Error analyzing front side:", error);
@@ -95,25 +91,25 @@ export const useFPTAI = () => {
     setProcessingCCCD(true);
 
     try {
-      // Start both FPT AI analysis and Cloudinary upload in parallel
-      const [fptResponse, cloudinaryResult] = await Promise.all([
+      // Start both FPT AI analysis and S3 upload in parallel
+      const [fptResponse, s3Result] = await Promise.all([
         fptAIService.analyzeCCCD(imageFile),
-        uploadCCCD(imageFile, "back"), // Upload to Cloudinary
+        uploadFile(imageFile, FilePath.NATIONS), // Upload to S3
       ]);
 
       if (fptResponse.errorCode !== 0) {
         throw new Error(fptResponse.errorMessage || "Unable to read ID card information");
       }
 
-      if (!cloudinaryResult?.secure_url) {
-        throw new Error("Unable to upload image to Cloudinary");
+      if (!s3Result?.fileKey) {
+        throw new Error("Unable to upload image to S3");
       }
 
       setBackResponse(fptResponse);
       setCCCDBackProcessed(true);
 
-      // Use Cloudinary URL
-      const backImageUrl = cloudinaryResult.secure_url;
+      // Use S3 fileKey
+      const backImageKey = s3Result.fileKey;
 
       toast.success("Successfully read and uploaded back side of ID card!");
 
@@ -122,10 +118,10 @@ export const useFPTAI = () => {
       if (currentState.cccdFrontProcessed && frontResponse) {
         // Get existing front image if already stored
         const existingFrontImage = currentState.formData.identityCard?.frontImage;
-        await parseCompleteData(frontResponse, fptResponse, existingFrontImage, backImageUrl);
+        await parseCompleteData(frontResponse, fptResponse, existingFrontImage, backImageKey);
       } else {
-        console.log("📝 Only back side processed, storing back image...");
-        updateIdentityCard({ backImage: backImageUrl });
+        console.log("📝 Only back side processed, storing back image key...");
+        updateIdentityCard({ backImage: backImageKey });
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "An error occurred while processing ID card");
@@ -205,14 +201,12 @@ export const useFPTAI = () => {
 
   return {
     // States
-    isAnalyzing: isAnalyzing || isUploadingToCloudinary, // Include Cloudinary upload state
+    isAnalyzing: isAnalyzing || isUploadingToS3, // Include S3 upload state
     frontResponse,
     backResponse,
     parsedData,
     cccdFrontProcessed,
     cccdBackProcessed,
-    uploadProgress,
-    uploadError,
 
     // Actions
     analyzeFrontSide,
