@@ -163,7 +163,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
 
         <div className="absolute bottom-2 left-2 flex items-center gap-x-2">
           {/* Only show play button if playlist has tracks */}
-          {playlist.trackCount > 0 && (
+          {playlist.tracksInfo.length > 0 && (
             <Button
               onClick={handlePlayPauseClick}
               className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity`}
