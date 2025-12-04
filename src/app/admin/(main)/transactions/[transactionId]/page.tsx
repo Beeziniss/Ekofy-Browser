@@ -11,7 +11,7 @@ const TransactionDetailPage = async ({ params }: PageProps) => {
   const { transactionId } = await params;
 
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(adminTransactionByIdOptions({ id: transactionId }));
+  await queryClient.prefetchQuery(adminTransactionByIdOptions({ id: transactionId }));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

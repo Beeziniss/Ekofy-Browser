@@ -10,7 +10,8 @@ const ArtistTransactionDetailPage = async ({ params }: PageProps) => {
   const { transactionId } = await params;
 
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(artistTransactionByIdOptions({ id: transactionId }));
+  await queryClient.prefetchQuery(artistTransactionByIdOptions({ id: transactionId }));
+
   return (
     <TransactionDetailSection referenceId={transactionId} backHref="/artist/studio/transactions/payment-history" />
   );

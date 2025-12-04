@@ -4,12 +4,14 @@ import { categoriesChannelOptions } from "@/gql/options/client-options";
 import { CategoryType } from "@/gql/graphql";
 import ChannelsView from "@/modules/client/channels/ui/views/channels-view";
 
-const Page = () => {
+const Page = async () => {
   const queryClient = getQueryClient();
 
   // Prefetch both Genres and Mood categories
-  void queryClient.prefetchQuery(categoriesChannelOptions(CategoryType.Genre, 50));
-  void queryClient.prefetchQuery(categoriesChannelOptions(CategoryType.Mood, 50));
+  await Promise.all([
+    queryClient.prefetchQuery(categoriesChannelOptions(CategoryType.Genre, 50)),
+    queryClient.prefetchQuery(categoriesChannelOptions(CategoryType.Mood, 50)),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

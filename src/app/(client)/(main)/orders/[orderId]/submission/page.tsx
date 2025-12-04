@@ -11,7 +11,7 @@ const Page = async ({ params }: PageProps) => {
   const { orderId } = await params;
 
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(orderPackageDetailOptions(orderId));
+  await queryClient.prefetchQuery(orderPackageDetailOptions(orderId));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

@@ -12,8 +12,10 @@ const Page = async ({ params }: PageProps) => {
   const queryClient = getQueryClient();
 
   // Prefetch both the track details and categories data
-  void queryClient.prefetchQuery(artistTrackDetailOptions(trackId));
-  void queryClient.prefetchQuery(categoriesOptions);
+  await Promise.all([
+    queryClient.prefetchQuery(artistTrackDetailOptions(trackId)),
+    queryClient.prefetchQuery(categoriesOptions),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
