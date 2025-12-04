@@ -11,8 +11,7 @@ const Page = async ({ params }: PageProps) => {
   const { serviceId } = await params;
 
   const queryClient = getQueryClient();
-
-  void queryClient.prefetchQuery(servicePackageOptions({ serviceId }));
+  await queryClient.prefetchQuery(servicePackageOptions({ serviceId }));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

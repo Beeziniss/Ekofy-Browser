@@ -22,9 +22,11 @@ const Page = async ({ params, searchParams }: PageProps) => {
   const queryClient = getQueryClient();
 
   // Prefetch all track insight queries
-  void queryClient.prefetchQuery(trackInsightOptions(trackId));
-  void queryClient.prefetchQuery(trackInsightFavCountOptions(trackId, dateFrom, dateTo));
-  void queryClient.prefetchQuery(trackInsightFavoriteCountOptions(trackId, dateFrom, dateTo));
+  await Promise.all([
+    queryClient.prefetchQuery(trackInsightOptions(trackId)),
+    queryClient.prefetchQuery(trackInsightFavCountOptions(trackId, dateFrom, dateTo)),
+    queryClient.prefetchQuery(trackInsightFavoriteCountOptions(trackId, dateFrom, dateTo)),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
