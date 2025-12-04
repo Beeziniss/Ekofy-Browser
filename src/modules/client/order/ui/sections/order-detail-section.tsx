@@ -5,12 +5,53 @@ import { orderPackageDetailOptions } from "@/gql/options/client-options";
 import { formatDate } from "date-fns";
 import { formatCurrency } from "@/utils/format-currency";
 import { Card, CardContent } from "@/components/ui/card";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface OrderDetailSectionProps {
   orderId: string;
 }
 
 const OrderDetailSection = ({ orderId }: OrderDetailSectionProps) => {
+  return (
+    <Suspense fallback={<OrderDetailSectionSkeleton />}>
+      <OrderDetailSectionSuspense orderId={orderId} />
+    </Suspense>
+  );
+};
+
+const OrderDetailSectionSkeleton = () => {
+  return (
+    <div className="flex flex-col gap-y-4">
+      <Card>
+        <CardContent className="rouned-md flex flex-col gap-y-3">
+          <div className="flex items-start justify-between">
+            <div>
+              <Skeleton className="h-8 w-48 rounded-md" />
+              <Skeleton className="h-8 w-90 rounded-md" />
+            </div>
+            <div className="flex flex-col items-end gap-y-2">
+              <Skeleton className="h-6 w-24 rounded-md" />
+              <Skeleton className="h-8 w-32 rounded-md" />
+            </div>
+          </div>
+
+          <Skeleton className="h-6 w-32 rounded-md" />
+
+          <Skeleton className="h-24 w-full rounded-md" />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className="rounded-md">
+          <Skeleton className="h-[28px] w-32 rounded-md" />
+          <Skeleton className="mt-2 h-48 w-full rounded-md" />
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
   const { data: orderPackageDetail } = useSuspenseQuery(orderPackageDetailOptions(orderId));
 
   const orderPackageData = orderPackageDetail?.package[0];

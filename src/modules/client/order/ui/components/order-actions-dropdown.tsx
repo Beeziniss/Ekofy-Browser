@@ -10,8 +10,7 @@ import {
 import { PackageOrderStatus } from "@/gql/graphql";
 import { switchStatusByRequestorMutationOptions } from "@/gql/options/client-mutation-options";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal, Eye, XCircle, RefreshCw } from "lucide-react";
-import Link from "next/link";
+import { MoreHorizontal, XCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 interface OrderActionsDropdownProps {
@@ -72,7 +71,7 @@ const OrderActionsDropdown = ({ orderId, status, onSuccess }: OrderActionsDropdo
       case PackageOrderStatus.Paid:
         return PackageOrderStatus.Cancelled;
       case PackageOrderStatus.InProgress:
-        return PackageOrderStatus.Refund;
+        return PackageOrderStatus.Disputed;
       default:
         return null;
     }
@@ -89,14 +88,7 @@ const OrderActionsDropdown = ({ orderId, status, onSuccess }: OrderActionsDropdo
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="border-gray-700 bg-gray-800">
-        <DropdownMenuItem className="cursor-pointer text-gray-300 hover:bg-gray-700 hover:text-white" asChild>
-          <Link href={`/orders/${orderId}/details`}>
-            <Eye className="mr-2 h-4 w-4" />
-            View
-          </Link>
-        </DropdownMenuItem>
-
+      <DropdownMenuContent align="end">
         {statusActionText && StatusActionIcon && targetStatus && (
           <DropdownMenuItem
             onClick={() => handleStatusChange(targetStatus)}
