@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { EllipsisVertical, FileIcon, ArrowUpRightIcon, EyeIcon, Edit } from "lucide-react";
 import { orderPackageDetailOptions } from "@/gql/options/client-options";
@@ -20,12 +20,32 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "date-fns";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface OrderSubmissionSectionProps {
   orderId: string;
 }
 
 const OrderSubmissionSection = ({ orderId }: OrderSubmissionSectionProps) => {
+  return (
+    <Suspense fallback={<OrderSubmissionSectionSkeleton />}>
+      <OrderSubmissionSectionSuspense orderId={orderId} />
+    </Suspense>
+  );
+};
+
+const OrderSubmissionSectionSkeleton = () => {
+  return (
+    <Card>
+      <CardContent className="flex flex-col space-y-6 rounded-md">
+        <h3 className="text-xl font-semibold">Order Submission</h3>
+        <Skeleton className="h-40 w-full rounded-md" />
+      </CardContent>
+    </Card>
+  );
+};
+
+const OrderSubmissionSectionSuspense = ({ orderId }: OrderSubmissionSectionProps) => {
   const { user } = useAuthStore();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { data: orderPackageDetail } = useSuspenseQuery(orderPackageDetailOptions(orderId));
@@ -93,7 +113,7 @@ const OrderSubmissionSection = ({ orderId }: OrderSubmissionSectionProps) => {
     <Card>
       <CardContent className="flex flex-col space-y-6 rounded-md">
         {/* Header with Submit Button */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between">
           <h3 className="text-xl font-semibold">Order Submission</h3>
           {orderPackageDetail?.providerId === user?.userId && !isOrderDisputed && (
             <OrderSubmissionSubmitDialog orderId={orderId} isOpen={isDialogOpen} onOpenChange={setIsDialogOpen} />
