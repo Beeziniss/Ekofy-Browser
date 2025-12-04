@@ -26,62 +26,24 @@ const IDUploadComponent = ({
 
   // Create preview URLs when files change
   useEffect(() => {
-    const fetchPresignedUrl = async (key: string) => {
-      if (!key) return null;
-      // If it's already a full URL or blob URL, return as is
-      if (key.startsWith('http://') || key.startsWith('https://') || key.startsWith('blob:')) {
-        return key;
-      }
-      // Otherwise, get presigned URL from API
-      try {
-        const response = await fetch(`/api/s3/presign?key=${encodeURIComponent(key)}`);
-        if (!response.ok) return null;
-        const data = await response.json();
-        return data.url;
-      } catch (error) {
-        console.error('Error fetching presigned URL:', error);
-        return null;
-      }
-    };
-
     if (frontId) {
       const url = URL.createObjectURL(frontId);
       setFrontPreview(url);
       return () => URL.revokeObjectURL(url);
     } else if (frontPreviewProp) {
-      fetchPresignedUrl(frontPreviewProp).then(url => {
-        if (url) setFrontPreview(url);
-      });
+      setFrontPreview(frontPreviewProp);
     } else {
       setFrontPreview(null);
     }
   }, [frontId, frontPreviewProp]);
 
   useEffect(() => {
-    const fetchPresignedUrl = async (key: string) => {
-      if (!key) return null;
-      if (key.startsWith('http://') || key.startsWith('https://') || key.startsWith('blob:')) {
-        return key;
-      }
-      try {
-        const response = await fetch(`/api/s3/presign?key=${encodeURIComponent(key)}`);
-        if (!response.ok) return null;
-        const data = await response.json();
-        return data.url;
-      } catch (error) {
-        console.error('Error fetching presigned URL:', error);
-        return null;
-      }
-    };
-
     if (backId) {
       const url = URL.createObjectURL(backId);
       setBackPreview(url);
       return () => URL.revokeObjectURL(url);
     } else if (backPreviewProp) {
-      fetchPresignedUrl(backPreviewProp).then(url => {
-        if (url) setBackPreview(url);
-      });
+      setBackPreview(backPreviewProp);
     } else {
       setBackPreview(null);
     }

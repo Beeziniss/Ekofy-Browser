@@ -22,7 +22,7 @@ import {
 import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2, Flag } from "lucide-react";
 import React, { useState } from "react";
 import TrackCommentReply from "./track-comment-reply";
-import { CommentThread, CommentType, ReportRelatedContentType, ArtistQuery, ListenerQuery } from "@/gql/graphql";
+import { CommentThread, CommentType, ReportRelatedContentType } from "@/gql/graphql";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createTrackCommentMutationOptions,
@@ -39,11 +39,9 @@ interface TrackCommentUserProps {
   thread: Omit<CommentThread, "hasMoreReplies" | "lastActivity">;
   trackId: string;
   level?: number;
-  listenerData?: ListenerQuery;
-  artistData?: ArtistQuery;
 }
 
-const TrackCommentUser = ({ thread, trackId, level = 0, listenerData, artistData }: TrackCommentUserProps) => {
+const TrackCommentUser = ({ thread, trackId, level = 0 }: TrackCommentUserProps) => {
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -153,7 +151,7 @@ const TrackCommentUser = ({ thread, trackId, level = 0, listenerData, artistData
         <AvatarImage
           src={comment.commenter?.listener?.avatarImage || comment.commenter?.artist?.avatarImage || undefined}
         />
-        <AvatarFallback>{comment.commenter?.fullName.slice(0, 1)}</AvatarFallback>
+        <AvatarFallback>{comment.commenter?.fullName.slice(0, 2)}</AvatarFallback>
       </Avatar>
 
       <div className="flex flex-1 flex-col gap-y-1">
@@ -283,17 +281,9 @@ const TrackCommentUser = ({ thread, trackId, level = 0, listenerData, artistData
           <div className="mt-3 flex items-center gap-x-3">
             <Avatar className="size-10">
               <AvatarImage
-                src={
-                  listenerData?.listeners?.items?.[0]?.avatarImage ||
-                  artistData?.artists?.items?.[0]?.avatarImage ||
-                  undefined
-                }
+                src={comment.commenter?.listener?.avatarImage || comment.commenter?.artist?.avatarImage || undefined}
               />
-              <AvatarFallback>
-                {listenerData?.listeners?.items?.[0]?.displayName?.slice(0, 1) ||
-                  artistData?.artists?.items?.[0]?.stageName?.slice(0, 1) ||
-                  "U"}
-              </AvatarFallback>
+              <AvatarFallback>{comment.commenter?.fullName.slice(0, 2)}</AvatarFallback>
             </Avatar>
             <div className="relative flex-1">
               <Input
@@ -332,8 +322,6 @@ const TrackCommentUser = ({ thread, trackId, level = 0, listenerData, artistData
                 trackId={trackId}
                 level={level + 1}
                 rootCommentId={comment.id}
-                listenerData={listenerData}
-                artistData={artistData}
               />
             ))}
           </div>

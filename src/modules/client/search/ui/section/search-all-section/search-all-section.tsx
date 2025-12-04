@@ -53,7 +53,7 @@ const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({ query, track
   return (
     <div className="space-y-8">
       {/* Playlists */}
-      {playlists.filter((p) => p.isPublic === true).length > 0 ? (
+      {playlists.length > 0 ? (
         <div>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-bold text-white">Playlists</h2>
@@ -65,12 +65,9 @@ const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({ query, track
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {playlists
-              .filter((p) => p.isPublic === true)
-              .slice(0, 6)
-              .map((playlist) => (
-                <PlaylistCardAll key={playlist.id} playlist={playlist} />
-              ))}
+            {playlists.slice(0, 6).map((playlist) => (
+              <PlaylistCardAll key={playlist.id} playlist={playlist} />
+            ))}
           </div>
         </div>
       ) : (
