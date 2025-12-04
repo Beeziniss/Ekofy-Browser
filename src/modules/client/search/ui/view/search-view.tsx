@@ -114,7 +114,7 @@ export const SEARCH_TRACKS = graphql(`
 
 export const SEARCH_PLAYLISTS = graphql(`
   query SearchPlaylists($skip: Int, $take: Int, $name: String!) {
-    searchPlaylists(skip: $skip, take: $take, name: $name, where: { isPublic: { eq: true } }) {
+    searchPlaylists(skip: $skip, take: $take, name: $name) {
       totalCount
       items {
         id

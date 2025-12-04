@@ -40,11 +40,6 @@ const nextConfig: NextConfig = {
         hostname: "placehold.co",
         pathname: "/**",
       },
-      {
-        protocol: "https",
-        hostname: "ekofy-s3-bucket.s3.ap-southeast-1.amazonaws.com",
-        pathname: "/**",
-      },
     ],
   },
   webpack(config) {
