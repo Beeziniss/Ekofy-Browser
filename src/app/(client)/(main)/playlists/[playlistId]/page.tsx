@@ -12,8 +12,10 @@ const Page = async ({ params }: PageProps) => {
   const queryClient = getQueryClient();
 
   // Prefetch both playlist details and track list (both regular and infinite)
-  void queryClient.prefetchQuery(playlistDetailOptions(playlistId));
-  void queryClient.prefetchQuery(playlistDetailTrackListOptions(playlistId));
+  await Promise.all([
+    queryClient.prefetchQuery(playlistDetailOptions(playlistId)),
+    queryClient.prefetchQuery(playlistDetailTrackListOptions(playlistId)),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

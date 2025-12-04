@@ -1,13 +1,12 @@
+import { getQueryClient } from "@/providers/get-query-client";
 import { trackListOptions } from "@/gql/options/artist-options";
 import TrackView from "@/modules/artist/studio/ui/views/track-view";
-import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import React from "react";
 
-const Page = () => {
+const Page = async () => {
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(trackListOptions);
+  await queryClient.prefetchQuery(trackListOptions);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
