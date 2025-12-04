@@ -3,10 +3,11 @@ import TrackUploadMetadataSection from "@/modules/artist/track-upload/ui/section
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-const Page = () => {
+const Page = async () => {
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(categoriesOptions);
+  await queryClient.prefetchQuery(categoriesOptions);
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="w-full">

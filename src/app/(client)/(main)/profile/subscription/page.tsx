@@ -6,11 +6,13 @@ import ProfileSubscriptionView from "@/modules/client/profile/ui/views/profile-s
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-const Page = () => {
+const Page = async () => {
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(subscriptionsPremiumQueryOptions());
-  void queryClient.prefetchQuery(listenerPremiumEntitlementsQueryOptions());
+  await Promise.all([
+    queryClient.prefetchQuery(subscriptionsPremiumQueryOptions()),
+    queryClient.prefetchQuery(listenerPremiumEntitlementsQueryOptions()),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

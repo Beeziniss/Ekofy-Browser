@@ -1,10 +1,7 @@
-"use client";
-
-import React, { use } from "react";
-import { ReportDetailView } from "@/modules/moderator/report-control/ui/view/report-detail-view";
-import { reportDetailOptions } from "@/gql/options/report-options";
 import { getQueryClient } from "@/providers/get-query-client";
+import { reportDetailOptions } from "@/gql/options/report-options";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { ReportDetailView } from "@/modules/moderator/report-control/ui/view/report-detail-view";
 
 interface ReportDetailPageProps {
   params: Promise<{
@@ -12,16 +9,16 @@ interface ReportDetailPageProps {
   }>;
 }
 
-const ReportDetailPage = ({ params }: ReportDetailPageProps) => {
-  const resolvedParams = use(params);
+const ReportDetailPage = async ({ params }: ReportDetailPageProps) => {
+  const { reportId } = await params;
   const queryClient = getQueryClient();
 
   // Prefetch report detail
-  void queryClient.prefetchQuery(reportDetailOptions(resolvedParams.reportId));
+  await queryClient.prefetchQuery(reportDetailOptions(reportId));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-        <ReportDetailView reportId={resolvedParams.reportId} />
+      <ReportDetailView reportId={reportId} />
     </HydrationBoundary>
   );
 };

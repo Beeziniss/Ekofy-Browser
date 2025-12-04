@@ -1,11 +1,8 @@
-"use client";
-
-import { use } from "react";
 import { notFound } from "next/navigation";
-import { subscriptionDetailQueryOptions, subscriptionPlansQueryOptions } from "@/gql/options/subscription-options";
-import { AdminSubscriptionDetail } from "@/modules/admin/subscription/ui/view";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { AdminSubscriptionDetail } from "@/modules/admin/subscription/ui/view";
+import { subscriptionDetailQueryOptions, subscriptionPlansQueryOptions } from "@/gql/options/subscription-options";
 
 interface SubscriptionDetailPageProps {
   params: Promise<{
@@ -13,8 +10,8 @@ interface SubscriptionDetailPageProps {
   }>;
 }
 
-const SubscriptionDetailPage = ({ params }: SubscriptionDetailPageProps) => {
-  const { subscriptionId } = use(params);
+const SubscriptionDetailPage = async ({ params }: SubscriptionDetailPageProps) => {
+  const { subscriptionId } = await params;
 
   if (!subscriptionId) {
     notFound();
@@ -23,8 +20,8 @@ const SubscriptionDetailPage = ({ params }: SubscriptionDetailPageProps) => {
   const queryClient = getQueryClient();
 
   // Prefetch subscription details and related plans
-  void queryClient.prefetchQuery(subscriptionDetailQueryOptions(subscriptionId));
-  void queryClient.prefetchQuery(subscriptionPlansQueryOptions(0, 10, subscriptionId, ""));
+  await queryClient.prefetchQuery(subscriptionDetailQueryOptions(subscriptionId));
+  await queryClient.prefetchQuery(subscriptionPlansQueryOptions(0, 10, subscriptionId, ""));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

@@ -6438,6 +6438,7 @@ export type UpdateTrackCommentRequestInput = {
 export type UpdateTrackRequestInput = {
   categoryIds?: InputMaybe<Array<Scalars['String']['input']>>;
   description?: InputMaybe<Scalars['String']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
   trackId: Scalars['String']['input'];
 };
