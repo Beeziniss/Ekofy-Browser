@@ -53,6 +53,8 @@ type Documents = {
     "\n  mutation UpdateArtistProfile($updateArtistRequest: UpdateArtistRequestInput!) {\n    updateArtistProfile(updateArtistRequest: $updateArtistRequest)\n  }\n": typeof types.UpdateArtistProfileDocument,
     "\n  mutation AddConversationGeneral($otherUserId: String!) {\n    addConversationGeneral(otherUserId: $otherUserId)\n  }\n": typeof types.AddConversationGeneralDocument,
     "\n  mutation AddConversationFromRequestHub($createConversationRequestInput: CreateConversationRequestInput!) {\n    addConversationFromRequestHub(request: $createConversationRequestInput)\n  }\n": typeof types.AddConversationFromRequestHubDocument,
+    "\n  mutation UpsertStreamCount($trackId: String!) {\n    upsertStreamCount(trackId: $trackId)\n  }\n": typeof types.UpsertStreamCountDocument,
+    "\n  mutation UpsertTopTrackCount($trackId: String!) {\n    upsertTopTrackCount(trackId: $trackId)\n  }\n": typeof types.UpsertTopTrackCountDocument,
     "\n  mutation SubmitDelivery($request: SubmitDeliveryRequestInput!) {\n    submitDelivery(request: $request)\n  }\n": typeof types.SubmitDeliveryDocument,
     "\n  mutation ApproveDelivery($packageOrderId: String!) {\n    approveDelivery(packageOrderId: $packageOrderId)\n  }\n": typeof types.ApproveDeliveryDocument,
     "\n  mutation SendRedoRequest($request: RedoRequestInput!) {\n    sendRedoRequest(request: $request)\n  }\n": typeof types.SendRedoRequestDocument,
@@ -231,6 +233,8 @@ const documents: Documents = {
     "\n  mutation UpdateArtistProfile($updateArtistRequest: UpdateArtistRequestInput!) {\n    updateArtistProfile(updateArtistRequest: $updateArtistRequest)\n  }\n": types.UpdateArtistProfileDocument,
     "\n  mutation AddConversationGeneral($otherUserId: String!) {\n    addConversationGeneral(otherUserId: $otherUserId)\n  }\n": types.AddConversationGeneralDocument,
     "\n  mutation AddConversationFromRequestHub($createConversationRequestInput: CreateConversationRequestInput!) {\n    addConversationFromRequestHub(request: $createConversationRequestInput)\n  }\n": types.AddConversationFromRequestHubDocument,
+    "\n  mutation UpsertStreamCount($trackId: String!) {\n    upsertStreamCount(trackId: $trackId)\n  }\n": types.UpsertStreamCountDocument,
+    "\n  mutation UpsertTopTrackCount($trackId: String!) {\n    upsertTopTrackCount(trackId: $trackId)\n  }\n": types.UpsertTopTrackCountDocument,
     "\n  mutation SubmitDelivery($request: SubmitDeliveryRequestInput!) {\n    submitDelivery(request: $request)\n  }\n": types.SubmitDeliveryDocument,
     "\n  mutation ApproveDelivery($packageOrderId: String!) {\n    approveDelivery(packageOrderId: $packageOrderId)\n  }\n": types.ApproveDeliveryDocument,
     "\n  mutation SendRedoRequest($request: RedoRequestInput!) {\n    sendRedoRequest(request: $request)\n  }\n": types.SendRedoRequestDocument,
@@ -523,6 +527,14 @@ export function graphql(source: "\n  mutation AddConversationGeneral($otherUserI
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation AddConversationFromRequestHub($createConversationRequestInput: CreateConversationRequestInput!) {\n    addConversationFromRequestHub(request: $createConversationRequestInput)\n  }\n"): typeof import('./graphql').AddConversationFromRequestHubDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpsertStreamCount($trackId: String!) {\n    upsertStreamCount(trackId: $trackId)\n  }\n"): typeof import('./graphql').UpsertStreamCountDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpsertTopTrackCount($trackId: String!) {\n    upsertTopTrackCount(trackId: $trackId)\n  }\n"): typeof import('./graphql').UpsertTopTrackCountDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
