@@ -6,12 +6,13 @@ import { ArrowLeft } from "lucide-react";
 import { VerificationHeader, IDUploadComponent, PersonalInformationComponent } from "../components";
 import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import { useFPTAI } from "../../hooks/use-fpt-ai";
-// import { isValidPhoneNumber, formatPhoneNumber } from "@/utils/signup-utils";
+import { useS3Upload } from "../../hooks/use-s3-upload";
 import { toast } from "sonner";
 import { validateImageFile } from "@/utils/cloudinary-utils";
 import { convertDateToISO, convertISOToDisplayDate } from "@/utils/signup-utils";
 import { UserGender } from "@/gql/graphql";
 import { ArtistCCCDData, ArtistSignUpSectionProps } from "@/types/artist_type";
+import { FilePath } from "@/types/file";
 
 type ArtistCCCDVerificationSectionProps = ArtistSignUpSectionProps<ArtistCCCDData> & {
   onBack: () => void;
@@ -28,9 +29,14 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     isProcessingCCCD,
     setCCCDFrontProcessed,
     setCCCDBackProcessed,
-  } = useArtistSignUpStore(); // FPT AI hook
+  } = useArtistSignUpStore();
+  
+  // FPT AI hook (handles CCCD upload)
   const { isAnalyzing, cccdFrontProcessed, cccdBackProcessed, analyzeFrontSide, analyzeBackSide, parsedData } =
     useFPTAI();
+
+  // S3 Upload hook (for authorization letter only)
+  const { uploadFile } = useS3Upload();
 
   const [frontId, setFrontId] = useState<File | null>(initialData?.frontId || null);
   const [backId, setBackId] = useState<File | null>(initialData?.backId || null);
@@ -109,7 +115,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
         placeOfOrigin,
         placeOfResidence: { addressLine: placeOfResidence },
         validUntil: dateOfExpiration ? convertDateToISO(dateOfExpiration) : "", // Convert DD/MM/YYYY to ISO for global state
-        // Only update image URLs if they are not blob URLs (to preserve Cloudinary URLs)
+        // Only update image URLs if they are not blob URLs (to preserve S3 keys)
         ...(frontIdPreview && !frontIdPreview.startsWith("blob:") && { frontImage: frontIdPreview }),
         ...(backIdPreview && !backIdPreview.startsWith("blob:") && { backImage: backIdPreview }),
       });
@@ -131,13 +137,15 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     updateIdentityCard,
   ]);
 
-  // Setup preview images for existing CCCD images when component mounts
+  // Setup preview images for existing CCCD images when component mounts or when identity card updates
   useEffect(() => {
-    // Check if we have stored CCCD images from previous step navigation
-    if (formData.identityCard?.frontImage && !frontId) {
+    // Check if we have stored CCCD images from previous step navigation or after FPT AI upload
+    if (formData.identityCard?.frontImage) {
       setFrontIdPreview(formData.identityCard.frontImage);
-      // Mark as processed if we have stored image URL
-      setCCCDFrontProcessed(true);
+      // Mark as processed if we have stored image key
+      if (!frontId) {
+        setCCCDFrontProcessed(true);
+      }
     } else if (frontId) {
       const url = URL.createObjectURL(frontId);
       setFrontIdPreview(url);
@@ -146,10 +154,12 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
   }, [frontId, formData.identityCard?.frontImage, setCCCDFrontProcessed]);
 
   useEffect(() => {
-    if (formData.identityCard?.backImage && !backId) {
+    if (formData.identityCard?.backImage) {
       setBackIdPreview(formData.identityCard.backImage);
-      // Mark as processed if we have stored image URL
-      setCCCDBackProcessed(true);
+      // Mark as processed if we have stored image key
+      if (!backId) {
+        setCCCDBackProcessed(true);
+      }
     } else if (backId) {
       const url = URL.createObjectURL(backId);
       setBackIdPreview(url);
@@ -332,26 +342,38 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
 
     if (type === "front") {
       setFrontId(file);
-      // Only call FPT AI analysis - it already handles Cloudinary upload
+      
       try {
+        // Analyze with FPT AI (which will also upload to S3)
+        toast.info("Processing front ID image...");
         await analyzeFrontSide(file);
-        // Success message and state update are handled in the hook
       } catch (error) {
         console.error("Error processing front side:", error);
-        toast.error("Error processing front side of ID card");
+        toast.error(error instanceof Error ? error.message : "Error processing front side of ID card");
       }
     } else if (type === "back") {
       setBackId(file);
-      // Only call FPT AI analysis - it already handles Cloudinary upload
+      
       try {
+        // Analyze with FPT AI (which will also upload to S3)
+        toast.info("Processing back ID image...");
         await analyzeBackSide(file);
-        // Success message and state update are handled in the hook
       } catch (error) {
         console.error("Error processing back side:", error);
-        toast.error("Error processing back side of ID card");
+        toast.error(error instanceof Error ? error.message : "Error processing back side of ID card");
       }
-    } else {
+    } else if (type === "authorization") {
       setAuthorizationLetter(file);
+      
+      try {
+        toast.info("Uploading authorization letter...");
+        await uploadFile(file, FilePath.NATIONS);
+        
+        toast.success("Authorization letter uploaded successfully");
+      } catch (error) {
+        console.error("Error uploading authorization letter:", error);
+        toast.error(error instanceof Error ? error.message : "Error uploading authorization letter");
+      }
     }
   };
 

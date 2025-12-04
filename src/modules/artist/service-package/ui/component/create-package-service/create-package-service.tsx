@@ -13,21 +13,22 @@ import { Plus, X } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const serviceDetailSchema = z.object({
-  key: z.string().regex(/^\d+$/, "Key must be numeric"),
+  key: z.string(),
   value: z
-    .string()
-    .min(1, "Value is required")
-    .regex(/^[A-Za-z0-9\s!@#$%^&*(),.?":{}|<>_\-\\\/+=\[\];'`~]*$/, "Value must only contain letters and spaces"), // Only letters and spaces allowed
+  .string()
+  .min(1, "Value is required")
+  .max(1000, "Value must be at most 1000 characters")
+  .regex(/^[A-Za-z\s!@#$%^&*(),.?":{}|<>_\-\\\/+=\[\];'`~]*$/, "Value must only contain special characters and letters"),
 });
 
 const createPackageSchema = z.object({
   packageName: z.string().min(1, "Package name is required").max(100, "Package name must be at most 100 characters"),
-  amount: z.number().min(0, "Amount must be positive").max(1000000000, "Amount is too large"),
+  amount: z.number().min(50000, "Amount must be at least 50.000VND").max(100000000, "The maximum amount is 100.000.000VND"),
   estimateDeliveryDays: z
     .number()
     .min(1, "Estimate delivery days must be at least 1")
-    .max(365, "Estimate delivery days is too large"),
-  maxRevision: z.number().min(1, "Max revisions must be at least 1").max(100, "Max revisions is too large"),
+    .max(365, "Estimate delivery cannot exceed 365 days"),
+  maxRevision: z.number().min(1, "Max revisions must be at least 1").max(100, "Max revisions cannot exceed 100"),
   description: z.string().min(1, "Description is required").max(1000, "Description must be at most 1000 characters"),
   serviceDetails: z.array(serviceDetailSchema).min(1, "At least one service detail is required"),
 });
@@ -197,82 +198,79 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="serviceDetails"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>
-                      Services detail <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <div className="space-y-4">
-                      {fields.map((field, index) => (
-                        <div key={field.id} className="flex items-end space-x-2">
-                          <div className="hidden flex-1">
-                            <FormField
-                              control={form.control}
-                              name={`serviceDetails.${index}.key`}
-                              render={({ field }) => (
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Service key"
-                                    className="border-gray-600 bg-gray-700 text-white"
-                                    disabled // Disable editing of the key
-                                  />
-                                </FormControl>
-                              )}
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <FormField
-                              control={form.control}
-                              name={`serviceDetails.${index}.value`}
-                              render={({ field }) => (
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Description"
-                                    className="border-gray-600 bg-gray-700 text-white"
-                                    onChange={(e) => {
-                                      const value = e.target.value;
-                                      if (/^[A-Za-z0-9\s!@#$%^&*(),.?":{}|<>_\-\\\/+=\[\];'`~]*$/.test(value)) {
-                                        field.onChange(value);
-                                      }
-                                    }}
-                                  />
-                                </FormControl>
-                              )}
-                            />
-                          </div>
-                          {fields.length > 1 && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleRemoveServiceDetail(index)}
-                              className="border-red-600 text-red-400 hover:text-red-300"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      ))}
+              <div className="space-y-4">
+                <FormLabel>
+                  Services detail <span className="text-red-500">*</span>
+                </FormLabel>
+                {fields.map((field, index) => (
+                  <div key={field.id} className="flex items-start space-x-2">
+                    <div className="hidden flex-1">
+                      <FormField
+                        control={form.control}
+                        name={`serviceDetails.${index}.key`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="Service key"
+                                className="border-gray-600 bg-gray-700 text-white"
+                                disabled
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <FormField
+                        control={form.control}
+                        name={`serviceDetails.${index}.value`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="Service detail value"
+                                className="border-gray-600 bg-gray-700 text-white"
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  if (/^[A-Za-z0-9\s!@#$%^&*(),.?":{}|<>_\-\\\/+=\[\];'`~]*$/.test(value)) {
+                                    field.onChange(value);
+                                  }
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    {fields.length > 1 && (
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={handleAddServiceDetail}
-                        className="border-gray-600 text-gray-300 hover:text-white"
+                        onClick={() => handleRemoveServiceDetail(index)}
+                        className="border-red-600 text-red-400 hover:text-red-300 mt-0"
                       >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Service Detail
+                        <X className="h-4 w-4" />
                       </Button>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                    )}
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddServiceDetail}
+                  className="border-gray-600 text-gray-300 hover:text-white"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Service Detail
+                </Button>
+              </div>
 
               <FormField
                 control={form.control}
