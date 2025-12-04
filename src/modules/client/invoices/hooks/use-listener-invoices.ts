@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { artistInvoicesOptions } from "@/gql/options/artist-activity-options";
+import { listenerInvoicesOptions } from "@/gql/options/listener-activity-options";
 import { useAuthStore } from "@/store";
 
-export function useArtistInvoices() {
+export function useListenerInvoices() {
   const { user } = useAuthStore();
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,10 +24,12 @@ export function useArtistInvoices() {
   }, [searchTerm]);
 
   const { data, isLoading, isError } = useQuery({
-    ...artistInvoicesOptions({
+    ...listenerInvoicesOptions({
       userId: user?.userId || "",
       page,
       pageSize,
+      // Note: If backend supports search, add search parameter here
+      // search: debouncedSearchTerm,
     }),
     enabled: !!user?.userId,
   });
