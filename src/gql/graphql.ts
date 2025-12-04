@@ -7130,6 +7130,20 @@ export type AddConversationFromRequestHubMutationVariables = Exact<{
 
 export type AddConversationFromRequestHubMutation = { __typename?: 'MutationInitialization', addConversationFromRequestHub: string };
 
+export type UpsertStreamCountMutationVariables = Exact<{
+  trackId: Scalars['String']['input'];
+}>;
+
+
+export type UpsertStreamCountMutation = { __typename?: 'MutationInitialization', upsertStreamCount: boolean };
+
+export type UpsertTopTrackCountMutationVariables = Exact<{
+  trackId: Scalars['String']['input'];
+}>;
+
+
+export type UpsertTopTrackCountMutation = { __typename?: 'MutationInitialization', upsertTopTrackCount: boolean };
+
 export type SubmitDeliveryMutationVariables = Exact<{
   request: SubmitDeliveryRequestInput;
 }>;
@@ -8747,6 +8761,16 @@ export const AddConversationFromRequestHubDocument = new TypedDocumentString(`
   addConversationFromRequestHub(request: $createConversationRequestInput)
 }
     `) as unknown as TypedDocumentString<AddConversationFromRequestHubMutation, AddConversationFromRequestHubMutationVariables>;
+export const UpsertStreamCountDocument = new TypedDocumentString(`
+    mutation UpsertStreamCount($trackId: String!) {
+  upsertStreamCount(trackId: $trackId)
+}
+    `) as unknown as TypedDocumentString<UpsertStreamCountMutation, UpsertStreamCountMutationVariables>;
+export const UpsertTopTrackCountDocument = new TypedDocumentString(`
+    mutation UpsertTopTrackCount($trackId: String!) {
+  upsertTopTrackCount(trackId: $trackId)
+}
+    `) as unknown as TypedDocumentString<UpsertTopTrackCountMutation, UpsertTopTrackCountMutationVariables>;
 export const SubmitDeliveryDocument = new TypedDocumentString(`
     mutation SubmitDelivery($request: SubmitDeliveryRequestInput!) {
   submitDelivery(request: $request)

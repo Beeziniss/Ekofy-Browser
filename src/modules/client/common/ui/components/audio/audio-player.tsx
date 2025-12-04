@@ -5,6 +5,11 @@ import { streamingApi } from "@/services/streaming-services";
 import { useEffect, useRef, useCallback } from "react";
 import Hls from "hls.js";
 import { getAccessTokenFromLocalStorage } from "@/utils/auth-utils";
+import { useMutation } from "@tanstack/react-query";
+import {
+  upsertStreamCountMutationOptions,
+  upsertTopTrackCountMutationOptions,
+} from "@/gql/options/client-mutation-options";
 
 const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -12,8 +17,13 @@ const AudioPlayer = () => {
   const lastTrackIdRef = useRef<string | null>(null);
   const tokenRefreshInProgressRef = useRef<boolean>(false);
   const lastTokenRefreshAttemptRef = useRef<number>(0);
+  const thirtySecondThresholdReachedRef = useRef<Set<string>>(new Set());
 
   const TOKEN_REFRESH_COOLDOWN = 5000; // 5 seconds cooldown
+
+  // Mutation hooks for stream count tracking
+  const upsertStreamCountMutation = useMutation(upsertStreamCountMutationOptions);
+  const upsertTopTrackCountMutation = useMutation(upsertTopTrackCountMutationOptions);
 
   // Helper function to safely get current playback state
   const getCurrentPlaybackState = useCallback(() => {
@@ -288,7 +298,31 @@ const AudioPlayer = () => {
   // Audio event handlers
   const handleTimeUpdate = () => {
     if (audioRef.current && !seekRequested) {
-      setCurrentTime(audioRef.current.currentTime * 1000); // Convert to milliseconds
+      const currentTimeInSeconds = audioRef.current.currentTime;
+      setCurrentTime(currentTimeInSeconds * 1000); // Convert to milliseconds
+
+      // Check if 30-second threshold has been reached
+      if (
+        currentTrack?.id &&
+        currentTimeInSeconds >= 30 &&
+        !thirtySecondThresholdReachedRef.current.has(currentTrack.id)
+      ) {
+        // Mark this track as having reached the 30-second threshold
+        thirtySecondThresholdReachedRef.current.add(currentTrack.id);
+
+        // Execute both mutations simultaneously
+        Promise.allSettled([
+          upsertStreamCountMutation.mutateAsync(currentTrack.id),
+          upsertTopTrackCountMutation.mutateAsync(currentTrack.id),
+        ]).then((results) => {
+          results.forEach((result, index) => {
+            if (result.status === "rejected") {
+              const mutationType = index === 0 ? "stream count" : "top track count";
+              console.error(`Failed to update ${mutationType}:`, result.reason);
+            }
+          });
+        });
+      }
     }
   };
 

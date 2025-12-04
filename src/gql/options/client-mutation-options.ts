@@ -50,6 +50,7 @@ import {
   SubmitDeliveryMutation,
   SwitchStatusByRequestorMutation,
 } from "@/modules/shared/mutations/client/order-mutation";
+import { UpsertStreamCountMutation, UpsertTopTrackCountMutation } from "@/modules/shared/mutations/client/job-mutation";
 
 // PLAYLIST MUTATIONS
 export const createPlaylistMutationOptions = mutationOptions({
@@ -237,4 +238,15 @@ export const switchStatusByRequestorMutationOptions = mutationOptions({
   mutationKey: ["switch-status-by-requestor"],
   mutationFn: async (request: ChangeOrderStatusRequestInput) =>
     await execute(SwitchStatusByRequestorMutation, { request }),
+});
+
+// JOB MUTATIONS
+export const upsertStreamCountMutationOptions = mutationOptions({
+  mutationKey: ["upsert-stream-count"],
+  mutationFn: async (trackId: string) => await execute(UpsertStreamCountMutation, { trackId }),
+});
+
+export const upsertTopTrackCountMutationOptions = mutationOptions({
+  mutationKey: ["upsert-top-track-count"],
+  mutationFn: async (trackId: string) => await execute(UpsertTopTrackCountMutation, { trackId }),
 });
