@@ -5,7 +5,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PaymentTransaction, TransactionStatus } from "@/gql/graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { methodBadge, paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
+import { methodBadge, transactionStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import { useCheckoutSession } from "@/hooks/use-checkout-session";
 import { useEffect, useState } from "react";
 
@@ -76,7 +76,7 @@ export default function PaymentTransactionDetailSection({
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
             <span>Transaction: #{transaction.id}</span>
-            {paymentStatusBadge(transaction.paymentStatus)}
+            {transactionStatusBadge(transaction.status)}
           </CardTitle>
         </CardHeader>
         <CardContent>

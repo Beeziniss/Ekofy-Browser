@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import { artistTransactionsOptions } from "@/gql/options/artist-activity-options";
 import { listenerTransactionsOptions } from "@/gql/options/listener-activity-options";
-import { methodBadge, paymentStatusBadge, transactionStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
+import { methodBadge, transactionStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type Source = "listener" | "artist";
@@ -68,8 +68,7 @@ export default function SharedPaymentTransactionsTable({
             <TableHead>Date</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Method</TableHead>
-            <TableHead>Payment Status</TableHead>
-            <TableHead>Transaction Status</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Transaction</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -77,13 +76,13 @@ export default function SharedPaymentTransactionsTable({
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center text-gray-400">
+              <TableCell colSpan={6} className="h-24 text-center text-gray-400">
                 Loading transactions...
               </TableCell>
             </TableRow>
           ) : isError ? (
             <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center text-red-400">
+              <TableCell colSpan={6} className="h-24 text-center text-red-400">
                 Failed to load transactions. Please try again.
               </TableCell>
             </TableRow>
@@ -101,9 +100,6 @@ export default function SharedPaymentTransactionsTable({
                   {Array.isArray(transaction?.stripePaymentMethod) && transaction!.stripePaymentMethod.length > 0
                     ? transaction.stripePaymentMethod.map((method, index) => methodBadge(method, index))
                     : "-"}
-                </TableCell>
-                <TableCell>
-                  {transaction?.paymentStatus ? paymentStatusBadge(transaction.paymentStatus) : "-"}
                 </TableCell>
                 <TableCell>
                   {transaction?.status ? transactionStatusBadge(transaction.status) : "-"}
@@ -130,7 +126,7 @@ export default function SharedPaymentTransactionsTable({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center text-gray-400">
+              <TableCell colSpan={6} className="h-24 text-center text-gray-400">
                 No transactions found.
               </TableCell>
             </TableRow>

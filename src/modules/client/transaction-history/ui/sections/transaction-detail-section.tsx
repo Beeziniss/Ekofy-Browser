@@ -63,6 +63,10 @@ const TransactionDetailSectionSkeleton = () => {
                 ))}
               </dd>
             </div>
+            <div>
+              <dt className="text-muted-foreground text-sm">Status</dt>
+              <Skeleton className="h-[22px] w-24" />
+            </div>
           </dl>
         </CardContent>
       </Card>
