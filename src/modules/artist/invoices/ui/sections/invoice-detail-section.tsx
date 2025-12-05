@@ -1,29 +1,47 @@
 "use client";
 
-import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { artistInvoiceByIdOptions } from "@/gql/options/artist-activity-options";
 import SharedInvoiceDetailSection from "@/modules/shared/ui/sections/invoices/invoice-detail-section";
 
-type Props = {
+interface InvoiceDetailSectionProps {
   referenceId: string;
   backHref?: string;
-};
+}
 
-export default function ArtistInvoiceDetailSection({
-  referenceId,
-  backHref = "/artist/studio/profile/invoices",
-}: Props) {
+export function InvoiceDetailSection({ referenceId, backHref = "/artist/studio/profile/invoices" }: InvoiceDetailSectionProps) {
   const { data, isLoading, isError } = useQuery(artistInvoiceByIdOptions({ id: referenceId }));
-  if (isLoading) return <div className="p-4">Loading invoice…</div>;
-  if (isError) return <div className="p-4 text-red-500">Failed to load invoice.</div>;
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="text-gray-400">Loading invoice...</div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="text-red-400">Failed to load invoice.</div>
+      </div>
+    );
+  }
+
   const item = data?.invoices?.items?.[0];
-  if (!item) return <div className="p-4">Invoice not found.</div>;
+
+  if (!item) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="text-gray-400">Invoice not found.</div>
+      </div>
+    );
+  }
 
   return (
     <SharedInvoiceDetailSection
       backHref={backHref}
-      referenceId={referenceId}
+      
       invoice={{
         id: item.id!,
         amount: (item.amount ?? 0) as number,

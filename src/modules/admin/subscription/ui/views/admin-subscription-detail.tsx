@@ -16,7 +16,7 @@ export function AdminSubscriptionDetail({ subscriptionId }: AdminSubscriptionDet
   };
 
   return (
-    <SubscriptionLayout showBackButton={true} showHeader={false}>
+    <SubscriptionLayout showCard={false}>
       <SubscriptionDetailSection subscriptionId={subscriptionId} onBack={handleBack} />
     </SubscriptionLayout>
   );

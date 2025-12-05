@@ -2,7 +2,7 @@
 
 import SharedInvoicesTable from "@/modules/shared/ui/components/activity/invoices-table";
 
-interface ArtistInvoiceTableProps {
+interface InvoiceTableProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   invoices: Record<string, any>[];
   isLoading: boolean;
@@ -13,7 +13,7 @@ interface ArtistInvoiceTableProps {
   onPageChange: (page: number) => void;
 }
 
-export function ArtistInvoiceTable({
+export function InvoiceTable({
   invoices,
   isLoading,
   isError,
@@ -21,7 +21,7 @@ export function ArtistInvoiceTable({
   pageSize,
   totalCount,
   onPageChange,
-}: ArtistInvoiceTableProps) {
+}: InvoiceTableProps) {
   return (
     <SharedInvoicesTable
       source="artist"

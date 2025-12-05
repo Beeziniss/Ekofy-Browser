@@ -12,7 +12,7 @@ interface InvoiceFiltersProps {
   onSortChange?: (value: string) => void;
 }
 
-export function ArtistInvoiceFilters({ 
+export function InvoiceFilters({ 
   searchTerm, 
   onSearchChange,
   sortBy = "date-desc",

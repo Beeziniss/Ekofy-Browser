@@ -1,10 +1,10 @@
 "use client";
 
-import { useArtistInvoices } from "../../../hooks/use-artist-invoices";
-import { ArtistInvoiceTable } from "./invoice-table";
-import { ArtistInvoiceFilters } from "./invoice-filters";
+import { useArtistInvoices } from "../../hooks/use-artist-invoices";
+import { InvoiceTable } from "../components/invoice-table";
+import { InvoiceFilters } from "../components/invoice-filters";
 
-export function ArtistInvoiceListSection() {
+export function InvoiceListSection() {
   const {
     invoices,
     totalCount,
@@ -20,15 +20,15 @@ export function ArtistInvoiceListSection() {
   } = useArtistInvoices();
 
   return (
-    <div className="space-y-6">
-      <ArtistInvoiceFilters
+    <div className="space-y-4">
+      <InvoiceFilters
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         sortBy={sortBy}
         onSortChange={setSortBy}
       />
 
-      <ArtistInvoiceTable
+      <InvoiceTable
         invoices={invoices}
         isLoading={isLoading}
         isError={isError}
