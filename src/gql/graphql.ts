@@ -2653,7 +2653,6 @@ export type MutationInitialization = {
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
   upsertStreamCount: Scalars['Boolean']['output'];
-  upsertTopTrackCount: Scalars['Boolean']['output'];
 };
 
 
@@ -3219,11 +3218,6 @@ export type MutationInitializationUploadTrackFingerprintArgs = {
 
 
 export type MutationInitializationUpsertStreamCountArgs = {
-  trackId: Scalars['String']['input'];
-};
-
-
-export type MutationInitializationUpsertTopTrackCountArgs = {
   trackId: Scalars['String']['input'];
 };
 
@@ -7137,13 +7131,6 @@ export type UpsertStreamCountMutationVariables = Exact<{
 
 export type UpsertStreamCountMutation = { __typename?: 'MutationInitialization', upsertStreamCount: boolean };
 
-export type UpsertTopTrackCountMutationVariables = Exact<{
-  trackId: Scalars['String']['input'];
-}>;
-
-
-export type UpsertTopTrackCountMutation = { __typename?: 'MutationInitialization', upsertTopTrackCount: boolean };
-
 export type SubmitDeliveryMutationVariables = Exact<{
   request: SubmitDeliveryRequestInput;
 }>;
@@ -8004,10 +7991,11 @@ export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { 
 
 export type TrackFavoriteQueryVariables = Exact<{
   take: Scalars['Int']['input'];
+  skip: Scalars['Int']['input'];
 }>;
 
 
-export type TrackFavoriteQuery = { __typename?: 'QueryInitialization', favoriteTracks?: { __typename?: 'FavoriteTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
+export type TrackFavoriteQuery = { __typename?: 'QueryInitialization', favoriteTracks?: { __typename?: 'FavoriteTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, createdAt: any, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
 
 export type UserBasicInfoQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -8766,11 +8754,6 @@ export const UpsertStreamCountDocument = new TypedDocumentString(`
   upsertStreamCount(trackId: $trackId)
 }
     `) as unknown as TypedDocumentString<UpsertStreamCountMutation, UpsertStreamCountMutationVariables>;
-export const UpsertTopTrackCountDocument = new TypedDocumentString(`
-    mutation UpsertTopTrackCount($trackId: String!) {
-  upsertTopTrackCount(trackId: $trackId)
-}
-    `) as unknown as TypedDocumentString<UpsertTopTrackCountMutation, UpsertTopTrackCountMutationVariables>;
 export const SubmitDeliveryDocument = new TypedDocumentString(`
     mutation SubmitDelivery($request: SubmitDeliveryRequestInput!) {
   submitDelivery(request: $request)
@@ -11105,8 +11088,8 @@ export const TrackDetailDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<TrackDetailQuery, TrackDetailQueryVariables>;
 export const TrackFavoriteDocument = new TypedDocumentString(`
-    query TrackFavorite($take: Int!) {
-  favoriteTracks(take: $take, order: {createdAt: DESC}) {
+    query TrackFavorite($take: Int!, $skip: Int!) {
+  favoriteTracks(take: $take, skip: $skip, order: {createdAt: DESC}) {
     totalCount
     items {
       id
@@ -11120,6 +11103,7 @@ export const TrackFavoriteDocument = new TypedDocumentString(`
         }
       }
       checkTrackInFavorite
+      createdAt
     }
   }
 }

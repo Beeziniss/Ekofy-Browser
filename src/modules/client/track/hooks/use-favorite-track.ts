@@ -94,6 +94,9 @@ export const useFavoriteTrack = () => {
       queryClient.invalidateQueries({
         queryKey: ["tracks-home"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["track-favorite"],
+      });
     },
   });
 

@@ -6,15 +6,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import {
-  AlbumIcon,
-  HeartIcon,
-  LibrarySquareIcon,
-  LucideIcon,
-  MicVocalIcon,
-  RssIcon,
-  UserRoundCheckIcon,
-} from "lucide-react";
+import { AlbumIcon, HeartIcon, LibrarySquareIcon, LucideIcon, RssIcon, UserRoundCheckIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -40,11 +32,6 @@ const mainNavItems: NavItem[] = [
     title: "Albums",
     href: "/library/albums",
     icon: AlbumIcon,
-  },
-  {
-    title: "Artists",
-    href: "/library/artists",
-    icon: MicVocalIcon,
   },
   {
     title: "Following",

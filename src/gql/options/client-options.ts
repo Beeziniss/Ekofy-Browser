@@ -112,10 +112,10 @@ export const trackDetailOptions = (trackId: string) =>
     enabled: !!trackId,
   });
 
-export const trackFavoriteOptions = (take: number = 12, isAuthenticated: boolean) =>
+export const trackFavoriteOptions = (take: number = 12, skip: number = 0, isAuthenticated: boolean) =>
   queryOptions({
-    queryKey: ["track-favorite"],
-    queryFn: async () => await execute(TrackFavoriteQuery, { take }),
+    queryKey: ["track-favorite", take, skip],
+    queryFn: async () => await execute(TrackFavoriteQuery, { take, skip }),
     enabled: isAuthenticated,
   });
 

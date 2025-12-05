@@ -25,7 +25,7 @@ const TracksYouLoveSkeleton = () => {
 
 const TracksYouLoveSectionSuspense = () => {
   const { isAuthenticated } = useAuthStore();
-  const { data, isPending } = useSuspenseQuery(trackFavoriteOptions(12, isAuthenticated));
+  const { data, isPending } = useSuspenseQuery(trackFavoriteOptions(12, 0, isAuthenticated));
 
   if (!isAuthenticated) {
     return null;

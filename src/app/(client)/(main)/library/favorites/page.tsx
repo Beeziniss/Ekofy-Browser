@@ -1,5 +1,7 @@
+import FavoriteView from "@/modules/client/library/ui/views/favorite-view";
+
 const Page = () => {
-  return <div>Page</div>;
+  return <FavoriteView />;
 };
 
 export default Page;
