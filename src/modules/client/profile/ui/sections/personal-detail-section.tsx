@@ -201,14 +201,14 @@ const PersonalDetailSection = ({ personal, userId }: PersonalDetailSectionProps)
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Confirm update</AlertDialogTitle>
+                  <AlertDialogTitle>Update Profile</AlertDialogTitle>
                   <AlertDialogDescription>
                     Are you sure you want to update your personal details?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleConfirm} disabled={isPending}>
+                  <AlertDialogAction onClick={handleConfirm} disabled={isPending} variant={"ekofy"}>
                     {isPending ? "Updating..." : "Confirm"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
