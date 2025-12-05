@@ -61,14 +61,14 @@ const AuthButton = () => {
   const { mutate: logout } = useMutation({
     mutationFn: authApi.general.logout,
     onSuccess: () => {
-      router.replace("/");
+      router.replace("/landing");
       clearUserData();
       queryClient.clear();
     },
     onError: (error) => {
       console.error("Logout failed:", error);
       // Still clear local data even if server logout fails
-      router.replace("/");
+      router.replace("/landing");
       clearUserData();
       queryClient.clear();
     },

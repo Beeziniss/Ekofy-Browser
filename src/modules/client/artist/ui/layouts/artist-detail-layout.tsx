@@ -1,11 +1,12 @@
 "use client";
 
 import { artistDetailOptions, followerOptions, followingOptions } from "@/gql/options/client-options";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQueries } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import ArtistAvatarSection from "../sections/artist-avatar-section";
 import ArtistOptionsSection from "../sections/artist-options-section";
 import ArtistInfoSection from "../sections/artist-info-section";
+import { Suspense } from "react";
 
 interface ArtistDetailLayoutProps {
   children: React.ReactNode;
@@ -14,24 +15,30 @@ interface ArtistDetailLayoutProps {
 const ArtistDetailLayout = ({ children }: ArtistDetailLayoutProps) => {
   const { artistId } = useParams<{ artistId: string }>();
 
-  const { data } = useSuspenseQuery(artistDetailOptions(artistId));
+  const results = useSuspenseQueries({
+    queries: [artistDetailOptions(artistId), followerOptions({ artistId }), followingOptions({ artistId })],
+  });
 
-  const { data: followerData } = useSuspenseQuery(followerOptions({ artistId }));
-  const { data: followingData } = useSuspenseQuery(followingOptions({ artistId }));
+  const [{ data: artistData }, { data: followerData }, { data: followingData }] = results;
 
   return (
     <div className="w-full pb-10">
-      <ArtistAvatarSection artistData={data} />
-      <ArtistOptionsSection artistData={data} artistId={artistId} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <ArtistAvatarSection artistData={artistData} />
+      </Suspense>
+
+      <Suspense fallback={<div>Loading...</div>}>
+        <ArtistOptionsSection artistData={artistData} artistId={artistId} />
+      </Suspense>
 
       <div className="grid grid-cols-8 gap-x-4 px-6">
         <div className="col-span-6 w-full">{children}</div>
         <div className="col-span-2 w-full">
           <div className="bg-main-purple/20 sticky top-20 rounded-md p-4 shadow">
             <ArtistInfoSection
+              artistData={artistData}
               followerCount={followerData?.followers?.totalCount ?? 0}
               followingCount={followingData?.followings?.totalCount ?? 0}
-              artistData={data}
             />
           </div>
         </div>

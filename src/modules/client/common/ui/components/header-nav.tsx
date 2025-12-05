@@ -15,7 +15,7 @@ interface ClientNavbarProps {
 
 const navBarItems: ClientNavbarProps[] = [
   {
-    href: "/",
+    href: "/home",
     label: "Home",
     activeStyle: "border-b-main-white text-main-white",
     useStartsWith: false,
