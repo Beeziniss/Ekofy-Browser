@@ -7766,6 +7766,26 @@ export type FollowingsQueryVariables = Exact<{
 
 export type FollowingsQuery = { __typename?: 'QueryInitialization', followings?: { __typename?: 'FollowingsCollectionSegment', totalCount: number } | null };
 
+export type FollowerInfiniteQueryVariables = Exact<{
+  userId?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<UserFilterInput>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type FollowerInfiniteQuery = { __typename?: 'QueryInitialization', followers?: { __typename?: 'FollowersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean }, items?: Array<{ __typename?: 'User', id: string, fullName: string, checkUserFollowing: boolean, role: UserRole }> | null } | null };
+
+export type FollowingInfiniteQueryVariables = Exact<{
+  userId?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<UserFilterInput>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type FollowingInfiniteQuery = { __typename?: 'QueryInitialization', followings?: { __typename?: 'FollowingsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean }, items?: Array<{ __typename?: 'User', id: string, fullName: string, checkUserFollowing: boolean, role: UserRole }> | null } | null };
+
 export type OrderPackageQueryVariables = Exact<{
   where?: InputMaybe<PackageOrderFilterInput>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -10126,6 +10146,50 @@ export const FollowingsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<FollowingsQuery, FollowingsQueryVariables>;
+export const FollowerInfiniteDocument = new TypedDocumentString(`
+    query FollowerInfinite($userId: String, $where: UserFilterInput, $take: Int, $skip: Int) {
+  followers(
+    userId: $userId
+    take: $take
+    skip: $skip
+    order: {createdAt: DESC}
+    where: $where
+  ) {
+    totalCount
+    pageInfo {
+      hasNextPage
+    }
+    items {
+      id
+      fullName
+      checkUserFollowing
+      role
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<FollowerInfiniteQuery, FollowerInfiniteQueryVariables>;
+export const FollowingInfiniteDocument = new TypedDocumentString(`
+    query FollowingInfinite($userId: String, $where: UserFilterInput, $take: Int, $skip: Int) {
+  followings(
+    userId: $userId
+    take: $take
+    skip: $skip
+    order: {createdAt: DESC}
+    where: $where
+  ) {
+    totalCount
+    pageInfo {
+      hasNextPage
+    }
+    items {
+      id
+      fullName
+      checkUserFollowing
+      role
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<FollowingInfiniteQuery, FollowingInfiniteQueryVariables>;
 export const OrderPackageDocument = new TypedDocumentString(`
     query OrderPackage($where: PackageOrderFilterInput, $take: Int, $skip: Int) {
   packageOrders(where: $where, take: $take, skip: $skip, order: {createdAt: DESC}) {

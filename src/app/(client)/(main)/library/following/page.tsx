@@ -1,7 +1,7 @@
-import React from "react";
+import FollowingView from "@/modules/client/library/ui/views/following-view";
 
 const Page = () => {
-  return <div>Page</div>;
+  return <FollowingView />;
 };
 
 export default Page;
