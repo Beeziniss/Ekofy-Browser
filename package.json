@@ -12,6 +12,8 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run codegen\""
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.940.0",
+    "@aws-sdk/s3-request-presigner": "^3.940.0",
     "@hookform/resolvers": "^5.2.2",
     "@microsoft/signalr": "^10.0.0",
     "@next/env": "^15.5.3",

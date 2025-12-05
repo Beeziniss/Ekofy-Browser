@@ -17,13 +17,16 @@ const serviceDetailSchema = z.object({
   value: z
     .string()
     .min(1, "Value is required")
-    .regex(/^[A-Za-z\s]+$/, "Value must only contain letters and spaces"), // Only letters and spaces allowed
+    .regex(/^[A-Za-z0-9\s!@#$%^&*(),.?":{}|<>_\-\\\/+=\[\];'`~]*$/, "Value must only contain letters and spaces"), // Only letters and spaces allowed
 });
 
 const createPackageSchema = z.object({
   packageName: z.string().min(1, "Package name is required").max(100, "Package name must be at most 100 characters"),
   amount: z.number().min(0, "Amount must be positive").max(1000000000, "Amount is too large"),
-  estimateDeliveryDays: z.number().min(1, "Estimate delivery days must be at least 1").max(365, "Estimate delivery days is too large"),
+  estimateDeliveryDays: z
+    .number()
+    .min(1, "Estimate delivery days must be at least 1")
+    .max(365, "Estimate delivery days is too large"),
   maxRevision: z.number().min(1, "Max revisions must be at least 1").max(100, "Max revisions is too large"),
   description: z.string().min(1, "Description is required").max(1000, "Description must be at most 1000 characters"),
   serviceDetails: z.array(serviceDetailSchema).min(1, "At least one service detail is required"),
@@ -149,7 +152,6 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
                   )}
                 />
 
-
                 <FormField
                   control={form.control}
                   name="estimateDeliveryDays"
@@ -206,7 +208,7 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
                     <div className="space-y-4">
                       {fields.map((field, index) => (
                         <div key={field.id} className="flex items-end space-x-2">
-                          <div className="flex-1">
+                          <div className="hidden flex-1">
                             <FormField
                               control={form.control}
                               name={`serviceDetails.${index}.key`}
@@ -234,7 +236,7 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
                                     className="border-gray-600 bg-gray-700 text-white"
                                     onChange={(e) => {
                                       const value = e.target.value;
-                                      if (/^[A-Za-z\s]*$/.test(value)) {
+                                      if (/^[A-Za-z0-9\s!@#$%^&*(),.?":{}|<>_\-\\\/+=\[\];'`~]*$/.test(value)) {
                                         field.onChange(value);
                                       }
                                     }}

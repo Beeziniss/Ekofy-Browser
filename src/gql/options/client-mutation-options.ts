@@ -27,6 +27,7 @@ import {
   RedoRequestInput,
   SubmitDeliveryRequestInput,
   UpdateListenerRequestInput,
+  ChangeOrderStatusRequestInput,
 } from "../graphql";
 import { mutationOptions } from "@tanstack/react-query";
 import {
@@ -47,7 +48,9 @@ import {
   ApproveDeliveryMutation,
   SendRedoRequestMutation,
   SubmitDeliveryMutation,
+  SwitchStatusByRequestorMutation,
 } from "@/modules/shared/mutations/client/order-mutation";
+import { UpsertStreamCountMutation } from "@/modules/shared/mutations/client/job-mutation";
 
 // PLAYLIST MUTATIONS
 export const createPlaylistMutationOptions = mutationOptions({
@@ -229,4 +232,16 @@ export const sendRedoRequestMutationOptions = mutationOptions({
 export const approveDeliveryMutationOptions = mutationOptions({
   mutationKey: ["approve-delivery"],
   mutationFn: async (packageOrderId: string) => await execute(ApproveDeliveryMutation, { packageOrderId }),
+});
+
+export const switchStatusByRequestorMutationOptions = mutationOptions({
+  mutationKey: ["switch-status-by-requestor"],
+  mutationFn: async (request: ChangeOrderStatusRequestInput) =>
+    await execute(SwitchStatusByRequestorMutation, { request }),
+});
+
+// JOB MUTATIONS
+export const upsertStreamCountMutationOptions = mutationOptions({
+  mutationKey: ["upsert-stream-count"],
+  mutationFn: async (trackId: string) => await execute(UpsertStreamCountMutation, { trackId }),
 });

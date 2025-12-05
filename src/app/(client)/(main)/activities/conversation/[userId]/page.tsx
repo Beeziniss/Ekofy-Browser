@@ -11,8 +11,10 @@ const Page = async ({ params }: PageProps) => {
   const { userId } = await params;
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(orderPackageOptions({ currentUserId: userId, skip: 0, take: 10, isArtist: false }));
-  void queryClient.prefetchQuery(listenerOptions(userId, userId));
+  await Promise.all([
+    queryClient.prefetchQuery(orderPackageOptions({ currentUserId: userId, skip: 0, take: 10, isArtist: false })),
+    queryClient.prefetchQuery(listenerOptions(userId, userId)),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

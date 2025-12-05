@@ -1,19 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import { ChevronRightIcon, CreditCardIcon, ReceiptIcon, ReceiptTextIcon, ClipboardListIcon, Flag } from "lucide-react";
+import { ChevronRightIcon, CreditCardIcon, ReceiptIcon } from "lucide-react";
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
-interface ActivitySectionProps {
-  userId?: string;
-}
-
-const ActivitySection = ({ userId }: ActivitySectionProps) => {
+const ActivitySection = () => {
   const activityItems = [
-    {
-      title: "Request History",
-      href: "/profile/my-requests",
-      icon: ClipboardListIcon,
-    },
     {
       title: "Payment History",
       href: "/profile/payment-history",
@@ -24,22 +15,12 @@ const ActivitySection = ({ userId }: ActivitySectionProps) => {
       href: "/profile/invoices",
       icon: ReceiptIcon,
     },
-    {
-      title: "Order History",
-      href: `/activities/conversation/${userId}`,
-      icon: ReceiptTextIcon,
-    },
-    {
-      title: "Report",
-      href: "/profile/reports",
-      icon: Flag,
-    },
   ];
 
   return (
     <div className="rounded-md bg-[#2a2a2a] pb-3">
       <div className="flex items-end p-4">
-        <h2 className="text-xl font-bold">My Activity</h2>
+        <h2 className="text-xl font-bold">Billing & Payments</h2>
       </div>
       <div className="flex flex-col">
         {activityItems.map((item) => (
