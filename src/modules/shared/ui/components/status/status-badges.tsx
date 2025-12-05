@@ -1,5 +1,18 @@
 import { Badge } from "@/components/ui/badge";
-import { PaymentTransactionStatus, PayoutTransactionStatus, RequestStatus } from "@/gql/graphql";
+import { PaymentTransactionStatus, PayoutTransactionStatus, RequestStatus, TransactionStatus } from "@/gql/graphql";
+
+export const transactionStatusBadge = (status: TransactionStatus) => {
+  switch (status) {
+    case TransactionStatus.Completed:
+      return <Badge className="border-green-200 bg-green-100 text-green-800">Completed</Badge>;
+    case TransactionStatus.Open:
+      return <Badge className="border-blue-200 bg-blue-100 text-blue-800">Open</Badge>;
+    case TransactionStatus.Expired:
+      return <Badge className="border-red-200 bg-red-100 text-red-800">Expired</Badge>;
+    default:
+      return <Badge className="border-gray-200 bg-gray-100 text-gray-800">Unknown</Badge>;
+  }
+};
 
 export const paymentStatusBadge = (status: PaymentTransactionStatus) => {
   switch (status) {

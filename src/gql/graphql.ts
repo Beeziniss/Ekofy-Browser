@@ -2653,7 +2653,6 @@ export type MutationInitialization = {
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
   upsertStreamCount: Scalars['Boolean']['output'];
-  upsertTopTrackCount: Scalars['Boolean']['output'];
 };
 
 
@@ -3219,11 +3218,6 @@ export type MutationInitializationUploadTrackFingerprintArgs = {
 
 
 export type MutationInitializationUpsertStreamCountArgs = {
-  trackId: Scalars['String']['input'];
-};
-
-
-export type MutationInitializationUpsertTopTrackCountArgs = {
   trackId: Scalars['String']['input'];
 };
 
@@ -7137,13 +7131,6 @@ export type UpsertStreamCountMutationVariables = Exact<{
 
 export type UpsertStreamCountMutation = { __typename?: 'MutationInitialization', upsertStreamCount: boolean };
 
-export type UpsertTopTrackCountMutationVariables = Exact<{
-  trackId: Scalars['String']['input'];
-}>;
-
-
-export type UpsertTopTrackCountMutation = { __typename?: 'MutationInitialization', upsertTopTrackCount: boolean };
-
 export type SubmitDeliveryMutationVariables = Exact<{
   request: SubmitDeliveryRequestInput;
 }>;
@@ -8766,11 +8753,6 @@ export const UpsertStreamCountDocument = new TypedDocumentString(`
   upsertStreamCount(trackId: $trackId)
 }
     `) as unknown as TypedDocumentString<UpsertStreamCountMutation, UpsertStreamCountMutationVariables>;
-export const UpsertTopTrackCountDocument = new TypedDocumentString(`
-    mutation UpsertTopTrackCount($trackId: String!) {
-  upsertTopTrackCount(trackId: $trackId)
-}
-    `) as unknown as TypedDocumentString<UpsertTopTrackCountMutation, UpsertTopTrackCountMutationVariables>;
 export const SubmitDeliveryDocument = new TypedDocumentString(`
     mutation SubmitDelivery($request: SubmitDeliveryRequestInput!) {
   submitDelivery(request: $request)

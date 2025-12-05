@@ -32,7 +32,7 @@ const TransactionDetailSectionSkeleton = () => {
           </div>
         </div>
         <div className="text-primary hover:border-main-white flex items-center gap-x-2 pb-0.5 text-sm hover:cursor-pointer hover:border-b">
-          <ArrowLeftIcon className="size-4" /> Back to Payment History
+          <ArrowLeftIcon className="size-4" /> Back to Transaction History
         </div>
       </div>
 
@@ -72,7 +72,7 @@ const TransactionDetailSectionSkeleton = () => {
 
 const TransactionDetailSectionSuspense = ({
   referenceId,
-  backHref = "/profile/payment-history",
+  backHref = "/profile/transaction-history",
 }: TransactionDetailSectionProps) => {
   const { data } = useSuspenseQuery(listenerTransactionByIdOptions({ id: referenceId }));
 

@@ -1,7 +1,7 @@
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { listenerTransactionByIdOptions } from "@/gql/options/listener-activity-options";
-import TransactionDetailSection from "@/modules/client/profile/ui/sections/payment-history/transaction-detail-section";
+import { ListenerTransactionHistoryDetail } from "@/modules/client/transaction-history/ui/views";
 
 interface PageProps {
   params: Promise<{ transactionId: string }>;
@@ -15,7 +15,7 @@ const TransactionDetailPage = async ({ params }: PageProps) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <TransactionDetailSection referenceId={transactionId} />
+      <ListenerTransactionHistoryDetail transactionId={transactionId} />
     </HydrationBoundary>
   );
 };
