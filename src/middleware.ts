@@ -34,18 +34,18 @@ export function middleware(request: NextRequest) {
   if (pathname === "/landing" && isAuthenticated && user) {
     const referer = request.headers.get("referer");
     const currentOrigin = url.origin;
-    
+
     // Check if referer exists and is from the same origin (internal navigation)
     if (referer && referer.startsWith(currentOrigin)) {
       const refererPath = new URL(referer).pathname;
-      
+
       // Prevent redirect loop - if they came from landing, go to home
       if (refererPath !== "/landing") {
         url.pathname = refererPath;
         return NextResponse.redirect(url);
       }
     }
-    
+
     // Default: redirect to appropriate dashboard based on role
     const dashboardPath =
       user.role === UserRole.ADMIN
@@ -55,7 +55,7 @@ export function middleware(request: NextRequest) {
           : user.role === UserRole.ARTIST
             ? "/artist/studio"
             : "/"; // Listener goes to home
-    
+
     url.pathname = dashboardPath;
     return NextResponse.redirect(url);
   }
@@ -76,9 +76,32 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Handle root route "/" - redirect to landing for non-authenticated users
+  // or to appropriate dashboard for authenticated users
+  if (pathname === "/") {
+    if (!isAuthenticated || !user) {
+      // Redirect unauthenticated users to landing
+      url.pathname = "/landing";
+      return NextResponse.redirect(url);
+    } else {
+      // Redirect authenticated users to their appropriate dashboard/home
+      const dashboardPath =
+        user.role === UserRole.ADMIN
+          ? "/admin"
+          : user.role === UserRole.MODERATOR
+            ? "/moderator/track-approval"
+            : user.role === UserRole.ARTIST
+              ? "/artist/studio"
+              : "/home"; // Listeners go to the new home page
+
+      url.pathname = dashboardPath;
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Restrict moderators and admins from accessing ANY listener-related pages
   const listenerRoutes = [
-    "/", // homepage
+    "/home", // new home route (was previously "/")
     "/library",
     "/playlists",
     "/search",
@@ -90,9 +113,7 @@ export function middleware(request: NextRequest) {
     "/sign-up", // listener sign-up
   ];
 
-  const isListenerRoute = listenerRoutes.some(
-    (route) => pathname === route || (route !== "/" && pathname.startsWith(route)),
-  );
+  const isListenerRoute = listenerRoutes.some((route) => pathname === route || pathname.startsWith(route));
 
   if (isListenerRoute && isAuthenticated && user && [UserRole.MODERATOR, UserRole.ADMIN].includes(user.role)) {
     // Redirect to their appropriate dashboard
@@ -155,15 +176,15 @@ export function middleware(request: NextRequest) {
             ? "/moderator/track-approval"
             : user.role === UserRole.ARTIST
               ? "/artist/studio"
-              : "/";
+              : "/home"; // Listeners go to the new home page
 
       url.pathname = redirectPath;
       return NextResponse.redirect(url);
     }
   }
 
-  // Allow authenticated artists to access homepage freely
-  if (pathname === "/" && user?.role === UserRole.ARTIST) {
+  // Allow authenticated artists to access homepage freely (now at /home)
+  if (pathname === "/home" && user?.role === UserRole.ARTIST) {
     return NextResponse.next();
   }
 
@@ -189,7 +210,7 @@ export function middleware(request: NextRequest) {
           ? "/moderator/track-approval"
           : user.role === UserRole.ARTIST
             ? "/artist/studio"
-            : "/";
+            : "/home"; // Listeners go to the new home page
 
     url.pathname = dashboardPath;
     return NextResponse.redirect(url);
