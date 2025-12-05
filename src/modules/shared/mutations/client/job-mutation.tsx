@@ -5,9 +5,3 @@ export const UpsertStreamCountMutation = graphql(`
     upsertStreamCount(trackId: $trackId)
   }
 `);
-
-export const UpsertTopTrackCountMutation = graphql(`
-  mutation UpsertTopTrackCount($trackId: String!) {
-    upsertTopTrackCount(trackId: $trackId)
-  }
-`);
