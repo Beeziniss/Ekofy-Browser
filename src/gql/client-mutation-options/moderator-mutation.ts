@@ -12,6 +12,7 @@ import {
   ApproveTrackUploadRequestMutation,
   RejectTrackUploadRequestMutation,
 } from "@/modules/shared/queries/moderator/track-approval-queries";
+import { REFUND_PARTIALLY_MUTATION } from "@/modules/shared/mutations/moderator/order-disputed-mutaion";
 
 export const useApproveArtistRegistration = () => {
   const queryClient = useQueryClient();
@@ -110,3 +111,24 @@ export const useRejectTrackWithFeedback = () => {
 // Legacy aliases for backward compatibility
 export const useApproveTrackUploadRequest = useApproveTrackWithFeedback;
 export const useRejectTrackUploadRequest = useRejectTrackWithFeedback;
+
+// Package Order Refund mutation for disputed orders
+export const useRefundPartially = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (request: {
+      id: string;
+      artistPercentageAmount: number;
+      requestorPercentageAmount: number;
+    }) => {
+      return await execute(REFUND_PARTIALLY_MUTATION, { request });
+    },
+    onSuccess: () => {
+      // Invalidate package orders queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ["moderator-package-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["moderator-disputed-package-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["moderator-package-order-detail"] });
+    },
+  });
+};

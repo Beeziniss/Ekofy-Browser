@@ -8,3 +8,4 @@ export * from "./subscription";
 export * from "./report";
 export * from "./pending-request";
 export * from "./graphql-error";
+export * from "./order-disputed";

@@ -58,7 +58,12 @@ const data = {
       name: "Public Requests",
       url: "/moderator/public-request",
       icon: PackageCheck,
-    }
+    },
+    {
+      name: "Disputed Orders",
+      url: "/moderator/disputed-orders",
+      icon: PackageCheck,
+    },
     // {
     //   name: "Approval Service Packages",
     //   url: "/moderator/approval-service-packages",

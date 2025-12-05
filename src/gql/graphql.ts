@@ -7455,6 +7455,13 @@ export type RejectArtistRegistrationMutationVariables = Exact<{
 
 export type RejectArtistRegistrationMutation = { __typename?: 'MutationInitialization', rejectArtistRegistration: boolean };
 
+export type RefundPartiallyMutationVariables = Exact<{
+  request: PackageOrderRefundRequestInput;
+}>;
+
+
+export type RefundPartiallyMutation = { __typename?: 'MutationInitialization', refundPartially: boolean };
+
 export type AdminProfileQueryVariables = Exact<{
   where?: InputMaybe<UserFilterInput>;
 }>;
@@ -8105,6 +8112,23 @@ export type UsersQueryVariables = Exact<{
 
 
 export type UsersQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, role: UserRole, phoneNumber?: string | null, status: UserStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type PackageOrdersListQueryVariables = Exact<{
+  take?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PackageOrderFilterInput>;
+  order?: InputMaybe<Array<PackageOrderSortInput> | PackageOrderSortInput>;
+}>;
+
+
+export type PackageOrdersListQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, clientId: string, providerId: string, artistPackageId: string, paymentTransactionId: string, requirements: string, status: PackageOrderStatus, revisionCount: number, duration: number, freezedTime: any, startedAt?: any | null, disputedAt?: any | null, completedAt?: any | null, isEscrowReleased: boolean, platformFeePercentage: any, artistFeePercentage: any, createdAt: any, package: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, estimateDeliveryDays: number, maxRevision: number }>, client: Array<{ __typename?: 'Listener', id: string, displayName: string, avatarImage?: string | null }>, provider: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }>, paymentTransaction: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, createdAt: any }> }> | null } | null };
+
+export type PackageOrderDetailQueryVariables = Exact<{
+  where?: InputMaybe<PackageOrderFilterInput>;
+}>;
+
+
+export type PackageOrderDetailQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', items?: Array<{ __typename?: 'PackageOrder', id: string, clientId: string, providerId: string, artistPackageId: string, paymentTransactionId: string, requirements: string, status: PackageOrderStatus, revisionCount: number, duration: number, freezedTime: any, startedAt?: any | null, disputedAt?: any | null, completedAt?: any | null, isEscrowReleased: boolean, platformFeePercentage: any, artistFeePercentage: any, createdAt: any, deliveries: Array<{ __typename?: 'PackageOrderDelivery', deliveryFileUrl: string, notes?: string | null, revisionNumber: number, clientFeedback?: string | null, requestedAt?: any | null, deliveredAt?: any | null }>, review?: { __typename?: 'Review', rating: number, content: string, createdAt: any, updatedAt?: any | null } | null, package: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', id: string, displayName: string, avatarImage?: string | null }>, provider: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }>, paymentTransaction: Array<{ __typename?: 'PaymentTransaction', id: string, userId: string, stripeCheckoutSessionId?: string | null, stripeSubscriptionId?: string | null, stripeInvoiceId?: string | null, stripePaymentId?: string | null, stripePaymentMethod: Array<string>, amount: any, currency: string, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, createdAt: any, updatedAt?: any | null, listener: Array<{ __typename?: 'Listener', displayName: string, id: string, avatarImage?: string | null }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }> }> }> | null } | null };
 
 export type RequestsPublicQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -9005,6 +9029,11 @@ export const RejectArtistRegistrationDocument = new TypedDocumentString(`
   rejectArtistRegistration(request: $request)
 }
     `) as unknown as TypedDocumentString<RejectArtistRegistrationMutation, RejectArtistRegistrationMutationVariables>;
+export const RefundPartiallyDocument = new TypedDocumentString(`
+    mutation RefundPartially($request: PackageOrderRefundRequestInput!) {
+  refundPartially(request: $request)
+}
+    `) as unknown as TypedDocumentString<RefundPartiallyMutation, RefundPartiallyMutationVariables>;
 export const AdminProfileDocument = new TypedDocumentString(`
     query AdminProfile($where: UserFilterInput) {
   users(where: $where) {
@@ -11402,6 +11431,145 @@ export const UsersDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<UsersQuery, UsersQueryVariables>;
+export const PackageOrdersListDocument = new TypedDocumentString(`
+    query PackageOrdersList($take: Int, $skip: Int, $where: PackageOrderFilterInput, $order: [PackageOrderSortInput!]) {
+  packageOrders(take: $take, skip: $skip, where: $where, order: $order) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      clientId
+      providerId
+      artistPackageId
+      paymentTransactionId
+      requirements
+      status
+      revisionCount
+      duration
+      freezedTime
+      startedAt
+      disputedAt
+      completedAt
+      isEscrowReleased
+      platformFeePercentage
+      artistFeePercentage
+      createdAt
+      package {
+        id
+        packageName
+        amount
+        estimateDeliveryDays
+        maxRevision
+      }
+      client {
+        id
+        displayName
+        avatarImage
+      }
+      provider {
+        id
+        stageName
+        avatarImage
+      }
+      paymentTransaction {
+        id
+        amount
+        currency
+        paymentStatus
+        status
+        createdAt
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PackageOrdersListQuery, PackageOrdersListQueryVariables>;
+export const PackageOrderDetailDocument = new TypedDocumentString(`
+    query PackageOrderDetail($where: PackageOrderFilterInput) {
+  packageOrders(where: $where) {
+    items {
+      id
+      clientId
+      providerId
+      artistPackageId
+      paymentTransactionId
+      requirements
+      status
+      revisionCount
+      deliveries {
+        deliveryFileUrl
+        notes
+        revisionNumber
+        clientFeedback
+        requestedAt
+        deliveredAt
+      }
+      duration
+      freezedTime
+      startedAt
+      disputedAt
+      completedAt
+      isEscrowReleased
+      platformFeePercentage
+      artistFeePercentage
+      review {
+        rating
+        content
+        createdAt
+        updatedAt
+      }
+      createdAt
+      package {
+        id
+        packageName
+        amount
+        estimateDeliveryDays
+        maxRevision
+        serviceDetails {
+          value
+        }
+      }
+      client {
+        id
+        displayName
+        avatarImage
+      }
+      provider {
+        id
+        stageName
+        avatarImage
+      }
+      paymentTransaction {
+        id
+        userId
+        stripeCheckoutSessionId
+        stripeSubscriptionId
+        stripeInvoiceId
+        stripePaymentId
+        stripePaymentMethod
+        amount
+        currency
+        paymentStatus
+        status
+        createdAt
+        updatedAt
+        listener {
+          displayName
+          id
+          avatarImage
+        }
+        artist {
+          id
+          stageName
+          avatarImage
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<PackageOrderDetailQuery, PackageOrderDetailQueryVariables>;
 export const RequestsPublicDocument = new TypedDocumentString(`
     query RequestsPublic($skip: Int, $take: Int, $where: RequestFilterInput) {
   requests(
