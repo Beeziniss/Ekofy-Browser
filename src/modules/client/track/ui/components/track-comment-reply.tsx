@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CommentResponse, CommentType, ArtistQuery, ListenerQuery } from "@/gql/graphql";
+import { CommentResponse, CommentType } from "@/gql/graphql";
 import {
   createTrackCommentMutationOptions,
   updateTrackCommentMutationOptions,
@@ -40,11 +40,9 @@ interface ReplyCommentProps {
   trackId: string;
   level: number;
   rootCommentId?: string;
-  listenerData?: ListenerQuery;
-  artistData?: ArtistQuery;
 }
 
-const TrackCommentReply = ({ reply, trackId, level, rootCommentId, listenerData, artistData }: ReplyCommentProps) => {
+const TrackCommentReply = ({ reply, trackId, level, rootCommentId }: ReplyCommentProps) => {
   const [showNestedReplies, setShowNestedReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -161,7 +159,7 @@ const TrackCommentReply = ({ reply, trackId, level, rootCommentId, listenerData,
         <AvatarImage
           src={reply.commenter?.listener?.avatarImage || reply.commenter?.artist?.avatarImage || undefined}
         />
-        <AvatarFallback>{reply.commenter?.listener?.displayName.slice(0, 2) || reply.commenter?.artist?.stageName.slice(0, 2)}</AvatarFallback>
+        <AvatarFallback>{reply.commenter?.fullName.slice(0, 2)}</AvatarFallback>
       </Avatar>
 
       <div className="flex flex-1 flex-col gap-y-1">
@@ -277,20 +275,12 @@ const TrackCommentReply = ({ reply, trackId, level, rootCommentId, listenerData,
 
         {/* Reply Input */}
         {showReplyInput && (
-          <div className="flex items-center gap-x-2">
-            <Avatar className="size-8">
+          <div className="mt-2 flex items-center gap-x-2">
+            <Avatar className="size-10">
               <AvatarImage
-                src={
-                  listenerData?.listeners?.items?.[0]?.avatarImage ||
-                  artistData?.artists?.items?.[0]?.avatarImage ||
-                  undefined
-                }
+                src={reply.commenter?.listener?.avatarImage || reply.commenter?.artist?.avatarImage || undefined}
               />
-              <AvatarFallback>
-                {listenerData?.listeners?.items?.[0]?.displayName?.slice(0, 1) ||
-                  artistData?.artists?.items?.[0]?.stageName?.slice(0, 1) ||
-                  "U"}
-              </AvatarFallback>
+              <AvatarFallback>{reply.commenter?.fullName.slice(0, 2)}</AvatarFallback>
             </Avatar>
             <div className="relative flex-1">
               <Input
@@ -330,8 +320,6 @@ const TrackCommentReply = ({ reply, trackId, level, rootCommentId, listenerData,
                   reply={nestedReply}
                   trackId={trackId}
                   level={level + 1}
-                  listenerData={listenerData}
-                  artistData={artistData}
                 />
               ))}
             </div>
