@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { FilePath } from "@/types/file";
 
 const deliveryFormSchema = z.object({
-  notes: z.string().optional(),
+  notes: z.string().max(1000, "Notes only allow up to 1000 characters").optional(),
 });
 
 type DeliveryFormValues = z.infer<typeof deliveryFormSchema>;
@@ -83,7 +83,6 @@ const OrderSubmissionSubmitDialog = ({ orderId, isOpen, onOpenChange }: OrderSub
         },
         body: JSON.stringify({
           fileName: file.name,
-          fileType: file.type,
           filePath: FilePath.ORDERS,
         }),
       });
@@ -97,9 +96,6 @@ const OrderSubmissionSubmitDialog = ({ orderId, isOpen, onOpenChange }: OrderSub
       // 2. Upload file directly to S3
       const uploadRes = await fetch(uploadUrl, {
         method: "PUT",
-        headers: {
-          "Content-Type": file.type,
-        },
         body: file,
       });
 

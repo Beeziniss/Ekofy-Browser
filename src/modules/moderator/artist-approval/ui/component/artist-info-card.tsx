@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { DotIcon } from "lucide-react";
 import Image from "next/image";
 import { UserManagementArtist } from "@/types/user-management";
+import React from "react";
 
 // Extended artist interface for approval process with additional ID card properties
 interface ArtistApprovalData extends UserManagementArtist {
@@ -23,6 +24,37 @@ interface ArtistInfoCardProps {
 }
 
 export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
+  const [frontImageUrl, setFrontImageUrl] = React.useState<string | null>(null);
+  const [backImageUrl, setBackImageUrl] = React.useState<string | null>(null);
+
+  // Fetch presigned URLs for S3 images
+  React.useEffect(() => {
+    const fetchImageUrl = async (key: string) => {
+      if (!key) return null;
+      // If it's already a full URL, return as is
+      if (key.startsWith('http://') || key.startsWith('https://')) {
+        return key;
+      }
+      // Otherwise, get presigned URL from API
+      try {
+        const response = await fetch(`/api/s3/presign?key=${encodeURIComponent(key)}`);
+        if (!response.ok) return null;
+        const data = await response.json();
+        return data.url;
+      } catch (error) {
+        console.error('Error fetching presigned URL:', error);
+        return null;
+      }
+    };
+
+    if (artist.frontImageUrl) {
+      fetchImageUrl(artist.frontImageUrl).then(setFrontImageUrl);
+    }
+    if (artist.backImageUrl) {
+      fetchImageUrl(artist.backImageUrl).then(setBackImageUrl);
+    }
+  }, [artist.frontImageUrl, artist.backImageUrl]);
+
   return (
     <div className="space-y-4">
       {/* Header with Avatar and Info */}
@@ -69,9 +101,9 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
             <div>
               <label className="mb-2 block text-sm text-gray-300">Front Image</label>
               <div className="transparent flex h-40 w-full items-center justify-center overflow-hidden rounded-lg border-2 border-solid border-gray-400 bg-blue-600">
-                {artist.frontImageUrl ? (
+                {frontImageUrl ? (
                   <Image
-                    src={artist.frontImageUrl}
+                    src={frontImageUrl}
                     alt="ID Front"
                     width={280}
                     height={160}
@@ -87,9 +119,9 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
             <div>
               <label className="mb-2 block text-sm text-gray-300">Back Image</label>
               <div className="transparent flex h-40 w-full items-center justify-center overflow-hidden rounded-lg border-2 border-solid border-gray-400 bg-blue-600">
-                {artist.backImageUrl ? (
+                {backImageUrl ? (
                   <Image
-                    src={artist.backImageUrl}
+                    src={backImageUrl}
                     alt="ID Back"
                     width={280}
                     height={160}

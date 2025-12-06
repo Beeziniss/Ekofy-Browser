@@ -45,6 +45,7 @@ export default function RootLayout({
             bottom: 60,
             right: 12,
           }}
+          className="![--width:clamp(280px,340px,100%)] xl:![--width:clamp(280px,420px,100%)]"
           duration={3500}
         />
       </body>

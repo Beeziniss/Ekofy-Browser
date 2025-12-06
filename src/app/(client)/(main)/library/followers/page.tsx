@@ -1,7 +1,7 @@
-import React from "react";
+import FollowerView from "@/modules/client/library/ui/views/follower-view";
 
 const Page = () => {
-  return <div>Page</div>;
+  return <FollowerView />;
 };
 
 export default Page;

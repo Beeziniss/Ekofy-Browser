@@ -30,13 +30,11 @@ const InfiniteScroll = ({ isManual = false, hasNextPage, isFetchingNextPage, fet
   return (
     <div className="flex flex-col items-center gap-4 p-4">
       <div ref={targetRef} className="h-1" />
-      {hasNextPage ? (
+      {hasNextPage && (
         <Button variant={"ekofy"} disabled={!hasNextPage || isFetchingNextPage} onClick={() => fetchNextPage()}>
           {isFetchingNextPage && <Spinner />}
           {isFetchingNextPage ? "Loading..." : "Load more"}
         </Button>
-      ) : (
-        <p className="text-muted-foreground text-sm">You have reached the end of the list</p>
       )}
     </div>
   );

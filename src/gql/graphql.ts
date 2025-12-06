@@ -7769,6 +7769,26 @@ export type FollowingsQueryVariables = Exact<{
 
 export type FollowingsQuery = { __typename?: 'QueryInitialization', followings?: { __typename?: 'FollowingsCollectionSegment', totalCount: number } | null };
 
+export type FollowerInfiniteQueryVariables = Exact<{
+  userId?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<UserFilterInput>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type FollowerInfiniteQuery = { __typename?: 'QueryInitialization', followers?: { __typename?: 'FollowersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean }, items?: Array<{ __typename?: 'User', id: string, fullName: string, checkUserFollowing: boolean, role: UserRole }> | null } | null };
+
+export type FollowingInfiniteQueryVariables = Exact<{
+  userId?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<UserFilterInput>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type FollowingInfiniteQuery = { __typename?: 'QueryInitialization', followings?: { __typename?: 'FollowingsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean }, items?: Array<{ __typename?: 'User', id: string, fullName: string, checkUserFollowing: boolean, role: UserRole }> | null } | null };
+
 export type OrderPackageQueryVariables = Exact<{
   where?: InputMaybe<PackageOrderFilterInput>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -7994,10 +8014,11 @@ export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { 
 
 export type TrackFavoriteQueryVariables = Exact<{
   take: Scalars['Int']['input'];
+  skip: Scalars['Int']['input'];
 }>;
 
 
-export type TrackFavoriteQuery = { __typename?: 'QueryInitialization', favoriteTracks?: { __typename?: 'FavoriteTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
+export type TrackFavoriteQuery = { __typename?: 'QueryInitialization', favoriteTracks?: { __typename?: 'FavoriteTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, createdAt: any, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
 
 export type UserBasicInfoQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -8605,7 +8626,12 @@ export const SearchTracksDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<SearchTracksQuery, SearchTracksQueryVariables>;
 export const SearchPlaylistsDocument = new TypedDocumentString(`
     query SearchPlaylists($skip: Int, $take: Int, $name: String!) {
-  searchPlaylists(skip: $skip, take: $take, name: $name) {
+  searchPlaylists(
+    skip: $skip
+    take: $take
+    name: $name
+    where: {isPublic: {eq: true}}
+  ) {
     totalCount
     items {
       id
@@ -10128,6 +10154,50 @@ export const FollowingsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<FollowingsQuery, FollowingsQueryVariables>;
+export const FollowerInfiniteDocument = new TypedDocumentString(`
+    query FollowerInfinite($userId: String, $where: UserFilterInput, $take: Int, $skip: Int) {
+  followers(
+    userId: $userId
+    take: $take
+    skip: $skip
+    order: {createdAt: DESC}
+    where: $where
+  ) {
+    totalCount
+    pageInfo {
+      hasNextPage
+    }
+    items {
+      id
+      fullName
+      checkUserFollowing
+      role
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<FollowerInfiniteQuery, FollowerInfiniteQueryVariables>;
+export const FollowingInfiniteDocument = new TypedDocumentString(`
+    query FollowingInfinite($userId: String, $where: UserFilterInput, $take: Int, $skip: Int) {
+  followings(
+    userId: $userId
+    take: $take
+    skip: $skip
+    order: {createdAt: DESC}
+    where: $where
+  ) {
+    totalCount
+    pageInfo {
+      hasNextPage
+    }
+    items {
+      id
+      fullName
+      checkUserFollowing
+      role
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<FollowingInfiniteQuery, FollowingInfiniteQueryVariables>;
 export const OrderPackageDocument = new TypedDocumentString(`
     query OrderPackage($where: PackageOrderFilterInput, $take: Int, $skip: Int) {
   packageOrders(where: $where, take: $take, skip: $skip, order: {createdAt: DESC}) {
@@ -11090,8 +11160,8 @@ export const TrackDetailDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<TrackDetailQuery, TrackDetailQueryVariables>;
 export const TrackFavoriteDocument = new TypedDocumentString(`
-    query TrackFavorite($take: Int!) {
-  favoriteTracks(take: $take, order: {createdAt: DESC}) {
+    query TrackFavorite($take: Int!, $skip: Int!) {
+  favoriteTracks(take: $take, skip: $skip, order: {createdAt: DESC}) {
     totalCount
     items {
       id
@@ -11105,6 +11175,7 @@ export const TrackFavoriteDocument = new TypedDocumentString(`
         }
       }
       checkTrackInFavorite
+      createdAt
     }
   }
 }

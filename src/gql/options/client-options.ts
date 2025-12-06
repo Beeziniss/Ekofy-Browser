@@ -19,13 +19,16 @@ import {
   PackageOrderFilterInput,
   CategoryType,
   ConversationStatus,
+  UserFilterInput,
 } from "../graphql";
 import {
   ArtistDetailQuery,
   ArtistListQuery,
   ArtistPackageQuery,
   ArtistQuery,
+  FollowerInfiniteQuery,
   FollowerQuery,
+  FollowingInfiniteQuery,
   FollowingQuery,
   GetListenerProfileQuery,
   GetUserActiveSubscriptionQuery,
@@ -112,10 +115,10 @@ export const trackDetailOptions = (trackId: string) =>
     enabled: !!trackId,
   });
 
-export const trackFavoriteOptions = (take: number = 12, isAuthenticated: boolean) =>
+export const trackFavoriteOptions = (take: number = 12, skip: number = 0, isAuthenticated: boolean) =>
   queryOptions({
-    queryKey: ["track-favorite"],
-    queryFn: async () => await execute(TrackFavoriteQuery, { take }),
+    queryKey: ["track-favorite", take, skip],
+    queryFn: async () => await execute(TrackFavoriteQuery, { take, skip }),
     enabled: isAuthenticated,
   });
 
@@ -251,6 +254,42 @@ export const followingOptions = ({ artistId, userId }: { artistId?: string; user
     queryKey: ["following", artistId],
     queryFn: async () => await execute(FollowingQuery, { artistId, userId }),
     enabled: !!artistId,
+  });
+
+export const followerInfiniteOptions = (userId: string, take: number = 12, name?: string) =>
+  infiniteQueryOptions({
+    queryKey: ["follower-infinite", userId],
+    queryFn: async ({ pageParam }) => {
+      const where: UserFilterInput = {
+        or: [{ fullName: { contains: name } }, { fullNameUnsigned: { contains: name } }],
+      };
+
+      const skip = (pageParam - 1) * take;
+      return await execute(FollowerInfiniteQuery, { userId, where, take, skip });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.followers?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+    enabled: !!userId,
+  });
+
+export const followingInfiniteOptions = (userId: string, take: number = 12, name?: string) =>
+  infiniteQueryOptions({
+    queryKey: ["following-infinite", userId],
+    queryFn: async ({ pageParam }) => {
+      const where: UserFilterInput = {
+        or: [{ fullName: { contains: name } }, { fullNameUnsigned: { contains: name } }],
+      };
+
+      const skip = (pageParam - 1) * take;
+      return await execute(FollowingInfiniteQuery, { userId, where, take, skip });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.followings?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+    enabled: !!userId,
   });
 
 // SERVICE PACKAGE QUERIES
