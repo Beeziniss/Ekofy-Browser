@@ -9,16 +9,6 @@ import { UserProfile } from "@/types/profile";
 
 interface ProfileSectionProps {
   userProfile: UserProfile | null | undefined;
-  personal: {
-    fullName: string;
-    email: string;
-    phoneNumber?: string;
-  };
-  account: {
-    createdAt: string;
-    role: string;
-    status: string;
-  };
 }
 
 const ProfileSection = ({ userProfile }: ProfileSectionProps) => {

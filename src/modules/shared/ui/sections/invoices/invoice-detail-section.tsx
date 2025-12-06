@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { ArrowLeftIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export type SharedInvoice = {
@@ -17,47 +18,51 @@ export type SharedInvoice = {
 
 interface SharedInvoiceDetailSectionProps {
   invoice: SharedInvoice;
-  referenceId?: string; // optional echo of the lookup id
+ 
   backHref: string;
 }
 
-export default function SharedInvoiceDetailSection({ invoice, referenceId, backHref }: SharedInvoiceDetailSectionProps) {
+export default function SharedInvoiceDetailSection({ invoice, backHref }: SharedInvoiceDetailSectionProps) {
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 md:px-6 py-6">
+    <div className="mx-auto w-full max-w-4xl px-4 py-6 md:px-6">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Invoice Detail</h1>
-          {referenceId ? (
-            <p className="text-sm text-muted-foreground">Reference: {referenceId}</p>
-          ) : null}
+          
+          
         </div>
-        <Link href={backHref} className="text-sm text-primary hover:underline">&larr; Back to Invoices</Link>
+        <Link
+          href={backHref}
+          className="text-primary hover:border-main-white flex items-center gap-x-2 pb-0.5 text-sm hover:cursor-pointer hover:border-b"
+        >
+          <ArrowLeftIcon className="size-4" /> Back to Invoices
+        </Link>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>#{invoice.id.slice(-8)}</CardTitle>
+          <CardTitle>Invoice ID: #{invoice.id}</CardTitle>
         </CardHeader>
         <CardContent>
-          <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <dt className="text-sm text-muted-foreground">Paid at</dt>
+              <dt className="text-muted-foreground text-sm">Paid at</dt>
               <dd className="text-sm">{new Date(invoice.paidAt).toLocaleString()}</dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground">Amount</dt>
+              <dt className="text-muted-foreground text-sm">Amount</dt>
               <dd className="text-sm">{invoice.amount.toLocaleString()} {invoice.currency}</dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground">Billed to</dt>
-              <dd className="text-sm">{invoice.to ?? invoice.email} {invoice.email ? `(${invoice.email})` : ""}</dd>
+              <dt className="text-muted-foreground text-sm">Billed to</dt>
+              <dd className="text-sm">{invoice.to ? invoice.to : "Unknown"} </dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground">Billed from</dt>
+              <dt className="text-muted-foreground text-sm">Billed from</dt>
               <dd className="text-sm">{invoice.from}</dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground">Transaction</dt>
+              <dt className="text-muted-foreground text-sm">Transaction ID</dt>
               <dd className="text-sm">{invoice.paymentTransactionId ?? "-"}</dd>
             </div>
           </dl>

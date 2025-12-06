@@ -6,8 +6,8 @@ import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/componen
 const ActivitySection = () => {
   const activityItems = [
     {
-      title: "Payment History",
-      href: "/profile/payment-history",
+      title: "Transaction History",
+      href: "/profile/transaction-history",
       icon: CreditCardIcon,
     },
     {

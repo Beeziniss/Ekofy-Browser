@@ -21,11 +21,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, CreditCard, UserCheck, UserX, Search } from "lucide-react";
+
+import { MoreHorizontal, Eye, CreditCard, UserCheck, UserX, Search, Plus } from "lucide-react";
 import { UserStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
 import { UserManagementUser } from "@/types";
+import { activeInactiveStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
+import { CustomPagination } from "@/components/ui/custom-pagination";
 interface UserTableProps {
   data: UserManagementUser[];
   totalCount: number;
@@ -49,8 +51,6 @@ export function UserTable({
   pageSize,
   onPageChange,
   onSearch,
-  hasNextPage,
-  hasPreviousPage,
   searchTerm,
   onStatusChange,
   onCreateModerator,
@@ -106,20 +106,7 @@ export function UserTable({
       header: "User Status",
       cell: ({ row }) => {
         const status = row.original.status;
-        return (
-          <Badge
-            variant={status === UserStatus.Active ? "default" : "secondary"}
-            className={` ${
-              status === UserStatus.Active
-                ? "border-green-200 bg-green-100 text-green-800"
-                : status === UserStatus.Inactive
-                  ? "border-yellow-200 bg-yellow-100 text-yellow-800"
-                  : "border-red-200 bg-red-100 text-red-800"
-            } `}
-          >
-            {status}
-          </Badge>
-        );
+        return activeInactiveStatusBadge(status);
       },
     },
     {
@@ -210,7 +197,8 @@ export function UserTable({
             className="border-gray-700 bg-gray-800 pl-9 text-white placeholder-gray-400"
           />
         </div>
-        <Button onClick={onCreateModerator} className="bg-blue-600 text-white hover:bg-blue-700">
+        <Button onClick={onCreateModerator} className="bg-white text-gray-900 hover:bg-gray-100">
+          <Plus className="mr-2 h-4 w-4" />
           Create Moderator
         </Button>
         {/* </div> */}
@@ -267,145 +255,14 @@ export function UserTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="text-sm text-gray-400">
-          Showing {isLoading ? 0 : (currentPage - 1) * pageSize + 1} to{" "}
-          {isLoading ? 0 : Math.min(currentPage * pageSize, totalCount)} of {isLoading ? 0 : totalCount} entries
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={!hasPreviousPage || isLoading}
-            className="border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Previous
-          </Button>
-
-          {/* Page Numbers */}
-          {!isLoading && totalCount > 0 && (
-            <div className="flex items-center space-x-1">
-              {(() => {
-                const totalPages = Math.ceil(totalCount / pageSize);
-                const pages = [];
-
-                // Calculate which pages to show
-                let startPage = Math.max(1, currentPage - 2);
-                let endPage = Math.min(totalPages, currentPage + 2);
-
-                // Adjust if we're near the beginning or end
-                if (currentPage <= 3) {
-                  endPage = Math.min(5, totalPages);
-                }
-                if (currentPage >= totalPages - 2) {
-                  startPage = Math.max(1, totalPages - 4);
-                }
-
-                // Add first page and ellipsis if needed
-                if (startPage > 1) {
-                  pages.push(
-                    <Button
-                      key={1}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onPageChange(1)}
-                      className="h-8 w-8 border-gray-700 bg-gray-800 p-0 text-gray-300 hover:bg-gray-700 hover:text-white"
-                      style={
-                        currentPage === 1
-                          ? {
-                              backgroundColor: "#2563eb",
-                              borderColor: "#2563eb",
-                              color: "white",
-                            }
-                          : {}
-                      }
-                    >
-                      1
-                    </Button>,
-                  );
-                  if (startPage > 2) {
-                    pages.push(
-                      <span key="ellipsis1" className="px-2 text-gray-400">
-                        ...
-                      </span>,
-                    );
-                  }
-                }
-
-                // Add the current range of pages
-                for (let i = startPage; i <= endPage; i++) {
-                  pages.push(
-                    <Button
-                      key={i}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onPageChange(i)}
-                      className="h-8 w-8 border-gray-700 bg-gray-800 p-0 text-gray-300 hover:bg-gray-700 hover:text-white"
-                      style={
-                        currentPage === i
-                          ? {
-                              backgroundColor: "#2563eb",
-                              borderColor: "#2563eb",
-                              color: "white",
-                            }
-                          : {}
-                      }
-                    >
-                      {i}
-                    </Button>,
-                  );
-                }
-
-                // Add ellipsis and last page if needed
-                if (endPage < totalPages) {
-                  if (endPage < totalPages - 1) {
-                    pages.push(
-                      <span key="ellipsis2" className="px-2 text-gray-400">
-                        ...
-                      </span>,
-                    );
-                  }
-                  pages.push(
-                    <Button
-                      key={totalPages}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onPageChange(totalPages)}
-                      className="h-8 w-8 border-gray-700 bg-gray-800 p-0 text-gray-300 hover:bg-gray-700 hover:text-white"
-                      style={
-                        currentPage === totalPages
-                          ? {
-                              backgroundColor: "#2563eb",
-                              borderColor: "#2563eb",
-                              color: "white",
-                            }
-                          : {}
-                      }
-                    >
-                      {totalPages}
-                    </Button>,
-                  );
-                }
-
-                return pages;
-              })()}
-            </div>
-          )}
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={!hasNextPage || isLoading}
-            className="border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
-          >
-            Next
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <CustomPagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(totalCount / pageSize)}
+        totalCount={totalCount}
+        pageSize={pageSize}
+        onPageChange={onPageChange}
+        isLoading={isLoading}
+      />
     </div>
   );
 }
