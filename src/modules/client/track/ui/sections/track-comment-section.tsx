@@ -151,7 +151,13 @@ const TrackCommentSection = ({ trackId, listenerData, artistData }: TrackComment
       <div className="flex flex-col gap-y-6">
         {commentsData.threadedComments.threads && commentsData.threadedComments.threads.length > 0 ? (
           commentsData.threadedComments.threads.map((thread, index) => (
-            <TrackCommentUser key={`${thread.rootComment.id}-${index}`} thread={thread} trackId={trackId} />
+            <TrackCommentUser
+              key={`${thread.rootComment.id}-${index}`}
+              thread={thread}
+              trackId={trackId}
+              listenerData={listenerData}
+              artistData={artistData}
+            />
           ))
         ) : (
           <div className="py-8 text-center text-gray-500">No comments yet. Be the first to comment!</div>

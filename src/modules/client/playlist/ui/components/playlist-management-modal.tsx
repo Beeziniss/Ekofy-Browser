@@ -343,7 +343,7 @@ const PlaylistManagementModal = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-main-white text-sm">Name</FormLabel>
+                  <FormLabel className="text-main-white text-sm">Name <span className="text-red-400">*</span></FormLabel>
                   <FormControl>
                     <Input placeholder="Playlist name" {...field} minLength={3} maxLength={100} />
                   </FormControl>

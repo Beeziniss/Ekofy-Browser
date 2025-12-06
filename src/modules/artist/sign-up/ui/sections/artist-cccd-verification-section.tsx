@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { VerificationHeader, IDUploadComponent, PersonalInformationComponent } from "../components";
 import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import { useFPTAI } from "../../hooks/use-fpt-ai";
+import { useS3Upload } from "../../hooks/use-s3-upload";
 // import { isValidPhoneNumber, formatPhoneNumber } from "@/utils/signup-utils";
 import { toast } from "sonner";
 import { validateImageFile } from "@/utils/cloudinary-utils";
@@ -31,6 +32,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
   } = useArtistSignUpStore(); // FPT AI hook
   const { isAnalyzing, cccdFrontProcessed, cccdBackProcessed, analyzeFrontSide, analyzeBackSide, parsedData } =
     useFPTAI();
+  const { getPresignedUrl } = useS3Upload();
 
   const [frontId, setFrontId] = useState<File | null>(initialData?.frontId || null);
   const [backId, setBackId] = useState<File | null>(initialData?.backId || null);
@@ -135,7 +137,14 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
   useEffect(() => {
     // Check if we have stored CCCD images from previous step navigation
     if (formData.identityCard?.frontImage && !frontId) {
-      setFrontIdPreview(formData.identityCard.frontImage);
+      // Fetch presigned URL for S3 key
+      const fetchPresignedUrl = async () => {
+        const url = await getPresignedUrl(formData.identityCard!.frontImage!);
+        if (url) {
+          setFrontIdPreview(url);
+        }
+      };
+      fetchPresignedUrl();
       // Mark as processed if we have stored image URL
       setCCCDFrontProcessed(true);
     } else if (frontId) {
@@ -143,11 +152,18 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
       setFrontIdPreview(url);
       return () => URL.revokeObjectURL(url);
     }
-  }, [frontId, formData.identityCard?.frontImage, setCCCDFrontProcessed]);
+  }, [frontId, formData.identityCard?.frontImage, setCCCDFrontProcessed, getPresignedUrl]);
 
   useEffect(() => {
     if (formData.identityCard?.backImage && !backId) {
-      setBackIdPreview(formData.identityCard.backImage);
+      // Fetch presigned URL for S3 key
+      const fetchPresignedUrl = async () => {
+        const url = await getPresignedUrl(formData.identityCard!.backImage!);
+        if (url) {
+          setBackIdPreview(url);
+        }
+      };
+      fetchPresignedUrl();
       // Mark as processed if we have stored image URL
       setCCCDBackProcessed(true);
     } else if (backId) {
@@ -155,7 +171,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
       setBackIdPreview(url);
       return () => URL.revokeObjectURL(url);
     }
-  }, [backId, formData.identityCard?.backImage, setCCCDBackProcessed]);
+  }, [backId, formData.identityCard?.backImage, setCCCDBackProcessed, getPresignedUrl]);
 
   // Auto-populate fields when FPT AI data is available
   useEffect(() => {
