@@ -1,7 +1,6 @@
 import ArtistPersonalDetailSection from "./artist-personal-detail-section";
 import ArtistAccountDetailSection from "./artist-account-detail-section";
 import ArtistSettingsSection from "./artist-settings-section";
-import ArtistActivitySection from "./activity-section";
 import HelpCard from "@/modules/client/profile/ui/components/help-card";
 import type { UserGender } from "@/gql/graphql";
 
@@ -42,7 +41,6 @@ export default function AccountTab({ artistData }: AccountTabProps) {
             membershipStatus={artistData.membershipStatus}
           />
           <ArtistSettingsSection />
-          <ArtistActivitySection />
         </div>
         <div className="md:col-span-3">
           <HelpCard className="md:sticky md:top-10" />
