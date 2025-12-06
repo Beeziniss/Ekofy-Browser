@@ -21,16 +21,7 @@ import { getUserInitials } from "@/utils/format-shorten-name";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { artistOptions, listenerOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
-import {
-  AudioLines,
-  Bell,
-  LogOut,
-  MessageCircleIcon,
-  MicVocalIcon,
-  ReceiptTextIcon,
-  Settings,
-  User,
-} from "lucide-react";
+import { AudioLines, Bell, LogOut, MessageCircleIcon, MicVocalIcon, ReceiptTextIcon, User } from "lucide-react";
 import { useNotificationSignalR } from "@/hooks/use-notification-signalr";
 import { NotificationPopover } from "@/components/notification-popover";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
@@ -151,13 +142,13 @@ const AuthButton = () => {
   ];
 
   const settingsMenuItems = [
-    {
-      type: "button" as const,
-      icon: Settings,
-      label: "Settings",
-      className: "text-main-white",
-      showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
-    },
+    // {
+    //   type: "button" as const,
+    //   icon: Settings,
+    //   label: "Settings",
+    //   className: "text-main-white",
+    //   showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
+    // },
     {
       type: "button" as const,
       icon: LogOut,
@@ -268,9 +259,8 @@ const AuthButton = () => {
                   .filter((item) => user && item.showForRoles.includes(user.role))
                   .map((item, index) => (
                     <DropdownMenuItem key={index} onClick={"onClick" in item ? item.onClick : undefined}>
-                      <item.icon
-                        className={`mr-2 size-4 ${"iconClassName" in item ? item.iconClassName : item.className}`}
-                      />
+                      {/* ${"iconClassName" in item ? item.iconClassName : item.className} */}
+                      <item.icon className={`mr-2 size-4 ${"iconClassName" in item ? item.iconClassName : ""}`} />
                       <span className={`text-base ${item.className}`}>{item.label}</span>
                     </DropdownMenuItem>
                   ))}

@@ -15,3 +15,37 @@ export const FollowingQuery = graphql(`
     }
   }
 `);
+
+export const FollowerInfiniteQuery = graphql(`
+  query FollowerInfinite($userId: String, $where: UserFilterInput, $take: Int, $skip: Int) {
+    followers(userId: $userId, take: $take, skip: $skip, order: { createdAt: DESC }, where: $where) {
+      totalCount
+      pageInfo {
+        hasNextPage
+      }
+      items {
+        id
+        fullName
+        checkUserFollowing
+        role
+      }
+    }
+  }
+`);
+
+export const FollowingInfiniteQuery = graphql(`
+  query FollowingInfinite($userId: String, $where: UserFilterInput, $take: Int, $skip: Int) {
+    followings(userId: $userId, take: $take, skip: $skip, order: { createdAt: DESC }, where: $where) {
+      totalCount
+      pageInfo {
+        hasNextPage
+      }
+      items {
+        id
+        fullName
+        checkUserFollowing
+        role
+      }
+    }
+  }
+`);
