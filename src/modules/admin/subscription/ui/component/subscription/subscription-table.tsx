@@ -1,7 +1,6 @@
 "use client";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,9 +10,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MoreHorizontal, Eye} from "lucide-react";
 import { formatNumber } from "@/utils/format-number";
+import { activeInactiveStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import type { Subscription } from "@/types";
 
 interface SubscriptionTableProps {
@@ -27,111 +26,75 @@ export function SubscriptionTable({
   onView,
   isLoading = false,
 }: SubscriptionTableProps) {
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case "ACTIVE":
-        return "default" as const;
-      case "INACTIVE":
-        return "secondary" as const;
-      default:
-        return "outline" as const;
-    }
-  };
-
-  const getTierBadgeVariant = (tier: string) => {
-    switch (tier) {
-      case "FREE":
-        return "outline" as const;
-      case "PREMIUM":
-        return "default" as const;
-      case "PRO":
-        return "destructive" as const;
-      default:
-        return "secondary" as const;
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex h-32 items-center justify-center">
-            <div className="text-muted-foreground">Loading subscriptions...</div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (subscriptions.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex h-32 items-center justify-center">
-            <div className="text-muted-foreground">No subscriptions found</div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Subscriptions</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
+    <div className="space-y-4">
+      <Table>
+        <TableHeader>
+          <TableRow className="border-gray-700 hover:bg-gray-800">
+            <TableHead className="text-gray-300">Name</TableHead>
+            <TableHead className="text-gray-300">Code</TableHead>
+            <TableHead className="text-gray-300">Tier</TableHead>
+            <TableHead className="text-gray-300">Amount</TableHead>
+            <TableHead className="text-gray-300">Status</TableHead>
+            <TableHead className="text-gray-300">Created At</TableHead>
+            <TableHead className="text-gray-300">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {isLoading ? (
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Code</TableHead>
-              <TableHead>Tier</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead className="w-[50px]">Actions</TableHead>
+              <TableCell colSpan={7} className="h-24 text-center text-gray-400">
+                Loading subscriptions...
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {subscriptions.map((subscription) => (
-              <TableRow key={subscription.id}>
+          ) : subscriptions.length > 0 ? (
+            subscriptions.map((subscription) => (
+              <TableRow key={subscription.id} className="border-gray-700 hover:bg-gray-800">
                 <TableCell className="font-medium">
                   <div>
-                    <div className="font-semibold">{subscription.name}</div>
-                    <div className="text-muted-foreground max-w-[200px] truncate text-sm">
+                    <div className="font-semibold text-white">{subscription.name}</div>
+                    <div className="text-gray-400 max-w-[200px] truncate text-sm">
                       {subscription.description}
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <code className="bg-muted rounded px-2 py-1 text-sm">{subscription.code}</code>
+                  <code className="bg-gray-800 rounded px-2 py-1 text-sm text-gray-300">{subscription.code}</code>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getTierBadgeVariant(subscription.tier)}>{subscription.tier}</Badge>
+                  <span className="border border-white rounded px-3 py-1 text-sm font-semibold bg-gray-800 text-white">
+                    {subscription.tier}
+                  </span>
+                </TableCell>
+                <TableCell className="font-medium text-white">
+                  {formatNumber(subscription.amount)} {subscription.currency}
                 </TableCell>
                 <TableCell>
-                  <div className="text-right">
-                    {formatNumber(subscription.amount)} {subscription.currency}
-                  </div>
+                  {activeInactiveStatusBadge(subscription.status)}
                 </TableCell>
-                <TableCell>
-                  <Badge variant={getStatusBadgeVariant(subscription.status)}>{subscription.status}</Badge>
+                <TableCell className="text-gray-300">
+                  {new Date(subscription.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
                 </TableCell>
-                <TableCell>{new Date(subscription.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
+                      <Button variant="ghost" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
+                    <DropdownMenuContent align="end" className="border-gray-700 bg-gray-800">
+                      <DropdownMenuLabel className="text-gray-300">Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator className="bg-gray-700" />
                       {onView && (
-                        <DropdownMenuItem onClick={() => onView(subscription)}>
+                        <DropdownMenuItem 
+                          onClick={() => onView(subscription)}
+                          className="text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer"
+                        >
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
                         </DropdownMenuItem>
@@ -140,10 +103,16 @@ export function SubscriptionTable({
                   </DropdownMenu>
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={7} className="h-24 text-center text-gray-400">
+                No subscriptions found.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

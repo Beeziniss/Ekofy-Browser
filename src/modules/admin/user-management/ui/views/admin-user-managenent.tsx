@@ -1,6 +1,6 @@
 import { graphql } from "@/gql";
-import { UserManagementLayout } from "../layout";
-import { UserManagementSection } from "../section";
+import { UserManagementLayout } from "../layouts";
+import { UserManagementSection } from "../sections";
 
 export const AdminGetListUser = graphql(`
   query UsersList($skip: Int, $take: Int, $where: UserFilterInput) {

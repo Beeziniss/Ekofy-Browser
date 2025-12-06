@@ -5,9 +5,10 @@ import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
+import { CustomPagination } from "@/components/ui/custom-pagination";
 import { artistTransactionsOptions } from "@/gql/options/artist-activity-options";
 import { listenerTransactionsOptions } from "@/gql/options/listener-activity-options";
-import { methodBadge, paymentStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
+import { methodBadge, transactionStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type Source = "listener" | "artist";
@@ -15,32 +16,49 @@ type Source = "listener" | "artist";
 interface SharedPaymentTransactionsTableProps {
   pageSize?: number;
   source: Source;
-  linkPrefix: string; // e.g. "/profile/payment-history" or "/artist/studio/transactions/payment-history"
+  linkPrefix: string; // e.g. "/profile/transaction-history" or "/artist/studio/transactions/payment-history"
+  // Optional: external data control for filtering/searching
+  externalData?: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    items: Record<string, any>[];
+    isLoading: boolean;
+    isError: boolean;
+    page: number;
+    totalCount: number;
+    onPageChange: (page: number) => void;
+  };
 }
 
 export default function SharedPaymentTransactionsTable({
   pageSize = 10,
   source,
   linkPrefix,
+  externalData,
 }: SharedPaymentTransactionsTableProps) {
   const { user } = useAuthStore();
-  const [page, setPage] = useState(1);
+  const [internalPage, setInternalPage] = useState(1);
 
   const queryOptions =
     source === "listener"
-      ? listenerTransactionsOptions({ userId: user?.userId || "", page, pageSize })
-      : artistTransactionsOptions({ userId: user?.userId || "", page, pageSize });
+      ? listenerTransactionsOptions({ userId: user?.userId || "", page: internalPage, pageSize })
+      : artistTransactionsOptions({ userId: user?.userId || "", page: internalPage, pageSize });
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading: internalLoading, isError: internalError } = useQuery({
     ...queryOptions,
-    enabled: !!user?.userId, // Only run query if user exists
+    enabled: !!user?.userId && !externalData,
   });
 
-  const transactionData = data?.paymentTransactions?.items || [];
-  const totalCount = data?.paymentTransactions?.totalCount ?? 0;
-  const hasNext = !!data?.paymentTransactions?.pageInfo?.hasNextPage;
-  const hasPrev = !!data?.paymentTransactions?.pageInfo?.hasPreviousPage;
+  // Use external data if provided, otherwise use internal data
+  const transactionData = externalData ? externalData.items : data?.paymentTransactions?.items || [];
+  const totalCount = externalData 
+    ? externalData.totalCount 
+    : data?.paymentTransactions?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  const isLoading = externalData ? externalData.isLoading : internalLoading;
+  const isError = externalData ? externalData.isError : internalError;
+  const page = externalData ? externalData.page : internalPage;
+  const handlePageChange = externalData ? externalData.onPageChange : setInternalPage;
 
   return (
     <div className="space-y-4">
@@ -58,12 +76,14 @@ export default function SharedPaymentTransactionsTable({
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={6}>Loading...</TableCell>
+              <TableCell colSpan={6} className="h-24 text-center text-gray-400">
+                Loading transactions...
+              </TableCell>
             </TableRow>
           ) : isError ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-red-500">
-                Failed to load transactions.
+              <TableCell colSpan={6} className="h-24 text-center text-red-400">
+                Failed to load transactions. Please try again.
               </TableCell>
             </TableRow>
           ) : transactionData && transactionData.length > 0 ? (
@@ -82,7 +102,7 @@ export default function SharedPaymentTransactionsTable({
                     : "-"}
                 </TableCell>
                 <TableCell>
-                  {transaction?.paymentStatus ? paymentStatusBadge(transaction.paymentStatus) : "-"}
+                  {transaction?.status ? transactionStatusBadge(transaction.status) : "-"}
                 </TableCell>
                 <TableCell>
                   {transaction?.id ? (
@@ -95,9 +115,9 @@ export default function SharedPaymentTransactionsTable({
                 </TableCell>
                 <TableCell>
                   {transaction?.id ? (
-                    <Link href={`${linkPrefix}/${transaction?.id}`} className="text-primary hover:underline">
-                      View
-                    </Link>
+                    <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white" asChild>
+                      <Link href={`${linkPrefix}/${transaction?.id}`}>View</Link>
+                    </Button>
                   ) : (
                     "-"
                   )}
@@ -106,25 +126,22 @@ export default function SharedPaymentTransactionsTable({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6}>No transactions found.</TableCell>
+              <TableCell colSpan={6} className="h-24 text-center text-gray-400">
+                No transactions found.
+              </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
 
-      <div className="flex items-center justify-between">
-        <div className="text-muted-foreground text-sm">
-          Page {page} of {totalPages}
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={!hasPrev}>
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setPage((p) => (hasNext ? p + 1 : p))} disabled={!hasNext}>
-            Next
-          </Button>
-        </div>
-      </div>
+      <CustomPagination
+        currentPage={page}
+        totalPages={totalPages}
+        totalCount={totalCount}
+        pageSize={pageSize}
+        onPageChange={handlePageChange}
+        isLoading={isLoading}
+      />
     </div>
   );
 }

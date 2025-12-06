@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import { AlbumIcon, AudioLinesIcon, LayoutDashboardIcon, LayoutPanelLeftIcon, BanknoteIcon, Flag } from "lucide-react";
+import { AlbumIcon, AudioLinesIcon, LayoutDashboardIcon, LayoutPanelLeftIcon, BanknoteIcon, Flag, ListChecksIcon } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
 import { NavProjects } from "../nav-projects";
@@ -52,7 +52,7 @@ const data = {
     {
       name: "Pending Requests",
       url: "/artist/studio/pending-request",
-      icon: AlbumIcon,
+      icon: ListChecksIcon,
     },
     {
       name: "Reports",
