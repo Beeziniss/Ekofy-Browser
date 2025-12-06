@@ -12,7 +12,11 @@ import {
   ApproveTrackUploadRequestMutation,
   RejectTrackUploadRequestMutation,
 } from "@/modules/shared/queries/moderator/track-approval-queries";
-import { REFUND_PARTIALLY_MUTATION } from "@/modules/shared/mutations/moderator/order-disputed-mutaion";
+import { 
+  REFUND_PARTIALLY_MUTATION,
+  SWITCH_STATUS_BY_REQUESTOR_MUTATION 
+} from "@/modules/shared/mutations/moderator/order-disputed-mutaion";
+import { PackageOrderStatus } from "../graphql";
 
 export const useApproveArtistRegistration = () => {
   const queryClient = useQueryClient();
@@ -123,6 +127,26 @@ export const useRefundPartially = () => {
       requestorPercentageAmount: number;
     }) => {
       return await execute(REFUND_PARTIALLY_MUTATION, { request });
+    },
+    onSuccess: () => {
+      // Invalidate package orders queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ["moderator-package-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["moderator-disputed-package-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["moderator-package-order-detail"] });
+    },
+  });
+};
+
+// Switch Order Status mutation for moderators (e.g., cancel refund)
+export const useSwitchStatusByRequestor = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (request: {
+      id: string;
+      status: PackageOrderStatus;
+    }) => {
+      return await execute(SWITCH_STATUS_BY_REQUESTOR_MUTATION, { request });
     },
     onSuccess: () => {
       // Invalidate package orders queries to refresh data

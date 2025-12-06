@@ -7936,6 +7936,7 @@ export type ListenerRequestsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<RequestFilterInput>;
+  order?: InputMaybe<Array<RequestSortInput> | RequestSortInput>;
 }>;
 
 
@@ -10790,13 +10791,8 @@ export const CheckPublicRequestExistenceDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<CheckPublicRequestExistenceQuery, CheckPublicRequestExistenceQueryVariables>;
 export const ListenerRequestsDocument = new TypedDocumentString(`
-    query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
-  requests(
-    skip: $skip
-    take: $take
-    where: $where
-    order: {postCreatedTime: DESC}
-  ) {
+    query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput, $order: [RequestSortInput!]) {
+  requests(skip: $skip, take: $take, where: $where, order: $order) {
     totalCount
     items {
       id

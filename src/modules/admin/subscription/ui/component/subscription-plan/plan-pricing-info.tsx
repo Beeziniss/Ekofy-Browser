@@ -19,7 +19,7 @@ export function PlanPricingInfo({ prices }: PlanPricingInfoProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Pricing Options</CardTitle>
+        <CardTitle>Plans</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
