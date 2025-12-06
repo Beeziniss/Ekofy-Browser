@@ -8,7 +8,7 @@ import ProfileSection from "../sections/profile-section";
 const AdminProfileView = () => {
   const { isAuthenticated } = useAuthStore();
   const profileData = useAdminProfile();
-  const { data, personal, account, isLoading } = profileData;
+  const { data, isLoading } = profileData;
 
   // Don't render if not authenticated
   if (!isAuthenticated) {
@@ -31,6 +31,12 @@ const AdminProfileView = () => {
   return (
     <div className="min-h-screen bg-[#121212]">
       <div className="container mx-auto px-4 py-8">
+        {/* Simple Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white">Profile</h1>
+          <p className="mt-2 text-gray-400">Manage your account information</p>
+        </div>
+
         <Suspense
           fallback={
             <div className="flex h-64 items-center justify-center">
@@ -38,7 +44,7 @@ const AdminProfileView = () => {
             </div>
           }
         >
-          <ProfileSection userProfile={data} personal={personal} account={account} />
+          <ProfileSection userProfile={data} />
         </Suspense>
       </div>
     </div>

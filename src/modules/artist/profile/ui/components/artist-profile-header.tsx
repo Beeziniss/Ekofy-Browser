@@ -127,7 +127,7 @@ export default React.memo(function ArtistProfileHeader({
 
             <div className="pb-2 md:block">
               <h1 className="text-2xl leading-tight font-bold md:text-3xl">{name}</h1>
-              <p className="text-muted-foreground text-sm">Artist Profile</p>
+              <p className="text-muted-foreground text-sm">ID: {userId}</p>
             </div>
           </div>
         </div>

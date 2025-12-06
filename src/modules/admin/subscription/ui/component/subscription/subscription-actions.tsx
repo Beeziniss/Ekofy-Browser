@@ -30,7 +30,7 @@ export function SubscriptionActions({
           </Button>
         )}
         {onCreateSubscription && (
-          <Button onClick={onCreateSubscription}>
+          <Button onClick={onCreateSubscription} className="bg-white text-gray-900 hover:bg-gray-100">
             <Plus className="mr-2 h-4 w-4" />
             Create Subscription
           </Button>
