@@ -11,6 +11,7 @@ import {
   // LayoutPanelLeft,
   AudioLines,
   PackageCheck,
+  ListOrdered,
 } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
@@ -61,8 +62,8 @@ const data = {
     },
     {
       name: "Disputed Orders",
-      url: "/moderator/disputed-orders",
-      icon: PackageCheck,
+      url: "/moderator/order-disputed",
+      icon: ListOrdered,
     },
     // {
     //   name: "Approval Service Packages",

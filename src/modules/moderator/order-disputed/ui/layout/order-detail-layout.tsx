@@ -9,7 +9,7 @@ interface OrderDetailLayoutProps {
 
 export function OrderDetailLayout({ children }: OrderDetailLayoutProps) {
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link href="/moderator/order-disputed">
@@ -26,7 +26,7 @@ export function OrderDetailLayout({ children }: OrderDetailLayoutProps) {
         <p className="text-sm text-gray-400">Review and resolve the disputed order</p>
       </div>
 
-      <div className="flex-1">{children}</div>
+      {children}
     </div>
   );
 }

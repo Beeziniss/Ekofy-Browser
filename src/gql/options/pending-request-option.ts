@@ -68,7 +68,8 @@ export const pendingRequestsOptions = (
       });
       return result;
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
   });
 };
 

@@ -11,6 +11,9 @@ interface OrderDisputedTableWrapperProps {
   pageSize: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  onPageChange: (page: number) => void;
+  onSearchChange: (search: string) => void;
+  searchTerm: string;
 }
 
 export function OrderDisputedTableWrapper({
@@ -20,12 +23,15 @@ export function OrderDisputedTableWrapper({
   pageSize,
   hasNextPage,
   hasPreviousPage,
+  onPageChange,
+  onSearchChange,
+  searchTerm,
 }: OrderDisputedTableWrapperProps) {
   return (
     <div className="space-y-4">
       {/* Search Bar */}
       <div className="flex items-center justify-between">
-        <OrderDisputedSearch />
+        <OrderDisputedSearch onSearchChange={onSearchChange} initialValue={searchTerm} />
       </div>
 
       {/* Table */}
@@ -36,6 +42,7 @@ export function OrderDisputedTableWrapper({
         pageSize={pageSize}
         hasNextPage={hasNextPage}
         hasPreviousPage={hasPreviousPage}
+        onPageChange={onPageChange}
       />
     </div>
   );

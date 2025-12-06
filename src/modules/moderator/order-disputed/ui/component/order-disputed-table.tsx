@@ -18,10 +18,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, AlertCircle } from "lucide-react";
+import { MoreHorizontal, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { PackageOrderStatus } from "@/gql/graphql";
-import { useRouter, useSearchParams } from "next/navigation";
-import { formatCurrency } from "@/utils/format-currency";
+import { useRouter } from "next/navigation";
+import { formatCurrencyVND } from "@/utils/format-currency";
 import { formatDate } from "@/utils/format-date";
 import { PackageOrderItem } from "@/types";
 import Image from "next/image";
@@ -33,6 +33,7 @@ interface OrderDisputedTableProps {
   pageSize: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  onPageChange: (page: number) => void;
 }
 
 export function OrderDisputedTable({
@@ -42,23 +43,16 @@ export function OrderDisputedTable({
   pageSize,
   hasNextPage,
   hasPreviousPage,
+  onPageChange,
 }: OrderDisputedTableProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [sorting, setSorting] = useState<SortingState>([]);
-
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", page.toString());
-    router.push(`?${params.toString()}`);
-  };
 
   const getStatusBadge = (status: PackageOrderStatus) => {
     switch (status) {
       case PackageOrderStatus.Disputed:
         return (
           <Badge className="border-red-200 bg-red-100 text-red-800 hover:bg-red-100">
-            <AlertCircle className="mr-1 h-3 w-3" />
             DISPUTED
           </Badge>
         );
@@ -91,7 +85,6 @@ export function OrderDisputedTable({
         return (
           <div className="flex flex-col space-y-1">
             <span className="font-medium text-gray-200">{packageInfo?.packageName || "N/A"}</span>
-            <span className="text-sm text-gray-400">ID: {row.original.id.slice(-8)}</span>
           </div>
         );
       },
@@ -145,10 +138,15 @@ export function OrderDisputedTable({
         const payment = row.original.paymentTransaction?.[0];
         return (
           <span className="font-medium text-gray-200">
-            {formatCurrency(payment?.amount || 0)}
+            {formatCurrencyVND(payment?.amount || 0)} {payment?.currency}
           </span>
         );
       },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => getStatusBadge(row.original.status),
     },
     {
       accessorKey: "disputedAt",
@@ -158,11 +156,6 @@ export function OrderDisputedTable({
           {row.original.disputedAt ? formatDate(row.original.disputedAt) : "N/A"}
         </span>
       ),
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => getStatusBadge(row.original.status),
     },
     {
       id: "actions",
@@ -203,7 +196,7 @@ export function OrderDisputedTable({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-gray-700 bg-gray-800/50">
+      <div>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -254,7 +247,7 @@ export function OrderDisputedTable({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handlePageChange(currentPage - 1)}
+            onClick={() => onPageChange(currentPage - 1)}
             disabled={!hasPreviousPage}
             className="border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
           >
@@ -269,7 +262,7 @@ export function OrderDisputedTable({
                   key={pageNumber}
                   variant={currentPage === pageNumber ? "default" : "outline"}
                   size="sm"
-                  onClick={() => handlePageChange(pageNumber)}
+                  onClick={() => onPageChange(pageNumber)}
                   className={
                     currentPage === pageNumber
                       ? "bg-blue-600 text-white hover:bg-blue-700"
@@ -284,7 +277,7 @@ export function OrderDisputedTable({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handlePageChange(currentPage + 1)}
+            onClick={() => onPageChange(currentPage + 1)}
             disabled={!hasNextPage}
             className="border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50"
           >

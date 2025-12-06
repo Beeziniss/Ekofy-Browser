@@ -38,6 +38,7 @@ export const PACKAGE_ORDERS_LIST_QUERY = graphql(`
           amount
           estimateDeliveryDays
           maxRevision
+          currency
         }
         client {
           id
@@ -107,16 +108,19 @@ export const PACKAGE_ORDER_DETAIL_QUERY = graphql(`
         serviceDetails {
           value
         }
+        currency
       }
       client {
         id
         displayName
         avatarImage
+        email
       }
       provider {
         id
         stageName
         avatarImage
+        email
       }
       paymentTransaction {
         id

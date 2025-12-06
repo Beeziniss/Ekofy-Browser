@@ -4,20 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { PackageOrderStatus } from "@/gql/graphql";
-import { formatCurrency } from "@/utils/format-currency";
+import { formatCurrencyVND } from "@/utils/format-currency";
 import { formatDate } from "@/utils/format-date";
+import { calculateDeadline } from "@/utils/calculate-deadline";
 import { PackageOrderDetail } from "@/types";
 import Image from "next/image";
+import { toast } from "sonner";
 import { 
-  User, 
-  Briefcase, 
-  Calendar, 
-  DollarSign, 
-  AlertCircle, 
-  FileText, 
   Package,
-  CreditCard 
+  FileIcon,
+  ExternalLink
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface OrderDetailInfoProps {
   order: PackageOrderDetail;
@@ -29,12 +27,51 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
   const provider = order.provider?.[0];
   const payment = order.paymentTransaction?.[0];
 
+  // Function to get presigned URL for file access
+  const getFileUrl = async (fileKey: string): Promise<string> => {
+    try {
+      const response = await fetch(`/api/s3/presign?key=${encodeURIComponent(fileKey)}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to get file URL");
+      }
+
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error("Error getting file URL:", error);
+      toast.error("Failed to access file. Please try again.");
+      throw error;
+    }
+  };
+
+  // Function to handle file access (either direct URL or S3 key)
+  const handleFileAccess = async (deliveryFileUrl: string) => {
+    try {
+      // Check if it's a direct URL or an S3 key
+      if (deliveryFileUrl.startsWith("http")) {
+        // Direct URL - open it
+        window.open(deliveryFileUrl, "_blank");
+      } else {
+        // S3 key - get presigned URL first
+        const actualUrl = await getFileUrl(deliveryFileUrl);
+        window.open(actualUrl, "_blank");
+      }
+    } catch {
+      // Error already handled in getFileUrl
+    }
+  };
+
+  // Calculate deadline
+  const deadline = order.startedAt && packageInfo?.estimateDeliveryDays
+    ? calculateDeadline(order.startedAt, packageInfo.estimateDeliveryDays, order.freezedTime || undefined)
+    : null;
+
   const getStatusBadge = (status: PackageOrderStatus) => {
     switch (status) {
       case PackageOrderStatus.Disputed:
         return (
           <Badge className="border-red-200 bg-red-100 text-red-800">
-            <AlertCircle className="mr-1 h-3 w-3" />
             DISPUTED
           </Badge>
         );
@@ -53,50 +90,56 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
       <Card className="border-gray-700 bg-gray-800/50">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl text-gray-100">Order Details</CardTitle>
+            <CardTitle className="text-xl text-gray-100">Order Information</CardTitle>
             {getStatusBadge(order.status)}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex items-start space-x-3">
-              <FileText className="mt-1 h-5 w-5 text-gray-400" />
               <div>
-                <p className="text-sm text-gray-400">Order ID</p>
-                <p className="font-mono text-sm font-medium text-gray-200">{order.id}</p>
+                <p className="text-sm text-main-white">Order ID</p>
+                <p className="font-mono text-sm font-medium text-main-grey">{order.id}</p>
               </div>
             </div>
             <div className="flex items-start space-x-3">
-              <Calendar className="mt-1 h-5 w-5 text-gray-400" />
               <div>
-                <p className="text-sm text-gray-400">Created At</p>
-                <p className="text-sm font-medium text-gray-200">{formatDate(order.createdAt)}</p>
+                <p className="text-sm text-main-white">Created At</p>
+                <p className="text-sm font-medium text-main-grey">{formatDate(order.createdAt)}</p>
               </div>
             </div>
             {order.startedAt && (
               <div className="flex items-start space-x-3">
-                <Calendar className="mt-1 h-5 w-5 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-400">Started At</p>
-                  <p className="text-sm font-medium text-gray-200">{formatDate(order.startedAt)}</p>
+                  <p className="text-sm text-main-white">Started At</p>
+                  <p className="text-sm font-medium text-main-grey">{formatDate(order.startedAt)}</p>
+                </div>
+              </div>
+            )}
+            {deadline && (
+              <div className="flex items-start space-x-3">
+                <div>
+                  <p className="text-sm text-main-white">Deadline</p>
+                  <p className="text-sm font-medium text-main-grey">{formatDate(deadline.toISOString())}</p>
+                  {order.freezedTime && (
+                    <p className="text-xs text-main-grey">Includes freeze time: {order.freezedTime}</p>
+                  )}
                 </div>
               </div>
             )}
             {order.disputedAt && (
               <div className="flex items-start space-x-3">
-                <AlertCircle className="mt-1 h-5 w-5 text-red-400" />
                 <div>
-                  <p className="text-sm text-gray-400">Disputed At</p>
-                  <p className="text-sm font-medium text-red-300">{formatDate(order.disputedAt)}</p>
+                  <p className="text-sm text-main-white">Disputed At</p>
+                  <p className="text-sm font-medium text-main-grey">{formatDate(order.disputedAt)}</p>
                 </div>
               </div>
             )}
             <div className="flex items-start space-x-3">
-              <DollarSign className="mt-1 h-5 w-5 text-gray-400" />
               <div>
-                <p className="text-sm text-gray-400">Escrow Status</p>
-                <Badge className={order.isEscrowReleased ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>
-                  {order.isEscrowReleased ? "Released" : "Held"}
+                <p className="text-sm text-main-white">Escrow Status</p>
+                <Badge className={order.isEscrowReleased ? "border-green-500 bg-green-500/20 text-green-400" : "border-blue-500 bg-blue-500/20 text-blue-400"}>
+                  {order.isEscrowReleased ? "PAID OUT" : "IN ESCROW"}
                 </Badge>
               </div>
             </div>
@@ -110,7 +153,6 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
         <Card className="border-gray-700 bg-gray-800/50">
           <CardHeader>
             <CardTitle className="flex items-center text-lg text-gray-100">
-              <User className="mr-2 h-5 w-5" />
               Client
             </CardTitle>
           </CardHeader>
@@ -127,7 +169,7 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
               </div>
               <div>
                 <p className="font-medium text-gray-200">{client?.displayName || "Unknown"}</p>
-                <p className="text-sm text-gray-400">Client ID: {client?.id.slice(-8)}</p>
+                <p className="text-sm text-gray-400">{client?.email}</p>
               </div>
             </div>
           </CardContent>
@@ -137,7 +179,6 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
         <Card className="border-gray-700 bg-gray-800/50">
           <CardHeader>
             <CardTitle className="flex items-center text-lg text-gray-100">
-              <Briefcase className="mr-2 h-5 w-5" />
               Provider (Artist)
             </CardTitle>
           </CardHeader>
@@ -154,7 +195,7 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
               </div>
               <div>
                 <p className="font-medium text-gray-200">{provider?.stageName || "Unknown"}</p>
-                <p className="text-sm text-gray-400">Artist ID: {provider?.id.slice(-8)}</p>
+                <p className="text-sm text-gray-400">{provider?.email}</p>
               </div>
             </div>
           </CardContent>
@@ -172,7 +213,7 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
         <CardContent className="space-y-4">
           <div>
             <h3 className="text-lg font-semibold text-gray-100">{packageInfo?.packageName}</h3>
-            <p className="text-2xl font-bold text-blue-400">{formatCurrency(packageInfo?.amount || 0)}</p>
+            <p className="text-2xl font-bold text-blue-400">{formatCurrencyVND(packageInfo?.amount || 0)} {packageInfo?.currency}</p>
           </div>
           <Separator className="bg-gray-700" />
           <div className="grid gap-4 md:grid-cols-3">
@@ -186,7 +227,7 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
             </div>
             <div>
               <p className="text-sm text-gray-400">Used Revisions</p>
-              <p className="font-medium text-gray-200">{order.revisionCount}</p>
+              <p className="font-medium text-gray-200">{Math.max(0, order.revisionCount || 0)}</p>
             </div>
           </div>
           {packageInfo?.serviceDetails && packageInfo.serviceDetails.length > 0 && (
@@ -212,7 +253,6 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
       <Card className="border-gray-700 bg-gray-800/50">
         <CardHeader>
           <CardTitle className="flex items-center text-lg text-gray-100">
-            <CreditCard className="mr-2 h-5 w-5" />
             Payment Information
           </CardTitle>
         </CardHeader>
@@ -221,7 +261,7 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
             <div>
               <p className="text-sm text-gray-400">Total Amount</p>
               <p className="text-xl font-bold text-gray-100">
-                {formatCurrency(payment?.amount || 0)}
+                {formatCurrencyVND(payment?.amount || 0)} {payment?.currency}
               </p>
             </div>
             <div>
@@ -269,10 +309,27 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
               {order.deliveries.map((delivery, index) => (
                 <div key={index} className="rounded-lg border border-gray-700 bg-gray-900/50 p-4">
                   <div className="mb-2 flex items-center justify-between">
-                    <Badge>Revision #{delivery.revisionNumber}</Badge>
+                    <Badge variant="ekofy">Revision #{delivery.revisionNumber}</Badge>
                     <span className="text-sm text-gray-400">{formatDate(delivery.deliveredAt)}</span>
                   </div>
-                  <p className="mb-2 text-sm text-gray-300">{delivery.notes}</p>
+                  <p className="mb-2 text-sm text-gray-300">Notes: {delivery.notes}</p>
+                  
+                  {/* Delivery File */}
+                  {delivery.deliveryFileUrl && (
+                    <div className="mb-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleFileAccess(delivery.deliveryFileUrl!)}
+                        className="flex items-center gap-2 border-gray-600 text-blue-400 hover:bg-gray-800 hover:text-blue-300"
+                      >
+                        <FileIcon className="h-4 w-4" />
+                        <span>View Delivery File</span>
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
                   {delivery.clientFeedback && (
                     <div className="mt-2 rounded bg-gray-800 p-2">
                       <p className="text-xs text-gray-400">Client Feedback:</p>

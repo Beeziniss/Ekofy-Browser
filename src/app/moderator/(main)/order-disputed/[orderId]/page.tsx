@@ -5,13 +5,13 @@ import { OrderDetailView } from "@/modules/moderator/order-disputed/ui/view";
 import { notFound } from "next/navigation";
 
 interface OrderDetailPageProps {
-  params: {
+  params: Promise<{
     orderId: string;
-  };
+  }>;
 }
 
 const OrderDetailPage = async ({ params }: OrderDetailPageProps) => {
-  const { orderId } = params;
+  const { orderId } = await params;
 
   if (!orderId) {
     notFound();

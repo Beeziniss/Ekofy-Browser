@@ -1,16 +1,41 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { OrderDisputedStats, OrderDisputedTableWrapper } from "../component";
+import { OrderDisputedTableWrapper } from "../component";
 import { moderatorDisputedPackageOrdersOptions } from "@/gql/options/moderator-options";
 import { toast } from "sonner";
 import { PackageOrderItem } from "@/types";
 
 export function OrderDisputedSection() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const currentPage = parseInt(searchParams.get("page") || "1");
-  const pageSize = parseInt(searchParams.get("pageSize") || "10");
+  
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchParams.get("search") || "");
+  const pageSize = 10;
+
+  // Sync URL params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (currentPage > 1) params.set("page", currentPage.toString());
+    if (debouncedSearchTerm) params.set("search", debouncedSearchTerm);
+    
+    const queryString = params.toString();
+    router.replace(`/moderator/order-disputed${queryString ? `?${queryString}` : ""}`, { scroll: false });
+  }, [currentPage, debouncedSearchTerm, router]);
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const {
     data: ordersData,
@@ -18,10 +43,17 @@ export function OrderDisputedSection() {
     error,
   } = useQuery(moderatorDisputedPackageOrdersOptions(currentPage, pageSize));
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+  };
+
   if (isLoading && !ordersData) {
     return (
       <div className="space-y-6">
-        <OrderDisputedStats />
         <div className="flex h-64 items-center justify-center rounded-lg border border-gray-700 bg-gray-800/50">
           <div className="text-gray-400">Loading disputed orders...</div>
         </div>
@@ -33,7 +65,6 @@ export function OrderDisputedSection() {
     toast.error("Failed to load disputed orders");
     return (
       <div className="space-y-6">
-        <OrderDisputedStats />
         <div className="flex h-64 items-center justify-center rounded-lg border border-gray-700 bg-gray-800/50">
           <div className="text-red-400">Error loading orders: {error.message}</div>
         </div>
@@ -45,21 +76,8 @@ export function OrderDisputedSection() {
   const totalCount = ordersData?.totalCount || 0;
   const pageInfo = ordersData?.pageInfo;
 
-  // Calculate stats from disputed orders
-  const stats = {
-    totalDisputed: totalCount,
-    pendingResolution: totalCount, // All disputed orders are pending resolution
-    resolvedToday: 0, // TODO: Calculate from resolved orders today
-    totalAmount: orders.reduce((sum, order) => {
-      const payment = order.paymentTransaction?.[0];
-      return sum + (payment?.amount || 0);
-    }, 0),
-  };
-
   return (
     <div className="space-y-6">
-      <OrderDisputedStats {...stats} />
-
       <OrderDisputedTableWrapper
         orders={orders}
         totalCount={totalCount}
@@ -67,6 +85,9 @@ export function OrderDisputedSection() {
         pageSize={pageSize}
         hasNextPage={pageInfo?.hasNextPage || false}
         hasPreviousPage={pageInfo?.hasPreviousPage || false}
+        onPageChange={handlePageChange}
+        onSearchChange={handleSearch}
+        searchTerm={searchTerm}
       />
     </div>
   );

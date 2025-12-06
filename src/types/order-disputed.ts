@@ -10,6 +10,7 @@ export interface PackageOrderItem {
   package: Array<{
     packageName: string;
     amount: number;
+    currency: string;
   }>;
   client: Array<{
     displayName: string;
@@ -36,6 +37,7 @@ export interface PackageOrderDetail {
   disputedAt?: string | null;
   completedAt?: string | null;
   createdAt: string;
+  freezedTime?: string | null;
   platformFeePercentage: number;
   artistFeePercentage: number;
   isEscrowReleased: boolean;
@@ -46,16 +48,19 @@ export interface PackageOrderDetail {
     estimateDeliveryDays: number;
     maxRevision: number;
     serviceDetails: Array<{ value: string }>;
+    currency: string;
   }>;
   client: Array<{
     id: string;
     displayName: string;
     avatarImage: string | null;
+    email: string;
   }>;
   provider: Array<{
     id: string;
     stageName: string;
     avatarImage: string | null;
+    email: string;
   }>;
   paymentTransaction: Array<{
     id: string;

@@ -55,10 +55,11 @@ export function OrderDetailSection({ orderId }: OrderDetailSectionProps) {
 
       {/* Right side - Actions (1/3 width) */}
       <div className="lg:col-span-1">
-        <div className="sticky top-6">
+        <div className="sticky top-20">
           <OrderDetailActions
             orderId={order.id}
             orderAmount={payment?.amount || 0}
+            currency={payment?.currency || "USD"}
           />
         </div>
       </div>

@@ -3,15 +3,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, Scale } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { RefundModal } from "./refund-modal";
 
 interface OrderDetailActionsProps {
   orderId: string;
   orderAmount: number;
+  currency?: string;
 }
 
-export function OrderDetailActions({ orderId, orderAmount }: OrderDetailActionsProps) {
+export function OrderDetailActions({ orderId, orderAmount, currency }: OrderDetailActionsProps) {
   const [showRefundModal, setShowRefundModal] = useState(false);
 
   return (
@@ -19,7 +20,6 @@ export function OrderDetailActions({ orderId, orderAmount }: OrderDetailActionsP
       <Card className="border-gray-700 bg-gray-800/50">
         <CardHeader>
           <CardTitle className="flex items-center text-lg text-gray-100">
-            <Scale className="mr-2 h-5 w-5" />
             Moderator Actions
           </CardTitle>
         </CardHeader>
@@ -40,10 +40,9 @@ export function OrderDetailActions({ orderId, orderAmount }: OrderDetailActionsP
           <div className="space-y-2">
             <Button
               onClick={() => setShowRefundModal(true)}
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-main-white"
               size="lg"
             >
-              <Scale className="mr-2 h-4 w-4" />
               Process Refund
             </Button>
             <p className="text-center text-xs text-gray-400">
@@ -58,6 +57,7 @@ export function OrderDetailActions({ orderId, orderAmount }: OrderDetailActionsP
         onClose={() => setShowRefundModal(false)}
         orderId={orderId}
         orderAmount={orderAmount}
+        currency={currency}
       />
     </>
   );

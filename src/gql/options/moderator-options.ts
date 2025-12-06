@@ -17,6 +17,7 @@ import {
   PackageOrderFilterInput,
   PackageOrderSortInput,
   PackageOrderStatus,
+  SortEnumType,
   // PaginatedDataOfPendingArtistPackageResponseFilterInput,
 } from "@/gql/graphql";
 import {
@@ -451,12 +452,14 @@ export const moderatorDisputedPackageOrdersOptions = (
         where: {
           status: { eq: PackageOrderStatus.Disputed },
         },
-        order,
+        order : [ { createdAt: SortEnumType.Desc } ],
       });
 
       return result.packageOrders;
     },
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: false, // Prevent refetch on mount
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
   });
 
 // Package Order Detail query options for moderator
@@ -473,5 +476,7 @@ export const moderatorPackageOrderDetailOptions = (orderId: string) =>
       return result.packageOrders?.items?.[0] || null;
     },
     enabled: !!orderId,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: false, // Prevent refetch on mount
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
   });

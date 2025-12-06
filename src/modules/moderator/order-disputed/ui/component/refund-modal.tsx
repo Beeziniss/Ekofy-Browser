@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { useRefundPartially } from "@/gql/client-mutation-options/moderator-mutation";
 import { toast } from "sonner";
-import { formatCurrency } from "@/utils/format-currency";
+import { formatCurrencyVND } from "@/utils/format-currency";
 import { Loader2 } from "lucide-react";
 
 interface RefundModalProps {
@@ -24,9 +24,10 @@ interface RefundModalProps {
   onClose: () => void;
   orderId: string;
   orderAmount: number;
+  currency?: string;
 }
 
-export function RefundModal({ open, onClose, orderId, orderAmount }: RefundModalProps) {
+export function RefundModal({ open, onClose, orderId, orderAmount, currency }: RefundModalProps) {
   const router = useRouter();
   const [clientPercentage, setClientPercentage] = useState(50);
   const [artistPercentage, setArtistPercentage] = useState(50);
@@ -63,8 +64,12 @@ export function RefundModal({ open, onClose, orderId, orderAmount }: RefundModal
     );
   };
 
-  const clientAmount = (orderAmount * clientPercentage) / 100;
-  const artistAmount = (orderAmount * artistPercentage) / 100;
+  // Calculate amounts after deducting 10% platform fee
+  const platformFeePercentage = 10;
+  const amountAfterPlatformFee = orderAmount * (1 - platformFeePercentage / 100);
+  const clientAmount = (amountAfterPlatformFee * clientPercentage) / 100;
+  const artistAmount = (amountAfterPlatformFee * artistPercentage) / 100;
+  const platformFeeAmount = orderAmount * (platformFeePercentage / 100);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -78,9 +83,19 @@ export function RefundModal({ open, onClose, orderId, orderAmount }: RefundModal
 
         <div className="space-y-6 py-4">
           {/* Total Amount Display */}
-          <div className="rounded-lg border border-gray-700 bg-gray-900/50 p-4">
-            <p className="text-sm text-gray-400">Total Order Amount</p>
-            <p className="text-2xl font-bold text-gray-100">{formatCurrency(orderAmount)}</p>
+          <div className="rounded-lg border border-gray-700 bg-gray-900/50 p-4 space-y-2">
+            <div className="flex justify-between">
+              <p className="text-sm text-gray-400">Total Order Amount</p>
+              <p className="text-lg font-semibold text-gray-100">{formatCurrencyVND(orderAmount)} {currency?.toUpperCase()}</p>
+            </div>
+            <div className="flex justify-between border-t border-gray-700 pt-2">
+              <p className="text-sm text-gray-400">Platform Fee (10%)</p>
+              <p className="text-sm font-medium text-red-400">- {formatCurrencyVND(platformFeeAmount)} {currency?.toUpperCase()}</p>
+            </div>
+            <div className="flex justify-between border-t border-gray-700 pt-2">
+              <p className="text-sm font-medium text-gray-300">Available for Refund</p>
+              <p className="text-xl font-bold text-blue-400">{formatCurrencyVND(amountAfterPlatformFee)} {currency?.toUpperCase()}</p>
+            </div>
           </div>
 
           {/* Client Refund */}
@@ -109,7 +124,7 @@ export function RefundModal({ open, onClose, orderId, orderAmount }: RefundModal
               step={1}
               className="w-full"
             />
-            <p className="text-right text-sm font-medium text-blue-400">{formatCurrency(clientAmount)}</p>
+            <p className="text-right text-sm font-medium text-blue-400">{formatCurrencyVND(clientAmount)} {currency?.toUpperCase()}</p>
           </div>
 
           {/* Artist Payment */}
@@ -138,7 +153,7 @@ export function RefundModal({ open, onClose, orderId, orderAmount }: RefundModal
               step={1}
               className="w-full"
             />
-            <p className="text-right text-sm font-medium text-green-400">{formatCurrency(artistAmount)}</p>
+            <p className="text-right text-sm font-medium text-green-400">{formatCurrencyVND(artistAmount)} {currency?.toUpperCase()}</p>
           </div>
 
           {/* Validation Message */}
@@ -156,7 +171,7 @@ export function RefundModal({ open, onClose, orderId, orderAmount }: RefundModal
           <Button
             onClick={handleConfirm}
             disabled={isPending || clientPercentage + artistPercentage !== 100}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-main-blue hover:bg-blue-700 text-main-white"
           >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Confirm Refund
