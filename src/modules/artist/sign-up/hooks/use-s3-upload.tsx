@@ -12,7 +12,7 @@ export const useS3Upload = () => {
   const uploadFile = async (file: File, filePath: FilePath = FilePath.NATIONS): Promise<UploadResult> => {
     // Validate file type
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-    
+
     if (!allowedTypes.includes(file.type)) {
       throw new Error("Only JPEG, PNG, and WEBP image files are allowed");
     }
@@ -70,10 +70,7 @@ export const useS3Upload = () => {
     }
   };
 
-  const uploadMultipleFiles = async (
-    files: File[],
-    filePath: FilePath = FilePath.NATIONS
-  ): Promise<UploadResult[]> => {
+  const uploadMultipleFiles = async (files: File[], filePath: FilePath = FilePath.NATIONS): Promise<UploadResult[]> => {
     const results: UploadResult[] = [];
 
     for (const file of files) {

@@ -108,7 +108,7 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href={"/"}>
+                <Link href={"/home"}>
                   <HomeIcon />
                   Home
                 </Link>

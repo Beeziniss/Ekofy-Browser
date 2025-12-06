@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { FilePath } from "@/types/file";
 
 const deliveryFormSchema = z.object({
-  notes: z.string().optional(),
+  notes: z.string().max(1000, "Notes only allow up to 1000 characters").optional(),
 });
 
 type DeliveryFormValues = z.infer<typeof deliveryFormSchema>;

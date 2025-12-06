@@ -51,8 +51,8 @@ export const TrackDetailViewQuery = graphql(`
 `);
 
 export const TrackFavoriteQuery = graphql(`
-  query TrackFavorite($take: Int!) {
-    favoriteTracks(take: $take, order: { createdAt: DESC }) {
+  query TrackFavorite($take: Int!, $skip: Int!) {
+    favoriteTracks(take: $take, skip: $skip, order: { createdAt: DESC }) {
       totalCount
       items {
         id
@@ -66,6 +66,7 @@ export const TrackFavoriteQuery = graphql(`
           }
         }
         checkTrackInFavorite
+        createdAt
       }
     }
   }
