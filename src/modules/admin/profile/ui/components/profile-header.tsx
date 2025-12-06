@@ -1,8 +1,6 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Edit } from "lucide-react";
 import { UserProfile } from "@/types/profile";
 
 interface ProfileHeaderProps {
@@ -10,7 +8,7 @@ interface ProfileHeaderProps {
   onEditClick: () => void;
 }
 
-const ProfileHeader = ({ userProfile, onEditClick }: ProfileHeaderProps) => {
+const ProfileHeader = ({ userProfile }: ProfileHeaderProps) => {
   const getInitials = (email: string) => {
     const name = email.split("@")[0];
     return name
@@ -39,7 +37,8 @@ const ProfileHeader = ({ userProfile, onEditClick }: ProfileHeaderProps) => {
         </div>
       </div>
 
-      <Button
+      {/* Edit button hidden as per requirement */}
+      {/* <Button
         onClick={onEditClick}
         variant="destructive"
         size="lg"
@@ -47,7 +46,7 @@ const ProfileHeader = ({ userProfile, onEditClick }: ProfileHeaderProps) => {
       >
         <Edit className="h-4 w-4" />
         Edit
-      </Button>
+      </Button> */}
     </div>
   );
 };

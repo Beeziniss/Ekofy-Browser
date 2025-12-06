@@ -82,7 +82,7 @@ export const CustomPagination: React.FC<CustomPaginationProps> = ({
     <div
       className={`flex items-center justify-between ${className} ${isLoading ? "pointer-events-none opacity-50" : ""}`}
     >
-      <div className="text-sm text-gray-400">
+      <div className="text-sm text-gray-400 whitespace-nowrap">
         Showing {startItem} to {endItem} of {totalCount} results
       </div>
 
@@ -109,7 +109,9 @@ export const CustomPagination: React.FC<CustomPaginationProps> = ({
                 <PaginationLink
                   onClick={() => onPageChange(pageNum)}
                   isActive={pageNum === currentPage}
-                  className="cursor-pointer hover:bg-gray-700"
+                  className={`cursor-pointer  ${
+                    pageNum === currentPage ? "bg-white hover:bg-white" : ""
+                  }`}
                 >
                   {pageNum}
                 </PaginationLink>
@@ -121,7 +123,7 @@ export const CustomPagination: React.FC<CustomPaginationProps> = ({
             <PaginationNext
               onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
               className={
-                currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-gray-700"
+                currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer "
               }
             />
           </PaginationItem>

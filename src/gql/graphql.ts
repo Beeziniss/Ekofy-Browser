@@ -3488,6 +3488,7 @@ export type PackageOrder = {
   package: Array<ArtistPackage>;
   paymentTransaction: Array<PaymentTransaction>;
   paymentTransactionId: Scalars['String']['output'];
+  payoutTransactionId?: Maybe<Scalars['String']['output']>;
   platformFeePercentage: Scalars['Decimal']['output'];
   provider: Array<Artist>;
   providerId: Scalars['String']['output'];
@@ -3571,6 +3572,7 @@ export type PackageOrderFilterInput = {
   or?: InputMaybe<Array<PackageOrderFilterInput>>;
   overdueJobId?: InputMaybe<StringOperationFilterInput>;
   paymentTransactionId?: InputMaybe<StringOperationFilterInput>;
+  payoutTransactionId?: InputMaybe<StringOperationFilterInput>;
   platformFeePercentage?: InputMaybe<DecimalOperationFilterInput>;
   providerId?: InputMaybe<StringOperationFilterInput>;
   requirements?: InputMaybe<StringOperationFilterInput>;
@@ -3602,6 +3604,7 @@ export type PackageOrderSortInput = {
   isEscrowReleased?: InputMaybe<SortEnumType>;
   overdueJobId?: InputMaybe<SortEnumType>;
   paymentTransactionId?: InputMaybe<SortEnumType>;
+  payoutTransactionId?: InputMaybe<SortEnumType>;
   platformFeePercentage?: InputMaybe<SortEnumType>;
   providerId?: InputMaybe<SortEnumType>;
   requirements?: InputMaybe<SortEnumType>;

@@ -9,6 +9,8 @@ import {
   LogOut,
   MessageCircleIcon,
   Sparkles,
+  FileTextIcon,
+  ReceiptIcon,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,6 +22,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -133,12 +138,26 @@ export function NavUser({
                   Account
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={"/artist/studio/transactions/payment-history"}>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 [&_svg]:text-muted-foreground gap-2">
                   <CreditCard />
                   Billing
-                </Link>
-              </DropdownMenuItem>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem asChild>
+                    <Link href="/artist/studio/transactions/transaction-history">
+                      <ReceiptIcon />
+                      Transaction History
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/artist/studio/transactions/invoices">
+                      <FileTextIcon />
+                      My Invoices
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
               <DropdownMenuItem>
                 <Bell />
                 Notifications
