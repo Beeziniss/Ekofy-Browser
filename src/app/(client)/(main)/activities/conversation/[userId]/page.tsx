@@ -1,7 +1,4 @@
-import { listenerOptions, orderPackageOptions } from "@/gql/options/client-options";
 import ActivityConversationView from "@/modules/client/activities/ui/views/activity-conversation-view";
-import { getQueryClient } from "@/providers/get-query-client";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 interface PageProps {
   params: Promise<{ userId: string }>;
@@ -9,18 +6,8 @@ interface PageProps {
 
 const Page = async ({ params }: PageProps) => {
   const { userId } = await params;
-  const queryClient = getQueryClient();
 
-  await Promise.all([
-    queryClient.prefetchQuery(orderPackageOptions({ currentUserId: userId, skip: 0, take: 10, isArtist: false })),
-    queryClient.prefetchQuery(listenerOptions(userId, userId)),
-  ]);
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ActivityConversationView userId={userId} />
-    </HydrationBoundary>
-  );
+  return <ActivityConversationView userId={userId} />;
 };
 
 export default Page;

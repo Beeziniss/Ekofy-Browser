@@ -198,7 +198,7 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
                 )}
               />
 
-              <div className="space-y-4">
+             <div className="space-y-4">
                 <FormLabel>
                   Services detail <span className="text-red-500">*</span>
                 </FormLabel>
@@ -255,9 +255,9 @@ const CreatePackageService = ({ onSubmit, onCancel, isLoading = false }: CreateP
                         onClick={() => handleRemoveServiceDetail(index)}
                         className="border-red-600 text-red-400 hover:text-red-300 mt-0"
                       >
-                        <X className="h-4 w-4" />
+                         <X className="h-4 w-4" />
                       </Button>
-                    )}
+                   )}
                   </div>
                 ))}
                 <Button

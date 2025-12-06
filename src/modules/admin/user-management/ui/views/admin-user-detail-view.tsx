@@ -1,8 +1,8 @@
 "use client";
 
 import { graphql } from "@/gql";
-import { UserManagementLayout } from "../layout";
-import { UserDetailSection } from "../section";
+import { UserManagementLayout } from "../layouts";
+import { UserDetailSection } from "../sections";
 
 interface AdminUserDetailViewProps {
   userId: string;

@@ -301,7 +301,6 @@ export const requestHubOptions = (skip: number = 0, take: number = 20, where?: R
         items: requests.items,
       };
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
 export const requestByIdOptions = (requestId: string) =>
@@ -318,7 +317,6 @@ export const requestByIdOptions = (requestId: string) =>
       };
     },
     enabled: !!requestId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
 export const searchRequestsOptions = (
@@ -348,7 +346,6 @@ export const searchRequestsOptions = (
       };
     },
     enabled: !!searchTerm.trim(),
-    staleTime: 1 * 60 * 1000, // 1 minute
   });
 
 export const userForRequestsOptions = (userId: string) =>
@@ -359,7 +356,6 @@ export const userForRequestsOptions = (userId: string) =>
       return result.users?.items?.[0] || null;
     },
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
 export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: RequestFilterInput) =>
@@ -382,7 +378,6 @@ export const myRequestsOptions = (skip: number = 0, take: number = 20, where?: R
         items: requests.items,
       };
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
 // CONVERSATION QUERIES
@@ -401,8 +396,6 @@ export const conversationListOptions = (userId: string, status?: ConversationSta
       const result = await execute(ConversationQuery, { where });
       return result;
     },
-    staleTime: 3 * 60 * 1000, // 3 minutes
-    gcTime: 5 * 60 * 1000, // 5 minutes
     enabled: !!userId,
   });
 
@@ -465,8 +458,6 @@ export const orderPackageOptions = ({
       const result = await execute(OrderPackageQuery, { where, skip, take });
       return result;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
     enabled: !!(currentUserId && otherUserId),
   });
 

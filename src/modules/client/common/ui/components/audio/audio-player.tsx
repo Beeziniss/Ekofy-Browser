@@ -6,10 +6,7 @@ import { useEffect, useRef, useCallback } from "react";
 import Hls from "hls.js";
 import { getAccessTokenFromLocalStorage } from "@/utils/auth-utils";
 import { useMutation } from "@tanstack/react-query";
-import {
-  upsertStreamCountMutationOptions,
-  upsertTopTrackCountMutationOptions,
-} from "@/gql/options/client-mutation-options";
+import { upsertStreamCountMutationOptions } from "@/gql/options/client-mutation-options";
 
 const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -23,7 +20,6 @@ const AudioPlayer = () => {
 
   // Mutation hooks for stream count tracking
   const upsertStreamCountMutation = useMutation(upsertStreamCountMutationOptions);
-  const upsertTopTrackCountMutation = useMutation(upsertTopTrackCountMutationOptions);
 
   // Helper function to safely get current playback state
   const getCurrentPlaybackState = useCallback(() => {
@@ -311,10 +307,7 @@ const AudioPlayer = () => {
         thirtySecondThresholdReachedRef.current.add(currentTrack.id);
 
         // Execute both mutations simultaneously
-        Promise.allSettled([
-          upsertStreamCountMutation.mutateAsync(currentTrack.id),
-          upsertTopTrackCountMutation.mutateAsync(currentTrack.id),
-        ]).then((results) => {
+        Promise.allSettled([upsertStreamCountMutation.mutateAsync(currentTrack.id)]).then((results) => {
           results.forEach((result, index) => {
             if (result.status === "rejected") {
               const mutationType = index === 0 ? "stream count" : "top track count";

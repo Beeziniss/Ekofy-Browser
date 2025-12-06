@@ -2653,7 +2653,6 @@ export type MutationInitialization = {
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
   upsertStreamCount: Scalars['Boolean']['output'];
-  upsertTopTrackCount: Scalars['Boolean']['output'];
 };
 
 
@@ -3222,11 +3221,6 @@ export type MutationInitializationUpsertStreamCountArgs = {
   trackId: Scalars['String']['input'];
 };
 
-
-export type MutationInitializationUpsertTopTrackCountArgs = {
-  trackId: Scalars['String']['input'];
-};
-
 export type Notification = {
   __typename?: 'Notification';
   action: NotificationActionType;
@@ -3494,6 +3488,7 @@ export type PackageOrder = {
   package: Array<ArtistPackage>;
   paymentTransaction: Array<PaymentTransaction>;
   paymentTransactionId: Scalars['String']['output'];
+  payoutTransactionId?: Maybe<Scalars['String']['output']>;
   platformFeePercentage: Scalars['Decimal']['output'];
   provider: Array<Artist>;
   providerId: Scalars['String']['output'];
@@ -3577,6 +3572,7 @@ export type PackageOrderFilterInput = {
   or?: InputMaybe<Array<PackageOrderFilterInput>>;
   overdueJobId?: InputMaybe<StringOperationFilterInput>;
   paymentTransactionId?: InputMaybe<StringOperationFilterInput>;
+  payoutTransactionId?: InputMaybe<StringOperationFilterInput>;
   platformFeePercentage?: InputMaybe<DecimalOperationFilterInput>;
   providerId?: InputMaybe<StringOperationFilterInput>;
   requirements?: InputMaybe<StringOperationFilterInput>;
@@ -3608,6 +3604,7 @@ export type PackageOrderSortInput = {
   isEscrowReleased?: InputMaybe<SortEnumType>;
   overdueJobId?: InputMaybe<SortEnumType>;
   paymentTransactionId?: InputMaybe<SortEnumType>;
+  payoutTransactionId?: InputMaybe<SortEnumType>;
   platformFeePercentage?: InputMaybe<SortEnumType>;
   providerId?: InputMaybe<SortEnumType>;
   requirements?: InputMaybe<SortEnumType>;
@@ -7137,13 +7134,6 @@ export type UpsertStreamCountMutationVariables = Exact<{
 
 export type UpsertStreamCountMutation = { __typename?: 'MutationInitialization', upsertStreamCount: boolean };
 
-export type UpsertTopTrackCountMutationVariables = Exact<{
-  trackId: Scalars['String']['input'];
-}>;
-
-
-export type UpsertTopTrackCountMutation = { __typename?: 'MutationInitialization', upsertTopTrackCount: boolean };
-
 export type SubmitDeliveryMutationVariables = Exact<{
   request: SubmitDeliveryRequestInput;
 }>;
@@ -8795,11 +8785,6 @@ export const UpsertStreamCountDocument = new TypedDocumentString(`
   upsertStreamCount(trackId: $trackId)
 }
     `) as unknown as TypedDocumentString<UpsertStreamCountMutation, UpsertStreamCountMutationVariables>;
-export const UpsertTopTrackCountDocument = new TypedDocumentString(`
-    mutation UpsertTopTrackCount($trackId: String!) {
-  upsertTopTrackCount(trackId: $trackId)
-}
-    `) as unknown as TypedDocumentString<UpsertTopTrackCountMutation, UpsertTopTrackCountMutationVariables>;
 export const SubmitDeliveryDocument = new TypedDocumentString(`
     mutation SubmitDelivery($request: SubmitDeliveryRequestInput!) {
   submitDelivery(request: $request)

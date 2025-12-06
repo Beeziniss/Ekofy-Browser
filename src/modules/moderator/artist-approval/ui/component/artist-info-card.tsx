@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
 import { Input } from "@/components/ui/input";
 import { DotIcon } from "lucide-react";
 import Image from "next/image";
 import { UserManagementArtist } from "@/types/user-management";
+import React from "react";
 
 // Extended artist interface for approval process with additional ID card properties
 interface ArtistApprovalData extends UserManagementArtist {

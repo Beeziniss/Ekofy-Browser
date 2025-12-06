@@ -283,7 +283,7 @@ const TrackCommentUser = ({ thread, trackId, level = 0, listenerData, artistData
           <div className="mt-3 flex items-center gap-x-3">
             <Avatar className="size-10">
               <AvatarImage
-                src={
+                 src={
                   listenerData?.listeners?.items?.[0]?.avatarImage ||
                   artistData?.artists?.items?.[0]?.avatarImage ||
                   undefined

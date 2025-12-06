@@ -7,6 +7,7 @@ import { VerificationHeader, IDUploadComponent, PersonalInformationComponent } f
 import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import { useFPTAI } from "../../hooks/use-fpt-ai";
 import { useS3Upload } from "../../hooks/use-s3-upload";
+// import { isValidPhoneNumber, formatPhoneNumber } from "@/utils/signup-utils";
 import { toast } from "sonner";
 import { validateImageFile } from "@/utils/cloudinary-utils";
 import { convertDateToISO, convertISOToDisplayDate } from "@/utils/signup-utils";
@@ -29,9 +30,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     isProcessingCCCD,
     setCCCDFrontProcessed,
     setCCCDBackProcessed,
-  } = useArtistSignUpStore();
-  
-  // FPT AI hook (handles CCCD upload)
+  } = useArtistSignUpStore(); // FPT AI hook
   const { isAnalyzing, cccdFrontProcessed, cccdBackProcessed, analyzeFrontSide, analyzeBackSide, parsedData } =
     useFPTAI();
 
@@ -141,8 +140,8 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
   useEffect(() => {
     // Check if we have stored CCCD images from previous step navigation or after FPT AI upload
     if (formData.identityCard?.frontImage) {
-      setFrontIdPreview(formData.identityCard.frontImage);
-      // Mark as processed if we have stored image key
+       setFrontIdPreview(formData.identityCard.frontImage);
+       // Mark as processed if we have stored image key
       if (!frontId) {
         setCCCDFrontProcessed(true);
       }
@@ -155,8 +154,8 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
 
   useEffect(() => {
     if (formData.identityCard?.backImage) {
-      setBackIdPreview(formData.identityCard.backImage);
-      // Mark as processed if we have stored image key
+       setBackIdPreview(formData.identityCard.backImage);
+       // Mark as processed if we have stored image key
       if (!backId) {
         setCCCDBackProcessed(true);
       }
@@ -353,19 +352,20 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
       }
     } else if (type === "back") {
       setBackId(file);
-      
+
       try {
         // Analyze with FPT AI (which will also upload to S3)
         toast.info("Processing back ID image...");
         await analyzeBackSide(file);
+        // Success message and state update are handled in the hook
       } catch (error) {
         console.error("Error processing back side:", error);
         toast.error(error instanceof Error ? error.message : "Error processing back side of ID card");
       }
     } else if (type === "authorization") {
       setAuthorizationLetter(file);
-      
-      try {
+
+       try {
         toast.info("Uploading authorization letter...");
         await uploadFile(file, FilePath.NATIONS);
         

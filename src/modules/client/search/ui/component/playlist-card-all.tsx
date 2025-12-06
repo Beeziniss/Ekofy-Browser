@@ -114,7 +114,7 @@ export const PlaylistCardAll = ({ playlist }: PlaylistCardAllProps) => {
               )}
             </Button>
           )}
-
+          
           {playlist.isPublic && !isOwnPlaylist && (
             <Button
               onClick={handleFavoriteClick}

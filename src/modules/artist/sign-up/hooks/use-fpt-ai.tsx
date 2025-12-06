@@ -33,7 +33,7 @@ export const useFPTAI = () => {
     setProcessingCCCD(true);
 
     try {
-      // Start both FPT AI analysis and S3 upload in parallel
+     // Start both FPT AI analysis and S3 upload in parallel
       const [fptResponse, s3Result] = await Promise.all([
         fptAIService.analyzeCCCD(imageFile),
         uploadFile(imageFile, FilePath.NATIONS), // Upload to S3
@@ -66,7 +66,7 @@ export const useFPTAI = () => {
       if (currentState.cccdBackProcessed && backResponse) {
         // Get existing back image if already stored
         const existingBackImage = currentState.formData.identityCard?.backImage;
-        await parseCompleteData(fptResponse, backResponse, frontImageKey, existingBackImage);
+         await parseCompleteData(fptResponse, backResponse, frontImageKey, existingBackImage);
       } else {
         // Store just the front image key for now
         updateIdentityCard({ frontImage: frontImageKey });
