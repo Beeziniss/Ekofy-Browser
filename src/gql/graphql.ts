@@ -8605,7 +8605,12 @@ export const SearchTracksDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<SearchTracksQuery, SearchTracksQueryVariables>;
 export const SearchPlaylistsDocument = new TypedDocumentString(`
     query SearchPlaylists($skip: Int, $take: Int, $name: String!) {
-  searchPlaylists(skip: $skip, take: $take, name: $name) {
+  searchPlaylists(
+    skip: $skip
+    take: $take
+    name: $name
+    where: {isPublic: {eq: true}}
+  ) {
     totalCount
     items {
       id

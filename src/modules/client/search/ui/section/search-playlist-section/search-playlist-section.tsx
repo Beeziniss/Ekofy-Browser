@@ -162,17 +162,19 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         />
 
         <div className="absolute bottom-2 left-2 flex items-center gap-x-2">
-          {/* Always show play button for playlists that might have tracks */}
-          <Button
-            onClick={handlePlayPauseClick}
-            className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity`}
-          >
-            {isPlaylistCurrentlyPlaying && isPlaying ? (
-              <PauseIcon className="text-main-dark-bg fill-main-dark-bg size-6" />
-            ) : (
-              <PlayIcon className="text-main-dark-bg fill-main-dark-bg size-6" />
-            )}
-          </Button>
+          {/* Only show play button if playlist has tracks */}
+          {playlist.tracksInfo.length > 0 && (
+            <Button
+              onClick={handlePlayPauseClick}
+              className={`bg-main-white hover:bg-main-white z-10 flex size-12 items-center justify-center rounded-full transition-opacity`}
+            >
+              {isPlaylistCurrentlyPlaying && isPlaying ? (
+                <PauseIcon className="text-main-dark-bg fill-main-dark-bg size-6" />
+              ) : (
+                <PlayIcon className="text-main-dark-bg fill-main-dark-bg size-6" />
+              )}
+            </Button>
+          )}
 
           {/* Show favorite button for public playlists (always show for testing) */}
           {playlist.isPublic && (
