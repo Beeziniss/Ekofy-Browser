@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requestsOptions } from "@/gql/options/listener-request-options";
-import { RequestStatus as GqlRequestStatus, RequestType as GqlRequestType } from "@/gql/graphql";
+import { RequestStatus as GqlRequestStatus, RequestType as GqlRequestType, SortEnumType } from "@/gql/graphql";
 import { useAuthStore } from "@/store";
 import { RequestListItem } from "./request-list-item";
 import { Card, CardContent } from "@/components/ui/card";
@@ -133,7 +134,7 @@ export default function MyRequestsSection() {
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearchValue] = useDebounce(searchValue, 300);
   const [statusFilter, setStatusFilter] = useState<GqlRequestStatus | "ALL">("ALL");
-  const [typeFilter, setTypeFilter] = useState<GqlRequestType | "ALL">("ALL");
+  const [activeTab, setActiveTab] = useState<GqlRequestType>(GqlRequestType.PublicRequest);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -142,12 +143,14 @@ export default function MyRequestsSection() {
   const where = {
     ...(debouncedSearchValue && { title: { contains: debouncedSearchValue } }),
     ...(statusFilter !== "ALL" && { status: { eq: statusFilter } }),
-    ...(typeFilter !== "ALL" && { type: { eq: typeFilter } }),
+    type: { eq: activeTab }, // Always filter by active tab
     ...(user?.userId && { requestUserId: { eq: user.userId } }),
   };
 
+  const order = [{ postCreatedTime: SortEnumType.Desc }, { requestCreatedTime: SortEnumType.Desc }];
+
   // Fetch requests
-  const { data: requestsData, isLoading } = useQuery(requestsOptions(skip, pageSize, where));
+  const { data: requestsData, isLoading } = useQuery(requestsOptions(skip, pageSize, where, order));
 
   const requests = requestsData?.items || [];
   const totalItems = requestsData?.totalCount || 0;
@@ -156,9 +159,9 @@ export default function MyRequestsSection() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchValue, statusFilter, typeFilter]);
+  }, [debouncedSearchValue, statusFilter, activeTab]);
 
-  const hasFilters = searchValue !== "" || statusFilter !== "ALL" || typeFilter !== "ALL";
+  const hasFilters = searchValue !== "" || statusFilter !== "ALL";
 
   // Check if user is authenticated
   if (!user) {
@@ -173,85 +176,83 @@ export default function MyRequestsSection() {
 
   return (
     <div className="space-y-6">
-      {/* Filters Section */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            {/* Search Input */}
-            <div className="relative flex-1 md:max-w-md">
-              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Search requests by title..."
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                className="pl-10"
+      {/* Tabs Section */}
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as GqlRequestType)}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value={GqlRequestType.PublicRequest}>Public Requests</TabsTrigger>
+          <TabsTrigger value={GqlRequestType.DirectRequest}>Direct Requests</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={activeTab} className="space-y-6 mt-6">
+          {/* Filters Section */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                {/* Search Input */}
+                <div className="relative flex-1 md:max-w-md">
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <Input
+                    placeholder="Search requests by title..."
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                {/* Filters */}
+                <div className="flex items-center gap-4">
+                  <Filter className="h-4 w-4 text-gray-400" />
+
+                  {/* Status Filter */}
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(value) => setStatusFilter(value as GqlRequestStatus | "ALL")}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL">All Statuses</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Open}>Open</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Closed}>Closed</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Blocked}>Blocked</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Deleted}>Deleted</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Pending}>Pending</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Confirmed}>Confirmed</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Canceled}>Canceled</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Rejected}>Rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Request List */}
+          {isLoading ? (
+            <RequestListSkeleton count={5} />
+          ) : requests.length === 0 ? (
+            <EmptyState hasFilters={hasFilters} />
+          ) : (
+            <>
+              <div className="space-y-4">
+                {requests.map((request) => (
+                  <RequestListItem key={request.id} request={request} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={totalItems}
+                itemsPerPage={pageSize}
               />
-            </div>
-
-            {/* Filters */}
-            <div className="flex items-center gap-4">
-              <Filter className="h-4 w-4 text-gray-400" />
-
-              {/* Type Filter */}
-              <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value as GqlRequestType | "ALL")}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Types</SelectItem>
-                  <SelectItem value={GqlRequestType.DirectRequest}>Direct Request</SelectItem>
-                  <SelectItem value={GqlRequestType.PublicRequest}>Public Request</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Status Filter */}
-              <Select
-                value={statusFilter}
-                onValueChange={(value) => setStatusFilter(value as GqlRequestStatus | "ALL")}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Statuses</SelectItem>
-                  <SelectItem value={GqlRequestStatus.Open}>Open</SelectItem>
-                  <SelectItem value={GqlRequestStatus.Closed}>Closed</SelectItem>
-                  <SelectItem value={GqlRequestStatus.Blocked}>Blocked</SelectItem>
-                  <SelectItem value={GqlRequestStatus.Deleted}>Deleted</SelectItem>
-                  <SelectItem value={GqlRequestStatus.Pending}>Pending</SelectItem>
-                  <SelectItem value={GqlRequestStatus.Confirmed}>Confirmed</SelectItem>
-                  <SelectItem value={GqlRequestStatus.Canceled}>Canceled</SelectItem>
-                  <SelectItem value={GqlRequestStatus.Rejected}>Rejected</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Request List */}
-      {isLoading ? (
-        <RequestListSkeleton count={5} />
-      ) : requests.length === 0 ? (
-        <EmptyState hasFilters={hasFilters} />
-      ) : (
-        <>
-          <div className="space-y-4">
-            {requests.map((request) => (
-              <RequestListItem key={request.id} request={request} />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            totalItems={totalItems}
-            itemsPerPage={pageSize}
-          />
-        </>
-      )}
+            </>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

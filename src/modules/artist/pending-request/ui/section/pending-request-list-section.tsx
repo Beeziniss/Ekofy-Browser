@@ -10,7 +10,7 @@ import { PendingRequestTable } from "../component/pending-request-table";
 import { PendingRequestPagination } from "../component/pending-request-pagination";
 import { RequestStatus } from "@/gql/graphql";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export function PendingRequestListSection() {
   const [filters, setFilters] = useState({
