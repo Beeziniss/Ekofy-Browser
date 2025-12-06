@@ -131,13 +131,15 @@ const OrderDetailInfoSectionSuspense = () => {
           <div className="flex flex-col">
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-xl font-semibold">Order Details</h3>
-              <OrderActionsDropdown
-                orderId={orderPackageDetail.id}
-                status={orderPackageDetail.status}
-                onSuccess={() => {
-                  // Status has been updated, queries are already invalidated in the component
-                }}
-              />
+              {user?.userId === orderPackageDetail.clientId && (
+                <OrderActionsDropdown
+                  orderId={orderPackageDetail.id}
+                  status={orderPackageDetail.status}
+                  onSuccess={() => {
+                    // Status has been updated, queries are already invalidated in the component
+                  }}
+                />
+              )}
             </div>
             <div className="border-input bg-main-purple/20 flex flex-col gap-y-1.5 rounded-md border p-2">
               <div className="text-main-white line-clamp-1 text-base">{packageData?.packageName}</div>

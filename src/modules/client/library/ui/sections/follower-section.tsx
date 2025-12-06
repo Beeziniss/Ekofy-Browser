@@ -1,17 +1,17 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useState } from "react";
+import { useAuthStore } from "@/store";
+import { SearchIcon } from "lucide-react";
 import { useDebounce } from "use-debounce";
 import { Input } from "@/components/ui/input";
-import { SearchIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { followerInfiniteOptions } from "@/gql/options/client-options";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { followerInfiniteOptions } from "@/gql/options/client-options";
 import InfiniteScroll from "@/modules/shared/ui/components/infinite-scroll";
-import FollowerList from "@/modules/client/follower/ui/components/follower-list";
-import { useAuthStore } from "@/store";
+import FollowerList from "@/modules/client/library/ui/components/follower-list";
 
-const FollowerSection = () => {
+/* const FollowerSection = () => {
   return (
     <Suspense fallback={<FollowerSectionSkeleton />}>
       <FollowerSectionSuspense />
@@ -47,9 +47,9 @@ const FollowerSectionSkeleton = () => {
       </div>
     </div>
   );
-};
+}; */
 
-const FollowerSectionSuspense = () => {
+const FollowerSection = () => {
   const { user } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery.toLowerCase(), 300);

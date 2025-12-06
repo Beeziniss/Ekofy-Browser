@@ -5,7 +5,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { EllipsisVertical, FileIcon, ArrowUpRightIcon, EyeIcon, Edit } from "lucide-react";
 import { orderPackageDetailOptions } from "@/gql/options/client-options";
 import { PackageOrderStatus } from "@/gql/graphql";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -135,8 +135,12 @@ const OrderSubmissionSectionSuspense = ({ orderId }: OrderSubmissionSectionProps
           )}
         </div>
         {deliveries.length > 0 ? (
-          <div className="overflow-x-auto rounded-md border">
+          <div className="overflow-x-auto rounded-md border pb-2">
             <Table>
+              <TableCaption>
+                <strong>FD:</strong> <strong className="text-main-purple/85">First Delivery</strong> (does not count as
+                a revision)
+              </TableCaption>
               <TableHeader>
                 <TableRow>
                   <TableHead>Revision No.</TableHead>
@@ -149,7 +153,7 @@ const OrderSubmissionSectionSuspense = ({ orderId }: OrderSubmissionSectionProps
               <TableBody>
                 {deliveries.map((delivery, index) => (
                   <TableRow key={index}>
-                    <TableCell className="w-32 font-medium">{delivery.revisionNumber || 1}</TableCell>
+                    <TableCell className="w-32 font-medium">{delivery.revisionNumber || "FD"}</TableCell>
                     <TableCell className="w-50">
                       {delivery.deliveryFileUrl ? (
                         <div
