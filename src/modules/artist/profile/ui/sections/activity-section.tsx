@@ -2,24 +2,26 @@
 
 import React from "react";
 import Link from "next/link";
-import { ChevronRightIcon } from "lucide-react";
-import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item";
+import { ChevronRightIcon, ReceiptIcon } from "lucide-react";
+import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
 const ArtistActivitySection = () => {
   return (
-    <div className="pt-0 ">
-      <div className="flex items-end justify-between gap-x-3">
-        <h2 className="text-xl font-bold">My Activity</h2>
+    <div className="rounded-md bg-[#2a2a2a] pb-3">
+      <div className="flex items-end p-4">
+        <h2 className="text-xl font-bold">Billing & Payments</h2>
       </div>
-      <div className="flex flex-col gap-6 pt-8">
-        
-        <Item asChild variant="muted">
+      <div className="flex flex-col">
+        <Item asChild variant="subscription" size={"sm"} className="rounded-none">
           <Link href="/artist/studio/profile/invoices" className="no-underline">
+            <ItemMedia variant={"icon"}>
+              <ReceiptIcon />
+            </ItemMedia>
             <ItemContent>
               <ItemTitle>Invoices</ItemTitle>
             </ItemContent>
             <ItemActions>
-              <ChevronRightIcon className="size-8" />
+              <ChevronRightIcon className="size-5" />
             </ItemActions>
           </Link>
         </Item>
