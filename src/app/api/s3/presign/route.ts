@@ -24,7 +24,6 @@ export async function POST(request: Request) {
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME!,
     Key: key,
-    ChecksumAlgorithm: undefined,
   });
 
   const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 }); // 5 min
