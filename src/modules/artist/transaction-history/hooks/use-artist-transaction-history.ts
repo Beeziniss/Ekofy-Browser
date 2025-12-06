@@ -4,14 +4,14 @@ import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { artistTransactionsOptions } from "@/gql/options/artist-activity-options";
 import { useAuthStore } from "@/store";
-import { PaymentTransactionStatus } from "@/gql/graphql";
+import { TransactionStatus } from "@/gql/graphql";
 
-export function useArtistPaymentHistory() {
+export function useArtistTransactionHistory() {
   const { user } = useAuthStore();
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<PaymentTransactionStatus | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<TransactionStatus | undefined>(undefined);
   const [sortBy, setSortBy] = useState("date-desc");
   const pageSize = 10;
 
@@ -56,7 +56,7 @@ export function useArtistPaymentHistory() {
 
     // Filter by status
     if (statusFilter) {
-      result = result.filter(transaction => transaction?.paymentStatus === statusFilter);
+      result = result.filter(transaction => transaction?.status === statusFilter);
     }
 
     // Sort

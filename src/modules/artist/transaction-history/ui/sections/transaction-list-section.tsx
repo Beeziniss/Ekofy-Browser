@@ -1,10 +1,10 @@
 "use client";
 
-import { useArtistPaymentHistory } from "../../../hooks/use-artist-payment-history";
-import { ArtistPaymentHistoryTable } from "./payment-history-table";
-import { ArtistPaymentHistoryFilters } from "./payment-history-filters";
+import { useArtistTransactionHistory } from "../../hooks/use-artist-transaction-history";
+import { TransactionTable } from "../components/transaction-table";
+import { TransactionFilters } from "../components/transaction-filters";
 
-export function ArtistPaymentHistoryListSection() {
+export function TransactionListSection() {
   const {
     transactions,
     totalCount,
@@ -19,11 +19,11 @@ export function ArtistPaymentHistoryListSection() {
     setSearchTerm,
     setStatusFilter,
     setSortBy,
-  } = useArtistPaymentHistory();
+  } = useArtistTransactionHistory();
 
   return (
-    <div className="space-y-6">
-      <ArtistPaymentHistoryFilters
+    <div className="space-y-4">
+      <TransactionFilters
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         statusFilter={statusFilter}
@@ -32,7 +32,7 @@ export function ArtistPaymentHistoryListSection() {
         onSortChange={setSortBy}
       />
 
-      <ArtistPaymentHistoryTable
+      <TransactionTable
         transactions={transactions}
         isLoading={isLoading}
         isError={isError}

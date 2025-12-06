@@ -1,5 +1,5 @@
 import { artistTransactionByIdOptions } from "@/gql/options/artist-activity-options";
-import TransactionDetailSection from "@/modules/artist/studio/ui/sections/transactions/transaction-detail-section";
+import { ArtistTransactionHistoryDetail } from "@/modules/artist/transaction-history/ui/views";
 import { getQueryClient } from "@/providers/get-query-client";
 
 interface PageProps {
@@ -12,9 +12,7 @@ const ArtistTransactionDetailPage = async ({ params }: PageProps) => {
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery(artistTransactionByIdOptions({ id: transactionId }));
 
-  return (
-    <TransactionDetailSection referenceId={transactionId} backHref="/artist/studio/transactions/payment-history" />
-  );
+  return <ArtistTransactionHistoryDetail referenceId={transactionId} />;
 };
 
 export default ArtistTransactionDetailPage;

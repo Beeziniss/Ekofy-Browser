@@ -1,13 +1,13 @@
-import { ArtistInvoiceDetail } from "@/modules/artist/invoices/ui/views";
+// import { ArtistInvoiceDetail } from "@/modules/artist/invoices/ui/views";
 
-interface PageProps {
-  params: Promise<{ invoiceId: string }>;
-}
+// interface PageProps {
+//   params: Promise<{ invoiceId: string }>;
+// }
 
-const ArtistInvoiceDetailPage = async ({ params }: PageProps) => {
-  const { invoiceId } = await params;
+// const ArtistInvoiceDetailPage = async ({ params }: PageProps) => {
+//   const { invoiceId } = await params;
 
-  return <ArtistInvoiceDetail invoiceId={invoiceId} />;
-};
+//   return <ArtistInvoiceDetail invoiceId={invoiceId} />;
+// };
 
-export default ArtistInvoiceDetailPage;
+// export default ArtistInvoiceDetailPage;

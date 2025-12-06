@@ -145,13 +145,13 @@ export function NavUser({
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem asChild>
-                    <Link href="/artist/studio/transactions/payment-history">
+                    <Link href="/artist/studio/transactions/transaction-history">
                       <ReceiptIcon />
                       Transaction History
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/artist/studio/profile/invoices">
+                    <Link href="/artist/studio/transactions/invoices">
                       <FileTextIcon />
                       My Invoices
                     </Link>

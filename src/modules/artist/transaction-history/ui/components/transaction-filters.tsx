@@ -4,25 +4,25 @@ import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { PaymentTransactionStatus } from "@/gql/graphql";
+import { TransactionStatus } from "@/gql/graphql";
 
-interface ArtistPaymentHistoryFiltersProps {
+interface TransactionFiltersProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  statusFilter?: PaymentTransactionStatus;
-  onStatusChange?: (value: PaymentTransactionStatus | undefined) => void;
+  statusFilter?: TransactionStatus;
+  onStatusChange?: (value: TransactionStatus | undefined) => void;
   sortBy?: string;
   onSortChange?: (value: string) => void;
 }
 
-export function ArtistPaymentHistoryFilters({ 
+export function TransactionFilters({ 
   searchTerm, 
   onSearchChange,
   statusFilter,
   onStatusChange,
   sortBy = "date-desc",
   onSortChange
-}: ArtistPaymentHistoryFiltersProps) {
+}: TransactionFiltersProps) {
   return (
     <Card>
       <CardContent className="p-4">
@@ -52,7 +52,7 @@ export function ArtistPaymentHistoryFilters({
                   if (value === "all") {
                     onStatusChange(undefined);
                   } else {
-                    onStatusChange(value as PaymentTransactionStatus);
+                    onStatusChange(value as TransactionStatus);
                   }
                 }}
               >
@@ -61,9 +61,9 @@ export function ArtistPaymentHistoryFilters({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value={PaymentTransactionStatus.Paid}>Paid</SelectItem>
-                  <SelectItem value={PaymentTransactionStatus.Pending}>Pending</SelectItem>
-                  <SelectItem value={PaymentTransactionStatus.Unpaid}>Unpaid</SelectItem>
+                  <SelectItem value={TransactionStatus.Completed}>Completed</SelectItem>
+                  <SelectItem value={TransactionStatus.Open}>Open</SelectItem>
+                  <SelectItem value={TransactionStatus.Expired}>Expired</SelectItem>
                 </SelectContent>
               </Select>
             )}
