@@ -4,9 +4,9 @@ import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { subscriptionsQueryOptions } from "@/gql/options/subscription-options";
-import { SubscriptionTable } from "../components/subscription/subscription-table";
-import { SubscriptionActions } from "../components/subscription/subscription-actions";
-import { CreateSubscriptionForm } from "../components/subscription/create-subscription-form";
+import { SubscriptionTable } from "../component/subscription/subscription-table";
+import { SubscriptionActions } from "../component/subscription/subscription-actions";
+import { CreateSubscriptionForm } from "../component/subscription/create-subscription-form";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import type { Subscription, SubscriptionsResponse } from "@/types";
 

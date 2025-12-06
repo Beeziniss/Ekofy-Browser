@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { SubscriptionDetailSection } from "../sections/subscription-detail-section";
-import { SubscriptionLayout } from "../layouts/subscription-layout";
+import { SubscriptionDetailSection } from "../section/subscription-detail-section";
+import { SubscriptionLayout } from "../layout/subscription-layout";
 
 interface AdminSubscriptionDetailProps {
   subscriptionId: string;

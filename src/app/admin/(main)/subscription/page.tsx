@@ -1,6 +1,6 @@
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { AdminSubscriptionList } from "@/modules/admin/subscription/ui/views";
+import { AdminSubscriptionList } from "@/modules/admin/subscription/ui/view";
 import { subscriptionsQueryOptions } from "@/gql/options/subscription-options";
 
 const SubscriptionPage = async () => {

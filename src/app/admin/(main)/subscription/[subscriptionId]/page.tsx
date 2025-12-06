@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { AdminSubscriptionDetail } from "@/modules/admin/subscription/ui/views";
+import { AdminSubscriptionDetail } from "@/modules/admin/subscription/ui/view";
 import { subscriptionDetailQueryOptions, subscriptionPlansQueryOptions } from "@/gql/options/subscription-options";
 
 interface SubscriptionDetailPageProps {
