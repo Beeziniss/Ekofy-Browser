@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand, ChecksumAlgorithm } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
@@ -18,12 +18,14 @@ const s3 = new S3Client({
 */
 
 export async function POST(request: Request) {
-  const { fileName, filePath } = await request.json();
+  const { fileName, fileType, filePath } = await request.json();
   const key = `${filePath}/${Date.now()}-${fileName}`;
 
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME!,
     Key: key,
+    ContentType: fileType,
+    ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
   });
 
   const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 }); // 5 min

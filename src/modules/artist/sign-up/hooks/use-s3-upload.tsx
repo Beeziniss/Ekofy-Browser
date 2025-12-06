@@ -34,6 +34,7 @@ export const useS3Upload = () => {
         },
         body: JSON.stringify({
           fileName: file.name,
+          fileType: file.type,
           filePath: filePath,
         }),
       });
@@ -47,6 +48,9 @@ export const useS3Upload = () => {
       // 2. Upload file directly to S3
       const uploadRes = await fetch(uploadUrl, {
         method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
         body: file,
       });
 

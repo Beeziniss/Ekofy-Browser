@@ -83,6 +83,7 @@ const OrderSubmissionSubmitDialog = ({ orderId, isOpen, onOpenChange }: OrderSub
         },
         body: JSON.stringify({
           fileName: file.name,
+          fileType: file.type,
           filePath: FilePath.ORDERS,
         }),
       });
@@ -96,6 +97,9 @@ const OrderSubmissionSubmitDialog = ({ orderId, isOpen, onOpenChange }: OrderSub
       // 2. Upload file directly to S3
       const uploadRes = await fetch(uploadUrl, {
         method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
         body: file,
       });
 
