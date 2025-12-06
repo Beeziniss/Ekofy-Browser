@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowLeftIcon } from "lucide-react";
+
 import { TransactionListSection } from "../sections";
 
 export function ArtistTransactionHistoryList() {
