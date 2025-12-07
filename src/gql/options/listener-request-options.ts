@@ -1,20 +1,21 @@
 import { execute } from "@/gql/execute";
 import { queryOptions } from "@tanstack/react-query";
 
-import type { RequestFilterInput, QueryInitializationRequestsArgs } from "@/gql/graphql";
+import type { RequestFilterInput, QueryInitializationRequestsArgs, RequestSortInput } from "@/gql/graphql";
 import { RequestQuery, RequestsQuery } from "@/modules/shared/queries/client/request-queries";
 
 /**
  * Query options for fetching listener's request history
  */
-export const requestsOptions = (skip: number = 0, take: number = 20, where?: RequestFilterInput) =>
+export const requestsOptions = (skip: number = 0, take: number = 20, where?: RequestFilterInput, order?: RequestSortInput[]) =>
   queryOptions({
-    queryKey: ["listener-requests", skip, take, where],
+    queryKey: ["listener-requests", skip, take, where, order],
     queryFn: async () => {
       const variables: QueryInitializationRequestsArgs = {
         skip,
         take,
         where,
+        order,
       };
       const result = await execute(RequestsQuery, variables);
       const requests = result.requests || {

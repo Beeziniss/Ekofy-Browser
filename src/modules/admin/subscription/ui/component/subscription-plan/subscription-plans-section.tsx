@@ -79,20 +79,6 @@ export function SubscriptionPlansSection({
         showCreatePlan={canCreateSubscriptionPlans()}
       />
 
-      {/* Info message when cannot create plans */}
-      {!canCreateSubscriptionPlans() && subscription && subscription.tier !== "FREE" && (
-        <Card className="border-main-dark-bg-1 bg-main-card-bg">
-          <CardContent className="p-4">
-            <p className="text-sm text-main-white">
-              {plans.length > 0 
-                ? "This subscription already has plans. Only one plan per subscription is allowed."
-                : "Only Premium and Pro subscriptions can create subscription plans."
-              }
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
       <SubscriptionPlanTable
         subscriptionPlans={plans}
         onView={onViewPlan}

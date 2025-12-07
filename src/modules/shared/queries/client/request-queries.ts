@@ -35,8 +35,8 @@ export const CheckPublicRequestExistenceQuery = graphql(`
  * This is separate from the request hub and shows requests made directly to artists
  */
 export const RequestsQuery = graphql(`
-  query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput) {
-    requests(skip: $skip, take: $take, where: $where, order: { postCreatedTime: DESC }) {
+  query ListenerRequests($skip: Int, $take: Int, $where: RequestFilterInput, $order: [RequestSortInput!]) {
+    requests(skip: $skip, take: $take, where: $where, order: $order) {
       totalCount
       items {
         id
