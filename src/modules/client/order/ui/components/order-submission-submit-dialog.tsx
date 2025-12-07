@@ -145,6 +145,8 @@ const OrderSubmissionSubmitDialog = ({ orderId, isOpen, onOpenChange }: OrderSub
       await queryClient.invalidateQueries({ queryKey: ["order-package-detail"] });
     } catch (error) {
       console.error("Failed to submit delivery:", error);
+      console.log(JSON.stringify(error, null, 2));
+
       toast.error(error instanceof Error ? error.message : "Failed to submit delivery. Please try again.");
     }
   };

@@ -10,7 +10,8 @@ import {
 import { PackageOrderStatus } from "@/gql/graphql";
 import { switchStatusByRequestorMutationOptions } from "@/gql/options/client-mutation-options";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal, XCircle, RefreshCw } from "lucide-react";
+import { MoreHorizontal, XCircle, RefreshCw, Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface OrderActionsDropdownProps {
@@ -20,8 +21,13 @@ interface OrderActionsDropdownProps {
 }
 
 const OrderActionsDropdown = ({ orderId, status, onSuccess }: OrderActionsDropdownProps) => {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { mutateAsync: switchStatus, isPending } = useMutation(switchStatusByRequestorMutationOptions);
+
+  const handleViewDetails = () => {
+    router.push(`/orders/${orderId}/details`);
+  };
 
   const handleStatusChange = async (newStatus: PackageOrderStatus) => {
     try {
@@ -89,6 +95,12 @@ const OrderActionsDropdown = ({ orderId, status, onSuccess }: OrderActionsDropdo
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          onClick={handleViewDetails}
+          className="cursor-pointer hover:bg-gray-700">
+          <Eye className="mr-2 h-4 w-4" />
+          <span className="text-sm text-main-white">View Details</span>
+        </DropdownMenuItem>
         {statusActionText && StatusActionIcon && targetStatus && (
           <DropdownMenuItem
             onClick={() => handleStatusChange(targetStatus)}

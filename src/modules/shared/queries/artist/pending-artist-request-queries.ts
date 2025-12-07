@@ -2,7 +2,7 @@ import { graphql } from "@/gql";
 
 export const GET_PENDING_ARTIST_REQUEST = graphql(`
   query GetPendingArtistRequest($skip: Int!, $take: Int!, $where: RequestFilterInput) {
-    requests(skip: $skip, take: $take, where: $where) {
+    requests(skip: $skip, take: $take, where: $where, order: { requestCreatedTime: DESC }) {
       totalCount
       pageInfo {
         hasNextPage

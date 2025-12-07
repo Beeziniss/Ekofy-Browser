@@ -14,6 +14,10 @@ import {
   ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType,
   ApprovalHistoryFilterInput,
   ApprovalType,
+  PackageOrderFilterInput,
+  PackageOrderSortInput,
+  PackageOrderStatus,
+  SortEnumType,
   // PaginatedDataOfPendingArtistPackageResponseFilterInput,
 } from "@/gql/graphql";
 import {
@@ -32,6 +36,10 @@ import {
 } from "@/modules/shared/queries/moderator/track-approval-queries";
 import { QUERY_USER_CREATED_BY } from "@/modules/shared/queries/moderator/track-approval-queries";
 import { ApprovalPriorityStatus } from "@/types/approval-track";
+import {
+  PACKAGE_ORDERS_LIST_QUERY,
+  PACKAGE_ORDER_DETAIL_QUERY,
+} from "@/modules/shared/queries/moderator/order-disputed-querties";
 
 export const moderatorProfileOptions = (userId: string) =>
   queryOptions({
@@ -401,4 +409,74 @@ export const moderatorCategoriesOptions = (categoryIds: string[]) =>
     },
     enabled: !!categoryIds && categoryIds.length > 0,
     staleTime: 10 * 60 * 1000, // 10 minutes - categories don't change often
+  });
+
+// Package Orders query options for moderator (table view)
+export const moderatorPackageOrdersOptions = (
+  page: number = 1,
+  pageSize: number = 10,
+  where?: PackageOrderFilterInput,
+  order?: PackageOrderSortInput[]
+) =>
+  queryOptions({
+    queryKey: ["moderator-package-orders", page, pageSize, where, order],
+    queryFn: async () => {
+      const skip = (page - 1) * pageSize;
+      
+      const result = await execute(PACKAGE_ORDERS_LIST_QUERY, {
+        take: pageSize,
+        skip,
+        where,
+        order,
+      });
+
+      return result.packageOrders;
+    },
+    staleTime: 30 * 1000, // 30 seconds - orders can change frequently
+  });
+
+// Package Orders (Disputed) query options for moderator
+export const moderatorDisputedPackageOrdersOptions = (
+  page: number = 1,
+  pageSize: number = 10,
+  order?: PackageOrderSortInput[]
+) =>
+  queryOptions({
+    queryKey: ["moderator-disputed-package-orders", page, pageSize, order],
+    queryFn: async () => {
+      const skip = (page - 1) * pageSize;
+      
+      const result = await execute(PACKAGE_ORDERS_LIST_QUERY, {
+        take: pageSize,
+        skip,
+        where: {
+          status: { eq: PackageOrderStatus.Disputed },
+        },
+        order : [ { createdAt: SortEnumType.Desc } ],
+      });
+
+      return result.packageOrders;
+    },
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: false, // Prevent refetch on mount
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
+  });
+
+// Package Order Detail query options for moderator
+export const moderatorPackageOrderDetailOptions = (orderId: string) =>
+  queryOptions({
+    queryKey: ["moderator-package-order-detail", orderId],
+    queryFn: async () => {
+      const result = await execute(PACKAGE_ORDER_DETAIL_QUERY, {
+        where: {
+          id: { eq: orderId },
+        },
+      });
+
+      return result.packageOrders?.items?.[0] || null;
+    },
+    enabled: !!orderId,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: false, // Prevent refetch on mount
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
   });

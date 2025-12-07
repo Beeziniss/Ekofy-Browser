@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArtistQuery, TrackDetailQuery, ReportRelatedContentType, PopularityActionType } from "@/gql/graphql";
+import { ReportRelatedContentType, PopularityActionType } from "@/gql/graphql";
 import { formatNumber } from "@/utils/format-number";
 import { CopyIcon, EllipsisIcon, FlagIcon, HeartIcon, ListPlusIcon, UserIcon } from "lucide-react";
 import { Suspense, useState } from "react";
@@ -22,31 +24,61 @@ import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-d
 import { useAuthAction } from "@/hooks/use-auth-action";
 import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
 import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { artistOptions, trackDetailOptions } from "@/gql/options/client-options";
+import { useAuthStore } from "@/store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TrackOwnerSectionProps {
-  data: TrackDetailQuery;
-  artistData?: ArtistQuery;
+  trackId: string;
 }
 
-const TrackOwnerSection = ({ data, artistData }: TrackOwnerSectionProps) => {
+const TrackOwnerSection = ({ trackId }: TrackOwnerSectionProps) => {
   return (
     <Suspense fallback={<TrackOwnerSectionSkeleton />}>
-      <TrackOwnerSectionSuspense data={data} artistData={artistData} />
+      <TrackOwnerSectionSuspense trackId={trackId} />
     </Suspense>
   );
 };
 
 const TrackOwnerSectionSkeleton = () => {
-  return <div>Loading...</div>;
+  return (
+    <div className="flex w-full items-center justify-between">
+      <div className="flex items-center gap-x-3">
+        <Skeleton className="size-16 rounded-full" />
+        <div className="flex items-center gap-x-6">
+          <div className="flex flex-col gap-y-1">
+            <Skeleton className="h-5 w-32 rounded-full" />
+            <Skeleton className="h-4 w-24 rounded-full" />
+          </div>
+          <Skeleton className="h-8 w-24 rounded-full" />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-x-4">
+        <Skeleton className="h-8 w-20 rounded-full" />
+        <Skeleton className="h-8 w-8 rounded-full" />
+      </div>
+    </div>
+  );
 };
 
-const TrackOwnerSectionSuspense = ({ data, artistData }: TrackOwnerSectionProps) => {
+const TrackOwnerSectionSuspense = ({ trackId }: TrackOwnerSectionProps) => {
+  const { user, isAuthenticated } = useAuthStore();
+  const { data } = useSuspenseQuery(trackDetailOptions(trackId));
+  const { data: artistData } = useQuery({
+    ...artistOptions({
+      userId: user?.userId || "",
+      artistId: user?.artistId || "",
+    }),
+    enabled: isAuthenticated && !!user?.userId && !!user?.artistId,
+  });
+
   const trackDetail = data.tracks?.items?.[0];
   const trackDetailArtist = trackDetail?.mainArtists?.items?.[0];
   const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth, isAuthenticated } =
-    useAuthAction();
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
   const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
 
   const { handleFavorite } = useFavoriteTrack();
