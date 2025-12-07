@@ -50,7 +50,7 @@ const useSignIn = () => {
           setAuthenticated(true);
 
           toast.success("Signed in successfully!");
-          router.push("/");
+          router.replace("/home");
         }
       } catch (error) {
         console.error("Failed to process sign-in success:", error);
