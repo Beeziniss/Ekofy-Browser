@@ -2653,6 +2653,7 @@ export type MutationInitialization = {
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
   upsertStreamCount: Scalars['Boolean']['output'];
+  upsertTopTrackCount: Scalars['Boolean']['output'];
 };
 
 
@@ -3221,6 +3222,11 @@ export type MutationInitializationUpsertStreamCountArgs = {
   trackId: Scalars['String']['input'];
 };
 
+
+export type MutationInitializationUpsertTopTrackCountArgs = {
+  trackId: Scalars['String']['input'];
+};
+
 export type Notification = {
   __typename?: 'Notification';
   action: NotificationActionType;
@@ -3488,7 +3494,6 @@ export type PackageOrder = {
   package: Array<ArtistPackage>;
   paymentTransaction: Array<PaymentTransaction>;
   paymentTransactionId: Scalars['String']['output'];
-  payoutTransactionId?: Maybe<Scalars['String']['output']>;
   platformFeePercentage: Scalars['Decimal']['output'];
   provider: Array<Artist>;
   providerId: Scalars['String']['output'];
@@ -3572,7 +3577,6 @@ export type PackageOrderFilterInput = {
   or?: InputMaybe<Array<PackageOrderFilterInput>>;
   overdueJobId?: InputMaybe<StringOperationFilterInput>;
   paymentTransactionId?: InputMaybe<StringOperationFilterInput>;
-  payoutTransactionId?: InputMaybe<StringOperationFilterInput>;
   platformFeePercentage?: InputMaybe<DecimalOperationFilterInput>;
   providerId?: InputMaybe<StringOperationFilterInput>;
   requirements?: InputMaybe<StringOperationFilterInput>;
@@ -3604,7 +3608,6 @@ export type PackageOrderSortInput = {
   isEscrowReleased?: InputMaybe<SortEnumType>;
   overdueJobId?: InputMaybe<SortEnumType>;
   paymentTransactionId?: InputMaybe<SortEnumType>;
-  payoutTransactionId?: InputMaybe<SortEnumType>;
   platformFeePercentage?: InputMaybe<SortEnumType>;
   providerId?: InputMaybe<SortEnumType>;
   requirements?: InputMaybe<SortEnumType>;
@@ -6442,7 +6445,6 @@ export type UpdateTrackRequestInput = {
 
 export type User = {
   __typename?: 'User';
-  artists?: Maybe<ArtistsCollectionSegment>;
   birthDate: Scalars['DateTime']['output'];
   checkUserFollowing: Scalars['Boolean']['output'];
   createdAt: Scalars['DateTime']['output'];
@@ -6454,7 +6456,6 @@ export type User = {
   id: Scalars['String']['output'];
   isLinkedWithGoogle: Scalars['Boolean']['output'];
   lastLoginAt?: Maybe<Scalars['DateTime']['output']>;
-  listeners?: Maybe<ListenersCollectionSegment>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
   restrictions: Array<Restriction>;
   role: UserRole;
@@ -6463,22 +6464,6 @@ export type User = {
   stripeCustomerId?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type UserArtistsArgs = {
-  order?: InputMaybe<Array<ArtistSortInput>>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ArtistFilterInput>;
-};
-
-
-export type UserListenersArgs = {
-  order?: InputMaybe<Array<ListenerSortInput>>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ListenerFilterInput>;
 };
 
 export type UserEngagement = {

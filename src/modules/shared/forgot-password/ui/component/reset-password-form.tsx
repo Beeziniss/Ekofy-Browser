@@ -12,7 +12,7 @@ import { useState } from "react";
 
 const resetPasswordSchema = z
   .object({
-    email: z.string().email("Please enter a valid email address"),
+    email: z.email("Please enter a valid email address"),
     otpCode: z.string().min(6, "OTP code must be 6 digits").max(6, "OTP code must be 6 digits"),
     newPassword: z
       .string()
@@ -21,7 +21,7 @@ const resetPasswordSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don&apos;t match",
+    message: "Passwords don't match",
     path: ["confirmPassword"],
   });
 

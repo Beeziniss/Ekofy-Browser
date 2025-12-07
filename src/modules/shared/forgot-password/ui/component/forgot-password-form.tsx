@@ -10,7 +10,6 @@ import { Loader2} from "lucide-react";
 
 const forgotPasswordSchema = z.object({
     email: z
-    .string()
     .email("Please enter a valid email address")
     .min(5, "Email must be at least 5 characters long") // Độ dài tối thiểu
     .max(50, "Email must be at most 50 characters long") // Độ dài tối đa
