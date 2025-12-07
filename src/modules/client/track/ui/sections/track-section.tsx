@@ -5,22 +5,22 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Track, useAudioStore } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrackDetailQuery } from "@/gql/graphql";
 import { HeartIcon, PlayIcon } from "lucide-react";
 import { formatPlayCount } from "@/utils/format-number";
 import { PauseButtonLarge, PlayButtonLargeRounded } from "@/assets/icons";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { useAuthAction } from "@/hooks/use-auth-action";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { trackDetailOptions } from "@/gql/options/client-options";
 
 interface TrackSectionProps {
-  data: TrackDetailQuery;
   trackId: string;
 }
 
-const TrackSection = ({ data, trackId }: TrackSectionProps) => {
+const TrackSection = ({ trackId }: TrackSectionProps) => {
   return (
     <Suspense fallback={<TrackSectionSkeleton />}>
-      <TrackSectionSuspense data={data} trackId={trackId} />
+      <TrackSectionSuspense trackId={trackId} />
     </Suspense>
   );
 };
@@ -40,7 +40,8 @@ const TrackSectionSkeleton = () => {
 };
 
 // TODO: Check for track-card.tsx for code and fix to apply approriate changes in future
-const TrackSectionSuspense = ({ data, trackId }: TrackSectionProps) => {
+const TrackSectionSuspense = ({ trackId }: TrackSectionProps) => {
+  const { data } = useSuspenseQuery(trackDetailOptions(trackId));
   const { currentTrack, isPlaying: globalIsPlaying, setCurrentTrack, togglePlayPause, play } = useAudioStore();
   const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
 
