@@ -19,16 +19,47 @@ import { createTrackCommentMutationOptions } from "@/gql/options/client-mutation
 import { CommentType, PopularityActionType } from "@/gql/graphql";
 import { artistOptions, listenerOptions, trackCommentsOptions } from "@/gql/options/client-options";
 import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { useAuthAction } from "@/hooks/use-auth-action";
 import { useAuthStore } from "@/store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TrackCommentSectionProps {
   trackId: string;
 }
 
 const TrackCommentSection = ({ trackId }: TrackCommentSectionProps) => {
+  return (
+    <Suspense fallback={<TrackCommentSectionSkeleton />}>
+      <TrackCommentSectionSuspense trackId={trackId} />
+    </Suspense>
+  );
+};
+
+const TrackCommentSectionSkeleton = () => {
+  return (
+    <div className="w-full space-y-8">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-[28px] w-32" />
+          <Skeleton className="h-9 w-40" />
+        </div>
+        <div className="flex items-center gap-x-3">
+          <Skeleton className="size-12 rounded-full" />
+          <Skeleton className="h-10 flex-1 rounded-full" />
+        </div>
+        <div className="space-y-6">
+          <Skeleton className="h-16 w-full rounded-lg" />
+          <Skeleton className="h-16 w-full rounded-lg" />
+          <Skeleton className="h-16 w-full rounded-lg" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TrackCommentSectionSuspense = ({ trackId }: TrackCommentSectionProps) => {
   const { user, isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
   const [comment, setComment] = useState("");
