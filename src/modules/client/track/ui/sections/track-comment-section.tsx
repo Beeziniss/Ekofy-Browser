@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,27 +14,69 @@ import {
 } from "@/components/ui/select";
 import { SendIcon, UserIcon } from "lucide-react";
 import TrackCommentUser from "../components/track-comment-user";
-import { useMutation, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { createTrackCommentMutationOptions } from "@/gql/options/client-mutation-options";
-import { ArtistQuery, CommentType, ListenerQuery, PopularityActionType } from "@/gql/graphql";
-import { trackCommentsOptions } from "@/gql/options/client-options";
+import { CommentType, PopularityActionType } from "@/gql/graphql";
+import { artistOptions, listenerOptions, trackCommentsOptions } from "@/gql/options/client-options";
 import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { useAuthAction } from "@/hooks/use-auth-action";
+import { useAuthStore } from "@/store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TrackCommentSectionProps {
   trackId: string;
-  listenerData?: ListenerQuery;
-  artistData?: ArtistQuery;
 }
 
-const TrackCommentSection = ({ trackId, listenerData, artistData }: TrackCommentSectionProps) => {
+const TrackCommentSection = ({ trackId }: TrackCommentSectionProps) => {
+  return (
+    <Suspense fallback={<TrackCommentSectionSkeleton />}>
+      <TrackCommentSectionSuspense trackId={trackId} />
+    </Suspense>
+  );
+};
+
+const TrackCommentSectionSkeleton = () => {
+  return (
+    <div className="w-full space-y-8">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-[28px] w-32" />
+          <Skeleton className="h-9 w-40" />
+        </div>
+        <div className="flex items-center gap-x-3">
+          <Skeleton className="size-12 rounded-full" />
+          <Skeleton className="h-10 flex-1 rounded-full" />
+        </div>
+        <div className="space-y-6">
+          <Skeleton className="h-16 w-full rounded-lg" />
+          <Skeleton className="h-16 w-full rounded-lg" />
+          <Skeleton className="h-16 w-full rounded-lg" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TrackCommentSectionSuspense = ({ trackId }: TrackCommentSectionProps) => {
+  const { user, isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
   const [comment, setComment] = useState("");
-  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth, isAuthenticated } =
-    useAuthAction();
+  const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
   const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
+
+  const { data: artistData } = useQuery({
+    ...artistOptions({
+      userId: user?.userId || "",
+      artistId: user?.artistId || "",
+    }),
+    enabled: isAuthenticated && !!user?.userId && !!user?.artistId,
+  });
+  const { data: listenerData } = useQuery({
+    ...listenerOptions(user?.userId || "", user?.listenerId || ""),
+    enabled: isAuthenticated && !!user?.userId && !!user?.listenerId,
+  });
 
   const { data: commentsData } = useSuspenseQuery(trackCommentsOptions(trackId));
   const { mutate: createComment, isPending } = useMutation({
