@@ -1,10 +1,10 @@
 "use client";
 
 import { toast } from "sonner";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { formatDate } from "date-fns";
 import { useAuthStore } from "@/store";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PackageOrderStatus } from "@/gql/graphql";
@@ -88,11 +88,22 @@ const OrderDetailInfoSectionSkeleton = () => {
 
 const OrderDetailInfoSectionSuspense = () => {
   const { user } = useAuthStore();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { orderId } = useParams<{ orderId: string }>();
 
   const { data: orderPackageDetail } = useSuspenseQuery(orderPackageDetailOptions(orderId));
   const { mutateAsync, isPending: isMutationPending } = useMutation(acceptRequestByArtistMutationOptions);
+
+  useEffect(() => {
+    if (orderPackageDetail && user) {
+      const isAuthorized = orderPackageDetail.clientId === user.userId || orderPackageDetail.providerId === user.userId;
+
+      if (!isAuthorized) {
+        router.push("/unauthorized");
+      }
+    }
+  }, [orderPackageDetail, user, router]);
 
   if (!orderPackageDetail || !orderPackageDetail?.package.length) {
     return <div className="bg-main-grey-1 rounded-md p-3">No order available.</div>;

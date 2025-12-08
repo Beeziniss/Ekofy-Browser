@@ -41,6 +41,11 @@ export const OrderPackageQuery = graphql(`
           displayName
           avatarImage
         }
+        provider {
+          avatarImage
+          stageName
+          email
+        }
       }
     }
   }
