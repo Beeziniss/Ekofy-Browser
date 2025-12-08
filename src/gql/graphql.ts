@@ -1926,7 +1926,7 @@ export type Invoice = {
   originContext?: Maybe<Scalars['String']['output']>;
   paidAt: Scalars['DateTime']['output'];
   paymentTransactionId: Scalars['String']['output'];
-  stripeInvoiceId: Scalars['String']['output'];
+  stripeInvoiceId?: Maybe<Scalars['String']['output']>;
   subscriptionSnapshot?: Maybe<SubscriptionSnapshot>;
   to: Scalars['String']['output'];
   transaction: Array<PaymentTransaction>;
@@ -2625,6 +2625,7 @@ export type MutationInitialization = {
   seedRoyaltyPolicyData: Scalars['Boolean']['output'];
   sendRedoRequest: Scalars['Boolean']['output'];
   sendRequest: Scalars['Boolean']['output'];
+  sendSingleNotification: Scalars['Boolean']['output'];
   softDeleteCategory: Scalars['Boolean']['output'];
   submitDelivery: Scalars['Boolean']['output'];
   switchEscrowCommissionPolicyToLatestVersion: Scalars['Boolean']['output'];
@@ -2653,7 +2654,6 @@ export type MutationInitialization = {
   uploadTrack: Scalars['Boolean']['output'];
   uploadTrackFingerprint: Scalars['String']['output'];
   upsertStreamCount: Scalars['Boolean']['output'];
-  upsertTopTrackCount: Scalars['Boolean']['output'];
 };
 
 
@@ -3086,6 +3086,15 @@ export type MutationInitializationSendRequestArgs = {
 };
 
 
+export type MutationInitializationSendSingleNotificationArgs = {
+  body: Scalars['String']['input'];
+  channelId: Scalars['String']['input'];
+  data?: InputMaybe<Array<KeyValuePairOfStringAndStringInput>>;
+  title: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationInitializationSoftDeleteCategoryArgs = {
   categoryId: Scalars['String']['input'];
 };
@@ -3222,11 +3231,6 @@ export type MutationInitializationUpsertStreamCountArgs = {
   trackId: Scalars['String']['input'];
 };
 
-
-export type MutationInitializationUpsertTopTrackCountArgs = {
-  trackId: Scalars['String']['input'];
-};
-
 export type Notification = {
   __typename?: 'Notification';
   action: NotificationActionType;
@@ -3236,6 +3240,7 @@ export type Notification = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
   isRead: Scalars['Boolean']['output'];
+  mobileUrl?: Maybe<Scalars['String']['output']>;
   readAt?: Maybe<Scalars['DateTime']['output']>;
   relatedId?: Maybe<Scalars['String']['output']>;
   relatedType?: Maybe<NotificationRelatedType>;
@@ -3283,6 +3288,7 @@ export type NotificationFilterInput = {
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   isRead?: InputMaybe<BooleanOperationFilterInput>;
+  mobileUrl?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<NotificationFilterInput>>;
   readAt?: InputMaybe<DateTimeOperationFilterInput>;
   relatedId?: InputMaybe<StringOperationFilterInput>;
@@ -3309,6 +3315,7 @@ export type NotificationSortInput = {
   createdAt?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   isRead?: InputMaybe<SortEnumType>;
+  mobileUrl?: InputMaybe<SortEnumType>;
   readAt?: InputMaybe<SortEnumType>;
   relatedId?: InputMaybe<SortEnumType>;
   relatedType?: InputMaybe<SortEnumType>;
@@ -3494,6 +3501,7 @@ export type PackageOrder = {
   package: Array<ArtistPackage>;
   paymentTransaction: Array<PaymentTransaction>;
   paymentTransactionId: Scalars['String']['output'];
+  payoutTransactionId?: Maybe<Scalars['String']['output']>;
   platformFeePercentage: Scalars['Decimal']['output'];
   provider: Array<Artist>;
   providerId: Scalars['String']['output'];
@@ -3577,6 +3585,7 @@ export type PackageOrderFilterInput = {
   or?: InputMaybe<Array<PackageOrderFilterInput>>;
   overdueJobId?: InputMaybe<StringOperationFilterInput>;
   paymentTransactionId?: InputMaybe<StringOperationFilterInput>;
+  payoutTransactionId?: InputMaybe<StringOperationFilterInput>;
   platformFeePercentage?: InputMaybe<DecimalOperationFilterInput>;
   providerId?: InputMaybe<StringOperationFilterInput>;
   requirements?: InputMaybe<StringOperationFilterInput>;
@@ -3608,6 +3617,7 @@ export type PackageOrderSortInput = {
   isEscrowReleased?: InputMaybe<SortEnumType>;
   overdueJobId?: InputMaybe<SortEnumType>;
   paymentTransactionId?: InputMaybe<SortEnumType>;
+  payoutTransactionId?: InputMaybe<SortEnumType>;
   platformFeePercentage?: InputMaybe<SortEnumType>;
   providerId?: InputMaybe<SortEnumType>;
   requirements?: InputMaybe<SortEnumType>;
@@ -6445,6 +6455,7 @@ export type UpdateTrackRequestInput = {
 
 export type User = {
   __typename?: 'User';
+  artists?: Maybe<ArtistsCollectionSegment>;
   birthDate: Scalars['DateTime']['output'];
   checkUserFollowing: Scalars['Boolean']['output'];
   createdAt: Scalars['DateTime']['output'];
@@ -6456,6 +6467,7 @@ export type User = {
   id: Scalars['String']['output'];
   isLinkedWithGoogle: Scalars['Boolean']['output'];
   lastLoginAt?: Maybe<Scalars['DateTime']['output']>;
+  listeners?: Maybe<ListenersCollectionSegment>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
   restrictions: Array<Restriction>;
   role: UserRole;
@@ -6464,6 +6476,22 @@ export type User = {
   stripeCustomerId?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+
+export type UserArtistsArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type UserListenersArgs = {
+  order?: InputMaybe<Array<ListenerSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ListenerFilterInput>;
 };
 
 export type UserEngagement = {
@@ -6583,7 +6611,7 @@ export type UserFilterInput = {
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
   createdBy?: InputMaybe<StringOperationFilterInput>;
   email?: InputMaybe<StringOperationFilterInput>;
-  fcmToken?: InputMaybe<StringOperationFilterInput>;
+  fcmToken?: InputMaybe<ListStringOperationFilterInput>;
   fullName?: InputMaybe<StringOperationFilterInput>;
   fullNameUnsigned?: InputMaybe<StringOperationFilterInput>;
   gender?: InputMaybe<UserGenderOperationFilterInput>;
@@ -6636,7 +6664,6 @@ export type UserSortInput = {
   createdAt?: InputMaybe<SortEnumType>;
   createdBy?: InputMaybe<SortEnumType>;
   email?: InputMaybe<SortEnumType>;
-  fcmToken?: InputMaybe<SortEnumType>;
   fullName?: InputMaybe<SortEnumType>;
   fullNameUnsigned?: InputMaybe<SortEnumType>;
   gender?: InputMaybe<SortEnumType>;
