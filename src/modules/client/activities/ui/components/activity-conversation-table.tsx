@@ -107,7 +107,12 @@ const ActivityConversationTable = ({
 
                     {/* Actions */}
                     <TableCell className="w-20">
-                      <OrderActionsDropdown orderId={order.id} status={order.status} onSuccess={onStatusChange} />
+                      <OrderActionsDropdown
+                        orderId={order.id}
+                        status={order.status}
+                        packageName={order.package?.[0]?.packageName}
+                        onSuccess={onStatusChange}
+                      />
                     </TableCell>
                   </TableRow>
                 );

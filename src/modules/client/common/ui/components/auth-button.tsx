@@ -20,7 +20,12 @@ import { authApi } from "@/services/auth-services";
 import { getUserInitials } from "@/utils/format-shorten-name";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { artistOptions, listenerOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
+import {
+  artistOptions,
+  listenerOptions,
+  userActiveSubscriptionOptions,
+  notificationOptions,
+} from "@/gql/options/client-options";
 import { AudioLines, Bell, LogOut, MessageCircleIcon, MicVocalIcon, ReceiptTextIcon, User } from "lucide-react";
 import { useNotificationSignalR } from "@/hooks/use-notification-signalr";
 import { NotificationPopover } from "@/components/notification-popover";
@@ -36,17 +41,53 @@ const AuthButton = () => {
   const queryClient = useQueryClient();
   const { isAuthenticated, user, clearUserData } = useAuthStore();
 
-  // Initialize notification SignalR hook
-  const { notifications, unreadCount, markAsRead, clearNotifications, onNotificationReceived } =
-    useNotificationSignalR();
+  // Fetch notifications using query
+  const { data: notificationsData } = useQuery({
+    ...notificationOptions({ userId: user?.userId || "", first: 5 }),
+    enabled: !!user?.userId && isAuthenticated,
+  });
 
-  // Set up notification event handler
+  // Initialize notification SignalR hook for real-time updates
+  const { onNotificationReceived } = useNotificationSignalR();
+
+  // Set up notification event handler to invalidate queries
   useEffect(() => {
     onNotificationReceived((notification) => {
-      // You can add additional logic here like showing a toast notification
       console.log("New notification received:", notification);
+      // Invalidate notifications query to refetch
+      queryClient.invalidateQueries({ queryKey: ["notifications", user?.userId] });
     });
-  }, [onNotificationReceived]);
+  }, [onNotificationReceived, queryClient, user?.userId]);
+
+  // Process notifications from query
+  const notifications =
+    notificationsData?.notifications?.edges?.map((edge) => ({
+      id: edge.node.id,
+      content: edge.node.content,
+      createdAt: edge.node.createdAt,
+      isRead: edge.node.isRead,
+      url: edge.node.url,
+      readAt: edge.node.readAt,
+      avatar: undefined, // Add avatar if available in your schema
+    })) || [];
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  /* // Handle marking notification as read
+  const handleMarkAsRead = (notificationId?: string) => {
+    // TODO: Call API to mark notification(s) as read
+    console.log("Mark as read:", notificationId || "all");
+    // Invalidate query to refetch
+    queryClient.invalidateQueries({ queryKey: ["notifications", user?.userId] });
+  };
+
+  // Handle clearing all notifications
+  const handleClearNotifications = () => {
+    // TODO: Call API to clear all notifications
+    console.log("Clear all notifications");
+    // Invalidate query to refetch
+    queryClient.invalidateQueries({ queryKey: ["notifications", user?.userId] });
+  }; */
 
   // Logout mutation
   const { mutate: logout } = useMutation({
@@ -174,8 +215,8 @@ const AuthButton = () => {
           <NotificationPopover
             notifications={notifications}
             unreadCount={unreadCount}
-            onMarkAsRead={markAsRead}
-            onClearNotifications={clearNotifications}
+            // onMarkAsRead={handleMarkAsRead}
+            // onClearNotifications={handleClearNotifications}
           >
             <div className="group relative cursor-pointer">
               {unreadCount > 0 ? (
