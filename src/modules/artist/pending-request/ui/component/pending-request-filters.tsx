@@ -45,8 +45,8 @@ export function PendingRequestFilters({
             <SelectItem value="all">ALL STATUS</SelectItem>
             <SelectItem value={RequestStatus.Pending}>PENDING</SelectItem>
             <SelectItem value={RequestStatus.Confirmed}>CONFIRMED</SelectItem>
+            <SelectItem value={RequestStatus.Closed}>CLOSED</SelectItem>
             <SelectItem value={RequestStatus.Rejected}>REJECTED</SelectItem>
-            <SelectItem value={RequestStatus.Canceled}>CANCELED</SelectItem>
           </SelectContent>
         </Select>
       </div>
