@@ -7874,6 +7874,29 @@ export type PlaylistsFavoriteQueryVariables = Exact<{
 
 export type PlaylistsFavoriteQuery = { __typename?: 'QueryInitialization', favoritePlaylists?: { __typename?: 'FavoritePlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, userId: string, isPublic: boolean, checkPlaylistInFavorite: boolean }> | null } | null };
 
+export type RecommendedTracksByTrackIdQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  algorithm: RecommendationAlgorithm;
+  trackId: Scalars['String']['input'];
+  limit: Scalars['Int']['input'];
+  audioFeatureWeight: AudioFeatureWeightInput;
+  order?: InputMaybe<Array<TrackSortInput> | TrackSortInput>;
+}>;
+
+
+export type RecommendedTracksByTrackIdQuery = { __typename?: 'QueryInitialization', recommendedTracksByTrackId?: { __typename?: 'RecommendedTracksByTrackIdCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, checkTrackInFavorite: boolean, favoriteCount: any, createdAt: any, streamCount: any, tags: Array<string>, categoryIds: Array<string>, type: TrackType, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> | null } | null, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null }> | null } | null };
+
+export type RelatedTracksQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TrackFilterInput>;
+  order?: InputMaybe<Array<TrackSortInput> | TrackSortInput>;
+}>;
+
+
+export type RelatedTracksQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Track', name: string, id: string, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, createdAt: any, checkTrackInFavorite: boolean, type: TrackType, tags: Array<string>, categoryIds: Array<string>, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', userId: string, id: string, stageName: string }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> | null } | null, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null }> | null } | null };
+
 export type ReportQueriesQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -8048,7 +8071,7 @@ export type TrackDetailQueryVariables = Exact<{
 }>;
 
 
-export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
+export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, categoryIds: Array<string>, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
 
 export type TrackFavoriteQueryVariables = Exact<{
   take: Scalars['Int']['input'];
@@ -10389,6 +10412,104 @@ export const PlaylistsFavoriteDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PlaylistsFavoriteQuery, PlaylistsFavoriteQueryVariables>;
+export const RecommendedTracksByTrackIdDocument = new TypedDocumentString(`
+    query RecommendedTracksByTrackId($skip: Int, $take: Int, $algorithm: RecommendationAlgorithm!, $trackId: String!, $limit: Int!, $audioFeatureWeight: AudioFeatureWeightInput!, $order: [TrackSortInput!]) {
+  recommendedTracksByTrackId(
+    skip: $skip
+    take: $take
+    algorithm: $algorithm
+    trackId: $trackId
+    limit: $limit
+    audioFeatureWeight: $audioFeatureWeight
+    order: $order
+  ) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      name
+      coverImage
+      mainArtistIds
+      featuredArtistIds
+      mainArtists {
+        items {
+          id
+          userId
+          stageName
+        }
+      }
+      featuredArtists {
+        items {
+          id
+          userId
+          stageName
+        }
+      }
+      checkTrackInFavorite
+      favoriteCount
+      createdAt
+      streamCount
+      tags
+      categoryIds
+      type
+      categories {
+        items {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RecommendedTracksByTrackIdQuery, RecommendedTracksByTrackIdQueryVariables>;
+export const RelatedTracksDocument = new TypedDocumentString(`
+    query RelatedTracks($skip: Int, $take: Int, $where: TrackFilterInput, $order: [TrackSortInput!]) {
+  tracks(skip: $skip, take: $take, where: $where, order: $order) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      name
+      id
+      mainArtistIds
+      featuredArtistIds
+      streamCount
+      favoriteCount
+      coverImage
+      createdAt
+      checkTrackInFavorite
+      type
+      tags
+      categoryIds
+      mainArtists {
+        items {
+          userId
+          id
+          stageName
+        }
+      }
+      featuredArtists {
+        items {
+          id
+          userId
+          stageName
+        }
+      }
+      categories {
+        items {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RelatedTracksQuery, RelatedTracksQueryVariables>;
 export const ReportQueriesDocument = new TypedDocumentString(`
     query ReportQueries($skip: Int, $take: Int, $where: ReportFilterInput) {
   reports(
@@ -11200,6 +11321,7 @@ export const TrackDetailDocument = new TypedDocumentString(`
       coverImage
       favoriteCount
       streamCount
+      categoryIds
       mainArtistIds
       mainArtists {
         items {

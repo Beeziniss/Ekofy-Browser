@@ -30,6 +30,7 @@ export const TrackDetailViewQuery = graphql(`
         coverImage
         favoriteCount
         streamCount
+        categoryIds
         mainArtistIds
         mainArtists {
           items {
@@ -71,3 +72,14 @@ export const TrackFavoriteQuery = graphql(`
     }
   }
 `);
+
+// export const TrackCategoriesQuery = graphql(`
+//   query TrackCategories($trackId: String!) {
+//     tracks(where: { id: { eq: $trackId } }) {
+//       items {
+//         id
+//         categoryIds
+//       }
+//     }
+//   }
+// `);
