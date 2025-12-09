@@ -226,7 +226,7 @@ const TrackUploadMetadataSection = () => {
   minDate.setDate(minDate.getDate() + 4);
 
   const { data: artistsData } = useQuery(trackUploadArtistListOptions);
-  const { data: categoriesData } = useQuery(categoriesOptions);
+  const { data: categoriesData } = useQuery(categoriesOptions());
   const uploadTrackMutation = useMutation(trackUploadMutationOptions);
 
   const form = useForm<FormData>({

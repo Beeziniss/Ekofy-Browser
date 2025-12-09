@@ -6,7 +6,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 const Page = async () => {
   const queryClient = getQueryClient();
 
-  await queryClient.prefetchQuery(categoriesOptions);
+  await queryClient.prefetchQuery(categoriesOptions());
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

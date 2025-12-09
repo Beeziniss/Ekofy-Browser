@@ -119,10 +119,11 @@ export const trackInsightFavoriteCountOptions = (trackId: string, dateFrom?: str
   });
 
 // CATEGORIES OPTIONS
-export const categoriesOptions = queryOptions({
-  queryKey: ["categories"],
-  queryFn: async () => await execute(CategoriesQuery),
-});
+export const categoriesOptions = (skip: number = 0, take: number = 50) =>
+  queryOptions({
+    queryKey: ["categories", skip, take],
+    queryFn: async () => await execute(CategoriesQuery, { skip, take }),
+  });
 
 // ARTIST OPTIONS
 export const artistProfileOptions = (userId: string) =>

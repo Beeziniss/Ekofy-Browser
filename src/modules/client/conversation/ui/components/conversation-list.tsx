@@ -11,7 +11,7 @@ import { useState, useMemo, memo } from "react";
 import { cn } from "@/lib/utils";
 
 // Define the allowed conversation statuses for filtering
-type FilterableStatus = ConversationStatus.None | ConversationStatus.InProgress | ConversationStatus.Completed;
+type FilterableStatus = ConversationStatus.None | ConversationStatus.InProgress | ConversationStatus.Completed | ConversationStatus.Pending;
 
 // Define the status mapping
 const STATUS_CONFIG: Record<
@@ -37,6 +37,11 @@ const STATUS_CONFIG: Record<
     variant: "ekofy",
     description: "Completed conversations",
   },
+  [ConversationStatus.Pending]: {
+    label: "Public",
+    variant: "ekofy",
+    description: "Public request conversations",
+  },
 };
 
 // Helper function to check if a status is filterable
@@ -60,6 +65,7 @@ const ConversationList = memo(() => {
       [ConversationStatus.None]: 0,
       [ConversationStatus.InProgress]: 0,
       [ConversationStatus.Completed]: 0,
+      [ConversationStatus.Pending]: 0,
     };
 
     if (!allConversations?.conversations?.items) {

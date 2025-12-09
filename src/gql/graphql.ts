@@ -7741,7 +7741,10 @@ export type ArtistPackagesDetailQueryVariables = Exact<{
 
 export type ArtistPackagesDetailQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, isCustom: boolean, description?: string | null, maxRevision: number, status: ArtistPackageStatus, isDelete: boolean, createdAt: any, updatedAt?: any | null, artistId: string, customPackageInfo?: { __typename?: 'CustomArtistPackageInfo', clientId: string, conversationId?: string | null } | null, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> | null } | null };
 
-export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+export type CategoriesQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
 
 
 export type CategoriesQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null };
@@ -9765,8 +9768,8 @@ export const ArtistPackagesDetailDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<ArtistPackagesDetailQuery, ArtistPackagesDetailQueryVariables>;
 export const CategoriesDocument = new TypedDocumentString(`
-    query Categories {
-  categories {
+    query Categories($skip: Int, $take: Int) {
+  categories(skip: $skip, take: $take) {
     items {
       id
       name

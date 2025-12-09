@@ -16,6 +16,7 @@ import { RefundModal } from "./refund-modal";
 import { useSwitchStatusByRequestor } from "@/gql/client-mutation-options/moderator-mutation";
 import { PackageOrderStatus } from "@/gql/graphql";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface OrderDetailActionsProps {
   orderId: string;
@@ -24,6 +25,7 @@ interface OrderDetailActionsProps {
 }
 
 export function OrderDetailActions({ orderId, orderAmount, currency }: OrderDetailActionsProps) {
+  const router = useRouter();
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
   const switchStatusMutation = useSwitchStatusByRequestor();
@@ -36,6 +38,7 @@ export function OrderDetailActions({ orderId, orderAmount, currency }: OrderDeta
       });
       toast.success("Order status changed to In Progress successfully");
       setShowCancelConfirmModal(false);
+      router.push("/moderator/order-disputed");
     } catch (error) {
       toast.error("Failed to cancel refund. Please try again.");
       console.error("Cancel refund error:", error);
