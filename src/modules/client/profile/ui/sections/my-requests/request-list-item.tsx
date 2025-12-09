@@ -109,18 +109,24 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
 
             {/* Summary */}
             {request.summary && (
-              <p
-                className="line-clamp-2 text-sm text-gray-400"
-                dangerouslySetInnerHTML={{ __html: request.summary || "No summary provided" }}
-              ></p>
+                <div>
+                <span className="font-medium text-white">Summary: </span>
+                <p
+                  className="line-clamp-2 text-sm text-gray-400 inline"
+                  dangerouslySetInnerHTML={{ __html: request.summary || "No summary provided" }}
+                ></p>
+                </div>
              )}
             
             {/* Requirements */}
             {request.requirements && (
+              <div>
+                <span className="font-medium text-white">Requirements: </span>
             <p
               className="line-clamp-2 text-sm text-gray-400"
               dangerouslySetInnerHTML={{ __html: request.requirements || "No requirements provided" }}
             ></p>
+              </div>
             )}
             {/* Artist Info - Only show for direct requests with artist */}
             {artist && (

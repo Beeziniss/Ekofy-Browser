@@ -114,7 +114,6 @@ export default function ProfileHeader({ name, avatarUrl, backgroundUrl, userId =
 
             <div className="pb-2 md:block">
               <h1 className="text-2xl leading-tight font-bold md:text-3xl">{name}</h1>
-              <p className="text-muted-foreground text-sm">ID: 12345678</p>
             </div>
           </div>
         </div>

@@ -14,7 +14,7 @@ const Page = async ({ params }: PageProps) => {
   // Prefetch both the track details and categories data
   await Promise.all([
     queryClient.prefetchQuery(artistTrackDetailOptions(trackId)),
-    queryClient.prefetchQuery(categoriesOptions),
+    queryClient.prefetchQuery(categoriesOptions()),
   ]);
 
   return (
