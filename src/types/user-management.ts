@@ -159,6 +159,7 @@ export interface ModeratorUserTableData {
   status: UserStatus;
   createdAt: string;
   gender?: string;
+  avatarImage?: string;
 }
 
 export interface ModeratorUserStatsData {

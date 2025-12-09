@@ -29,7 +29,7 @@ export function PlanPricingInfo({ prices }: PlanPricingInfoProps) {
                 <div>
                   <label className="text-main-white text-sm font-medium">Price</label>
                   <p className="text-main-grey-dark text-lg font-semibold">
-                    {formatNumber(price.stripePriceUnitAmount / 100)} {price.stripePriceCurrency}
+                    {formatNumber(price.stripePriceUnitAmount)} {price.stripePriceCurrency.toUpperCase()}
                   </p>
                 </div>
                 <div>

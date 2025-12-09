@@ -1,8 +1,8 @@
 import { graphql } from "@/gql";
 
 export const CategoriesQuery = graphql(`
-  query Categories {
-    categories {
+  query Categories($skip: Int, $take: Int) {
+    categories (skip: $skip, take: $take) {
       items {
         id
         name

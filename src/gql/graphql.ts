@@ -2633,6 +2633,8 @@ export type MutationInitialization = {
   switchToLatestVersion: Scalars['Boolean']['output'];
   testDateComparing: Scalars['Boolean']['output'];
   testGenrateMonthlyRoyaltyReportsAynsc: Scalars['Boolean']['output'];
+  testInstantPayout: Scalars['Boolean']['output'];
+  testTopup: Scalars['Boolean']['output'];
   testTransferMoneyToArtist: TransferResponse;
   unbanUser: Scalars['Boolean']['output'];
   unfollowUser: Scalars['Boolean']['output'];
@@ -3116,6 +3118,17 @@ export type MutationInitializationTestGenrateMonthlyRoyaltyReportsAynscArgs = {
 };
 
 
+export type MutationInitializationTestInstantPayoutArgs = {
+  accountId: Scalars['String']['input'];
+  amount: Scalars['Long']['input'];
+};
+
+
+export type MutationInitializationTestTopupArgs = {
+  amount: Scalars['Long']['input'];
+};
+
+
 export type MutationInitializationTestTransferMoneyToArtistArgs = {
   amount: Scalars['Decimal']['input'];
   artistAccountId: Scalars['String']['input'];
@@ -3235,7 +3248,9 @@ export type Notification = {
   __typename?: 'Notification';
   action: NotificationActionType;
   actor: Array<User>;
+  actorArtist: Array<Artist>;
   actorId: Scalars['String']['output'];
+  actorListener: Array<Listener>;
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
@@ -3244,7 +3259,10 @@ export type Notification = {
   readAt?: Maybe<Scalars['DateTime']['output']>;
   relatedId?: Maybe<Scalars['String']['output']>;
   relatedType?: Maybe<NotificationRelatedType>;
+  target: Array<User>;
+  targetArtist: Array<Artist>;
   targetId: Scalars['String']['output'];
+  targetListener: Array<Listener>;
   url?: Maybe<Scalars['String']['output']>;
 };
 
@@ -3252,6 +3270,36 @@ export type Notification = {
 export type NotificationActorArgs = {
   order?: InputMaybe<Array<UserSortInput>>;
   where?: InputMaybe<UserFilterInput>;
+};
+
+
+export type NotificationActorArtistArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type NotificationActorListenerArgs = {
+  order?: InputMaybe<Array<ListenerSortInput>>;
+  where?: InputMaybe<ListenerFilterInput>;
+};
+
+
+export type NotificationTargetArgs = {
+  order?: InputMaybe<Array<UserSortInput>>;
+  where?: InputMaybe<UserFilterInput>;
+};
+
+
+export type NotificationTargetArtistArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type NotificationTargetListenerArgs = {
+  order?: InputMaybe<Array<ListenerSortInput>>;
+  where?: InputMaybe<ListenerFilterInput>;
 };
 
 export enum NotificationActionType {
@@ -7001,6 +7049,27 @@ export type SearchPlaylistsQueryVariables = Exact<{
 
 export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', searchPlaylists?: { __typename?: 'SearchPlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, checkPlaylistInFavorite: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
 
+export type CreateCategoryMutationVariables = Exact<{
+  categoryRequest: CreateCategoryRequestInput;
+}>;
+
+
+export type CreateCategoryMutation = { __typename?: 'MutationInitialization', createCategory: boolean };
+
+export type UpdateCategoryMutationVariables = Exact<{
+  updateCategoryRequest: UpdateCategoryRequestInput;
+}>;
+
+
+export type UpdateCategoryMutation = { __typename?: 'MutationInitialization', updateCategory: boolean };
+
+export type SoftDeleteCategoryMutationVariables = Exact<{
+  categoryId: Scalars['String']['input'];
+}>;
+
+
+export type SoftDeleteCategoryMutation = { __typename?: 'MutationInitialization', softDeleteCategory: boolean };
+
 export type CreateEscrowCommissionPolicyMutationVariables = Exact<{
   createRequest: CreateEscrowCommissionPolicyRequestInput;
 }>;
@@ -7489,6 +7558,23 @@ export type AdminProfileQueryVariables = Exact<{
 
 export type AdminProfileQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus, role: UserRole, createdAt: any, updatedAt?: any | null }> | null } | null };
 
+export type CategoriesAdminQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<CategoryFilterInput>;
+  order?: InputMaybe<Array<CategorySortInput> | CategorySortInput>;
+}>;
+
+
+export type CategoriesAdminQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Category', id: string, name: string, slug: string, type: CategoryType, aliases: Array<string>, popularity: number, description?: string | null, isVisible: boolean, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type CategoryDetailAdminQueryVariables = Exact<{
+  where?: InputMaybe<CategoryFilterInput>;
+}>;
+
+
+export type CategoryDetailAdminQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string, slug: string, type: CategoryType, aliases: Array<string>, popularity: number, description?: string | null, isVisible: boolean, createdAt: any, updatedAt?: any | null }> | null } | null };
+
 export type PaymentTransactionsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -7655,7 +7741,10 @@ export type ArtistPackagesDetailQueryVariables = Exact<{
 
 export type ArtistPackagesDetailQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, currency: CurrencyType, estimateDeliveryDays: number, isCustom: boolean, description?: string | null, maxRevision: number, status: ArtistPackageStatus, isDelete: boolean, createdAt: any, updatedAt?: any | null, artistId: string, customPackageInfo?: { __typename?: 'CustomArtistPackageInfo', clientId: string, conversationId?: string | null } | null, serviceDetails: Array<{ __typename?: 'Metadata', key: string, value: string }> }> | null } | null };
 
-export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+export type CategoriesQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
 
 
 export type CategoriesQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null };
@@ -7883,6 +7972,29 @@ export type PlaylistsFavoriteQueryVariables = Exact<{
 
 export type PlaylistsFavoriteQuery = { __typename?: 'QueryInitialization', favoritePlaylists?: { __typename?: 'FavoritePlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, userId: string, isPublic: boolean, checkPlaylistInFavorite: boolean }> | null } | null };
 
+export type RecommendedTracksByTrackIdQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  algorithm: RecommendationAlgorithm;
+  trackId: Scalars['String']['input'];
+  limit: Scalars['Int']['input'];
+  audioFeatureWeight: AudioFeatureWeightInput;
+  order?: InputMaybe<Array<TrackSortInput> | TrackSortInput>;
+}>;
+
+
+export type RecommendedTracksByTrackIdQuery = { __typename?: 'QueryInitialization', recommendedTracksByTrackId?: { __typename?: 'RecommendedTracksByTrackIdCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, checkTrackInFavorite: boolean, favoriteCount: any, createdAt: any, streamCount: any, tags: Array<string>, categoryIds: Array<string>, type: TrackType, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> | null } | null, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null }> | null } | null };
+
+export type RelatedTracksQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TrackFilterInput>;
+  order?: InputMaybe<Array<TrackSortInput> | TrackSortInput>;
+}>;
+
+
+export type RelatedTracksQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Track', name: string, id: string, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, createdAt: any, checkTrackInFavorite: boolean, type: TrackType, tags: Array<string>, categoryIds: Array<string>, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', userId: string, id: string, stageName: string }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> | null } | null, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null }> | null } | null };
+
 export type ReportQueriesQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -8057,7 +8169,7 @@ export type TrackDetailQueryVariables = Exact<{
 }>;
 
 
-export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
+export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, categoryIds: Array<string>, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
 
 export type TrackFavoriteQueryVariables = Exact<{
   take: Scalars['Int']['input'];
@@ -8717,6 +8829,21 @@ export const SearchPlaylistsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SearchPlaylistsQuery, SearchPlaylistsQueryVariables>;
+export const CreateCategoryDocument = new TypedDocumentString(`
+    mutation CreateCategory($categoryRequest: CreateCategoryRequestInput!) {
+  createCategory(categoryRequest: $categoryRequest)
+}
+    `) as unknown as TypedDocumentString<CreateCategoryMutation, CreateCategoryMutationVariables>;
+export const UpdateCategoryDocument = new TypedDocumentString(`
+    mutation UpdateCategory($updateCategoryRequest: UpdateCategoryRequestInput!) {
+  updateCategory(updateCategoryRequest: $updateCategoryRequest)
+}
+    `) as unknown as TypedDocumentString<UpdateCategoryMutation, UpdateCategoryMutationVariables>;
+export const SoftDeleteCategoryDocument = new TypedDocumentString(`
+    mutation SoftDeleteCategory($categoryId: String!) {
+  softDeleteCategory(categoryId: $categoryId)
+}
+    `) as unknown as TypedDocumentString<SoftDeleteCategoryMutation, SoftDeleteCategoryMutationVariables>;
 export const CreateEscrowCommissionPolicyDocument = new TypedDocumentString(`
     mutation CreateEscrowCommissionPolicy($createRequest: CreateEscrowCommissionPolicyRequestInput!) {
   createEscrowCommissionPolicy(createRequest: $createRequest)
@@ -9098,6 +9225,47 @@ export const AdminProfileDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AdminProfileQuery, AdminProfileQueryVariables>;
+export const CategoriesAdminDocument = new TypedDocumentString(`
+    query CategoriesAdmin($skip: Int, $take: Int, $where: CategoryFilterInput, $order: [CategorySortInput!]) {
+  categories(skip: $skip, take: $take, where: $where, order: $order) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      name
+      slug
+      type
+      aliases
+      popularity
+      description
+      isVisible
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CategoriesAdminQuery, CategoriesAdminQueryVariables>;
+export const CategoryDetailAdminDocument = new TypedDocumentString(`
+    query CategoryDetailAdmin($where: CategoryFilterInput) {
+  categories(where: $where) {
+    items {
+      id
+      name
+      slug
+      type
+      aliases
+      popularity
+      description
+      isVisible
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CategoryDetailAdminQuery, CategoryDetailAdminQueryVariables>;
 export const PaymentTransactionsDocument = new TypedDocumentString(`
     query PaymentTransactions($skip: Int, $take: Int, $where: PaymentTransactionFilterInput, $order: [PaymentTransactionSortInput!]) {
   paymentTransactions(skip: $skip, take: $take, where: $where, order: $order) {
@@ -9386,7 +9554,7 @@ export const RoyaltyPoliciesDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<RoyaltyPoliciesQuery, RoyaltyPoliciesQueryVariables>;
 export const SubscriptionsDocument = new TypedDocumentString(`
     query Subscriptions($where: SubscriptionFilterInput!) {
-  subscriptions(where: $where, order: {version: DESC}) {
+  subscriptions(where: $where, order: {createdAt: DESC}) {
     pageInfo {
       hasNextPage
       hasPreviousPage
@@ -9609,8 +9777,8 @@ export const ArtistPackagesDetailDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<ArtistPackagesDetailQuery, ArtistPackagesDetailQueryVariables>;
 export const CategoriesDocument = new TypedDocumentString(`
-    query Categories {
-  categories {
+    query Categories($skip: Int, $take: Int) {
+  categories(skip: $skip, take: $take) {
     items {
       id
       name
@@ -10429,6 +10597,104 @@ export const PlaylistsFavoriteDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PlaylistsFavoriteQuery, PlaylistsFavoriteQueryVariables>;
+export const RecommendedTracksByTrackIdDocument = new TypedDocumentString(`
+    query RecommendedTracksByTrackId($skip: Int, $take: Int, $algorithm: RecommendationAlgorithm!, $trackId: String!, $limit: Int!, $audioFeatureWeight: AudioFeatureWeightInput!, $order: [TrackSortInput!]) {
+  recommendedTracksByTrackId(
+    skip: $skip
+    take: $take
+    algorithm: $algorithm
+    trackId: $trackId
+    limit: $limit
+    audioFeatureWeight: $audioFeatureWeight
+    order: $order
+  ) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      name
+      coverImage
+      mainArtistIds
+      featuredArtistIds
+      mainArtists {
+        items {
+          id
+          userId
+          stageName
+        }
+      }
+      featuredArtists {
+        items {
+          id
+          userId
+          stageName
+        }
+      }
+      checkTrackInFavorite
+      favoriteCount
+      createdAt
+      streamCount
+      tags
+      categoryIds
+      type
+      categories {
+        items {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RecommendedTracksByTrackIdQuery, RecommendedTracksByTrackIdQueryVariables>;
+export const RelatedTracksDocument = new TypedDocumentString(`
+    query RelatedTracks($skip: Int, $take: Int, $where: TrackFilterInput, $order: [TrackSortInput!]) {
+  tracks(skip: $skip, take: $take, where: $where, order: $order) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      name
+      id
+      mainArtistIds
+      featuredArtistIds
+      streamCount
+      favoriteCount
+      coverImage
+      createdAt
+      checkTrackInFavorite
+      type
+      tags
+      categoryIds
+      mainArtists {
+        items {
+          userId
+          id
+          stageName
+        }
+      }
+      featuredArtists {
+        items {
+          id
+          userId
+          stageName
+        }
+      }
+      categories {
+        items {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<RelatedTracksQuery, RelatedTracksQueryVariables>;
 export const ReportQueriesDocument = new TypedDocumentString(`
     query ReportQueries($skip: Int, $take: Int, $where: ReportFilterInput) {
   reports(
@@ -11240,6 +11506,7 @@ export const TrackDetailDocument = new TypedDocumentString(`
       coverImage
       favoriteCount
       streamCount
+      categoryIds
       mainArtistIds
       mainArtists {
         items {

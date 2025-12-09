@@ -26,6 +26,20 @@ export function SubscriptionTable({
   onView,
   isLoading = false,
 }: SubscriptionTableProps) {
+
+  function getTierColor(tier: string) {
+  switch (tier.toLowerCase()) {
+    case "free":
+      return "border-main-white text-main-white";
+    case "premium":
+      return "bg-gray-300 border-gray-300 text-black";
+    case "pro":
+      return "bg-red-700 border-red-400 text-red-200";
+    default:
+      return "bg-gray-800 border-white text-white";
+  }
+}
+
   return (
     <div className="space-y-4">
       <Table>
@@ -62,7 +76,11 @@ export function SubscriptionTable({
                   <code className="bg-gray-800 rounded px-2 py-1 text-sm text-gray-300">{subscription.code}</code>
                 </TableCell>
                 <TableCell>
-                  <span className="border border-white rounded px-3 py-1 text-sm font-semibold bg-gray-800 text-white">
+                  <span
+                    className={`inline-block border px-3 py-1 text-sm font-medium ${getTierColor(
+                      subscription.tier
+                    )}`}
+                  >      
                     {subscription.tier}
                   </span>
                 </TableCell>

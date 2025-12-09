@@ -35,7 +35,7 @@ const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadat
 
   // Fetch track details and categories
   const { data: track, isLoading: trackLoading } = useQuery(artistTrackDetailOptions(trackId));
-  const { data: categoriesData, isLoading: categoriesLoading } = useQuery(categoriesOptions);
+  const { data: categoriesData, isLoading: categoriesLoading } = useQuery(categoriesOptions());
 
   // Mutation for updating track metadata
   const { mutateAsync: updateTrackMetadata } = useMutation(updateTrackMetadataMutationOptions);

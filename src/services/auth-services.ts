@@ -229,6 +229,21 @@ export const authApi = {
         throw error;
       }
     },
+    changePassword: async (currentPassword: string, newPassword: string, confirmPassword: string) => {
+      try {
+        const response = await axiosInstance.post(`/api/authentication/change-password`, {
+          currentPassword,
+          newPassword,
+          confirmPassword,
+        });
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          throw new Error(error.response?.data?.message || "Failed to change password");
+        }
+        throw error;
+      }
+    },
   },
   moderator: {
     login: async (email: string, password: string, isRememberMe: boolean): Promise<ModeratorLoginResponse> => {

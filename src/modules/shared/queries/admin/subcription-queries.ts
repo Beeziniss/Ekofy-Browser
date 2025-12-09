@@ -2,7 +2,7 @@ import { graphql } from "@/gql";
 
 export const SUBSCRIPTION_QUERIES = graphql(`
   query Subscriptions($where: SubscriptionFilterInput!) {
-    subscriptions(where: $where, order: { version: DESC }) {
+    subscriptions(where: $where, order: { createdAt: DESC }) {
       pageInfo {
         hasNextPage
         hasPreviousPage

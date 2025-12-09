@@ -22,12 +22,39 @@ export function InvoiceFilters({
   selectedType,
   onTypeChange,
 }: InvoiceFiltersProps) {
+  const getTypeLabel = (value: string) => {
+    switch (value) {
+      case "service": return "Service";
+      case "subscription": return "Subscription";
+      default: return "All Types";
+    }
+  };
+
+  const getStatusLabel = (value: string) => {
+    switch (value) {
+      case PaymentTransactionStatus.Paid: return "Paid";
+      case PaymentTransactionStatus.Pending: return "Pending";
+      case PaymentTransactionStatus.Unpaid: return "Unpaid";
+      default: return "All Status";
+    }
+  };
+
+  const handleTypeChange = (value: string) => {
+    onTypeChange(value);
+  };
+
+  const handleStatusChange = (value: string) => {
+    onStatusChange(value);
+  };
+
   return (
     <div className="flex gap-4">
       {/* Invoice Type Filter */}
-      <Select value={selectedType} onValueChange={onTypeChange}>
+      <Select value={selectedType} onValueChange={handleTypeChange}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="All Types" />
+          <SelectValue>
+            {getTypeLabel(selectedType)}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Types</SelectItem>
@@ -37,9 +64,11 @@ export function InvoiceFilters({
       </Select>
 
       {/* Payment Status Filter */}
-      <Select value={selectedStatus} onValueChange={onStatusChange}>
+      <Select value={selectedStatus} onValueChange={handleStatusChange}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="All Status" />
+          <SelectValue>
+            {getStatusLabel(selectedStatus)}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Status</SelectItem>

@@ -1,8 +1,9 @@
 import TrackSection from "../sections/track-section";
 import TrackLikeSection from "../sections/track-like-section";
 import TrackOwnerSection from "../sections/track-owner-section";
-import TrackRelatedSection from "../sections/track-related-section";
+import RecommendedTracksSection from "../sections/track-recommended-section";
 import TrackCommentSection from "../sections/track-comment-section";
+import TrackRelatedSection from "../sections/track-related-section";
 
 interface TrackDetailViewProps {
   trackId: string;
@@ -20,7 +21,8 @@ const TrackDetailView = ({ trackId }: TrackDetailViewProps) => {
             <TrackCommentSection trackId={trackId} />
           </div>
           <div className="col-span-3 space-y-8">
-            <TrackRelatedSection />
+            <RecommendedTracksSection trackId={trackId} />
+            <TrackRelatedSection trackId={trackId} />
             <TrackLikeSection />
           </div>
         </div>

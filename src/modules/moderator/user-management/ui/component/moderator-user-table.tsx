@@ -26,6 +26,7 @@ import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, UserCheck, UserX, Searc
 import { UserRole, UserStatus } from "@/gql/graphql";
 import { ModeratorUserTableData } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 interface ModeratorUserTableProps {
   data: ModeratorUserTableData[];
@@ -106,11 +107,21 @@ export function ModeratorUserTable({
       header: "User",
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-purple-500">
-            <span className="text-sm font-medium text-white">
-              {row.original.fullName?.charAt(0)?.toUpperCase() || "U"}
-            </span>
-          </div>
+          {row.original.avatarImage ? (
+            <Image
+              src={row.original.avatarImage}
+              alt={row.original.fullName || "User"}
+              width={32}
+              height={32}
+              className="rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-purple-500">
+              <span className="text-sm font-medium text-white">
+                {row.original.fullName?.charAt(0)?.toUpperCase() || "U"}
+              </span>
+            </div>
+          )}
           <span className="font-medium text-gray-300">{row.original.fullName || "Unknown User"}</span>
         </div>
       ),
