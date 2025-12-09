@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,24 +15,17 @@ export function InvoiceDashboardSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Get filters from URL
-  const page = parseInt(searchParams.get("invoicePage") || "1");
-  const status = searchParams.get("invoiceStatus") || "all";
-  const type = searchParams.get("invoiceType") || "all";
-  const pageSize = 5; // Reduced from 10 to 5 to avoid field cost limit
+  // Use state for filters instead of relying on URL params
+  const [status, setStatus] = useState(searchParams.get("invoiceStatus") || "all");
+  const [type, setType] = useState(searchParams.get("invoiceType") || "all");
+  const [page, setPage] = useState(parseInt(searchParams.get("invoicePage") || "1"));
+  const pageSize = 5;
 
   // Build where filter
   const whereFilter = useMemo(() => {
     const filter: Record<string, unknown> = {};
-    
-    // Filter by invoice type
-    if (type === "service") {
-      filter.oneOffSnapshot = { ne: null };
-    } else if (type === "subscription") {
-      filter.subscriptionSnapshot = { ne: null };
-    }
-
     return Object.keys(filter).length > 0 ? filter : undefined;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
   const { data, isLoading } = useQuery(
@@ -44,33 +37,78 @@ export function InvoiceDashboardSection() {
     )
   );
 
+  // Client-side filtering by invoice type
+  const typeFilteredInvoices = useMemo(() => {
+    if (!data?.items) return [];
+    if (type === "all") return data.items;
+    
+    return data.items.filter((invoice) => {
+      if (type === "service") {
+        return invoice.oneOffSnapshot !== null && invoice.oneOffSnapshot !== undefined;
+      } else if (type === "subscription") {
+        return invoice.subscriptionSnapshot !== null && invoice.subscriptionSnapshot !== undefined;
+      }
+      return true;
+    });
+  }, [data?.items, type]);
+
+  // Client-side filtering by payment status
+  const filteredInvoices = useMemo(() => {
+    if (status === "all") return typeFilteredInvoices;
+    const filtered = typeFilteredInvoices.filter((invoice) => {
+      const transactionStatus = invoice.transaction?.[0]?.paymentStatus;
+      return transactionStatus === status;
+    });
+    
+    return filtered;
+  }, [typeFilteredInvoices, status]);
+
+  // Adjust pagination for filtered results
+  const filteredTotalCount = useMemo(() => {
+    if (status === "all") return data?.totalCount || 0;
+    return filteredInvoices.length;
+  }, [status, data?.totalCount, filteredInvoices.length]);
+
   const updateURL = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === "all" || value === "1") {
+    if (value === "1") {
       params.delete(key);
     } else {
       params.set(key, value);
     }
-    router.push(`?${params.toString()}`, { scroll: false });
+    const newUrl = `?${params.toString()}`;
+    console.log("Updating URL to:", newUrl);
+    router.replace(newUrl, { scroll: false });
   };
 
   const handleStatusChange = (newStatus: string) => {
+    console.log("handleStatusChange called with:", newStatus);
+    setStatus(newStatus);
     updateURL("invoiceStatus", newStatus);
-    updateURL("invoicePage", "1"); // Reset to page 1
+    if (newStatus !== status) {
+      setPage(1);
+      updateURL("invoicePage", "1");
+    }
   };
 
   const handleTypeChange = (newType: string) => {
+    console.log("handleTypeChange called with:", newType);
+    setType(newType);
     updateURL("invoiceType", newType);
-    updateURL("invoicePage", "1"); // Reset to page 1
+    if (newType !== type) {
+      setPage(1);
+      updateURL("invoicePage", "1");
+    }
   };
 
   const handlePageChange = (newPage: number) => {
+    setPage(newPage);
     updateURL("invoicePage", newPage.toString());
   };
 
-  const totalPages = data ? Math.ceil(data.totalCount / pageSize) : 0;
-  const hasNextPage = data?.pageInfo.hasNextPage || false;
-  const hasPreviousPage = data?.pageInfo.hasPreviousPage || false;
+  const totalPages = filteredTotalCount ? Math.ceil(filteredTotalCount / pageSize) : 0;
+  const hasNextPage = page < totalPages;
+  const hasPreviousPage = page > 1;
 
   return (
     <Card>
@@ -93,12 +131,12 @@ export function InvoiceDashboardSection() {
           </div>
         ) : (
           <>
-            <InvoiceTable invoices={data?.items || []} />
+            <InvoiceTable invoices={filteredInvoices} />
             
             {/* Pagination */}
             <div className="mt-4 flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
-                Page {page} of {totalPages || 1} ({data?.totalCount || 0} total)
+                Page {page} of {totalPages || 1} ({filteredTotalCount} total)
               </div>
               <div className="flex gap-2">
                 <Button

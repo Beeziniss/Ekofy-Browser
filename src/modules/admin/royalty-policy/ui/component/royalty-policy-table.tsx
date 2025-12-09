@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { RoyaltyPoliciesQuery } from "@/gql/graphql";
 import { formatDate } from "@/utils/format-date";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrencyVND } from "@/utils/format-currency";
 
 type RoyaltyPolicy = NonNullable<
   NonNullable<RoyaltyPoliciesQuery["royaltyPolicies"]>["items"]
@@ -93,10 +94,7 @@ export function RoyaltyPolicyTable({
             <TableRow key={policy.id}>
                 <TableCell>{policies.indexOf(policy) + 1}</TableCell>
               <TableCell className="font-medium">
-                {new Intl.NumberFormat("en-US", {
-                  minimumFractionDigits: 3,
-                  maximumFractionDigits: 3,
-                }).format(Number(policy.ratePerStream))}
+                {formatCurrencyVND(policy.ratePerStream)}
               </TableCell>
               <TableCell>
                 <Badge variant="outline">{policy.currency}</Badge>

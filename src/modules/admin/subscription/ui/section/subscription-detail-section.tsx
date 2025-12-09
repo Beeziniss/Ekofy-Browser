@@ -77,17 +77,6 @@ export function SubscriptionDetailSection({ subscriptionId, onBack }: Subscripti
     }
   };
 
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case "ACTIVE":
-        return "default" as const;
-      case "INACTIVE":
-        return "secondary" as const;
-      default:
-        return "outline" as const;
-    }
-  };
-
   const getTierBadgeVariant = (tier: string) => {
     switch (tier) {
       case "FREE":
@@ -129,7 +118,6 @@ export function SubscriptionDetailSection({ subscriptionId, onBack }: Subscripti
 
       <SubscriptionInfoCard
         subscription={subscription}
-        getStatusBadgeVariant={getStatusBadgeVariant}
         getTierBadgeVariant={getTierBadgeVariant}
       />
 

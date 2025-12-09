@@ -2633,6 +2633,8 @@ export type MutationInitialization = {
   switchToLatestVersion: Scalars['Boolean']['output'];
   testDateComparing: Scalars['Boolean']['output'];
   testGenrateMonthlyRoyaltyReportsAynsc: Scalars['Boolean']['output'];
+  testInstantPayout: Scalars['Boolean']['output'];
+  testTopup: Scalars['Boolean']['output'];
   testTransferMoneyToArtist: TransferResponse;
   unbanUser: Scalars['Boolean']['output'];
   unfollowUser: Scalars['Boolean']['output'];
@@ -3116,6 +3118,17 @@ export type MutationInitializationTestGenrateMonthlyRoyaltyReportsAynscArgs = {
 };
 
 
+export type MutationInitializationTestInstantPayoutArgs = {
+  accountId: Scalars['String']['input'];
+  amount: Scalars['Long']['input'];
+};
+
+
+export type MutationInitializationTestTopupArgs = {
+  amount: Scalars['Long']['input'];
+};
+
+
 export type MutationInitializationTestTransferMoneyToArtistArgs = {
   amount: Scalars['Decimal']['input'];
   artistAccountId: Scalars['String']['input'];
@@ -3235,7 +3248,9 @@ export type Notification = {
   __typename?: 'Notification';
   action: NotificationActionType;
   actor: Array<User>;
+  actorArtist: Array<Artist>;
   actorId: Scalars['String']['output'];
+  actorListener: Array<Listener>;
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
@@ -3244,7 +3259,10 @@ export type Notification = {
   readAt?: Maybe<Scalars['DateTime']['output']>;
   relatedId?: Maybe<Scalars['String']['output']>;
   relatedType?: Maybe<NotificationRelatedType>;
+  target: Array<User>;
+  targetArtist: Array<Artist>;
   targetId: Scalars['String']['output'];
+  targetListener: Array<Listener>;
   url?: Maybe<Scalars['String']['output']>;
 };
 
@@ -3252,6 +3270,36 @@ export type Notification = {
 export type NotificationActorArgs = {
   order?: InputMaybe<Array<UserSortInput>>;
   where?: InputMaybe<UserFilterInput>;
+};
+
+
+export type NotificationActorArtistArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type NotificationActorListenerArgs = {
+  order?: InputMaybe<Array<ListenerSortInput>>;
+  where?: InputMaybe<ListenerFilterInput>;
+};
+
+
+export type NotificationTargetArgs = {
+  order?: InputMaybe<Array<UserSortInput>>;
+  where?: InputMaybe<UserFilterInput>;
+};
+
+
+export type NotificationTargetArtistArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type NotificationTargetListenerArgs = {
+  order?: InputMaybe<Array<ListenerSortInput>>;
+  where?: InputMaybe<ListenerFilterInput>;
 };
 
 export enum NotificationActionType {
@@ -7001,6 +7049,27 @@ export type SearchPlaylistsQueryVariables = Exact<{
 
 export type SearchPlaylistsQuery = { __typename?: 'QueryInitialization', searchPlaylists?: { __typename?: 'SearchPlaylistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Playlist', id: string, userId: string, name: string, nameUnsigned: string, coverImage?: string | null, isPublic: boolean, checkPlaylistInFavorite: boolean, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }>, user: Array<{ __typename?: 'User', id: string, fullName: string }> }> | null } | null };
 
+export type CreateCategoryMutationVariables = Exact<{
+  categoryRequest: CreateCategoryRequestInput;
+}>;
+
+
+export type CreateCategoryMutation = { __typename?: 'MutationInitialization', createCategory: boolean };
+
+export type UpdateCategoryMutationVariables = Exact<{
+  updateCategoryRequest: UpdateCategoryRequestInput;
+}>;
+
+
+export type UpdateCategoryMutation = { __typename?: 'MutationInitialization', updateCategory: boolean };
+
+export type SoftDeleteCategoryMutationVariables = Exact<{
+  categoryId: Scalars['String']['input'];
+}>;
+
+
+export type SoftDeleteCategoryMutation = { __typename?: 'MutationInitialization', softDeleteCategory: boolean };
+
 export type CreateEscrowCommissionPolicyMutationVariables = Exact<{
   createRequest: CreateEscrowCommissionPolicyRequestInput;
 }>;
@@ -7488,6 +7557,23 @@ export type AdminProfileQueryVariables = Exact<{
 
 
 export type AdminProfileQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus, role: UserRole, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type CategoriesAdminQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<CategoryFilterInput>;
+  order?: InputMaybe<Array<CategorySortInput> | CategorySortInput>;
+}>;
+
+
+export type CategoriesAdminQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Category', id: string, name: string, slug: string, type: CategoryType, aliases: Array<string>, popularity: number, description?: string | null, isVisible: boolean, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type CategoryDetailAdminQueryVariables = Exact<{
+  where?: InputMaybe<CategoryFilterInput>;
+}>;
+
+
+export type CategoryDetailAdminQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string, slug: string, type: CategoryType, aliases: Array<string>, popularity: number, description?: string | null, isVisible: boolean, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type PaymentTransactionsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -8731,6 +8817,21 @@ export const SearchPlaylistsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SearchPlaylistsQuery, SearchPlaylistsQueryVariables>;
+export const CreateCategoryDocument = new TypedDocumentString(`
+    mutation CreateCategory($categoryRequest: CreateCategoryRequestInput!) {
+  createCategory(categoryRequest: $categoryRequest)
+}
+    `) as unknown as TypedDocumentString<CreateCategoryMutation, CreateCategoryMutationVariables>;
+export const UpdateCategoryDocument = new TypedDocumentString(`
+    mutation UpdateCategory($updateCategoryRequest: UpdateCategoryRequestInput!) {
+  updateCategory(updateCategoryRequest: $updateCategoryRequest)
+}
+    `) as unknown as TypedDocumentString<UpdateCategoryMutation, UpdateCategoryMutationVariables>;
+export const SoftDeleteCategoryDocument = new TypedDocumentString(`
+    mutation SoftDeleteCategory($categoryId: String!) {
+  softDeleteCategory(categoryId: $categoryId)
+}
+    `) as unknown as TypedDocumentString<SoftDeleteCategoryMutation, SoftDeleteCategoryMutationVariables>;
 export const CreateEscrowCommissionPolicyDocument = new TypedDocumentString(`
     mutation CreateEscrowCommissionPolicy($createRequest: CreateEscrowCommissionPolicyRequestInput!) {
   createEscrowCommissionPolicy(createRequest: $createRequest)
@@ -9112,6 +9213,47 @@ export const AdminProfileDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AdminProfileQuery, AdminProfileQueryVariables>;
+export const CategoriesAdminDocument = new TypedDocumentString(`
+    query CategoriesAdmin($skip: Int, $take: Int, $where: CategoryFilterInput, $order: [CategorySortInput!]) {
+  categories(skip: $skip, take: $take, where: $where, order: $order) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      name
+      slug
+      type
+      aliases
+      popularity
+      description
+      isVisible
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CategoriesAdminQuery, CategoriesAdminQueryVariables>;
+export const CategoryDetailAdminDocument = new TypedDocumentString(`
+    query CategoryDetailAdmin($where: CategoryFilterInput) {
+  categories(where: $where) {
+    items {
+      id
+      name
+      slug
+      type
+      aliases
+      popularity
+      description
+      isVisible
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CategoryDetailAdminQuery, CategoryDetailAdminQueryVariables>;
 export const PaymentTransactionsDocument = new TypedDocumentString(`
     query PaymentTransactions($skip: Int, $take: Int, $where: PaymentTransactionFilterInput, $order: [PaymentTransactionSortInput!]) {
   paymentTransactions(skip: $skip, take: $take, where: $where, order: $order) {
@@ -9400,7 +9542,7 @@ export const RoyaltyPoliciesDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<RoyaltyPoliciesQuery, RoyaltyPoliciesQueryVariables>;
 export const SubscriptionsDocument = new TypedDocumentString(`
     query Subscriptions($where: SubscriptionFilterInput!) {
-  subscriptions(where: $where, order: {version: DESC}) {
+  subscriptions(where: $where, order: {createdAt: DESC}) {
     pageInfo {
       hasNextPage
       hasPreviousPage
