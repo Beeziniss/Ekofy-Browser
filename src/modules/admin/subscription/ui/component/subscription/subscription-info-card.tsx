@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatNumber } from "@/utils/format-number";
+import { activeInactiveStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 
 interface SubscriptionInfoCardProps {
   subscription: {
@@ -18,13 +19,11 @@ interface SubscriptionInfoCardProps {
     createdAt: string;
     updatedAt?: string;
   };
-  getStatusBadgeVariant: (status: string) => "default" | "secondary" | "outline";
   getTierBadgeVariant: (tier: string) => "default" | "secondary" | "outline" | "destructive";
 }
 
 export function SubscriptionInfoCard({
   subscription,
-  getStatusBadgeVariant,
   getTierBadgeVariant,
 }: SubscriptionInfoCardProps) {
   return (
@@ -44,7 +43,7 @@ export function SubscriptionInfoCard({
           </div>
           <div>
             <div className="text-muted-foreground text-sm font-medium">Status</div>
-            <Badge variant={getStatusBadgeVariant(subscription.status)}>{subscription.status}</Badge>
+            {activeInactiveStatusBadge(subscription.status)}
           </div>
           <div>
             <div className="text-muted-foreground text-sm font-medium">Version</div>

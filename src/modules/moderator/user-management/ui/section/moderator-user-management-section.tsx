@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ModeratorUserStatsCards, ModeratorUserTableWrapper, ModeratorStatusConfirmModal } from "../component";
 import { moderatorUsersQueryOptions } from "@/gql/options/moderator-options";
 import { useDeActiveUser, useReActiveUser } from "@/gql/client-mutation-options/moderator-mutation";
-import { UserStatus } from "@/gql/graphql";
+import { UserStatus, UserRole } from "@/gql/graphql";
 import { ModeratorUserTableData } from "@/types";
 import { toast } from "sonner";
 
@@ -90,7 +90,28 @@ export function ModeratorUserManagementSection() {
     );
   }
 
-  const users = usersData?.users?.items || [];
+  const rawUsers = usersData?.users?.items || [];
+  const artists = usersData?.artists?.items || [];
+  const listeners = usersData?.listeners?.items || [];
+  
+  // Merge avatarImage from artists and listeners into users
+  const users = rawUsers.map((user) => {
+    let avatarImage: string | undefined = undefined;
+    
+    if (user.role === UserRole.Artist) {
+      const artist = artists.find((a) => a.userId === user.id);
+      avatarImage = artist?.avatarImage || undefined;
+    } else if (user.role === UserRole.Listener) {
+      const listener = listeners.find((l) => l.userId === user.id);
+      avatarImage = listener?.avatarImage || undefined;
+    }
+    
+    return {
+      ...user,
+      avatarImage,
+    };
+  });
+  
   const totalCount = usersData?.users?.totalCount || 0;
   const pageInfo = usersData?.users?.pageInfo;
 

@@ -2633,6 +2633,8 @@ export type MutationInitialization = {
   switchToLatestVersion: Scalars['Boolean']['output'];
   testDateComparing: Scalars['Boolean']['output'];
   testGenrateMonthlyRoyaltyReportsAynsc: Scalars['Boolean']['output'];
+  testInstantPayout: Scalars['Boolean']['output'];
+  testTopup: Scalars['Boolean']['output'];
   testTransferMoneyToArtist: TransferResponse;
   unbanUser: Scalars['Boolean']['output'];
   unfollowUser: Scalars['Boolean']['output'];
@@ -3116,6 +3118,17 @@ export type MutationInitializationTestGenrateMonthlyRoyaltyReportsAynscArgs = {
 };
 
 
+export type MutationInitializationTestInstantPayoutArgs = {
+  accountId: Scalars['String']['input'];
+  amount: Scalars['Long']['input'];
+};
+
+
+export type MutationInitializationTestTopupArgs = {
+  amount: Scalars['Long']['input'];
+};
+
+
 export type MutationInitializationTestTransferMoneyToArtistArgs = {
   amount: Scalars['Decimal']['input'];
   artistAccountId: Scalars['String']['input'];
@@ -3235,7 +3248,9 @@ export type Notification = {
   __typename?: 'Notification';
   action: NotificationActionType;
   actor: Array<User>;
+  actorArtist: Array<Artist>;
   actorId: Scalars['String']['output'];
+  actorListener: Array<Listener>;
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
@@ -3244,7 +3259,10 @@ export type Notification = {
   readAt?: Maybe<Scalars['DateTime']['output']>;
   relatedId?: Maybe<Scalars['String']['output']>;
   relatedType?: Maybe<NotificationRelatedType>;
+  target: Array<User>;
+  targetArtist: Array<Artist>;
   targetId: Scalars['String']['output'];
+  targetListener: Array<Listener>;
   url?: Maybe<Scalars['String']['output']>;
 };
 
@@ -3252,6 +3270,36 @@ export type Notification = {
 export type NotificationActorArgs = {
   order?: InputMaybe<Array<UserSortInput>>;
   where?: InputMaybe<UserFilterInput>;
+};
+
+
+export type NotificationActorArtistArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type NotificationActorListenerArgs = {
+  order?: InputMaybe<Array<ListenerSortInput>>;
+  where?: InputMaybe<ListenerFilterInput>;
+};
+
+
+export type NotificationTargetArgs = {
+  order?: InputMaybe<Array<UserSortInput>>;
+  where?: InputMaybe<UserFilterInput>;
+};
+
+
+export type NotificationTargetArtistArgs = {
+  order?: InputMaybe<Array<ArtistSortInput>>;
+  where?: InputMaybe<ArtistFilterInput>;
+};
+
+
+export type NotificationTargetListenerArgs = {
+  order?: InputMaybe<Array<ListenerSortInput>>;
+  where?: InputMaybe<ListenerFilterInput>;
 };
 
 export enum NotificationActionType {
@@ -9494,7 +9542,7 @@ export const RoyaltyPoliciesDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<RoyaltyPoliciesQuery, RoyaltyPoliciesQueryVariables>;
 export const SubscriptionsDocument = new TypedDocumentString(`
     query Subscriptions($where: SubscriptionFilterInput!) {
-  subscriptions(where: $where, order: {version: DESC}) {
+  subscriptions(where: $where, order: {createdAt: DESC}) {
     pageInfo {
       hasNextPage
       hasPreviousPage
