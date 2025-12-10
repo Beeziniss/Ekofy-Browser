@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { useArtistPayouts } from "@/modules/artist/studio/hooks/use-artist-payouts";
+import { platformFeeByPayoutIdOptions } from "@/gql/options/artist-activity-options";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -21,6 +23,21 @@ interface PayoutsTableProps {
 }
 
 const statusBadge = payoutStatusBadge;
+
+// Component to fetch and display platform fee
+function PlatformFeeCell({ payoutId }: { payoutId: string }) {
+  const { data, isLoading } = useQuery(platformFeeByPayoutIdOptions({ payoutTransactionId: payoutId }));
+  
+  if (isLoading) return <span className="text-gray-400">...</span>;
+  
+  const platformFee = data?.packageOrders?.items?.[0]?.platformFeePercentage;
+  
+  if (platformFee !== undefined && platformFee !== null) {
+    return <span>{platformFee}%</span>;
+  }
+  
+  return <span className="text-gray-400">-</span>;
+}
 
 export default function PayoutsTable({ userId, pageSize = 10 }: PayoutsTableProps) {
   const [page, setPage] = useState(1);
@@ -42,6 +59,7 @@ export default function PayoutsTable({ userId, pageSize = 10 }: PayoutsTableProp
               <TableHead>Date</TableHead>
               <TableHead>Amount</TableHead>
               <TableHead>Method</TableHead>
+              <TableHead>Platform Fee</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Payout</TableHead>
               <TableHead>Actions</TableHead>
@@ -50,11 +68,11 @@ export default function PayoutsTable({ userId, pageSize = 10 }: PayoutsTableProp
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6}>Loading...</TableCell>
+                <TableCell colSpan={7}>Loading...</TableCell>
               </TableRow>
             ) : isError ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-red-500">Failed to load payouts.</TableCell>
+                <TableCell colSpan={7} className="text-red-500">Failed to load payouts.</TableCell>
               </TableRow>
             ) : items && items.length > 0 ? (
               items.map((tx, idx) => (
@@ -66,6 +84,9 @@ export default function PayoutsTable({ userId, pageSize = 10 }: PayoutsTableProp
                     {typeof tx?.amount === "number" ? tx.amount.toLocaleString() : tx?.amount} {tx?.currency}
                   </TableCell>
                   <TableCell>{tx?.method || "-"}</TableCell>
+                  <TableCell>
+                    {tx?.id ? <PlatformFeeCell payoutId={tx.id} /> : "-"}
+                  </TableCell>
                   <TableCell>{tx?.status ? statusBadge(tx.status as PayoutTransactionStatus) : "-"}</TableCell>
                   <TableCell>
                     {tx?.stripeTransferId || tx?.stripePayoutId || tx?.id ? (
@@ -87,7 +108,7 @@ export default function PayoutsTable({ userId, pageSize = 10 }: PayoutsTableProp
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6}>No payouts found.</TableCell>
+                <TableCell colSpan={7}>No payouts found.</TableCell>
               </TableRow>
             )}
           </TableBody>

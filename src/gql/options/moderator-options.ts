@@ -7,7 +7,7 @@ import {
 } from "@/modules/shared/queries/moderator/approval-histories-queries";
 // import { PendingArtistPackagesQuery } from "@/modules/shared/queries/artist/artist-packages-queries";
 import { execute } from "../execute";
-import { queryOptions } from "@tanstack/react-query";
+import { queryOptions, infiniteQueryOptions } from "@tanstack/react-query";
 import {
   UserRole,
   UserFilterInput,
@@ -18,6 +18,7 @@ import {
   PackageOrderSortInput,
   PackageOrderStatus,
   SortEnumType,
+  MessageFilterInput,
   // PaginatedDataOfPendingArtistPackageResponseFilterInput,
 } from "@/gql/graphql";
 import {
@@ -39,6 +40,7 @@ import { ApprovalPriorityStatus } from "@/types/approval-track";
 import {
   PACKAGE_ORDERS_LIST_QUERY,
   PACKAGE_ORDER_DETAIL_QUERY,
+  ORDER_CONVERSATION_MESSAGES_QUERY,
 } from "@/modules/shared/queries/moderator/order-disputed-querties";
 
 export const moderatorProfileOptions = (userId: string) =>
@@ -479,4 +481,30 @@ export const moderatorPackageOrderDetailOptions = (orderId: string) =>
     staleTime: 0, // Always fetch fresh data
     refetchOnMount: false, // Prevent refetch on mount
     refetchOnWindowFocus: false, // Prevent refetch on window focus
+  });
+
+// Order Conversation Messages query options for moderator
+// Using cursor-based infinite query for pagination like client conversation
+export const moderatorOrderConversationMessagesOptions = (conversationId: string, pageSize: number = 50) =>
+  infiniteQueryOptions({
+    queryKey: ["moderator-order-conversation-messages", conversationId],
+    queryFn: async ({ pageParam }) => {
+      const where: MessageFilterInput = { conversationId: { eq: conversationId } };
+      
+      const result = await execute(ORDER_CONVERSATION_MESSAGES_QUERY, {
+        where,
+        first: pageSize, // Load first N messages
+        after: pageParam as string | undefined, // Cursor for next page
+      });
+
+      return result;
+    },
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => {
+      // Return next cursor if there are more pages
+      return lastPage.messages?.pageInfo.hasNextPage
+        ? lastPage.messages?.pageInfo.endCursor
+        : undefined;
+    },
+    enabled: !!conversationId,
   });

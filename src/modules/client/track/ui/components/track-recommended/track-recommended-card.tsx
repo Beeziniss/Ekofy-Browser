@@ -36,6 +36,7 @@ interface RecommendedTrackCardProps {
   checkTrackInFavorite?: boolean;
   favoriteCount?: number;
   streamCount?: number;
+  categories?: Array<{ id: string; name?: string | null } | null>;
 }
 
 const RecommendedTrackCard = React.memo(
@@ -48,6 +49,7 @@ const RecommendedTrackCard = React.memo(
     checkTrackInFavorite,
     favoriteCount,
     streamCount,
+    categories,
   }: RecommendedTrackCardProps) => {
     const queryClient = useQueryClient();
     const { isAuthenticated } = useAuthStore();
@@ -237,6 +239,24 @@ const RecommendedTrackCard = React.memo(
                 <span>Unknown Artist</span>
               )}
             </div>
+            
+            {/* Categories */}
+            {categories && categories.length > 0 && (
+              <div className="mt-1 flex flex-wrap items-center gap-1">
+                {categories.slice(0, 3).map((category, idx) => {
+                  if (!category?.name) return null;
+                  return (
+                    <span
+                      key={category.id || idx}
+                      className="rounded-full bg-primary-500/10 px-1.5 py-0.5 text-[10px] font-medium text-primary-500"
+                    >
+                      {category.name}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+
             {/* Stats */}
             <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
               {streamCount !== undefined && (

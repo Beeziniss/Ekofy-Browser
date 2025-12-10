@@ -67,10 +67,10 @@ export function StripeSuccessCard() {
           {/* Success Message */}
           <div className="space-y-4">
             <h1 className="text-2xl font-bold text-main-white">
-              Kết nối thành công!
+              Connected successfully!
             </h1>
             <p className="text-main-white leading-relaxed text-sm">
-              Tài khoản Stripe của bạn đã được kết nối thành công. Bạn đã sẵn sàng để bắt đầu nhận thanh toán.
+              Your Stripe account has been connected successfully. You are now ready to start receiving payments.
             </p>
           </div>
 
@@ -91,7 +91,7 @@ export function StripeSuccessCard() {
               className="w-full primary_gradient hover:opacity-80 text-main-white font-semibold py-3 h-12 rounded-xl transition-all duration-200 shadow-lg"
             >
               <div className="flex items-center gap-2">
-                Quay về trang chủ
+                Back to Home
                 <ArrowRight className="w-4 h-4" />
               </div>
             </Button>
@@ -99,7 +99,7 @@ export function StripeSuccessCard() {
 
           {/* Additional Info */}
           <div className="text-sm text-main-white">
-            <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với đội hỗ trợ của chúng tôi.</p>
+            <p>If you have any questions, please contact our support team.</p>
           </div>
         </CardContent>
       </Card>

@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CommentResponse, CommentType } from "@/gql/graphql";
+import { ArtistQuery, CommentResponse, CommentType, ListenerQuery } from "@/gql/graphql";
 import {
   createRequestHubCommentMutationOptions,
   updateRequestHubCommentMutationOptions,
@@ -41,9 +41,11 @@ interface RequestHubReplyCommentProps {
   requestId: string;
   level: number;
   rootCommentId?: string;
+  listenerData?: ListenerQuery;
+  artistData?: ArtistQuery;
 }
 
-const RequestHubCommentReply = ({ reply, requestId, level, rootCommentId }: RequestHubReplyCommentProps) => {
+const RequestHubCommentReply = ({ reply, requestId, level, rootCommentId, listenerData, artistData }: RequestHubReplyCommentProps) => {
   const [showNestedReplies, setShowNestedReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -300,11 +302,17 @@ const RequestHubCommentReply = ({ reply, requestId, level, rootCommentId }: Requ
         {showReplyInput && (
           <div className="mt-2 flex items-center gap-x-2">
             <Avatar className="h-7 w-7 border border-gray-600/50">
-              <AvatarImage
-                src={reply.commenter?.listener?.avatarImage || reply.commenter?.artist?.avatarImage || undefined}
+               <AvatarImage
+                src={
+                  listenerData?.listeners?.items?.[0]?.avatarImage ||
+                  artistData?.artists?.items?.[0]?.avatarImage ||
+                  undefined
+                }
               />
-              <AvatarFallback className="bg-gray-700 text-xs text-gray-300">
-                {reply.commenter?.fullName.slice(0, 2)}
+              <AvatarFallback>
+                {listenerData?.listeners?.items?.[0]?.displayName?.slice(0, 1) ||
+                  artistData?.artists?.items?.[0]?.stageName?.slice(0, 1) ||
+                  "U"}
               </AvatarFallback>
             </Avatar>
             <div className="relative flex-1">
