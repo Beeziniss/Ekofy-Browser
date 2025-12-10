@@ -26,6 +26,7 @@ interface ArtistInfoCardProps {
 export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
   const [frontImageUrl, setFrontImageUrl] = React.useState<string | null>(null);
   const [backImageUrl, setBackImageUrl] = React.useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
 
   // Fetch presigned URLs for S3 images
   React.useEffect(() => {
@@ -57,6 +58,30 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
 
   return (
     <div className="space-y-4">
+      {/* Image Preview Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-h-[90vh] max-w-[90vw]">
+            <Image
+              src={selectedImage}
+              alt="ID Preview"
+              width={1200}
+              height={800}
+              className="h-auto w-auto max-h-[90vh] max-w-[90vw] object-contain"
+            />
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header with Avatar and Info */}
       <div className="mx-auto w-full rounded-lg bg-[#121212] pt-6 pb-16">
         <div className="primary_gradient relative h-60 w-full rounded-lg">
@@ -100,7 +125,10 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
             {/* Front Image */}
             <div>
               <label className="mb-2 block text-sm text-gray-300">Front Image</label>
-              <div className="transparent flex h-40 w-full items-center justify-center overflow-hidden rounded-lg border-2 border-solid border-gray-400 bg-blue-600">
+              <div
+                className="transparent flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-solid border-gray-400 bg-blue-600 transition-opacity hover:opacity-80"
+                onClick={() => frontImageUrl && setSelectedImage(frontImageUrl)}
+              >
                 {frontImageUrl ? (
                   <Image
                     src={frontImageUrl}
@@ -118,7 +146,10 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
             {/* Back Image */}
             <div>
               <label className="mb-2 block text-sm text-gray-300">Back Image</label>
-              <div className="transparent flex h-40 w-full items-center justify-center overflow-hidden rounded-lg border-2 border-solid border-gray-400 bg-blue-600">
+              <div
+                className="transparent flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-solid border-gray-400 bg-blue-600 transition-opacity hover:opacity-80"
+                onClick={() => backImageUrl && setSelectedImage(backImageUrl)}
+              >
                 {backImageUrl ? (
                   <Image
                     src={backImageUrl}
