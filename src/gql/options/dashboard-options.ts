@@ -122,12 +122,14 @@ export const totalArtistsOptions = (
 
 // Total Tracks Options
 export const totalTracksOptions = (
+  skip: 0,
+  take: 1000,
   where?: TrackFilterInput,
   order?: TrackSortInput[]
 ) => ({
-  queryKey: ['total-tracks', where, order],
+  queryKey: ['total-tracks', skip, take, where, order],
   queryFn: async () => {
-    const result = await execute(TOTAL_TRACKS, { where, order });
+    const result = await execute(TOTAL_TRACKS, { skip, take, where, order });
     return result.tracks || {
       totalCount: 0,
     };
@@ -190,11 +192,13 @@ export const platformRevenueOptions = (
 
 // Track Daily Metrics Options
 export const trackDailyMetricsOptions = (
+  skip: number = 0,
+  take: number = 1000,
   where?: TrackDailyMetricFilterInput
 ) => ({
-  queryKey: ['track-daily-metrics', where],
+  queryKey: ['track-daily-metrics', skip, take, where],
   queryFn: async () => {
-    const result = await execute(TRACK_DAILY_METRICS, { where });
+    const result = await execute(TRACK_DAILY_METRICS, { skip, take, where });
     return result.trackDailyMetrics || {
       items: [],
       totalCount: 0,

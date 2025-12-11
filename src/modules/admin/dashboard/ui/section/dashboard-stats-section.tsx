@@ -21,7 +21,7 @@ export function DashboardStatsSection() {
     totalArtistsOptions()
   );
   const { data: tracksData, isLoading: tracksLoading } = useQuery(
-    totalTracksOptions()
+    totalTracksOptions(0, 1000)
   );
 
   // Calculate streams for monthly period only
@@ -29,7 +29,7 @@ export function DashboardStatsSection() {
   const oneMonthAgo = useMemo(() => new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()), [now]);
 
   const { data: monthlyStreamsData, isLoading: monthlyStreamsLoading } = useQuery(
-    trackDailyMetricsOptions({ createdAt: { gte: oneMonthAgo.toISOString() } })
+    trackDailyMetricsOptions(0, 1000, { createdAt: { gte: oneMonthAgo.toISOString() } })
   );
 
   const totalListeners = listenersData?.totalCount || 0;
