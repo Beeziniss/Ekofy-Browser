@@ -11613,7 +11613,7 @@ export const TrackListHomeDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<TrackListHomeQuery, TrackListHomeQueryVariables>;
 export const TrackDetailDocument = new TypedDocumentString(`
     query TrackDetail($trackId: String!) {
-  tracks(where: {id: {eq: $trackId}}) {
+  tracks(where: {id: {eq: $trackId}}, take: 1, skip: 0) {
     items {
       id
       name

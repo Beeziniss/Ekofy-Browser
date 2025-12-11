@@ -21,7 +21,7 @@ interface OrderApproveDeliveryProps {
   orderId: string;
 }
 
-const OrderApproveDelivery: React.FC<OrderApproveDeliveryProps> = ({ orderId }) => {
+const OrderApproveDelivery = ({ orderId }: OrderApproveDeliveryProps) => {
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = useMutation(approveDeliveryMutationOptions);
 

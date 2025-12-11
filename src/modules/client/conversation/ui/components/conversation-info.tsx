@@ -7,6 +7,7 @@ import { formatDate } from "@/utils/format-date";
 import ConversationInfoRequests from "./conversation-info-requests";
 import { Skeleton } from "@/components/ui/skeleton";
 import { memo } from "react";
+import { ConversationStatus } from "@/gql/graphql";
 
 interface ConversationInfoProps {
   currentUserId: string;
@@ -15,11 +16,21 @@ interface ConversationInfoProps {
   nickname?: string;
   isArtist: boolean;
   conversationId?: string;
+  conversationStatus?: ConversationStatus;
   requestId?: string | null;
 }
 
 const ConversationInfo = memo(
-  ({ currentUserId, otherUserId, avatarImage, nickname, isArtist, conversationId, requestId }: ConversationInfoProps) => {
+  ({
+    currentUserId,
+    otherUserId,
+    avatarImage,
+    nickname,
+    isArtist,
+    conversationId,
+    conversationStatus,
+    requestId,
+  }: ConversationInfoProps) => {
     const { data: userInfo, isPending } = useQuery(userBasicInfoOptions(otherUserId));
 
     // Use the key prop to force re-mounting when switching users
@@ -34,6 +45,7 @@ const ConversationInfo = memo(
           isArtist={isArtist}
           conversationId={conversationId}
           requestId={requestId}
+          conversationStatus={conversationStatus}
         />
 
         {/* Profile Information Section */}
