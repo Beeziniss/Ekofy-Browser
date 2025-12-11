@@ -7,11 +7,13 @@ import {
   SortEnumType,
   InvoiceFilterInput,
   InvoiceSortInput,
+  PackageOrderFilterInput,
 } from "@/gql/graphql";
 import {
   GetArtistInvoicesQuery,
   GetArtistPayoutsQuery,
   GetArtistTransactionsQuery,
+  GetPlatformFeesQuery,
 } from "@/modules/shared/queries/artist/revenue-queries";
 
 export function artistTransactionsOptions(params: {
@@ -105,5 +107,18 @@ export function artistInvoiceByIdOptions(params: { id: string }) {
   return {
     queryKey: ["artist-invoice", id],
     queryFn: async () => execute(GetArtistInvoicesQuery, { where, skip, take }),
+  };
+}
+
+// Platform fee by payoutTransactionId
+export function platformFeeByPayoutIdOptions(params: { payoutTransactionId: string }) {
+  const { payoutTransactionId } = params;
+  const where: PackageOrderFilterInput = {
+    payoutTransactionId: { eq: payoutTransactionId },
+  };
+  
+  return {
+    queryKey: ["platform-fee", payoutTransactionId],
+    queryFn: async () => execute(GetPlatformFeesQuery, { where }),
   };
 }

@@ -41,6 +41,8 @@ const RelatedTrackCard = React.memo(
     const trackName = track.name || "Unknown Track";
     const coverImage = track.coverImage;
     const checkTrackInFavorite = track.checkTrackInFavorite || false;
+    const favoriteCount = track.favoriteCount || 0;
+    const streamCount = track.streamCount || 0;
 
     // Extract artists
     const allArtists = React.useMemo(() => {
@@ -243,6 +245,19 @@ const RelatedTrackCard = React.memo(
                   ))}
               </div>
             )}
+
+            {/* Stats */}
+            <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+              <span className="flex items-center gap-1">
+                <Heart className="h-3 w-3" />
+                {favoriteCount?.toLocaleString() || 0}
+              </span>
+              <span className="flex items-center gap-1">
+                <Play className="h-3 w-3" />
+                {streamCount?.toLocaleString() || 0}
+              </span>
+            </div>
+
           </div>
 
           {/* Action Buttons */}

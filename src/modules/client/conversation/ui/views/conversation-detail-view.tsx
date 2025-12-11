@@ -62,6 +62,7 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
   const [showCreateRequestDialog, setShowCreateRequestDialog] = useState(false);
   const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const [expandedPackages, setExpandedPackages] = useState<Set<string>>(new Set());
+  const maxCharacters = 5000;
 
   // Memoize derived values to prevent unnecessary re-renders
   const isArtist = useMemo(() => user?.role === UserRole.ARTIST, [user?.role]);
@@ -340,13 +341,19 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
                 autoFocus
                 value={newMessage}
                 disabled={isOrderDisputed}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  if (inputValue.length <= maxCharacters) {
+                    setNewMessage(inputValue);
+                  }
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
                   }
                 }}
+                maxLength={maxCharacters}
               />
               <InputGroupAddon align="block-end">
                 <InputGroupButton variant="outline" className="rounded-full" size="icon-xs" disabled={isOrderDisputed}>

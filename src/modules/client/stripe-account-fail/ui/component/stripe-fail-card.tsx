@@ -14,7 +14,7 @@ export function StripeFailCard() {
   const [isVisible, setIsVisible] = useState(false);
   const createAccountMutation = useCreateExpressConnectedAccount();
 
-    useEffect(() => {
+  useEffect(() => {
     // Trigger animation after mount
     setTimeout(() => setIsVisible(true), 100);
   }, []);
@@ -64,10 +64,10 @@ export function StripeFailCard() {
           {/* Fail Message */}
           <div className="space-y-4">
             <h1 className="text-2xl font-bold text-main-white">
-              Kết nối thất bại!
+              Connection failed!
             </h1>
             <p className="text-main-white leading-relaxed text-sm">
-              Đã có lỗi xảy ra khi kết nối tài khoản Stripe của bạn. Vui lòng thử lại hoặc liên hệ với đội hỗ trợ nếu vấn đề vẫn tiếp tục.
+              An error occurred while connecting your Stripe account. Please try again or contact support if the issue persists.
             </p>
           </div>
 
@@ -82,12 +82,12 @@ export function StripeFailCard() {
               {isRetrying || createAccountMutation.isPending ? (
                 <div className="flex items-center gap-2">
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  Đang kết nối...
+                  Connecting...
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
                   <RefreshCw className="w-4 h-4" />
-                  Thử lại kết nối
+                  Retry connection
                 </div>
               )}
             </Button>
@@ -98,13 +98,13 @@ export function StripeFailCard() {
               variant="ghost"
               className="w-full primary_gradient hover:opacity-80 font-medium py-3 h-12 transition-all duration-200"
             >
-              Quay về trang chủ
+              Back to homepage
             </Button>
           </div>
 
           {/* Support Info */}
           <div className="text-sm text-main-white">
-            <p>Cần hỗ trợ? Liên hệ với chúng tôi qua email:</p>
+            <p>Need help? Contact us via email:</p>
             <p className="font-medium text-main-white mt-1">support@ekofy.com</p>
           </div>
         </CardContent>

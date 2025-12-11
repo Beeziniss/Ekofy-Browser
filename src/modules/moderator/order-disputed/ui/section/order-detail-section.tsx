@@ -1,11 +1,12 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { moderatorPackageOrderDetailOptions } from "@/gql/options/moderator-options";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { moderatorPackageOrderDetailOptions, moderatorOrderConversationMessagesOptions } from "@/gql/options/moderator-options";
 import { OrderDetailInfo, OrderDetailActions } from "../component";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { PackageOrderDetail } from "@/types";
+import { useMemo } from "react";
 
 interface OrderDetailSectionProps {
   orderId: string;
@@ -13,6 +14,28 @@ interface OrderDetailSectionProps {
 
 export function OrderDetailSection({ orderId }: OrderDetailSectionProps) {
   const { data: order, isLoading, error } = useQuery(moderatorPackageOrderDetailOptions(orderId));
+
+  // Fetch conversation messages using infinite query with cursor pagination
+  const conversationId = order?.conversationId || "";
+  const { 
+    data: conversationMessagesData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    ...moderatorOrderConversationMessagesOptions(conversationId, 50),
+    enabled: !!conversationId,
+  });
+
+  // Flatten all messages from all pages (already in chronological order: oldest first)
+  const messages = useMemo(() => {
+    if (!conversationMessagesData?.pages) return [];
+    
+    const allMessages = conversationMessagesData.pages.flatMap(
+      (page) => page.messages?.edges?.map((edge) => edge.node) || []
+    );
+    return allMessages;
+  }, [conversationMessagesData]);
 
   if (isLoading) {
     return (
@@ -50,7 +73,13 @@ export function OrderDetailSection({ orderId }: OrderDetailSectionProps) {
     <div className="grid gap-6 lg:grid-cols-3">
       {/* Left side - Order Details (2/3 width) */}
       <div className="lg:col-span-2">
-        <OrderDetailInfo order={order as PackageOrderDetail} />
+        <OrderDetailInfo 
+          order={order as PackageOrderDetail} 
+          conversationMessages={messages}
+          hasMoreMessages={hasNextPage}
+          loadMoreMessages={fetchNextPage}
+          isLoadingMore={isFetchingNextPage}
+        />
       </div>
 
       {/* Right side - Actions (1/3 width) */}

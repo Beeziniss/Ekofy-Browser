@@ -1,5 +1,38 @@
 import { graphql } from "@/gql";
 
+// Query to get all conversation messages for order dispute review
+// Using cursor-based pagination (before/after) to load more messages
+export const ORDER_CONVERSATION_MESSAGES_QUERY = graphql(`
+  query OrderConversationMessages($where: MessageFilterInput, $last: Int, $before: String, $first: Int, $after: String) {
+    messages(where: $where, last: $last, before: $before, first: $first, after: $after) {
+      edges {
+        cursor
+        node {
+          id
+          conversationId
+          senderId
+          receiverId
+          isRead
+          text
+          sentAt
+          deletedForIds
+          senderProfileMessages {
+            avatar
+            nickname
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+`);
+
 // Query for package orders list (table view) with filtering and pagination
 export const PACKAGE_ORDERS_LIST_QUERY = graphql(`
   query PackageOrdersList(
@@ -73,6 +106,7 @@ export const PACKAGE_ORDER_DETAIL_QUERY = graphql(`
       providerId
       artistPackageId
       paymentTransactionId
+      conversationId
       requirements
       status
       revisionCount

@@ -71,7 +71,7 @@ const useArtistSignUp = (onNavigate?: () => void) => {
     onSuccess: async (data: ArtistSignUpResponse) => {
       try {
         // Show success message immediately
-        const message = data?.message || "Artist registration successful! We will contact you within 48 hours.";
+        const message = data?.message || "Artist registration successful! We will contact you within 1 week.";
         toast.success(message);
 
         // If user data is returned, store it (some APIs return user data immediately)

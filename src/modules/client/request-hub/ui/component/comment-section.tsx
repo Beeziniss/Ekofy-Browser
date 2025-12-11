@@ -12,12 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SendIcon, MessageSquare } from "lucide-react";
+import { SendIcon, MessageSquare, UserIcon } from "lucide-react";
 import RequestHubCommentUser from "./request-hub-comment-user";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createRequestHubCommentMutationOptions } from "@/gql/options/client-mutation-options";
 import { CommentType } from "@/gql/graphql";
-import { requestHubCommentsOptions, userForRequestsOptions } from "@/gql/options/client-options";
+import { artistOptions, listenerOptions, requestHubCommentsOptions } from "@/gql/options/client-options";
 import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
@@ -32,11 +32,17 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
   const { user, isAuthenticated } = useAuthStore();
   const { showAuthDialog } = useAuthDialog();
 
-  // Fetch current user data for avatar and name (only when authenticated)
-  const { data: currentUserData } = useQuery({
-    ...userForRequestsOptions(user?.userId || ""),
-    enabled: !!user?.userId && isAuthenticated,
-  });
+    const { data: artistData } = useQuery({
+      ...artistOptions({
+        userId: user?.userId || "",
+        artistId: user?.artistId || "",
+      }),
+      enabled: isAuthenticated && !!user?.userId && !!user?.artistId,
+    });
+    const { data: listenerData } = useQuery({
+      ...listenerOptions(user?.userId || "", user?.listenerId || ""),
+      enabled: isAuthenticated && !!user?.userId && !!user?.listenerId,
+    });
 
   // Always fetch comments - no auth required to view
   const { data: commentsData } = useQuery(requestHubCommentsOptions(requestId));
@@ -118,10 +124,17 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
       {/* Comment Input */}
       <div className="flex items-start gap-3 rounded-lg border border-gray-700/30 p-4">
         <Avatar className="h-10 w-10 border-2 border-purple-500/30">
-          <AvatarImage src={undefined} alt={currentUserData?.fullName || "User"} />
-          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-sm font-medium text-white">
-            {currentUserData?.fullName?.slice(0, 2).toUpperCase() || "U"}
-          </AvatarFallback>
+          <AvatarImage
+              src={
+                listenerData?.listeners?.items?.[0]?.avatarImage ||
+                artistData?.artists?.items?.[0]?.avatarImage ||
+                undefined
+              }
+            />
+            <AvatarFallback>
+              {listenerData?.listeners?.items?.[0]?.displayName.slice(0, 1) ||
+                artistData?.artists?.items?.[0]?.stageName || <UserIcon className="size-6" />}
+            </AvatarFallback>
         </Avatar>
 
         <div className="flex-1 space-y-3">
@@ -173,7 +186,12 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
         {commentsData?.threadedComments?.threads && commentsData.threadedComments.threads.length > 0 ? (
           commentsData.threadedComments.threads.map((thread, index) => (
             <div key={`${thread.rootComment.id}-${index}`} className="rounded-lg border border-gray-700/30 p-4">
-              <RequestHubCommentUser thread={thread} requestId={requestId} />
+              <RequestHubCommentUser 
+              thread={thread} 
+              requestId={requestId} 
+              listenerData={listenerData}
+              artistData={artistData}
+              />
             </div>
           ))
         ) : (

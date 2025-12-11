@@ -337,7 +337,7 @@ const ProfileSubscriptionSectionSuspense = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleResumeConfirm}>Yes, Resume</AlertDialogAction>
+            <AlertDialogAction onClick={handleResumeConfirm} className="!bg-main-purple">Yes, Resume</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
