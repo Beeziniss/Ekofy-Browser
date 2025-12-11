@@ -9796,7 +9796,7 @@ export const ArtistPackagesDetailDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<ArtistPackagesDetailQuery, ArtistPackagesDetailQueryVariables>;
 export const CategoriesDocument = new TypedDocumentString(`
     query Categories($skip: Int, $take: Int) {
-  categories(skip: $skip, take: $take) {
+  categories(skip: $skip, take: $take, where: {isVisible: {eq: true}}) {
     items {
       id
       name
