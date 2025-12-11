@@ -99,7 +99,12 @@ const TrackTableHeader = ({ totalTracks, serverTotalCount }: TrackTableHeaderPro
 
       <div className="flex items-center gap-3">
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={handleClearFilters} className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClearFilters}
+            className="text-main-purple hover:text-main-purple flex items-center gap-2"
+          >
             <RotateCcwIcon className="size-4" />
             Clear Filters
           </Button>
@@ -125,7 +130,7 @@ const TrackTableHeader = ({ totalTracks, serverTotalCount }: TrackTableHeaderPro
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="text-main-grey-dark-1 flex items-center gap-2 hover:text-white">
+            <Button variant="outline" className="text-main-white flex items-center gap-2 hover:text-white">
               <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
