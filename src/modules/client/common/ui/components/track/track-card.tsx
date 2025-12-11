@@ -19,6 +19,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-options";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { PauseButtonMedium, PlayButtonMediumRounded } from "@/assets/icons";
+import PlaylistAddModal from "@/modules/client/playlist/ui/components/playlist-add-modal";
 
 type ArtistInfo = {
   id: string;
@@ -40,7 +41,8 @@ const TrackCard = React.memo(
     const { isAuthenticated } = useAuthStore();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showAuthDialog, setShowAuthDialog] = useState(false);
-    const [authDialogAction, setAuthDialogAction] = useState<"play" | "favorite">("play");
+    const [authDialogAction, setAuthDialogAction] = useState<"play" | "favorite" | "playlist">("play");
+    const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
 
     // Selective subscriptions - only subscribe to what affects THIS track
     const isCurrentTrack = useAudioStore((state) => state.currentTrack?.id === trackId);
@@ -210,7 +212,17 @@ const TrackCard = React.memo(
                   <LinkIcon className="text-main-white mr-2 size-4" />
                   <span className="text-main-white text-sm">Copy link</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (!isAuthenticated) {
+                      setAuthDialogAction("playlist");
+                      setShowAuthDialog(true);
+                      return;
+                    }
+                    setAddToPlaylistModalOpen(true);
+                  }}
+                >
                   <ListPlus className="text-main-white mr-2 size-4" />
                   <span className="text-main-white text-sm">Add to playlist</span>
                 </DropdownMenuItem>
@@ -266,6 +278,15 @@ const TrackCard = React.memo(
           action={authDialogAction}
           trackName={trackName}
         />
+
+        {/* Add to Playlist Modal */}
+        {isAuthenticated && trackId && (
+          <PlaylistAddModal
+            open={addToPlaylistModalOpen}
+            onOpenChange={setAddToPlaylistModalOpen}
+            trackId={trackId}
+          />
+        )}
       </div>
     );
   },
