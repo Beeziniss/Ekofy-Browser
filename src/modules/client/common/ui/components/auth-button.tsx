@@ -7,6 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 // import Image from "next/image";
@@ -26,7 +29,18 @@ import {
   userActiveSubscriptionOptions,
   notificationOptions,
 } from "@/gql/options/client-options";
-import { Bell, LogOut, MessageCircleIcon, MicVocalIcon, ReceiptTextIcon, User } from "lucide-react";
+import {
+  Bell,
+  CreditCard,
+  FileTextIcon,
+  ListChecksIcon,
+  LogOut,
+  MessageCircleIcon,
+  MicVocalIcon,
+  ReceiptIcon,
+  ReceiptTextIcon,
+  User,
+} from "lucide-react";
 import { useNotificationSignalR } from "@/hooks/use-notification-signalr";
 import { NotificationPopover } from "@/components/notification-popover";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
@@ -155,23 +169,7 @@ const AuthButton = () => {
       className: "text-main-white",
       showForRoles: [UserRole.ARTIST],
     },
-    {
-      type: "link" as const,
-      icon: ReceiptTextIcon,
-      label: "Orders",
-      href: `/activities/order/${user?.userId}`,
-      className: "text-main-white",
-      showForRoles: [UserRole.ARTIST],
-    },
     // Premium/Pro option (available for all)
-    {
-      type: "button" as const,
-      icon: SparklesColorful,
-      label: user?.role === UserRole.ARTIST ? "Go Pro" : "Go Premium",
-      href: "/subscription",
-      className: "primary_gradient !bg-gradient-to-b bg-clip-text text-base font-semibold text-transparent",
-      showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
-    },
   ];
 
   const settingsMenuItems = [
@@ -182,6 +180,14 @@ const AuthButton = () => {
     //   className: "text-main-white",
     //   showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
     // },
+    {
+      type: "link" as const,
+      icon: SparklesColorful,
+      label: user?.role === UserRole.ARTIST ? "Go Pro" : "Go Premium",
+      href: "/subscription",
+      className: "primary_gradient !bg-gradient-to-b bg-clip-text text-base font-semibold text-transparent",
+      showForRoles: [UserRole.LISTENER, UserRole.ARTIST],
+    },
     {
       type: "button" as const,
       icon: LogOut,
@@ -283,6 +289,50 @@ const AuthButton = () => {
                       )}
                     </DropdownMenuItem>
                   ))}
+
+                {user?.role === UserRole.ARTIST && (
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="text-main-white">
+                      <ReceiptTextIcon className="mr-2 size-4" />
+                      <span className="text-base">Orders</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem asChild>
+                        <Link href="/artist/studio/pending-request">
+                          <ListChecksIcon />
+                          Pending Requests
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/activities/order/${user?.userId}`}>
+                          <ReceiptTextIcon />
+                          My Orders
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                )}
+
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger className="text-main-white">
+                    <CreditCard className="mr-2 size-4" />
+                    Billing
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem asChild>
+                      <Link href="/artist/studio/transactions/transaction-history">
+                        <ReceiptIcon />
+                        Transaction History
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/artist/studio/transactions/invoices">
+                        <FileTextIcon />
+                        My Invoices
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
               </DropdownMenuGroup>
 
               <DropdownMenuSeparator />
@@ -293,8 +343,17 @@ const AuthButton = () => {
                   .map((item, index) => (
                     <DropdownMenuItem key={index} onClick={"onClick" in item ? item.onClick : undefined}>
                       {/* ${"iconClassName" in item ? item.iconClassName : item.className} */}
-                      <item.icon className={`mr-2 size-4 ${"iconClassName" in item ? item.iconClassName : ""}`} />
-                      <span className={`text-base ${item.className}`}>{item.label}</span>
+                      {item.type === "link" ? (
+                        <Link href={item.href!} className="flex items-center">
+                          <item.icon className={`mr-2 size-4 ${item.className}`} />
+                          <span className={`text-base ${item.className}`}>{item.label}</span>
+                        </Link>
+                      ) : (
+                        <>
+                          <item.icon className={`mr-2 size-4 ${"iconClassName" in item ? item.iconClassName : ""}`} />
+                          <span className={`text-base ${item.className}`}>{item.label}</span>
+                        </>
+                      )}
                     </DropdownMenuItem>
                   ))}
               </DropdownMenuGroup>

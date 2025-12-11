@@ -11,6 +11,9 @@ import {
   Sparkles,
   FileTextIcon,
   ReceiptIcon,
+  ListChecksIcon,
+  ReceiptTextIcon,
+  PackageIcon,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -51,6 +54,7 @@ export function NavUser({
   const displayName = header?.name || user.name;
   const displayEmail = data?.email || user.email;
   const avatarSrc = data?.avatarImage || user.avatar;
+  const { user: userStore } = useAuthStore();
 
   // Logout mutation
   const { mutate: logout } = useMutation({
@@ -139,7 +143,27 @@ export function NavUser({
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 [&_svg]:text-muted-foreground gap-2">
+                <DropdownMenuSubTrigger className="[&_svg]:text-muted-foreground gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+                  <PackageIcon />
+                  Orders
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem asChild>
+                    <Link href="/artist/studio/pending-request">
+                      <ListChecksIcon />
+                      Pending Requests
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={`/activities/order/${userStore?.userId}`}>
+                      <ReceiptTextIcon />
+                      My Orders
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="[&_svg]:text-muted-foreground gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
                   <CreditCard />
                   Billing
                 </DropdownMenuSubTrigger>
@@ -158,9 +182,11 @@ export function NavUser({
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
+              <DropdownMenuItem asChild>
+                <Link href={"/notification"}>
+                  <Bell />
+                  Notifications
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
