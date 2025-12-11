@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { ChevronRightIcon, CreditCardIcon, ReceiptIcon } from "lucide-react";
+import { ChevronRightIcon, CreditCardIcon, ReceiptIcon, RotateCcwIcon } from "lucide-react";
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
 const ActivitySection = () => {
@@ -9,6 +9,11 @@ const ActivitySection = () => {
       title: "Transaction History",
       href: "/profile/transaction-history",
       icon: CreditCardIcon,
+    },
+    {
+      title: "Refund History",
+      href: "/profile/refund-history",
+      icon: RotateCcwIcon,
     },
     {
       title: "Invoices",
