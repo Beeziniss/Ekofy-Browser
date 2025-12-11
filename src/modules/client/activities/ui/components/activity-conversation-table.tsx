@@ -90,7 +90,7 @@ const ActivityConversationTable = ({
 
                     {/* Deadline */}
                     <TableCell className="w-52">
-                      <span className="text-muted-foreground text-sm">{deadlineDisplay}</span>
+                      <span className="text-muted-foreground text-sm">{order.startedAt ? deadlineDisplay : "N/A"}</span>
                     </TableCell>
 
                     {/* Amount/Total */}

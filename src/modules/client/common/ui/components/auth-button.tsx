@@ -31,6 +31,7 @@ import {
 } from "@/gql/options/client-options";
 import {
   Bell,
+  ClipboardListIcon,
   CreditCard,
   FileTextIcon,
   ListChecksIcon,
@@ -290,49 +291,97 @@ const AuthButton = () => {
                     </DropdownMenuItem>
                   ))}
 
-                {user?.role === UserRole.ARTIST && (
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="text-main-white">
-                      <ReceiptTextIcon className="mr-2 size-4" />
-                      <span className="text-base">Orders</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem asChild>
-                        <Link href="/artist/studio/pending-request">
-                          <ListChecksIcon />
-                          Pending Requests
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/activities/order/${user?.userId}`}>
-                          <ReceiptTextIcon />
-                          My Orders
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
+                {user?.role === UserRole.LISTENER && (
+                  <>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="[&_svg]:text-main-white gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+                        <ReceiptTextIcon className="mr-2 size-4" />
+                        <span className="text-base">My Orders</span>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem asChild>
+                          <Link href="/profile/my-requests">
+                            <ClipboardListIcon />
+                            Request History
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/activities/conversation/${user?.userId}`}>
+                            <ReceiptTextIcon />
+                            Order History
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="[&_svg]:text-main-white gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+                        <CreditCard className="mr-2 size-4" />
+                        Billing
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem asChild>
+                          <Link href="/profile/transaction-history">
+                            <ReceiptIcon />
+                            Transaction History
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/profile/invoices">
+                            <FileTextIcon />
+                            Invoices
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                  </>
                 )}
 
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="text-main-white">
-                    <CreditCard className="mr-2 size-4" />
-                    Billing
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuItem asChild>
-                      <Link href="/artist/studio/transactions/transaction-history">
-                        <ReceiptIcon />
-                        Transaction History
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/artist/studio/transactions/invoices">
-                        <FileTextIcon />
-                        My Invoices
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
+                {user?.role === UserRole.ARTIST && (
+                  <>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="[&_svg]:text-main-white gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+                        <ReceiptTextIcon className="mr-2 size-4" />
+                        <span className="text-base">Orders</span>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem asChild>
+                          <Link href="/artist/studio/pending-request">
+                            <ListChecksIcon />
+                            Pending Requests
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/activities/order/${user?.userId}`}>
+                            <ReceiptTextIcon />
+                            My Orders
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="[&_svg]:text-main-white gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+                        <CreditCard className="mr-2 size-4" />
+                        Billing
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem asChild>
+                          <Link href="/artist/studio/transactions/transaction-history">
+                            <ReceiptIcon />
+                            Transaction History
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/artist/studio/transactions/invoices">
+                            <FileTextIcon />
+                            My Invoices
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                  </>
+                )}
               </DropdownMenuGroup>
 
               <DropdownMenuSeparator />
