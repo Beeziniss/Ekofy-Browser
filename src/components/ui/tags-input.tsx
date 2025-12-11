@@ -18,8 +18,9 @@ const InputTags = ({
 }) => (
   <label
     className={cn(
-      "has-[input:focus-visible]:border-ring has-[input:focus-visible]:ring-ring/50 dark:bg-input/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-md border border-white/30 p-1 text-sm transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 has-[input:focus-visible]:ring-[3px]",
+      "has-[input:focus-visible]:border-ring has-[input:focus-visible]:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-md border border-white/30 p-1 text-sm transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 has-[input:focus-visible]:ring-[3px]",
       className,
+      props.disabled ? "cursor-not-allowed opacity-50" : "dark:bg-input/30",
     )}
     aria-invalid={ariaInvalid}
     id={id}
@@ -39,17 +40,20 @@ const InputTags = ({
         }}
       >
         <span>{t}</span>
-        <X
-          className="text-muted-foreground hover:text-destructive size-3 cursor-pointer transition-colors"
-          onClick={() => onChange(tags.filter((i) => i !== t))}
-          data-slot="icon"
-        />
+        {props.disabled ? null : (
+          <X
+            className="text-muted-foreground hover:text-destructive size-3 cursor-pointer transition-colors"
+            onClick={() => onChange(tags.filter((i) => i !== t))}
+            data-slot="icon"
+          />
+        )}
       </span>
     ))}
     <input
       className={cn(
         "placeholder:text-muted-foreground ml-1 h-8 min-w-0 flex-1 appearance-none border-0 bg-transparent px-2 py-1 text-sm font-semibold ring-0 transition-all duration-200 ease-out outline-none placeholder:capitalize focus:outline-none",
         tags.length ? "w-0 placeholder:opacity-0" : "",
+        props.disabled ? "cursor-not-allowed" : "cursor-text",
       )}
       type="text"
       onKeyDown={(e) => {
