@@ -33,7 +33,10 @@ const OrderActionsDropdown = ({ orderId, status, packageName, onSuccess }: Order
     router.push(`/orders/${orderId}/details`);
   };
 
-  const handleStatusChange = async (newStatus: PackageOrderStatus, reason?: string) => {
+  // TODO: reason is used to input in refund request
+  // const handleStatusChange = async (newStatus: PackageOrderStatus, reason?: string) => {
+
+  const handleStatusChange = async (newStatus: PackageOrderStatus) => {
     try {
       await switchStatus({
         id: orderId,
@@ -58,8 +61,12 @@ const OrderActionsDropdown = ({ orderId, status, packageName, onSuccess }: Order
     setShowRefundDialog(true);
   };
 
-  const handleRefundConfirm = async (reason: string) => {
-    await handleStatusChange(PackageOrderStatus.Disputed, reason);
+  // TODO: reason is used to input in refund request
+  // const handleRefundConfirm = async (reason: string) => {
+  const handleRefundConfirm = async () => {
+    // TODO: uncomment when reason is used
+    // await handleStatusChange(PackageOrderStatus.Disputed, reason);
+    await handleStatusChange(PackageOrderStatus.Disputed);
     setShowRefundDialog(false);
   };
 

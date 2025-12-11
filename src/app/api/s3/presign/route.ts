@@ -157,3 +157,65 @@ async function handleRetrieve() {
     setIsRetrieving(false);
   }
 } */
+
+/* async function handleMultipleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+		const files = Array.from(e.target.files || []);
+		if (files.length === 0) return;
+
+		// Validate file types
+		const allowedTypes = [
+			"application/pdf",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			"image/jpeg",
+			"image/png",
+			"image/gif",
+			"image/webp",
+		];
+
+		const invalidFiles = files.filter((file) => !allowedTypes.includes(file.type));
+		if (invalidFiles.length > 0) {
+			alert(
+				`Invalid file types: ${invalidFiles.map((f) => f.name).join(", ")}\nOnly PDF, DOCX, and image files are allowed`
+			);
+			return;
+		}
+
+		setIsUploading(true);
+
+		// Initialize progress for all files
+		const initialProgress: UploadProgress[] = files.map((file) => ({
+			fileName: file.name,
+			progress: 0,
+			status: "pending",
+		}));
+		setUploadProgress(initialProgress);
+
+		// Upload files concurrently
+		const uploadPromises = files.map((file, index) => uploadSingleFile(file, index));
+
+		try {
+			const results = await Promise.allSettled(uploadPromises);
+
+			// Process results
+			const successfulUploads: UploadedFile[] = [];
+			results.forEach((result, index) => {
+				if (result.status === "fulfilled" && result.value) {
+					successfulUploads.push(result.value);
+				} else if (result.status === "rejected") {
+					updateProgress(index, 0, "failed", result.reason?.message || "Upload failed");
+				}
+			});
+
+			setUploadedFiles((prev) => [...prev, ...successfulUploads]);
+
+			// Clear the input
+			e.target.value = "";
+		} catch (error) {
+			console.error("Upload process failed:", error);
+			alert("Some uploads failed. Please check the progress and try again.");
+		} finally {
+			setIsUploading(false);
+		}
+	} 
+    
+  */

@@ -48,9 +48,12 @@ const TrackTableSection = () => {
     switch (sortBy) {
       case "releaseDate":
         order.push({
-          releaseInfo: {
+          // TODO: Make this visible when the error about Privacy is fixed
+          // NOTE: Currently we use the createdAt because releaseDate causes errors when filtering
+          /* releaseInfo: {
             releaseDate: sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
-          },
+          }, */
+          createdAt: sortOrder === "desc" ? SortEnumType.Desc : SortEnumType.Asc,
         });
         break;
       case "streamCount":

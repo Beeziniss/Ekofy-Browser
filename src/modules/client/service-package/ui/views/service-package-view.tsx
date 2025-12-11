@@ -6,7 +6,7 @@ interface ServicePackageViewProps {
 
 const ServicePackageView = ({ serviceId }: ServicePackageViewProps) => {
   return (
-    <div className="w-full px-6 py-12">
+    <div className="w-full">
       <ServicePackageSection serviceId={serviceId} />
     </div>
   );
