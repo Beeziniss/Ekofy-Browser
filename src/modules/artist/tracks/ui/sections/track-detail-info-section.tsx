@@ -5,7 +5,7 @@ import { artistTrackDetailOptions } from "@/gql/options/artist-options";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChartLineIcon, EyeIcon, HeartIcon, PlayIcon, TagIcon, UserIcon } from "lucide-react";
+import { CalendarIcon, ChartLineIcon, HeartIcon, PlayIcon, TagIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
