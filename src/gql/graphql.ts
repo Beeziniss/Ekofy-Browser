@@ -8015,6 +8015,17 @@ export type RecommendedTracksByTrackIdQueryVariables = Exact<{
 
 export type RecommendedTracksByTrackIdQuery = { __typename?: 'QueryInitialization', recommendedTracksByTrackId?: { __typename?: 'RecommendedTracksByTrackIdCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, checkTrackInFavorite: boolean, favoriteCount: any, createdAt: any, streamCount: any, tags: Array<string>, categoryIds: Array<string>, type: TrackType, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> | null } | null, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null }> | null } | null };
 
+export type GetListenerRefundTransactionsQueryVariables = Exact<{
+  where?: InputMaybe<RefundTransactionFilterInput>;
+  order?: InputMaybe<Array<RefundTransactionSortInput> | RefundTransactionSortInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetListenerRefundTransactionsQuery = { __typename?: 'QueryInitialization', refundTransactions?: { __typename?: 'RefundTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'RefundTransaction', id: string, amount: any, currency: CurrencyType, createdAt: any, status: RefundTransactionStatus, reason: RefundReasonType, stripePaymentId: string, updatedAt?: any | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
 export type RelatedTracksQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -10726,6 +10737,33 @@ export const RecommendedTracksByTrackIdDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<RecommendedTracksByTrackIdQuery, RecommendedTracksByTrackIdQueryVariables>;
+export const GetListenerRefundTransactionsDocument = new TypedDocumentString(`
+    query GetListenerRefundTransactions($where: RefundTransactionFilterInput, $order: [RefundTransactionSortInput!], $skip: Int, $take: Int, $userId: String) {
+  refundTransactions(
+    where: $where
+    order: $order
+    skip: $skip
+    take: $take
+    userId: $userId
+  ) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      status
+      reason
+      stripePaymentId
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetListenerRefundTransactionsQuery, GetListenerRefundTransactionsQueryVariables>;
 export const RelatedTracksDocument = new TypedDocumentString(`
     query RelatedTracks($skip: Int, $take: Int, $where: TrackFilterInput, $order: [TrackSortInput!]) {
   tracks(skip: $skip, take: $take, where: $where, order: $order) {
