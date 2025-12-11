@@ -9,7 +9,10 @@ import { useDebounce } from "use-debounce";
 
 const SearchBar = () => {
   const [searchValue, setSearchValue] = useState("");
-  const [shouldSearch, setShouldSearch] = useState(false);
+  // const [shouldSearch, setShouldSearch] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+
   const [debouncedSearchValue] = useDebounce(searchValue, 500);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -17,45 +20,72 @@ const SearchBar = () => {
 
   // Initialize search value from URL params only (no localStorage)
   useEffect(() => {
+    if (initialized) return;
+
     const queryFromUrl = searchParams.get("q");
     if (queryFromUrl && pathname.startsWith("/search")) {
       setSearchValue(queryFromUrl);
-      setShouldSearch(false); // Don't trigger search on init
+      // setShouldSearch(false); // Don't trigger search on init
     }
-  }, [searchParams, pathname]);
+
+    setInitialized(true);
+  }, [searchParams, pathname, initialized]);
 
   // Clear search when navigating away from search page
   useEffect(() => {
     if (!pathname.startsWith("/search")) {
       setSearchValue("");
-      setShouldSearch(false); // Stop any pending searches
+      // setShouldSearch(false); // Stop any pending searches
     }
   }, [pathname]);
 
-  // Auto navigate when debounced value changes AND shouldSearch is true
   useEffect(() => {
-    if (debouncedSearchValue.trim() && shouldSearch) {
-      if (pathname.startsWith("/search")) {
-        const currentType = searchParams.get("type") || "all";
-        const currentQuery = searchParams.get("q");
-        
-        // Only navigate if the search term is different from current URL
-        if (currentQuery !== debouncedSearchValue.trim()) {
-          const newUrl = `/search?q=${encodeURIComponent(debouncedSearchValue.trim())}&type=${currentType}`;
-          router.push(newUrl);
-        }
-      } else {
-        // If not on search page and user types, navigate to search
-        const newUrl = `/search?q=${encodeURIComponent(debouncedSearchValue.trim())}&type=all`;
-        router.push(newUrl);
-      }
-      setShouldSearch(false); // Reset after navigation
+    if (debouncedSearchValue === searchValue) {
+      setIsTyping(false);
     }
-  }, [debouncedSearchValue, shouldSearch, router, searchParams, pathname]);
+  }, [debouncedSearchValue, searchValue]);
+
+   useEffect(() => {
+    if (!initialized) return;
+
+    const trimmed = debouncedSearchValue.trim();
+
+    // Only trigger if user typed something
+    if (isTyping && trimmed !== "" && !pathname.startsWith("/search")) {
+      router.push(
+        `/search?q=${encodeURIComponent(trimmed)}&type=all`
+      );
+    }
+  }, [debouncedSearchValue, initialized, pathname, router, isTyping]);
+
+  // Auto navigate when debounced value changes AND shouldSearch is true
+ useEffect(() => {
+    if (!initialized) return;
+
+    if (!pathname.startsWith("/search")) return;
+
+    const trimmed = debouncedSearchValue.trim();
+    const currentType = searchParams.get("type") || "all";
+    const currentQuery = searchParams.get("q") || "";
+
+    if (trimmed === "") {
+      if (pathname.startsWith("/search")) {
+        router.push(`/search?type=${currentType}`);
+      }
+      return;
+    }
+
+    if (trimmed !== currentQuery) {
+      router.push(
+        `/search?q=${encodeURIComponent(trimmed)}&type=${currentType}`
+      );
+    }
+  }, [debouncedSearchValue, initialized, pathname, router, searchParams]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
-    setShouldSearch(true); // Mark that user wants to search
+    // setShouldSearch(true); // Mark that user wants to search
+    setIsTyping(true);
   };
 
   return (

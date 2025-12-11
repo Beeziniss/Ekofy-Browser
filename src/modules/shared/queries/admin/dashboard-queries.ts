@@ -85,8 +85,8 @@ export const TOTAL_ARTIST = graphql(`
 `);
 
 export const TOTAL_TRACKS = graphql(`
-    query TotalTracksDashBoard($where: TrackFilterInput, $order: [TrackSortInput!]) {
-        tracks(where: $where, order: $order) {
+    query TotalTracksDashBoard($skip: Int, $take: Int, $where: TrackFilterInput, $order: [TrackSortInput!]) {
+        tracks(skip: $skip, take: $take, where: $where, order: $order) {
             totalCount
             items{
                 createdAt
@@ -231,8 +231,8 @@ export const PLATFORM_REVENUE = graphql(`
 `);
 
 export const TRACK_DAILY_METRICS = graphql(`
-    query TrackDailyMetrics ($where: TrackDailyMetricFilterInput) {
-    trackDailyMetrics(where: $where) {
+    query TrackDailyMetrics ($skip:Int, $take:Int, $where: TrackDailyMetricFilterInput) {
+    trackDailyMetrics(skip: $skip, take: $take, where: $where) {
         items {
             createdAt
             streamCount

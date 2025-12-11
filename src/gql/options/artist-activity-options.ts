@@ -8,6 +8,8 @@ import {
   InvoiceFilterInput,
   InvoiceSortInput,
   PackageOrderFilterInput,
+  TrackFilterInput,
+  TrackDailyMetricFilterInput,
 } from "@/gql/graphql";
 import {
   GetArtistInvoicesQuery,
@@ -15,6 +17,10 @@ import {
   GetArtistTransactionsQuery,
   GetPlatformFeesQuery,
 } from "@/modules/shared/queries/artist/revenue-queries";
+import {
+  TrackListStatsQuery,
+  TrackDailyMetricsQuery,
+} from "@/modules/shared/queries/artist/track-queries";
 
 export function artistTransactionsOptions(params: {
   userId: string;
@@ -120,5 +126,36 @@ export function platformFeeByPayoutIdOptions(params: { payoutTransactionId: stri
   return {
     queryKey: ["platform-fee", payoutTransactionId],
     queryFn: async () => execute(GetPlatformFeesQuery, { where }),
+  };
+}
+
+// Track list stats by artist (createdBy)
+export function artistTrackListStatsOptions(params: { artistId: string }) {
+  const { artistId } = params;
+  const where: TrackFilterInput = {
+    createdBy: { eq: artistId },
+  };
+  const skip = 0;
+  const take = 1000;
+  
+  return {
+    queryKey: ["artist-track-stats", artistId],
+    queryFn: async () => execute(TrackListStatsQuery, { where, skip, take }),
+  };
+}
+
+// Track daily metrics by track IDs
+export function artistTrackDailyMetricsOptions(params: { trackIds: string[] }) {
+  const { trackIds } = params;
+  const where: TrackDailyMetricFilterInput = {
+    trackId: { in: trackIds },
+  };
+  const skip = 0;
+  const take = 1000;
+  
+  return {
+    queryKey: ["artist-track-metrics", trackIds],
+    queryFn: async () => execute(TrackDailyMetricsQuery, { where, skip, take }),
+    enabled: trackIds.length > 0,
   };
 }

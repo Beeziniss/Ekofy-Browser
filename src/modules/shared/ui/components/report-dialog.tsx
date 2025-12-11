@@ -180,7 +180,7 @@ export function ReportDialog({
           <DialogDescription>
             {reportedUserName && contentId && `Reporting ${CONTENT_TYPE_LABELS[contentType]}: "${reportedUserName}". `}
             {reportedUserName && !contentId && `Report about user: ${reportedUserName}. `}
-            Please provide detailed information so we can review your report.
+            Please provide detail information so we can review your report.
           </DialogDescription>
         </DialogHeader>
 
@@ -218,10 +218,10 @@ export function ReportDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Detailed Description <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>Description <span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Please describe in detail the issue you encountered..."
+                      placeholder="Please describe the issue you encountered..."
                       className="min-h-32 resize-none"
                       {...field}
                     />

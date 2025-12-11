@@ -283,3 +283,32 @@ export const ArtistTrackDetailQuery = graphql(`
     }
   }
 `);
+
+export const TrackListStatsQuery = graphql(`
+  query TrackListStats($skip: Int, $take: Int, $where: TrackFilterInput) {
+    tracks(skip: $skip, take: $take, where: $where) {
+    items {
+        id
+      }
+    }
+  }
+`);
+
+export const TrackDailyMetricsQuery = graphql(`
+  query TrackDailyMetricsArtist($skip: Int, $take: Int, $where: TrackDailyMetricFilterInput) {
+    trackDailyMetrics(skip: $skip, take: $take, where: $where) {
+      items {
+        id
+            trackId
+            streamCount
+            downloadCount
+            favoriteCount
+            commentCount
+            createdAt
+            updatedAt
+      }
+    }
+  }
+`);
+
+
