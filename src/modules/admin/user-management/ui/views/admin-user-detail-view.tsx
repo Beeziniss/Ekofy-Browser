@@ -100,7 +100,7 @@ export function AdminUserDetailView({ userId }: AdminUserDetailViewProps) {
   return (
     <UserManagementLayout
       title="User Details"
-      description="View detailed user information and manage user status"
+      description="View detail user information and manage user status"
       showBackButton={true}
     >
       <UserDetailSection userId={userId} />

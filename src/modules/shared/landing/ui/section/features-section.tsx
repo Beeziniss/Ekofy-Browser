@@ -28,7 +28,7 @@ export const FeaturesSection = () => {
     {
       icon: <TrendingUp className="w-8 h-8" />,
       title: 'Growth Analytics',
-      description: 'Track your progress with detailed insights into streams, engagement, and revenue.',
+      description: 'Track your progress with detail insights into streams, engagement, and revenue.',
     },
     {
       icon: <Users className="w-8 h-8" />,

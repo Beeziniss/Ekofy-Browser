@@ -7623,6 +7623,8 @@ export type ArtistDashBoardQueryVariables = Exact<{
 export type ArtistDashBoardQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', createdAt: any }> | null } | null };
 
 export type TotalTracksDashBoardQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<TrackFilterInput>;
   order?: InputMaybe<Array<TrackSortInput> | TrackSortInput>;
 }>;
@@ -7658,6 +7660,8 @@ export type PlatformRevenueQueryVariables = Exact<{
 export type PlatformRevenueQuery = { __typename?: 'QueryInitialization', platformRevenues?: { __typename?: 'PlatformRevenuesCollectionSegment', items?: Array<{ __typename?: 'PlatformRevenue', subscriptionRevenue: any, serviceRevenue: any, grossRevenue: any, royaltyPayoutAmount: any, servicePayoutAmount: any, refundAmount: any, totalPayoutAmount: any, grossDeductions: any, commissionProfit: any, netProfit: any, currency: CurrencyType, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type TrackDailyMetricsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<TrackDailyMetricFilterInput>;
 }>;
 
@@ -7850,6 +7854,24 @@ export type ArtistTrackDetailQueryQueryVariables = Exact<{
 
 
 export type ArtistTrackDetailQueryQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, categoryIds: Array<string>, checkTrackInFavorite: boolean, createdAt: any, featuredArtistIds: Array<string>, popularity: any, tags: Array<string>, type: TrackType, nameUnsigned: string, legalDocuments: Array<{ __typename?: 'LegalDocument', documentType: DocumentType, documentUrl: string, name: string, note?: string | null }>, restriction: { __typename?: 'Restriction', action?: RestrictionAction | null, expired?: any | null, reason?: string | null, type: RestrictionType, reportId?: string | null, restrictedAt?: any | null }, syncedLyrics: Array<{ __typename?: 'SyncedLine', text: string, time: number }>, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null } | null };
+
+export type TrackListStatsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TrackFilterInput>;
+}>;
+
+
+export type TrackListStatsQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string }> | null } | null };
+
+export type TrackDailyMetricsArtistQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TrackDailyMetricFilterInput>;
+}>;
+
+
+export type TrackDailyMetricsArtistQuery = { __typename?: 'QueryInitialization', trackDailyMetrics?: { __typename?: 'TrackDailyMetricsCollectionSegment', items?: Array<{ __typename?: 'TrackDailyMetric', id: string, trackId: string, streamCount: any, downloadCount: any, favoriteCount: any, commentCount: any, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type TrackUploadArtistListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -9376,8 +9398,8 @@ export const ArtistDashBoardDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<ArtistDashBoardQuery, ArtistDashBoardQueryVariables>;
 export const TotalTracksDashBoardDocument = new TypedDocumentString(`
-    query TotalTracksDashBoard($where: TrackFilterInput, $order: [TrackSortInput!]) {
-  tracks(where: $where, order: $order) {
+    query TotalTracksDashBoard($skip: Int, $take: Int, $where: TrackFilterInput, $order: [TrackSortInput!]) {
+  tracks(skip: $skip, take: $take, where: $where, order: $order) {
     totalCount
     items {
       createdAt
@@ -9518,8 +9540,8 @@ export const PlatformRevenueDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<PlatformRevenueQuery, PlatformRevenueQueryVariables>;
 export const TrackDailyMetricsDocument = new TypedDocumentString(`
-    query TrackDailyMetrics($where: TrackDailyMetricFilterInput) {
-  trackDailyMetrics(where: $where) {
+    query TrackDailyMetrics($skip: Int, $take: Int, $where: TrackDailyMetricFilterInput) {
+  trackDailyMetrics(skip: $skip, take: $take, where: $where) {
     items {
       createdAt
       streamCount
@@ -10302,6 +10324,31 @@ export const ArtistTrackDetailQueryDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<ArtistTrackDetailQueryQuery, ArtistTrackDetailQueryQueryVariables>;
+export const TrackListStatsDocument = new TypedDocumentString(`
+    query TrackListStats($skip: Int, $take: Int, $where: TrackFilterInput) {
+  tracks(skip: $skip, take: $take, where: $where) {
+    items {
+      id
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackListStatsQuery, TrackListStatsQueryVariables>;
+export const TrackDailyMetricsArtistDocument = new TypedDocumentString(`
+    query TrackDailyMetricsArtist($skip: Int, $take: Int, $where: TrackDailyMetricFilterInput) {
+  trackDailyMetrics(skip: $skip, take: $take, where: $where) {
+    items {
+      id
+      trackId
+      streamCount
+      downloadCount
+      favoriteCount
+      commentCount
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackDailyMetricsArtistQuery, TrackDailyMetricsArtistQueryVariables>;
 export const TrackUploadArtistListDocument = new TypedDocumentString(`
     query TrackUploadArtistList {
   artists(where: {isVisible: {eq: true}}, take: 50) {

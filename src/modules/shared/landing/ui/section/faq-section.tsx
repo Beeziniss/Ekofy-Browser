@@ -32,7 +32,7 @@ export const FaqSection = () => {
     {
       question: 'How does Ekofy ensure fair royalty distribution?',
       answer:
-        'We use transparent royalty management systems that track every stream and transaction. Artists can view detailed analytics and revenue breakdowns in real-time. Our payment structure is designed to give artists a fair share of revenue, with clear terms and no hidden fees.',
+        'We use transparent royalty management systems that track every stream and transaction. Artists can view detail analytics and revenue breakdowns in real-time. Our payment structure is designed to give artists a fair share of revenue, with clear terms and no hidden fees.',
     },
     {
       question: 'Can I cancel my subscription anytime?',

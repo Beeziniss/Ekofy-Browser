@@ -21,8 +21,8 @@ const DashboardPage = async () => {
   await Promise.all([
     queryClient.prefetchQuery(totalListenersOptions()),
     queryClient.prefetchQuery(totalArtistsOptions()),
-    queryClient.prefetchQuery(totalTracksOptions()),
-    queryClient.prefetchQuery(trackDailyMetricsOptions({ createdAt: { gte: oneMonthAgo.toISOString() } })),
+    queryClient.prefetchQuery(totalTracksOptions(0, 1000)),
+    queryClient.prefetchQuery(trackDailyMetricsOptions(0, 1000, { createdAt: { gte: oneMonthAgo.toISOString() } })),
   ]);
 
   // Prefetch invoice dashboard - will be visible by default

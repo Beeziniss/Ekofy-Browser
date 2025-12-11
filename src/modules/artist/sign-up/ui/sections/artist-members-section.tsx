@@ -113,8 +113,11 @@ const ArtistMembersSection = ({ onNext, onBack, initialData }: ArtistMembersSect
       // Update store with members data
       updateFormData({ members: membersData });
 
-      // Check if password exists in session data before attempting registration
-      if (!sessionData.password || !sessionData.confirmPassword) {
+      // Check if password exists in either formData or session data
+      const password = formData.password || sessionData.password;
+      const confirmPassword = formData.confirmPassword || sessionData.confirmPassword;
+      
+      if (!password || !confirmPassword) {
         toast.error("Password information is missing. Please go back to the first step and re-enter your password.");
         // Navigate back to form step to re-enter password
         // router.push('/artist/sign-up');
@@ -127,6 +130,8 @@ const ArtistMembersSection = ({ onNext, onBack, initialData }: ArtistMembersSect
           ...formData,
           ...sessionData, // Include password from session data
           members: membersData,
+          password, // Ensure password is included
+          confirmPassword, // Ensure confirmPassword is included
         });
 
         // Call registration API
