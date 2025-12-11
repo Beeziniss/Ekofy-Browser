@@ -115,9 +115,10 @@ const OrderSubmissionSectionSuspense = ({ orderId }: OrderSubmissionSectionProps
         {/* Header with Submit Button */}
         <div className="flex items-start justify-between">
           <h3 className="text-xl font-semibold">Order Submission</h3>
-          {orderPackageDetail?.providerId === user?.userId && !isOrderDisputed && (
-            <OrderSubmissionSubmitDialog orderId={orderId} isOpen={isDialogOpen} onOpenChange={setIsDialogOpen} />
-          )}
+          {orderPackageDetail?.providerId === user?.userId &&
+            orderPackageDetail?.status === PackageOrderStatus.InProgress && (
+              <OrderSubmissionSubmitDialog orderId={orderId} isOpen={isDialogOpen} onOpenChange={setIsDialogOpen} />
+            )}
 
           <OrderSubmissionDeliveryDialog
             isOpen={selectedDelivery !== null}

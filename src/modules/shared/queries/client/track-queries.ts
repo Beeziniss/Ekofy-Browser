@@ -31,6 +31,12 @@ export const TrackDetailViewQuery = graphql(`
         favoriteCount
         streamCount
         categoryIds
+        categories {
+          items {
+            name
+            id
+          }
+        }
         mainArtistIds
         mainArtists {
           items {

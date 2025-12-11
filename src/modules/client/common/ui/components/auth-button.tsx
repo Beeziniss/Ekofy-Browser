@@ -20,8 +20,13 @@ import { authApi } from "@/services/auth-services";
 import { getUserInitials } from "@/utils/format-shorten-name";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { artistOptions, listenerOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
-import { AudioLines, Bell, LogOut, MessageCircleIcon, MicVocalIcon, ReceiptTextIcon, User } from "lucide-react";
+import {
+  artistOptions,
+  listenerOptions,
+  userActiveSubscriptionOptions,
+  notificationOptions,
+} from "@/gql/options/client-options";
+import { Bell, LogOut, MessageCircleIcon, MicVocalIcon, ReceiptTextIcon, User } from "lucide-react";
 import { useNotificationSignalR } from "@/hooks/use-notification-signalr";
 import { NotificationPopover } from "@/components/notification-popover";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
@@ -36,17 +41,53 @@ const AuthButton = () => {
   const queryClient = useQueryClient();
   const { isAuthenticated, user, clearUserData } = useAuthStore();
 
-  // Initialize notification SignalR hook
-  const { notifications, unreadCount, markAsRead, clearNotifications, onNotificationReceived } =
-    useNotificationSignalR();
+  // Fetch notifications using query
+  const { data: notificationsData } = useQuery({
+    ...notificationOptions({ userId: user?.userId || "", first: 5 }),
+    enabled: !!user?.userId && isAuthenticated,
+  });
 
-  // Set up notification event handler
+  // Initialize notification SignalR hook for real-time updates
+  const { onNotificationReceived } = useNotificationSignalR();
+
+  // Set up notification event handler to invalidate queries
   useEffect(() => {
     onNotificationReceived((notification) => {
-      // You can add additional logic here like showing a toast notification
       console.log("New notification received:", notification);
+      // Invalidate notifications query to refetch
+      queryClient.invalidateQueries({ queryKey: ["notifications", user?.userId] });
     });
-  }, [onNotificationReceived]);
+  }, [onNotificationReceived, queryClient, user?.userId]);
+
+  // Process notifications from query
+  const notifications =
+    notificationsData?.notifications?.edges?.map((edge) => ({
+      id: edge.node.id,
+      content: edge.node.content,
+      createdAt: edge.node.createdAt,
+      isRead: edge.node.isRead,
+      url: edge.node.url,
+      readAt: edge.node.readAt,
+      avatar: undefined, // Add avatar if available in your schema
+    })) || [];
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  /* // Handle marking notification as read
+  const handleMarkAsRead = (notificationId?: string) => {
+    // TODO: Call API to mark notification(s) as read
+    console.log("Mark as read:", notificationId || "all");
+    // Invalidate query to refetch
+    queryClient.invalidateQueries({ queryKey: ["notifications", user?.userId] });
+  };
+
+  // Handle clearing all notifications
+  const handleClearNotifications = () => {
+    // TODO: Call API to clear all notifications
+    console.log("Clear all notifications");
+    // Invalidate query to refetch
+    queryClient.invalidateQueries({ queryKey: ["notifications", user?.userId] });
+  }; */
 
   // Logout mutation
   const { mutate: logout } = useMutation({
@@ -108,14 +149,6 @@ const AuthButton = () => {
     // Artist-specific items
     {
       type: "link" as const,
-      icon: AudioLines,
-      label: "Track",
-      href: "/artist/studio/tracks",
-      className: "text-main-white",
-      showForRoles: [UserRole.ARTIST],
-    },
-    {
-      type: "link" as const,
       icon: MicVocalIcon,
       label: "Studio",
       href: "/artist/studio",
@@ -174,12 +207,12 @@ const AuthButton = () => {
           <NotificationPopover
             notifications={notifications}
             unreadCount={unreadCount}
-            onMarkAsRead={markAsRead}
-            onClearNotifications={clearNotifications}
+            // onMarkAsRead={handleMarkAsRead}
+            // onClearNotifications={handleClearNotifications}
           >
             <div className="group relative cursor-pointer">
               {unreadCount > 0 ? (
-                <div className="relative">
+                <div className="relative p-2">
                   <BellActive className="size-5" />
                   {/* {unreadCount > 0 && (
                       <div className="absolute -top-1 -right-1 flex h-4 w-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
@@ -271,10 +304,10 @@ const AuthButton = () => {
       ) : (
         // Signed out
         <div className="flex items-center gap-x-4">
-          <Link href={"/login"} className="hover:underline">
+          <Link href={"/welcome"} className="hover:underline">
             <span className="text-sm font-medium">Sign In</span>
           </Link>
-          <Link href={"/sign-up"}>
+          <Link href={"/welcome"}>
             <Button className="primary_gradient font-semibold text-white hover:brightness-90">Create Account</Button>
           </Link>
         </div>

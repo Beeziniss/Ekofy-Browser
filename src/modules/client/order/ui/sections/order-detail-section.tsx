@@ -7,6 +7,7 @@ import { formatCurrency } from "@/utils/format-currency";
 import { Card, CardContent } from "@/components/ui/card";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface OrderDetailSectionProps {
   orderId: string;
@@ -55,6 +56,8 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
   const { data: orderPackageDetail } = useSuspenseQuery(orderPackageDetailOptions(orderId));
 
   const orderPackageData = orderPackageDetail?.package[0];
+  const clientData = orderPackageDetail?.client?.[0];
+  const providerData = orderPackageDetail?.provider?.[0];
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -64,13 +67,32 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
             <div>
               <h3 className="text-main-purple text-2xl font-semibold">{orderPackageData?.packageName}</h3>
               <div className="mt-2 flex items-center gap-x-3">
-                <div className="text-muted-foreground text-sm font-stretch-normal">
-                  Order by <strong className="text-main-white">{orderPackageDetail?.client?.[0].displayName}</strong>
+                <div className="text-muted-foreground flex items-center gap-x-2 text-sm font-stretch-normal">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={clientData?.avatarImage || ""} alt={clientData?.displayName || "Client"} />
+                    <AvatarFallback>{clientData?.displayName?.charAt(0) || "C"}</AvatarFallback>
+                  </Avatar>
+                  Order by <strong className="text-main-white">{clientData?.displayName}</strong>
                 </div>
                 <div className="text-muted-foreground text-sm">
                   Date ordered {formatDate(new Date(orderPackageDetail?.createdAt || ""), "MMM dd, yyyy")}
                 </div>
               </div>
+              {providerData && (
+                <div className="text-muted-foreground mt-2 flex items-center gap-x-2 text-sm font-stretch-normal">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage
+                      src={providerData?.avatarImage || ""}
+                      alt={providerData?.stageName || providerData?.email || "Provider"}
+                    />
+                    <AvatarFallback>
+                      {providerData?.stageName?.charAt(0) || providerData?.email?.charAt(0) || "P"}
+                    </AvatarFallback>
+                  </Avatar>
+                  Provider:{" "}
+                  <strong className="text-main-white">{providerData?.stageName || providerData?.email}</strong>
+                </div>
+              )}
             </div>
             <div className="flex flex-col items-end gap-y-2">
               <div className="text-sm font-normal">Total price</div>

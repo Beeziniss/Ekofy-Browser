@@ -20,6 +20,7 @@ import {
   CategoryType,
   ConversationStatus,
   UserFilterInput,
+  NotificationFilterInput,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -53,6 +54,7 @@ import {
 import { ConversationMessagesQuery, ConversationQuery } from "@/modules/shared/queries/client/conversation-queries";
 import { OrderPackageQuery } from "@/modules/shared/queries/client/order-queries";
 import { CategoriesChannelQuery } from "@/modules/shared/queries/client/category-queries";
+import { NotificationQuery } from "@/modules/shared/queries/client/notification-queries";
 
 // PROFILE QUERIES
 export const userBasicInfoOptions = (userId: string) =>
@@ -520,4 +522,33 @@ export const categoriesChannelOptions = (type: CategoryType, take: number) =>
       return result;
     },
     enabled: !!type,
+  });
+
+// NOTIFICATION QUERIES
+export const notificationOptions = ({ userId, first = 5, after }: { userId: string; first?: number; after?: string }) =>
+  queryOptions({
+    queryKey: ["notifications", userId, first, after],
+    queryFn: async () => {
+      const where: NotificationFilterInput = { targetId: { eq: userId } };
+      const result = await execute(NotificationQuery, { where, first, after });
+      return result;
+    },
+  });
+
+export const notificationInfiniteOptions = (userId: string, first: number = 5) =>
+  infiniteQueryOptions({
+    queryKey: ["notifications-infinite", userId],
+    queryFn: async ({ pageParam }) => {
+      const where: NotificationFilterInput = { targetId: { eq: userId } };
+      return await execute(NotificationQuery, {
+        where,
+        first,
+        after: pageParam,
+      });
+    },
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => {
+      return lastPage.notifications?.pageInfo.hasNextPage ? lastPage.notifications?.pageInfo.endCursor : undefined;
+    },
+    enabled: !!userId,
   });

@@ -13,23 +13,27 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MoreHorizontal, XCircle, RefreshCw, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useState } from "react";
+import OrderRefundRequestDialog from "./order-refund-request-dialog";
 
 interface OrderActionsDropdownProps {
   orderId: string;
   status: PackageOrderStatus;
+  packageName?: string;
   onSuccess?: () => void;
 }
 
-const OrderActionsDropdown = ({ orderId, status, onSuccess }: OrderActionsDropdownProps) => {
+const OrderActionsDropdown = ({ orderId, status, packageName, onSuccess }: OrderActionsDropdownProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { mutateAsync: switchStatus, isPending } = useMutation(switchStatusByRequestorMutationOptions);
+  const [showRefundDialog, setShowRefundDialog] = useState(false);
 
   const handleViewDetails = () => {
     router.push(`/orders/${orderId}/details`);
   };
 
-  const handleStatusChange = async (newStatus: PackageOrderStatus) => {
+  const handleStatusChange = async (newStatus: PackageOrderStatus, reason?: string) => {
     try {
       await switchStatus({
         id: orderId,
@@ -48,6 +52,15 @@ const OrderActionsDropdown = ({ orderId, status, onSuccess }: OrderActionsDropdo
       console.error("Error updating order status:", error);
       toast.error("Failed to update order status. Please try again.");
     }
+  };
+
+  const handleRefundRequest = () => {
+    setShowRefundDialog(true);
+  };
+
+  const handleRefundConfirm = async (reason: string) => {
+    await handleStatusChange(PackageOrderStatus.Disputed, reason);
+    setShowRefundDialog(false);
   };
 
   const getStatusActionText = () => {
@@ -87,32 +100,50 @@ const OrderActionsDropdown = ({ orderId, status, onSuccess }: OrderActionsDropdo
   const StatusActionIcon = getStatusActionIcon();
   const targetStatus = getTargetStatus();
 
+  const handleAction = () => {
+    if (status === PackageOrderStatus.InProgress) {
+      // Show dialog for refund request
+      handleRefundRequest();
+    } else if (targetStatus) {
+      // Direct action for cancel
+      handleStatusChange(targetStatus);
+    }
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onClick={handleViewDetails}
-          className="cursor-pointer hover:bg-gray-700">
-          <Eye className="mr-2 h-4 w-4" />
-          <span className="text-sm text-main-white">View Details</span>
-        </DropdownMenuItem>
-        {statusActionText && StatusActionIcon && targetStatus && (
-          <DropdownMenuItem
-            onClick={() => handleStatusChange(targetStatus)}
-            disabled={isPending}
-            className="cursor-pointer text-red-300 hover:bg-gray-700 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <StatusActionIcon className="mr-2 h-4 w-4" />
-            {statusActionText}
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={handleViewDetails} className="cursor-pointer hover:bg-gray-700">
+            <Eye className="mr-2 h-4 w-4" />
+            <span className="text-main-white text-sm">View Details</span>
           </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          {statusActionText && StatusActionIcon && targetStatus && (
+            <DropdownMenuItem
+              onClick={handleAction}
+              disabled={isPending}
+              className="cursor-pointer text-red-300 hover:bg-gray-700 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <StatusActionIcon className="mr-2 h-4 w-4" />
+              {statusActionText}
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <OrderRefundRequestDialog
+        open={showRefundDialog}
+        onOpenChange={setShowRefundDialog}
+        onConfirm={handleRefundConfirm}
+        isPending={isPending}
+        packageName={packageName}
+      />
+    </>
   );
 };
 

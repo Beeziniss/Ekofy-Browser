@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import useForgotPassword from "../../hook/use-forgot-password";
-import { Loader2} from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const forgotPasswordSchema = z.object({
-    email: z
+  email: z
     .email("Please enter a valid email address")
     .min(5, "Email must be at least 5 characters long") // Độ dài tối thiểu
-    .max(50, "Email must be at most 50 characters long") // Độ dài tối đa
+    .max(50, "Email must be at most 50 characters long"), // Độ dài tối đa
 });
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
@@ -41,16 +41,13 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSuccess }) =>
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="mx-auto w-full max-w-md">
       <div className="bg-main-dark-1 rounded-xl p-8 shadow-xl">
         {/* Header */}
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center mb-4">
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Forgot Password?</h2>
-          <p className="text-gray-400 text-sm">
-            Enter your email address and we&apos;ll send you a reset code
-          </p>
+        <div className="mb-6 text-center">
+          <div className="mb-4 flex items-center justify-center"></div>
+          <h2 className="mb-2 text-2xl font-bold text-white">Forgot Password?</h2>
+          <p className="text-sm text-gray-400">Enter your email address and we&apos;ll send you a reset code</p>
         </div>
 
         {/* Form */}
@@ -61,14 +58,15 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSuccess }) =>
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium">Email Address<span className="text-red-500">*</span></FormLabel>
+                  <FormLabel className="font-medium text-white">
+                    Email Address<span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
                       placeholder="Enter your email address"
                       {...field}
                       disabled={isLoading}
-                      className="border-gradient-input h-12 w-full text-white placeholder-gray-400 bg-transparent focus:border-blue-500 focus:ring-blue-500/50"
+                      className="border-gradient-input h-12 w-full bg-transparent text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
                     />
                   </FormControl>
                   <FormMessage className="text-red-400" />
@@ -77,7 +75,7 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSuccess }) =>
             />
             <Button
               type="submit"
-              className="primary_gradient w-full h-12 text-white font-semibold rounded-md hover:opacity-90 transition-opacity"
+              className="primary_gradient h-12 w-full rounded-md font-semibold text-white transition-opacity hover:opacity-90"
               disabled={isLoading}
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
