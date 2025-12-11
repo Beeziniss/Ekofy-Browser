@@ -20,7 +20,7 @@ export function formatNumber(number: number, decimals = 1): string {
 
   // For numbers less than 100,000 - use comma formatting
   if (number < 100000) {
-    return number.toLocaleString("en-US");
+    return number.toLocaleString("vi-VN");
   }
 
   // For numbers in thousands (100K - 999K)

@@ -41,6 +41,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import Link from "next/link";
+import { formatDate } from "@/utils/format-date";
 
 export interface Track {
   id: string;
@@ -54,6 +55,7 @@ export interface Track {
     releaseDate?: string;
     isRelease: boolean;
   };
+  createdAt: string;
   mainArtists?: {
     __typename?: "MainArtistsCollectionSegment";
     items?:
@@ -125,7 +127,7 @@ const TrackTable = ({
             </div>
             <div className="min-w-0">
               <Link
-                href={`/artist/studio/tracks/insights/${track.id}`}
+                href={`/artist/studio/tracks/detail/${track.id}`}
                 className="text-main-white hover:text-main-purple truncate font-medium hover:underline"
               >
                 {track.name}
@@ -161,7 +163,7 @@ const TrackTable = ({
       cell: ({ row }) => {
         const releaseDate = row.original.releaseInfo.releaseDate;
         if (!releaseDate) {
-          return <span className="text-main-white text-sm">Jan 01, 2025</span>;
+          return <span className="text-main-white text-sm">{formatDate(row.original.createdAt)}</span>;
         }
         const date = new Date(releaseDate);
         const formattedDate = date.toLocaleDateString("en-US", {
@@ -216,15 +218,15 @@ const TrackTable = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link href={`/artist/studio/tracks/insights/${row.original.id}`} className="w-full cursor-pointer">
-                  <ChartLineIcon />
-                  Insights
+                <Link href={`/artist/studio/tracks/detail/${row.original.id}`} className="w-full">
+                  <EyeIcon />
+                  View Detail
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={`/artist/studio/tracks/detail/${row.original.id}`} className="w-full cursor-pointer">
-                  <EyeIcon />
-                  View Detail
+                <Link href={`/artist/studio/tracks/insights/${row.original.id}`} className="w-full">
+                  <ChartLineIcon />
+                  Insights
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>

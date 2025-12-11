@@ -25,7 +25,7 @@ const TrackTableSection = () => {
   // Build where filter
   const where: TrackFilterInput = {};
   if (searchQuery.trim()) {
-    where.name = { contains: searchQuery };
+    where.nameUnsigned = { contains: searchQuery };
   }
   if (privacyFilter !== "all") {
     where.releaseInfo = {

@@ -221,9 +221,12 @@ const TrackUploadMetadataSection = () => {
     },
   ]);
 
-  // Get minimum date (3 days from today)
-  const minDate = new Date();
-  minDate.setDate(minDate.getDate() + 4);
+  // Get minimum date (4 days from today) - memoized to prevent recreation
+  const minDate = useMemo(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 4);
+    return date;
+  }, []);
 
   const { data: artistsData } = useQuery(trackUploadArtistListOptions);
   const { data: categoriesData } = useQuery(categoriesOptions());
@@ -311,8 +314,9 @@ const TrackUploadMetadataSection = () => {
         };
       });
 
-      setWorkSplits(newSplits);
-      setRecordingSplits(newSplits);
+      // Create separate copies for work and recording splits to avoid reference sharing
+      setWorkSplits(newSplits.map((split) => ({ ...split })));
+      setRecordingSplits(newSplits.map((split) => ({ ...split })));
     },
     [artistsData?.artists?.items, form],
   );
@@ -385,9 +389,6 @@ const TrackUploadMetadataSection = () => {
         const newDocs = [...legalDocuments];
         newDocs[index].documentFile = file;
         setLegalDocuments(newDocs);
-
-        // TODO: Remove this
-        toast.success(`Document "${file.name}" uploaded successfully!`);
       }
     },
     [legalDocuments],
@@ -598,62 +599,55 @@ const TrackUploadMetadataSection = () => {
 
   // Reset form values when displayTrack changes
   useEffect(() => {
-    if (displayTrack) {
-      form.reset({
-        title: displayTrack.metadata.title || "",
-        description: "",
-        mainArtistIds: [],
-        featuredArtistIds: [],
-        categoryIds: [],
-        tags: [],
-        isReleased: false,
-        releaseDate: undefined,
-        coverImage: undefined,
-        isExplicit: false,
-        isOriginal: true,
-        isTesting: true,
-        legalDocuments: [],
-        workSplits: [],
-        recordingSplits: [],
-      });
-      setCoverImagePreview(null);
-      setWorkSplits([]);
-      setRecordingSplits([]);
-      setLegalDocuments([
-        {
-          documentType: DocumentType.License,
-          documentFile: null,
-          name: "",
-          note: "",
-        },
-      ]);
+    if (!displayTrack) return;
 
-      // Initialize current user as main artist after reset (only if Stripe account is set up)
-      if (artistsData?.artists?.items && user?.userId) {
-        const currentUserArtist = artistsData.artists.items.find((artist) => artist.userId === user.userId);
-        if (currentUserArtist && currentUserArtist.user?.[0]?.stripeAccountId) {
-          // Use setTimeout to ensure this runs after the reset has completed
-          setTimeout(() => {
-            form.setValue("mainArtistIds", [currentUserArtist.id]);
-          }, 0);
-        }
+    form.reset({
+      title: displayTrack.metadata.title || "",
+      description: "",
+      mainArtistIds: [],
+      featuredArtistIds: [],
+      categoryIds: [],
+      tags: [],
+      isReleased: false,
+      releaseDate: undefined,
+      coverImage: undefined,
+      isExplicit: false,
+      isOriginal: true,
+      isTesting: true,
+      legalDocuments: [],
+      workSplits: [],
+      recordingSplits: [],
+    });
+    setCoverImagePreview(null);
+    setWorkSplits([]);
+    setRecordingSplits([]);
+    setLegalDocuments([
+      {
+        documentType: DocumentType.License,
+        documentFile: null,
+        name: "",
+        note: "",
+      },
+    ]);
+
+    // Initialize current user as main artist after reset (only if Stripe account is set up)
+    if (artistsData?.artists?.items && user?.userId) {
+      const currentUserArtist = artistsData.artists.items.find((artist) => artist.userId === user.userId);
+      if (currentUserArtist && currentUserArtist.user?.[0]?.stripeAccountId) {
+        // Use setTimeout to ensure this runs after the reset has completed
+        setTimeout(() => {
+          form.setValue("mainArtistIds", [currentUserArtist.id], { shouldValidate: false });
+        }, 0);
       }
     }
-  }, [displayTrack, form, user, artistsData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayTrack?.id]);
 
-  // Sync form with state variables for validation
+  // Sync form with state variables for validation - consolidated to prevent cascading updates
   useEffect(() => {
-    form.setValue("workSplits", workSplits);
-  }, [workSplits, form]);
-
-  useEffect(() => {
-    form.setValue("recordingSplits", recordingSplits);
-  }, [recordingSplits, form]);
-
-  useEffect(() => {
-    // Only sync documents that have valid files - don't sync to form for validation
-    // The form validation will be handled separately during submission
-  }, [legalDocuments, form]);
+    form.setValue("workSplits", workSplits, { shouldValidate: false, shouldDirty: false });
+    form.setValue("recordingSplits", recordingSplits, { shouldValidate: false, shouldDirty: false });
+  }, [workSplits, recordingSplits, form]);
 
   // Clear release date when isReleased is set to false
   useEffect(() => {
@@ -668,17 +662,21 @@ const TrackUploadMetadataSection = () => {
 
   // Ensure current user is set as main artist when artistsData becomes available (only if Stripe account is set up)
   useEffect(() => {
-    if (artistsData?.artists?.items && user?.userId && form.watch("mainArtistIds").length === 0) {
-      const currentUserArtist = artistsData.artists.items.find((artist) => artist.userId === user.userId);
-      if (currentUserArtist && currentUserArtist.user?.[0]?.stripeAccountId) {
-        form.setValue("mainArtistIds", [currentUserArtist.id]);
-      }
+    if (!artistsData?.artists?.items || !user?.userId) return;
+
+    const currentMainArtists = form.getValues("mainArtistIds");
+    if (currentMainArtists.length > 0) return; // Already has artists, don't override
+
+    const currentUserArtist = artistsData.artists.items.find((artist) => artist.userId === user.userId);
+    if (currentUserArtist?.user?.[0]?.stripeAccountId) {
+      form.setValue("mainArtistIds", [currentUserArtist.id], { shouldValidate: false });
     }
   }, [artistsData?.artists?.items, user?.userId, form]);
 
   // Watch for changes in artist selections and automatically update splits
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
+      // Only update if the changed field is actually artist-related
       if (name === "mainArtistIds" || name === "featuredArtistIds") {
         const mainIds: string[] = Array.isArray(value.mainArtistIds)
           ? value.mainArtistIds.filter((id): id is string => typeof id === "string")
@@ -688,14 +686,20 @@ const TrackUploadMetadataSection = () => {
           : [];
         const allSelectedArtists = [...mainIds, ...featuredIds];
 
+        // Only update if we have artists selected
         if (allSelectedArtists.length > 0) {
           updateSplitsFromArtists(allSelectedArtists);
+        } else {
+          // Clear splits if no artists are selected
+          setWorkSplits([]);
+          setRecordingSplits([]);
         }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [form, updateSplitsFromArtists]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateSplitsFromArtists]);
 
   // Copy track URL to clipboard
   /* const handleCopyUrl = async () => {
@@ -803,11 +807,7 @@ const TrackUploadMetadataSection = () => {
                             })) || []
                         }
                         defaultValue={field.value}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          // Update work and recording splits when main artists change
-                          updateSplitsFromArtists([...value, ...form.watch("featuredArtistIds")]);
-                        }}
+                        onValueChange={field.onChange}
                         placeholder="Choose main artists..."
                         maxCount={5}
                         resetOnDefaultValueChange={true}
@@ -852,11 +852,7 @@ const TrackUploadMetadataSection = () => {
                             })) || []
                         }
                         defaultValue={field.value}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          // Update work and recording splits when featured artists change
-                          updateSplitsFromArtists([...form.watch("mainArtistIds"), ...value]);
-                        }}
+                        onValueChange={field.onChange}
                         placeholder="Choose featured artists..."
                         maxCount={5}
                         resetOnDefaultValueChange={true}
@@ -1111,7 +1107,7 @@ const TrackUploadMetadataSection = () => {
               <AccordionItem value="advanced-settings">
                 <AccordionTrigger>
                   <div className="flex items-center">
-                    <FileChartColumnIcon className="text-main-white mr-3 size-6" /> Advanced Settings
+                    <FileChartColumnIcon className="text-main-white mr-3 size-6" /> Legal Documents
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="pl-9">
@@ -1287,9 +1283,7 @@ const TrackUploadMetadataSection = () => {
                                   </div>
 
                                   <div className="space-y-1">
-                                    <Label className="text-xs">
-                                      Note <span className="text-red-500">*</span>
-                                    </Label>
+                                    <Label className="text-xs">Note (optional)</Label>
                                     <Input
                                       placeholder="Add a note about this document"
                                       value={doc.note}
@@ -1341,7 +1335,7 @@ const TrackUploadMetadataSection = () => {
               <AccordionItem value="copyright">
                 <AccordionTrigger>
                   <div className="flex items-center">
-                    <CreativeCommonsIcon className="text-main-white mr-3 size-6" /> Copyright
+                    <CreativeCommonsIcon className="text-main-white mr-3 size-6" /> Royalty Splits
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="pl-9">
@@ -1351,7 +1345,7 @@ const TrackUploadMetadataSection = () => {
                       control={form.control}
                       name="isOriginal"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="hidden">
                           <div>
                             <p className="text-main-white text-xs font-bold">Original Content</p>
                             <p className="text-main-grey-dark-1 text-xs font-normal">

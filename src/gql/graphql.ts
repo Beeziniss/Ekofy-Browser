@@ -8176,7 +8176,7 @@ export type TrackDetailQueryVariables = Exact<{
 }>;
 
 
-export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, categoryIds: Array<string>, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
+export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, categoryIds: Array<string>, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', name: string, id: string }> | null } | null, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
 
 export type TrackFavoriteQueryVariables = Exact<{
   take: Scalars['Int']['input'];
@@ -9796,7 +9796,7 @@ export const ArtistPackagesDetailDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<ArtistPackagesDetailQuery, ArtistPackagesDetailQueryVariables>;
 export const CategoriesDocument = new TypedDocumentString(`
     query Categories($skip: Int, $take: Int) {
-  categories(skip: $skip, take: $take) {
+  categories(skip: $skip, take: $take, where: {isVisible: {eq: true}}) {
     items {
       id
       name
@@ -11535,6 +11535,12 @@ export const TrackDetailDocument = new TypedDocumentString(`
       favoriteCount
       streamCount
       categoryIds
+      categories {
+        items {
+          name
+          id
+        }
+      }
       mainArtistIds
       mainArtists {
         items {
