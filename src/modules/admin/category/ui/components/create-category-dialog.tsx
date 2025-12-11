@@ -165,7 +165,7 @@ export function CreateCategoryDialog({
                     />
                   </FormControl>
                   <FormDescription>
-                    A detailed description for this category
+                    A detail description for this category
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

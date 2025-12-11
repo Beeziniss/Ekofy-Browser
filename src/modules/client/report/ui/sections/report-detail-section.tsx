@@ -248,7 +248,7 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
                 <>
                   <Separator />
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="font-medium">Resolution time:</span>
+                    <span className="font-medium">Resovle time:</span>
                     <span>{format(resolvedAt, "dd/MM/yyyy HH:mm", { locale: vi })}</span>
                   </div>
                 </>

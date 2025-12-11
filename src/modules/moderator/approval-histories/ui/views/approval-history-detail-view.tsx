@@ -11,7 +11,7 @@ export function ApprovalHistoryDetailView({ historyId }: ApprovalHistoryDetailVi
   return (
     <ApprovalHistoryDetailLayout
       title="Approval History Detail"
-      description="View detailed information about this approval record"
+      description="View detail information about this approval record"
     >
       <ApprovalHistoryDetailSection historyId={historyId} />
     </ApprovalHistoryDetailLayout>

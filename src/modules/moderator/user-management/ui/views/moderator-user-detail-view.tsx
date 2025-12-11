@@ -11,7 +11,7 @@ export function ModeratorUserDetailView({ userId }: ModeratorUserDetailViewProps
   return (
     <ModeratorUserManagementLayout
       title="User Details"
-      description="View detailed user information and manage user status"
+      description="View detail user information and manage user status"
       showBackButton={true}
     >
       <ModeratorUserDetailSection userId={userId} />

@@ -76,7 +76,7 @@ export function ArtistReportDetailSection({ reportId, className }: ArtistReportD
             </Link>
           </Button>
           <h1 className="text-main-white text-2xl font-bold">Report Details</h1>
-          <p className="text-main-grey mt-1">View detailed information about this report</p>
+          <p className="text-main-grey mt-1">View detail information about this report</p>
         </div>
         <ArtistReportStatusBadge status={report.status} />
       </div>

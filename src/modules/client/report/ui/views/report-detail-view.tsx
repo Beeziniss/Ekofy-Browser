@@ -19,7 +19,7 @@ export function ReportDetailView({ reportId }: ReportDetailViewProps) {
   return (
     <ReportLayout
       title="Report Details"
-      description="View detailed information about violation reports"
+      description="View detail information about violation reports"
       backHref="/profile/reports"
       backLabel="Back to List"
     >
