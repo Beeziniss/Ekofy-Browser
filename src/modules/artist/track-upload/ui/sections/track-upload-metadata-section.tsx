@@ -39,7 +39,8 @@ import {
 } from "@/gql/graphql";
 import { useAuthStore } from "@/store";
 import { useDropzone, FileRejection } from "react-dropzone";
-import { uploadImageToCloudinary, uploadLegalDocument, validateDocumentFile } from "@/utils/cloudinary-utils";
+import { uploadImageToCloudinary } from "@/utils/cloudinary-utils";
+import { uploadLegalDocument, validateDocumentFile } from "@/utils/s3-upload-utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import InputTags from "@/components/ui/tags-input";
@@ -504,19 +505,15 @@ const TrackUploadMetadataSection = () => {
         releaseStatus = ReleaseStatus.NotAnnounced;
       }
 
-      // Upload legal documents to Cloudinary
+      // Upload legal documents to S3
       const uploadedLegalDocuments = [];
       for (const doc of legalDocuments) {
         if (doc.documentFile && doc.name && doc.note) {
           try {
-            const uploadResult = await uploadLegalDocument(
-              doc.documentFile,
-              user.userId,
-              doc.documentType.toLowerCase(),
-            );
+            const uploadResult = await uploadLegalDocument(doc.documentFile);
             uploadedLegalDocuments.push({
               documentType: doc.documentType as DocumentType,
-              documentUrl: uploadResult.secure_url,
+              documentUrl: uploadResult.fileUrl,
               name: doc.name,
               note: doc.note,
             });
@@ -1040,12 +1037,13 @@ const TrackUploadMetadataSection = () => {
                 />
               </div>
 
+              {/* // TODO: Make this visible when the error about Privacy is fixed */}
               <div className="w-full">
                 <FormField
                   control={form.control}
                   name="releaseDate"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="hidden">
                       <FormLabel className="text-sm font-medium">
                         Release Date {!form.watch("isReleased") && "(Optional)"}
                       </FormLabel>

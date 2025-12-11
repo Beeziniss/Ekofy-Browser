@@ -55,6 +55,7 @@ const OrderSubmissionSectionSuspense = ({ orderId }: OrderSubmissionSectionProps
 
   const deliveries = orderPackageDetail?.deliveries || [];
   const isOrderDisputed = orderPackageDetail?.status === PackageOrderStatus.Disputed;
+  const isOrderInProgress = orderPackageDetail?.status === PackageOrderStatus.InProgress;
 
   // Function to get presigned URL for file access
   const getFileUrl = async (fileKey: string): Promise<string> => {
@@ -200,7 +201,7 @@ const OrderSubmissionSectionSuspense = ({ orderId }: OrderSubmissionSectionProps
                               Open File
                             </DropdownMenuItem>
                           )}
-                          {orderPackageDetail?.clientId === user?.userId && !isOrderDisputed && (
+                          {orderPackageDetail?.clientId === user?.userId && isOrderInProgress && (
                             <DropdownMenuItem onClick={() => handleRequestRevision(delivery)}>
                               <Edit className="h-4 w-4" />
                               Request Revision

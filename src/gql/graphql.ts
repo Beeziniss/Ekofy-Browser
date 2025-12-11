@@ -2047,7 +2047,7 @@ export type LegalDocument = {
   documentType: DocumentType;
   documentUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  note: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
 };
 
 export type LegalDocumentFilterInput = {
@@ -2063,7 +2063,7 @@ export type LegalDocumentInput = {
   documentType: DocumentType;
   documentUrl: Scalars['String']['input'];
   name: Scalars['String']['input'];
-  note: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** A segment of a collection. */
@@ -4645,6 +4645,7 @@ export type QueryInitializationRefundTransactionsArgs = {
   order?: InputMaybe<Array<RefundTransactionSortInput>>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<RefundTransactionFilterInput>;
 };
 
@@ -7622,6 +7623,8 @@ export type ArtistDashBoardQueryVariables = Exact<{
 export type ArtistDashBoardQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', createdAt: any }> | null } | null };
 
 export type TotalTracksDashBoardQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<TrackFilterInput>;
   order?: InputMaybe<Array<TrackSortInput> | TrackSortInput>;
 }>;
@@ -7657,6 +7660,8 @@ export type PlatformRevenueQueryVariables = Exact<{
 export type PlatformRevenueQuery = { __typename?: 'QueryInitialization', platformRevenues?: { __typename?: 'PlatformRevenuesCollectionSegment', items?: Array<{ __typename?: 'PlatformRevenue', subscriptionRevenue: any, serviceRevenue: any, grossRevenue: any, royaltyPayoutAmount: any, servicePayoutAmount: any, refundAmount: any, totalPayoutAmount: any, grossDeductions: any, commissionProfit: any, netProfit: any, currency: CurrencyType, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type TrackDailyMetricsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<TrackDailyMetricFilterInput>;
 }>;
 
@@ -7825,7 +7830,7 @@ export type TracksWithFiltersQueryVariables = Exact<{
 }>;
 
 
-export type TracksWithFiltersQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, categoryIds: Array<string>, checkTrackInFavorite: boolean, createdAt: any, featuredArtistIds: Array<string>, popularity: any, tags: Array<string>, type: TrackType, nameUnsigned: string, legalDocuments: Array<{ __typename?: 'LegalDocument', documentType: DocumentType, documentUrl: string, name: string, note: string }>, restriction: { __typename?: 'Restriction', action?: RestrictionAction | null, expired?: any | null, reason?: string | null, type: RestrictionType, reportId?: string | null, restrictedAt?: any | null }, syncedLyrics: Array<{ __typename?: 'SyncedLine', text: string, time: number }>, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type TracksWithFiltersQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, categoryIds: Array<string>, checkTrackInFavorite: boolean, createdAt: any, featuredArtistIds: Array<string>, popularity: any, tags: Array<string>, type: TrackType, nameUnsigned: string, legalDocuments: Array<{ __typename?: 'LegalDocument', documentType: DocumentType, documentUrl: string, name: string, note?: string | null }>, restriction: { __typename?: 'Restriction', action?: RestrictionAction | null, expired?: any | null, reason?: string | null, type: RestrictionType, reportId?: string | null, restrictedAt?: any | null }, syncedLyrics: Array<{ __typename?: 'SyncedLine', text: string, time: number }>, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type TrackUploadPendingRequestsQueryVariables = Exact<{
   pageNumber: Scalars['Int']['input'];
@@ -7834,21 +7839,39 @@ export type TrackUploadPendingRequestsQueryVariables = Exact<{
 }>;
 
 
-export type TrackUploadPendingRequestsQuery = { __typename?: 'QueryInitialization', pendingTrackUploadRequests: { __typename?: 'PaginatedDataOfCombinedUploadRequest', totalCount: number, items: Array<{ __typename?: 'CombinedUploadRequest', id: string, requestedAt: any, createdBy: string, track: { __typename?: 'TrackTempRequest', id: string, name: string, description?: string | null, type: TrackType, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, coverImage: string, isExplicit: boolean, tags: Array<string>, categoryIds: Array<string>, lyrics?: string | null, previewVideo?: string | null, createdBy: string, requestedAt: any, releaseInfo: { __typename?: 'ReleaseInfo', isRelease: boolean, releaseDate?: any | null, releasedAt?: any | null, releaseStatus: ReleaseStatus }, legalDocuments: Array<{ __typename?: 'LegalDocument', name: string, documentUrl: string, documentType: DocumentType, note: string }> }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string }> | null } | null, recordingUsers?: { __typename?: 'RecordingUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, workUsers?: { __typename?: 'WorkUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, work: { __typename?: 'WorkTempRequest', id: string, description?: string | null }, recording: { __typename?: 'RecordingTempRequest', id: string, description?: string | null } }> } };
+export type TrackUploadPendingRequestsQuery = { __typename?: 'QueryInitialization', pendingTrackUploadRequests: { __typename?: 'PaginatedDataOfCombinedUploadRequest', totalCount: number, items: Array<{ __typename?: 'CombinedUploadRequest', id: string, requestedAt: any, createdBy: string, track: { __typename?: 'TrackTempRequest', id: string, name: string, description?: string | null, type: TrackType, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, coverImage: string, isExplicit: boolean, tags: Array<string>, categoryIds: Array<string>, lyrics?: string | null, previewVideo?: string | null, createdBy: string, requestedAt: any, releaseInfo: { __typename?: 'ReleaseInfo', isRelease: boolean, releaseDate?: any | null, releasedAt?: any | null, releaseStatus: ReleaseStatus }, legalDocuments: Array<{ __typename?: 'LegalDocument', name: string, documentUrl: string, documentType: DocumentType, note?: string | null }> }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string }> | null } | null, recordingUsers?: { __typename?: 'RecordingUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, workUsers?: { __typename?: 'WorkUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, work: { __typename?: 'WorkTempRequest', id: string, description?: string | null }, recording: { __typename?: 'RecordingTempRequest', id: string, description?: string | null } }> } };
 
 export type TrackUploadPendingRequestDetailQueryVariables = Exact<{
   uploadId: Scalars['String']['input'];
 }>;
 
 
-export type TrackUploadPendingRequestDetailQuery = { __typename?: 'QueryInitialization', pendingTrackUploadRequestById: { __typename?: 'CombinedUploadRequest', id: string, requestedAt: any, createdBy: string, track: { __typename?: 'TrackTempRequest', id: string, name: string, description?: string | null, type: TrackType, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, coverImage: string, isExplicit: boolean, tags: Array<string>, categoryIds: Array<string>, lyrics?: string | null, previewVideo?: string | null, createdBy: string, requestedAt: any, releaseInfo: { __typename?: 'ReleaseInfo', isRelease: boolean, releaseDate?: any | null, releasedAt?: any | null, releaseStatus: ReleaseStatus }, legalDocuments: Array<{ __typename?: 'LegalDocument', name: string, documentUrl: string, documentType: DocumentType, note: string }> }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string }> | null } | null, recordingUsers?: { __typename?: 'RecordingUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, workUsers?: { __typename?: 'WorkUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, work: { __typename?: 'WorkTempRequest', id: string, description?: string | null, workSplits: Array<{ __typename?: 'CreateWorkSplitRequest', userId: string, artistRole: ArtistRole, percentage: any }> }, recording: { __typename?: 'RecordingTempRequest', id: string, description?: string | null } } };
+export type TrackUploadPendingRequestDetailQuery = { __typename?: 'QueryInitialization', pendingTrackUploadRequestById: { __typename?: 'CombinedUploadRequest', id: string, requestedAt: any, createdBy: string, track: { __typename?: 'TrackTempRequest', id: string, name: string, description?: string | null, type: TrackType, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, coverImage: string, isExplicit: boolean, tags: Array<string>, categoryIds: Array<string>, lyrics?: string | null, previewVideo?: string | null, createdBy: string, requestedAt: any, releaseInfo: { __typename?: 'ReleaseInfo', isRelease: boolean, releaseDate?: any | null, releasedAt?: any | null, releaseStatus: ReleaseStatus }, legalDocuments: Array<{ __typename?: 'LegalDocument', name: string, documentUrl: string, documentType: DocumentType, note?: string | null }> }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string }> | null } | null, recordingUsers?: { __typename?: 'RecordingUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, workUsers?: { __typename?: 'WorkUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, work: { __typename?: 'WorkTempRequest', id: string, description?: string | null, workSplits: Array<{ __typename?: 'CreateWorkSplitRequest', userId: string, artistRole: ArtistRole, percentage: any }> }, recording: { __typename?: 'RecordingTempRequest', id: string, description?: string | null } } };
 
 export type ArtistTrackDetailQueryQueryVariables = Exact<{
   where: TrackFilterInput;
 }>;
 
 
-export type ArtistTrackDetailQueryQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, categoryIds: Array<string>, checkTrackInFavorite: boolean, createdAt: any, featuredArtistIds: Array<string>, popularity: any, tags: Array<string>, type: TrackType, nameUnsigned: string, legalDocuments: Array<{ __typename?: 'LegalDocument', documentType: DocumentType, documentUrl: string, name: string, note: string }>, restriction: { __typename?: 'Restriction', action?: RestrictionAction | null, expired?: any | null, reason?: string | null, type: RestrictionType, reportId?: string | null, restrictedAt?: any | null }, syncedLyrics: Array<{ __typename?: 'SyncedLine', text: string, time: number }>, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null } | null };
+export type ArtistTrackDetailQueryQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, description?: string | null, mainArtistIds: Array<string>, streamCount: any, favoriteCount: any, coverImage: string, isExplicit: boolean, categoryIds: Array<string>, checkTrackInFavorite: boolean, createdAt: any, featuredArtistIds: Array<string>, popularity: any, tags: Array<string>, type: TrackType, nameUnsigned: string, legalDocuments: Array<{ __typename?: 'LegalDocument', documentType: DocumentType, documentUrl: string, name: string, note?: string | null }>, restriction: { __typename?: 'Restriction', action?: RestrictionAction | null, expired?: any | null, reason?: string | null, type: RestrictionType, reportId?: string | null, restrictedAt?: any | null }, syncedLyrics: Array<{ __typename?: 'SyncedLine', text: string, time: number }>, releaseInfo: { __typename?: 'ReleaseInfo', releaseDate?: any | null, isRelease: boolean }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null } | null };
+
+export type TrackListStatsQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TrackFilterInput>;
+}>;
+
+
+export type TrackListStatsQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string }> | null } | null };
+
+export type TrackDailyMetricsArtistQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TrackDailyMetricFilterInput>;
+}>;
+
+
+export type TrackDailyMetricsArtistQuery = { __typename?: 'QueryInitialization', trackDailyMetrics?: { __typename?: 'TrackDailyMetricsCollectionSegment', items?: Array<{ __typename?: 'TrackDailyMetric', id: string, trackId: string, streamCount: any, downloadCount: any, favoriteCount: any, commentCount: any, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type TrackUploadArtistListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7991,6 +8014,17 @@ export type RecommendedTracksByTrackIdQueryVariables = Exact<{
 
 
 export type RecommendedTracksByTrackIdQuery = { __typename?: 'QueryInitialization', recommendedTracksByTrackId?: { __typename?: 'RecommendedTracksByTrackIdCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, checkTrackInFavorite: boolean, favoriteCount: any, createdAt: any, streamCount: any, tags: Array<string>, categoryIds: Array<string>, type: TrackType, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }> | null } | null, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string }> | null } | null }> | null } | null };
+
+export type GetListenerRefundTransactionsQueryVariables = Exact<{
+  where?: InputMaybe<RefundTransactionFilterInput>;
+  order?: InputMaybe<Array<RefundTransactionSortInput> | RefundTransactionSortInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetListenerRefundTransactionsQuery = { __typename?: 'QueryInitialization', refundTransactions?: { __typename?: 'RefundTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'RefundTransaction', id: string, amount: any, currency: CurrencyType, createdAt: any, status: RefundTransactionStatus, reason: RefundReasonType, stripePaymentId: string, updatedAt?: any | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type RelatedTracksQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -8334,14 +8368,14 @@ export type PendingTrackUploadRequestsListQueryVariables = Exact<{
 }>;
 
 
-export type PendingTrackUploadRequestsListQuery = { __typename?: 'QueryInitialization', pendingTrackUploadRequests: { __typename?: 'PaginatedDataOfCombinedUploadRequest', totalCount: number, items: Array<{ __typename?: 'CombinedUploadRequest', id: string, approvalPriority: ApprovalPriorityStatus, requestedAt: any, createdBy: string, track: { __typename?: 'TrackTempRequest', id: string, name: string, description?: string | null, type: TrackType, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, coverImage: string, isExplicit: boolean, tags: Array<string>, categoryIds: Array<string>, lyrics?: string | null, previewVideo?: string | null, createdBy: string, requestedAt: any, releaseInfo: { __typename?: 'ReleaseInfo', isRelease: boolean, releaseDate?: any | null, releasedAt?: any | null, releaseStatus: ReleaseStatus }, legalDocuments: Array<{ __typename?: 'LegalDocument', name: string, documentUrl: string, documentType: DocumentType, note: string }> }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string }> | null } | null, recordingUsers?: { __typename?: 'RecordingUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, workUsers?: { __typename?: 'WorkUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, work: { __typename?: 'WorkTempRequest', id: string, description?: string | null }, recording: { __typename?: 'RecordingTempRequest', id: string, description?: string | null } }> } };
+export type PendingTrackUploadRequestsListQuery = { __typename?: 'QueryInitialization', pendingTrackUploadRequests: { __typename?: 'PaginatedDataOfCombinedUploadRequest', totalCount: number, items: Array<{ __typename?: 'CombinedUploadRequest', id: string, approvalPriority: ApprovalPriorityStatus, requestedAt: any, createdBy: string, track: { __typename?: 'TrackTempRequest', id: string, name: string, description?: string | null, type: TrackType, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, coverImage: string, isExplicit: boolean, tags: Array<string>, categoryIds: Array<string>, lyrics?: string | null, previewVideo?: string | null, createdBy: string, requestedAt: any, releaseInfo: { __typename?: 'ReleaseInfo', isRelease: boolean, releaseDate?: any | null, releasedAt?: any | null, releaseStatus: ReleaseStatus }, legalDocuments: Array<{ __typename?: 'LegalDocument', name: string, documentUrl: string, documentType: DocumentType, note?: string | null }> }, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string }> | null } | null, recordingUsers?: { __typename?: 'RecordingUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, workUsers?: { __typename?: 'WorkUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any }> | null } | null, work: { __typename?: 'WorkTempRequest', id: string, description?: string | null }, recording: { __typename?: 'RecordingTempRequest', id: string, description?: string | null } }> } };
 
 export type PendingTrackUploadRequestByIdQueryVariables = Exact<{
   uploadId: Scalars['String']['input'];
 }>;
 
 
-export type PendingTrackUploadRequestByIdQuery = { __typename?: 'QueryInitialization', pendingTrackUploadRequestById: { __typename?: 'CombinedUploadRequest', id: string, approvalPriority: ApprovalPriorityStatus, requestedAt: any, createdBy: string, track: { __typename?: 'TrackTempRequest', id: string, name: string, description?: string | null, type: TrackType, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, categoryIds: Array<string>, tags: Array<string>, coverImage: string, previewVideo?: string | null, isExplicit: boolean, lyrics?: string | null, createdBy: string, requestedAt: any, releaseInfo: { __typename?: 'ReleaseInfo', isRelease: boolean, releaseDate?: any | null, releasedAt?: any | null, releaseStatus: ReleaseStatus }, legalDocuments: Array<{ __typename?: 'LegalDocument', name: string, documentUrl: string, documentType: DocumentType, note: string }> }, work: { __typename?: 'WorkTempRequest', id: string, description?: string | null, workSplits: Array<{ __typename?: 'CreateWorkSplitRequest', userId: string, artistRole: ArtistRole, percentage: any }> }, recording: { __typename?: 'RecordingTempRequest', id: string, description?: string | null, recordingSplitRequests: Array<{ __typename?: 'CreateRecordingSplitRequest', userId: string, artistRole: ArtistRole, percentage: any }> }, workUsers?: { __typename?: 'WorkUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus }> | null } | null, recordingUsers?: { __typename?: 'RecordingUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus }> | null } | null, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null } };
+export type PendingTrackUploadRequestByIdQuery = { __typename?: 'QueryInitialization', pendingTrackUploadRequestById: { __typename?: 'CombinedUploadRequest', id: string, approvalPriority: ApprovalPriorityStatus, requestedAt: any, createdBy: string, track: { __typename?: 'TrackTempRequest', id: string, name: string, description?: string | null, type: TrackType, mainArtistIds: Array<string>, featuredArtistIds: Array<string>, categoryIds: Array<string>, tags: Array<string>, coverImage: string, previewVideo?: string | null, isExplicit: boolean, lyrics?: string | null, createdBy: string, requestedAt: any, releaseInfo: { __typename?: 'ReleaseInfo', isRelease: boolean, releaseDate?: any | null, releasedAt?: any | null, releaseStatus: ReleaseStatus }, legalDocuments: Array<{ __typename?: 'LegalDocument', name: string, documentUrl: string, documentType: DocumentType, note?: string | null }> }, work: { __typename?: 'WorkTempRequest', id: string, description?: string | null, workSplits: Array<{ __typename?: 'CreateWorkSplitRequest', userId: string, artistRole: ArtistRole, percentage: any }> }, recording: { __typename?: 'RecordingTempRequest', id: string, description?: string | null, recordingSplitRequests: Array<{ __typename?: 'CreateRecordingSplitRequest', userId: string, artistRole: ArtistRole, percentage: any }> }, workUsers?: { __typename?: 'WorkUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus }> | null } | null, recordingUsers?: { __typename?: 'RecordingUsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, email: string, fullName: string, gender: UserGender, birthDate: any, phoneNumber?: string | null, status: UserStatus }> | null } | null, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null, featuredArtists?: { __typename?: 'FeaturedArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null }> | null } | null } };
 
 export type UserCreatedByQueryVariables = Exact<{
   where: UserFilterInput;
@@ -9364,8 +9398,8 @@ export const ArtistDashBoardDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<ArtistDashBoardQuery, ArtistDashBoardQueryVariables>;
 export const TotalTracksDashBoardDocument = new TypedDocumentString(`
-    query TotalTracksDashBoard($where: TrackFilterInput, $order: [TrackSortInput!]) {
-  tracks(where: $where, order: $order) {
+    query TotalTracksDashBoard($skip: Int, $take: Int, $where: TrackFilterInput, $order: [TrackSortInput!]) {
+  tracks(skip: $skip, take: $take, where: $where, order: $order) {
     totalCount
     items {
       createdAt
@@ -9506,8 +9540,8 @@ export const PlatformRevenueDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<PlatformRevenueQuery, PlatformRevenueQueryVariables>;
 export const TrackDailyMetricsDocument = new TypedDocumentString(`
-    query TrackDailyMetrics($where: TrackDailyMetricFilterInput) {
-  trackDailyMetrics(where: $where) {
+    query TrackDailyMetrics($skip: Int, $take: Int, $where: TrackDailyMetricFilterInput) {
+  trackDailyMetrics(skip: $skip, take: $take, where: $where) {
     items {
       createdAt
       streamCount
@@ -10290,6 +10324,31 @@ export const ArtistTrackDetailQueryDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<ArtistTrackDetailQueryQuery, ArtistTrackDetailQueryQueryVariables>;
+export const TrackListStatsDocument = new TypedDocumentString(`
+    query TrackListStats($skip: Int, $take: Int, $where: TrackFilterInput) {
+  tracks(skip: $skip, take: $take, where: $where) {
+    items {
+      id
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackListStatsQuery, TrackListStatsQueryVariables>;
+export const TrackDailyMetricsArtistDocument = new TypedDocumentString(`
+    query TrackDailyMetricsArtist($skip: Int, $take: Int, $where: TrackDailyMetricFilterInput) {
+  trackDailyMetrics(skip: $skip, take: $take, where: $where) {
+    items {
+      id
+      trackId
+      streamCount
+      downloadCount
+      favoriteCount
+      commentCount
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TrackDailyMetricsArtistQuery, TrackDailyMetricsArtistQueryVariables>;
 export const TrackUploadArtistListDocument = new TypedDocumentString(`
     query TrackUploadArtistList {
   artists(where: {isVisible: {eq: true}}, take: 50) {
@@ -10678,6 +10737,33 @@ export const RecommendedTracksByTrackIdDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<RecommendedTracksByTrackIdQuery, RecommendedTracksByTrackIdQueryVariables>;
+export const GetListenerRefundTransactionsDocument = new TypedDocumentString(`
+    query GetListenerRefundTransactions($where: RefundTransactionFilterInput, $order: [RefundTransactionSortInput!], $skip: Int, $take: Int, $userId: String) {
+  refundTransactions(
+    where: $where
+    order: $order
+    skip: $skip
+    take: $take
+    userId: $userId
+  ) {
+    totalCount
+    items {
+      id
+      amount
+      currency
+      createdAt
+      status
+      reason
+      stripePaymentId
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetListenerRefundTransactionsQuery, GetListenerRefundTransactionsQueryVariables>;
 export const RelatedTracksDocument = new TypedDocumentString(`
     query RelatedTracks($skip: Int, $take: Int, $where: TrackFilterInput, $order: [TrackSortInput!]) {
   tracks(skip: $skip, take: $take, where: $where, order: $order) {
@@ -11527,7 +11613,7 @@ export const TrackListHomeDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<TrackListHomeQuery, TrackListHomeQueryVariables>;
 export const TrackDetailDocument = new TypedDocumentString(`
     query TrackDetail($trackId: String!) {
-  tracks(where: {id: {eq: $trackId}}) {
+  tracks(where: {id: {eq: $trackId}}, take: 1, skip: 0) {
     items {
       id
       name

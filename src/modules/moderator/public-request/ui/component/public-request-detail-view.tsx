@@ -165,7 +165,7 @@ export function PublicRequestDetailView({ request, onBack }: PublicRequestDetail
 
             <div>
               <h3 className="mb-2 flex items-center text-sm font-semibold text-gray-400">
-                Detailed Description
+                Detail Description
               </h3>
               <p className="text-base leading-relaxed text-gray-200">{request.detailDescription}</p>
             </div>

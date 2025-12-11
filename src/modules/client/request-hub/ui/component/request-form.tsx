@@ -177,11 +177,11 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">Detailed Description<span className="text-red-500">*</span></label>
+          <label className="mb-2 block text-sm font-medium">Description<span className="text-red-500">*</span></label>
           <Editor
             value={detailDescription}
             onChange={setDetailDescription}
-            placeholder="Detailed description for your request with rich formatting..."
+            placeholder="Description for your request with rich formatting..."
             className="w-full"
           />
         </div>

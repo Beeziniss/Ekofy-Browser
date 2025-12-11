@@ -1,16 +1,12 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { ArrowLeftIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import ActivityConversationTable from "../components/activity-conversation-table";
 import { listenerOptions, orderPackageOptions } from "@/gql/options/client-options";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Link from "next/link";
-import { useAuthStore } from "@/store";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface ActivityConversationSectionProps {
   userId: string;
@@ -78,8 +74,6 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const skip = (currentPage - 1) * pageSize;
-  const { user } = useAuthStore();
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const { data: listenerData } = useSuspenseQuery(listenerOptions(userId, userId));
@@ -102,9 +96,9 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
     });
   };
 
-  const handleGoBack = () => {
+  /* const handleGoBack = () => {
     router.back();
-  };
+  }; */
 
   return (
     <div className="flex w-full flex-col gap-y-6">
@@ -112,7 +106,7 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
         <h1 className="text-4xl tracking-wide">
           Orders with <strong>{listenerData.listeners?.items?.[0].displayName}</strong>
         </h1>
-        {user && user.userId === userId ? (
+        {/* {user && user.userId === userId ? (
           <Link
             href="/profile"
             className="text-main-white hover:border-main-white flex cursor-pointer items-center gap-x-2 border-b border-transparent pb-0.5 transition-colors"
@@ -126,7 +120,7 @@ const ActivityConversationSectionSuspense = ({ userId }: ActivityConversationSec
           >
             <ArrowLeftIcon className="w-4" /> Back to previous page
           </div>
-        )}
+        )} */}
       </div>
       <div>{totalCount} result found</div>
       <ActivityConversationTable

@@ -7,17 +7,26 @@ import { useQuery } from "@tanstack/react-query";
 import { calculateDeadline } from "@/utils/calculate-deadline";
 import { orderPackageOptions } from "@/gql/options/client-options";
 import { useMemo, memo } from "react";
+import { ConversationStatus } from "@/gql/graphql";
 
 interface ConversationInfoRequestsProps {
   currentUserId: string;
   otherUserId: string;
   isArtist: boolean;
   conversationId?: string;
+  conversationStatus?: ConversationStatus;
   requestId?: string | null;
 }
 
 const ConversationInfoRequests = memo(
-  ({ currentUserId, otherUserId, isArtist, conversationId, requestId }: ConversationInfoRequestsProps) => {
+  ({
+    currentUserId,
+    otherUserId,
+    isArtist,
+    conversationId,
+    conversationStatus,
+    requestId,
+  }: ConversationInfoRequestsProps) => {
     // Memoize query options to prevent unnecessary re-renders
     const queryOptions = useMemo(() => {
       const options = {
@@ -78,7 +87,10 @@ const ConversationInfoRequests = memo(
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-main-white text-lg font-semibold">Orders with {isArtist ? "you" : "artist"}</h3>
+          <h3 className="text-main-white text-lg font-semibold">
+            {conversationStatus === ConversationStatus.None ? "Latest Order" : "Orders"} with{" "}
+            {isArtist ? "you" : "artist"}
+          </h3>
           <Link href={orderPageLink} passHref>
             <Button variant="link" size="sm" className="h-auto p-0">
               To Order page
@@ -93,8 +105,10 @@ const ConversationInfoRequests = memo(
                 <span className="text-sm font-semibold text-white">S</span>
               </div>
               <div className="flex-1">
-                <p className="text-main-white text-sm font-medium">{orderPackageData?.package[0].packageName}</p>
-                <p className="text-main-grey text-xs">{deadlineDisplay}</p>
+                <p className="text-main-white line-clamp-1 text-sm font-medium">
+                  {orderPackageData?.package[0].packageName}
+                </p>
+                <p className="text-main-grey text-xs">{orderPackageData.startedAt ? deadlineDisplay : "N/A"}</p>
               </div>
               <ArrowUpRightIcon className="text-main-grey size-6" />
             </div>

@@ -23,7 +23,7 @@ export const TrackListHomeQuery = graphql(`
 
 export const TrackDetailViewQuery = graphql(`
   query TrackDetail($trackId: String!) {
-    tracks(where: { id: { eq: $trackId } }) {
+    tracks(where: { id: { eq: $trackId } }, take: 1, skip: 0) {
       items {
         id
         name

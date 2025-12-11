@@ -198,15 +198,18 @@ const OrderDetailInfoSectionSuspense = () => {
         </CardContent>
       </Card>
 
-      {!orderPackageDetail.startedAt && orderPackageDetail.status !== PackageOrderStatus.Disputed && (
-        <Button variant={"ekofy"} onClick={handleStartWorking} disabled={isMutationPending} size={"lg"}>
-          Start Working
-        </Button>
-      )}
+      {!orderPackageDetail.startedAt &&
+        orderPackageDetail.status !== PackageOrderStatus.Disputed &&
+        user?.userId === orderPackageDetail.providerId && (
+          <Button variant={"ekofy"} onClick={handleStartWorking} disabled={isMutationPending} size={"lg"}>
+            Start Working
+          </Button>
+        )}
 
-      {orderPackageDetail.clientId === user?.userId && orderPackageDetail.status !== PackageOrderStatus.Disputed && (
-        <OrderApproveDelivery orderId={orderId} />
-      )}
+      {orderPackageDetail.clientId === user?.userId &&
+        orderPackageDetail.status !== PackageOrderStatus.InProgress &&
+        orderPackageDetail.deliveries &&
+        orderPackageDetail.deliveries.length > 0 && <OrderApproveDelivery orderId={orderId} />}
     </div>
   );
 };

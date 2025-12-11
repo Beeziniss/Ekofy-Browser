@@ -180,7 +180,7 @@ export function RequestDetailView({ request, onBack, onEdit, className }: Reques
             {/* Detail Description */}
             <Card>
               <CardContent className="px-6 py-0">
-                <h2 className="mb-4 text-lg font-semibold">Detailed Description</h2>
+                <h2 className="mb-4 text-lg font-semibold">Detail Description</h2>
                 <div
                   className="prose prose-invert max-w-none leading-relaxed text-white"
                   dangerouslySetInnerHTML={{ __html: request.detailDescription || "" }}
