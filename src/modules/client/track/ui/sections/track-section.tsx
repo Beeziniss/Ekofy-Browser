@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Track, useAudioStore } from "@/store";
@@ -12,6 +12,7 @@ import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-d
 import { useAuthAction } from "@/hooks/use-auth-action";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { trackDetailOptions } from "@/gql/options/client-options";
+import Link from "next/link";
 
 interface TrackSectionProps {
   trackId: string;
@@ -93,7 +94,27 @@ const TrackSectionSuspense = ({ trackId }: TrackSectionProps) => {
       <div className="flex flex-col">
         <div className="flex flex-col gap-y-2">
           <h1 className="text-main-white text-4xl font-bold">{data.tracks?.items?.[0]?.name}</h1>
-          <p className="text-lg font-semibold">{data.tracks?.items?.[0].mainArtists?.items?.[0]?.stageName}</p>
+          <p className="text-lg font-semibold">
+            {data.tracks?.items?.[0].mainArtists?.items?.map((artist, index, array) => (
+              <React.Fragment key={artist?.id}>
+                <Link href={`/artist/${artist.id}`} className="hover:text-main-purple hover:underline">
+                  {artist?.stageName}
+                </Link>
+                {index < array.length - 1 && ", "}
+              </React.Fragment>
+            ))}
+          </p>
+
+          <div className="flex flex-wrap gap-2">
+            {data.tracks?.items?.[0]?.categories?.items?.map((category) => (
+              <span
+                key={category?.id}
+                className="bg-main-purple/60 cursor-default rounded-md px-3 py-1 text-sm font-medium text-white"
+              >
+                # {category?.name}
+              </span>
+            ))}
+          </div>
 
           <div className="bg-main-dark-bg-1 flex w-fit items-center gap-x-3 rounded-sm border-white/30 px-2 py-1">
             <div className="flex items-center gap-x-1.5">

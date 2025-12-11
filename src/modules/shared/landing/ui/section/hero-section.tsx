@@ -1,45 +1,45 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { HeroTitle } from '../component/hero/hero-title';
-import { HeroSubtitle } from '../component/hero/hero-subtitle';
-import { HeroCta } from '../component/hero/hero-cta';
+import React from "react";
+import { useRouter } from "next/navigation";
+import { HeroTitle } from "../component/hero/hero-title";
+import { HeroSubtitle } from "../component/hero/hero-subtitle";
+import { HeroCta } from "../component/hero/hero-cta";
 
 export const HeroSection = () => {
   const router = useRouter();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-20">
       {/* Gradient background effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-main-purple/20 via-main-dark-bg to-main-blue/20 pointer-events-none" />
-      
+      <div className="from-main-purple/20 via-main-dark-bg to-main-blue/20 pointer-events-none absolute inset-0 bg-gradient-to-br" />
+
       {/* Animated circles background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-main-purple/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-main-blue/10 rounded-full blur-3xl animate-pulse delay-1000" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="bg-main-purple/10 absolute top-1/4 left-1/4 h-96 w-96 animate-pulse rounded-full blur-3xl" />
+        <div className="bg-main-blue/10 absolute right-1/4 bottom-1/4 h-96 w-96 animate-pulse rounded-full blur-3xl delay-1000" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto text-center space-y-8">
+      <div className="relative z-10 mx-auto max-w-6xl space-y-8 text-center">
         <HeroTitle>
           WHERE MUSIC
           <br />
           <span className="text-primary-gradient">MEETS OPPORTUNITY</span>
         </HeroTitle>
-        
+
         <HeroSubtitle className="mx-auto">
-          Empowering independent artists to thrive while delivering personalized, 
-          immersive music experiences to listeners worldwide.
+          Empowering independent artists to thrive while delivering personalized, immersive music experiences to
+          listeners worldwide.
         </HeroSubtitle>
-        
+
         <HeroCta
           className="justify-center pt-4"
           primaryText="Start Your Journey"
           secondaryText="Explore Features"
-          onPrimaryClick={() => router.push('/sign-up')}
+          onPrimaryClick={() => router.push("/welcome")}
           onSecondaryClick={() => {
-            const featuresSection = document.getElementById('features');
-            featuresSection?.scrollIntoView({ behavior: 'smooth' });
+            const featuresSection = document.getElementById("features");
+            featuresSection?.scrollIntoView({ behavior: "smooth" });
           }}
         />
 

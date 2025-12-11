@@ -80,3 +80,14 @@ export const GetArtistInvoicesQuery = graphql(`
     }
   }
 `);
+
+export const GetPlatformFeesQuery = graphql(`
+  query PackageOrdersPlatform ($where: PackageOrderFilterInput) {
+    packageOrders(where: $where) {
+      items {
+        platformFeePercentage
+        payoutTransactionId
+      }
+    }
+  }
+`);

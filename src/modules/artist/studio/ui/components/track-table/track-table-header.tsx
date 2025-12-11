@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ChevronDown, Clock } from "lucide-react";
+import { Search, ChevronDown, Clock, RotateCcwIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,9 +20,9 @@ interface TrackTableHeaderProps {
 }
 
 const TrackTableHeader = ({ totalTracks, serverTotalCount }: TrackTableHeaderProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
 
   const updateURLParams = (params: { [key: string]: string }) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
@@ -64,9 +64,16 @@ const TrackTableHeader = ({ totalTracks, serverTotalCount }: TrackTableHeaderPro
     updateURLParams({ sortBy, sortOrder: newSortOrder });
   };
 
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    router.push(window.location.pathname, { scroll: false });
+  };
+
   const currentPrivacy = searchParams.get("privacy") || "all";
   const currentSortBy = searchParams.get("sortBy") || "";
   const currentSortOrder = searchParams.get("sortOrder") || "desc";
+
+  const hasActiveFilters = searchParams.get("search") || searchParams.get("privacy") || searchParams.get("sortBy");
 
   return (
     <div className="mb-6 flex items-center justify-between">
@@ -91,6 +98,13 @@ const TrackTableHeader = ({ totalTracks, serverTotalCount }: TrackTableHeaderPro
       </div>
 
       <div className="flex items-center gap-3">
+        {hasActiveFilters && (
+          <Button variant="ghost" size="sm" onClick={handleClearFilters} className="flex items-center gap-2">
+            <RotateCcwIcon className="size-4" />
+            Clear Filters
+          </Button>
+        )}
+
         <Link href="/artist/studio/tracks/pending">
           <Button variant="outline" className="flex items-center gap-2">
             <Clock className="size-4" />

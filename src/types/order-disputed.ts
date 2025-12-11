@@ -33,11 +33,14 @@ export interface PackageOrderDetail {
   requirements: string;
   revisionCount: number;
   duration: number;
+  clientId: string;
+  providerId: string;
   startedAt?: string | null;
   disputedAt?: string | null;
   completedAt?: string | null;
   createdAt: string;
   freezedTime?: string | null;
+  conversationId?: string | null;
   platformFeePercentage: number;
   artistFeePercentage: number;
   isEscrowReleased: boolean;

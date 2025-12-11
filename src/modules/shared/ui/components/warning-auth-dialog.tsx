@@ -142,7 +142,7 @@ export function WarningAuthDialog({ open, onOpenChange, action, trackName }: War
           </div>
 
           <div className="flex flex-col gap-y-4">
-            <Link href="/sign-up" className="w-full" onClick={() => onOpenChange(false)}>
+            <Link href="/welcome" className="w-full" onClick={() => onOpenChange(false)}>
               <Button className="h-11 w-full rounded-full bg-gradient-to-r from-blue-600 to-purple-600 font-semibold text-white hover:from-blue-700 hover:to-purple-700">
                 Create free account
               </Button>
@@ -151,7 +151,7 @@ export function WarningAuthDialog({ open, onOpenChange, action, trackName }: War
             <div className="text-center">
               <span className="text-sm text-gray-400">Already have an account? </span>
               <Link
-                href="/login"
+                href="/welcome"
                 className="text-sm font-medium text-purple-400 underline hover:text-purple-300"
                 onClick={() => onOpenChange(false)}
               >

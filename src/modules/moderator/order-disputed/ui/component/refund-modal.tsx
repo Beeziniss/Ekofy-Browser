@@ -32,6 +32,9 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency }: R
   const [clientPercentage, setClientPercentage] = useState(50);
   const [artistPercentage, setArtistPercentage] = useState(50);
   const { mutate: refundPartially, isPending } = useRefundPartially();
+  
+  // Platform fee percentage (adjust this based on your business logic)
+  const platformFeePercentage = 10;
 
   const handleClientPercentageChange = (value: number) => {
     setClientPercentage(value);
@@ -64,12 +67,10 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency }: R
     );
   };
 
-  // Calculate amounts after deducting 10% platform fee
-  const platformFeePercentage = 10;
-  const amountAfterPlatformFee = orderAmount * (1 - platformFeePercentage / 100);
-  const clientAmount = (amountAfterPlatformFee * clientPercentage) / 100;
-  const artistAmount = (amountAfterPlatformFee * artistPercentage) / 100;
-  const platformFeeAmount = orderAmount * (platformFeePercentage / 100);
+  // Calculate amounts based on total order amount
+  const clientAmount = (orderAmount * clientPercentage) / 100;
+  const artistAmountBeforeFee = (orderAmount * artistPercentage) / 100;
+  const platformFee = (artistAmountBeforeFee * platformFeePercentage) / 100;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -85,16 +86,8 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency }: R
           {/* Total Amount Display */}
           <div className="rounded-lg border border-gray-700 bg-gray-900/50 p-4 space-y-2">
             <div className="flex justify-between">
-              <p className="text-sm text-gray-400">Total Order Amount</p>
-              <p className="text-lg font-semibold text-gray-100">{formatCurrencyVND(orderAmount)} {currency?.toUpperCase()}</p>
-            </div>
-            <div className="flex justify-between border-t border-gray-700 pt-2">
-              <p className="text-sm text-gray-400">Platform Fee (10%)</p>
-              <p className="text-sm font-medium text-red-400">- {formatCurrencyVND(platformFeeAmount)} {currency?.toUpperCase()}</p>
-            </div>
-            <div className="flex justify-between border-t border-gray-700 pt-2">
-              <p className="text-sm font-medium text-gray-300">Available for Refund</p>
-              <p className="text-xl font-bold text-blue-400">{formatCurrencyVND(amountAfterPlatformFee)} {currency?.toUpperCase()}</p>
+              <p className="text-sm font-medium text-gray-300">Total Order Amount</p>
+              <p className="text-xl font-bold text-blue-400">{formatCurrencyVND(orderAmount)} {currency?.toUpperCase()}</p>
             </div>
           </div>
 
@@ -102,7 +95,7 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency }: R
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label htmlFor="client-percentage" className="text-gray-300">
-                Client Refund
+                Listener Refund
               </Label>
               <div className="flex items-center space-x-2">
                 <Input
@@ -130,9 +123,14 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency }: R
           {/* Artist Payment */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label htmlFor="artist-percentage" className="text-gray-300">
-                Artist Payment
-              </Label>
+              <div className="flex flex-col">
+                <Label htmlFor="artist-percentage" className="text-gray-300">
+                  Artist Payout
+                </Label>
+                <p className="text-xs text-gray-500 mt-1">
+                  (The artist will bear the platform&apos;s fees. Platform fee: {platformFeePercentage}% = -{formatCurrencyVND(platformFee)} {currency?.toUpperCase()})
+                </p>
+              </div>
               <div className="flex items-center space-x-2">
                 <Input
                   id="artist-percentage"
@@ -153,7 +151,7 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency }: R
               step={1}
               className="w-full"
             />
-            <p className="text-right text-sm font-medium text-green-400">{formatCurrencyVND(artistAmount)} {currency?.toUpperCase()}</p>
+            <p className="text-right text-sm font-medium text-blue-400">{formatCurrencyVND(artistAmountBeforeFee)} {currency?.toUpperCase()}</p>
           </div>
 
           {/* Validation Message */}

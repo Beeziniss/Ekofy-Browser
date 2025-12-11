@@ -33,11 +33,7 @@ interface ResetPasswordFormProps {
   onBackToForgotPassword?: () => void;
 }
 
-const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ 
-  email = "", 
-  onSuccess,
-  onBackToForgotPassword 
-}) => {
+const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ email = "", onSuccess, onBackToForgotPassword }) => {
   const { resetPassword, isLoading } = useResetPassword();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -68,16 +64,13 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="mx-auto w-full max-w-md">
       <div className="bg-main-dark-1 rounded-xl p-8 shadow-xl">
         {/* Header */}
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center mb-4">
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Reset Password</h2>
-          <p className="text-gray-400 text-sm">
-            Enter the code sent to your email and set a new password
-          </p>
+        <div className="mb-6 text-center">
+          <div className="mb-4 flex items-center justify-center"></div>
+          <h2 className="mb-2 text-2xl font-bold text-white">Reset Password</h2>
+          <p className="text-sm text-gray-400">Enter the code sent to your email and set a new password</p>
         </div>
 
         {/* Form */}
@@ -88,26 +81,29 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium">Email Address<span className="text-red-500">*</span></FormLabel>
+                  <FormLabel className="font-medium text-white">
+                    Email Address<span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
                       {...field}
                       disabled={true}
-                      className="border-gradient-input h-12 w-full text-white bg-transparent cursor-not-allowed opacity-70"
+                      className="border-gradient-input h-12 w-full cursor-not-allowed bg-transparent text-white opacity-70"
                     />
                   </FormControl>
                   <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="otpCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium">Verification Code<span className="text-red-500">*</span></FormLabel>
+                  <FormLabel className="font-medium text-white">
+                    Verification Code<span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="flex justify-center">
                       <InputOTP
@@ -118,12 +114,30 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
                         className="gap-2"
                       >
                         <InputOTPGroup className="gap-2">
-                          <InputOTPSlot index={0} className="w-12 h-12 text-white border-gray-600 bg-main-dark-bg focus:border-blue-500" />
-                          <InputOTPSlot index={1} className="w-12 h-12 text-white border-gray-600 bg-main-dark-bg focus:border-blue-500" />
-                          <InputOTPSlot index={2} className="w-12 h-12 text-white border-gray-600 bg-main-dark-bg focus:border-blue-500" />
-                          <InputOTPSlot index={3} className="w-12 h-12 text-white border-gray-600 bg-main-dark-bg focus:border-blue-500" />
-                          <InputOTPSlot index={4} className="w-12 h-12 text-white border-gray-600 bg-main-dark-bg focus:border-blue-500" />
-                          <InputOTPSlot index={5} className="w-12 h-12 text-white border-gray-600 bg-main-dark-bg focus:border-blue-500" />
+                          <InputOTPSlot
+                            index={0}
+                            className="bg-main-dark-bg h-12 w-12 border-gray-600 text-white focus:border-blue-500"
+                          />
+                          <InputOTPSlot
+                            index={1}
+                            className="bg-main-dark-bg h-12 w-12 border-gray-600 text-white focus:border-blue-500"
+                          />
+                          <InputOTPSlot
+                            index={2}
+                            className="bg-main-dark-bg h-12 w-12 border-gray-600 text-white focus:border-blue-500"
+                          />
+                          <InputOTPSlot
+                            index={3}
+                            className="bg-main-dark-bg h-12 w-12 border-gray-600 text-white focus:border-blue-500"
+                          />
+                          <InputOTPSlot
+                            index={4}
+                            className="bg-main-dark-bg h-12 w-12 border-gray-600 text-white focus:border-blue-500"
+                          />
+                          <InputOTPSlot
+                            index={5}
+                            className="bg-main-dark-bg h-12 w-12 border-gray-600 text-white focus:border-blue-500"
+                          />
                         </InputOTPGroup>
                       </InputOTP>
                     </div>
@@ -138,7 +152,9 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium">New Password<span className="text-red-500">*</span></FormLabel>
+                  <FormLabel className="font-medium text-white">
+                    New Password<span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -146,21 +162,17 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
                         placeholder="Enter new password"
                         {...field}
                         disabled={isLoading}
-                        className="border-gradient-input h-12 w-full pr-12 text-white placeholder-gray-400 bg-transparent focus:border-blue-500 focus:ring-blue-500/50"
+                        className="border-gradient-input h-12 w-full bg-transparent pr-12 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-white"
+                        className="absolute top-0 right-0 h-full px-3 py-2 text-gray-400 hover:bg-transparent hover:text-white"
                         onClick={() => setShowPassword(!showPassword)}
                         disabled={isLoading}
                       >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
                   </FormControl>
@@ -174,7 +186,9 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-medium">Confirm New Password<span className="text-red-500">*</span></FormLabel>
+                  <FormLabel className="font-medium text-white">
+                    Confirm New Password<span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -182,21 +196,17 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
                         placeholder="Confirm new password"
                         {...field}
                         disabled={isLoading}
-                        className="border-gradient-input h-12 w-full pr-12 text-white placeholder-gray-400 bg-transparent focus:border-blue-500 focus:ring-blue-500/50"
+                        className="border-gradient-input h-12 w-full bg-transparent pr-12 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/50"
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-white"
+                        className="absolute top-0 right-0 h-full px-3 py-2 text-gray-400 hover:bg-transparent hover:text-white"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         disabled={isLoading}
                       >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
                   </FormControl>
@@ -207,7 +217,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
 
             <Button
               type="submit"
-              className="primary_gradient w-full h-12 text-white font-semibold rounded-md hover:opacity-90 transition-opacity"
+              className="primary_gradient h-12 w-full rounded-md font-semibold text-white transition-opacity hover:opacity-90"
               disabled={isLoading}
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -215,10 +225,10 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
             </Button>
 
             {onBackToForgotPassword && (
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full h-12 text-white border-gray-600 hover:bg-gray-800 transition-colors" 
+              <Button
+                type="button"
+                variant="outline"
+                className="h-12 w-full border-gray-600 text-white transition-colors hover:bg-gray-800"
                 onClick={onBackToForgotPassword}
                 disabled={isLoading}
               >

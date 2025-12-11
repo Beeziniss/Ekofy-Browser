@@ -6,17 +6,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { MultiSelect } from "@/components/ui/multi-select";
 import InputTags from "@/components/ui/tags-input";
+import { Switch } from "@/components/ui/switch";
 import { artistTrackDetailOptions, categoriesOptions } from "@/gql/options/artist-options";
 import { updateTrackMetadataMutationOptions } from "@/gql/options/artist-mutation-options";
 import { toast } from "sonner";
-import { SaveIcon, XIcon } from "lucide-react";
+import { SaveIcon, XIcon, GlobeIcon, LockIcon } from "lucide-react";
 
 interface TrackMetadataFormSectionProps {
   trackId: string;
+  isEditing: boolean;
   onCancel: () => void;
   onSuccess: () => void;
 }
@@ -25,11 +27,12 @@ const trackMetadataSchema = z.object({
   description: z.string().optional(),
   categoryIds: z.array(z.string()).min(1, "Please select at least one category"),
   tags: z.array(z.string()).min(1, "Please add at least one tag"),
+  isPublic: z.boolean(),
 });
 
 type TrackMetadataFormData = z.infer<typeof trackMetadataSchema>;
 
-const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadataFormSectionProps) => {
+const TrackMetadataFormSection = ({ trackId, isEditing, onCancel, onSuccess }: TrackMetadataFormSectionProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
 
@@ -46,6 +49,7 @@ const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadat
       description: "",
       categoryIds: [],
       tags: [],
+      isPublic: false,
     },
   });
 
@@ -56,6 +60,7 @@ const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadat
         description: track.description || "",
         categoryIds: track.categoryIds || [],
         tags: track.tags || [],
+        isPublic: track.releaseInfo?.isRelease || false,
       });
     }
   }, [track, form]);
@@ -68,6 +73,7 @@ const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadat
         categoryIds: data.categoryIds,
         description: data.description,
         tags: data.tags,
+        isPublic: data.isPublic,
       });
 
       // Invalidate and refetch track data
@@ -87,39 +93,73 @@ const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadat
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="h-4 bg-gray-300 rounded w-1/4 mb-2" />
-          <div className="h-10 bg-gray-300 rounded mb-4" />
-          
-          <div className="h-4 bg-gray-300 rounded w-1/4 mb-2" />
-          <div className="h-10 bg-gray-300 rounded mb-4" />
-          
-          <div className="h-4 bg-gray-300 rounded w-1/4 mb-2" />
-          <div className="h-24 bg-gray-300 rounded mb-4" />
-          
+          <div className="mb-2 h-4 w-1/4 rounded bg-gray-300" />
+          <div className="mb-4 h-10 rounded bg-gray-300" />
+
+          <div className="mb-2 h-4 w-1/4 rounded bg-gray-300" />
+          <div className="mb-4 h-10 rounded bg-gray-300" />
+
+          <div className="mb-2 h-4 w-1/4 rounded bg-gray-300" />
+          <div className="mb-4 h-24 rounded bg-gray-300" />
+
           <div className="flex gap-2">
-            <div className="h-10 bg-gray-300 rounded w-20" />
-            <div className="h-10 bg-gray-300 rounded w-20" />
+            <div className="h-10 w-20 rounded bg-gray-300" />
+            <div className="h-10 w-20 rounded bg-gray-300" />
           </div>
         </div>
       </div>
     );
   }
 
-  const categoryOptions = categoriesData?.categories?.items?.map((category) => ({
-    value: category.id,
-    label: category.name,
-  })) || [];
+  const categoryOptions =
+    categoriesData?.categories?.items?.map((category) => ({
+      value: category.id,
+      label: category.name,
+    })) || [];
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Public/Private Switch */}
+        <FormField
+          control={form.control}
+          name="isPublic"
+          render={({ field }) => (
+            <FormItem className="bg-muted/10 border-border/30 flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-main-white flex items-center gap-2 text-base">
+                  {field.value ? (
+                    <>
+                      <GlobeIcon className="h-4 w-4" />
+                      Public Track
+                    </>
+                  ) : (
+                    <>
+                      <LockIcon className="h-4 w-4" />
+                      Private Track
+                    </>
+                  )}
+                </FormLabel>
+                <FormDescription>
+                  {field.value
+                    ? "Your track is visible to everyone and can be discovered by listeners."
+                    : "Your track is private and only visible to you."}
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch checked={field.value} onCheckedChange={field.onChange} disabled={!isEditing} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
         {/* Categories Field */}
         <FormField
           control={form.control}
           name="categoryIds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-main-white">
+              <FormLabel className="text-main-white text-sm font-medium">
                 Categories<span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
@@ -130,7 +170,7 @@ const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadat
                   placeholder="Choose music genres..."
                   maxCount={5}
                   resetOnDefaultValueChange={true}
-                  className="bg-transparent border-white/30"
+                  disabled={!isEditing}
                 />
               </FormControl>
               <FormMessage />
@@ -144,7 +184,7 @@ const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadat
           name="tags"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-main-white">
+              <FormLabel className="text-main-white text-sm font-medium">
                 Tags<span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
@@ -152,8 +192,11 @@ const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadat
                   value={field.value}
                   onChange={field.onChange}
                   placeholder="Add tags to help people discover your track..."
+                  className="border-white/30 !bg-transparent"
+                  disabled={!isEditing}
                 />
               </FormControl>
+              {isEditing && <FormDescription>Hint: Use , or Enter to add tags</FormDescription>}
               <FormMessage />
             </FormItem>
           )}
@@ -165,14 +208,13 @@ const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadat
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-main-white">
-                Description
-              </FormLabel>
+              <FormLabel className="text-main-white text-sm font-medium">Description</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
                   placeholder="Tell listeners about your track..."
-                  className="h-24 resize-none bg-transparent border-white/30 text-main-white placeholder:text-muted-foreground"
+                  className="text-main-white placeholder:text-muted-foreground h-24 resize-none border-white/30 !bg-transparent"
+                  disabled={!isEditing}
                 />
               </FormControl>
               <FormMessage />
@@ -181,27 +223,31 @@ const TrackMetadataFormSection = ({ trackId, onCancel, onSuccess }: TrackMetadat
         />
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-3 pt-4">
-          <Button type="submit" disabled={isSubmitting}>
-            <SaveIcon className="h-4 w-4 mr-2" />
-            {isSubmitting ? "Saving..." : "Save Changes"}
-          </Button>
-          
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-            <XIcon className="h-4 w-4 mr-2" />
-            Cancel
-          </Button>
-        </div>
+        {isEditing && (
+          <div className="flex items-center gap-3 pt-4">
+            <Button type="submit" variant={"ekofy"} disabled={isSubmitting}>
+              <SaveIcon className="mr-2 h-4 w-4" />
+              {isSubmitting ? "Saving..." : "Save Changes"}
+            </Button>
+
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+              <XIcon className="mr-2 h-4 w-4" />
+              Cancel
+            </Button>
+          </div>
+        )}
 
         {/* Help Text */}
-        <div className="text-xs text-muted-foreground bg-muted/20 p-3 rounded-lg">
-          <p className="font-medium mb-1">Tips for better discovery:</p>
-          <ul className="list-disc list-inside space-y-1">
-            <li>Choose categories that best represent your music style</li>
-            <li>Add relevant tags like mood, instruments, or themes</li>
-            <li>Write a compelling description that tells your story</li>
-          </ul>
-        </div>
+        {isEditing && (
+          <div className="text-muted-foreground bg-muted/20 rounded-lg p-3 text-xs">
+            <p className="mb-1 font-medium">Tips for better discovery:</p>
+            <ul className="list-inside list-disc space-y-1">
+              <li>Choose categories that best represent your music style</li>
+              <li>Add relevant tags like mood, instruments, or themes</li>
+              <li>Write a compelling description that tells your story</li>
+            </ul>
+          </div>
+        )}
       </form>
     </Form>
   );

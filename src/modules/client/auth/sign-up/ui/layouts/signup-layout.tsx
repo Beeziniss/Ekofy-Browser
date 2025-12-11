@@ -5,7 +5,7 @@ interface SignUpLayoutProps {
 }
 
 const SignUpLayout = ({ children }: SignUpLayoutProps) => {
-  return <div className="flex w-full">{children}</div>;
+  return <div className="flex h-screen w-full overflow-hidden">{children}</div>;
 };
 
 export default SignUpLayout;

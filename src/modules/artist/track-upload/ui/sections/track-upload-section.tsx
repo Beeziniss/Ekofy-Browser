@@ -127,6 +127,7 @@ const TrackUploadSection = () => {
       "audio/mp3": [".mp3"],
     },
     multiple: false,
+    maxSize: 50 * 1024 * 1024, // 50MB
     noClick: true, // We'll handle click on the button specifically
   });
 

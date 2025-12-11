@@ -24,7 +24,7 @@ import {
 import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2, Flag } from "lucide-react";
 import React, { useState } from "react";
 import RequestHubCommentReply from "./request-hub-comment-reply";
-import { CommentThread, CommentType, ReportRelatedContentType } from "@/gql/graphql";
+import { ArtistQuery, CommentThread, CommentType, ListenerQuery, ReportRelatedContentType } from "@/gql/graphql";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createRequestHubCommentMutationOptions,
@@ -40,9 +40,11 @@ interface RequestHubCommentUserProps {
   thread: Omit<CommentThread, "hasMoreReplies" | "lastActivity">;
   requestId: string;
   level?: number;
+  listenerData?: ListenerQuery;
+  artistData?: ArtistQuery;  
 }
 
-const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubCommentUserProps) => {
+const RequestHubCommentUser = ({ thread, requestId, level = 0, listenerData, artistData }: RequestHubCommentUserProps) => {
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -299,10 +301,16 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubComme
           <div className="mt-2 flex items-center gap-x-2">
             <Avatar className="h-7 w-7 border border-gray-600/50">
               <AvatarImage
-                src={comment.commenter?.listener?.avatarImage || comment.commenter?.artist?.avatarImage || undefined}
+                  src={
+                  listenerData?.listeners?.items?.[0]?.avatarImage ||
+                  artistData?.artists?.items?.[0]?.avatarImage ||
+                  undefined
+                }
               />
-              <AvatarFallback className="bg-gray-700 text-xs text-gray-300">
-                {comment.commenter?.fullName.slice(0, 2)}
+              <AvatarFallback>
+                {listenerData?.listeners?.items?.[0]?.displayName?.slice(0, 1) ||
+                  artistData?.artists?.items?.[0]?.stageName?.slice(0, 1) ||
+                  "U"}
               </AvatarFallback>
             </Avatar>
             <div className="relative flex-1">
@@ -342,6 +350,8 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0 }: RequestHubComme
                 requestId={requestId}
                 level={level + 1}
                 rootCommentId={comment.id}
+                listenerData={listenerData}
+                artistData={artistData}
               />
             ))}
           </div>

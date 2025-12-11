@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { PackageOrderStatus } from "@/gql/graphql";
 import { formatCurrencyVND } from "@/utils/format-currency";
 import { formatDate } from "@/utils/format-date";
-import { calculateDeadline } from "@/utils/calculate-deadline";
+// import { calculateDeadline } from "@/utils/calculate-deadline";
 import { PackageOrderDetail } from "@/types";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -16,12 +16,35 @@ import {
   ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { OrderConversationMessages } from "./order-conversation-messages";
 
 interface OrderDetailInfoProps {
   order: PackageOrderDetail;
+  conversationMessages?: Array<{
+    id: string;
+    conversationId?: string | null;
+    senderId?: string | null;
+    text?: string | null;
+    sentAt: string;
+    seenAt?: string | null;
+    senderProfileMessages: {
+      avatar?: string | null;
+      nickname?: string | null;
+      userId?: string | null;
+    };
+  }>;
+  hasMoreMessages?: boolean;
+  loadMoreMessages?: () => void;
+  isLoadingMore?: boolean;
 }
 
-export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
+export function OrderDetailInfo({ 
+  order, 
+  conversationMessages = [],
+  hasMoreMessages,
+  loadMoreMessages,
+  isLoadingMore,
+}: OrderDetailInfoProps) {
   const packageInfo = order.package?.[0];
   const client = order.client?.[0];
   const provider = order.provider?.[0];
@@ -63,9 +86,9 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
   };
 
   // Calculate deadline
-  const deadline = order.startedAt && packageInfo?.estimateDeliveryDays
-    ? calculateDeadline(order.startedAt, packageInfo.estimateDeliveryDays, order.freezedTime || undefined)
-    : null;
+  // const deadline = order.startedAt && packageInfo?.estimateDeliveryDays
+  //   ? calculateDeadline(order.startedAt, packageInfo.estimateDeliveryDays, order.freezedTime || undefined)
+  //   : null;
 
   const getStatusBadge = (status: PackageOrderStatus) => {
     switch (status) {
@@ -116,17 +139,6 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
                 </div>
               </div>
             )}
-            {deadline && (
-              <div className="flex items-start space-x-3">
-                <div>
-                  <p className="text-sm text-main-white">Deadline</p>
-                  <p className="text-sm font-medium text-main-grey">{formatDate(deadline.toISOString())}</p>
-                  {order.freezedTime && (
-                    <p className="text-xs text-main-grey">Includes freeze time: {order.freezedTime}</p>
-                  )}
-                </div>
-              </div>
-            )}
             {order.disputedAt && (
               <div className="flex items-start space-x-3">
                 <div>
@@ -135,14 +147,6 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
                 </div>
               </div>
             )}
-            <div className="flex items-start space-x-3">
-              <div>
-                <p className="text-sm text-main-white">Escrow Status</p>
-                <Badge className={order.isEscrowReleased ? "border-green-500 bg-green-500/20 text-green-400" : "border-blue-500 bg-blue-500/20 text-blue-400"}>
-                  {order.isEscrowReleased ? "PAID OUT" : "IN ESCROW"}
-                </Badge>
-              </div>
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -153,7 +157,7 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
         <Card className="border-gray-700 bg-gray-800/50">
           <CardHeader>
             <CardTitle className="flex items-center text-lg text-gray-100">
-              Client
+              Listener
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -342,6 +346,16 @@ export function OrderDetailInfo({ order }: OrderDetailInfoProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Conversation Messages */}
+      <OrderConversationMessages
+        messages={conversationMessages}
+        clientId={order.clientId}
+        providerId={order.providerId}
+        hasMoreMessages={hasMoreMessages}
+        loadMoreMessages={loadMoreMessages}
+        isLoadingMore={isLoadingMore}
+      />
     </div>
   );
 }

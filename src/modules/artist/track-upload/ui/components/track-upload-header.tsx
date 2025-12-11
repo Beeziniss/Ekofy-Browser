@@ -116,7 +116,7 @@ const TrackUploadHeader = () => {
             <input {...getInputProps()} />
             <button
               onClick={handleReplaceTrack}
-              className="cursor-pointer text-sm text-white/70 transition-colors hover:text-white"
+              className="text-main-purple hover:text-main-purple/90 cursor-pointer text-sm font-semibold transition-colors"
             >
               Replace Track
             </button>

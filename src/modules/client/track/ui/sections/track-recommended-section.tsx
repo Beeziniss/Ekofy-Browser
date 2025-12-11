@@ -119,6 +119,8 @@ const RecommendedTracksSection = ({
 
           const allArtists = [...mainArtists, ...featuredArtists];
 
+          const categories = track.categories?.items?.filter(Boolean) || [];
+
           return (
             <RecommendedTrackCard
               key={`${trackId}-${index}`}
@@ -130,6 +132,7 @@ const RecommendedTracksSection = ({
               checkTrackInFavorite={track.checkTrackInFavorite || false}
               favoriteCount={track.favoriteCount || 0}
               streamCount={track.streamCount || 0}
+              categories={categories}
             />
           );
         })}

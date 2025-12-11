@@ -42,6 +42,9 @@ const RecommendedTrackCardFull = React.memo(
     const featuredArtists = track.featuredArtists?.items?.filter((a) => a) || [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const allArtists = [...mainArtists, ...featuredArtists];
+    
+    // Extract categories
+    const categories = track.categories?.items?.filter((c) => c && c.name) || [];
 
     // Audio store selectors
     const isCurrentTrack = useAudioStore((state) => state.currentTrack?.id === trackId);
@@ -226,6 +229,23 @@ const RecommendedTrackCardFull = React.memo(
                 <span>Unknown Artist</span>
               )}
             </div>
+            
+            {/* Categories */}
+            {categories.length > 0 && (
+              <div className="mt-1 flex flex-wrap items-center gap-1">
+                {categories.slice(0, 3).map((category) =>
+                  category ? (
+                    <span
+                      key={category.id}
+                      className="rounded-full bg-primary-500/10 px-1.5 py-0.5 text-[10px] font-medium text-primary-500"
+                    >
+                      {category.name}
+                    </span>
+                  ) : null
+                )}
+              </div>
+            )}
+            
             {/* Stats */}
             <div className="mt-1 flex items-center gap-4 text-xs text-gray-500">
               {streamCount !== undefined && (
