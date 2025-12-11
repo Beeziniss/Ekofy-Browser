@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import useSignIn from "../../hook/use-sign-in";
 import useGoogleSignIn from "../../hook/use-google-sign-in";
-import { EkofyLogo } from "@/assets/icons";
+import { EkofyLogoTextLg } from "@/assets/icons";
 
 const loginSchema = z.object({
   email: z
@@ -70,13 +70,10 @@ const LoginFormSection = () => {
       <div className="w-full max-w-sm space-y-6">
         {/* Logo and Title */}
         <div className="text-center">
-          <div className="mb-6 flex items-center justify-center">
-            <div className="mr-3 flex items-center justify-center rounded-full">
-              <EkofyLogo className="size-[60px]" />
-            </div>
-            <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
-          </div>
-          <h2 className="mb-8 text-4xl font-bold text-white">Welcome Back</h2>
+          <Link href={"/landing"} className="w-fit">
+            <EkofyLogoTextLg className="mx-auto mb-6 w-42 text-white" />
+          </Link>
+          <h1 className="mb-8 text-4xl font-bold text-white">Welcome Back</h1>
         </div>
 
         {/* Login Form */}
@@ -93,7 +90,6 @@ const LoginFormSection = () => {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
                       disabled={isLoading}
                       placeholder="Enter your email"
                       maxLength={50}

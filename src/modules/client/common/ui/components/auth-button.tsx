@@ -26,7 +26,7 @@ import {
   userActiveSubscriptionOptions,
   notificationOptions,
 } from "@/gql/options/client-options";
-import { AudioLines, Bell, LogOut, MessageCircleIcon, MicVocalIcon, ReceiptTextIcon, User } from "lucide-react";
+import { Bell, LogOut, MessageCircleIcon, MicVocalIcon, ReceiptTextIcon, User } from "lucide-react";
 import { useNotificationSignalR } from "@/hooks/use-notification-signalr";
 import { NotificationPopover } from "@/components/notification-popover";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
@@ -149,14 +149,6 @@ const AuthButton = () => {
     // Artist-specific items
     {
       type: "link" as const,
-      icon: AudioLines,
-      label: "Track",
-      href: "/artist/studio/tracks",
-      className: "text-main-white",
-      showForRoles: [UserRole.ARTIST],
-    },
-    {
-      type: "link" as const,
       icon: MicVocalIcon,
       label: "Studio",
       href: "/artist/studio",
@@ -220,7 +212,7 @@ const AuthButton = () => {
           >
             <div className="group relative cursor-pointer">
               {unreadCount > 0 ? (
-                <div className="relative">
+                <div className="relative p-2">
                   <BellActive className="size-5" />
                   {/* {unreadCount > 0 && (
                       <div className="absolute -top-1 -right-1 flex h-4 w-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
@@ -312,10 +304,10 @@ const AuthButton = () => {
       ) : (
         // Signed out
         <div className="flex items-center gap-x-4">
-          <Link href={"/login"} className="hover:underline">
+          <Link href={"/welcome"} className="hover:underline">
             <span className="text-sm font-medium">Sign In</span>
           </Link>
-          <Link href={"/sign-up"}>
+          <Link href={"/welcome"}>
             <Button className="primary_gradient font-semibold text-white hover:brightness-90">Create Account</Button>
           </Link>
         </div>

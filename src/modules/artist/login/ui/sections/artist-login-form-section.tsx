@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import useArtistSignIn from "../../hook/use-artist-sign-in";
-import { EkofyLogo } from "@/assets/icons";
+import { EkofyLogoTextLg } from "@/assets/icons";
 
 const loginSchema = z.object({
   email: z
@@ -54,12 +54,9 @@ const ArtistLoginFormSection = () => {
       <div className="w-full max-w-md space-y-6">
         {/* Logo and Title */}
         <div className="mb-8 text-center">
-          <div className="mb-6 flex items-center justify-center">
-            <div className="mr-3 flex items-center justify-center rounded-full">
-              <EkofyLogo className="size-[60px]" />
-            </div>
-            <h1 className="text-primary-gradient text-4xl font-bold">Ekofy</h1>
-          </div>
+          <Link href={"/landing"} className="w-fit">
+            <EkofyLogoTextLg className="mx-auto mb-6 w-42 text-white" />
+          </Link>
           <h2 className="mb-4 text-3xl font-bold text-white">Welcome Back, Artist</h2>
           <p className="text-sm text-gray-300">Enter your email and password to access your artist account</p>
         </div>
@@ -78,7 +75,6 @@ const ArtistLoginFormSection = () => {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
                       disabled={isLoading}
                       placeholder="Enter your email"
                       maxLength={50}
