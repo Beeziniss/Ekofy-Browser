@@ -29,12 +29,17 @@ type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 interface ResetPasswordFormProps {
   email?: string;
+  userType?: string;
   onSuccess?: () => void;
   onBackToForgotPassword?: () => void;
 }
 
-const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ email = "", onSuccess, onBackToForgotPassword }) => {
-  const { resetPassword, isLoading } = useResetPassword();
+const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ 
+  email = "", 
+  userType = "listener",
+  onBackToForgotPassword 
+}) => {
+  const { resetPasswordAsync, isLoading } = useResetPassword(userType);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -50,16 +55,16 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ email = "", onSuc
 
   const onSubmit = async (data: ResetPasswordFormValues) => {
     try {
-      await resetPassword({
+      await resetPasswordAsync({
         email: data.email,
         otpCode: data.otpCode,
         newPassword: data.newPassword,
         confirmPassword: data.confirmPassword,
       });
-      onSuccess?.();
     } catch (error) {
-      // Error handling is done in the hook
+      // Error handling is done in the hook (toast notification)
       console.error("Reset password error:", error);
+      // Don't call onSuccess here - stay on current page
     }
   };
 

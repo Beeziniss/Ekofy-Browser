@@ -35,6 +35,7 @@ export interface UserManagementArtist {
   updatedAt: string;
   members?: ArtistMember[];
   identityCard?: IdentityCard;
+  requestedAt: string;
 }
 
 export interface ArtistMember {

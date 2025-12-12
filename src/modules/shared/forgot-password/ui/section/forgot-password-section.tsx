@@ -1,13 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ForgotPasswordForm, ResetPasswordForm, SuccessMessage } from "../component";
 
 type ForgotPasswordStep = "email" | "reset" | "success";
 
 const ForgotPasswordSection: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const userType = searchParams.get("type") || "listener"; // Default to listener if not specified
+  
   const [currentStep, setCurrentStep] = useState<ForgotPasswordStep>("email");
   const [email, setEmail] = useState<string>("");
 
@@ -25,7 +28,9 @@ const ForgotPasswordSection: React.FC = () => {
   };
 
   const handleBackToLogin = () => {
-    router.push("/login");
+    // Redirect based on user type
+    const loginPath = userType === "artist" ? "/artist/login" : "/login";
+    router.push(loginPath);
   };
 
   const renderCurrentStep = () => {
@@ -36,6 +41,7 @@ const ForgotPasswordSection: React.FC = () => {
         return (
           <ResetPasswordForm
             email={email}
+            userType={userType}
             onSuccess={handleResetSuccess}
             onBackToForgotPassword={handleBackToEmail}
           />

@@ -33,6 +33,7 @@ interface ArtistApprovalTableData extends Omit<UserManagementArtist, "followers"
   phoneNumber?: string;
   followers?: number;
   followerCount?: number;
+  requestedAt: string;
 }
 
 interface ArtistApprovalTableProps {
@@ -88,6 +89,11 @@ export function ArtistApprovalTable({
       cell: ({ row }) => <span className="text-gray-300">{row.original.email}</span>,
     },
     {
+      accessorKey: "phoneNumber",
+      header: "Phone",
+      cell: ({ row }) => <span className="text-gray-300">{row.original.phoneNumber || "N/A"}</span>,
+    },
+    {
       accessorKey: "artistType",
       header: "Type",
       cell: ({ row }) => <span className="text-gray-300 capitalize">{row.original.artistType.toLowerCase()}</span>,
@@ -115,9 +121,17 @@ export function ArtistApprovalTable({
       ),
     },
     {
-      accessorKey: "phoneNumber",
-      header: "Phone",
-      cell: ({ row }) => <span className="text-gray-300">{row.original.phoneNumber || "N/A"}</span>,
+      accessorKey: "requestedAt",
+      header: "Requested At",
+      cell: ({ row }) => (
+        <span className="text-gray-300">
+          {new Date(row.original.requestedAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ),
     },
     {
       id: "actions",

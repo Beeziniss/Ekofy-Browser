@@ -5,6 +5,7 @@ import { DotIcon } from "lucide-react";
 import Image from "next/image";
 import { UserManagementArtist } from "@/types/user-management";
 import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Extended artist interface for approval process with additional ID card properties
 interface ArtistApprovalData extends UserManagementArtist {
@@ -17,6 +18,7 @@ interface ArtistApprovalData extends UserManagementArtist {
   placeOfOrigin?: string;
   placeOfResidence?: string;
   phoneNumber?: string;
+  requestedAt: string;
 }
 
 interface ArtistInfoCardProps {
@@ -116,38 +118,40 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
       </div>
 
       {/* Identity Card Information */}
-      <div className="transparent rounded-xl border-2 border-solid border-gray-400 bg-black/40 p-6">
-        <h3 className="mb-4 text-lg font-semibold text-white">Identity card information</h3>
-
+      <Card>
+        <CardHeader>
+          <CardTitle>Identity card information</CardTitle>
+        </CardHeader>
+        <CardContent>
         <div className="grid grid-cols-[280px_1fr] gap-6">
           {/* LEFT SIDE: Images */}
           <div className="space-y-4">
             {/* Front Image */}
             <div>
               <label className="mb-2 block text-sm text-gray-300">Front Image</label>
-              <div
-                className="transparent flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-solid border-gray-400 bg-blue-600 transition-opacity hover:opacity-80"
-                onClick={() => frontImageUrl && setSelectedImage(frontImageUrl)}
-              >
-                {frontImageUrl ? (
-                  <Image
-                    src={frontImageUrl}
-                    alt="ID Front"
-                    width={280}
-                    height={160}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="h-full w-full bg-gradient-to-br from-blue-600 to-blue-400"></div>
-                )}
-              </div>
+                <div
+                  className="transparent flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-solid border-[#424242] bg-blue-600 transition-opacity hover:opacity-80"
+                  onClick={() => frontImageUrl && setSelectedImage(frontImageUrl)}
+                >
+                  {frontImageUrl ? (
+                    <Image
+                      src={frontImageUrl}
+                      alt="ID Front"
+                      width={280}
+                      height={160}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-gradient-to-br from-blue-600 to-blue-400"></div>
+                  )}
+                </div>
             </div>
 
             {/* Back Image */}
             <div>
               <label className="mb-2 block text-sm text-gray-300">Back Image</label>
               <div
-                className="transparent flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-solid border-gray-400 bg-blue-600 transition-opacity hover:opacity-80"
+                className="transparent flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-solid border-[#424242] bg-blue-600 transition-opacity hover:opacity-80"
                 onClick={() => backImageUrl && setSelectedImage(backImageUrl)}
               >
                 {backImageUrl ? (
@@ -172,7 +176,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               <Input
                 value={artist.identityCardNumber || "Number of Citizen"}
                 readOnly
-                className="transparent h-9 border-2 border-solid border-gray-400 bg-transparent text-white"
+                className="transparent h-9 border-2 border-solid bg-transparent text-white"
                 placeholder="Number of Citizen"
               />
             </div>
@@ -182,7 +186,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               <Input
                 value={artist.identityCardFullName || "Full Name"}
                 readOnly
-                className="transparent h-9 border-2 border-solid border-gray-400 bg-transparent text-white"
+                className="transparent h-9 border-2 border-solid bg-transparent text-white"
                 placeholder="Full Name"
               />
             </div>
@@ -197,7 +201,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                       : "dd/mm/yyyy"
                   }
                   readOnly
-                  className="transparent h-9 border-2 border-solid border-gray-400 bg-transparent text-white"
+                  className="transparent h-9 border-2 border-solid bg-transparent text-white"
                   placeholder="dd/mm/yyyy"
                 />
               </div>
@@ -206,7 +210,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 <Input
                   value={artist.gender || "Gender"}
                   readOnly
-                  className="transparent h-9 border-2 border-solid border-gray-400 bg-transparent text-white"
+                  className="transparent h-9 border-2 border-solid bg-transparent text-white"
                   placeholder="Gender"
                 />
               </div>
@@ -217,7 +221,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               <Input
                 value={artist.placeOfOrigin || "Place of origin"}
                 readOnly
-                className="transparent h-9 border-2 border-solid border-gray-400 bg-transparent text-white"
+                className="transparent h-9 border-2 border-solid bg-transparent text-white"
                 placeholder="Place of origin"
               />
             </div>
@@ -227,7 +231,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               <Input
                 value={artist.placeOfResidence || "Place of residence"}
                 readOnly
-                className="transparent h-9 border-2 border-solid border-gray-400 bg-transparent text-white"
+                className="transparent h-9 border-2 border-solid bg-transparent text-white"
                 placeholder="Place of residence"
               />
             </div>
@@ -264,18 +268,19 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               </div> */}
           </div>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Contact Information */}
       <div className="space-y-4">
-        <div className="transparent rounded-lg border-2 border-solid border-gray-400 bg-[#121212] p-4">
+        <Card className="p-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="mb-1 block text-sm text-gray-300">Email</label>
               <Input
                 value={artist.email || "Email Artist"}
                 readOnly
-                className="transparent border-2 border-solid border-gray-400 bg-gray-700 text-white"
+                className="transparent border-2 border-solid bg-gray-700 text-white"
               />
             </div>
             <div>
@@ -283,7 +288,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               <Input
                 value={artist.phoneNumber || "Phone Number"}
                 readOnly
-                className="transparent border-2 border-solid border-gray-400 bg-gray-700 text-white"
+                className="transparent border-2 border-solid bg-gray-700 text-white"
               />
             </div>
             <div>
@@ -291,7 +296,19 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               <Input
                 value={artist.artistType}
                 readOnly
-                className="transparent border-2 border-solid border-gray-400 bg-gray-700 text-white"
+                className="transparent border-2 border-solid bg-gray-700 text-white"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-gray-300">Requested At</label>
+              <Input
+                value={new Date(artist.requestedAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+                readOnly
+                className="transparent border-2 border-solid bg-gray-700 text-white"
               />
             </div>
             {/* <div>
@@ -305,7 +322,7 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
               />
             </div> */}
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
