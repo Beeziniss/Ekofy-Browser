@@ -207,7 +207,7 @@ const OrderDetailInfoSectionSuspense = () => {
         )}
 
       {orderPackageDetail.clientId === user?.userId &&
-        orderPackageDetail.status !== PackageOrderStatus.InProgress &&
+        orderPackageDetail.status === PackageOrderStatus.InProgress &&
         orderPackageDetail.deliveries &&
         orderPackageDetail.deliveries.length > 0 && <OrderApproveDelivery orderId={orderId} />}
     </div>
