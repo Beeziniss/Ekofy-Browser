@@ -508,7 +508,7 @@ export const orderPackageDetailOptions = (orderId: string) =>
     queryFn: async () => {
       const where: PackageOrderFilterInput = { id: { eq: orderId } };
       const result = await execute(OrderPackageQuery, { where });
-      return result.packageOrders?.items?.[0] || null;
+      return result?.packageOrders?.items?.[0] || null;
     },
     enabled: !!orderId,
   });

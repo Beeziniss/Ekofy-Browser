@@ -296,7 +296,7 @@ const AuthButton = () => {
                     <DropdownMenuSub>
                       <DropdownMenuSubTrigger className="[&_svg]:text-main-white gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
                         <ReceiptTextIcon className="mr-2 size-4" />
-                        <span className="text-base">My Orders</span>
+                        My Orders
                       </DropdownMenuSubTrigger>
                       <DropdownMenuSubContent>
                         <DropdownMenuItem asChild>
@@ -342,7 +342,7 @@ const AuthButton = () => {
                     <DropdownMenuSub>
                       <DropdownMenuSubTrigger className="[&_svg]:text-main-white gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
                         <ReceiptTextIcon className="mr-2 size-4" />
-                        <span className="text-base">Orders</span>
+                        Orders
                       </DropdownMenuSubTrigger>
                       <DropdownMenuSubContent>
                         <DropdownMenuItem asChild>
