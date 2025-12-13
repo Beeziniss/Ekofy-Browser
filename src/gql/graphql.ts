@@ -7730,6 +7730,48 @@ export type SearchTransactionsQueryVariables = Exact<{
 
 export type SearchTransactionsQuery = { __typename?: 'QueryInitialization', searchPaymentTransactions?: { __typename?: 'SearchPaymentTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PaymentTransaction', id: string, amount: any, currency: string, createdAt: any, updatedAt?: any | null, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, stripePaymentMethod: Array<string>, stripePaymentId?: string | null, stripeCheckoutSessionId?: string | null, stripeInvoiceId?: string | null, stripeSubscriptionId?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
+export type GetAllPayoutTransactionsQueryVariables = Exact<{
+  where?: InputMaybe<PayoutTransactionFilterInput>;
+  order?: InputMaybe<Array<PayoutTransactionSortInput> | PayoutTransactionSortInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetAllPayoutTransactionsQuery = { __typename?: 'QueryInitialization', payoutTransactions?: { __typename?: 'PayoutTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PayoutTransaction', id: string, userId: string, royaltyReportId?: string | null, stripeTransferId: string, stripePayoutId: string, destinationAccountId: string, amount: any, currency: string, level?: AggregationLevel | null, description: string, status: PayoutTransactionStatus, method?: string | null, createdAt: any, updatedAt?: any | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type SearchPayoutTransactionsQueryVariables = Exact<{
+  order?: InputMaybe<Array<PayoutTransactionSortInput> | PayoutTransactionSortInput>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PayoutTransactionFilterInput>;
+}>;
+
+
+export type SearchPayoutTransactionsQuery = { __typename?: 'QueryInitialization', searchPayoutTransactions?: { __typename?: 'SearchPayoutTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PayoutTransaction', id: string, userId: string, royaltyReportId?: string | null, stripeTransferId: string, stripePayoutId: string, destinationAccountId: string, amount: any, currency: string, level?: AggregationLevel | null, description: string, status: PayoutTransactionStatus, method?: string | null, createdAt: any, updatedAt?: any | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type GetAllRefundTransactionsQueryVariables = Exact<{
+  where?: InputMaybe<RefundTransactionFilterInput>;
+  order?: InputMaybe<Array<RefundTransactionSortInput> | RefundTransactionSortInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetAllRefundTransactionsQuery = { __typename?: 'QueryInitialization', refundTransactions?: { __typename?: 'RefundTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'RefundTransaction', id: string, stripePaymentId: string, amount: any, currency: CurrencyType, reason: RefundReasonType, status: RefundTransactionStatus, createdAt: any, updatedAt?: any | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type SearchRefundTransactionsQueryVariables = Exact<{
+  order?: InputMaybe<Array<RefundTransactionSortInput> | RefundTransactionSortInput>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RefundTransactionFilterInput>;
+}>;
+
+
+export type SearchRefundTransactionsQuery = { __typename?: 'QueryInitialization', searchRefundTransactions?: { __typename?: 'SearchRefundTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'RefundTransaction', id: string, stripePaymentId: string, amount: any, currency: CurrencyType, reason: RefundReasonType, status: RefundTransactionStatus, createdAt: any, updatedAt?: any | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
 export type ArtistPackagesServiceQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -9760,6 +9802,114 @@ export const SearchTransactionsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SearchTransactionsQuery, SearchTransactionsQueryVariables>;
+export const GetAllPayoutTransactionsDocument = new TypedDocumentString(`
+    query GetAllPayoutTransactions($where: PayoutTransactionFilterInput, $order: [PayoutTransactionSortInput!], $skip: Int, $take: Int) {
+  payoutTransactions(where: $where, order: $order, skip: $skip, take: $take) {
+    totalCount
+    items {
+      id
+      userId
+      royaltyReportId
+      stripeTransferId
+      stripePayoutId
+      destinationAccountId
+      amount
+      currency
+      level
+      description
+      status
+      method
+      createdAt
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetAllPayoutTransactionsQuery, GetAllPayoutTransactionsQueryVariables>;
+export const SearchPayoutTransactionsDocument = new TypedDocumentString(`
+    query SearchPayoutTransactions($order: [PayoutTransactionSortInput!], $searchTerm: String, $skip: Int, $take: Int, $where: PayoutTransactionFilterInput) {
+  searchPayoutTransactions(
+    order: $order
+    searchTerm: $searchTerm
+    skip: $skip
+    take: $take
+    where: $where
+  ) {
+    totalCount
+    items {
+      id
+      userId
+      royaltyReportId
+      stripeTransferId
+      stripePayoutId
+      destinationAccountId
+      amount
+      currency
+      level
+      description
+      status
+      method
+      createdAt
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SearchPayoutTransactionsQuery, SearchPayoutTransactionsQueryVariables>;
+export const GetAllRefundTransactionsDocument = new TypedDocumentString(`
+    query GetAllRefundTransactions($where: RefundTransactionFilterInput, $order: [RefundTransactionSortInput!], $skip: Int, $take: Int) {
+  refundTransactions(where: $where, order: $order, skip: $skip, take: $take) {
+    totalCount
+    items {
+      id
+      stripePaymentId
+      amount
+      currency
+      reason
+      status
+      createdAt
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetAllRefundTransactionsQuery, GetAllRefundTransactionsQueryVariables>;
+export const SearchRefundTransactionsDocument = new TypedDocumentString(`
+    query SearchRefundTransactions($order: [RefundTransactionSortInput!], $searchTerm: String, $skip: Int, $take: Int, $where: RefundTransactionFilterInput) {
+  searchRefundTransactions(
+    order: $order
+    searchTerm: $searchTerm
+    skip: $skip
+    take: $take
+    where: $where
+  ) {
+    totalCount
+    items {
+      id
+      stripePaymentId
+      amount
+      currency
+      reason
+      status
+      createdAt
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SearchRefundTransactionsQuery, SearchRefundTransactionsQueryVariables>;
 export const ArtistPackagesServiceDocument = new TypedDocumentString(`
     query ArtistPackagesService($skip: Int, $take: Int, $where: ArtistPackageFilterInput) {
   artistPackages(

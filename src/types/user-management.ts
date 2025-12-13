@@ -35,9 +35,28 @@ export interface UserManagementArtist {
   updatedAt: string;
   members?: ArtistMember[];
   identityCard?: IdentityCard;
-  requestedAt: string;
 }
 
+export interface ArtistApprovalView {
+  id: string;
+  userId: string;
+  stageName: string;
+  email: string;
+  artistType: ArtistType;
+  categoryIds: string[];
+  biography?: string;
+  followers: number;
+  popularity: number;
+  avatarImage?: string;
+  bannerImage?: string;
+  isVerified: boolean;
+  verifiedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  members?: ArtistMember[];
+  identityCard?: IdentityCard;
+  requestedAt: string;
+}
 export interface ArtistMember {
   fullName: string;
   email: string;

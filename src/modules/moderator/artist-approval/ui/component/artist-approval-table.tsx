@@ -23,10 +23,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { UserManagementArtist } from "@/types/user-management";
+import { ArtistApprovalView } from "@/types/user-management";
 
 // Extended interface for artist approval data with additional fields
-interface ArtistApprovalTableData extends Omit<UserManagementArtist, "followers"> {
+interface ArtistApprovalTableData extends Omit<ArtistApprovalView, "followers"> {
   fullName?: string;
   gender?: string;
   birthDate?: string;
@@ -157,7 +157,7 @@ export function ArtistApprovalTable({
   ];
 
   const table = useReactTable({
-    data,
+    data: [...data].reverse(),
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, RefreshCw } from "lucide-react";
+import { Filter, RefreshCw } from "lucide-react";
 import { useArtistReports } from "../../hooks";
 import { ArtistReportStatusBadge } from "../components/artist-report-status-badge";
 import { ReportStatus, ReportType } from "@/gql/graphql";
@@ -19,7 +18,6 @@ interface ArtistReportListSectionProps {
 }
 
 export function ArtistReportListSection({ className }: ArtistReportListSectionProps) {
-  const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ReportStatus | "ALL">("ALL");
   const [reportTypeFilter, setReportTypeFilter] = useState<ReportType | "ALL">("ALL");
   const [skip, setSkip] = useState(0);
@@ -47,10 +45,7 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
     }
   };
 
-  const filteredReports = reports.filter(
-    (report) =>
-      search === "" || report.description.toLowerCase().includes(search.toLowerCase()) || report.id.includes(search),
-  );
+  const filteredReports = reports;
 
   if (error) {
     return (
@@ -85,18 +80,6 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4 md:flex-row md:items-end">
-            <div className="flex-1 space-y-2">
-              <label className="text-main-white text-sm font-medium">Search</label>
-              <div className="relative">
-                <Search className="text-main-grey absolute top-3 left-3 h-4 w-4" />
-                <Input
-                  placeholder="Search by user"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="bg-main-dark-bg-1 border-main-grey-dark-bg/50 text-main-white pl-10"
-                />
-              </div>
-            </div>
             <div className="w-full space-y-2 md:w-[200px]">
               <label className="text-main-white text-sm font-medium">Status</label>
               <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ReportStatus | "ALL")}>

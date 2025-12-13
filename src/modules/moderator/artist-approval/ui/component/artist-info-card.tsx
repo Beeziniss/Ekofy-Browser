@@ -3,12 +3,12 @@
 import { Input } from "@/components/ui/input";
 import { DotIcon } from "lucide-react";
 import Image from "next/image";
-import { UserManagementArtist } from "@/types/user-management";
+import { ArtistApprovalView } from "@/types/user-management";
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Extended artist interface for approval process with additional ID card properties
-interface ArtistApprovalData extends UserManagementArtist {
+interface ArtistApprovalData extends ArtistApprovalView {
   frontImageUrl?: string;
   backImageUrl?: string;
   identityCardNumber?: string;
@@ -235,37 +235,6 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 placeholder="Place of residence"
               />
             </div>
-
-            {/* <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1.5 block text-sm text-gray-300">
-                    Date of Expiry
-                  </label>
-                  <Input
-                    value={
-                      artist.identityCard.validUntil
-                        ? new Date(
-                            artist.identityCard.validUntil,
-                          ).toLocaleDateString("en-GB")
-                        : "dd/mm/yyyy"
-                    }
-                    readOnly
-                    className="border-gradient-input h-9 bg-transparent text-white"
-                    placeholder="dd/mm/yyyy"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm text-gray-300">
-                    Nationality
-                  </label>
-                  <Input
-                    value={artist.identityCard.nationality || "Nationality"}
-                    readOnly
-                    className="border-gradient-input h-9 bg-transparent text-white"
-                    placeholder="Nationality"
-                  />
-                </div>
-              </div> */}
           </div>
         </div>
         </CardContent>
@@ -311,16 +280,6 @@ export function ArtistInfoCard({ artist }: ArtistInfoCardProps) {
                 className="transparent border-2 border-solid bg-gray-700 text-white"
               />
             </div>
-            {/* <div>
-              <label className="mb-1 block text-sm text-gray-300">
-                Is Verified
-              </label>
-              <Input
-                value={artist.isVerified ? "Verified" : "Not Verified"}
-                readOnly
-                className="border-gradient-input bg-gray-700 text-white"
-              />
-            </div> */}
           </div>
         </Card>
       </div>
