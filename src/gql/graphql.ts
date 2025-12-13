@@ -8866,7 +8866,12 @@ export const SearchListenersDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<SearchListenersQuery, SearchListenersQueryVariables>;
 export const SearchTracksDocument = new TypedDocumentString(`
     query SearchTracks($skip: Int, $take: Int, $name: String!) {
-  searchTracks(skip: $skip, take: $take, name: $name) {
+  searchTracks(
+    skip: $skip
+    take: $take
+    name: $name
+    where: {and: [{releaseInfo: {isRelease: {eq: true}}}, {restriction: {type: {eq: NONE}}}]}
+  ) {
     totalCount
     items {
       id
@@ -11743,7 +11748,11 @@ export const TrackCommentRepliesDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<TrackCommentRepliesQuery, TrackCommentRepliesQueryVariables>;
 export const TrackListHomeDocument = new TypedDocumentString(`
     query TrackListHome($take: Int!) {
-  tracks(take: $take, order: {createdAt: DESC}) {
+  tracks(
+    take: $take
+    order: {createdAt: DESC}
+    where: {and: [{releaseInfo: {isRelease: {eq: true}}}, {restriction: {type: {eq: NONE}}}]}
+  ) {
     totalCount
     items {
       id

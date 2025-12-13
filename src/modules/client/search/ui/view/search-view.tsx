@@ -83,7 +83,12 @@ export const SEARCH_LISTENERS = graphql(`
 
 export const SEARCH_TRACKS = graphql(`
   query SearchTracks($skip: Int, $take: Int, $name: String!) {
-    searchTracks(skip: $skip, take: $take, name: $name) {
+    searchTracks(
+      skip: $skip
+      take: $take
+      name: $name
+      where: { and: [{ releaseInfo: { isRelease: { eq: true } } }, { restriction: { type: { eq: NONE } } }] }
+    ) {
       totalCount
       items {
         id

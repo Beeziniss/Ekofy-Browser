@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Suspense, useState } from "react";
-import { ArrowLeftIcon, CheckIcon, HeadphonesIcon, MicIcon, PlayIcon } from "lucide-react";
+import { ArrowLeftIcon, CheckIcon, HeadphonesIcon, MicIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getUserInitials } from "@/utils/format-shorten-name";
 import { servicePackageOptions } from "@/gql/options/client-options";
@@ -91,10 +91,10 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
               </div>
 
               <p className="text-main-white/80 max-w-2xl text-base leading-relaxed">
-                {artist?.biography || "Professional audio engineer with years of experience"}
+                {artist?.biography || "No biography available."}
               </p>
 
-              <div className="flex items-center gap-x-6">
+              {/* <div className="flex items-center gap-x-6">
                 <div className="flex items-center gap-x-2 text-sm text-slate-400">
                   <div className="flex items-center">
                     <span className="size-3 rounded-full bg-slate-600"></span>
@@ -119,7 +119,7 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
               >
                 <PlayIcon className="fill-main-blue text-main-blue size-4 animate-pulse" />
                 Listen to samples
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

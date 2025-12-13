@@ -2,7 +2,11 @@ import { graphql } from "@/gql";
 
 export const TrackListHomeQuery = graphql(`
   query TrackListHome($take: Int!) {
-    tracks(take: $take, order: { createdAt: DESC }) {
+    tracks(
+      take: $take
+      order: { createdAt: DESC }
+      where: { and: [{ releaseInfo: { isRelease: { eq: true } } }, { restriction: { type: { eq: NONE } } }] }
+    ) {
       totalCount
       items {
         id

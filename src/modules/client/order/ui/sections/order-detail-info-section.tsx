@@ -96,7 +96,14 @@ const OrderDetailInfoSectionSuspense = () => {
   const { mutateAsync, isPending: isMutationPending } = useMutation(acceptRequestByArtistMutationOptions);
 
   useEffect(() => {
-    if (orderPackageDetail && user) {
+    // Check authentication first
+    if (!user) {
+      router.push("/");
+      return;
+    }
+
+    // Then check authorization
+    if (orderPackageDetail) {
       const isAuthorized = orderPackageDetail.clientId === user.userId || orderPackageDetail.providerId === user.userId;
 
       if (!isAuthorized) {
@@ -207,7 +214,7 @@ const OrderDetailInfoSectionSuspense = () => {
         )}
 
       {orderPackageDetail.clientId === user?.userId &&
-        orderPackageDetail.status !== PackageOrderStatus.InProgress &&
+        orderPackageDetail.status === PackageOrderStatus.InProgress &&
         orderPackageDetail.deliveries &&
         orderPackageDetail.deliveries.length > 0 && <OrderApproveDelivery orderId={orderId} />}
     </div>

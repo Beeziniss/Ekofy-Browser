@@ -416,8 +416,7 @@ const TrackUploadMetadataSection = () => {
 
     // Validate legal documents manually
     const hasValidDocuments =
-      legalDocuments.length > 0 &&
-      legalDocuments.every((doc) => doc.documentFile && doc.name.trim() && doc.note.trim());
+      legalDocuments.length > 0 && legalDocuments.every((doc) => doc.documentFile && doc.name.trim());
 
     if (!hasValidDocuments) {
       toast.error("Please ensure all legal documents have files uploaded and required fields filled.");
@@ -634,6 +633,8 @@ const TrackUploadMetadataSection = () => {
         // Use setTimeout to ensure this runs after the reset has completed
         setTimeout(() => {
           form.setValue("mainArtistIds", [currentUserArtist.id], { shouldValidate: false });
+          // Manually update splits to ensure they're populated
+          updateSplitsFromArtists([currentUserArtist.id]);
         }, 0);
       }
     }
@@ -667,8 +668,10 @@ const TrackUploadMetadataSection = () => {
     const currentUserArtist = artistsData.artists.items.find((artist) => artist.userId === user.userId);
     if (currentUserArtist?.user?.[0]?.stripeAccountId) {
       form.setValue("mainArtistIds", [currentUserArtist.id], { shouldValidate: false });
+      // Manually update splits to ensure they're populated
+      updateSplitsFromArtists([currentUserArtist.id]);
     }
-  }, [artistsData?.artists?.items, user?.userId, form]);
+  }, [artistsData?.artists?.items, user?.userId, form, updateSplitsFromArtists]);
 
   // Watch for changes in artist selections and automatically update splits
   useEffect(() => {
