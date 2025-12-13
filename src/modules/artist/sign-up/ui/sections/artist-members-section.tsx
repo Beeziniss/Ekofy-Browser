@@ -77,6 +77,12 @@ const ArtistMembersSection = ({ onNext, onBack, initialData }: ArtistMembersSect
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
+    // Check if there is at least one member
+    if (members.length === 0) {
+      toast.error("Please add at least one member before registering");
+      return false;
+    }
+
     members.forEach((member, index) => {
       if (!member.fullName.trim()) {
         newErrors[`member-${index}-fullName`] = "Full name is required";

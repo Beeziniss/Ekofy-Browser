@@ -86,6 +86,7 @@ export function ArtistApprovalSection() {
     birthDate: artist.birthDate,
     phoneNumber: artist.phoneNumber,
     followers: 0,
+    requestedAt: artist.requestedAt,
   }));
 
   // Calculate pagination info

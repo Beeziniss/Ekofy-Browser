@@ -221,7 +221,7 @@ export function ReportControlTable({
                 </>
               )}
 
-            {onRestoreUser && 
+            {onRestoreUser && row.original.assignedModeratorId === currentUserId &&
               row.original.actionTaken && 
               (row.original.actionTaken === ReportAction.Suspended || 
                row.original.actionTaken === ReportAction.PermanentBan ||
@@ -239,7 +239,7 @@ export function ReportControlTable({
                 </>
               )}
 
-            {onRestoreContent && 
+            {onRestoreContent && row.original.assignedModeratorId === currentUserId &&
               row.original.actionTaken && 
               row.original.actionTaken === ReportAction.ContentRemoval &&
               row.original.status === ReportStatus.Approved && (

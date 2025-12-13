@@ -53,7 +53,7 @@ export function ReportDetailHeaderSection({
     report.status === ReportStatus.Approved;
 
   // Check if can restore content: must have ContentRemoval action and be Approved
-  const canRestoreContent = onRestoreContentClick &&
+  const canRestoreContent = onRestoreContentClick && report.assignedModeratorId === currentUserId &&
     report.actionTaken &&
     report.actionTaken === ReportAction.ContentRemoval &&
     report.status === ReportStatus.Approved;

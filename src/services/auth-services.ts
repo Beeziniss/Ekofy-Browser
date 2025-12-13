@@ -239,7 +239,7 @@ export const authApi = {
         return response.data;
       } catch (error) {
         if (isAxiosError(error)) {
-          throw new Error(error.response?.data?.message || "Failed to change password");
+          throw new Error(error.response?.data?.detail || "Failed to change password");
         }
         throw error;
       }
