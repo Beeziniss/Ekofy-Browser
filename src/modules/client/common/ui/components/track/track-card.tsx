@@ -20,6 +20,8 @@ import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-opti
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { PauseButtonMedium, PlayButtonMediumRounded } from "@/assets/icons";
 import PlaylistAddModal from "@/modules/client/playlist/ui/components/playlist-add-modal";
+import { useProcessTrackDiscoveryPopularity, useProcessTrackEngagementPopularity, useProcessArtistDiscoveryPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
+import { PopularityActionType } from "@/gql/graphql";
 
 type ArtistInfo = {
   id: string;
@@ -43,6 +45,9 @@ const TrackCard = React.memo(
     const [showAuthDialog, setShowAuthDialog] = useState(false);
     const [authDialogAction, setAuthDialogAction] = useState<"play" | "favorite" | "playlist">("play");
     const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
+    const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
+    const { mutate: trackDiscoveryPopularity } = useProcessTrackDiscoveryPopularity();
+    const { mutate: artistDiscoveryPopularity } = useProcessArtistDiscoveryPopularity();
 
     // Selective subscriptions - only subscribe to what affects THIS track
     const isCurrentTrack = useAudioStore((state) => state.currentTrack?.id === trackId);
@@ -115,6 +120,11 @@ const TrackCard = React.memo(
 
       navigator.clipboard.writeText(window.location.href + `track/${trackId}`);
       toast.info("Copied!");
+      // Track popularity for share action
+      trackEngagementPopularity({
+        trackId: trackId,
+        actionType: PopularityActionType.Share,
+      });
     };
 
     const { mutate: favoriteTrack } = useMutation({
@@ -148,16 +158,38 @@ const TrackCard = React.memo(
       if (checkTrackInFavorite) {
         favoriteTrack({ trackId, isAdding: false });
         toast.success(`${trackName} removed from favorites!`);
+        trackEngagementPopularity({
+          trackId,
+          actionType: PopularityActionType.Unfavorite,
+        });
       } else {
         favoriteTrack({ trackId, isAdding: true });
         toast.success(`${trackName} added to favorites!`);
+        trackEngagementPopularity({
+          trackId,
+          actionType: PopularityActionType.Favorite,
+        });
       }
     };
 
+    const handleTrackAddPopularity = () => {
+      trackDiscoveryPopularity({
+        trackId: trackId,
+        actionType: PopularityActionType.Search,
+      });
+    };
+
+    const handleArtistAddPopularity = () => {
+      artistDiscoveryPopularity({
+        artistId: artists[0]?.id || "",
+        actionType: PopularityActionType.Search,
+      });
+    }
     return (
       <div className="w-full rounded-sm">
         <Link
           href={`/track/${trackId}`}
+          onClick={handleTrackAddPopularity}
           className={`group relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-md transition-opacity after:absolute after:inset-0 after:rounded-md after:bg-black after:content-[''] hover:after:opacity-20 ${isMenuOpen ? "after:opacity-20" : "after:opacity-0"}`}
         >
           <Image
@@ -235,6 +267,7 @@ const TrackCard = React.memo(
           <div className="flex items-center gap-2 text-xs font-bold sm:gap-3 sm:text-sm">
             <Link
               href={`/track/${trackId}`}
+              onClick={handleTrackAddPopularity}
               className={`hover:text-main-purple line-clamp-1 ${
                 isCurrentTrack && globalIsPlaying ? "text-main-purple" : ""
               }`}
@@ -262,7 +295,11 @@ const TrackCard = React.memo(
               artists.length > 0 &&
               artists.map((artist, index) => (
                 <span key={index}>
-                  <Link href={`/artists/${artist?.id}`} className="hover:text-main-purple hover:underline">
+                  <Link 
+                    href={`/artists/${artist?.id}`} 
+                    onClick={handleArtistAddPopularity}
+                    className="hover:text-main-purple hover:underline"
+                    >
                     {artist?.stageName}
                   </Link>
                   {index < artists.length - 1 && ", "}

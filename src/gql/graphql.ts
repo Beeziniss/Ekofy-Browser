@@ -8892,6 +8892,7 @@ export const SearchTracksDocument = new TypedDocumentString(`
     take: $take
     name: $name
     where: {and: [{releaseInfo: {isRelease: {eq: true}}}, {restriction: {type: {eq: NONE}}}]}
+    order: {createdAt: DESC}
   ) {
     totalCount
     items {
