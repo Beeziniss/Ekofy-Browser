@@ -74,9 +74,11 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
                   </Avatar>
                   Order by <strong className="text-main-white">{clientData?.displayName}</strong>
                 </div>
-                <div className="text-muted-foreground text-sm">
-                  Date ordered {formatDate(new Date(orderPackageDetail?.createdAt || ""), "MMM dd, yyyy")}
-                </div>
+                {orderPackageDetail?.createdAt && (
+                  <div className="text-muted-foreground text-sm">
+                    Date ordered {formatDate(new Date(orderPackageDetail.createdAt), "MMM dd, yyyy")}
+                  </div>
+                )}
               </div>
               {providerData && (
                 <div className="text-muted-foreground mt-2 flex items-center gap-x-2 text-sm font-stretch-normal">

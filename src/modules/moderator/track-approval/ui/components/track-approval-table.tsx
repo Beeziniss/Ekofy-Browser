@@ -230,7 +230,7 @@ export function TrackApprovalTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((item: TrackUploadRequestListItem, index) => (
+            {[...data].reverse().map((item: TrackUploadRequestListItem, index) => (
               <TableRow key={item.id}>
                 <TableCell>{(currentPage - 1) * pageSize + index + 1}</TableCell>
                 <TableCell>

@@ -29,8 +29,8 @@ import { useCreateEscrowPolicyMutation } from "@/gql/client-mutation-options/esc
 const formSchema = z.object({
   platformFeePercentage: z
     .string()
-    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0 && Number(val) <= 100, {
-      message: "Platform fee percentage must be between 0 and 100",
+    .refine((val) => !isNaN(Number(val)) && Number(val) >= 1 && Number(val) <= 100, {
+      message: "Platform fee percentage must be between 1 and 100",
     }),
 });
 
@@ -109,14 +109,14 @@ export function CreateEscrowPolicyDialog({
                         const input = e.currentTarget;
                         if (Number(input.value) > 100) {
                           input.value = "100";
-                        } else if (Number(input.value) < 0) {
-                          input.value = "0";
+                        } else if (Number(input.value) < 1) {
+                          input.value = "1";
                         }
                       }}
                     />
                   </FormControl>
                   <FormDescription>
-                    The platform commission fee percentage (0-100)
+                    The platform commission fee percentage (1-100)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

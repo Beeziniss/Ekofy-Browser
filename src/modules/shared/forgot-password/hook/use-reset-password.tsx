@@ -9,7 +9,7 @@ interface ResetPasswordResponse {
   message: string;
 }
 
-const useResetPassword = () => {
+const useResetPassword = (userType: string = "listener") => {
   const router = useRouter();
 
   const {
@@ -32,8 +32,9 @@ const useResetPassword = () => {
     },
     onSuccess: () => {
       toast.success("Password reset successfully");
-      // Redirect to login after successful password reset
-      router.push("/login");
+      // Redirect to appropriate login page based on user type
+      const loginPath = userType === "artist" ? "/artist/login" : "/login";
+      router.push(loginPath);
     },
     onError: (error) => {
       console.error("Reset password error:", error);

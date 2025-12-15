@@ -14,12 +14,12 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
   }
 
   return (
-    <Card className="transparent border-2 border-solid border-gray-400 bg-[#121212] text-white">
+    <Card>
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-white">Optional Artist type</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="transparent rounded-lg border-2 border-solid border-gray-400 bg-[#121212] p-4">
+        <div className="transparent rounded-lg border-2 border-solid p-4">
           <h4 className="mb-4 font-semibold text-white">Artist Members</h4>
 
           {members.map((member, index) => (
@@ -37,7 +37,7 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
                   <Input
                     value={member.fullName}
                     readOnly
-                    className="transparent border-2 border-solid border-gray-400 bg-[#121212] text-white"
+                    className="transparent border-2 border-solid bg-[#121212] text-white"
                   />
                 </div>
                 <div>
@@ -45,7 +45,7 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
                   <Input
                     value={member.email}
                     readOnly
-                    className="transparent border-2 border-solid border-gray-400 bg-[#121212] text-white"
+                    className="transparent border-2 border-solid bg-[#121212] text-white"
                   />
                 </div>
                 <div>
@@ -53,7 +53,7 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
                   <Input
                     value={member.phoneNumber}
                     readOnly
-                    className="transparent border-2 border-solid border-gray-400 bg-[#121212] text-white"
+                    className="transparent border-2 border-solid bg-[#121212] text-white"
                   />
                 </div>
                 <div>
@@ -61,7 +61,7 @@ export function BandMembersCard({ members }: BandMembersCardProps) {
                   <Input
                     value={member.gender}
                     readOnly
-                    className="transparent border-2 border-solid border-gray-400 bg-[#121212] text-white"
+                    className="transparent border-2 border-solid bg-[#121212] text-white"
                   />
                 </div>
               </div>

@@ -137,7 +137,7 @@ const ArtistLoginFormSection = () => {
                 )}
               />
               <Link
-                href="/forgot-password"
+                href="/forgot-password?type=artist"
                 className="text-sm text-white underline transition-colors hover:text-blue-400"
               >
                 Forgot your password?

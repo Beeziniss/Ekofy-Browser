@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { adminTransactionByIdOptions } from "@/gql/options/admin-options";
+import { adminPaymentTransactionByIdOptions } from "@/gql/options/transaction-options";
 import PaymentTransactionDetailSection from "@/modules/shared/ui/sections/transactions/payment-transaction-detail-section";
 import { ArrowLeftIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -74,9 +74,8 @@ const TransactionDetailSectionSkeleton = () => {
 };
 
 const TransactionDetailSectionSuspense = ({ referenceId }: TransactionDetailSectionProps) => {
-  const { data } = useSuspenseQuery(adminTransactionByIdOptions({ id: referenceId }));
+  const { data: transactionData } = useSuspenseQuery(adminPaymentTransactionByIdOptions({ id: referenceId }));
 
-  const transactionData = data?.paymentTransactions?.items?.[0];
   if (!transactionData) return <div className="p-4">Transaction not found.</div>;
 
   // Handle user data (could be array from GraphQL)
@@ -122,7 +121,7 @@ const TransactionDetailSectionSuspense = ({ referenceId }: TransactionDetailSect
               </div>
               <div>
                 <dt className="text-muted-foreground text-sm">User ID</dt>
-                <dd className="text-sm font-mono text-xs">{transactionData.userId}</dd>
+                <dd className="font-mono text-xs">{transactionData.userId}</dd>
               </div>
             </dl>
           </CardContent>

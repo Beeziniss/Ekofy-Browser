@@ -136,6 +136,7 @@ export function ArtistDetailsSection({ userId }: ArtistDetailsSectionProps) {
     placeOfOrigin: artist.placeOfOrigin || undefined,
     placeOfResidence: artist.placeOfResidence || undefined,
     phoneNumber: artist.phoneNumber || undefined,
+    requestedAt: artist.requestedAt,
   };
 
   return (

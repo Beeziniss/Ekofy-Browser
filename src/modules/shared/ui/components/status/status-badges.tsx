@@ -1,5 +1,11 @@
 import { Badge } from "@/components/ui/badge";
-import { PaymentTransactionStatus, PayoutTransactionStatus, RequestStatus, TransactionStatus } from "@/gql/graphql";
+import {
+  PaymentTransactionStatus,
+  PayoutTransactionStatus,
+  RefundTransactionStatus,
+  RequestStatus,
+  TransactionStatus,
+} from "@/gql/graphql";
 
 export const transactionStatusBadge = (status: TransactionStatus) => {
   switch (status) {
@@ -38,6 +44,23 @@ export const payoutStatusBadge = (status: PayoutTransactionStatus) => {
     case PayoutTransactionStatus.Failed:
       return <Badge className="border-red-200 bg-red-100 text-red-800">Failed</Badge>;
     case PayoutTransactionStatus.Canceled:
+      return <Badge className="border-gray-200 bg-gray-100 text-gray-800">Canceled</Badge>;
+    default:
+      return <Badge className="border-gray-200 bg-gray-100 text-gray-800">Unknown</Badge>;
+  }
+};
+
+export const refundStatusBadge = (status: RefundTransactionStatus) => {
+  switch (status) {
+    case RefundTransactionStatus.Succeeded:
+      return <Badge className="border-green-200 bg-green-100 text-green-800">Succeeded</Badge>;
+    case RefundTransactionStatus.Pending:
+      return <Badge className="border-yellow-200 bg-yellow-100 text-yellow-800">Pending</Badge>;
+    case RefundTransactionStatus.RequiresAction:
+      return <Badge className="border-blue-200 bg-blue-100 text-blue-800">Requires Action</Badge>;
+    case RefundTransactionStatus.Failed:
+      return <Badge className="border-red-200 bg-red-100 text-red-800">Failed</Badge>;
+    case RefundTransactionStatus.Canceled:
       return <Badge className="border-gray-200 bg-gray-100 text-gray-800">Canceled</Badge>;
     default:
       return <Badge className="border-gray-200 bg-gray-100 text-gray-800">Unknown</Badge>;
