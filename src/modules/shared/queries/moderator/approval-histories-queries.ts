@@ -2,7 +2,7 @@ import { graphql } from "@/gql";
 
 export const ApprovalHistoriesListQuery = graphql(`
   query ApprovalHistoriesList($skip: Int, $take: Int, $where: ApprovalHistoryFilterInput) {
-    approvalHistories(skip: $skip, take: $take, where: $where) {
+    approvalHistories(skip: $skip, take: $take, where: $where, order: { actionAt: DESC }) {
       totalCount
       items {
         id
@@ -10,6 +10,7 @@ export const ApprovalHistoriesListQuery = graphql(`
         actionAt
         action
         notes
+        approvedByUserId
         snapshot
         approvedBy {
           id
@@ -36,6 +37,7 @@ export const ModeratorApprovalHistoryDetailQuery = graphql(`
         actionAt
         action
         notes
+        approvedByUserId
         snapshot
         approvedBy {
           id
@@ -44,6 +46,49 @@ export const ModeratorApprovalHistoryDetailQuery = graphql(`
           role
         }
         targetId
+      }
+    }
+  }
+`);
+
+export const ApprovalHistoriesArtistQuery = graphql(`
+  query ApprovalHistoriesArtist($where: ArtistFilterInput) {
+    artists(where: $where) {
+      items {
+      id
+      userId
+      stageName
+      email
+      }
+    }
+  }
+`);
+
+export const ApprovalHistoriesUserQuery = graphql(`
+  query ApprovalHistoriesUser($where: UserFilterInput) {
+    users(where: $where) {
+      items {
+            id
+            artists {
+                items {
+                    id
+                    userId
+                    stageName
+                    email
+                }
+            }
+        }
+    }
+}
+`);
+
+export const ApprovalHistoriesCategoryQuery = graphql(`
+  query ApprovalHistoriesCategory($where: CategoryFilterInput) {
+    categories(where: $where) {
+      items {
+        id
+        name
+        type
       }
     }
   }

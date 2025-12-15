@@ -13,6 +13,8 @@ export function ApprovalHistoriesSection() {
   
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
   const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  const [approvalTypeFilter, setApprovalTypeFilter] = useState(searchParams.get("type") || "ALL");
+  const [actionFilter, setActionFilter] = useState(searchParams.get("action") || "ALL");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchParams.get("search") || "");
   const [isSearching, setIsSearching] = useState(false);
   const pageSize = 10;
@@ -22,10 +24,12 @@ export function ApprovalHistoriesSection() {
     const params = new URLSearchParams();
     if (currentPage > 1) params.set("page", currentPage.toString());
     if (debouncedSearchTerm) params.set("search", debouncedSearchTerm);
+    if (approvalTypeFilter !== "ALL") params.set("type", approvalTypeFilter);
+    if (actionFilter !== "ALL") params.set("action", actionFilter);
     
     const queryString = params.toString();
     router.replace(`/moderator/approval-histories${queryString ? `?${queryString}` : ""}`, { scroll: false });
-  }, [currentPage, debouncedSearchTerm, router]);
+  }, [currentPage, debouncedSearchTerm, approvalTypeFilter, actionFilter, router]);
 
   // Debounce search term
   useEffect(() => {
@@ -42,11 +46,16 @@ export function ApprovalHistoriesSection() {
     return () => clearTimeout(timer);
   }, [searchTerm, debouncedSearchTerm]);
 
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [approvalTypeFilter, actionFilter]);
+
   const {
     data: approvalHistoriesData,
     isLoading,
     error,
-  } = useQuery(moderatorApprovalHistoriesOptions(currentPage, pageSize, debouncedSearchTerm));
+  } = useQuery(moderatorApprovalHistoriesOptions(currentPage, pageSize, debouncedSearchTerm, approvalTypeFilter, actionFilter));
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -54,6 +63,14 @@ export function ApprovalHistoriesSection() {
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
+  };
+
+  const handleApprovalTypeFilter = (type: string) => {
+    setApprovalTypeFilter(type);
+  };
+
+  const handleActionFilter = (action: string) => {
+    setActionFilter(action);
   };
 
   if (isLoading) {
@@ -85,9 +102,13 @@ export function ApprovalHistoriesSection() {
         pageSize={pageSize}
         onPageChange={handlePageChange}
         onSearch={handleSearch}
+        onApprovalTypeFilter={handleApprovalTypeFilter}
+        onActionFilter={handleActionFilter}
         hasNextPage={hasNextPage}
         hasPreviousPage={hasPreviousPage}
         searchTerm={searchTerm}
+        approvalTypeFilter={approvalTypeFilter}
+        actionFilter={actionFilter}
         isLoading={isTableLoading}
         error={error}
       />

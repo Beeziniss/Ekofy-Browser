@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { requestByIdOptions } from "@/gql/options/client-options";
@@ -8,6 +8,7 @@ import { RequestDetailView } from "@/modules/client/request-hub/ui/component";
 import { AuthDialogProvider } from "@/modules/client/request-hub/ui/context";
 import { useRouter } from "next/navigation";
 import { RequestStatus } from "@/gql/graphql";
+import { toast } from "sonner";
 
 const RequestDetailPage = () => {
   const params = useParams();
@@ -15,7 +16,7 @@ const RequestDetailPage = () => {
   const requestId = params.requesthubId as string;
 
   // Fetch request details
-  const { data: request, isLoading } = useQuery(requestByIdOptions(requestId));
+  const { data: request, isLoading, isError } = useQuery(requestByIdOptions(requestId));
 
   const handleBack = () => {
     router.push("/request-hub");
@@ -24,6 +25,33 @@ const RequestDetailPage = () => {
   const handleEdit = (id: string) => {
     router.push(`/request-hub/${id}/edit`);
   };
+
+  // Redirect if request not found or backend error
+  useEffect(() => {
+    if (!isLoading && (isError || !request)) {
+      toast.error("Request not found", {
+        description: "The request you're looking for has been Closed or removed.",
+      });
+      router.push("/request-hub");
+    }
+  }, [isLoading, isError, request, router]);
+
+  // Redirect if request is not open (Closed, Blocked, or Deleted)
+  useEffect(() => {
+    if (request && request.status !== RequestStatus.Open) {
+      const statusMessage = 
+        request.status === RequestStatus.Closed 
+          ? "This request has been closed and is no longer available for viewing."
+          : request.status === RequestStatus.Blocked
+          ? "This request has been blocked and is not available."
+          : "This request is not available for viewing.";
+      
+      toast.error("Request unavailable", {
+        description: statusMessage,
+      });
+      router.push("/request-hub");
+    }
+  }, [request, router]);
 
   if (isLoading) {
     return (
@@ -34,20 +62,7 @@ const RequestDetailPage = () => {
   }
 
   if (!request) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-white">Request not found</div>
-      </div>
-    );
-  }
-
-  // Only show OPEN requests in detail view
-  if (request.status !== RequestStatus.Open) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-white">This request is not available for viewing</div>
-      </div>
-    );
+    return null; // Will redirect via useEffect
   }
 
   return (

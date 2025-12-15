@@ -36,7 +36,10 @@ export function ApprovalHistoryDetailSection({ historyId }: ApprovalHistoryDetai
         <ApprovalHistoryApproverInfo approvedBy={history.approvedBy} />
       </div>
 
-      <ApprovalHistorySnapshotInfo snapshot={history.snapshot} />
+      <ApprovalHistorySnapshotInfo 
+        snapshot={history.snapshot} 
+        approvalType={history.approvalType}
+      />
     </div>
   );
 }

@@ -207,6 +207,7 @@ export function MyRequestsView() {
               detailDescription: editingRequest.detailDescription || "",
               budget: editingRequest.budget!,
               duration: editingRequest.duration,
+              status: editingRequest.status,
             }}
             onSubmit={handleUpdateSubmit}
             onCancel={handleCancel}
@@ -239,8 +240,8 @@ export function MyRequestsView() {
                       <SelectItem value="ALL">All Statuses</SelectItem>
                       <SelectItem value={GqlRequestStatus.Open}>Open</SelectItem>
                       <SelectItem value={GqlRequestStatus.Closed}>Closed</SelectItem>
-                      <SelectItem value={GqlRequestStatus.Blocked}>Blocked</SelectItem>
-                      <SelectItem value={GqlRequestStatus.Deleted}>Deleted</SelectItem>
+                      {/* <SelectItem value={GqlRequestStatus.Blocked}>Blocked</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Deleted}>Deleted</SelectItem> */}
                     </SelectContent>
                   </Select>
                 </div>

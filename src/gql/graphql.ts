@@ -8328,14 +8328,35 @@ export type ApprovalHistoriesListQueryVariables = Exact<{
 }>;
 
 
-export type ApprovalHistoriesListQuery = { __typename?: 'QueryInitialization', approvalHistories?: { __typename?: 'ApprovalHistoriesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'ApprovalHistory', id: string, approvalType: ApprovalType, actionAt: any, action: HistoryActionType, notes?: string | null, snapshot: any, targetId: string, approvedBy: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type ApprovalHistoriesListQuery = { __typename?: 'QueryInitialization', approvalHistories?: { __typename?: 'ApprovalHistoriesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'ApprovalHistory', id: string, approvalType: ApprovalType, actionAt: any, action: HistoryActionType, notes?: string | null, approvedByUserId: string, snapshot: any, targetId: string, approvedBy: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type ModeratorApprovalHistoryDetailQueryVariables = Exact<{
   where?: InputMaybe<ApprovalHistoryFilterInput>;
 }>;
 
 
-export type ModeratorApprovalHistoryDetailQuery = { __typename?: 'QueryInitialization', approvalHistories?: { __typename?: 'ApprovalHistoriesCollectionSegment', items?: Array<{ __typename?: 'ApprovalHistory', id: string, approvalType: ApprovalType, actionAt: any, action: HistoryActionType, notes?: string | null, snapshot: any, targetId: string, approvedBy: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null } | null };
+export type ModeratorApprovalHistoryDetailQuery = { __typename?: 'QueryInitialization', approvalHistories?: { __typename?: 'ApprovalHistoriesCollectionSegment', items?: Array<{ __typename?: 'ApprovalHistory', id: string, approvalType: ApprovalType, actionAt: any, action: HistoryActionType, notes?: string | null, approvedByUserId: string, snapshot: any, targetId: string, approvedBy: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null } | null };
+
+export type ApprovalHistoriesArtistQueryVariables = Exact<{
+  where?: InputMaybe<ArtistFilterInput>;
+}>;
+
+
+export type ApprovalHistoriesArtistQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string }> | null } | null };
+
+export type ApprovalHistoriesUserQueryVariables = Exact<{
+  where?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type ApprovalHistoriesUserQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string }> | null } | null }> | null } | null };
+
+export type ApprovalHistoriesCategoryQueryVariables = Exact<{
+  where?: InputMaybe<CategoryFilterInput>;
+}>;
+
+
+export type ApprovalHistoriesCategoryQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string, type: CategoryType }> | null } | null };
 
 export type PendingArtistRegistrationsListQueryVariables = Exact<{
   pageNumber: Scalars['Int']['input'];
@@ -11985,7 +12006,12 @@ export const GetUserStripeAccountIdDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<GetUserStripeAccountIdQuery, GetUserStripeAccountIdQueryVariables>;
 export const ApprovalHistoriesListDocument = new TypedDocumentString(`
     query ApprovalHistoriesList($skip: Int, $take: Int, $where: ApprovalHistoryFilterInput) {
-  approvalHistories(skip: $skip, take: $take, where: $where) {
+  approvalHistories(
+    skip: $skip
+    take: $take
+    where: $where
+    order: {actionAt: DESC}
+  ) {
     totalCount
     items {
       id
@@ -11993,6 +12019,7 @@ export const ApprovalHistoriesListDocument = new TypedDocumentString(`
       actionAt
       action
       notes
+      approvedByUserId
       snapshot
       approvedBy {
         id
@@ -12018,6 +12045,7 @@ export const ModeratorApprovalHistoryDetailDocument = new TypedDocumentString(`
       actionAt
       action
       notes
+      approvedByUserId
       snapshot
       approvedBy {
         id
@@ -12030,6 +12058,46 @@ export const ModeratorApprovalHistoryDetailDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<ModeratorApprovalHistoryDetailQuery, ModeratorApprovalHistoryDetailQueryVariables>;
+export const ApprovalHistoriesArtistDocument = new TypedDocumentString(`
+    query ApprovalHistoriesArtist($where: ArtistFilterInput) {
+  artists(where: $where) {
+    items {
+      id
+      userId
+      stageName
+      email
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ApprovalHistoriesArtistQuery, ApprovalHistoriesArtistQueryVariables>;
+export const ApprovalHistoriesUserDocument = new TypedDocumentString(`
+    query ApprovalHistoriesUser($where: UserFilterInput) {
+  users(where: $where) {
+    items {
+      id
+      artists {
+        items {
+          id
+          userId
+          stageName
+          email
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ApprovalHistoriesUserQuery, ApprovalHistoriesUserQueryVariables>;
+export const ApprovalHistoriesCategoryDocument = new TypedDocumentString(`
+    query ApprovalHistoriesCategory($where: CategoryFilterInput) {
+  categories(where: $where) {
+    items {
+      id
+      name
+      type
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ApprovalHistoriesCategoryQuery, ApprovalHistoriesCategoryQueryVariables>;
 export const PendingArtistRegistrationsListDocument = new TypedDocumentString(`
     query PendingArtistRegistrationsList($pageNumber: Int!, $pageSize: Int!) {
   pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize) {

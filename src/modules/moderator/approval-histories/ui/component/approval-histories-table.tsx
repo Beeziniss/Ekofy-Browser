@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -10,23 +11,36 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, Search } from "lucide-react";
+import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, Search, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ApprovalHistoryItem } from "@/types";
+import { fetchUserEmails } from "@/utils/approval-history-utils";
+
 interface ApprovalHistoriesTableProps {
-  data: ApprovalHistoryItem[]; // Using ApprovalHistoryItem[] to work with GraphQL response
+  data: ApprovalHistoryItem[];
   totalCount: number;
   currentPage: number;
   pageSize: number;
   onPageChange: (page: number) => void;
   onSearch: (searchTerm: string) => void;
+  onApprovalTypeFilter: (type: string) => void;
+  onActionFilter: (action: string) => void;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
-  searchTerm: string; // Add searchTerm prop to control input value
-  isLoading?: boolean; // Add loading state
-  error?: Error | null; // Add error state
+  searchTerm: string;
+  approvalTypeFilter: string;
+  actionFilter: string;
+  isLoading?: boolean;
+  error?: Error | null;
 }
 
 export function ApprovalHistoriesTable({
@@ -36,13 +50,69 @@ export function ApprovalHistoriesTable({
   pageSize,
   onPageChange,
   onSearch,
+  onApprovalTypeFilter,
+  onActionFilter,
   hasNextPage,
   hasPreviousPage,
   searchTerm,
+  approvalTypeFilter,
+  actionFilter,
   isLoading = false,
-  // error = null,
 }: ApprovalHistoriesTableProps) {
   const router = useRouter();
+  const [emailMap, setEmailMap] = useState<Map<string, string>>(new Map());
+  const [loadingEmails, setLoadingEmails] = useState(false);
+
+  // Fetch emails for TRACK_UPLOAD, RECORDING_UPLOAD, WORK_UPLOAD
+  useEffect(() => {
+    const fetchEmails = async () => {
+      setLoadingEmails(true);
+      try {
+        const userIdsToFetch = new Set<string>();
+
+        data.forEach((item) => {
+          const snapshot = item.snapshot as unknown as Record<string, unknown>;
+          const type = item.approvalType;
+
+          // For TRACK_UPLOAD, get CreatedBy (user ID)
+          if (type === "TRACK_UPLOAD" && snapshot?.CreatedBy) {
+            userIdsToFetch.add(snapshot.CreatedBy as string);
+          }
+          // For RECORDING_UPLOAD, get UserId from RecordingSplitRequests
+          else if (type === "RECORDING_UPLOAD" && snapshot?.RecordingSplitRequests) {
+            const splits = snapshot.RecordingSplitRequests as Array<Record<string, unknown>>;
+            splits.forEach((split) => {
+              if (split?.UserId) {
+                userIdsToFetch.add(split.UserId as string);
+              }
+            });
+          }
+          // For WORK_UPLOAD, get UserId from WorkSplits
+          else if (type === "WORK_UPLOAD" && snapshot?.WorkSplits) {
+            const splits = snapshot.WorkSplits as Array<Record<string, unknown>>;
+            splits.forEach((split) => {
+              if (split?.UserId) {
+                userIdsToFetch.add(split.UserId as string);
+              }
+            });
+          }
+        });
+
+        if (userIdsToFetch.size > 0) {
+          const emails = await fetchUserEmails(Array.from(userIdsToFetch));
+          setEmailMap(emails);
+        }
+      } catch (error) {
+        console.error("Error fetching emails:", error);
+      } finally {
+        setLoadingEmails(false);
+      }
+    };
+
+    if (data.length > 0) {
+      fetchEmails();
+    }
+  }, [data]);
 
   const handleViewDetail = (historyId: string) => {
     router.push(`/moderator/approval-histories/${historyId}`);
@@ -70,12 +140,50 @@ export function ApprovalHistoriesTable({
     {
       accessorKey: "email",
       header: "Email",
-      cell: ({ row }) => <span className="font-mono text-xs">{row.original.snapshot.Email}</span>,
+      cell: ({ row }) => {
+        const snapshot = row.original.snapshot as unknown as Record<string, unknown>;
+        const type = row.original.approvalType;
+        let email = "N/A";
+
+        // For TRACK_UPLOAD - fetch from user CreatedBy
+        if (type === "TRACK_UPLOAD") {
+          const userId = snapshot?.CreatedBy as string | undefined;
+          if (userId) {
+            email = emailMap.get(userId) || (loadingEmails ? "Loading..." : "N/A");
+          }
+        }
+        // For RECORDING_UPLOAD - get from RecordingSplitRequests
+        else if (type === "RECORDING_UPLOAD") {
+          const splits = snapshot?.RecordingSplitRequests as Array<Record<string, unknown>> | undefined;
+          if (splits && splits.length > 0) {
+            const userId = splits[0]?.UserId as string | undefined;
+            if (userId) {
+              email = emailMap.get(userId) || (loadingEmails ? "Loading..." : "N/A");
+            }
+          }
+        }
+        // For WORK_UPLOAD - get from WorkSplits
+        else if (type === "WORK_UPLOAD") {
+          const splits = snapshot?.WorkSplits as Array<Record<string, unknown>> | undefined;
+          if (splits && splits.length > 0) {
+            const userId = splits[0]?.UserId as string | undefined;
+            if (userId) {
+              email = emailMap.get(userId) || (loadingEmails ? "Loading..." : "N/A");
+            }
+          }
+        }
+        // For ARTIST_REGISTRATION - use snapshot email
+        else {
+          email = (snapshot?.Email as string) || (snapshot?.email as string) || "N/A";
+        }
+
+        return <span className="font-mono text-xs">{email}</span>;
+      },
     },
     {
       accessorKey: "approvalType",
       header: "Type",
-      cell: ({ row }) => <Badge variant="outline">{row.original.approvalType.replace("_", " ")}</Badge>,
+      cell: ({ row }) => <Badge variant="outline">{row.original.approvalType.replace(/_/g, " ")}</Badge>,
     },
     {
       accessorKey: "action",
@@ -127,9 +235,9 @@ export function ApprovalHistoriesTable({
 
   return (
     <div className="space-y-4">
-      {/* Search */}
-      <div className="flex items-center space-x-2">
-        <div className="relative max-w-sm flex-1">
+      {/* Search and Filters */}
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1 max-w-sm">
           <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
           <Input
             placeholder="Search histories..."
@@ -138,6 +246,33 @@ export function ApprovalHistoriesTable({
             className="pl-8"
           />
         </div>
+        
+        <Select value={approvalTypeFilter} onValueChange={onApprovalTypeFilter}>
+          <SelectTrigger className="w-[200px]">
+            <Filter className="mr-2 h-4 w-4" />
+            <SelectValue placeholder="Approval Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All Types</SelectItem>
+            <SelectItem value="ARTIST_REGISTRATION">Artist Registration</SelectItem>
+            <SelectItem value="TRACK_UPLOAD">Track Upload</SelectItem>
+            <SelectItem value="WORK_UPLOAD">Work Upload</SelectItem>
+            <SelectItem value="RECORDING_UPLOAD">Recording Upload</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={actionFilter} onValueChange={onActionFilter}>
+          <SelectTrigger className="w-[180px]">
+            <Filter className="mr-2 h-4 w-4" />
+            <SelectValue placeholder="Action" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All Actions</SelectItem>
+            <SelectItem value="APPROVED">Approved</SelectItem>
+            <SelectItem value="REJECTED">Rejected</SelectItem>
+            <SelectItem value="PENDING">Pending</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
