@@ -88,7 +88,8 @@ export const SEARCH_TRACKS = graphql(`
       take: $take
       name: $name
       where: { and: [{ releaseInfo: { isRelease: { eq: true } } }, { restriction: { type: { eq: NONE } } }] }
-    ) {
+      order: { createdAt: DESC }
+      ) {
       totalCount
       items {
         id

@@ -74,6 +74,11 @@ const PlaylistAddModal = ({ open, onOpenChange, trackId, trigger }: PlaylistAddM
       });
       // Don't close modal after successful removal
       toast.success("Track removed from playlist successfully!");
+    // Track popularity for remove from playlist
+      trackEngagementPopularity({
+        trackId,
+        actionType: PopularityActionType.RemoveFromPlaylist,
+      });
     },
     onError: (error) => {
       console.error("Failed to remove track from playlist:", error);

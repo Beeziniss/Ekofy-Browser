@@ -9,9 +9,9 @@ import { useAudioStore } from "@/store";
 import { formatDuration } from "@/utils/duration-utils";
 import { useSearchAuth } from "../../hooks/use-search-auth";
 import { TrackActionMenu } from "./track-action-menu";
-import { useProcessTrackDiscoveryPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
-import { PopularityActionType } from "@/gql/graphql";
-import { useRouter } from "next/navigation";
+// import { useProcessTrackDiscoveryPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
+// import { PopularityActionType } from "@/gql/graphql";
+// import { useRouter } from "next/navigation";
 
 interface TrackRowAllProps {
   track: SearchTrackItem;
@@ -21,8 +21,8 @@ interface TrackRowAllProps {
 export const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
   const { duration } = useAudioStore();
   const { executeWithAuth } = useSearchAuth();
-  const router = useRouter();
-  const { mutate: trackDiscoveryPopularity } = useProcessTrackDiscoveryPopularity();
+  // const router = useRouter();
+  // const { mutate: trackDiscoveryPopularity } = useProcessTrackDiscoveryPopularity();
 
   const { isTrackCurrentlyPlaying, isPlaying, handlePlayPause } = useTrackPlayback(track.id, {
     id: track.id,
@@ -55,18 +55,18 @@ export const TrackRowAll = ({ track, index }: TrackRowAllProps) => {
   const displayDuration =
     isTrackCurrentlyPlaying && duration > 0 ? formatDuration(duration) : formatCreatedAt(track.createdAt);
 
-  const handleTrackClick = () => {
-    // Track search result click
-    trackDiscoveryPopularity({
-      trackId: track.id,
-      actionType: PopularityActionType.SearchResultClick,
-    });
-    // Navigate to track detail
-    router.push(`/track/${track.id}`);
-  };
+  // const handleTrackClick = () => {
+  //   // Track search result click
+  //   trackDiscoveryPopularity({
+  //     trackId: track.id,
+  //     actionType: PopularityActionType.SearchResultClick,
+  //   });
+  //   // Navigate to track detail
+  //   router.push(`/track/${track.id}`);
+  // };
 
   return (
-    <TableRow className="group relative border-b border-gray-800/50 hover:bg-gray-800/50 cursor-pointer" onClick={handleTrackClick}>
+    <TableRow className="group relative border-b border-gray-800/50 hover:bg-gray-800/50 cursor-pointer">
       <TableCell className="w-12 text-center">
         <div className="flex h-8 w-8 items-center justify-center">
           <span
