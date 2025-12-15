@@ -9,6 +9,20 @@ import { DeleteConfirmModal } from "./delete-confirm-modal";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
 import { CreateRequestData, UpdateRequestData, RequestBudget } from "@/types/request-hub";
+import { z } from "zod";
+
+// Zod validation schema
+const requestFormSchema = z.object({
+  title: z.string().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
+  summary: z.string().min(1, "Summary is required").max(500, "Summary must be less than 500 characters"),
+  detailDescription: z.string().min(1, "Description is required"),
+  budgetMin: z.number().min(1000, "Minimum budget must be at least 1,000 VND"),
+  budgetMax: z.number().min(1000, "Maximum budget must be at least 1,000 VND"),
+  duration: z.number().min(1, "Duration must be at least 1 day").int("Duration must be a whole number"),
+}).refine((data) => data.budgetMax >= data.budgetMin, {
+  message: "Maximum budget must be greater than or equal to minimum budget",
+  path: ["budgetMax"],
+});
 
 // Helper function to format number with dots
 const formatCurrency = (value: string): string => {
@@ -63,8 +77,14 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
     return 1;
   });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [budgetError, setBudgetError] = useState("");
-  const [durationError, setDurationError] = useState("");
+  const [errors, setErrors] = useState<{
+    title?: string;
+    summary?: string;
+    detailDescription?: string;
+    budgetMin?: string;
+    budgetMax?: string;
+    duration?: string;
+  }>({});
 
   // Check user role - only listeners can create/edit requests
   const { user } = useAuthStore();
@@ -92,29 +112,34 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Clear previous errors
+    setErrors({});
+
     const budgetMinNumber = parseCurrency(budgetMin);
     const budgetMaxNumber = parseCurrency(budgetMax) || budgetMinNumber;
 
-    // Validation: minimum budget should be at least 1000 VND
-    if (budgetMinNumber < 1000) {
-      setBudgetError("Minimum budget must be at least 1,000 VND");
+    // Validate with Zod
+    const validationResult = requestFormSchema.safeParse({
+      title: title.trim(),
+      summary: summary.trim(),
+      detailDescription: detailDescription.trim(),
+      budgetMin: budgetMinNumber,
+      budgetMax: budgetMaxNumber,
+      duration,
+    });
+
+    if (!validationResult.success) {
+      // Map Zod errors to error state
+      const fieldErrors: typeof errors = {};
+      validationResult.error.issues.forEach((issue) => {
+        const path = issue.path[0] as keyof typeof errors;
+        if (path) {
+          fieldErrors[path] = issue.message;
+        }
+      });
+      setErrors(fieldErrors);
       return;
     }
-
-    // Validation: max should be >= min
-    if (budgetMaxNumber < budgetMinNumber) {
-      setBudgetError("Maximum budget must be greater than or equal to minimum budget");
-      return;
-    }
-
-    // Validation: duration is required
-    if (!duration || duration < 0) {
-      setDurationError("Please indicate a valid duration of at least 1 day.");
-      return;
-    }
-
-    // Clear error if validation passes
-    setBudgetError("");
 
     const budget = { min: budgetMinNumber, max: budgetMaxNumber };
 
@@ -153,34 +178,52 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         <div>
-          <label className="mb-2 block text-sm font-medium">Title<span className="text-red-500">*</span></label>
+          <label htmlFor="request-title" className="mb-2 block text-sm font-medium">Title<span className="text-red-500">*</span></label>
+          {errors.title && (
+            <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{errors.title}</div>
+          )}
           <Input
+            id="request-title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
+            }}
             placeholder="Request title"
             className="w-full"
-            required
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">Summary<span className="text-red-500">*</span></label>
+          <label htmlFor="request-summary" className="mb-2 block text-sm font-medium">Summary<span className="text-red-500">*</span></label>
+          {errors.summary && (
+            <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{errors.summary}</div>
+          )}
           <Textarea
+            id="request-summary"
             value={summary}
-            onChange={(e) => setSummary(e.target.value)}
+            onChange={(e) => {
+              setSummary(e.target.value);
+              if (errors.summary) setErrors((prev) => ({ ...prev, summary: undefined }));
+            }}
             placeholder="Brief summary of your request..."
             className="min-h-[100px] w-full"
-            required
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">Description<span className="text-red-500">*</span></label>
+          <label htmlFor="request-description" className="mb-2 block text-sm font-medium">Description<span className="text-red-500">*</span></label>
+          {errors.detailDescription && (
+            <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{errors.detailDescription}</div>
+          )}
           <Editor
             value={detailDescription}
-            onChange={setDetailDescription}
+            onChange={(value) => {
+              setDetailDescription(value);
+              if (errors.detailDescription) setErrors((prev) => ({ ...prev, detailDescription: undefined }));
+            }}
             placeholder="Description for your request with rich formatting..."
             className="w-full"
           />
@@ -188,13 +231,16 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
 
         <div>
           <label className="mb-2 block text-sm font-medium">Budget (VND)<span className="text-red-500">*</span></label>
-          {budgetError && (
-            <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{budgetError}</div>
+          {(errors.budgetMin || errors.budgetMax) && (
+            <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">
+              {errors.budgetMin || errors.budgetMax}
+            </div>
           )}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-xs text-gray-500">Minimum Budget<span className="text-red-500">*</span></label>
+              <label htmlFor="budget-min" className="mb-1 block text-xs text-gray-500">Minimum Budget<span className="text-red-500">*</span></label>
               <Input
+                id="budget-min"
                 type="text"
                 value={budgetMin}
                 onChange={(e) => {
@@ -202,7 +248,7 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
                   setBudgetMin(formattedValue);
 
                   // Clear error when user types
-                  if (budgetError) setBudgetError("");
+                  if (errors.budgetMin) setErrors((prev) => ({ ...prev, budgetMin: undefined }));
 
                   // Auto-update max if it's less than min
                   const minValue = parseCurrency(formattedValue);
@@ -213,12 +259,12 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
                 }}
                 placeholder="0"
                 className="w-full"
-                required
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-gray-500">Maximum Budget<span className="text-red-500">*</span></label>
+              <label htmlFor="budget-max" className="mb-1 block text-xs text-gray-500">Maximum Budget<span className="text-red-500">*</span></label>
               <Input
+                id="budget-max"
                 type="text"
                 value={budgetMax}
                 onChange={(e) => {
@@ -226,20 +272,10 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
                   setBudgetMax(formattedValue);
 
                   // Clear error when user types
-                  if (budgetError) setBudgetError("");
-
-                  // Real-time validation
-                  const minValue = parseCurrency(budgetMin);
-                  const maxValue = parseCurrency(formattedValue);
-                  if (minValue > 0 && minValue < 1000) {
-                    setBudgetError("Minimum budget must be at least 1,000 VND");
-                  } else if (maxValue > 0 && maxValue < minValue) {
-                    setBudgetError("Maximum budget must be greater than or equal to minimum budget");
-                  }
+                  if (errors.budgetMax) setErrors((prev) => ({ ...prev, budgetMax: undefined }));
                 }}
                 placeholder="0"
                 className="w-full"
-                required
               />
             </div>
           </div>
@@ -250,25 +286,25 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">Duration (days)<span className="text-red-500">*</span></label>
-          {durationError && (
-            <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{durationError}</div>
+          <label htmlFor="request-duration" className="mb-2 block text-sm font-medium">Duration (days)<span className="text-red-500">*</span></label>
+          {errors.duration && (
+            <div className="mb-2 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">{errors.duration}</div>
           )}
           <Input
+            id="request-duration"
             type="number"
             value={duration}
             onChange={(e) => {
               const newDuration = parseInt(e.target.value, 10);
               if (!isNaN(newDuration) && newDuration >= 1) {
                 setDuration(newDuration);
-                setDurationError("");
-              } else {
-              setDurationError("Duration must be at least 1 day.");
+                if (errors.duration) setErrors((prev) => ({ ...prev, duration: undefined }));
+              } else if (e.target.value === "") {
+                setDuration(0);
               }
             }}
             placeholder="Enter duration in days"
             className="w-full"
-            required
           />
           <p className="mt-1 text-xs text-gray-500">Duration must be at least 1 day.</p>
         </div>

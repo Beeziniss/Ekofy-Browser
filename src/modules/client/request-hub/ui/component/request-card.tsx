@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MessageCircle, Clock, ChevronDown, ChevronUp, SquarePen, MoreVertical, Flag } from "lucide-react";
-import { RequestsQuery, ReportRelatedContentType } from "@/gql/graphql";
+import { RequestsQuery, ReportRelatedContentType, RequestStatus } from "@/gql/graphql";
 import { requestHubCommentsOptions } from "@/gql/options/client-options";
 import { RequestHubCommentSection } from "./";
 import { cn } from "@/lib/utils";
@@ -210,10 +210,12 @@ export function RequestCard({ request, onViewDetails, onEdit, className, isOwner
             {showComments ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
           </Button>
           <div className="flex space-x-2">
+            {request.status === RequestStatus.Open && (
             <Button variant="outline" size="sm" onClick={() => onViewDetails?.(request.id)} className="text-sm">
               View Details
             </Button>
-            {isOwner && onEdit && (
+            )}
+            {isOwner && onEdit && request.status === RequestStatus.Open && (
               <Button size="sm" onClick={handleEdit} className="primary_gradient text-sm text-white hover:opacity-65">
                 <SquarePen className="mr-1 h-3 w-3" />
                 Edit
