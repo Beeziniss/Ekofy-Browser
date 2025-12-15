@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HeartIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -7,6 +8,7 @@ import { userFollowMutationOptions, userUnfollowMutationOptions } from "@/gql/op
 import { useAuthStore } from "@/store";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { UserRole } from "@/gql/graphql";
+import Link from "next/link";
 
 interface FollowerCardProps {
   follower: {
@@ -14,6 +16,21 @@ interface FollowerCardProps {
     fullName: string;
     checkUserFollowing: boolean;
     role: UserRole;
+    artists: {
+      items: Array<{
+        id: string;
+        userId: string;
+        avatarImage: string | null;
+        stageName: string;
+      }>;
+    };
+    listeners: {
+      items: Array<{
+        userId: string;
+        displayName: string;
+        avatarImage: string | null;
+      }>;
+    };
   };
 }
 
@@ -92,7 +109,31 @@ const FollowerCard = ({ follower }: FollowerCardProps) => {
     }
   };
 
-  // Get user's first letter for avatar
+  // Get avatar and display name based on role
+  const getAvatarData = () => {
+    const isArtistRole = follower.role === UserRole.Artist;
+    if (isArtistRole && follower.artists.items.length > 0) {
+      const artist = follower.artists.items[0];
+      return {
+        avatarImage: artist.avatarImage,
+        displayName: artist.stageName,
+      };
+    } else if (follower.listeners.items.length > 0) {
+      const listener = follower.listeners.items[0];
+      return {
+        avatarImage: listener.avatarImage,
+        displayName: listener.displayName,
+      };
+    }
+    return {
+      avatarImage: null,
+      displayName: follower.fullName,
+    };
+  };
+
+  const { avatarImage, displayName } = getAvatarData();
+
+  // Get user's first letter for avatar fallback
   const getInitials = (name: string) => {
     return name.charAt(0).toUpperCase();
   };
@@ -116,10 +157,11 @@ const FollowerCard = ({ follower }: FollowerCardProps) => {
   return (
     <div key={follower.id} className="flex w-full flex-col space-y-2.5">
       <div className="group relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-full transition-opacity after:absolute after:inset-0 after:rounded-full after:bg-black after:opacity-0 after:content-[''] hover:after:opacity-20">
-        {/* Avatar circle with first letter */}
-        <div className="bg-main-card-bg flex aspect-square h-full w-full items-center justify-center rounded-full text-4xl font-bold text-white">
-          {getInitials(follower.fullName)}
-        </div>
+        {/* Avatar with image or fallback */}
+        <Avatar className="h-full w-full">
+          {avatarImage && <AvatarImage src={avatarImage} alt={displayName} />}
+          <AvatarFallback className="text-4xl font-bold">{getInitials(displayName)}</AvatarFallback>
+        </Avatar>
 
         {/* Follow button - only show if not self and is an artist */}
         {!isSelf && isArtist && (
@@ -137,9 +179,12 @@ const FollowerCard = ({ follower }: FollowerCardProps) => {
       </div>
 
       <div className="flex flex-col gap-y-1 text-center">
-        <p className="text-main-white hover:text-main-purple cursor-pointer text-sm hover:underline">
-          {follower.fullName}
-        </p>
+        <Link
+          href={`/artists/${follower.artists.items[0].id || follower.listeners.items[0]?.userId || ""}`}
+          className="text-main-white hover:text-main-purple cursor-pointer text-sm hover:underline"
+        >
+          {displayName}
+        </Link>
         <p className="text-main-grey text-xs">{formatRole(follower.role)}</p>
       </div>
 
