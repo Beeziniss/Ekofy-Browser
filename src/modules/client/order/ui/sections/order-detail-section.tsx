@@ -1,6 +1,6 @@
 "use client";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { orderPackageDetailOptions } from "@/gql/options/client-options";
 import { formatDate } from "date-fns";
 import { formatCurrency } from "@/utils/format-currency";
@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { OrderReviewCard } from "../components/order-review-card";
+import { PackageOrderStatus } from "@/gql/graphql";
 
 interface OrderDetailSectionProps {
   orderId: string;
@@ -53,11 +55,17 @@ const OrderDetailSectionSkeleton = () => {
 };
 
 const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
+  const queryClient = useQueryClient();
   const { data: orderPackageDetail } = useSuspenseQuery(orderPackageDetailOptions(orderId));
 
   const orderPackageData = orderPackageDetail?.package[0];
   const clientData = orderPackageDetail?.client?.[0];
   const providerData = orderPackageDetail?.provider?.[0];
+
+  const handleReviewUpdated = () => {
+    // Invalidate and refetch order detail to get updated review
+    queryClient.invalidateQueries({ queryKey: ["order-package-detail", orderId] });
+  };
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -131,6 +139,16 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
           ></div>
         </CardContent>
       </Card>
+
+      {/* Review Section - Only show for completed orders */}
+      {orderPackageDetail?.status === PackageOrderStatus.Completed && (
+        <OrderReviewCard
+          orderId={orderId}
+          orderStatus={orderPackageDetail.status}
+          review={orderPackageDetail?.review}
+          onReviewUpdated={handleReviewUpdated}
+        />
+      )}
     </div>
   );
 };

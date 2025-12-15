@@ -7448,6 +7448,13 @@ export type UpdateReviewMutationVariables = Exact<{
 
 export type UpdateReviewMutation = { __typename?: 'MutationInitialization', updateReview: boolean };
 
+export type DeleteReviewHardMutationVariables = Exact<{
+  reviewId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteReviewHardMutation = { __typename?: 'MutationInitialization', deleteReviewHard: boolean };
+
 export type ServiceCreateCheckoutSessionMutationVariables = Exact<{
   createPaymentCheckoutSessionInput: CreatePaymentCheckoutSessionRequestInput;
 }>;
@@ -8003,7 +8010,7 @@ export type OrderPackageQueryVariables = Exact<{
 }>;
 
 
-export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, providerId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, requirements: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }>, provider: Array<{ __typename?: 'Artist', avatarImage?: string | null, stageName: string, email: string }> }> | null } | null };
+export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, providerId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, requirements: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, review?: { __typename?: 'Review', rating: number, content: string, createdAt: any, updatedAt?: any | null } | null, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }>, provider: Array<{ __typename?: 'Artist', avatarImage?: string | null, stageName: string, email: string }> }> | null } | null };
 
 export type CouponsQueryVariables = Exact<{
   where?: InputMaybe<CouponFilterInput>;
@@ -9240,6 +9247,11 @@ export const UpdateReviewDocument = new TypedDocumentString(`
   updateReview(updateReviewRequest: $updateReviewRequest)
 }
     `) as unknown as TypedDocumentString<UpdateReviewMutation, UpdateReviewMutationVariables>;
+export const DeleteReviewHardDocument = new TypedDocumentString(`
+    mutation DeleteReviewHard($reviewId: String!) {
+  deleteReviewHard(reviewId: $reviewId)
+}
+    `) as unknown as TypedDocumentString<DeleteReviewHardMutation, DeleteReviewHardMutationVariables>;
 export const ServiceCreateCheckoutSessionDocument = new TypedDocumentString(`
     mutation ServiceCreateCheckoutSession($createPaymentCheckoutSessionInput: CreatePaymentCheckoutSessionRequestInput!) {
   createPaymentCheckoutSession(
@@ -10755,6 +10767,12 @@ export const OrderPackageDocument = new TypedDocumentString(`
         deliveredAt
         deliveryFileUrl
         clientFeedback
+      }
+      review {
+        rating
+        content
+        createdAt
+        updatedAt
       }
       package {
         id

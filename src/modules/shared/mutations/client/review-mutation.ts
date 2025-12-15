@@ -11,3 +11,9 @@ export const UpdateReviewMutation = graphql(`
     updateReview(updateReviewRequest: $updateReviewRequest)
   }
 `);
+
+export const DeleteReviewMutation = graphql(`
+  mutation DeleteReviewHard($reviewId: String!) {
+    deleteReviewHard(reviewId: $reviewId)
+  }
+`);
