@@ -12,10 +12,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MessageCircle, Clock, ChevronDown, ChevronUp, SquarePen, MoreVertical, Flag } from "lucide-react";
+import { MessageCircle, Clock, ChevronDown, ChevronUp, MoreVertical, Flag, Trash2 } from "lucide-react";
 import { RequestsQuery, ReportRelatedContentType, RequestStatus } from "@/gql/graphql";
 import { requestHubCommentsOptions } from "@/gql/options/client-options";
 import { RequestHubCommentSection } from "./";
+import { DeleteConfirmModal } from "./delete-confirm-modal";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
@@ -28,14 +29,16 @@ interface RequestCardProps {
   request: RequestItem;
   onViewDetails?: (id: string) => void;
   onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
   className?: string;
   onSave?: (id: string) => void;
   isOwner?: boolean;
 }
 
-export function RequestCard({ request, onViewDetails, onEdit, className, isOwner = false }: RequestCardProps) {
+export function RequestCard({ request, onViewDetails, onEdit, onDelete, className, isOwner = false }: RequestCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // Get auth state and dialog
   const { isAuthenticated } = useAuthStore();
@@ -146,25 +149,43 @@ export function RequestCard({ request, onViewDetails, onEdit, className, isOwner
             </div>
           </div>
           
-          {/* Action Menu - Only show report if not owner and authenticated */}
-          {isAuthenticated && !isOwner && request.requestUserId && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40 border-gray-600">
-                <DropdownMenuItem
-                  onClick={() => setReportDialogOpen(true)}
-                  className="cursor-pointer text-sm text-gray-200 hover:bg-gray-700"
-                >
-                  <Flag className="mr-2 h-4 w-4" />
-                  Report
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          {/* Action Menu */}
+          <div className="flex items-center gap-2">
+            {/* Delete button for owner */}
+            {isOwner && onDelete && request.status === RequestStatus.Open && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0 text-red-400 hover:text-red-300"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteDialogOpen(true);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+            
+            {/* Report menu for non-owner */}
+            {isAuthenticated && !isOwner && request.requestUserId && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40 border-gray-600">
+                  <DropdownMenuItem
+                    onClick={() => setReportDialogOpen(true)}
+                    className="cursor-pointer text-sm text-gray-200 hover:bg-gray-700"
+                  >
+                    <Flag className="mr-2 h-4 w-4" />
+                    Report
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
 
         {/* Title */}
@@ -216,8 +237,7 @@ export function RequestCard({ request, onViewDetails, onEdit, className, isOwner
             </Button>
             )}
             {isOwner && onEdit && request.status === RequestStatus.Open && (
-              <Button size="sm" onClick={handleEdit} className="primary_gradient text-sm text-white hover:opacity-65">
-                <SquarePen className="mr-1 h-3 w-3" />
+              <Button size="sm" variant="ekofy" onClick={handleEdit} className="text-sm text-white hover:opacity-65">
                 Edit
               </Button>
             )}
@@ -243,6 +263,16 @@ export function RequestCard({ request, onViewDetails, onEdit, className, isOwner
           onOpenChange={setReportDialogOpen}
         />
       )}
+
+      {/* Delete Confirm Dialog */}
+      <DeleteConfirmModal
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={() => {
+          onDelete?.(request.id);
+          setDeleteDialogOpen(false);
+        }}
+      />
     </Card>
   );
 }

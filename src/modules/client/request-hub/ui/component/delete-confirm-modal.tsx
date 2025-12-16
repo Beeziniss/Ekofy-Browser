@@ -14,9 +14,10 @@ interface DeleteConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  isDeleting?: boolean;
 }
 
-export function DeleteConfirmModal({ isOpen, onClose, onConfirm }: DeleteConfirmModalProps) {
+export function DeleteConfirmModal({ isOpen, onClose, onConfirm, isDeleting = false }: DeleteConfirmModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -34,11 +35,11 @@ export function DeleteConfirmModal({ isOpen, onClose, onConfirm }: DeleteConfirm
           </DialogDescription>
         </div>
         <DialogFooter className="flex justify-center space-x-4">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={onConfirm}>
-            Delete
+          <Button variant="destructive" onClick={onConfirm} disabled={isDeleting}>
+            {isDeleting ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

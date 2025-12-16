@@ -1,22 +1,26 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { requestByIdOptions } from "@/gql/options/client-options";
-import { RequestDetailView } from "@/modules/client/request-hub/ui/component";
+import { RequestDetailView, DeleteConfirmModal } from "@/modules/client/request-hub/ui/component";
 import { AuthDialogProvider } from "@/modules/client/request-hub/ui/context";
 import { useRouter } from "next/navigation";
 import { RequestStatus } from "@/gql/graphql";
 import { toast } from "sonner";
+import { useDeleteRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
 
 const RequestDetailPage = () => {
   const params = useParams();
   const router = useRouter();
   const requestId = params.requesthubId as string;
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Fetch request details
   const { data: request, isLoading, isError } = useQuery(requestByIdOptions(requestId));
+  
+  const deleteRequestMutation = useDeleteRequest();
 
   const handleBack = () => {
     router.push("/request-hub");
@@ -24,6 +28,34 @@ const RequestDetailPage = () => {
 
   const handleEdit = (id: string) => {
     router.push(`/request-hub/${id}/edit`);
+  };
+
+  const handleDelete = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!request) return;
+
+    try {
+      const deleteInput = {
+        id: request.id,
+        title: request.title,
+        summary: request.summary,
+        detailDescription: request.detailDescription,
+        budget: request.budget,
+        duration: request.duration,
+      };
+
+      await deleteRequestMutation.mutateAsync(deleteInput);
+      toast.success("Request deleted successfully!");
+      router.push("/request-hub/my-requests");
+    } catch (error) {
+      toast.error("Failed to delete request");
+      console.error("Delete request error:", error);
+    } finally {
+      setIsDeleteModalOpen(false);
+    }
   };
 
   // Redirect if request not found or backend error
@@ -67,7 +99,19 @@ const RequestDetailPage = () => {
 
   return (
     <AuthDialogProvider>
-      <RequestDetailView request={request} onBack={handleBack} onEdit={handleEdit} />
+      <RequestDetailView 
+        request={request} 
+        onBack={handleBack} 
+        onEdit={handleEdit} 
+        onDelete={handleDelete}
+      />
+      
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        isDeleting={deleteRequestMutation.isPending}
+      />
     </AuthDialogProvider>
   );
 };

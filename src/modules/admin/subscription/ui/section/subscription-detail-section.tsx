@@ -77,19 +77,6 @@ export function SubscriptionDetailSection({ subscriptionId, onBack }: Subscripti
     }
   };
 
-  const getTierBadgeVariant = (tier: string) => {
-    switch (tier) {
-      case "FREE":
-        return "outline" as const;
-      case "PREMIUM":
-        return "default" as const;
-      case "PRO":
-        return "destructive" as const;
-      default:
-        return "secondary" as const;
-    }
-  };
-
   if (isLoadingSubscription) {
     return (
       <div className="flex h-32 items-center justify-center">
@@ -118,7 +105,6 @@ export function SubscriptionDetailSection({ subscriptionId, onBack }: Subscripti
 
       <SubscriptionInfoCard
         subscription={subscription}
-        getTierBadgeVariant={getTierBadgeVariant}
       />
 
       <SubscriptionPlansSection

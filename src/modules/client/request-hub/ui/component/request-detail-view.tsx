@@ -14,8 +14,9 @@ import {
   MessageCircle,
   SquarePen,
   Flag,
+  Trash2,
 } from "lucide-react";
-import { RequestsQuery } from "@/gql/graphql";
+import { RequestsQuery, RequestStatus } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
@@ -24,6 +25,7 @@ import RequestHubCommentSection from "./comment-section";
 import { StripeAccountRequiredModal } from "@/modules/shared/ui/components/stripe-account-required-modal";
 import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
 import { ReportRelatedContentType } from "@/gql/graphql";
+import { DeleteConfirmModal } from "./delete-confirm-modal";
 import { useMutation } from "@tanstack/react-query";
 import { addConversationFromRequestHubMutationOptions } from "@/gql/options/client-mutation-options";
 import { useRouter } from "next/navigation";
@@ -35,15 +37,17 @@ interface RequestDetailViewProps {
   request: RequestItem;
   onBack: () => void;
   onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
   className?: string;
 }
 
-export function RequestDetailView({ request, onBack, onEdit, className }: RequestDetailViewProps) {
+export function RequestDetailView({ request, onBack, onEdit, onDelete, className }: RequestDetailViewProps) {
   const router = useRouter();
   const { showAuthDialog } = useAuthDialog();
   const { isAuthenticated, user } = useAuthStore();
   const [showStripeModal, setShowStripeModal] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { isArtist, hasStripeAccount } = useStripeAccountStatus();
 
   const { mutateAsync: addConversation } = useMutation(addConversationFromRequestHubMutationOptions);
@@ -234,10 +238,18 @@ export function RequestDetailView({ request, onBack, onEdit, className }: Reques
 
                   <div className="space-y-3">
                     {/* Show Edit button if user is the owner */}
-                    {user?.userId === request.requestUserId && onEdit && (
-                      <Button className="primary_gradient w-full text-white hover:opacity-90" onClick={handleEdit}>
+                    {user?.userId === request.requestUserId && onEdit && request.status === RequestStatus.Open && (
+                      <Button variant="ekofy" className="w-full text-white hover:opacity-90" onClick={handleEdit}>
                         <SquarePen className="mr-2 h-4 w-4" />
                         Edit Request
+                      </Button>
+                    )}
+
+                    {/* Show Delete button if user is the owner */}
+                    {user?.userId === request.requestUserId && onDelete && request.status === RequestStatus.Open && (
+                      <Button variant="destructive" className="w-full" onClick={() => setDeleteDialogOpen(true)}>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete Request
                       </Button>
                     )}
 
@@ -281,6 +293,16 @@ export function RequestDetailView({ request, onBack, onEdit, className }: Reques
           onOpenChange={setReportDialogOpen}
         />
       )}
+
+      {/* Delete Confirm Dialog */}
+      <DeleteConfirmModal
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={() => {
+          onDelete?.(request.id);
+          setDeleteDialogOpen(false);
+        }}
+      />
     </div>
   );
 }

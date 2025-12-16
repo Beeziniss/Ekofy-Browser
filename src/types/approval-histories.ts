@@ -108,7 +108,7 @@ export type ApprovalHistorySnapshot =
 
 export interface ApprovalHistoryItem {
   id: string;
-  approvalType: "ARTIST_REGISTRATION" | "TRACK_UPLOAD" | "WORK_UPLOAD" | "RECORDING_UPLOAD";
+  approvalType: "ARTIST_REGISTRATION" | "TRACK_UPLOAD" | "WORK_UPLOAD" | "RECORDING_UPLOAD" | "DISPUTE_RESOLUTION";
   actionByUserId: string;
   actionAt: string;
   action: "APPROVED" | "REJECTED" | "PENDING";

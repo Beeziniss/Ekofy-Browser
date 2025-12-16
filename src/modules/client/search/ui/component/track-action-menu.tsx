@@ -9,6 +9,7 @@ import {
   Eye,
   CheckIcon,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { SearchTrackItem } from "@/types/search";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -217,6 +218,12 @@ export const TrackActionMenu: React.FC<TrackActionMenuProps> = ({ track }) => {
                             <div className="h-4 w-4 rounded bg-gray-600"></div>
                           )}
                           <span className="truncate">{playlist.name}</span>
+                          <span>                      
+                          {!playlist.isPublic && (
+                          <Badge variant="secondary" className="flex items-center gap-1 px-1.5 py-0.5 text-xs">
+                            Private
+                          </Badge>
+                      )}</span >
                         </div>
                         {inPlaylist && <CheckIcon className="h-4 w-4 text-green-500" />}
                       </div>
