@@ -12,6 +12,7 @@ interface ViewRequestSectionProps {
   isLoading?: boolean;
   onViewDetails: (id: string) => void;
   onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
   onSave?: (id: string) => void;
 }
 
@@ -20,6 +21,7 @@ export function ViewRequestSection({
   isLoading = false,
   onViewDetails,
   onEdit,
+  onDelete,
   onSave,
 }: ViewRequestSectionProps) {
   const { user } = useAuthStore();
@@ -48,6 +50,7 @@ export function ViewRequestSection({
             request={request}
             onViewDetails={onViewDetails}
             onEdit={isOwner ? onEdit : undefined}
+            onDelete={isOwner ? onDelete : undefined}
             onSave={onSave}
             isOwner={isOwner}
           />

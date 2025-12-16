@@ -20,7 +20,7 @@ import { fetchArtistNames, fetchCategoryNames } from "@/utils/approval-history-u
 
 interface ApprovalHistorySnapshotInfoProps {
   snapshot: ApprovalHistorySnapshot;
-  approvalType: "ARTIST_REGISTRATION" | "TRACK_UPLOAD" | "WORK_UPLOAD" | "RECORDING_UPLOAD";
+  approvalType: "ARTIST_REGISTRATION" | "TRACK_UPLOAD" | "WORK_UPLOAD" | "RECORDING_UPLOAD" | "DISPUTE_RESOLUTION";
 }
 
 // Component for Artist Registration
