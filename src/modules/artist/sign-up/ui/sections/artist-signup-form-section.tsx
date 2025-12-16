@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { TermsOfServiceDialog } from "../components";
 
 type ArtistSignUpFormSectionProps = ArtistSignUpSectionProps<ArtistSignUpFormData>;
 
@@ -46,6 +47,7 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
   const { formData, updateFormData, goToNextStep } = useArtistSignUpStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showTermsDialog, setShowTermsDialog] = useState(false);
 
   const form = useForm<ArtistSignUpSchemaData>({
     resolver: zodResolver(artistSignUpSchema),
@@ -58,6 +60,7 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
   });
 
   const password = form.watch("password");
+  const agreeTerms = form.watch("agreeTerms");
 
   const validatePassword = (password: string) => {
     return {
@@ -249,13 +252,20 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
                     <div className="flex-1">
                       <FormLabel className="text-sm font-normal text-gray-300">
                         I agree to the{" "}
-                        <Link href="#" className="text-blue-400 hover:text-blue-300">
-                          Terms of Service
-                        </Link>{" "}
-                        and{" "}
-                        <Link href="#" className="text-blue-400 hover:text-blue-300">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowTermsDialog(true);
+                          }}
+                          className="text-blue-400 hover:text-blue-300 underline"
+                        >
+                        Terms and Conditions
+                        </button>{" "}
+                        of Ekofy
+                        {/* <Link href="#" className="text-blue-400 hover:text-blue-300">
                           Privacy Policy
-                        </Link>
+                        </Link> */}
                       </FormLabel>
                       <FormMessage className="text-red-400" />
                     </div>
@@ -265,7 +275,8 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
 
               <Button
                 type="submit"
-                className="primary_gradient w-full rounded-md px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-60"
+                disabled={!agreeTerms}
+                className="primary_gradient w-full rounded-md px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-60 disabled:opacity-50 disabled:cursor-not-allowed"
                 size="lg"
               >
                 Continue
@@ -285,6 +296,9 @@ const ArtistSignUpFormSection = ({ onNext, initialData }: ArtistSignUpFormSectio
           </Form>
         </div>
       </div>
+
+      {/* Terms of Service Dialog */}
+      <TermsOfServiceDialog isOpen={showTermsDialog} onClose={() => setShowTermsDialog(false)} />
     </div>
   );
 };
