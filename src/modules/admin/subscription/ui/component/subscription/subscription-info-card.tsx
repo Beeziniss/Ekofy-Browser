@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { formatNumber } from "@/utils/format-number";
 import { activeInactiveStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 
@@ -19,13 +18,42 @@ interface SubscriptionInfoCardProps {
     createdAt: string;
     updatedAt?: string;
   };
-  getTierBadgeVariant: (tier: string) => "default" | "secondary" | "outline" | "destructive";
 }
 
 export function SubscriptionInfoCard({
   subscription,
-  getTierBadgeVariant,
 }: SubscriptionInfoCardProps) {
+  
+    function getTierColor(tier: string) {
+    switch (tier.toLowerCase()) {
+      case "free":
+        return "bg-secondary text-muted-foreground border-border";
+      case "pro":
+        return "text-white border-transparent shadow-md";
+      case "premium":
+        return "text-white border-transparent shadow-lg";
+      default:
+        return "bg-gray-800 border-white text-white";
+    }
+  }
+
+  function getTierStyle(tier: string): React.CSSProperties {
+    switch (tier.toLowerCase()) {
+      case "pro":
+        return {
+          background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+          boxShadow: "0 2px 8px rgba(59, 130, 246, 0.4)",
+        };
+      case "premium":
+        return {
+          background: "linear-gradient(135deg, #f59e0b, #ec4899)",
+          boxShadow: "0 2px 12px rgba(245, 158, 11, 0.5)",
+        };
+      default:
+        return {};
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -39,7 +67,12 @@ export function SubscriptionInfoCard({
           </div>
           <div>
             <div className="text-muted-foreground text-sm font-medium">Tier</div>
-            <Badge variant={getTierBadgeVariant(subscription.tier)}>{subscription.tier}</Badge>
+            <span
+              className={`inline-flex items-center justify-center px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-md transition-all duration-300 ${getTierColor(subscription.tier)}`}
+              style={getTierStyle(subscription.tier)}
+            >
+              {subscription.tier}
+            </span>
           </div>
           <div>
             <div className="text-muted-foreground text-sm font-medium">Status</div>
