@@ -16,21 +16,21 @@ interface FollowerCardProps {
     fullName: string;
     checkUserFollowing: boolean;
     role: UserRole;
-    artists: {
-      items: Array<{
+    artists?: {
+      items?: Array<{
         id: string;
         userId: string;
-        avatarImage: string | null;
+        avatarImage?: string | null;
         stageName: string;
-      }>;
-    };
-    listeners: {
-      items: Array<{
+      }> | null;
+    } | null;
+    listeners?: {
+      items?: Array<{
         userId: string;
         displayName: string;
-        avatarImage: string | null;
-      }>;
-    };
+        avatarImage?: string | null;
+      }> | null;
+    } | null;
   };
 }
 
@@ -112,16 +112,16 @@ const FollowerCard = ({ follower }: FollowerCardProps) => {
   // Get avatar and display name based on role
   const getAvatarData = () => {
     const isArtistRole = follower.role === UserRole.Artist;
-    if (isArtistRole && follower.artists.items.length > 0) {
+    if (isArtistRole && follower.artists?.items && follower.artists.items.length > 0) {
       const artist = follower.artists.items[0];
       return {
-        avatarImage: artist.avatarImage,
+        avatarImage: artist.avatarImage ?? null,
         displayName: artist.stageName,
       };
-    } else if (follower.listeners.items.length > 0) {
+    } else if (follower.listeners?.items && follower.listeners.items.length > 0) {
       const listener = follower.listeners.items[0];
       return {
-        avatarImage: listener.avatarImage,
+        avatarImage: listener.avatarImage ?? null,
         displayName: listener.displayName,
       };
     }
@@ -180,7 +180,7 @@ const FollowerCard = ({ follower }: FollowerCardProps) => {
 
       <div className="flex flex-col gap-y-1 text-center">
         <Link
-          href={`/artists/${follower.artists.items[0].id || follower.listeners.items[0]?.userId || ""}`}
+          href={`/artists/${follower.artists?.items?.[0]?.id || follower.listeners?.items?.[0]?.userId || ""}`}
           className="text-main-white hover:text-main-purple cursor-pointer text-sm hover:underline"
         >
           {displayName}
