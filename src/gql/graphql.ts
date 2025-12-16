@@ -765,6 +765,7 @@ export type CategoryTypeOperationFilterInput = {
 
 export type ChangeOrderStatusRequestInput = {
   id: Scalars['String']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
   status: PackageOrderStatus;
 };
 
@@ -2631,6 +2632,7 @@ export type MutationInitialization = {
   switchEscrowCommissionPolicyToLatestVersion: Scalars['Boolean']['output'];
   switchStatusByRequestor: Scalars['Boolean']['output'];
   switchToLatestVersion: Scalars['Boolean']['output'];
+  testCalculateRoyaltyForTracks: Scalars['Boolean']['output'];
   testDateComparing: Scalars['Boolean']['output'];
   testGenrateMonthlyRoyaltyReportsAynsc: Scalars['Boolean']['output'];
   testInstantPayout: Scalars['Boolean']['output'];
@@ -3112,6 +3114,12 @@ export type MutationInitializationSwitchStatusByRequestorArgs = {
 };
 
 
+export type MutationInitializationTestCalculateRoyaltyForTracksArgs = {
+  month: Scalars['Int']['input'];
+  year: Scalars['Int']['input'];
+};
+
+
 export type MutationInitializationTestGenrateMonthlyRoyaltyReportsAynscArgs = {
   month: Scalars['Int']['input'];
   year: Scalars['Int']['input'];
@@ -3541,6 +3549,7 @@ export type PackageOrder = {
   createdAt: Scalars['DateTime']['output'];
   deliveries: Array<PackageOrderDelivery>;
   disputedAt?: Maybe<Scalars['DateTime']['output']>;
+  disputedReason?: Maybe<Scalars['String']['output']>;
   duration: Scalars['Int']['output'];
   freezedTime: Scalars['TimeSpan']['output'];
   id: Scalars['String']['output'];
@@ -3626,6 +3635,7 @@ export type PackageOrderFilterInput = {
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
   deliveries?: InputMaybe<ListFilterInputTypeOfPackageOrderDeliveryFilterInput>;
   disputedAt?: InputMaybe<DateTimeOperationFilterInput>;
+  disputedReason?: InputMaybe<StringOperationFilterInput>;
   duration?: InputMaybe<IntOperationFilterInput>;
   freezedTime?: InputMaybe<TimeSpanOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
@@ -3659,6 +3669,7 @@ export type PackageOrderSortInput = {
   conversationId?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
   disputedAt?: InputMaybe<SortEnumType>;
+  disputedReason?: InputMaybe<SortEnumType>;
   duration?: InputMaybe<SortEnumType>;
   freezedTime?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
@@ -5326,6 +5337,7 @@ export type Request = {
   duration: Scalars['Int']['output'];
   id: Scalars['String']['output'];
   notes?: Maybe<Scalars['String']['output']>;
+  orderId?: Maybe<Scalars['String']['output']>;
   packageId?: Maybe<Scalars['String']['output']>;
   postCreatedTime?: Maybe<Scalars['DateTime']['output']>;
   requestCreatedTime?: Maybe<Scalars['DateTime']['output']>;
@@ -5400,6 +5412,7 @@ export type RequestFilterInput = {
   id?: InputMaybe<StringOperationFilterInput>;
   notes?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<RequestFilterInput>>;
+  orderId?: InputMaybe<StringOperationFilterInput>;
   packageId?: InputMaybe<StringOperationFilterInput>;
   postCreatedTime?: InputMaybe<DateTimeOperationFilterInput>;
   requestCreatedTime?: InputMaybe<DateTimeOperationFilterInput>;
@@ -5432,6 +5445,7 @@ export type RequestSortInput = {
   duration?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   notes?: InputMaybe<SortEnumType>;
+  orderId?: InputMaybe<SortEnumType>;
   packageId?: InputMaybe<SortEnumType>;
   postCreatedTime?: InputMaybe<SortEnumType>;
   requestCreatedTime?: InputMaybe<SortEnumType>;
@@ -7021,7 +7035,7 @@ export type SearchArtistsQueryVariables = Exact<{
 }>;
 
 
-export type SearchArtistsQuery = { __typename?: 'QueryInitialization', searchArtists?: { __typename?: 'SearchArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null, followerCount: any, user: Array<{ __typename?: 'User', fullName: string, role: UserRole }> }> | null } | null };
+export type SearchArtistsQuery = { __typename?: 'QueryInitialization', searchArtists?: { __typename?: 'SearchArtistsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, stageNameUnsigned: string, email: string, artistType: ArtistType, avatarImage?: string | null, followerCount: any, user: Array<{ __typename?: 'User', id: string, fullName: string, role: UserRole, checkUserFollowing: boolean }> }> | null } | null };
 
 export type SearchListenersQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -8845,7 +8859,12 @@ export const PlaylistDetailTrackListDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<PlaylistDetailTrackListQuery, PlaylistDetailTrackListQueryVariables>;
 export const SearchArtistsDocument = new TypedDocumentString(`
     query SearchArtists($skip: Int, $take: Int, $stageName: String!) {
-  searchArtists(skip: $skip, take: $take, stageName: $stageName) {
+  searchArtists(
+    skip: $skip
+    take: $take
+    stageName: $stageName
+    where: {isVisible: {eq: true}}
+  ) {
     totalCount
     items {
       id
@@ -8857,8 +8876,10 @@ export const SearchArtistsDocument = new TypedDocumentString(`
       avatarImage
       followerCount
       user {
+        id
         fullName
         role
+        checkUserFollowing
       }
     }
   }

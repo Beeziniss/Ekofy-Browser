@@ -44,6 +44,13 @@ export const useArtistFollow = ({ artistId, trackId, onSuccess }: UseArtistFollo
         },
       });
     }
+
+    // Invalidate search artists queries to update follow status in search results
+    queryClient.invalidateQueries({
+      predicate: (query) => {
+        return query.queryKey[0] === "searchArtists";
+      },
+    });
   };
 
   const { mutate: followUser, isPending: isFollowPending } = useMutation({
