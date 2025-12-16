@@ -469,6 +469,16 @@ export const conversationDetailOptions = (coversationId: string) =>
     },
   });
 
+export const conversationDetailByRequestOptions = (requestId: string) =>
+  queryOptions({
+    queryKey: ["conversation-detail-by-request", requestId],
+    queryFn: async () => {
+      const where: ConversationFilterInput = { requestId: { eq: requestId } };
+      const result = await execute(ConversationQuery, { where });
+      return result;
+    },
+  });
+
 export const conversationMessagesOptions = (conversationId: string) =>
   queryOptions({
     queryKey: ["conversation-messages", conversationId],

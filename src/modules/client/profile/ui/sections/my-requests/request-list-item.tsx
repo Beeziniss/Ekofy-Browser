@@ -5,12 +5,13 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FragmentType, useFragment } from "@/gql";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, Calendar, User, DollarSign } from "lucide-react";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import { serviceCreateCheckoutSessionMutationOptions } from "@/gql/options/client-mutation-options";
 import { Request, RequestArtistFragmentDoc, RequestArtistPackageFragmentDoc, RequestStatus } from "@/gql/graphql";
+import { conversationDetailByRequestOptions } from "@/gql/options/client-options";
 
 interface RequestListItemProps {
   request: Omit<Request, "requestor" | "artist" | "artistPackage"> & {
@@ -30,6 +31,9 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
   // Payment mutation
   const createCheckoutSessionMutation = useMutation(serviceCreateCheckoutSessionMutationOptions);
 
+  // Conversation query
+  const { data: conversationData } = useQuery(conversationDetailByRequestOptions(request.id));
+
   const handlePayment = async () => {
     if (!request.packageId) {
       toast.error("Package information is missing for this request.");
@@ -43,7 +47,7 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
         duration: request.duration || 0,
         requirements: request.requirements || "",
         deliveries: [], // Empty array as requested
-        conversationId: null,
+        conversationId: conversationData?.conversations?.items?.[0].id ?? null,
         // successUrl: `${window.location.origin}/profile/my-requests/${request.id}?payment=success`,
         // cancelUrl: `${window.location.origin}/profile/my-requests/${request.id}?payment=cancelled`,
         successUrl: `${window.location.origin}`,
@@ -109,23 +113,23 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
 
             {/* Summary */}
             {request.summary && (
-                <div>
+              <div>
                 <span className="font-medium text-white">Summary: </span>
                 <p
-                  className="line-clamp-2 text-sm text-gray-400 inline"
+                  className="line-clamp-2 inline text-sm text-gray-400"
                   dangerouslySetInnerHTML={{ __html: request.summary || "No summary provided" }}
                 ></p>
-                </div>
-             )}
-            
+              </div>
+            )}
+
             {/* Requirements */}
             {request.requirements && (
               <div>
                 <span className="font-medium text-white">Requirements: </span>
-            <p
-              className="line-clamp-2 text-sm text-gray-400"
-              dangerouslySetInnerHTML={{ __html: request.requirements || "No requirements provided" }}
-            ></p>
+                <p
+                  className="line-clamp-2 text-sm text-gray-400"
+                  dangerouslySetInnerHTML={{ __html: request.requirements || "No requirements provided" }}
+                ></p>
               </div>
             )}
             {/* Artist Info - Only show for direct requests with artist */}
