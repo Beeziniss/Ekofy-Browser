@@ -43,6 +43,7 @@ import {
   RequestHubCommentThreadRepliesQuery,
   RequestHubCommentThreadsQuery,
   SEARCH_REQUESTS_QUERY,
+  SuggestedTracksForPlaylistQuery,
   TrackCommentRepliesQuery,
   TrackCommentsQuery,
   TrackDetailViewQuery,
@@ -122,6 +123,24 @@ export const trackFavoriteOptions = (take: number = 12, skip: number = 0, isAuth
     queryKey: ["track-favorite", take, skip],
     queryFn: async () => await execute(TrackFavoriteQuery, { take, skip }),
     enabled: isAuthenticated,
+  });
+
+export const suggestedTracksForPlaylistOptions = (playlistId: string, nameUnsigned: string = "", take: number = 12) =>
+  queryOptions({
+    queryKey: ["suggested-tracks-for-playlist", playlistId, nameUnsigned],
+    queryFn: async () => {
+      // First, fetch the current tracks in the playlist
+      const playlistData = await execute(PlaylistDetailTrackListQuery, { playlistId });
+      const existingTrackIds =
+        playlistData.playlists?.items?.[0]?.tracks?.items?.map((track) => track?.id).filter(Boolean) || [];
+
+      // Then fetch suggested tracks excluding the existing ones
+      return await execute(SuggestedTracksForPlaylistQuery, {
+        take,
+        excludeTrackIds: existingTrackIds.length > 0 ? existingTrackIds : null,
+        nameUnsigned,
+      });
+    },
   });
 
 // PLAYLIST QUERIES
