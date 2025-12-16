@@ -12,6 +12,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { TermsOfServiceDialog } from "../components";
 
 const signUpSchema = z
   .object({
@@ -29,6 +31,7 @@ const signUpSchema = z
       .regex(/[0-9]/, "Password must contain at least one number")
       .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
     confirmPassword: z.string().min(1, "Confirm password is required"),
+    agreeTerms: z.boolean().refine((val) => val === true, "You must agree to the terms and conditions"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -41,6 +44,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
   const { goToNextStep, updateFormData, formData } = useSignUpStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showTermsDialog, setShowTermsDialog] = useState(false);
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -48,10 +52,12 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
       email: initialData?.email || formData.email || "",
       password: "",
       confirmPassword: "",
+      agreeTerms: false,
     },
   });
 
   const password = form.watch("password");
+  const agreeTerms = form.watch("agreeTerms");
 
   const validatePassword = (password: string) => {
     return {
@@ -231,10 +237,45 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
                 </div>
               </div>
 
+              {/* Terms and Conditions */}
+              <FormField
+                control={form.control}
+                name="agreeTerms"
+                render={({ field }) => (
+                  <FormItem className="flex items-start space-y-0 space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} className="mt-1" />
+                    </FormControl>
+                    <div className="flex-1">
+                      <FormLabel className="text-sm font-normal text-gray-300">
+                        I agree to the{" "}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowTermsDialog(true);
+                          }}
+                          className="text-blue-400 hover:text-blue-300 underline"
+                        >
+                          Terms and Conditions
+                        </button>
+                        {" "}
+                        of Ekofy
+                        {/* <Link href="#" className="text-blue-400 hover:text-blue-300">
+                          Privacy Policy
+                        </Link> */}
+                      </FormLabel>
+                      <FormMessage className="text-red-400" />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
               {/* Continue Button */}
               <Button
                 type="submit"
-                className="primary_gradient w-full rounded-md px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-90"
+                disabled={!agreeTerms}
+                className="primary_gradient w-full rounded-md px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 size="lg"
               >
                 Continue
@@ -265,7 +306,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
             type="button"
             variant="outline"
             onClick={handleGoogleSignUp}
-            className="w-full rounded-md border-gray-600 bg-transparent px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:bg-gray-800"
+            disabled={!agreeTerms}
+            className="w-full rounded-md border-gray-600 bg-transparent px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
             size="lg"
           >
             <svg className="mr-3 h-5 w-5" viewBox="0 0 24 24">
@@ -290,7 +332,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
           </Button>
         </div>
       </div>
-    </div>
+      {/* Terms of Service Dialog */}
+      <TermsOfServiceDialog isOpen={showTermsDialog} onClose={() => setShowTermsDialog(false)} />    </div>
   );
 };
 
