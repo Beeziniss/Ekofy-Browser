@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { playlistDetailOptions } from "@/gql/options/client-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import { EllipsisIcon, LinkIcon, PenLineIcon, Trash2Icon, UserIcon } from "lucide-react";
+import { EllipsisIcon, LinkIcon, PenLineIcon, Trash2Icon } from "lucide-react";
 import Image from "next/image";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import PlaylistManagementModal from "../components/playlist-management-modal";
 import PlaylistDeleteModal from "../components/playlist-delete-modal";
 import type { PlaylistData } from "../components/playlist-management-modal";
@@ -20,6 +20,9 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePlaylistPlayback } from "../../hooks/use-playlist-playback";
 import { PauseButtonMedium, PlayButtonMedium } from "@/assets/icons";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useAuthStore } from "@/store";
+import { useRouter } from "next/navigation";
 
 interface PlaylistInfoSectionProps {
   playlistId: string;
@@ -73,11 +76,33 @@ const PlaylistInfoSectionSuspense = ({ playlistId }: PlaylistInfoSectionProps) =
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const { data } = useSuspenseQuery(playlistDetailOptions(playlistId));
+  const { user, isAuthenticated } = useAuthStore();
+  const router = useRouter();
 
   // Use custom hook for playlist playback functionality
   const { isPlaylistCurrentlyPlaying, isPlaying, playlistTracks, handlePlayPause } = usePlaylistPlayback(playlistId);
 
   const playlistData = data?.playlists?.items?.[0];
+
+  // Access control for private playlists
+  useEffect(() => {
+    if (!playlistData) return;
+
+    // If the playlist is private
+    if (!playlistData.isPublic) {
+      // If user is not authenticated, redirect to landing page
+      if (!isAuthenticated) {
+        router.push("/landing");
+        return;
+      }
+
+      // If user is authenticated but not the owner, redirect to unauthorized
+      if (playlistData.userId !== user?.userId) {
+        router.push("/unauthorized");
+        return;
+      }
+    }
+  }, [playlistData, isAuthenticated, user, router]);
 
   // Handle play/pause click for playlist
   const handlePlayPauseClick = async (e: React.MouseEvent) => {
@@ -113,7 +138,7 @@ const PlaylistInfoSectionSuspense = ({ playlistId }: PlaylistInfoSectionProps) =
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex items-center gap-x-8">
+      <div className="flex items-end gap-x-8">
         <Image
           src={playlistData?.coverImage || "https://placehold.co/280"}
           alt={playlistData?.name || "Playlist Cover"}
@@ -123,22 +148,45 @@ const PlaylistInfoSectionSuspense = ({ playlistId }: PlaylistInfoSectionProps) =
           unoptimized
         />
 
-        <div className="flex flex-col gap-y-6">
-          <h1 className="text-main-white text-6xl font-bold">{playlistData?.name || "Untitled Playlist"}</h1>
+        <div className="flex flex-1 flex-col gap-y-6">
+          <h1 className="text-main-white line-clamp-1 text-6xl font-bold">
+            {playlistData?.name || "Untitled Playlist"}
+          </h1>
 
           <div className="flex flex-col gap-y-1">
             <div className="flex items-center gap-x-3">
-              <div className="bg-main-white flex size-8 items-center justify-center rounded-full">
-                <UserIcon className="size-4 text-black" />
-              </div>
+              <Avatar className="size-8">
+                <AvatarImage
+                  src={
+                    playlistData?.artist?.[0]?.avatarImage ||
+                    playlistData?.listener?.[0]?.avatarImage ||
+                    "https://placehold.co/32"
+                  }
+                  alt="User avatar"
+                />
+                <AvatarFallback>
+                  {
+                    (playlistData?.artist?.[0]?.stageName ||
+                      playlistData?.listener?.[0]?.displayName ||
+                      playlistData?.user?.[0]?.fullName ||
+                      "A")[0]
+                  }
+                </AvatarFallback>
+              </Avatar>
               <span className="text-main-white text-base font-medium">
-                {playlistData?.user[0]?.fullName || "Anonymous"}
+                {playlistData?.artist?.[0]?.stageName ||
+                  playlistData?.listener?.[0]?.displayName ||
+                  playlistData?.user?.[0]?.fullName ||
+                  "Anonymous"}
               </span>
             </div>
             <div className="text-main-grey mt-2 text-base">{playlistData?.tracks?.totalCount || 0} tracks</div>
             <div className="text-main-grey text-base">
               {playlistData?.isPublic ? "Public" : "Private"} | Updated:{" "}
               {formatDistanceToNow(playlistData?.updatedAt || playlistData?.createdAt, { addSuffix: true })}
+            </div>
+            <div className="text-main-white mt-4 line-clamp-2 w-full text-base break-words">
+              {playlistData?.description || "No description provided."}
             </div>
           </div>
         </div>

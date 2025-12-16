@@ -7019,14 +7019,14 @@ export type PlaylistDetailQueryVariables = Exact<{
 }>;
 
 
-export type PlaylistDetailQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, description?: string | null, isPublic: boolean, userId: string, createdAt: any, updatedAt?: any | null, user: Array<{ __typename?: 'User', id: string, fullName: string }>, tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string }> | null } | null, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string }> }> | null } | null };
+export type PlaylistDetailQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, coverImage?: string | null, description?: string | null, isPublic: boolean, userId: string, createdAt: any, updatedAt?: any | null, user: Array<{ __typename?: 'User', id: string, fullName: string }>, artist: Array<{ __typename?: 'Artist', id: string, avatarImage?: string | null, stageName: string }>, listener: Array<{ __typename?: 'Listener', id: string, avatarImage?: string | null, displayName: string }>, tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string }> | null } | null, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string }> }> | null } | null };
 
 export type PlaylistDetailTrackListQueryVariables = Exact<{
   playlistId: Scalars['String']['input'];
 }>;
 
 
-export type PlaylistDetailTrackListQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, isExplicit: boolean, mainArtistIds: Array<string>, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null } | null, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }> }> | null } | null };
+export type PlaylistDetailTrackListQuery = { __typename?: 'QueryInitialization', playlists?: { __typename?: 'PlaylistsCollectionSegment', items?: Array<{ __typename?: 'Playlist', id: string, name: string, tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, isExplicit: boolean, mainArtistIds: Array<string>, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', stageName: string }> | null } | null }> | null } | null, tracksInfo: Array<{ __typename?: 'PlaylistTracksInfo', trackId: string, addedTime: any }> }> | null } | null };
 
 export type SearchArtistsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -7989,7 +7989,7 @@ export type FollowerInfiniteQueryVariables = Exact<{
 }>;
 
 
-export type FollowerInfiniteQuery = { __typename?: 'QueryInitialization', followers?: { __typename?: 'FollowersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean }, items?: Array<{ __typename?: 'User', id: string, fullName: string, checkUserFollowing: boolean, role: UserRole }> | null } | null };
+export type FollowerInfiniteQuery = { __typename?: 'QueryInitialization', followers?: { __typename?: 'FollowersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean }, items?: Array<{ __typename?: 'User', id: string, fullName: string, checkUserFollowing: boolean, role: UserRole, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, avatarImage?: string | null, stageName: string }> | null } | null, listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', userId: string, displayName: string, avatarImage?: string | null }> | null } | null }> | null } | null };
 
 export type FollowingInfiniteQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['String']['input']>;
@@ -7999,7 +7999,7 @@ export type FollowingInfiniteQueryVariables = Exact<{
 }>;
 
 
-export type FollowingInfiniteQuery = { __typename?: 'QueryInitialization', followings?: { __typename?: 'FollowingsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean }, items?: Array<{ __typename?: 'User', id: string, fullName: string, checkUserFollowing: boolean, role: UserRole }> | null } | null };
+export type FollowingInfiniteQuery = { __typename?: 'QueryInitialization', followings?: { __typename?: 'FollowingsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean }, items?: Array<{ __typename?: 'User', id: string, fullName: string, checkUserFollowing: boolean, role: UserRole, artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, avatarImage?: string | null, stageName: string }> | null } | null, listeners?: { __typename?: 'ListenersCollectionSegment', items?: Array<{ __typename?: 'Listener', userId: string, displayName: string, avatarImage?: string | null }> | null } | null }> | null } | null };
 
 export type NotificationQueryVariables = Exact<{
   where?: InputMaybe<NotificationFilterInput>;
@@ -8275,6 +8275,15 @@ export type TrackFavoriteQueryVariables = Exact<{
 
 
 export type TrackFavoriteQuery = { __typename?: 'QueryInitialization', favoriteTracks?: { __typename?: 'FavoriteTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, createdAt: any, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
+
+export type SuggestedTracksForPlaylistQueryVariables = Exact<{
+  take: Scalars['Int']['input'];
+  excludeTrackIds?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+  nameUnsigned: Scalars['String']['input'];
+}>;
+
+
+export type SuggestedTracksForPlaylistQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, isExplicit: boolean, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
 
 export type UserBasicInfoQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -8814,6 +8823,16 @@ export const PlaylistDetailDocument = new TypedDocumentString(`
         id
         fullName
       }
+      artist {
+        id
+        avatarImage
+        stageName
+      }
+      listener {
+        id
+        avatarImage
+        displayName
+      }
       userId
       tracks {
         items {
@@ -8835,6 +8854,7 @@ export const PlaylistDetailTrackListDocument = new TypedDocumentString(`
   playlists(where: {id: {eq: $playlistId}}) {
     items {
       id
+      name
       tracks {
         items {
           id
@@ -10697,6 +10717,21 @@ export const FollowerInfiniteDocument = new TypedDocumentString(`
     items {
       id
       fullName
+      artists {
+        items {
+          id
+          userId
+          avatarImage
+          stageName
+        }
+      }
+      listeners {
+        items {
+          userId
+          displayName
+          avatarImage
+        }
+      }
       checkUserFollowing
       role
     }
@@ -10719,6 +10754,21 @@ export const FollowingInfiniteDocument = new TypedDocumentString(`
     items {
       id
       fullName
+      artists {
+        items {
+          id
+          userId
+          avatarImage
+          stageName
+        }
+      }
+      listeners {
+        items {
+          userId
+          displayName
+          avatarImage
+        }
+      }
       checkUserFollowing
       role
     }
@@ -11869,6 +11919,31 @@ export const TrackFavoriteDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TrackFavoriteQuery, TrackFavoriteQueryVariables>;
+export const SuggestedTracksForPlaylistDocument = new TypedDocumentString(`
+    query SuggestedTracksForPlaylist($take: Int!, $excludeTrackIds: [String!], $nameUnsigned: String!) {
+  tracks(
+    take: $take
+    order: {createdAt: DESC}
+    where: {and: [{releaseInfo: {isRelease: {eq: true}}}, {restriction: {type: {eq: NONE}}}, {id: {nin: $excludeTrackIds}}], nameUnsigned: {contains: $nameUnsigned}}
+  ) {
+    totalCount
+    items {
+      id
+      name
+      coverImage
+      mainArtistIds
+      isExplicit
+      mainArtists {
+        items {
+          id
+          stageName
+        }
+      }
+      checkTrackInFavorite
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<SuggestedTracksForPlaylistQuery, SuggestedTracksForPlaylistQueryVariables>;
 export const UserBasicInfoDocument = new TypedDocumentString(`
     query UserBasicInfo($userId: String!) {
   users(where: {id: {eq: $userId}}) {

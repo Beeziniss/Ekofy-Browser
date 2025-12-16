@@ -83,6 +83,39 @@ export const TrackFavoriteQuery = graphql(`
   }
 `);
 
+export const SuggestedTracksForPlaylistQuery = graphql(`
+  query SuggestedTracksForPlaylist($take: Int!, $excludeTrackIds: [String!], $nameUnsigned: String!) {
+    tracks(
+      take: $take
+      order: { createdAt: DESC }
+      where: {
+        and: [
+          { releaseInfo: { isRelease: { eq: true } } }
+          { restriction: { type: { eq: NONE } } }
+          { id: { nin: $excludeTrackIds } }
+        ]
+        nameUnsigned: { contains: $nameUnsigned }
+      }
+    ) {
+      totalCount
+      items {
+        id
+        name
+        coverImage
+        mainArtistIds
+        isExplicit
+        mainArtists {
+          items {
+            id
+            stageName
+          }
+        }
+        checkTrackInFavorite
+      }
+    }
+  }
+`);
+
 // export const TrackCategoriesQuery = graphql(`
 //   query TrackCategories($trackId: String!) {
 //     tracks(where: { id: { eq: $trackId } }) {

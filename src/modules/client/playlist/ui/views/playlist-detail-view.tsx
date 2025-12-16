@@ -38,6 +38,16 @@ export const PlaylistDetailQuery = graphql(`
           id
           fullName
         }
+        artist {
+          id
+          avatarImage
+          stageName
+        }
+        listener {
+          id
+          avatarImage
+          displayName
+        }
         userId
         tracks {
           items {
@@ -60,6 +70,7 @@ export const PlaylistDetailTrackListQuery = graphql(`
     playlists(where: { id: { eq: $playlistId } }) {
       items {
         id
+        name
         tracks {
           items {
             id
