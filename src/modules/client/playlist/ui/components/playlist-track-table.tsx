@@ -34,6 +34,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import PlaylistRemoveTrackModal from "./playlist-remove-track-modal";
+import PlaylistAddTrackDrawer from "./playlist-add-track-drawer";
 import { Track, useAudioStore } from "@/store";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
@@ -50,9 +51,10 @@ export interface PlaylistTrack {
 interface PlaylistTrackTableProps {
   tracks: PlaylistTrack[];
   playlistId: string;
+  playlistName: string;
 }
 
-const PlaylistTrackTable = ({ tracks, playlistId }: PlaylistTrackTableProps) => {
+const PlaylistTrackTable = ({ tracks, playlistId, playlistName }: PlaylistTrackTableProps) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -65,6 +67,7 @@ const PlaylistTrackTable = ({ tracks, playlistId }: PlaylistTrackTableProps) => 
     trackId: "",
     trackName: "",
   });
+  const [addTrackDrawerOpen, setAddTrackDrawerOpen] = useState(false);
 
   const [globalFilterDebounced] = useDebounce(globalFilter, 300);
 
@@ -372,12 +375,15 @@ const PlaylistTrackTable = ({ tracks, playlistId }: PlaylistTrackTableProps) => 
           ))}
         </TableHeader>
         <TableBody>
-          <tr className="hover:bg-muted/50 flex cursor-pointer items-center gap-x-3 px-2 py-3 transition-colors">
-            <td className="bg-main-grey-dark-bg flex size-12 items-center justify-center">
+          <TableRow
+            className="hover:bg-muted/50 flex cursor-pointer items-center gap-x-3 px-2 py-3 transition-colors"
+            onClick={() => setAddTrackDrawerOpen(true)}
+          >
+            <TableCell className="bg-main-grey-dark-bg flex size-12 items-center justify-center">
               <PlusIcon className="text-main-white size-6" />
-            </td>
+            </TableCell>
             <td className="text-main-white flex-1">Add new track</td>
-          </tr>
+          </TableRow>
           {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} className="group flex items-center">
@@ -417,6 +423,13 @@ const PlaylistTrackTable = ({ tracks, playlistId }: PlaylistTrackTableProps) => 
         trackId={removeTrackModal.trackId}
         trackName={removeTrackModal.trackName}
         onSuccess={() => setRemoveTrackModal({ open: false, trackId: "", trackName: "" })}
+      />
+
+      <PlaylistAddTrackDrawer
+        open={addTrackDrawerOpen}
+        onOpenChange={setAddTrackDrawerOpen}
+        playlistId={playlistId}
+        playlistName={playlistName}
       />
     </div>
   );

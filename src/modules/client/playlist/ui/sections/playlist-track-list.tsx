@@ -81,7 +81,7 @@ const PlaylistTrackListSuspense = ({ playlistId }: PlaylistTrackListProps) => {
         };
       }) || [];
 
-  return <PlaylistTrackTable tracks={tracks} playlistId={playlistId} />;
+  return <PlaylistTrackTable tracks={tracks} playlistId={playlistId} playlistName={playlist.name || "Playlist"} />;
 };
 
 export default PlaylistTrackList;
