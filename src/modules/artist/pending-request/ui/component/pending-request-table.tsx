@@ -173,7 +173,7 @@ export function PendingRequestTable({
                 {/* View Order - only show if orderId exists */}
                 {request.orderId && (
                   <DropdownMenuItem asChild>
-                    <Link href={`/artist/studio/orders/${request.orderId}`} className="flex items-center">
+                    <Link href={`/orders/${request.orderId}/details`} className="flex items-center">
                       <ShoppingCart className="mr-2 h-4 w-4" />
                       View Order
                     </Link>

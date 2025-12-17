@@ -11,7 +11,7 @@ export const subscriptionsPremiumQueryOptions = () =>
       const response = await execute(SUBSCRIPTION_QUERIES, {
         where: {
           tier: { eq: SubscriptionTier.Premium },
-          status: { eq: SubscriptionStatus.Active },
+          // status: { eq: SubscriptionStatus.Active },
         },
       });
       return response;

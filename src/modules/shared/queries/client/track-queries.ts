@@ -34,6 +34,7 @@ export const TrackDetailViewQuery = graphql(`
         coverImage
         favoriteCount
         streamCount
+        description
         categoryIds
         categories {
           items {
@@ -41,6 +42,7 @@ export const TrackDetailViewQuery = graphql(`
             id
           }
         }
+        isExplicit
         mainArtistIds
         mainArtists {
           items {
@@ -55,6 +57,10 @@ export const TrackDetailViewQuery = graphql(`
             }
           }
         }
+        releaseInfo {
+          isRelease
+        }
+        createdBy
         checkTrackInFavorite
       }
     }
