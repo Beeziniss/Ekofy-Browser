@@ -7128,6 +7128,11 @@ export type SoftDeleteCategoryMutationVariables = Exact<{
 
 export type SoftDeleteCategoryMutation = { __typename?: 'MutationInitialization', softDeleteCategory: boolean };
 
+export type ComputePlatformRevenueMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ComputePlatformRevenueMutation = { __typename?: 'MutationInitialization', computePlatformRevenue: { __typename?: 'PlatformRevenue', subscriptionRevenue: any, serviceRevenue: any, grossRevenue: any, royaltyPayoutAmount: any, servicePayoutAmount: any, refundAmount: any, totalPayoutAmount: any, grossDeductions: any, commissionProfit: any, netProfit: any, currency: CurrencyType, createdAt: any, updatedAt?: any | null } };
+
 export type CreateEscrowCommissionPolicyMutationVariables = Exact<{
   createRequest: CreateEscrowCommissionPolicyRequestInput;
 }>;
@@ -7228,6 +7233,13 @@ export type DeleteArtistPackageMutationVariables = Exact<{
 
 
 export type DeleteArtistPackageMutation = { __typename?: 'MutationInitialization', deleteArtistPackage: boolean };
+
+export type ComputeArtistRevenueByArtistIdMutationVariables = Exact<{
+  artistId: Scalars['String']['input'];
+}>;
+
+
+export type ComputeArtistRevenueByArtistIdMutation = { __typename?: 'MutationInitialization', computeArtistRevenueByArtistId: { __typename?: 'ArtistRevenueResponse', royaltyEarnings: any, serviceRevenue: any, serviceEarnings: any, grossRevenue: any, netRevenue: any } };
 
 export type ChangeRequestStatusMutationVariables = Exact<{
   request: ChangeStatusRequestInput;
@@ -7795,7 +7807,7 @@ export type GetAllPayoutTransactionsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllPayoutTransactionsQuery = { __typename?: 'QueryInitialization', payoutTransactions?: { __typename?: 'PayoutTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PayoutTransaction', id: string, userId: string, royaltyReportId?: string | null, stripeTransferId: string, stripePayoutId: string, destinationAccountId: string, amount: any, currency: string, level?: AggregationLevel | null, description: string, status: PayoutTransactionStatus, method?: string | null, createdAt: any, updatedAt?: any | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type GetAllPayoutTransactionsQuery = { __typename?: 'QueryInitialization', payoutTransactions?: { __typename?: 'PayoutTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PayoutTransaction', id: string, userId: string, royaltyReportId?: string | null, stripeTransferId: string, stripePayoutId: string, destinationAccountId: string, amount: any, currency: string, level?: AggregationLevel | null, description: string, status: PayoutTransactionStatus, method?: string | null, createdAt: any, updatedAt?: any | null, user: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type SearchPayoutTransactionsQueryVariables = Exact<{
   order?: InputMaybe<Array<PayoutTransactionSortInput> | PayoutTransactionSortInput>;
@@ -7806,7 +7818,7 @@ export type SearchPayoutTransactionsQueryVariables = Exact<{
 }>;
 
 
-export type SearchPayoutTransactionsQuery = { __typename?: 'QueryInitialization', searchPayoutTransactions?: { __typename?: 'SearchPayoutTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PayoutTransaction', id: string, userId: string, royaltyReportId?: string | null, stripeTransferId: string, stripePayoutId: string, destinationAccountId: string, amount: any, currency: string, level?: AggregationLevel | null, description: string, status: PayoutTransactionStatus, method?: string | null, createdAt: any, updatedAt?: any | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type SearchPayoutTransactionsQuery = { __typename?: 'QueryInitialization', searchPayoutTransactions?: { __typename?: 'SearchPayoutTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'PayoutTransaction', id: string, userId: string, royaltyReportId?: string | null, stripeTransferId: string, stripePayoutId: string, destinationAccountId: string, amount: any, currency: string, level?: AggregationLevel | null, description: string, status: PayoutTransactionStatus, method?: string | null, createdAt: any, updatedAt?: any | null, user: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type GetAllRefundTransactionsQueryVariables = Exact<{
   where?: InputMaybe<RefundTransactionFilterInput>;
@@ -7816,7 +7828,7 @@ export type GetAllRefundTransactionsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllRefundTransactionsQuery = { __typename?: 'QueryInitialization', refundTransactions?: { __typename?: 'RefundTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'RefundTransaction', id: string, stripePaymentId: string, amount: any, currency: CurrencyType, reason: RefundReasonType, status: RefundTransactionStatus, createdAt: any, updatedAt?: any | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type GetAllRefundTransactionsQuery = { __typename?: 'QueryInitialization', refundTransactions?: { __typename?: 'RefundTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'RefundTransaction', id: string, stripePaymentId: string, amount: any, currency: CurrencyType, reason: RefundReasonType, status: RefundTransactionStatus, createdAt: any, updatedAt?: any | null, user: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type SearchRefundTransactionsQueryVariables = Exact<{
   order?: InputMaybe<Array<RefundTransactionSortInput> | RefundTransactionSortInput>;
@@ -7827,7 +7839,7 @@ export type SearchRefundTransactionsQueryVariables = Exact<{
 }>;
 
 
-export type SearchRefundTransactionsQuery = { __typename?: 'QueryInitialization', searchRefundTransactions?: { __typename?: 'SearchRefundTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'RefundTransaction', id: string, stripePaymentId: string, amount: any, currency: CurrencyType, reason: RefundReasonType, status: RefundTransactionStatus, createdAt: any, updatedAt?: any | null }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+export type SearchRefundTransactionsQuery = { __typename?: 'QueryInitialization', searchRefundTransactions?: { __typename?: 'SearchRefundTransactionsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'RefundTransaction', id: string, stripePaymentId: string, amount: any, currency: CurrencyType, reason: RefundReasonType, status: RefundTransactionStatus, createdAt: any, updatedAt?: any | null, user: Array<{ __typename?: 'User', id: string, email: string, fullName: string, role: UserRole }> }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type ArtistPackagesServiceQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -9049,6 +9061,25 @@ export const SoftDeleteCategoryDocument = new TypedDocumentString(`
   softDeleteCategory(categoryId: $categoryId)
 }
     `) as unknown as TypedDocumentString<SoftDeleteCategoryMutation, SoftDeleteCategoryMutationVariables>;
+export const ComputePlatformRevenueDocument = new TypedDocumentString(`
+    mutation ComputePlatformRevenue {
+  computePlatformRevenue {
+    subscriptionRevenue
+    serviceRevenue
+    grossRevenue
+    royaltyPayoutAmount
+    servicePayoutAmount
+    refundAmount
+    totalPayoutAmount
+    grossDeductions
+    commissionProfit
+    netProfit
+    currency
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<ComputePlatformRevenueMutation, ComputePlatformRevenueMutationVariables>;
 export const CreateEscrowCommissionPolicyDocument = new TypedDocumentString(`
     mutation CreateEscrowCommissionPolicy($createRequest: CreateEscrowCommissionPolicyRequestInput!) {
   createEscrowCommissionPolicy(createRequest: $createRequest)
@@ -9128,6 +9159,17 @@ export const DeleteArtistPackageDocument = new TypedDocumentString(`
   deleteArtistPackage(artistPackageId: $artistPackageId)
 }
     `) as unknown as TypedDocumentString<DeleteArtistPackageMutation, DeleteArtistPackageMutationVariables>;
+export const ComputeArtistRevenueByArtistIdDocument = new TypedDocumentString(`
+    mutation ComputeArtistRevenueByArtistId($artistId: String!) {
+  computeArtistRevenueByArtistId(artistId: $artistId) {
+    royaltyEarnings
+    serviceRevenue
+    serviceEarnings
+    grossRevenue
+    netRevenue
+  }
+}
+    `) as unknown as TypedDocumentString<ComputeArtistRevenueByArtistIdMutation, ComputeArtistRevenueByArtistIdMutationVariables>;
 export const ChangeRequestStatusDocument = new TypedDocumentString(`
     mutation ChangeRequestStatus($request: ChangeStatusRequestInput!) {
   changeRequestStatus(request: $request)
@@ -9932,6 +9974,12 @@ export const GetAllPayoutTransactionsDocument = new TypedDocumentString(`
       method
       createdAt
       updatedAt
+      user {
+        id
+        email
+        fullName
+        role
+      }
     }
     pageInfo {
       hasNextPage
@@ -9965,6 +10013,12 @@ export const SearchPayoutTransactionsDocument = new TypedDocumentString(`
       method
       createdAt
       updatedAt
+      user {
+        id
+        email
+        fullName
+        role
+      }
     }
     pageInfo {
       hasNextPage
@@ -9986,6 +10040,12 @@ export const GetAllRefundTransactionsDocument = new TypedDocumentString(`
       status
       createdAt
       updatedAt
+      user {
+        id
+        email
+        fullName
+        role
+      }
     }
     pageInfo {
       hasNextPage
@@ -10013,6 +10073,12 @@ export const SearchRefundTransactionsDocument = new TypedDocumentString(`
       status
       createdAt
       updatedAt
+      user {
+        id
+        email
+        fullName
+        role
+      }
     }
     pageInfo {
       hasNextPage
