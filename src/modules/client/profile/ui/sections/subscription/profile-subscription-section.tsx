@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { userActiveSubscriptionOptions } from "@/gql/options/client-options";
+import { userSubscriptionOptions } from "@/gql/options/client-options";
 import {
   listenerPremiumEntitlementsQueryOptions,
   subscriptionsPremiumQueryOptions,
@@ -89,19 +89,31 @@ const ProfileSubscriptionSectionSuspense = () => {
 
   const { data: subscriptionsPremium } = useSuspenseQuery(subscriptionsPremiumQueryOptions());
   const { data: listenerPremiumEntitlements } = useSuspenseQuery(listenerPremiumEntitlementsQueryOptions());
-  const { data: userSubscription } = useQuery({
-    ...userActiveSubscriptionOptions(user?.userId || ""),
+  const { data: userSubscriptions } = useQuery({
+    ...userSubscriptionOptions(user?.userId || ""),
     enabled: !!user?.userId && !!user.listenerId && isAuthenticated,
   });
 
-  const subscription = subscriptionsPremium?.subscriptions?.items?.[0];
+  // Get all available subscription plans
+  const availableSubscriptions = subscriptionsPremium?.subscriptions?.items || [];
+
+  // Find user's active subscription by matching with any available subscription plan
+  // This includes old versions (v1) that are still active due to periodEnd
+  const userSubscription = userSubscriptions?.items?.find((userSub) =>
+    availableSubscriptions.some((planSub) => planSub?.id === userSub?.subscriptionId)
+  ) || null;
+
+  // Get the subscription plan details that matches the user's subscription
+  const subscription = availableSubscriptions.find(
+    (planSub) => planSub?.id === userSubscription?.subscriptionId
+  ) || availableSubscriptions[0];
 
   // Cancel subscription mutation
   const { mutate: cancelSubscription, isPending: isCanceling } = useMutation({
     ...subscriptionCancelMutationOptions,
     onSuccess: () => {
       // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: ["user-active-subscription"] });
+      queryClient.invalidateQueries({ queryKey: ["user-subscription"] });
       queryClient.invalidateQueries({ queryKey: ["subscriptions-premium"] });
       queryClient.invalidateQueries({ queryKey: ["listener-premium-entitlements"] });
 
@@ -119,7 +131,7 @@ const ProfileSubscriptionSectionSuspense = () => {
     ...subscriptionResumeMutationOptions,
     onSuccess: () => {
       // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: ["user-active-subscription"] });
+      queryClient.invalidateQueries({ queryKey: ["user-subscription"] });
       queryClient.invalidateQueries({ queryKey: ["subscriptions-premium"] });
       queryClient.invalidateQueries({ queryKey: ["listener-premium-entitlements"] });
 
@@ -157,7 +169,8 @@ const ProfileSubscriptionSectionSuspense = () => {
     return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
-  if (userSubscription?.subscriptionId !== subscription?.id) {
+  // Check if user has any subscription for the current plan (including old versions)
+  if (!userSubscription) {
     return (
       <div className="flex flex-col space-y-6">
         <Link
@@ -171,7 +184,7 @@ const ProfileSubscriptionSectionSuspense = () => {
 
         <div className="space-y-4">
           <p className="text-main-white/70 text-base">
-            You do not have an active {subscription?.name} subscription. Click the button below to explore our premium
+            You do not have an active premium subscription. Click the button below to explore our premium
             plans and subscribe.
           </p>
         </div>
@@ -185,8 +198,6 @@ const ProfileSubscriptionSectionSuspense = () => {
       </div>
     );
   }
-
-  console.log(userSubscription);
 
   return (
     <>
@@ -320,7 +331,9 @@ const ProfileSubscriptionSectionSuspense = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleResumeConfirm} className="!bg-main-purple">Yes, Resume</AlertDialogAction>
+            <AlertDialogAction onClick={handleResumeConfirm} className="!bg-main-purple">
+              Yes, Resume
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

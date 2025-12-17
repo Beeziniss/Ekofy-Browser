@@ -96,10 +96,26 @@ export const userActiveSubscriptionOptions = (userId: string) =>
           userId: { eq: userId },
           isActive: { eq: true },
         },
-        take: 1,
         skip: 0,
       });
       return result.userSubscriptions?.items?.[0] || null;
+    },
+    retry: 0,
+    enabled: !!userId,
+  });
+
+export const userSubscriptionOptions = (userId: string) =>
+  queryOptions({
+    queryKey: ["user-subscription", userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const result = await execute(GetUserActiveSubscriptionQuery, {
+        where: {
+          userId: { eq: userId },
+        },
+        skip: 0,
+      });
+      return result.userSubscriptions || null;
     },
     retry: 0,
     enabled: !!userId,
@@ -116,6 +132,7 @@ export const trackDetailOptions = (trackId: string) =>
     queryKey: ["track-detail", trackId],
     queryFn: async () => await execute(TrackDetailViewQuery, { trackId }),
     enabled: !!trackId,
+    retry: 0,
   });
 
 export const trackFavoriteOptions = (take: number = 12, skip: number = 0, isAuthenticated: boolean) =>
