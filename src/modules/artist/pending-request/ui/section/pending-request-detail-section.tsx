@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { pendingRequestDetailOptions } from "@/gql/options/pending-request-option";
+import { moderatorPackageOrderDetailOptions } from "@/gql/options/moderator-options";
 import { useChangeRequestStatusMutation } from "@/gql/client-mutation-options/pending-request-mutation";
 import { PendingRequestInfoCard } from "../component/pending-request-info-card";
 import { PendingRequestActions } from "../component/pending-request-actions";
@@ -25,6 +26,12 @@ export function PendingRequestDetailSection({ requestId }: PendingRequestDetailS
 
   // Mutations
   const changeStatusMutation = useChangeRequestStatusMutation();
+
+  const request = data?.requests?.items?.[0];
+  const orderId = request?.orderId;
+
+  // Fetch order details including conversationId when orderId exists
+  const { data: orderData } = useQuery(moderatorPackageOrderDetailOptions(orderId || ""));
 
   // Handlers
   const handleApprove = async () => {
@@ -90,10 +97,8 @@ export function PendingRequestDetailSection({ requestId }: PendingRequestDetailS
     );
   }
 
-  const request = data.requests;
-
   return (
-     <div className="container mx-auto space-y-2 p-4">
+    <div className="container mx-auto space-y-2 p-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -103,24 +108,27 @@ export function PendingRequestDetailSection({ requestId }: PendingRequestDetailS
           </Button>
         </div>
       </div>
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Main Content */}
-      <div className="lg:col-span-2">
-        <PendingRequestInfoCard request={request.items || []} />
-      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Content */}
+        <div className="lg:col-span-2">
+          <PendingRequestInfoCard request={data.requests.items || []} />
+        </div>
 
-      {/* Sidebar */}
-      <div>
-        <PendingRequestActions
-          requestId={requestId}
-          status={request.items?.[0]?.status || RequestStatus.Pending}
-          requestTitle={request.items?.[0]?.title || 'Untitled Request'}
-          onApprove={handleApprove}
-          onReject={handleReject}
-          isProcessing={changeStatusMutation.isPending}
-        />
+        {/* Sidebar */}
+        <div>
+          <PendingRequestActions
+            requestId={requestId}
+            status={data.requests.items?.[0]?.status || RequestStatus.Pending}
+            requestTitle={data.requests.items?.[0]?.title || 'Untitled Request'}
+            orderId={orderId}
+            conversationId={orderData?.conversationId}
+            onApprove={handleApprove}
+            onReject={handleReject}
+            isProcessing={changeStatusMutation.isPending}
+          />
+        </div>
       </div>
-    </div>
     </div>
   );
 }
