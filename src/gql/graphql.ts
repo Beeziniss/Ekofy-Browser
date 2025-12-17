@@ -8309,7 +8309,7 @@ export type TrackDetailQueryVariables = Exact<{
 }>;
 
 
-export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, categoryIds: Array<string>, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', name: string, id: string }> | null } | null, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null }> | null } | null };
+export type TrackDetailQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, favoriteCount: any, streamCount: any, description?: string | null, categoryIds: Array<string>, isExplicit: boolean, mainArtistIds: Array<string>, createdBy?: string | null, checkTrackInFavorite: boolean, categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', name: string, id: string }> | null } | null, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, followerCount: any, avatarImage?: string | null, userId: string, user: Array<{ __typename?: 'User', id: string, checkUserFollowing: boolean }> }> | null } | null, releaseInfo: { __typename?: 'ReleaseInfo', isRelease: boolean } }> | null } | null };
 
 export type TrackFavoriteQueryVariables = Exact<{
   take: Scalars['Int']['input'];
@@ -11916,6 +11916,7 @@ export const TrackDetailDocument = new TypedDocumentString(`
       coverImage
       favoriteCount
       streamCount
+      description
       categoryIds
       categories {
         items {
@@ -11923,6 +11924,7 @@ export const TrackDetailDocument = new TypedDocumentString(`
           id
         }
       }
+      isExplicit
       mainArtistIds
       mainArtists {
         items {
@@ -11937,6 +11939,10 @@ export const TrackDetailDocument = new TypedDocumentString(`
           }
         }
       }
+      releaseInfo {
+        isRelease
+      }
+      createdBy
       checkTrackInFavorite
     }
   }

@@ -59,11 +59,11 @@ const TrackDetailInfoSection = ({ trackId }: TrackDetailInfoSectionProps) => {
       <CardContent className="p-0">
         <div className="flex flex-col gap-6 md:flex-row">
           {/* Cover Image */}
-          <div className="relative flex-shrink-0 pl-6">
+          <div className="relative flex-shrink-0 pl-6 rounded-md">
             {track.coverImage ? (
               <div className="relative h-64 w-full md:h-80 md:w-80">
                 <Image src={track.coverImage} alt={track.name} fill className="rounded-md object-cover" priority />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-md" />
                 {track.isExplicit && (
                   <div className="bg-main-purple text-main-white absolute right-2 bottom-2 flex size-8 items-center justify-center rounded-md text-lg font-semibold">
                     E
@@ -78,7 +78,7 @@ const TrackDetailInfoSection = ({ trackId }: TrackDetailInfoSectionProps) => {
           </div>
 
           {/* Track Details */}
-          <div className="flex min-w-0 flex-1 flex-col justify-between p-6">
+          <div className="flex min-w-0 flex-1 flex-col justify-between pr-6">
             {/* Header Section */}
             <div>
               <div className="mb-6 flex items-start justify-between gap-4">
