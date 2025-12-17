@@ -2621,6 +2621,7 @@ export type MutationInitialization = {
   restoreContent: Scalars['Boolean']['output'];
   restoreUser: Scalars['Boolean']['output'];
   resumeSubscription: Scalars['Boolean']['output'];
+  seedDataFingerprint: Scalars['Boolean']['output'];
   seedEntitlements: Scalars['Boolean']['output'];
   seedEscrowCommissionPolicyData: Scalars['Boolean']['output'];
   seedMonthlyStreamCountByTrackId: Scalars['Boolean']['output'];
@@ -4290,7 +4291,7 @@ export type QueryInitialization = {
   subscriptionPlans?: Maybe<SubscriptionPlansCollectionSegment>;
   subscriptions?: Maybe<SubscriptionsCollectionSegment>;
   threadedComments: ThreadedCommentsResponse;
-  topTracks: Array<TopTrackResponse>;
+  topTracks: Array<TopTrack>;
   trackBySemanticSearch: Array<Track>;
   trackComments?: Maybe<TrackCommentsCollectionSegment>;
   trackDailyMetrics?: Maybe<TrackDailyMetricsCollectionSegment>;
@@ -6186,15 +6187,22 @@ export type TopReportedUserResponse = {
   userName: Scalars['String']['output'];
 };
 
-export type TopTrackInfo = {
-  __typename?: 'TopTrackInfo';
-  playedCount: Scalars['Int']['output'];
-  trackId: Scalars['String']['output'];
+export type TopTrack = {
+  __typename?: 'TopTrack';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  tracksInfo: Array<TopTrackInfo>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId: Scalars['String']['output'];
 };
 
-export type TopTrackResponse = {
-  __typename?: 'TopTrackResponse';
-  tracksInfo: Array<TopTrackInfo>;
+export type TopTrackInfo = {
+  __typename?: 'TopTrackInfo';
+  artistName: Scalars['String']['output'];
+  playedCount: Scalars['Int']['output'];
+  track?: Maybe<Track>;
+  trackId: Scalars['String']['output'];
+  trackName: Scalars['String']['output'];
 };
 
 export type Track = {
@@ -7894,7 +7902,7 @@ export type RequestPendingDetailByIdQueryVariables = Exact<{
 }>;
 
 
-export type RequestPendingDetailByIdQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, requirements?: string | null, postCreatedTime?: any | null, updatedAt?: any | null, type: RequestType, currency: CurrencyType, duration: number, status: RequestStatus, requestCreatedTime?: any | null, notes?: string | null, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string }>, artist: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }>, artistPackage: Array<{ __typename?: 'ArtistPackage', id: string, artistId: string, packageName: string, amount: any, currency: CurrencyType, maxRevision: number, estimateDeliveryDays: number }>, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null }> | null } | null };
+export type RequestPendingDetailByIdQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, orderId?: string | null, title?: string | null, titleUnsigned?: string | null, summary?: string | null, summaryUnsigned?: string | null, detailDescription?: string | null, requirements?: string | null, postCreatedTime?: any | null, updatedAt?: any | null, type: RequestType, currency: CurrencyType, duration: number, status: RequestStatus, requestCreatedTime?: any | null, notes?: string | null, requestor: Array<{ __typename?: 'Listener', id: string, userId: string, displayName: string, email: string }>, artist: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string }>, artistPackage: Array<{ __typename?: 'ArtistPackage', id: string, artistId: string, packageName: string, amount: any, currency: CurrencyType, maxRevision: number, estimateDeliveryDays: number }>, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null }> | null } | null };
 
 export type GetArtistTransactionsQueryVariables = Exact<{
   where?: InputMaybe<PaymentTransactionFilterInput>;
@@ -8245,7 +8253,7 @@ export type ListenerRequestsQueryVariables = Exact<{
 }>;
 
 
-export type ListenerRequestsQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, duration: number, status: RequestStatus, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<(
+export type ListenerRequestsQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, orderId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, duration: number, status: RequestStatus, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<(
         { __typename?: 'Artist' }
         & { ' $fragmentRefs'?: { 'RequestArtistFragment': RequestArtistFragment } }
       )>, artistPackage: Array<(
@@ -8260,7 +8268,7 @@ export type ListenerRequestByIdQueryVariables = Exact<{
 }>;
 
 
-export type ListenerRequestByIdQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, duration: number, status: RequestStatus, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<(
+export type ListenerRequestByIdQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Request', id: string, requestUserId: string, artistId?: string | null, packageId?: string | null, orderId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null, type: RequestType, currency: CurrencyType, duration: number, status: RequestStatus, postCreatedTime?: any | null, requestCreatedTime?: any | null, updatedAt?: any | null, notes?: string | null, budget?: { __typename?: 'RequestBudget', min: any, max: any } | null, artist: Array<(
         { __typename?: 'Artist' }
         & { ' $fragmentRefs'?: { 'RequestArtistFragment': RequestArtistFragment } }
       )>, artistPackage: Array<(
@@ -10248,6 +10256,7 @@ export const RequestPendingDetailByIdDocument = new TypedDocumentString(`
       requestUserId
       artistId
       packageId
+      orderId
       title
       titleUnsigned
       summary
@@ -11654,6 +11663,7 @@ export const ListenerRequestsDocument = new TypedDocumentString(`
       requestUserId
       artistId
       packageId
+      orderId
       title
       summary
       detailDescription
@@ -11706,6 +11716,7 @@ export const ListenerRequestByIdDocument = new TypedDocumentString(`
       requestUserId
       artistId
       packageId
+      orderId
       title
       summary
       detailDescription

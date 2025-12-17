@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -63,8 +63,9 @@ export function ReportDialog({
   contentId, 
   reportedUserId, 
   reportedUserName,
+  reportType: initialReportType,
   open: controlledOpen,
-  onOpenChange: controlledOnOpenChange 
+  onOpenChange: controlledOnOpenChange
 }: ReportButtonProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -79,13 +80,23 @@ export function ReportDialog({
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
-      reportType: undefined,
+      reportType: initialReportType || undefined,
       description: "",
       evidences: [],
     },
   });
 
-  const availableReportTypes = REPORT_TYPES_BY_CONTENT[contentType];
+  // Reset form when dialog opens with initialReportType
+  useEffect(() => {
+    if (open && initialReportType) {
+      form.setValue("reportType", initialReportType);
+    }
+  }, [open, initialReportType, form]);
+
+  // If initialReportType is provided, only show that type, otherwise show all available types
+  const availableReportTypes = initialReportType 
+    ? [initialReportType] 
+    : REPORT_TYPES_BY_CONTENT[contentType];
 
   const onSubmit = async (data: ReportFormValues) => {
     if (!user?.userId) {
@@ -192,7 +203,7 @@ export function ReportDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Reason for Reporting <span className="text-red-500">*</span></FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value} disabled={!!initialReportType}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select reason for reporting" />

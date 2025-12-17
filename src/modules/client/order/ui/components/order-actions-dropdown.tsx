@@ -36,11 +36,12 @@ const OrderActionsDropdown = ({ orderId, status, packageName, onSuccess }: Order
   // TODO: reason is used to input in refund request
   // const handleStatusChange = async (newStatus: PackageOrderStatus, reason?: string) => {
 
-  const handleStatusChange = async (newStatus: PackageOrderStatus) => {
+  const handleStatusChange = async (newStatus: PackageOrderStatus, reason?: string) => {
     try {
       await switchStatus({
         id: orderId,
         status: newStatus,
+        reason: reason,
       });
 
       // Invalidate relevant queries
@@ -61,12 +62,8 @@ const OrderActionsDropdown = ({ orderId, status, packageName, onSuccess }: Order
     setShowRefundDialog(true);
   };
 
-  // TODO: reason is used to input in refund request
-  // const handleRefundConfirm = async (reason: string) => {
-  const handleRefundConfirm = async () => {
-    // TODO: uncomment when reason is used
-    // await handleStatusChange(PackageOrderStatus.Disputed, reason);
-    await handleStatusChange(PackageOrderStatus.Disputed);
+  const handleRefundConfirm = async (reason: string) => {
+    await handleStatusChange(PackageOrderStatus.Disputed, reason);
     setShowRefundDialog(false);
   };
 

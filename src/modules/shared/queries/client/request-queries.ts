@@ -43,6 +43,7 @@ export const RequestsQuery = graphql(`
         requestUserId
         artistId
         packageId
+        orderId
         title
         summary
         detailDescription
@@ -86,6 +87,7 @@ export const RequestQuery = graphql(`
         requestUserId
         artistId
         packageId
+        orderId
         title
         summary
         detailDescription

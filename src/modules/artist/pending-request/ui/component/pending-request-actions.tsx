@@ -1,15 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, Package, MessageCircle } from "lucide-react";
 import { RequestStatus } from "@/gql/graphql";
 
 interface PendingRequestActionsProps {
   requestId: string;
   status: RequestStatus;
   requestTitle: string;
+  orderId?: string | null;
+  conversationId?: string | null;
   onApprove: () => void;
   onReject: () => void;
   isProcessing: boolean;
@@ -18,6 +21,8 @@ interface PendingRequestActionsProps {
 export function PendingRequestActions({
   status,
   requestTitle,
+  orderId,
+  conversationId,
   onApprove,
   onReject,
   isProcessing,
@@ -31,6 +36,25 @@ export function PendingRequestActions({
         <CardTitle className="text-lg">Actions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* View Order and View Conversation Buttons */}
+        {orderId && (
+          <Button asChild variant="outline" className="w-full gap-2">
+            <Link href={`/orders/${orderId}/details`}>
+              <Package className="h-4 w-4" />
+              View Order
+            </Link>
+          </Button>
+        )}
+        
+        {conversationId && (
+          <Button asChild variant="outline" className="w-full gap-2">
+            <Link href={`/inbox/${conversationId}`}>
+              <MessageCircle className="h-4 w-4" />
+              View Conversation
+            </Link>
+          </Button>
+        )}
+
         {/* Action Buttons */}
         {canProcessRequest ? (
           <>
