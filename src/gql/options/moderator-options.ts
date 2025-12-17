@@ -14,6 +14,7 @@ import {
   ModeratorApprovalHistoryDetailQuery as ModeratorApprovalHistoryDetailQueryType,
   ApprovalHistoryFilterInput,
   ApprovalType,
+  HistoryActionType,
   PackageOrderFilterInput,
   PackageOrderSortInput,
   PackageOrderStatus,
@@ -211,21 +212,36 @@ export const moderatorUserDetailOptions = (userId: string) =>
   });
 
 // Approval histories query options for moderator
-export const moderatorApprovalHistoriesOptions = (page: number = 1, pageSize: number = 10, searchTerm: string = "") =>
+export const moderatorApprovalHistoriesOptions = (
+  page: number = 1, 
+  pageSize: number = 10, 
+  searchTerm: string = "",
+  approvalType: string = "ALL",
+  action: string = "ALL"
+) =>
   queryOptions({
-    queryKey: ["moderator-approval-histories", page, pageSize, searchTerm],
+    queryKey: ["moderator-approval-histories", page, pageSize, searchTerm, approvalType, action],
     queryFn: async () => {
       const skip = (page - 1) * pageSize;
-      // const where: Record<string, unknown> = {};
+      const where: ApprovalHistoryFilterInput = {};
+      
+      // Filter by approval type if not "ALL"
+      if (approvalType !== "ALL") {
+        where.approvalType = { eq: approvalType as ApprovalType };
+      }
+      
+      // Filter by action if not "ALL"
+      if (action !== "ALL") {
+        where.action = { eq: action as HistoryActionType };
+      }
+      
       // Add search filter if search term is provided
-      const where: ApprovalHistoryFilterInput = {
-        approvalType: { in: [ApprovalType.ArtistRegistration] },
-      };
       if (searchTerm.trim()) {
         where.snapshot = {
           contains: searchTerm,
         };
       }
+      
       const result = (await execute(ApprovalHistoriesListQuery, {
         skip,
         take: pageSize,

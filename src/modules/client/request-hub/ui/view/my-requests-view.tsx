@@ -11,7 +11,7 @@ import {
 } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { RequestHubLayout } from "../layout";
 import { CreateRequestSection, ViewRequestSection, EditRequestSection } from "../section";
-import { Pagination, StripeAccountRequiredModal } from "../component";
+import { Pagination, StripeAccountRequiredModal, DeleteConfirmModal } from "../component";
 import { CreateRequestData, UpdateRequestData } from "@/types/request-hub";
 import { RequestsQuery, RequestStatus as GqlRequestStatus } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
@@ -28,6 +28,8 @@ type RequestItem = NonNullable<NonNullable<RequestsQuery["requests"]>["items"]>[
 export function MyRequestsView() {
   const [mode, setMode] = useState<RequestHubMode>("view");
   const [editingRequest, setEditingRequest] = useState<RequestItem | null>(null);
+  const [deletingRequest, setDeletingRequest] = useState<RequestItem | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearchValue] = useDebounce(searchValue, 300);
   const [statusFilter, setStatusFilter] = useState<GqlRequestStatus | "ALL">("ALL");
@@ -145,26 +147,35 @@ export function MyRequestsView() {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = (id: string) => {
+    const requestToDelete = requests.find(r => r.id === id);
+    if (requestToDelete) {
+      setDeletingRequest(requestToDelete);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const confirmDelete = async () => {
     try {
-      if (!editingRequest) return;
+      if (!deletingRequest) return;
 
       const deleteInput = {
-        id: editingRequest.id,
-        title: editingRequest.title,
-        summary: editingRequest.summary,
-        detailDescription: editingRequest.detailDescription,
-        budget: editingRequest.budget,
-        duration: editingRequest.duration,
+        id: deletingRequest.id,
+        title: deletingRequest.title,
+        summary: deletingRequest.summary,
+        detailDescription: deletingRequest.detailDescription,
+        budget: deletingRequest.budget,
+        duration: deletingRequest.duration,
       };
 
       await deleteRequestMutation.mutateAsync(deleteInput);
       toast.success("Request deleted successfully!");
-      setMode("view");
-      setEditingRequest(null);
+      setDeletingRequest(null);
     } catch (error) {
       toast.error("Failed to delete request");
       console.error("Delete request error:", error);
+    } finally {
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -207,10 +218,10 @@ export function MyRequestsView() {
               detailDescription: editingRequest.detailDescription || "",
               budget: editingRequest.budget!,
               duration: editingRequest.duration,
+              status: editingRequest.status,
             }}
             onSubmit={handleUpdateSubmit}
             onCancel={handleCancel}
-            onDelete={handleDelete}
           />
         ) : null;
       case "view":
@@ -239,8 +250,8 @@ export function MyRequestsView() {
                       <SelectItem value="ALL">All Statuses</SelectItem>
                       <SelectItem value={GqlRequestStatus.Open}>Open</SelectItem>
                       <SelectItem value={GqlRequestStatus.Closed}>Closed</SelectItem>
-                      <SelectItem value={GqlRequestStatus.Blocked}>Blocked</SelectItem>
-                      <SelectItem value={GqlRequestStatus.Deleted}>Deleted</SelectItem>
+                      {/* <SelectItem value={GqlRequestStatus.Blocked}>Blocked</SelectItem>
+                      <SelectItem value={GqlRequestStatus.Deleted}>Deleted</SelectItem> */}
                     </SelectContent>
                   </Select>
                 </div>
@@ -250,6 +261,7 @@ export function MyRequestsView() {
                 isLoading={isLoading}
                 onViewDetails={handleViewDetails}
                 onEdit={handleEdit}
+                onDelete={handleDelete}
                 onSave={handleSave}
               />
 
@@ -275,6 +287,17 @@ export function MyRequestsView() {
         open={showStripeModal}
         onOpenChange={setShowStripeModal}
         onCancel={() => setShowStripeModal(false)}
+      />
+      
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeletingRequest(null);
+        }}
+        onConfirm={confirmDelete}
+        isDeleting={deleteRequestMutation.isPending}
       />
     </>
   );

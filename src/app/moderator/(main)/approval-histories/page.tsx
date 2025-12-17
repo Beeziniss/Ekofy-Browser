@@ -6,8 +6,8 @@ import { ApprovalHistoriesView } from "@/modules/moderator/approval-histories/ui
 const ApprovalHistoriesPage = async () => {
   const queryClient = getQueryClient();
 
-  // Prefetch initial data
-  await queryClient.prefetchQuery(moderatorApprovalHistoriesOptions(1, 10, ""));
+  // Prefetch initial data with default filters
+  await queryClient.prefetchQuery(moderatorApprovalHistoriesOptions(1, 10, "", "ALL", "ALL"));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

@@ -39,7 +39,7 @@ interface SearchViewProps {
 // GraphQL Queries - using raw strings until schema is updated
 export const SEARCH_ARTISTS = graphql(`
   query SearchArtists($skip: Int, $take: Int, $stageName: String!) {
-    searchArtists(skip: $skip, take: $take, stageName: $stageName) {
+    searchArtists(skip: $skip, take: $take, stageName: $stageName, where: {isVisible: { eq: true }}) {
       totalCount
       items {
         id
@@ -51,8 +51,10 @@ export const SEARCH_ARTISTS = graphql(`
         avatarImage
         followerCount
         user {
+          id
           fullName
           role
+          checkUserFollowing
         }
       }
     }
@@ -88,7 +90,8 @@ export const SEARCH_TRACKS = graphql(`
       take: $take
       name: $name
       where: { and: [{ releaseInfo: { isRelease: { eq: true } } }, { restriction: { type: { eq: NONE } } }] }
-    ) {
+      order: { createdAt: DESC }
+      ) {
       totalCount
       items {
         id

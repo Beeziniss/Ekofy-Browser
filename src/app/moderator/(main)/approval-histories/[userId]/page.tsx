@@ -5,19 +5,19 @@ import { ApprovalHistoryDetailView } from "@/modules/moderator/approval-historie
 
 interface ApprovalHistoryDetailsPageProps {
   params: Promise<{
-    userId: string;
+    userId: string; // Keep as userId since it's the folder name
   }>;
 }
 
 const ApprovalHistoryDetailsPage = async ({ params }: ApprovalHistoryDetailsPageProps) => {
-  const { userId } = await params;
+  const { userId: historyId } = await params; // Treat it as historyId
   const queryClient = getQueryClient();
 
   // Prefetch approval history detail data
-  await queryClient.prefetchQuery(moderatorApprovalHistoryDetailOptions(userId));
+  await queryClient.prefetchQuery(moderatorApprovalHistoryDetailOptions(historyId));
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ApprovalHistoryDetailView historyId={userId} />
+      <ApprovalHistoryDetailView historyId={historyId} />
     </HydrationBoundary>
   );
 };

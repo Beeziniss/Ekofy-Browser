@@ -19,6 +19,10 @@ export const useFavoriteSearch = () => {
       queryClient.invalidateQueries({
         queryKey: ["search"],
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ["searchTracks"],
+      });
     },
     onError: (error) => {
       console.error("Failed to update track favorites:", error);
@@ -36,6 +40,9 @@ export const useFavoriteSearch = () => {
       // Invalidate search queries to refresh favorite status
       queryClient.invalidateQueries({
         queryKey: ["search"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["searchPlaylists"],
       });
     },
     onError: (error) => {

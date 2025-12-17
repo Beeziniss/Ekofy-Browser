@@ -13,6 +13,7 @@ export const GET_PENDING_ARTIST_REQUEST = graphql(`
         requestUserId
         artistId
         packageId
+        orderId
         title
         requestCreatedTime
         type

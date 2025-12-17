@@ -31,7 +31,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { addDays, isWithinInterval } from "date-fns";
 
 const ProfileSubscriptionSection = () => {
   return (
@@ -133,26 +132,17 @@ const ProfileSubscriptionSectionSuspense = () => {
     },
   });
 
-  // Check if user can resume subscription (only when subscription is set to cancel)
+  // Check if user can resume subscription (3 days before period end and subscription is set to cancel)
   const canResumeSubscription = () => {
-    if (!userSubscription?.cancelAtEndOfPeriod) return false;
-    return true;
+    if (!userSubscription?.periodEnd || !userSubscription?.cancelAtEndOfPeriod) return false;
+
+    const periodEndDate = new Date(userSubscription.periodEnd);
+    const currentDate = new Date();
+    const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
+    const timeDiff = periodEndDate.getTime() - currentDate.getTime();
+
+    return timeDiff <= threeDaysInMs && timeDiff > 0;
   };
-
-  // Check if user is within 3 days before subscription end
-  const isWithin3DaysBeforeEnd = () => {
-    if (!userSubscription?.periodEnd) return false;
-
-    const now = new Date();
-    const endDate = new Date(userSubscription.periodEnd);
-    const threeDaysBeforeEnd = addDays(endDate, -3);
-
-    return isWithinInterval(now, {
-      start: threeDaysBeforeEnd,
-      end: endDate,
-    });
-  };
-
   const handleCancelConfirm = () => {
     cancelSubscription();
     setCancelDialogOpen(false);
@@ -196,7 +186,7 @@ const ProfileSubscriptionSectionSuspense = () => {
     );
   }
 
-  console.log(JSON.stringify(userSubscription, null, 2));
+  console.log(userSubscription);
 
   return (
     <>
@@ -265,7 +255,7 @@ const ProfileSubscriptionSectionSuspense = () => {
             </div>
 
             <div className="space-y-3 px-6">
-              {/* Show Resume button if subscription is cancelled */}
+              {/* Show Resume button if user can resume subscription (cancelled and within 3 days) */}
               {canResumeSubscription() && (
                 <>
                   <Button
@@ -278,29 +268,22 @@ const ProfileSubscriptionSectionSuspense = () => {
                     {isResuming ? "Resuming..." : "Resume Subscription"}
                   </Button>
                   <p className="text-main-white/70 text-center text-sm">
-                    You can resume your subscription before it expires.
+                    You can resume your subscription up to 3 days before the end date.
                   </p>
                 </>
               )}
 
-              {/* Cancel Subscription Button - only show if not already set to cancel and not within 3 days before end */}
-              {!userSubscription?.cancelAtEndOfPeriod && !isWithin3DaysBeforeEnd() && (
+              {/* Cancel Subscription Button - only show if not already set to cancel */}
+              {!userSubscription?.cancelAtEndOfPeriod && (
                 <Button
                   className="w-full text-base font-medium"
                   size={"lg"}
-                  variant={"destructive"}
+                  variant={canResumeSubscription() ? "outline" : "destructive"}
                   onClick={() => setCancelDialogOpen(true)}
                   disabled={isCanceling}
                 >
                   {isCanceling ? "Canceling..." : "Cancel Subscription"}
                 </Button>
-              )}
-
-              {/* Show message when within 3 days before end and subscription is active */}
-              {!userSubscription?.cancelAtEndOfPeriod && isWithin3DaysBeforeEnd() && (
-                <div className="text-main-white/70 rounded-md border border-yellow-500/20 bg-yellow-500/10 p-4 text-center text-sm">
-                  You cannot cancel your subscription within 3 days before the renewal date.
-                </div>
               )}
             </div>
           </CardContent>

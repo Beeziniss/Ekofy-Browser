@@ -66,6 +66,7 @@ export interface SearchArtistItem {
   user: {
     fullName: string;
     role: string;
+    checkUserFollowing?: boolean;
   }[];
   // Add other artist properties as needed
 }

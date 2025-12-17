@@ -18,11 +18,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Eye, CheckCircle, XCircle, MoreHorizontal } from "lucide-react";
+import { Eye, CheckCircle, XCircle, MoreHorizontal, ShoppingCart, MessageSquare } from "lucide-react";
 import { RequestStatus, GetPendingArtistRequestQuery } from "@/gql/graphql";
 import Link from "next/link";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "@/utils/format-date";
+import { conversationDetailByRequestOptions } from "@/gql/options/client-options";
 
 type PendingRequestItem = NonNullable<NonNullable<GetPendingArtistRequestQuery["requests"]>["items"]>[0];
 
@@ -100,6 +102,130 @@ export function PendingRequestTable({
     setConfirmDialog({ isOpen: true, type, requestId, requestTitle });
   };
 
+  // Component to render each request row with conversation query
+  const RequestTableRow = ({ request }: { request: PendingRequestItem }) => {
+    const { data: conversationData } = useQuery(conversationDetailByRequestOptions(request.id));
+    const conversationId = conversationData?.conversations?.items?.[0]?.id;
+
+    return (
+      <TableRow key={request.id}>
+        <TableCell>
+          <div className="text-sm">{request.type || "N/A"}</div>
+        </TableCell>
+        <TableCell>
+          <div className="font-medium">{request.requestor[0]?.displayName || "Unknown"}</div>
+        </TableCell>
+        <TableCell>
+          {request.artistPackage && request.artistPackage[0] ? (
+            <div className="text-sm">{request.artistPackage[0].packageName}</div>
+          ) : (
+            <span className="text-muted-foreground text-sm">Custom Request</span>
+          )}
+        </TableCell>
+        <TableCell>
+          <div className="text-sm">
+            {request.budget ? (
+              <>
+                {new Intl.NumberFormat("vi-VN").format(request.budget.min)} {request.currency}
+                {request.budget.min !== request.budget.max && (
+                  <>
+                    {" - "}
+                    {new Intl.NumberFormat("vi-VN").format(request.budget.max)} {request.currency}
+                  </>
+                )}
+              </>
+            ) : request.artistPackage && request.artistPackage[0] ? (
+              <>
+                {new Intl.NumberFormat("vi-VN").format(request.artistPackage[0].amount)}{" "}
+                {request.artistPackage[0].currency}
+              </>
+            ) : (
+              <span className="text-muted-foreground">N/A</span>
+            )}
+          </div>
+        </TableCell>
+        <TableCell>
+          <Badge
+            className={`${STATUS_CONFIG[request.status as RequestStatus]?.className} border font-semibold transition-colors`}
+          >
+            {STATUS_CONFIG[request.status as RequestStatus]?.label}
+          </Badge>
+        </TableCell>
+        <TableCell>
+          <div className="text-sm">{formatDate(request.requestCreatedTime)}</div>
+        </TableCell>
+        <TableCell className="text-right">
+          <div className="flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="lg" variant="outline" disabled={isProcessing} className="gap-1">
+                  <MoreHorizontal className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href={`/artist/studio/pending-request/${request.id}`} className="flex items-center">
+                    <Eye className="mr-2 h-4 w-4" />
+                    View Details
+                  </Link>
+                </DropdownMenuItem>
+                
+                {/* View Order - only show if orderId exists */}
+                {request.orderId && (
+                  <DropdownMenuItem asChild>
+                    <Link href={`/artist/studio/orders/${request.orderId}`} className="flex items-center">
+                      <ShoppingCart className="mr-2 h-4 w-4" />
+                      View Order
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+
+                {/* View Conversation - only show if conversationId exists */}
+                {conversationId && (
+                  <DropdownMenuItem asChild>
+                    <Link href={`/inbox/${conversationId}`} className="flex items-center">
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      View Conversation
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+
+                {canProcessRequest(request.status) && (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        openConfirmDialog(
+                          "approve",
+                          request.id,
+                          request.artistPackage && request.artistPackage[0]
+                            ? request.artistPackage[0].packageName
+                            : "Custom Request",
+                        )
+                      }
+                      className="text-green-600 focus:text-green-600"
+                    >
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Approve
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        openConfirmDialog("reject", request.id, request.title || "Untitled Request")
+                      }
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      <XCircle className="mr-2 h-4 w-4" />
+                      Reject
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </TableCell>
+      </TableRow>
+    );
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -129,105 +255,7 @@ export function PendingRequestTable({
               </TableCell>
             </TableRow>
           ) : (
-            requests.map((request) => (
-              <TableRow key={request.id}>
-                {/* <TableCell>
-                  <div className="font-medium">{request.title}</div>
-                </TableCell> */}
-                <TableCell>
-                  <div className="text-sm">{request.type || "N/A"}</div>
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium">{request.requestor[0]?.displayName || "Unknown"}</div>
-                </TableCell>
-                <TableCell>
-                  {request.artistPackage && request.artistPackage[0] ? (
-                    <div className="text-sm">{request.artistPackage[0].packageName}</div>
-                  ) : (
-                    <span className="text-muted-foreground text-sm">Custom Request</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm">
-                    {request.budget ? (
-                      <>
-                        {new Intl.NumberFormat("vi-VN").format(request.budget.min)} {request.currency}
-                        {request.budget.min !== request.budget.max && (
-                          <>
-                            {" - "}
-                            {new Intl.NumberFormat("vi-VN").format(request.budget.max)} {request.currency}
-                          </>
-                        )}
-                      </>
-                    ) : request.artistPackage && request.artistPackage[0] ? (
-                      <>
-                        {new Intl.NumberFormat("vi-VN").format(request.artistPackage[0].amount)}{" "}
-                        {request.artistPackage[0].currency}
-                      </>
-                    ) : (
-                      <span className="text-muted-foreground">N/A</span>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    className={`${STATUS_CONFIG[request.status as RequestStatus]?.className} border font-semibold transition-colors`}
-                  >
-                    {STATUS_CONFIG[request.status as RequestStatus]?.label}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm">{formatDate(request.requestCreatedTime)}</div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="lg" variant="outline" disabled={isProcessing} className="gap-1">
-                          <MoreHorizontal className="h-3 w-3" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link href={`/artist/studio/pending-request/${request.id}`} className="flex items-center">
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Details
-                          </Link>
-                        </DropdownMenuItem>
-                        {canProcessRequest(request.status) && (
-                          <>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                openConfirmDialog(
-                                  "approve",
-                                  request.id,
-                                  request.artistPackage && request.artistPackage[0]
-                                    ? request.artistPackage[0].packageName
-                                    : "Custom Request",
-                                )
-                              }
-                              className="text-green-600 focus:text-green-600"
-                            >
-                              <CheckCircle className="mr-2 h-4 w-4" />
-                              Approve
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                openConfirmDialog("reject", request.id, request.title || "Untitled Request")
-                              }
-                              className="text-red-600 focus:text-red-600"
-                            >
-                              <XCircle className="mr-2 h-4 w-4" />
-                              Reject
-                            </DropdownMenuItem>
-                          </>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
+            requests.map((request) => <RequestTableRow key={request.id} request={request} />)
           )}
         </TableBody>
       </Table>
