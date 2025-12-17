@@ -4,19 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { User, Eye, Music, FileText, Disc } from "lucide-react";
+import { User, Eye, Music, FileText, Disc, DollarSign, Package } from "lucide-react";
 import { format } from "date-fns";
 import { 
   ApprovalHistorySnapshot, 
   ArtistRegistrationSnapshot, 
   TrackUploadSnapshot,
   WorkUploadSnapshot,
-  RecordingUploadSnapshot
+  RecordingUploadSnapshot,
+  DisputeResolutionSnapshot
 } from "@/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getImageUrl } from "@/utils/image-utils";
-import { fetchArtistNames, fetchCategoryNames } from "@/utils/approval-history-utils";
+import { fetchArtistNames, fetchCategoryNames, fetchUserFullInfo } from "@/utils/approval-history-utils";
 
 interface ApprovalHistorySnapshotInfoProps {
   snapshot: ApprovalHistorySnapshot;
@@ -726,6 +727,210 @@ const RecordingUploadView = ({ snapshot }: { snapshot: RecordingUploadSnapshot }
   );
 };
 
+// Component for Dispute Resolution
+const DisputeResolutionView = ({ snapshot }: { snapshot: DisputeResolutionSnapshot }) => {
+  const [client, setClient] = useState<{ fullName: string; email: string } | null>(null);
+  const [provider, setProvider] = useState<string>("");
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoadingData(true);
+      
+      // Fetch client info (user)
+      const clientMap = await fetchUserFullInfo([snapshot.ClientId]);
+      const clientInfo = clientMap.get(snapshot.ClientId);
+      if (clientInfo) {
+        setClient(clientInfo);
+      }
+      
+      // Fetch provider info (artist)
+      const artistMap = await fetchArtistNames([snapshot.ProviderId]);
+      setProvider(artistMap.get(snapshot.ProviderId) || "Unknown Artist");
+      
+      setIsLoadingData(false);
+    };
+
+    loadData();
+  }, [snapshot]);
+
+  const formatCurrency = (amount: number, currency: string = "VND") => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Refund Resolution Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <DollarSign className="mr-2 h-5 w-5" />
+            Refund Resolution
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Total Amount */}
+          <div className="rounded-lg border border-gray-700 bg-gray-900/50 p-4">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-300">Total Order Amount</span>
+              <span className="text-xl font-bold text-blue-400">
+                {formatCurrency(snapshot.PackageOrderAmount)}
+              </span>
+            </div>
+          </div>
+
+          {/* Visual Split */}
+          <div className="space-y-2">
+            <div className="h-12 flex rounded-lg overflow-hidden">
+              <div 
+                className="bg-blue-500 flex items-center justify-center text-white text-sm font-medium"
+                style={{ width: `${snapshot.RequestorPercentage}%` }}
+              >
+                Client {snapshot.RequestorPercentage}%
+              </div>
+              <div 
+                className="bg-green-500 flex items-center justify-center text-white text-sm font-medium"
+                style={{ width: `${snapshot.ArtistPercentage}%` }}
+              >
+                Artist {snapshot.ArtistPercentage}%
+              </div>
+            </div>
+          </div>
+
+          {/* Amount Details */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
+              <div className="space-y-2">
+                <p className="text-sm text-gray-400">Client Refund</p>
+                <p className="text-2xl font-bold text-blue-400">
+                  {formatCurrency(snapshot.RefundAmount)}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {snapshot.RequestorPercentage}% of total
+                </p>
+              </div>
+            </div>
+            
+            <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-4">
+              <div className="space-y-2">
+                <p className="text-sm text-gray-400">Artist Escrow Release</p>
+                <p className="text-2xl font-bold text-green-400">
+                  {formatCurrency(snapshot.EscrowReleaseAmount)}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {snapshot.ArtistPercentage}% of total
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Package Order Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Package className="mr-2 h-5 w-5" />
+            Package Order Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <span className="text-sm font-medium text-gray-400">Package Order ID:</span>
+              <p className="text-gray-200 mt-1 font-mono text-sm">{snapshot.PackageOrderId}</p>
+            </div>
+            <div>
+              <span className="text-sm font-medium text-gray-400">Status:</span>
+              <div className="mt-1">
+                <Badge variant="outline">{snapshot.PackageOrderStatus}</Badge>
+              </div>
+            </div>
+            <div>
+              <span className="text-sm font-medium text-gray-400">Amount:</span>
+              <p className="text-gray-200 mt-1">
+                {formatCurrency(snapshot.PackageOrderAmount)}
+              </p>
+            </div>
+            {snapshot.DisputedReason && (
+              <div className="md:col-span-2">
+                <span className="text-sm font-medium text-gray-400">Disputed Reason:</span>
+                <p className="text-muted-foreground mt-1 text-sm rounded-lg bg-gray-900/50 p-3">
+                  {snapshot.DisputedReason}
+                </p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Client and Artist Information */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {/* Client Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <User className="mr-2 h-5 w-5" />
+              Client Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {isLoadingData ? (
+              <p className="text-muted-foreground text-sm">Loading client information...</p>
+            ) : (
+              <div className="space-y-2">
+                <div>
+                  <span className="text-sm font-medium text-gray-400">Name:</span>
+                  <p className="text-gray-200 mt-1">{client?.fullName || "Unknown"}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-400">Email:</span>
+                  <p className="text-gray-200 mt-1">{client?.email || "N/A"}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-400">Client ID:</span>
+                  <p className="text-xs text-gray-500 mt-1 font-mono">{snapshot.ClientId}</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Artist Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Music className="mr-2 h-5 w-5" />
+              Artist Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {isLoadingData ? (
+              <p className="text-muted-foreground text-sm">Loading artist information...</p>
+            ) : (
+              <div className="space-y-2">
+                <div>
+                  <span className="text-sm font-medium text-gray-400">Stage Name:</span>
+                  <p className="text-gray-200 mt-1">{provider}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-400">Artist ID:</span>
+                  <p className="text-xs text-gray-500 mt-1 font-mono">{snapshot.ProviderId}</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
 export const ApprovalHistorySnapshotInfo = ({ snapshot, approvalType }: ApprovalHistorySnapshotInfoProps) => {
   switch (approvalType) {
     case "ARTIST_REGISTRATION":
@@ -736,6 +941,8 @@ export const ApprovalHistorySnapshotInfo = ({ snapshot, approvalType }: Approval
       return <WorkUploadView snapshot={snapshot as WorkUploadSnapshot} />;
     case "RECORDING_UPLOAD":
       return <RecordingUploadView snapshot={snapshot as RecordingUploadSnapshot} />;
+    case "DISPUTE_RESOLUTION":
+      return <DisputeResolutionView snapshot={snapshot as DisputeResolutionSnapshot} />;
     default:
       return (
         <Card>

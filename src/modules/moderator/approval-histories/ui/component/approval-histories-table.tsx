@@ -258,6 +258,7 @@ export function ApprovalHistoriesTable({
             <SelectItem value="TRACK_UPLOAD">Track Upload</SelectItem>
             <SelectItem value="WORK_UPLOAD">Work Upload</SelectItem>
             <SelectItem value="RECORDING_UPLOAD">Recording Upload</SelectItem>
+            <SelectItem value="DISPUTE_RESOLUTION">Dispute Resolution</SelectItem>
           </SelectContent>
         </Select>
 

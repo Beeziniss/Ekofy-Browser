@@ -2,7 +2,8 @@ import { execute } from "@/gql/execute";
 import { 
   ApprovalHistoriesArtistQuery, 
   ApprovalHistoriesUserQuery,
-  ApprovalHistoriesCategoryQuery 
+  ApprovalHistoriesCategoryQuery,
+  ApprovalHistoriesUserFullInfoQuery
 } from "@/modules/shared/queries/moderator/approval-histories-queries";
 
 interface Artist {
@@ -155,4 +156,36 @@ export async function fetchUserEmails(userIds: string[]): Promise<Map<string, st
   }
 
   return emailMap;
+}
+
+/**
+ * Fetch user full information by user IDs
+ * @param userIds - Array of user IDs
+ * @returns Promise<Map<string, { fullName: string; email: string }>> - Map of user ID to user info
+ */
+export async function fetchUserFullInfo(userIds: string[]): Promise<Map<string, { fullName: string; email: string }>> {
+  if (!userIds || userIds.length === 0) return new Map();
+
+  const userInfoMap = new Map<string, { fullName: string; email: string }>();
+
+  try {
+    const result = await execute(ApprovalHistoriesUserFullInfoQuery, {
+      where: {
+        id: { in: userIds }
+      }
+    });
+
+    result?.users?.items?.forEach((user: any) => {
+      if (user?.id && user?.fullName && user?.email) {
+        userInfoMap.set(user.id, {
+          fullName: user.fullName,
+          email: user.email
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching user full info:", error);
+  }
+
+  return userInfoMap;
 }
