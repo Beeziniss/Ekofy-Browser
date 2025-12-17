@@ -2621,6 +2621,7 @@ export type MutationInitialization = {
   restoreContent: Scalars['Boolean']['output'];
   restoreUser: Scalars['Boolean']['output'];
   resumeSubscription: Scalars['Boolean']['output'];
+  seedDataFingerprint: Scalars['Boolean']['output'];
   seedEntitlements: Scalars['Boolean']['output'];
   seedEscrowCommissionPolicyData: Scalars['Boolean']['output'];
   seedMonthlyStreamCountByTrackId: Scalars['Boolean']['output'];
@@ -4290,7 +4291,7 @@ export type QueryInitialization = {
   subscriptionPlans?: Maybe<SubscriptionPlansCollectionSegment>;
   subscriptions?: Maybe<SubscriptionsCollectionSegment>;
   threadedComments: ThreadedCommentsResponse;
-  topTracks: Array<TopTrackResponse>;
+  topTracks: Array<TopTrack>;
   trackBySemanticSearch: Array<Track>;
   trackComments?: Maybe<TrackCommentsCollectionSegment>;
   trackDailyMetrics?: Maybe<TrackDailyMetricsCollectionSegment>;
@@ -6186,15 +6187,22 @@ export type TopReportedUserResponse = {
   userName: Scalars['String']['output'];
 };
 
-export type TopTrackInfo = {
-  __typename?: 'TopTrackInfo';
-  playedCount: Scalars['Int']['output'];
-  trackId: Scalars['String']['output'];
+export type TopTrack = {
+  __typename?: 'TopTrack';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  tracksInfo: Array<TopTrackInfo>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId: Scalars['String']['output'];
 };
 
-export type TopTrackResponse = {
-  __typename?: 'TopTrackResponse';
-  tracksInfo: Array<TopTrackInfo>;
+export type TopTrackInfo = {
+  __typename?: 'TopTrackInfo';
+  artistName: Scalars['String']['output'];
+  playedCount: Scalars['Int']['output'];
+  track?: Maybe<Track>;
+  trackId: Scalars['String']['output'];
+  trackName: Scalars['String']['output'];
 };
 
 export type Track = {
@@ -7921,6 +7929,13 @@ export type PackageOrdersPlatformQueryVariables = Exact<{
 
 export type PackageOrdersPlatformQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', items?: Array<{ __typename?: 'PackageOrder', platformFeePercentage: any, payoutTransactionId?: string | null }> | null } | null };
 
+export type ArtistRevenueDataQueryVariables = Exact<{
+  artistId: Scalars['String']['input'];
+}>;
+
+
+export type ArtistRevenueDataQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null, email: string, followerCount: any, popularity: any, grossRevenue: any, netRevenue: any, royaltyEarnings: any, serviceRevenue: any, serviceEarnings: any }> | null } | null };
+
 export type TracksWithFiltersQueryVariables = Exact<{
   skip: Scalars['Int']['input'];
   take: Scalars['Int']['input'];
@@ -7970,7 +7985,7 @@ export type TrackDailyMetricsArtistQueryVariables = Exact<{
 }>;
 
 
-export type TrackDailyMetricsArtistQuery = { __typename?: 'QueryInitialization', trackDailyMetrics?: { __typename?: 'TrackDailyMetricsCollectionSegment', items?: Array<{ __typename?: 'TrackDailyMetric', id: string, trackId: string, streamCount: any, downloadCount: any, favoriteCount: any, commentCount: any, createdAt: any, updatedAt?: any | null }> | null } | null };
+export type TrackDailyMetricsArtistQuery = { __typename?: 'QueryInitialization', trackDailyMetrics?: { __typename?: 'TrackDailyMetricsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'TrackDailyMetric', id: string, trackId: string, streamCount: any, downloadCount: any, favoriteCount: any, commentCount: any, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type TrackUploadArtistListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8818,7 +8833,7 @@ export const UnbanUserDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<UnbanUserMutation, UnbanUserMutationVariables>;
 export const TrackInsightViewDocument = new TypedDocumentString(`
     query TrackInsightView($trackId: String!) {
-  tracks(where: {id: {eq: $trackId}}) {
+  tracks(where: {id: {eq: $trackId}}, take: 1) {
     items {
       id
       name
@@ -10302,6 +10317,25 @@ export const PackageOrdersPlatformDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PackageOrdersPlatformQuery, PackageOrdersPlatformQueryVariables>;
+export const ArtistRevenueDataDocument = new TypedDocumentString(`
+    query ArtistRevenueData($artistId: String!) {
+  artists(where: {id: {eq: $artistId}}) {
+    items {
+      id
+      stageName
+      avatarImage
+      email
+      followerCount
+      popularity
+      grossRevenue
+      netRevenue
+      royaltyEarnings
+      serviceRevenue
+      serviceEarnings
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ArtistRevenueDataQuery, ArtistRevenueDataQueryVariables>;
 export const TracksWithFiltersDocument = new TypedDocumentString(`
     query TracksWithFilters($skip: Int!, $take: Int!, $where: TrackFilterInput, $order: [TrackSortInput!]) {
   tracks(skip: $skip, take: $take, where: $where, order: $order) {
@@ -10597,7 +10631,12 @@ export const TrackListStatsDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<TrackListStatsQuery, TrackListStatsQueryVariables>;
 export const TrackDailyMetricsArtistDocument = new TypedDocumentString(`
     query TrackDailyMetricsArtist($skip: Int, $take: Int, $where: TrackDailyMetricFilterInput) {
-  trackDailyMetrics(skip: $skip, take: $take, where: $where) {
+  trackDailyMetrics(
+    skip: $skip
+    take: $take
+    where: $where
+    order: {createdAt: DESC}
+  ) {
     items {
       id
       trackId
@@ -10608,6 +10647,7 @@ export const TrackDailyMetricsArtistDocument = new TypedDocumentString(`
       createdAt
       updatedAt
     }
+    totalCount
   }
 }
     `) as unknown as TypedDocumentString<TrackDailyMetricsArtistQuery, TrackDailyMetricsArtistQueryVariables>;

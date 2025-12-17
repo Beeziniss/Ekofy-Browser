@@ -1,7 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { trackInsightOptions } from "@/gql/options/artist-options";
+import { trackDailyMetricsOptions } from "@/gql/options/artist-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -46,27 +46,43 @@ const TrackInsightStreamsPayoutsChartSectionSuspense = ({
   trackId,
   timeRange,
 }: TrackInsightStreamsPayoutsChartSectionSuspenseProps) => {
-  const { data } = useSuspenseQuery(trackInsightOptions(trackId));
+  // Get the take value based on time range
+  const getDaysCount = (range: string) => {
+    switch (range) {
+      case "last-7-days":
+        return 7;
+      case "last-30-days":
+        return 30;
+      case "last-90-days":
+        return 90;
+      case "last-365-days":
+        return 365;
+      default:
+        return 7;
+    }
+  };
+
+  const daysCount = getDaysCount(timeRange);
+
+  // Fetch track daily metrics for the selected time range
+  const { data: metricsData } = useSuspenseQuery(trackDailyMetricsOptions(trackId, 0, daysCount));
 
   const generateStreamsPayoutsChartData = () => {
-    const trackData = data?.tracks?.items?.[0];
-    const baseStreamCount = trackData?.streamCount || 100;
+    if (!metricsData?.items || metricsData.items.length === 0) {
+      return [];
+    }
 
-    // For streams and payouts, we show monthly data only
-    const months = getMonthsInRange(timeRange);
+    // Sort by date (oldest first) for proper chart display
+    const sortedMetrics = [...metricsData.items].reverse();
 
-    return Array.from({ length: months }, (_, i) => {
-      const date = new Date();
-      date.setMonth(date.getMonth() - (months - 1 - i));
-
+    return sortedMetrics.map((metric) => {
+      const date = new Date(metric.createdAt);
       const displayDate = date.toLocaleDateString("en-US", {
         month: "short",
-        year: "numeric",
+        day: "numeric",
       });
 
-      // Generate realistic stream variations (monthly aggregated data)
-      const streamVariation = Math.sin(i / 2) * 500 + Math.random() * 1000 - 500;
-      const streams = Math.max(0, Math.floor(baseStreamCount / months + streamVariation));
+      const streams = Number(metric.streamCount);
 
       // Payouts are calculated based on streams (placeholder calculation)
       const payoutsPerStream = 0.003; // Example: $0.003 per stream
@@ -78,21 +94,6 @@ const TrackInsightStreamsPayoutsChartSectionSuspense = ({
         payouts,
       };
     });
-  };
-
-  const getMonthsInRange = (timeRange: string) => {
-    switch (timeRange) {
-      case "last-7-days":
-        return 1; // Show current month for short ranges
-      case "last-30-days":
-        return 1; // Show current month
-      case "last-90-days":
-        return 3; // Show last 3 months
-      case "last-365-days":
-        return 12; // Show last 12 months
-      default:
-        return 1;
-    }
   };
 
   const chartData = generateStreamsPayoutsChartData();
@@ -127,7 +128,7 @@ const TrackInsightStreamsPayoutsChartSectionSuspense = ({
 
   return (
     <div className="bg-main-dark-grey rounded-lg border border-gray-700 p-6">
-      <h3 className="text-main-white mb-6 text-xl font-semibold">Streams & Payouts (Monthly)</h3>
+      <h3 className="text-main-white mb-6 text-xl font-semibold">Streams & Payouts Over Time</h3>
 
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
@@ -161,10 +162,11 @@ const TrackInsightStreamsPayoutsChartSectionSuspense = ({
       </div>
 
       <div className="text-main-grey mt-4 text-sm">
-        <p>* Stream data is aggregated monthly. Payouts feature is currently under development.</p>
+        <p>* Daily stream data from track metrics. Payouts feature is currently under development.</p>
       </div>
     </div>
   );
 };
 
 export default TrackInsightStreamsPayoutsChartSection;
+

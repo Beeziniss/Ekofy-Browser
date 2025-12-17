@@ -1,7 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { trackInsightFavoriteCountOptions, trackInsightFavCountOptions } from "@/gql/options/artist-options";
+import { trackDailyMetricsOptions } from "@/gql/options/artist-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -45,54 +45,10 @@ interface TrackInsightFavoritesChartSectionSuspenseProps {
 const TrackInsightFavoritesChartSectionSuspense = ({
   trackId,
   timeRange,
-  dateFrom,
-  dateTo,
 }: TrackInsightFavoritesChartSectionSuspenseProps) => {
-  // First get the total count
-  const { data: totalCountData } = useSuspenseQuery(
-    trackInsightFavCountOptions(trackId, dateFrom || undefined, dateTo || undefined),
-  );
-
-  // Then get the detailed favorite count data
-  const { data: favoriteData } = useSuspenseQuery(
-    trackInsightFavoriteCountOptions(
-      trackId,
-      dateFrom || undefined,
-      dateTo || undefined,
-      totalCountData.userEngagement?.totalCount,
-    ),
-  );
-
-  const generateFavoritesChartData = () => {
-    const days = getDaysInRange(timeRange);
-    const favoritesByDate = favoriteData?.favoritesByDate || [];
-
-    // Create a map for quick lookup
-    const favoritesMap = new Map();
-    favoritesByDate.forEach((item) => {
-      favoritesMap.set(item.date, item.count);
-    });
-
-    // Generate data for each day in the range
-    return Array.from({ length: days }, (_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (days - 1 - i));
-
-      const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-      const displayDate = date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-
-      return {
-        date: displayDate,
-        favorites: favoritesMap.get(dateKey) || 0,
-      };
-    });
-  };
-
-  const getDaysInRange = (timeRange: string) => {
-    switch (timeRange) {
+  // Get the take value based on time range
+  const getDaysCount = (range: string) => {
+    switch (range) {
       case "last-7-days":
         return 7;
       case "last-30-days":
@@ -106,8 +62,35 @@ const TrackInsightFavoritesChartSectionSuspense = ({
     }
   };
 
+  const daysCount = getDaysCount(timeRange);
+
+  // Fetch track daily metrics for the selected time range
+  const { data: metricsData } = useSuspenseQuery(trackDailyMetricsOptions(trackId, 0, daysCount));
+
+  const generateFavoritesChartData = () => {
+    if (!metricsData?.items || metricsData.items.length === 0) {
+      return [];
+    }
+
+    // Sort by date (oldest first) for proper chart display
+    const sortedMetrics = [...metricsData.items].reverse();
+
+    return sortedMetrics.map((metric) => {
+      const date = new Date(metric.createdAt);
+      const displayDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+
+      return {
+        date: displayDate,
+        favorites: Number(metric.favoriteCount),
+      };
+    });
+  };
+
   const chartData = generateFavoritesChartData();
-  const totalFavorites = totalCountData?.userEngagement?.totalCount || 0;
+  const totalFavorites = metricsData?.items?.reduce((sum: number, metric: any) => sum + Number(metric.favoriteCount), 0) || 0;
 
   interface TooltipProps {
     active?: boolean;
@@ -174,3 +157,4 @@ const TrackInsightFavoritesChartSectionSuspense = ({
 };
 
 export default TrackInsightFavoritesChartSection;
+
