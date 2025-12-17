@@ -6,7 +6,15 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { AlbumIcon, HeartIcon, LibrarySquareIcon, LucideIcon, RssIcon, UserRoundCheckIcon } from "lucide-react";
+import {
+  AlbumIcon,
+  HeartIcon,
+  LibrarySquareIcon,
+  LucideIcon,
+  Music2Icon,
+  RssIcon,
+  UserRoundCheckIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -43,6 +51,11 @@ const mainNavItems: NavItem[] = [
     href: "/library/followers",
     icon: UserRoundCheckIcon,
   },
+  {
+    title: "Top Tracks",
+    href: "/library/top-tracks",
+    icon: Music2Icon,
+  }
 ];
 
 const activeItemStyles = "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";

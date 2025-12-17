@@ -28,6 +28,7 @@ import {
   SubmitDeliveryRequestInput,
   UpdateListenerRequestInput,
   ChangeOrderStatusRequestInput,
+  CreateAlbumRequestInput,
 } from "../graphql";
 import { mutationOptions } from "@tanstack/react-query";
 import {
@@ -51,6 +52,7 @@ import {
   SwitchStatusByRequestorMutation,
 } from "@/modules/shared/mutations/client/order-mutation";
 import { UpsertStreamCountMutation } from "@/modules/shared/mutations/client/job-mutation";
+import { CreateAlbumMutation } from "@/modules/shared/mutations/client/album-mutation";
 
 // PLAYLIST MUTATIONS
 export const createPlaylistMutationOptions = mutationOptions({
@@ -244,4 +246,13 @@ export const switchStatusByRequestorMutationOptions = mutationOptions({
 export const upsertStreamCountMutationOptions = mutationOptions({
   mutationKey: ["upsert-stream-count"],
   mutationFn: async (trackId: string) => await execute(UpsertStreamCountMutation, { trackId }),
+});
+
+// ALBUM MUTATIONS
+export const createAlbumMutationOptions = mutationOptions({
+  mutationKey: ["create-album"],
+  mutationFn: async (newAlbum: CreateAlbumRequestInput) =>
+    await execute(CreateAlbumMutation, {
+      data: newAlbum,
+    }),
 });

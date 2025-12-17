@@ -21,6 +21,8 @@ import {
   ConversationStatus,
   UserFilterInput,
   NotificationFilterInput,
+  AlbumFilterInput,
+  TrackFilterInput,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -56,6 +58,8 @@ import { ConversationMessagesQuery, ConversationQuery } from "@/modules/shared/q
 import { OrderPackageQuery } from "@/modules/shared/queries/client/order-queries";
 import { CategoriesChannelQuery } from "@/modules/shared/queries/client/category-queries";
 import { NotificationQuery } from "@/modules/shared/queries/client/notification-queries";
+import { AlbumQuery } from "@/modules/shared/queries/client/album-queries";
+import { TrackListWithFiltersQuery } from "@/modules/shared/queries/artist";
 
 // PROFILE QUERIES
 export const userBasicInfoOptions = (userId: string) =>
@@ -598,3 +602,57 @@ export const notificationInfiniteOptions = (userId: string, first: number = 5) =
     },
     enabled: !!userId,
   });
+
+// ALBUM QUERIES
+export const albumListOptions = (name?: string, take: number = 12) =>
+  infiniteQueryOptions({
+    queryKey: ["albums", name],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+
+      const where: AlbumFilterInput = {};
+
+      if (name) {
+        where.nameUnsigned = { contains: name };
+        where.isVisible = { eq: true };
+      }
+
+      return await execute(AlbumQuery, {
+        where,
+        take,
+        skip,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.albums?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+  });
+
+// TRACK QUERIES FOR ARTIST
+export const artistTracksInfiniteOptions = (artistId: string, take: number = 20) =>
+  infiniteQueryOptions({
+    queryKey: ["artist-tracks", artistId],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+
+      const where: TrackFilterInput = {
+        or: [
+          { mainArtistIds: { some: { eq: artistId } } },
+          { featuredArtistIds: { some: { eq: artistId } } },
+        ],
+      };
+
+      return await execute(TrackListWithFiltersQuery, {
+        where,
+        take,
+        skip,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.tracks?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+    enabled: !!artistId,
+  });
+

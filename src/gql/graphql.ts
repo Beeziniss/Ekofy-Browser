@@ -2621,6 +2621,7 @@ export type MutationInitialization = {
   restoreContent: Scalars['Boolean']['output'];
   restoreUser: Scalars['Boolean']['output'];
   resumeSubscription: Scalars['Boolean']['output'];
+  seedDataFingerprint: Scalars['Boolean']['output'];
   seedEntitlements: Scalars['Boolean']['output'];
   seedEscrowCommissionPolicyData: Scalars['Boolean']['output'];
   seedMonthlyStreamCountByTrackId: Scalars['Boolean']['output'];
@@ -4290,7 +4291,7 @@ export type QueryInitialization = {
   subscriptionPlans?: Maybe<SubscriptionPlansCollectionSegment>;
   subscriptions?: Maybe<SubscriptionsCollectionSegment>;
   threadedComments: ThreadedCommentsResponse;
-  topTracks: Array<TopTrackResponse>;
+  topTracks: Array<TopTrack>;
   trackBySemanticSearch: Array<Track>;
   trackComments?: Maybe<TrackCommentsCollectionSegment>;
   trackDailyMetrics?: Maybe<TrackDailyMetricsCollectionSegment>;
@@ -6186,15 +6187,22 @@ export type TopReportedUserResponse = {
   userName: Scalars['String']['output'];
 };
 
-export type TopTrackInfo = {
-  __typename?: 'TopTrackInfo';
-  playedCount: Scalars['Int']['output'];
-  trackId: Scalars['String']['output'];
+export type TopTrack = {
+  __typename?: 'TopTrack';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  tracksInfo: Array<TopTrackInfo>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId: Scalars['String']['output'];
 };
 
-export type TopTrackResponse = {
-  __typename?: 'TopTrackResponse';
-  tracksInfo: Array<TopTrackInfo>;
+export type TopTrackInfo = {
+  __typename?: 'TopTrackInfo';
+  artistName: Scalars['String']['output'];
+  playedCount: Scalars['Int']['output'];
+  track?: Maybe<Track>;
+  trackId: Scalars['String']['output'];
+  trackName: Scalars['String']['output'];
 };
 
 export type Track = {
@@ -7270,6 +7278,34 @@ export type UpdateArtistProfileMutationVariables = Exact<{
 
 export type UpdateArtistProfileMutation = { __typename?: 'MutationInitialization', updateArtistProfile: boolean };
 
+export type CreateAlbumMutationVariables = Exact<{
+  data: CreateAlbumRequestInput;
+}>;
+
+
+export type CreateAlbumMutation = { __typename?: 'MutationInitialization', createAlbum: boolean };
+
+export type DeleteAlbumMutationVariables = Exact<{
+  albumId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteAlbumMutation = { __typename?: 'MutationInitialization', deleteAlbum: boolean };
+
+export type RemoveTrackFromAlbumMutationVariables = Exact<{
+  data: RemoveTrackFromAlbumRequestInput;
+}>;
+
+
+export type RemoveTrackFromAlbumMutation = { __typename?: 'MutationInitialization', removeTrackFromAlbum: boolean };
+
+export type AddTracksToAlbumMutationVariables = Exact<{
+  data: AddTrackToAlbumRequestInput;
+}>;
+
+
+export type AddTracksToAlbumMutation = { __typename?: 'MutationInitialization', addTrackToAlbum: boolean };
+
 export type AddConversationGeneralMutationVariables = Exact<{
   otherUserId: Scalars['String']['input'];
 }>;
@@ -7985,6 +8021,15 @@ export type GetArtistProfileQueryVariables = Exact<{
 
 
 export type GetArtistProfileQuery = { __typename?: 'QueryInitialization', artists?: { __typename?: 'ArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, userId: string, stageName: string, email: string, artistType: ArtistType, avatarImage?: string | null, bannerImage?: string | null, biography?: string | null, isVerified: boolean, createdAt: any, members: Array<{ __typename?: 'ArtistMember', fullName: string, email: string, gender: UserGender, isLeader: boolean, phoneNumber: string }>, user: Array<{ __typename?: 'User', status: UserStatus }>, identityCard: { __typename?: 'IdentityCard', number: string, fullName: string, dateOfBirth: any, gender: UserGender, placeOfOrigin: string, validUntil?: any | null, placeOfResidence: { __typename?: 'Address', addressLine?: string | null } } }> | null } | null };
+
+export type AlbumsQueryVariables = Exact<{
+  where?: InputMaybe<AlbumFilterInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type AlbumsQuery = { __typename?: 'QueryInitialization', albums?: { __typename?: 'AlbumsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Album', id: string, name: string, coverImage: string, description?: string | null, isVisible: boolean, checkAlbumInFavorite: boolean }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean } } | null };
 
 export type CategoriesChannelQueryVariables = Exact<{
   type?: InputMaybe<CategoryType>;
@@ -9163,6 +9208,26 @@ export const UpdateArtistProfileDocument = new TypedDocumentString(`
   updateArtistProfile(updateArtistRequest: $updateArtistRequest)
 }
     `) as unknown as TypedDocumentString<UpdateArtistProfileMutation, UpdateArtistProfileMutationVariables>;
+export const CreateAlbumDocument = new TypedDocumentString(`
+    mutation CreateAlbum($data: CreateAlbumRequestInput!) {
+  createAlbum(createAlbumRequest: $data)
+}
+    `) as unknown as TypedDocumentString<CreateAlbumMutation, CreateAlbumMutationVariables>;
+export const DeleteAlbumDocument = new TypedDocumentString(`
+    mutation DeleteAlbum($albumId: String!) {
+  deleteAlbum(albumId: $albumId)
+}
+    `) as unknown as TypedDocumentString<DeleteAlbumMutation, DeleteAlbumMutationVariables>;
+export const RemoveTrackFromAlbumDocument = new TypedDocumentString(`
+    mutation RemoveTrackFromAlbum($data: RemoveTrackFromAlbumRequestInput!) {
+  removeTrackFromAlbum(removeTrackFromAlbumRequest: $data)
+}
+    `) as unknown as TypedDocumentString<RemoveTrackFromAlbumMutation, RemoveTrackFromAlbumMutationVariables>;
+export const AddTracksToAlbumDocument = new TypedDocumentString(`
+    mutation AddTracksToAlbum($data: AddTrackToAlbumRequestInput!) {
+  addTrackToAlbum(addTrackToAlbumRequest: $data)
+}
+    `) as unknown as TypedDocumentString<AddTracksToAlbumMutation, AddTracksToAlbumMutationVariables>;
 export const AddConversationGeneralDocument = new TypedDocumentString(`
     mutation AddConversationGeneral($otherUserId: String!) {
   addConversationGeneral(otherUserId: $otherUserId)
@@ -10664,6 +10729,24 @@ export const GetArtistProfileDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetArtistProfileQuery, GetArtistProfileQueryVariables>;
+export const AlbumsDocument = new TypedDocumentString(`
+    query Albums($where: AlbumFilterInput, $skip: Int, $take: Int) {
+  albums(where: $where, skip: $skip, take: $take, order: {createdAt: DESC}) {
+    items {
+      id
+      name
+      coverImage
+      description
+      isVisible
+      checkAlbumInFavorite
+    }
+    pageInfo {
+      hasNextPage
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<AlbumsQuery, AlbumsQueryVariables>;
 export const CategoriesChannelDocument = new TypedDocumentString(`
     query CategoriesChannel($type: CategoryType, $take: Int!) {
   categories(

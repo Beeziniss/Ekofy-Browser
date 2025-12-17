@@ -1,7 +1,7 @@
-import React from "react";
+import AlbumViews from "@/modules/client/albums/ui/views/album-views";
 
 const Page = () => {
-  return <div>Page</div>;
+  return <AlbumViews />
 };
 
 export default Page;

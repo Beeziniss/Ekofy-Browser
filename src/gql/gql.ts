@@ -54,6 +54,10 @@ type Documents = {
     "\n  mutation UpdateTrackMetadata($updateTrackRequest: UpdateTrackRequestInput!) {\n    updateMetadataTrack(updateTrackRequest: $updateTrackRequest)\n  }\n": typeof types.UpdateTrackMetadataDocument,
     "\n  mutation CancelTrackUpload($uploadId: String!, $reasonReject: String!, $isCancel: Boolean!) {\n    rejectTrackUploadRequest(isCancled: $isCancel, reasonReject: $reasonReject, uploadId: $uploadId)\n  }\n": typeof types.CancelTrackUploadDocument,
     "\n  mutation UpdateArtistProfile($updateArtistRequest: UpdateArtistRequestInput!) {\n    updateArtistProfile(updateArtistRequest: $updateArtistRequest)\n  }\n": typeof types.UpdateArtistProfileDocument,
+    "\n    mutation CreateAlbum($data: CreateAlbumRequestInput!) {\n      createAlbum(createAlbumRequest: $data)\n    }\n": typeof types.CreateAlbumDocument,
+    "\n    mutation DeleteAlbum($albumId: String!) {\n      deleteAlbum(albumId: $albumId)\n    }\n": typeof types.DeleteAlbumDocument,
+    "\n    mutation RemoveTrackFromAlbum($data: RemoveTrackFromAlbumRequestInput!) {\n      removeTrackFromAlbum(removeTrackFromAlbumRequest: $data)\n    }\n": typeof types.RemoveTrackFromAlbumDocument,
+    "\n    mutation AddTracksToAlbum($data: AddTrackToAlbumRequestInput!) {\n      addTrackToAlbum(addTrackToAlbumRequest: $data)\n    }\n": typeof types.AddTracksToAlbumDocument,
     "\n  mutation AddConversationGeneral($otherUserId: String!) {\n    addConversationGeneral(otherUserId: $otherUserId)\n  }\n": typeof types.AddConversationGeneralDocument,
     "\n  mutation AddConversationFromRequestHub($createConversationRequestInput: CreateConversationRequestInput!) {\n    addConversationFromRequestHub(request: $createConversationRequestInput)\n  }\n": typeof types.AddConversationFromRequestHubDocument,
     "\n  mutation UpsertStreamCount($trackId: String!) {\n    upsertStreamCount(trackId: $trackId)\n  }\n": typeof types.UpsertStreamCountDocument,
@@ -145,6 +149,7 @@ type Documents = {
     "\n  query TrackDailyMetricsArtist($skip: Int, $take: Int, $where: TrackDailyMetricFilterInput) {\n    trackDailyMetrics(skip: $skip, take: $take, where: $where) {\n      items {\n        id\n            trackId\n            streamCount\n            downloadCount\n            favoriteCount\n            commentCount\n            createdAt\n            updatedAt\n      }\n    }\n  }\n": typeof types.TrackDailyMetricsArtistDocument,
     "\n  query TrackUploadArtistList {\n    artists(where: { isVisible: { eq: true } }, take: 50) {\n      items {\n        id\n        userId\n        stageName\n        user {\n          stripeAccountId\n        }\n      }\n    }\n  }\n": typeof types.TrackUploadArtistListDocument,
     "\n  query GetArtistProfile($where: ArtistFilterInput, $take: Int, $skip: Int) {\n    artists(where: $where, take: $take, skip: $skip) {\n      items {\n        id\n        userId\n        stageName\n        email\n        artistType\n        avatarImage\n        bannerImage\n        biography\n        members {\n          fullName\n          email\n          gender\n          isLeader\n          phoneNumber\n        }\n        isVerified\n        createdAt\n        user {\n          status\n        }\n        identityCard {\n          number\n          fullName\n          dateOfBirth\n          gender\n          placeOfOrigin\n          validUntil\n          placeOfResidence {\n            addressLine\n          }\n        }\n      }\n    }\n  }\n": typeof types.GetArtistProfileDocument,
+    "\n  query Albums($where: AlbumFilterInput, $skip: Int, $take: Int) {\n    albums(where: $where, skip: $skip, take: $take, order: {createdAt: DESC}) {\n      items {\n        id\n        name\n        coverImage\n        description\n        isVisible\n        checkAlbumInFavorite\n      }\n      pageInfo {\n        hasNextPage\n      }\n      totalCount\n    }\n  }\n": typeof types.AlbumsDocument,
     "\n  query CategoriesChannel($type: CategoryType, $take: Int!) {\n    categories(where: { isVisible: { eq: true }, type: { eq: $type } }, order: { popularity: DESC }, take: $take) {\n      items {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CategoriesChannelDocument,
     "\n  query Conversations($where: ConversationFilterInput) {\n    conversations(where: $where, order: { lastMessage: { sentAt: DESC } }) {\n      items {\n        id\n        userIds\n        requestId\n        status\n        ownerProfileConversation {\n          avatar\n          nickname\n          artistId\n        }\n        otherProfileConversation {\n          avatar\n          nickname\n          artistId\n        }\n        lastMessage {\n          text\n          senderId\n          sentAt\n          isReadBy\n        }\n      }\n      totalCount\n    }\n  }\n": typeof types.ConversationsDocument,
     "\n  query Messages($where: MessageFilterInput) {\n    messages(where: $where, last: 10) {\n      edges {\n        cursor\n        node {\n          id\n          conversationId\n          senderId\n          receiverId\n          isRead\n          text\n          sentAt\n          deletedForIds\n          senderProfileMessages {\n            avatar\n            nickname\n          }\n        }\n      }\n      totalCount\n    }\n  }\n": typeof types.MessagesDocument,
@@ -259,6 +264,10 @@ const documents: Documents = {
     "\n  mutation UpdateTrackMetadata($updateTrackRequest: UpdateTrackRequestInput!) {\n    updateMetadataTrack(updateTrackRequest: $updateTrackRequest)\n  }\n": types.UpdateTrackMetadataDocument,
     "\n  mutation CancelTrackUpload($uploadId: String!, $reasonReject: String!, $isCancel: Boolean!) {\n    rejectTrackUploadRequest(isCancled: $isCancel, reasonReject: $reasonReject, uploadId: $uploadId)\n  }\n": types.CancelTrackUploadDocument,
     "\n  mutation UpdateArtistProfile($updateArtistRequest: UpdateArtistRequestInput!) {\n    updateArtistProfile(updateArtistRequest: $updateArtistRequest)\n  }\n": types.UpdateArtistProfileDocument,
+    "\n    mutation CreateAlbum($data: CreateAlbumRequestInput!) {\n      createAlbum(createAlbumRequest: $data)\n    }\n": types.CreateAlbumDocument,
+    "\n    mutation DeleteAlbum($albumId: String!) {\n      deleteAlbum(albumId: $albumId)\n    }\n": types.DeleteAlbumDocument,
+    "\n    mutation RemoveTrackFromAlbum($data: RemoveTrackFromAlbumRequestInput!) {\n      removeTrackFromAlbum(removeTrackFromAlbumRequest: $data)\n    }\n": types.RemoveTrackFromAlbumDocument,
+    "\n    mutation AddTracksToAlbum($data: AddTrackToAlbumRequestInput!) {\n      addTrackToAlbum(addTrackToAlbumRequest: $data)\n    }\n": types.AddTracksToAlbumDocument,
     "\n  mutation AddConversationGeneral($otherUserId: String!) {\n    addConversationGeneral(otherUserId: $otherUserId)\n  }\n": types.AddConversationGeneralDocument,
     "\n  mutation AddConversationFromRequestHub($createConversationRequestInput: CreateConversationRequestInput!) {\n    addConversationFromRequestHub(request: $createConversationRequestInput)\n  }\n": types.AddConversationFromRequestHubDocument,
     "\n  mutation UpsertStreamCount($trackId: String!) {\n    upsertStreamCount(trackId: $trackId)\n  }\n": types.UpsertStreamCountDocument,
@@ -350,6 +359,7 @@ const documents: Documents = {
     "\n  query TrackDailyMetricsArtist($skip: Int, $take: Int, $where: TrackDailyMetricFilterInput) {\n    trackDailyMetrics(skip: $skip, take: $take, where: $where) {\n      items {\n        id\n            trackId\n            streamCount\n            downloadCount\n            favoriteCount\n            commentCount\n            createdAt\n            updatedAt\n      }\n    }\n  }\n": types.TrackDailyMetricsArtistDocument,
     "\n  query TrackUploadArtistList {\n    artists(where: { isVisible: { eq: true } }, take: 50) {\n      items {\n        id\n        userId\n        stageName\n        user {\n          stripeAccountId\n        }\n      }\n    }\n  }\n": types.TrackUploadArtistListDocument,
     "\n  query GetArtistProfile($where: ArtistFilterInput, $take: Int, $skip: Int) {\n    artists(where: $where, take: $take, skip: $skip) {\n      items {\n        id\n        userId\n        stageName\n        email\n        artistType\n        avatarImage\n        bannerImage\n        biography\n        members {\n          fullName\n          email\n          gender\n          isLeader\n          phoneNumber\n        }\n        isVerified\n        createdAt\n        user {\n          status\n        }\n        identityCard {\n          number\n          fullName\n          dateOfBirth\n          gender\n          placeOfOrigin\n          validUntil\n          placeOfResidence {\n            addressLine\n          }\n        }\n      }\n    }\n  }\n": types.GetArtistProfileDocument,
+    "\n  query Albums($where: AlbumFilterInput, $skip: Int, $take: Int) {\n    albums(where: $where, skip: $skip, take: $take, order: {createdAt: DESC}) {\n      items {\n        id\n        name\n        coverImage\n        description\n        isVisible\n        checkAlbumInFavorite\n      }\n      pageInfo {\n        hasNextPage\n      }\n      totalCount\n    }\n  }\n": types.AlbumsDocument,
     "\n  query CategoriesChannel($type: CategoryType, $take: Int!) {\n    categories(where: { isVisible: { eq: true }, type: { eq: $type } }, order: { popularity: DESC }, take: $take) {\n      items {\n        id\n        name\n      }\n    }\n  }\n": types.CategoriesChannelDocument,
     "\n  query Conversations($where: ConversationFilterInput) {\n    conversations(where: $where, order: { lastMessage: { sentAt: DESC } }) {\n      items {\n        id\n        userIds\n        requestId\n        status\n        ownerProfileConversation {\n          avatar\n          nickname\n          artistId\n        }\n        otherProfileConversation {\n          avatar\n          nickname\n          artistId\n        }\n        lastMessage {\n          text\n          senderId\n          sentAt\n          isReadBy\n        }\n      }\n      totalCount\n    }\n  }\n": types.ConversationsDocument,
     "\n  query Messages($where: MessageFilterInput) {\n    messages(where: $where, last: 10) {\n      edges {\n        cursor\n        node {\n          id\n          conversationId\n          senderId\n          receiverId\n          isRead\n          text\n          sentAt\n          deletedForIds\n          senderProfileMessages {\n            avatar\n            nickname\n          }\n        }\n      }\n      totalCount\n    }\n  }\n": types.MessagesDocument,
@@ -581,6 +591,22 @@ export function graphql(source: "\n  mutation CancelTrackUpload($uploadId: Strin
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation UpdateArtistProfile($updateArtistRequest: UpdateArtistRequestInput!) {\n    updateArtistProfile(updateArtistRequest: $updateArtistRequest)\n  }\n"): typeof import('./graphql').UpdateArtistProfileDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation CreateAlbum($data: CreateAlbumRequestInput!) {\n      createAlbum(createAlbumRequest: $data)\n    }\n"): typeof import('./graphql').CreateAlbumDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation DeleteAlbum($albumId: String!) {\n      deleteAlbum(albumId: $albumId)\n    }\n"): typeof import('./graphql').DeleteAlbumDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation RemoveTrackFromAlbum($data: RemoveTrackFromAlbumRequestInput!) {\n      removeTrackFromAlbum(removeTrackFromAlbumRequest: $data)\n    }\n"): typeof import('./graphql').RemoveTrackFromAlbumDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation AddTracksToAlbum($data: AddTrackToAlbumRequestInput!) {\n      addTrackToAlbum(addTrackToAlbumRequest: $data)\n    }\n"): typeof import('./graphql').AddTracksToAlbumDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -945,6 +971,10 @@ export function graphql(source: "\n  query TrackUploadArtistList {\n    artists(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetArtistProfile($where: ArtistFilterInput, $take: Int, $skip: Int) {\n    artists(where: $where, take: $take, skip: $skip) {\n      items {\n        id\n        userId\n        stageName\n        email\n        artistType\n        avatarImage\n        bannerImage\n        biography\n        members {\n          fullName\n          email\n          gender\n          isLeader\n          phoneNumber\n        }\n        isVerified\n        createdAt\n        user {\n          status\n        }\n        identityCard {\n          number\n          fullName\n          dateOfBirth\n          gender\n          placeOfOrigin\n          validUntil\n          placeOfResidence {\n            addressLine\n          }\n        }\n      }\n    }\n  }\n"): typeof import('./graphql').GetArtistProfileDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Albums($where: AlbumFilterInput, $skip: Int, $take: Int) {\n    albums(where: $where, skip: $skip, take: $take, order: {createdAt: DESC}) {\n      items {\n        id\n        name\n        coverImage\n        description\n        isVisible\n        checkAlbumInFavorite\n      }\n      pageInfo {\n        hasNextPage\n      }\n      totalCount\n    }\n  }\n"): typeof import('./graphql').AlbumsDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
