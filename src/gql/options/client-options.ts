@@ -46,6 +46,7 @@ import {
   RequestHubCommentThreadsQuery,
   SEARCH_REQUESTS_QUERY,
   SuggestedTracksForPlaylistQuery,
+  TopTracksQuery,
   TrackCommentRepliesQuery,
   TrackCommentsQuery,
   TrackDetailViewQuery,
@@ -161,6 +162,16 @@ export const suggestedTracksForPlaylistOptions = (playlistId: string, nameUnsign
         excludeTrackIds: existingTrackIds.length > 0 ? existingTrackIds : null,
         nameUnsigned,
       });
+    },
+  });
+
+export const topTracksOptions = () =>
+  queryOptions({
+    queryKey: ["top-tracks"],
+    queryFn: async () => {
+      const result = await execute(TopTracksQuery);
+
+      return result || null;
     },
   });
 
