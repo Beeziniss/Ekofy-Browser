@@ -269,6 +269,16 @@ export function OrderDetailInfo({
         </CardContent>
       </Card>
 
+      {/* Disputed Reason */}
+      <Card className="border-gray-700 bg-gray-800/50">
+        <CardHeader>
+          <CardTitle className="text-lg text-gray-100">Disputed Reason</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-300">{order.disputedReason || "No specific reason provided."}</p>
+        </CardContent>
+      </Card>
+
       {/* Deliveries */}
       {order.deliveries && order.deliveries.length > 0 && (
         <Card className="border-gray-700 bg-gray-800/50">

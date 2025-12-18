@@ -142,7 +142,7 @@ export function OrderDetailActions({ orderId, orderAmount, currency }: OrderDeta
               onClick={() => setShowCancelConfirmModal(false)}
               disabled={switchStatusMutation.isPending}
             >
-              Go Back
+              Cancel
             </Button>
             <Button
               type="button"
