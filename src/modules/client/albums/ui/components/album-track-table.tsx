@@ -18,9 +18,11 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   PauseIcon,
+  PlusIcon,
+  Trash2Icon,
 } from "lucide-react";
 import Image from "next/image";
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -34,40 +36,44 @@ import {
 import { Track, useAudioStore } from "@/store";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
-import { useFavoriteTrack } from "@/modules/client/track/hooks/use-favorite-track";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { PauseButtonMedium, PlayButtonMedium } from "@/assets/icons";
+import AlbumRemoveTrackModal from "./album-remove-track-modal";
+import AlbumAddTrackDrawer from "./album-add-track-drawer";
 
-export interface FavoriteTrack {
+export interface AlbumTrack {
   id: string;
   name: string;
   coverImage: string;
-  artist: string;
-  addedTime: string;
+  mainArtistIds: string[];
+  mainArtists?: {
+    items?: {
+      id: string;
+      stageName: string;
+    }[];
+  };
 }
 
-interface FavoriteTracksTableProps {
-  tracks: FavoriteTrack[];
-  totalCount: number;
-  currentPage: number;
-  pageSize: number;
-  onPageChange: (page: number) => void;
+interface AlbumTrackTableProps {
+  tracks: AlbumTrack[];
+  albumId: string;
+  albumName: string;
 }
 
-const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPageChange }: FavoriteTracksTableProps) => {
+const AlbumTrackTable = ({ tracks, albumId, albumName }: AlbumTrackTableProps) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [removeTrackModal, setRemoveTrackModal] = useState<{
+    open: boolean;
+    trackId: string;
+    trackName: string;
+  }>({
+    open: false,
+    trackId: "",
+    trackName: "",
+  });
+  const [addTrackDrawerOpen, setAddTrackDrawerOpen] = useState(false);
 
   const [globalFilterDebounced] = useDebounce(globalFilter, 300);
-  const { handleFavorite } = useFavoriteTrack();
 
   const {
     currentTrack,
@@ -79,77 +85,50 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
     skipToTrack,
   } = useAudioStore();
 
-  // Convert favorite tracks to Track format for the store
-  const convertToTrackFormat = (favoriteTracks: FavoriteTrack[]): Track[] => {
-    return favoriteTracks.map((track) => ({
-      id: track.id,
-      name: track.name || "Unknown Track",
-      artist: track.artist,
-      coverImage: track.coverImage,
-    }));
-  };
-
-  // Check if favorites playlist is currently active and playing
-  const isFavoritesActive = currentPlaylistId === "favorites";
-  const isFavoritesPlaying = isFavoritesActive && globalIsPlaying;
-
-  // Handle main Play/Pause button click
-  const handleMainPlayPause = () => {
-    if (tracks.length === 0) return;
-
-    if (isFavoritesActive) {
-      // If favorites is active, just toggle play/pause
-      togglePlayPause();
-    } else {
-      // If favorites is not active, set up the playlist and play from the first track
-      const tracksForQueue = convertToTrackFormat(tracks);
-      setPlaylist(tracksForQueue, "favorites");
-      play();
-    }
-  };
-
-  const formatAddedTime = (addedTime: string) => {
-    return new Date(addedTime).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const columns: ColumnDef<FavoriteTrack>[] = useMemo(
+  const columns: ColumnDef<AlbumTrack>[] = useMemo(
     () => [
       {
         accessorKey: "name",
         header: "TRACK",
         cell: ({ row }) => {
           const track = row.original;
-          // Check if this is the currently playing track AND favorites is active
+          // Check if this is the currently playing track AND this album is active
           const isCurrentTrack = currentTrack?.id === track.id;
-          const isFavoritesActive = currentPlaylistId === "favorites";
-          const isCurrentlyPlaying = isCurrentTrack && isFavoritesActive && globalIsPlaying;
+          const isAlbumActive = currentPlaylistId === albumId;
+          const isCurrentlyPlaying = isCurrentTrack && isAlbumActive && globalIsPlaying;
+
+          // Convert album tracks to Track format for the store
+          const convertToTrackFormat = (albumTracks: AlbumTrack[]): Track[] => {
+            return albumTracks.map((track) => ({
+              id: track.id,
+              name: track.name || "Unknown Track",
+              artist: track.mainArtists?.items?.[0]?.stageName || "Unknown Artist",
+              coverImage: track.coverImage,
+            }));
+          };
 
           // Handle play/pause click
           const handlePlayPauseClick = (e: React.MouseEvent) => {
             e.preventDefault();
 
-            if (isCurrentTrack && isFavoritesActive) {
-              // If it's the current track from favorites, toggle play/pause
+            if (isCurrentTrack && isAlbumActive) {
+              // If it's the current track from this album, toggle play/pause
               togglePlayPause();
             } else {
-              // Convert all tracks and set up favorites context
+              // Convert all tracks and set up album context
               const tracksForQueue = convertToTrackFormat(tracks);
 
               // Find the index of the clicked track
               const trackIndex = tracksForQueue.findIndex((t) => t.id === track.id);
 
               if (trackIndex !== -1) {
-                if (isFavoritesActive) {
-                  // If favorites is already active, just skip to the track
+                if (isAlbumActive) {
+                  // If this album is already active, just skip to the track
                   skipToTrack(trackIndex);
                   play();
                 } else {
-                  // Set the entire favorites playlist with "favorites" as playlist ID
-                  setPlaylist(tracksForQueue, "favorites");
+                  // Set the entire album with the correct album ID and track
+                  setPlaylist(tracksForQueue, albumId);
 
                   // If it's not the first track, skip to the clicked track
                   if (trackIndex !== 0) {
@@ -161,7 +140,6 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
               }
             }
           };
-
           return (
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -177,7 +155,7 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
                   <div className="primary_gradient size-12 rounded-md" />
                 )}
                 <div
-                  className={`absolute inset-0 flex cursor-pointer items-center justify-center rounded-md bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 ${isCurrentlyPlaying ? "opacity-100" : ""}`}
+                  className={`absolute inset-0 flex items-center justify-center rounded-md bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 ${isCurrentlyPlaying ? "opacity-100" : ""}`}
                   onClick={handlePlayPauseClick}
                 >
                   {isCurrentlyPlaying ? (
@@ -205,28 +183,25 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
         header: "ARTIST",
         cell: ({ row }) => (
           <span className="line-clamp-1 text-gray-300 transition-colors hover:text-white">
-            {row.original.artist || "Unknown Artist"}
+            {row.original.mainArtists?.items?.[0]?.stageName || "Unknown Artist"}
           </span>
         ),
         enableSorting: true,
         filterFn: "includesString",
       },
       {
-        accessorKey: "addedTime",
-        header: "ADDED",
-        cell: ({ row }) => <span className="text-sm text-gray-400">{formatAddedTime(row.original.addedTime)}</span>,
-        enableSorting: true,
-        sortingFn: (rowA, rowB) => {
-          const dateA = new Date(rowA.original.addedTime);
-          const dateB = new Date(rowB.original.addedTime);
-          return dateA.getTime() - dateB.getTime();
-        },
-      },
-      {
         id: "actions",
         header: "",
         cell: ({ row }) => {
           const track = row.original;
+
+          const handleRemoveFromAlbum = () => {
+            setRemoveTrackModal({
+              open: true,
+              trackId: track.id,
+              trackName: track.name,
+            });
+          };
 
           const handleCopyLink = () => {
             if (track.id) {
@@ -236,12 +211,32 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
             }
           };
 
-          const handleRemoveFromFavorites = () => {
-            handleFavorite({
-              id: track.id,
-              name: track.name,
-              checkTrackInFavorite: true, // Setting to true since we want to remove (isAdding will be false)
-            });
+          const handlePlayNow = () => {
+            const tracksForQueue = tracks.map((t) => ({
+              id: t.id,
+              name: t.name || "Unknown Track",
+              artist: t.mainArtists?.items?.[0]?.stageName || "Unknown Artist",
+              coverImage: t.coverImage,
+            }));
+
+            const trackIndex = tracksForQueue.findIndex((t) => t.id === track.id);
+
+            if (trackIndex !== -1) {
+              if (currentPlaylistId === albumId) {
+                // If this album is already active, just skip to the track
+                skipToTrack(trackIndex);
+              } else {
+                // Set the entire album with the correct album ID and track
+                setPlaylist(tracksForQueue, albumId);
+
+                // If it's not the first track, skip to the clicked track
+                if (trackIndex !== 0) {
+                  setTimeout(() => skipToTrack(trackIndex), 0);
+                }
+              }
+
+              play();
+            }
           };
 
           return (
@@ -255,13 +250,21 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem className="cursor-pointer" onClick={handlePlayNow}>
+                  <PlayIcon className="mr-2 h-4 w-4" />
+                  Play Now
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  <HeartIcon className="mr-2 h-4 w-4" />
+                  Add to Favorites
+                </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onClick={handleCopyLink}>
                   <ShareIcon className="mr-2 h-4 w-4" />
                   Share Track
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer text-red-400" onClick={handleRemoveFromFavorites}>
-                  <HeartIcon className="mr-2 h-4 w-4" />
-                  Remove from Favorites
+                <DropdownMenuItem className="cursor-pointer text-red-400" onClick={handleRemoveFromAlbum}>
+                  <Trash2Icon className="mr-2 h-4 w-4" />
+                  Remove from Album
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -271,15 +274,16 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
       },
     ],
     [
-      currentTrack?.id,
-      currentPlaylistId,
+      currentTrack,
       globalIsPlaying,
-      togglePlayPause,
+      currentPlaylistId,
+      albumId,
       tracks,
-      skipToTrack,
+      // Functions from Zustand are stable references
       play,
       setPlaylist,
-      handleFavorite,
+      skipToTrack,
+      togglePlayPause,
     ],
   );
 
@@ -300,75 +304,18 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
     },
   });
 
-  // Calculate pagination info
-  const totalPages = Math.ceil(totalCount / pageSize);
-  const startItem = (currentPage - 1) * pageSize + 1;
-  const endItem = Math.min(currentPage * pageSize, totalCount);
-
-  const renderPaginationItems = () => {
-    const items = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    // Adjust start page if we're near the end
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      items.push(
-        <PaginationItem key={i}>
-          <PaginationLink
-            href="#"
-            isActive={i === currentPage}
-            onClick={(e) => {
-              e.preventDefault();
-              onPageChange(i);
-            }}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>,
-      );
-    }
-
-    return items;
-  };
-
   return (
     <div className="w-full space-y-4">
-      {/* Header with Play/Pause button and Search Box */}
-      <div className="flex items-center justify-between gap-4">
-        {/* Play/Pause Button */}
-        <Button
-          variant="ghost"
-          size="iconLg"
-          onClick={handleMainPlayPause}
-          disabled={tracks.length === 0}
-          className="text-main-white mt-auto duration-0 hover:brightness-90"
-        >
-          {isFavoritesPlaying ? <PauseButtonMedium className="size-12" /> : <PlayButtonMedium className="size-12" />}
-        </Button>
-
-        {/* Search Box */}
-        <div className="relative w-80">
-          <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-          <Input
-            placeholder="Search favorite tracks..."
-            value={globalFilter ?? ""}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="border-gray-700 bg-gray-800 pl-10 text-white placeholder-gray-400"
-          />
-        </div>
+      {/* Search Box */}
+      <div className="relative w-80">
+        <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <Input
+          placeholder="Search tracks..."
+          value={globalFilter ?? ""}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="border-gray-700 bg-gray-800 pl-10 text-white placeholder-gray-400"
+        />
       </div>
-
-      {/* Results info */}
-      {totalCount > 0 && (
-        <div className="text-sm text-gray-400">
-          Showing {startItem}-{endItem} of {totalCount} favorite tracks
-        </div>
-      )}
 
       {/* Table */}
       <Table>
@@ -378,7 +325,7 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className={`text-main-white ${header.column.id === "name" ? "flex-1" : ""} ${header.column.id === "artist" ? "w-[20%]" : ""} ${header.column.id === "addedTime" ? "w-25" : ""} ${header.column.id === "actions" ? "w-14" : ""} flex items-center`}
+                  className={`text-main-white ${header.column.id === "name" ? "flex-1" : ""} ${header.column.id === "artist" ? "w-[20%]" : ""} ${header.column.id === "actions" ? "w-14" : ""} flex items-center`}
                 >
                   {header.isPlaceholder ? null : (
                     <div
@@ -402,6 +349,15 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
           ))}
         </TableHeader>
         <TableBody>
+          <TableRow
+            className="hover:bg-muted/50 flex cursor-pointer items-center gap-x-3 px-2 py-3 transition-colors"
+            onClick={() => setAddTrackDrawerOpen(true)}
+          >
+            <TableCell className="bg-main-grey-dark-bg flex size-12 items-center justify-center">
+              <PlusIcon className="text-main-white size-6" />
+            </TableCell>
+            <td className="text-main-white flex-1">Add new track</td>
+          </TableRow>
           {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} className="group flex items-center">
@@ -410,7 +366,7 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
                     key={cell.id}
                     className={`py-3 ${cell.column.id === "name" ? "flex-1" : ""} ${
                       cell.column.id === "artist" ? "w-[20%]" : ""
-                    } ${cell.column.id === "addedTime" ? "w-25" : ""} ${cell.column.id === "actions" ? "w-14" : ""}`}
+                    } ${cell.column.id === "actions" ? "w-14" : ""}`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -422,11 +378,8 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
               <TableCell colSpan={columns.length} className="w-full py-4 text-center">
                 <div className="text-main-white flex flex-col items-center gap-y-3 font-normal">
                   <div className="text-lg">
-                    {globalFilter
-                      ? "No favorite tracks found matching your search."
-                      : "You haven't added any tracks to your favorites yet. Explore and find tracks you love!"}
+                    {globalFilter ? "No tracks found matching your search." : "This album has no tracks yet."}
                   </div>
-                  <Button>Explore tracks</Button>
                 </div>
               </TableCell>
             </TableRow>
@@ -434,43 +387,24 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
         </TableBody>
       </Table>
 
-      {/* Pagination */}
-      {totalCount > pageSize && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-400">
-            Page {currentPage} of {totalPages}
-          </div>
-          <Pagination>
-            <PaginationContent>
-              {currentPage > 1 && (
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onPageChange(currentPage - 1);
-                    }}
-                  />
-                </PaginationItem>
-              )}
-              {renderPaginationItems()}
-              {currentPage < totalPages && (
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onPageChange(currentPage + 1);
-                    }}
-                  />
-                </PaginationItem>
-              )}
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+      <AlbumRemoveTrackModal
+        open={removeTrackModal.open}
+        onOpenChange={(open) => setRemoveTrackModal((prev) => ({ ...prev, open }))}
+        albumId={albumId}
+        trackId={removeTrackModal.trackId}
+        trackName={removeTrackModal.trackName}
+        onSuccess={() => setRemoveTrackModal({ open: false, trackId: "", trackName: "" })}
+      />
+
+      <AlbumAddTrackDrawer
+        open={addTrackDrawerOpen}
+        onOpenChange={setAddTrackDrawerOpen}
+        albumId={albumId}
+        albumName={albumName}
+      />
     </div>
   );
 };
 
-export default FavoriteTracksTable;
+export default AlbumTrackTable;
+

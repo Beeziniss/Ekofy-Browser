@@ -20,6 +20,7 @@ export const TrackListHomeQuery = graphql(`
           }
         }
         checkTrackInFavorite
+        streamCount
       }
     }
   }
@@ -82,6 +83,7 @@ export const TrackFavoriteQuery = graphql(`
             stageName
           }
         }
+        streamCount
         checkTrackInFavorite
         createdAt
       }
@@ -122,13 +124,27 @@ export const SuggestedTracksForPlaylistQuery = graphql(`
   }
 `);
 
-// export const TrackCategoriesQuery = graphql(`
-//   query TrackCategories($trackId: String!) {
-//     tracks(where: { id: { eq: $trackId } }) {
-//       items {
-//         id
-//         categoryIds
-//       }
-//     }
-//   }
-// `);
+export const TopTracksQuery = graphql(`
+  query TopTracks {
+    topTracks {
+      id
+      createdAt
+      tracksInfo {
+        trackId
+        track {
+          id
+          name
+          coverImage
+          streamCount
+          mainArtistIds
+          mainArtists {
+            items {
+              id
+              stageName
+            }
+          }
+          checkTrackInFavorite
+        }
+      }
+    }
+  }`)
