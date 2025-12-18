@@ -81,6 +81,7 @@ const TransactionDetailSectionSuspense = ({
   const { data } = useSuspenseQuery(listenerTransactionByIdOptions({ id: referenceId }));
 
   const transactionData = data?.paymentTransactions?.items?.[0];
+
   if (!transactionData) return <div className="p-4">Transaction not found.</div>;
 
   return <PaymentTransactionDetailSection backHref={backHref} transaction={transactionData} />;

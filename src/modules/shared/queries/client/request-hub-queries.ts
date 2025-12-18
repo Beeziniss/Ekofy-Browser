@@ -76,6 +76,7 @@ export const REQUEST_BY_ID_QUERY = graphql(`
         id
         userId
         displayName
+        avatarImage
       }
     }
   }
