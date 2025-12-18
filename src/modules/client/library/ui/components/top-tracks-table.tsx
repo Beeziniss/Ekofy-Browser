@@ -35,33 +35,22 @@ import { Track, useAudioStore } from "@/store";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 import { useFavoriteTrack } from "@/modules/client/track/hooks/use-favorite-track";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { PauseButtonMedium, PlayButtonMedium } from "@/assets/icons";
 
-export interface FavoriteTrack {
+export interface TopTrack {
   id: string;
   name: string;
   coverImage: string;
   artist: string;
-  addedTime: string;
+  streamCount?: number;
+  checkTrackInFavorite?: boolean;
 }
 
-interface FavoriteTracksTableProps {
-  tracks: FavoriteTrack[];
-  totalCount: number;
-  currentPage: number;
-  pageSize: number;
-  onPageChange: (page: number) => void;
+interface TopTracksTableProps {
+  tracks: TopTrack[];
 }
 
-const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPageChange }: FavoriteTracksTableProps) => {
+const TopTracksTable = ({ tracks }: TopTracksTableProps) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -79,9 +68,9 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
     skipToTrack,
   } = useAudioStore();
 
-  // Convert favorite tracks to Track format for the store
-  const convertToTrackFormat = (favoriteTracks: FavoriteTrack[]): Track[] => {
-    return favoriteTracks.map((track) => ({
+  // Convert top tracks to Track format for the store
+  const convertToTrackFormat = (topTracks: TopTrack[]): Track[] => {
+    return topTracks.map((track) => ({
       id: track.id,
       name: track.name || "Unknown Track",
       artist: track.artist,
@@ -89,67 +78,59 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
     }));
   };
 
-  // Check if favorites playlist is currently active and playing
-  const isFavoritesActive = currentPlaylistId === "favorites";
-  const isFavoritesPlaying = isFavoritesActive && globalIsPlaying;
+  // Check if top-tracks playlist is currently active and playing
+  const isTopTracksActive = currentPlaylistId === "top-tracks";
+  const isTopTracksPlaying = isTopTracksActive && globalIsPlaying;
 
   // Handle main Play/Pause button click
   const handleMainPlayPause = () => {
     if (tracks.length === 0) return;
 
-    if (isFavoritesActive) {
-      // If favorites is active, just toggle play/pause
+    if (isTopTracksActive) {
+      // If top-tracks is active, just toggle play/pause
       togglePlayPause();
     } else {
-      // If favorites is not active, set up the playlist and play from the first track
+      // If top-tracks is not active, set up the playlist and play from the first track
       const tracksForQueue = convertToTrackFormat(tracks);
-      setPlaylist(tracksForQueue, "favorites");
+      setPlaylist(tracksForQueue, "top-tracks");
       play();
     }
   };
 
-  const formatAddedTime = (addedTime: string) => {
-    return new Date(addedTime).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const columns: ColumnDef<FavoriteTrack>[] = useMemo(
+  const columns: ColumnDef<TopTrack>[] = useMemo(
     () => [
       {
         accessorKey: "name",
         header: "TRACK",
         cell: ({ row }) => {
           const track = row.original;
-          // Check if this is the currently playing track AND favorites is active
+          // Check if this is the currently playing track AND top-tracks is active
           const isCurrentTrack = currentTrack?.id === track.id;
-          const isFavoritesActive = currentPlaylistId === "favorites";
-          const isCurrentlyPlaying = isCurrentTrack && isFavoritesActive && globalIsPlaying;
+          const isTopTracksActive = currentPlaylistId === "top-tracks";
+          const isCurrentlyPlaying = isCurrentTrack && isTopTracksActive && globalIsPlaying;
 
           // Handle play/pause click
           const handlePlayPauseClick = (e: React.MouseEvent) => {
             e.preventDefault();
 
-            if (isCurrentTrack && isFavoritesActive) {
-              // If it's the current track from favorites, toggle play/pause
+            if (isCurrentTrack && isTopTracksActive) {
+              // If it's the current track from top-tracks, toggle play/pause
               togglePlayPause();
             } else {
-              // Convert all tracks and set up favorites context
+              // Convert all tracks and set up top-tracks context
               const tracksForQueue = convertToTrackFormat(tracks);
 
               // Find the index of the clicked track
               const trackIndex = tracksForQueue.findIndex((t) => t.id === track.id);
 
               if (trackIndex !== -1) {
-                if (isFavoritesActive) {
-                  // If favorites is already active, just skip to the track
+                if (isTopTracksActive) {
+                  // If top-tracks is already active, just skip to the track
                   skipToTrack(trackIndex);
                   play();
                 } else {
-                  // Set the entire favorites playlist with "favorites" as playlist ID
-                  setPlaylist(tracksForQueue, "favorites");
+                  // Set the entire top-tracks playlist with "top-tracks" as playlist ID
+                  setPlaylist(tracksForQueue, "top-tracks");
 
                   // If it's not the first track, skip to the clicked track
                   if (trackIndex !== 0) {
@@ -212,14 +193,18 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
         filterFn: "includesString",
       },
       {
-        accessorKey: "addedTime",
-        header: "ADDED",
-        cell: ({ row }) => <span className="text-sm text-gray-400">{formatAddedTime(row.original.addedTime)}</span>,
+        accessorKey: "streamCount",
+        header: "STREAMS",
+        cell: ({ row }) => (
+          <span className="text-sm text-gray-400">
+            {row.original.streamCount ? row.original.streamCount.toLocaleString() : "N/A"}
+          </span>
+        ),
         enableSorting: true,
         sortingFn: (rowA, rowB) => {
-          const dateA = new Date(rowA.original.addedTime);
-          const dateB = new Date(rowB.original.addedTime);
-          return dateA.getTime() - dateB.getTime();
+          const countA = rowA.original.streamCount || 0;
+          const countB = rowB.original.streamCount || 0;
+          return countA - countB;
         },
       },
       {
@@ -236,11 +221,11 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
             }
           };
 
-          const handleRemoveFromFavorites = () => {
+          const handleToggleFavorite = () => {
             handleFavorite({
               id: track.id,
               name: track.name,
-              checkTrackInFavorite: true, // Setting to true since we want to remove (isAdding will be false)
+              checkTrackInFavorite: track.checkTrackInFavorite || false,
             });
           };
 
@@ -259,9 +244,9 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
                   <ShareIcon className="mr-2 h-4 w-4" />
                   Share Track
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer text-red-400" onClick={handleRemoveFromFavorites}>
+                <DropdownMenuItem className="cursor-pointer" onClick={handleToggleFavorite}>
                   <HeartIcon className="mr-2 h-4 w-4" />
-                  Remove from Favorites
+                  {track.checkTrackInFavorite ? "Remove from Favorites" : "Add to Favorites"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -300,42 +285,6 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
     },
   });
 
-  // Calculate pagination info
-  const totalPages = Math.ceil(totalCount / pageSize);
-  const startItem = (currentPage - 1) * pageSize + 1;
-  const endItem = Math.min(currentPage * pageSize, totalCount);
-
-  const renderPaginationItems = () => {
-    const items = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    // Adjust start page if we're near the end
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      items.push(
-        <PaginationItem key={i}>
-          <PaginationLink
-            href="#"
-            isActive={i === currentPage}
-            onClick={(e) => {
-              e.preventDefault();
-              onPageChange(i);
-            }}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>,
-      );
-    }
-
-    return items;
-  };
-
   return (
     <div className="w-full space-y-4">
       {/* Header with Play/Pause button and Search Box */}
@@ -348,27 +297,20 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
           disabled={tracks.length === 0}
           className="text-main-white mt-auto duration-0 hover:brightness-90"
         >
-          {isFavoritesPlaying ? <PauseButtonMedium className="size-12" /> : <PlayButtonMedium className="size-12" />}
+          {isTopTracksPlaying ? <PauseButtonMedium className="size-12" /> : <PlayButtonMedium className="size-12" />}
         </Button>
 
         {/* Search Box */}
         <div className="relative w-80">
           <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <Input
-            placeholder="Search favorite tracks..."
+            placeholder="Search top tracks..."
             value={globalFilter ?? ""}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="border-gray-700 bg-gray-800 pl-10 text-white placeholder-gray-400"
           />
         </div>
       </div>
-
-      {/* Results info */}
-      {totalCount > 0 && (
-        <div className="text-sm text-gray-400">
-          Showing {startItem}-{endItem} of {totalCount} favorite tracks
-        </div>
-      )}
 
       {/* Table */}
       <Table>
@@ -378,7 +320,7 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className={`text-main-white ${header.column.id === "name" ? "flex-1" : ""} ${header.column.id === "artist" ? "w-[20%]" : ""} ${header.column.id === "addedTime" ? "w-25" : ""} ${header.column.id === "actions" ? "w-14" : ""} flex items-center`}
+                  className={`text-main-white ${header.column.id === "name" ? "flex-1" : ""} ${header.column.id === "artist" ? "w-[20%]" : ""} ${header.column.id === "streamCount" ? "w-25" : ""} ${header.column.id === "actions" ? "w-14" : ""} flex items-center`}
                 >
                   {header.isPlaceholder ? null : (
                     <div
@@ -410,7 +352,7 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
                     key={cell.id}
                     className={`py-3 ${cell.column.id === "name" ? "flex-1" : ""} ${
                       cell.column.id === "artist" ? "w-[20%]" : ""
-                    } ${cell.column.id === "addedTime" ? "w-25" : ""} ${cell.column.id === "actions" ? "w-14" : ""}`}
+                    } ${cell.column.id === "streamCount" ? "w-25" : ""} ${cell.column.id === "actions" ? "w-14" : ""}`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -422,9 +364,7 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
               <TableCell colSpan={columns.length} className="w-full py-4 text-center">
                 <div className="text-main-white flex flex-col items-center gap-y-3 font-normal">
                   <div className="text-lg">
-                    {globalFilter
-                      ? "No favorite tracks found matching your search."
-                      : "You haven't added any tracks to your favorites yet. Explore and find tracks you love!"}
+                    {globalFilter ? "No top tracks found matching your search." : "No top tracks available."}
                   </div>
                   <Button>Explore tracks</Button>
                 </div>
@@ -433,44 +373,9 @@ const FavoriteTracksTable = ({ tracks, totalCount, currentPage, pageSize, onPage
           )}
         </TableBody>
       </Table>
-
-      {/* Pagination */}
-      {totalCount > pageSize && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-400">
-            Page {currentPage} of {totalPages}
-          </div>
-          <Pagination>
-            <PaginationContent>
-              {currentPage > 1 && (
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onPageChange(currentPage - 1);
-                    }}
-                  />
-                </PaginationItem>
-              )}
-              {renderPaginationItems()}
-              {currentPage < totalPages && (
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onPageChange(currentPage + 1);
-                    }}
-                  />
-                </PaginationItem>
-              )}
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
     </div>
   );
 };
 
-export default FavoriteTracksTable;
+export default TopTracksTable;
+

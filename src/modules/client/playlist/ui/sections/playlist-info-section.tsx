@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { playlistDetailOptions } from "@/gql/options/client-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import { EllipsisIcon, LinkIcon, PenLineIcon, Trash2Icon } from "lucide-react";
+import { EllipsisIcon, LinkIcon, PauseIcon, PenLineIcon, PlayIcon, Trash2Icon } from "lucide-react";
 import Image from "next/image";
 import { Suspense, useState, useEffect } from "react";
 import PlaylistManagementModal from "../components/playlist-management-modal";
@@ -195,15 +195,14 @@ const PlaylistInfoSectionSuspense = ({ playlistId }: PlaylistInfoSectionProps) =
       <div className="flex items-center gap-x-4">
         {playlistTracks && playlistTracks.length > 0 && (
           <Button
-            variant="ghost"
-            size="iconLg"
+            size="lg"
             onClick={handlePlayPauseClick}
-            className="text-main-white mt-auto duration-0 hover:brightness-90"
+            className="bg-main-purple hover:bg-main-purple/90 size-12 rounded-full"
           >
             {isPlaylistCurrentlyPlaying && isPlaying ? (
-              <PauseButtonMedium className="size-12" />
+              <PauseIcon className="size-7 fill-white text-white" />
             ) : (
-              <PlayButtonMedium className="size-12" />
+              <PlayIcon className="size-7 fill-white text-white" />
             )}
           </Button>
         )}
