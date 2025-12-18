@@ -14,6 +14,7 @@ export interface ReportButtonProps {
   contentId?: string; // For Track, Comment, Request
   reportedUserId: string;
   reportedUserName?: string;
+  reportType?: ReportType; // Pre-fill report type
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -51,6 +52,7 @@ export const REPORT_TYPES_BY_CONTENT: Record<ReportRelatedContentType, ReportTyp
     ReportType.Other,
   ],
   [ReportRelatedContentType.Track]: [
+    ReportType.UnapprovedUploadedTrack,
     ReportType.CopyrightViolation,
     ReportType.InappropriateContent,
     ReportType.HateSpeech,
