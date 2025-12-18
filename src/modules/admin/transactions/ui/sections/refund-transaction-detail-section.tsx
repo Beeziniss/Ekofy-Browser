@@ -121,6 +121,27 @@ const RefundTransactionDetailSectionSuspense = ({ referenceId }: RefundTransacti
               <dd className="text-sm">{refundStatusBadge(transaction.status)}</dd>
             </div>
 
+            <div>
+              <dt className="mb-1 text-sm text-gray-400">User Name</dt>
+              <dd className="text-sm text-white">
+                {transaction.user?.[0]?.fullName ? (
+                  <Link
+                    href={`/admin/user-management/${transaction.user[0].id}`}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    {transaction.user[0].fullName}
+                  </Link>
+                ) : (
+                  <span className="text-gray-500">Unknown</span>
+                )}
+              </dd>
+            </div>
+
+            <div>
+              <dt className="mb-1 text-sm text-gray-400">User Email</dt>
+              <dd className="text-sm text-white">{transaction.user?.[0]?.email || "-"}</dd>
+            </div>
+
             <div className="sm:col-span-2">
               <dt className="mb-1 text-sm text-gray-400">Stripe Payment ID</dt>
               <dd className="font-mono text-sm text-white">{transaction.stripePaymentId}</dd>

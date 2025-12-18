@@ -114,6 +114,12 @@ export const GetAllPayoutTransactionsQuery = graphql(`
             method
             createdAt
             updatedAt
+            user {
+            id
+            email
+            fullName
+            role
+          }
         }
       pageInfo {
         hasNextPage
@@ -154,6 +160,12 @@ export const SearchPayoutTransactionsQuery = graphql(`
         method
         createdAt
         updatedAt
+        user {
+          id
+          email
+          fullName
+          role
+        }
         }
       pageInfo {
         hasNextPage
@@ -181,6 +193,12 @@ export const GetAllRefundTransactionsQuery = graphql(`
             status
             createdAt
             updatedAt
+            user {
+          id
+          email
+          fullName
+          role
+        }
         }
       pageInfo {
         hasNextPage
@@ -215,6 +233,12 @@ export const SearchRefundTransactionsQuery = graphql(`
         status
         createdAt
         updatedAt
+        user {
+          id
+          email
+          fullName
+          role
+        }
         }
       pageInfo {
         hasNextPage

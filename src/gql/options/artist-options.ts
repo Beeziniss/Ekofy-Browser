@@ -8,14 +8,18 @@ import {
 import {
   ArtistPackageFilterInput,
   TrackFilterInput,
+  TrackDailyMetricFilterInput,
   UserEngagementAction,
   UserEngagementFilterInput,
   UserEngagementTargetType,
+  TrackDailyMetricSortInput,
 } from "@/gql/graphql";
 import {
+  ArtistRevenueQuery,
   ArtistTrackDetailQuery,
   CategoriesQuery,
   GetArtistProfileQuery,
+  TrackDailyMetricsQuery,
   TrackListWithFiltersQuery,
   TrackUploadArtistListQuery,
   TrackUploadPendingRequestDetailQuery,
@@ -232,5 +236,33 @@ export const artistTrackDetailOptions = (trackId: string) =>
       return result.tracks?.items?.[0] || null;
     },
     enabled: !!trackId,
+    retry: 0,
+  });
+
+export const trackDailyMetricsOptions = (trackId: string, skip: number = 0, take: number = 7) =>
+  queryOptions({
+    queryKey: ["track-daily-metrics", trackId, skip, take],
+    queryFn: async () => {
+      const where: TrackDailyMetricFilterInput = { trackId: { eq: trackId } };
+      // const order: TrackDailyMetricSortInput = { date: "DESC" };
+      const result = await execute(TrackDailyMetricsQuery, { where, skip, take });
+      return result?.trackDailyMetrics || null;
+    },
+    enabled: !!trackId,
+    retry: 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+// REVENUE OPTIONS
+export const artistRevenueOptions = (artistId: string) =>
+  queryOptions({
+    queryKey: ["artist-revenue", artistId],
+    queryFn: async () => {
+      const result = await execute(ArtistRevenueQuery, {
+       artistId
+      });
+      return result.artists?.items?.[0] || null;
+    },
+    enabled: !!artistId,
     retry: 0,
   });
