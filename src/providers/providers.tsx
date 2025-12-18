@@ -13,15 +13,14 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_AUTHENTICATION_GOOGLE_CLIENT_ID || ""}>
-      <AuthProvider>
-        {children}
-        {/* <ReactQueryDevtools
+        <AuthProvider>
+          {children}
+          {/* <ReactQueryDevtools
           initialIsOpen={false}
           buttonPosition="bottom-right"
         /> */}
-      </AuthProvider>
+        </AuthProvider>
       </GoogleOAuthProvider>
     </QueryClientProvider>
   );
 }
-
