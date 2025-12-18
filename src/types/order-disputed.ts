@@ -44,6 +44,7 @@ export interface PackageOrderDetail {
   platformFeePercentage: number;
   artistFeePercentage: number;
   isEscrowReleased: boolean;
+  disputedReason: string;
   package: Array<{
     id: string;
     packageName: string;

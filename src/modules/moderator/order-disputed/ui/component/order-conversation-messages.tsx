@@ -38,7 +38,7 @@ export function OrderConversationMessages({
 
   if (!messages || messages.length === 0) {
     return (
-      <Card className="border-gray-700 bg-gray-800">
+      <Card className="border-gray-700 bg-gray-800/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-100">
             <MessageSquare className="h-5 w-5" />

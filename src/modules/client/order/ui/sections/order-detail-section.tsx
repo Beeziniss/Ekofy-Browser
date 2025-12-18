@@ -131,6 +131,14 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
           ></div>
         </CardContent>
       </Card>
+      {orderPackageDetail?.disputedReason && (
+        <Card>
+          <CardContent className="rounded-md">
+            <h3 className="text-xl font-semibold">Disputed Reason</h3>
+            <div className="text-main-white/90 mt-2 text-sm whitespace-pre-wrap">{orderPackageDetail?.disputedReason}</div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
