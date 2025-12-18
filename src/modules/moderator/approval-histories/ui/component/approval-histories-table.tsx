@@ -11,13 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, Search, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -95,6 +89,13 @@ export function ApprovalHistoriesTable({
                 userIdsToFetch.add(split.UserId as string);
               }
             });
+
+            // For DISPUTE_RESOLUTION, get ClientId 
+          } else if (type === "DISPUTE_RESOLUTION") {
+            if (snapshot?.ClientId) {
+              userIdsToFetch.add(snapshot.ClientId as string);
+            }
+            
           }
         });
 
@@ -171,6 +172,13 @@ export function ApprovalHistoriesTable({
               email = emailMap.get(userId) || (loadingEmails ? "Loading..." : "N/A");
             }
           }
+        } 
+        // For DISPUTE_RESOLUTION - get from ClientId
+        else if (type === "DISPUTE_RESOLUTION") {
+          const clientId = snapshot?.ClientId as string | undefined;
+          if (clientId) {
+            email = emailMap.get(clientId) || (loadingEmails ? "Loading..." : "N/A");
+          }
         }
         // For ARTIST_REGISTRATION - use snapshot email
         else {
@@ -237,7 +245,7 @@ export function ApprovalHistoriesTable({
     <div className="space-y-4">
       {/* Search and Filters */}
       <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
+        <div className="relative max-w-sm flex-1">
           <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
           <Input
             placeholder="Search histories..."
@@ -246,7 +254,7 @@ export function ApprovalHistoriesTable({
             className="pl-8"
           />
         </div>
-        
+
         <Select value={approvalTypeFilter} onValueChange={onApprovalTypeFilter}>
           <SelectTrigger className="w-[200px]">
             <Filter className="mr-2 h-4 w-4" />
