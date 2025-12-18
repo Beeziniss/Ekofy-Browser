@@ -296,17 +296,18 @@ export const TrackListStatsQuery = graphql(`
 
 export const TrackDailyMetricsQuery = graphql(`
   query TrackDailyMetricsArtist($skip: Int, $take: Int, $where: TrackDailyMetricFilterInput) {
-    trackDailyMetrics(skip: $skip, take: $take, where: $where) {
+    trackDailyMetrics(skip: $skip, take: $take, where: $where, order: {createdAt: DESC}) {
       items {
         id
-            trackId
-            streamCount
-            downloadCount
-            favoriteCount
-            commentCount
-            createdAt
-            updatedAt
+        trackId
+        streamCount
+        downloadCount
+        favoriteCount
+        commentCount
+        createdAt
+        updatedAt
       }
+      totalCount
     }
   }
 `);

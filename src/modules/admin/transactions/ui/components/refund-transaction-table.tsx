@@ -35,6 +35,8 @@ export function RefundTransactionTable({
           <TableRow className="border-gray-700 hover:bg-gray-800">
             <TableHead className="text-gray-300">Date</TableHead>
             <TableHead className="text-gray-300">Stripe Payment ID</TableHead>
+            <TableHead className="text-gray-300">User</TableHead>
+            <TableHead className="text-gray-300">Email</TableHead>
             <TableHead className="text-gray-300">Amount</TableHead>
             <TableHead className="text-gray-300">Reason</TableHead>
             <TableHead className="text-gray-300">Status</TableHead>
@@ -44,13 +46,13 @@ export function RefundTransactionTable({
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center text-gray-400">
+              <TableCell colSpan={8} className="h-24 text-center text-gray-400">
                 Loading refund transactions...
               </TableCell>
             </TableRow>
           ) : isError ? (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center text-red-400">
+              <TableCell colSpan={8} className="h-24 text-center text-red-400">
                 Failed to load refund transactions. Please try again.
               </TableCell>
             </TableRow>
@@ -74,6 +76,19 @@ export function RefundTransactionTable({
                       {tx?.stripePaymentId ? `${tx.stripePaymentId.slice(0, 20)}...` : "-"}
                     </span>
                   </TableCell>
+                  <TableCell>
+                      {tx?.user?.[0]?.fullName ? (
+                        <Link
+                          href={`/admin/user-management/${tx.user[0].id}`}
+                          className="font-medium text-white hover:text-primary"
+                        >
+                          {tx.user[0].fullName}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-500">Unknown</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="max-w-[200px] truncate text-gray-300">{tx.user?.[0]?.email || "-"}</TableCell>
                   <TableCell className="font-medium text-white">
                     {typeof tx?.amount === "number" ? tx.amount.toLocaleString() : tx?.amount} {tx?.currency || "VND"}
                   </TableCell>
@@ -89,7 +104,7 @@ export function RefundTransactionTable({
             })
           ) : (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center text-gray-400">
+              <TableCell colSpan={8} className="h-24 text-center text-gray-400">
                 No refund transactions found.
               </TableCell>
             </TableRow>

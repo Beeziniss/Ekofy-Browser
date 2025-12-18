@@ -34,8 +34,8 @@ const ConversationCard = ({ conversation }: ConversationCardProps) => {
           <AvatarFallback>{getUserInitials(otherUserProfile?.nickname)}</AvatarFallback>
         </Avatar>
 
-        <div className="flex flex-col">
-          <div className="text-sm font-semibold">{otherUserProfile.nickname}</div>
+        <div className="flex flex-col max-w-[200px]">
+          <div className="text-sm font-semibold line-clamp-1">{otherUserProfile.nickname}</div>
           <div className="line-clamp-1 text-xs text-gray-400">{lastMessage?.text || "No messages yet"}</div>
         </div>
       </div>

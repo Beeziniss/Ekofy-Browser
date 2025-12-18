@@ -7,15 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 import { sendRedoRequestMutationOptions } from "@/gql/options/client-mutation-options";
 import { toast } from "sonner";
 import { parseGraphQLError } from "@/utils/graphql-error-utils";
+import { differenceInHours, formatDate } from "date-fns";
 
 interface OrderSubmissionRevisionDialogProps {
   isOpen: boolean;
   onClose: () => void;
   packageOrderId: string;
   revisionNumber: number;
+  deadline?: Date | null;
 }
 
 const OrderSubmissionRevisionDialog = ({
@@ -23,12 +27,17 @@ const OrderSubmissionRevisionDialog = ({
   onClose,
   packageOrderId,
   revisionNumber,
+  deadline,
 }: OrderSubmissionRevisionDialogProps) => {
   const [clientFeedback, setClientFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
 
   const sendRedoRequestMutation = useMutation(sendRedoRequestMutationOptions);
+
+  // Check if deadline is within 48 hours
+  const hoursRemaining = deadline ? differenceInHours(deadline, new Date()) : null;
+  const isWithin48Hours = hoursRemaining !== null && hoursRemaining <= 48 && hoursRemaining > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +57,7 @@ const OrderSubmissionRevisionDialog = ({
       });
 
       toast.success("Revision request sent successfully!");
-      queryClient.invalidateQueries({ queryKey: ["order-package-detail"] });
+      await queryClient.invalidateQueries({ queryKey: ["order-package-detail"] });
       handleClose();
     } catch (error) {
       const graphqlError = parseGraphQLError(error, "Failed to send revision request");
@@ -71,6 +80,17 @@ const OrderSubmissionRevisionDialog = ({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Warning Alert for 48-hour deadline */}
+          {isWithin48Hours && deadline && (
+            <Alert className="border-yellow-500/30 bg-yellow-500/10">
+              <AlertTriangle className="h-4 w-4 text-yellow-400" />
+              <AlertDescription className="text-yellow-400">
+                ⚠️ Warning: Only {Math.max(0, Math.round(hoursRemaining!))} hours remaining until deadline ({formatDate(deadline, "PPp")}).
+                Requesting a revision may impact the delivery timeline.
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="revisionNumber">Revision Number</Label>
             <Input id="revisionNumber" type="number" value={revisionNumber} disabled className="bg-gray-50" />

@@ -20,7 +20,7 @@ import {
   PauseIcon,
 } from "lucide-react";
 import Image from "next/image";
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,

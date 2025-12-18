@@ -27,7 +27,7 @@ export function PayoutTransactionFilters({
         <Input
           id="search"
           type="text"
-          placeholder="Search payout transactions..."
+          placeholder="Search by user name or email..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="border-gray-700 bg-gray-800 text-white placeholder:text-gray-500"

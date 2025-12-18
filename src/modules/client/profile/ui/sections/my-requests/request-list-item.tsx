@@ -41,13 +41,16 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
     }
 
     try {
+      // Safely get conversationId - direct requests won't have conversations
+      const conversationId = conversationData?.conversations?.items?.[0]?.id ?? null;
+
       const result = await createCheckoutSessionMutation.mutateAsync({
         packageId: request.packageId,
         requestId: request.id,
         duration: request.duration || 0,
         requirements: request.requirements || "",
         deliveries: [], // Empty array as requested
-        conversationId: conversationData?.conversations?.items?.[0].id ?? null,
+        conversationId,
         // successUrl: `${window.location.origin}/profile/my-requests/${request.id}?payment=success`,
         // cancelUrl: `${window.location.origin}/profile/my-requests/${request.id}?payment=cancelled`,
         successUrl: `${window.location.origin}`,

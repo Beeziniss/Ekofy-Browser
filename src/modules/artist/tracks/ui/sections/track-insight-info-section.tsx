@@ -1,7 +1,7 @@
 "use client";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { trackInsightOptions } from "@/gql/options/artist-options";
+import { trackDailyMetricsOptions, trackInsightOptions } from "@/gql/options/artist-options";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -68,7 +68,31 @@ const TrackInsightInfoSectionSuspense = ({ trackId, timeRange }: TrackInsightInf
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Get the take value based on time range
+  const getDaysCount = (range: string) => {
+    switch (range) {
+      case "last-7-days":
+        return 7;
+      case "last-30-days":
+        return 30;
+      case "last-90-days":
+        return 90;
+      case "last-365-days":
+        return 365;
+      default:
+        return 7;
+    }
+  };
+
+  const daysCount = getDaysCount(timeRange);
+
+  // Fetch track daily metrics for the selected time range
+  const { data: metricsData } = useSuspenseQuery(trackDailyMetricsOptions(trackId, 0, daysCount));
+
   const trackData = data?.tracks?.items?.[0];
+
+  // Calculate total streams from daily metrics
+  const totalStreams = metricsData?.items?.reduce((sum, metric) => sum + Number(metric.streamCount), 0) || 0;
 
   const handleTimeRangeChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -155,7 +179,7 @@ const TrackInsightInfoSectionSuspense = ({ trackId, timeRange }: TrackInsightInf
       </div>
 
       <div className="text-main-white text-center text-3xl font-semibold">
-        This track got {trackData?.streamCount || 0} streams in the last {getTimeRangeNumber(timeRange)} days
+        This track got {totalStreams.toLocaleString()} streams in the last {getTimeRangeNumber(timeRange)} days
       </div>
     </div>
   );
