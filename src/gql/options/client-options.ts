@@ -59,7 +59,7 @@ import { ConversationMessagesQuery, ConversationQuery } from "@/modules/shared/q
 import { OrderPackageQuery } from "@/modules/shared/queries/client/order-queries";
 import { CategoriesChannelQuery } from "@/modules/shared/queries/client/category-queries";
 import { NotificationQuery } from "@/modules/shared/queries/client/notification-queries";
-import { AlbumQuery } from "@/modules/shared/queries/client/album-queries";
+import { AlbumDetailQuery, AlbumQuery } from "@/modules/shared/queries/client/album-queries";
 import { TrackListWithFiltersQuery } from "@/modules/shared/queries/artist";
 
 // PROFILE QUERIES
@@ -638,6 +638,22 @@ export const albumListOptions = (name?: string, take: number = 12) =>
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.albums?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
     },
+  });
+
+export const albumDetailOptions = (albumId: string) =>
+  queryOptions({
+    queryKey: ["album-detail", albumId],
+    queryFn: async () => {
+      const where: AlbumFilterInput = { id: { eq: albumId } };
+
+      const result = await execute(AlbumDetailQuery, {
+        where,
+        take: 1,
+      });
+
+      return result || null;
+    },
+    enabled: !!albumId,
   });
 
 // TRACK QUERIES FOR ARTIST

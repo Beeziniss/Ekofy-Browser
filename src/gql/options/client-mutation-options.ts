@@ -29,6 +29,7 @@ import {
   UpdateListenerRequestInput,
   ChangeOrderStatusRequestInput,
   CreateAlbumRequestInput,
+  AddTrackToAlbumRequestInput,
 } from "../graphql";
 import { mutationOptions } from "@tanstack/react-query";
 import {
@@ -52,7 +53,12 @@ import {
   SwitchStatusByRequestorMutation,
 } from "@/modules/shared/mutations/client/order-mutation";
 import { UpsertStreamCountMutation } from "@/modules/shared/mutations/client/job-mutation";
-import { CreateAlbumMutation } from "@/modules/shared/mutations/client/album-mutation";
+import {
+  AddTracksToAlbumMutation,
+  CreateAlbumMutation,
+  DeleteAlbumMutation,
+  RemoveTrackFromAlbumMutation,
+} from "@/modules/shared/mutations/client/album-mutation";
 
 // PLAYLIST MUTATIONS
 export const createPlaylistMutationOptions = mutationOptions({
@@ -255,4 +261,20 @@ export const createAlbumMutationOptions = mutationOptions({
     await execute(CreateAlbumMutation, {
       data: newAlbum,
     }),
+});
+
+export const deleteAlbumMutationOptions = mutationOptions({
+  mutationKey: ["delete-album"],
+  mutationFn: async (albumId: string) => await execute(DeleteAlbumMutation, { albumId }),
+});
+
+export const removeTrackFromAlbumMutationOptions = mutationOptions({
+  mutationKey: ["remove-track-from-album"],
+  mutationFn: async (data: { albumId: string; trackId: string }) =>
+    await execute(RemoveTrackFromAlbumMutation, { data }),
+});
+
+export const addTracksToAlbumMutationOptions = mutationOptions({
+  mutationKey: ["add-tracks-to-album"],
+  mutationFn: async (data: AddTrackToAlbumRequestInput) => await execute(AddTracksToAlbumMutation, { data }),
 });

@@ -8050,6 +8050,14 @@ export type AlbumsQueryVariables = Exact<{
 
 export type AlbumsQuery = { __typename?: 'QueryInitialization', albums?: { __typename?: 'AlbumsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Album', id: string, name: string, coverImage: string, description?: string | null, isVisible: boolean, checkAlbumInFavorite: boolean }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean } } | null };
 
+export type AlbumDetailQueryVariables = Exact<{
+  where?: InputMaybe<AlbumFilterInput>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type AlbumDetailQuery = { __typename?: 'QueryInitialization', albums?: { __typename?: 'AlbumsCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Album', id: string, name: string, trackIds: Array<string>, coverImage: string, description?: string | null, isVisible: boolean, createdAt: any, updatedAt?: any | null, tracks?: { __typename?: 'TracksCollectionSegment', items?: Array<{ __typename?: 'Track', id: string, coverImage: string, name: string, mainArtistIds: Array<string>, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null, artists: Array<{ __typename?: 'Artist', stageName: string }>, contributingArtists: Array<{ __typename?: 'ContributingArtist', artistId: string }> }> | null } | null };
+
 export type CategoriesChannelQueryVariables = Exact<{
   type?: InputMaybe<CategoryType>;
   take: Scalars['Int']['input'];
@@ -10851,6 +10859,43 @@ export const AlbumsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AlbumsQuery, AlbumsQueryVariables>;
+export const AlbumDetailDocument = new TypedDocumentString(`
+    query AlbumDetail($where: AlbumFilterInput, $take: Int) {
+  albums(where: $where, take: $take) {
+    items {
+      id
+      name
+      trackIds
+      coverImage
+      tracks {
+        items {
+          id
+          coverImage
+          name
+          mainArtistIds
+          mainArtists {
+            items {
+              id
+              stageName
+            }
+          }
+        }
+      }
+      description
+      isVisible
+      createdAt
+      updatedAt
+      artists {
+        stageName
+      }
+      contributingArtists {
+        artistId
+      }
+    }
+    totalCount
+  }
+}
+    `) as unknown as TypedDocumentString<AlbumDetailQuery, AlbumDetailQueryVariables>;
 export const CategoriesChannelDocument = new TypedDocumentString(`
     query CategoriesChannel($type: CategoryType, $take: Int!) {
   categories(
