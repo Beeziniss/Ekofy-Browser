@@ -1,13 +1,15 @@
 "use client";
 
-import { graphql } from "@/gql";
-import { ArrowLeftIcon, SettingsIcon } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { graphql } from "@/gql";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
+import { ArrowLeftIcon, SettingsIcon } from "lucide-react";
+import { useState } from "react";
 import TrackInsightInfoSection from "../sections/track-insight-info-section";
-import TrackInsightChartSection from "../sections/track-insight-chart-section";
-import TrackInsightStatsSection from "../sections/track-insight-stats-section";
+import TrackInsightStatsSection, { MetricType } from "../sections/track-insight-stats-section";
+import TrackInsightMetricChartSection from "../sections/track-insight-metric-chart-section";
+import TrackInsightPayoutsChartSection from "../sections/track-insight-payouts-chart-section";
 
 interface TrackInsightViewProps {
   trackId: string;
@@ -15,7 +17,7 @@ interface TrackInsightViewProps {
 
 export const TrackInsightViewQuery = graphql(`
   query TrackInsightView($trackId: String!) {
-    tracks(where: { id: { eq: $trackId } }) {
+    tracks(where: { id: { eq: $trackId } }, take: 1) {
       items {
         id
         name
@@ -35,6 +37,9 @@ const TrackInsightView = ({ trackId }: TrackInsightViewProps) => {
   const timeRange = searchParams.get("timeRange") || "last-7-days";
   const dateFrom = searchParams.get("dateFrom");
   const dateTo = searchParams.get("dateTo");
+
+  // State to track which metric is selected
+  const [selectedMetric, setSelectedMetric] = useState<MetricType>("streams");
 
   return (
     <div className="w-full space-y-6 px-4 py-8">
@@ -56,13 +61,39 @@ const TrackInsightView = ({ trackId }: TrackInsightViewProps) => {
         </Link>
       </div>
 
+      {/* Track Info & Time Range Selector */}
       <TrackInsightInfoSection trackId={trackId} timeRange={timeRange} dateFrom={dateFrom} dateTo={dateTo} />
 
-      <TrackInsightStatsSection trackId={trackId} timeRange={timeRange} dateFrom={dateFrom} dateTo={dateTo} />
+      {/* Stats Cards - Upper Section (Streams, Favorites, Comments, Downloads) */}
+      <TrackInsightStatsSection
+        trackId={trackId}
+        timeRange={timeRange}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        selectedMetric={selectedMetric}
+        onSelectMetric={setSelectedMetric}
+      />
 
-      <TrackInsightChartSection trackId={trackId} timeRange={timeRange} dateFrom={dateFrom} dateTo={dateTo} />
+      {/* Selected Metric Chart */}
+      <TrackInsightMetricChartSection
+        trackId={trackId}
+        timeRange={timeRange}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        selectedMetric={selectedMetric}
+      />
+
+      {/* Payouts Section - Lower Section */}
+      <TrackInsightPayoutsChartSection
+        trackId={trackId}
+        timeRange={timeRange}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+      />
     </div>
   );
 };
 
 export default TrackInsightView;
+
+
