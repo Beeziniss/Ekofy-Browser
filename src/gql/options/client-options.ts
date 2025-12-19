@@ -166,12 +166,11 @@ export const suggestedTracksForPlaylistOptions = (playlistId: string, nameUnsign
     },
   });
 
-export const topTracksOptions = () =>
+export const topTracksOptions = (userId: string) =>
   queryOptions({
-    queryKey: ["top-tracks"],
+    queryKey: ["top-tracks", userId],
     queryFn: async () => {
-      const result = await execute(TopTracksQuery);
-
+      const result = await execute(TopTracksQuery, { userId });
       return result || null;
     },
   });

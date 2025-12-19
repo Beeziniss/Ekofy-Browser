@@ -100,6 +100,9 @@ export const useFavoriteTrack = () => {
       queryClient.invalidateQueries({
         queryKey: ["track-semantic"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["top-tracks"],
+      });
     },
   });
 

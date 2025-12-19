@@ -2243,6 +2243,13 @@ export type ListFilterInputTypeOfSyncedLineFilterInput = {
   some?: InputMaybe<SyncedLineFilterInput>;
 };
 
+export type ListFilterInputTypeOfTopTrackInfoFilterInput = {
+  all?: InputMaybe<TopTrackInfoFilterInput>;
+  any?: InputMaybe<Scalars['Boolean']['input']>;
+  none?: InputMaybe<TopTrackInfoFilterInput>;
+  some?: InputMaybe<TopTrackInfoFilterInput>;
+};
+
 export type ListFilterInputTypeOfWorkSplitFilterInput = {
   all?: InputMaybe<WorkSplitFilterInput>;
   any?: InputMaybe<Scalars['Boolean']['input']>;
@@ -4322,7 +4329,7 @@ export type QueryInitialization = {
   subscriptionPlans?: Maybe<SubscriptionPlansCollectionSegment>;
   subscriptions?: Maybe<SubscriptionsCollectionSegment>;
   threadedComments: ThreadedCommentsResponse;
-  topTracks: Array<TopTrack>;
+  topTracks?: Maybe<TopTracksCollectionSegment>;
   trackBySemanticSearch: Array<Track>;
   trackComments?: Maybe<TrackCommentsCollectionSegment>;
   trackDailyMetrics?: Maybe<TrackDailyMetricsCollectionSegment>;
@@ -4866,6 +4873,14 @@ export type QueryInitializationSubscriptionsArgs = {
 
 export type QueryInitializationThreadedCommentsArgs = {
   request: ThreadedCommentsRequestInput;
+};
+
+
+export type QueryInitializationTopTracksArgs = {
+  order?: InputMaybe<Array<TopTrackInfoSortInput>>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TopTrackFilterInput>;
 };
 
 
@@ -6233,13 +6248,43 @@ export type TopTrack = {
   userId: Scalars['String']['output'];
 };
 
+export type TopTrackFilterInput = {
+  and?: InputMaybe<Array<TopTrackFilterInput>>;
+  createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<TopTrackFilterInput>>;
+  tracksInfo?: InputMaybe<ListFilterInputTypeOfTopTrackInfoFilterInput>;
+  updatedAt?: InputMaybe<DateTimeOperationFilterInput>;
+  userId?: InputMaybe<StringOperationFilterInput>;
+};
+
 export type TopTrackInfo = {
   __typename?: 'TopTrackInfo';
-  artistName: Scalars['String']['output'];
   playedCount: Scalars['Int']['output'];
   track?: Maybe<Track>;
   trackId: Scalars['String']['output'];
-  trackName: Scalars['String']['output'];
+};
+
+export type TopTrackInfoFilterInput = {
+  and?: InputMaybe<Array<TopTrackInfoFilterInput>>;
+  or?: InputMaybe<Array<TopTrackInfoFilterInput>>;
+  playedCount?: InputMaybe<IntOperationFilterInput>;
+  trackId?: InputMaybe<StringOperationFilterInput>;
+};
+
+export type TopTrackInfoSortInput = {
+  playedCount?: InputMaybe<SortEnumType>;
+  trackId?: InputMaybe<SortEnumType>;
+};
+
+/** A segment of a collection. */
+export type TopTracksCollectionSegment = {
+  __typename?: 'TopTracksCollectionSegment';
+  /** A flattened list of the items. */
+  items?: Maybe<Array<TopTrack>>;
+  /** Information to aid in pagination. */
+  pageInfo: CollectionSegmentInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type Track = {
@@ -8461,10 +8506,12 @@ export type SuggestedTracksForPlaylistQueryVariables = Exact<{
 
 export type SuggestedTracksForPlaylistQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, isExplicit: boolean, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
 
-export type TopTracksQueryVariables = Exact<{ [key: string]: never; }>;
+export type TopTracksQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
 
 
-export type TopTracksQuery = { __typename?: 'QueryInitialization', topTracks: Array<{ __typename?: 'TopTrack', id: string, createdAt: any, tracksInfo: Array<{ __typename?: 'TopTrackInfo', trackId: string, track?: { __typename?: 'Track', id: string, name: string, coverImage: string, streamCount: any, mainArtistIds: Array<string>, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null } | null }> }> };
+export type TopTracksQuery = { __typename?: 'QueryInitialization', topTracks?: { __typename?: 'TopTracksCollectionSegment', items?: Array<{ __typename?: 'TopTrack', id: string, createdAt: any, tracksInfo: Array<{ __typename?: 'TopTrackInfo', trackId: string, track?: { __typename?: 'Track', id: string, name: string, coverImage: string, streamCount: any, mainArtistIds: Array<string>, isExplicit: boolean, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null } | null }> }> | null } | null };
 
 export type UserBasicInfoQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -12344,25 +12391,28 @@ export const SuggestedTracksForPlaylistDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<SuggestedTracksForPlaylistQuery, SuggestedTracksForPlaylistQueryVariables>;
 export const TopTracksDocument = new TypedDocumentString(`
-    query TopTracks {
-  topTracks {
-    id
-    createdAt
-    tracksInfo {
-      trackId
-      track {
-        id
-        name
-        coverImage
-        streamCount
-        mainArtistIds
-        mainArtists {
-          items {
-            id
-            stageName
+    query TopTracks($userId: String!) {
+  topTracks(take: 50, where: {userId: {eq: $userId}}) {
+    items {
+      id
+      createdAt
+      tracksInfo {
+        trackId
+        track {
+          id
+          name
+          coverImage
+          streamCount
+          mainArtistIds
+          isExplicit
+          mainArtists {
+            items {
+              id
+              stageName
+            }
           }
+          checkTrackInFavorite
         }
-        checkTrackInFavorite
       }
     }
   }
