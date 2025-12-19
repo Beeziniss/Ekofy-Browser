@@ -489,6 +489,7 @@ export const conversationListOptions = (userId: string, status?: ConversationSta
       return result;
     },
     enabled: !!userId,
+    retry: 0,
   });
 
 export const conversationDetailOptions = (coversationId: string) =>
@@ -499,6 +500,7 @@ export const conversationDetailOptions = (coversationId: string) =>
       const result = await execute(ConversationQuery, { where });
       return result;
     },
+    retry: 0,
   });
 
 export const conversationDetailByRequestOptions = (requestId: string) =>
@@ -506,6 +508,19 @@ export const conversationDetailByRequestOptions = (requestId: string) =>
     queryKey: ["conversation-detail-by-request", requestId],
     queryFn: async () => {
       const where: ConversationFilterInput = { requestId: { eq: requestId } };
+      const result = await execute(ConversationQuery, { where });
+      return result;
+    },
+  });
+
+export const conversationDetailByRequestPublicOptions = (requestId: string) =>
+  queryOptions({
+    queryKey: ["conversation-detail-by-request-public", requestId],
+    queryFn: async () => {
+      const where: ConversationFilterInput = {
+        requestId: { eq: requestId },
+        status: { eq: ConversationStatus.Pending },
+      };
       const result = await execute(ConversationQuery, { where });
       return result;
     },
@@ -664,10 +679,7 @@ export const artistTracksInfiniteOptions = (artistId: string, take: number = 20)
       const skip = (pageParam - 1) * take;
 
       const where: TrackFilterInput = {
-        or: [
-          { mainArtistIds: { some: { eq: artistId } } },
-          { featuredArtistIds: { some: { eq: artistId } } },
-        ],
+        or: [{ mainArtistIds: { some: { eq: artistId } } }, { featuredArtistIds: { some: { eq: artistId } } }],
       };
 
       return await execute(TrackListWithFiltersQuery, {
@@ -682,4 +694,3 @@ export const artistTracksInfiniteOptions = (artistId: string, take: number = 20)
     },
     enabled: !!artistId,
   });
-

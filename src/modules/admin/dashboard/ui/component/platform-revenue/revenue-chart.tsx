@@ -9,7 +9,15 @@ import {
   Wallet,
   BarChart3,
 } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, TooltipProps } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Cell } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 
 type PlatformRevenue = NonNullable<NonNullable<PlatformRevenueQuery["platformRevenues"]>["items"]>[number];
 
@@ -18,44 +26,85 @@ interface RevenueChartProps {
 }
 
 export function RevenueChart({ data }: RevenueChartProps) {
-  // Prepare data for bar chart
+  // Chart configuration
+  const chartConfig = {
+    "Subscription Revenue": {
+      label: "Subscription Revenue",
+      color: "#a855f7",
+    },
+    "Service Revenue": {
+      label: "Service Revenue",
+      color: "#3b82f6",
+    },
+    "Gross Revenue": {
+      label: "Gross Revenue",
+      color: "#10b981",
+    },
+    "Royalty Payout": {
+      label: "Royalty Payout",
+      color: "#f97316",
+    },
+    "Service Payout": {
+      label: "Service Payout",
+      color: "#fb923c",
+    },
+    "Refund Amount": {
+      label: "Refund Amount",
+      color: "#ef4444",
+    },
+    "Total Deductions": {
+      label: "Total Deductions",
+      color: "#9ca3af",
+    },
+    "Commission Profit": {
+      label: "Commission Profit",
+      color: "#06b6d4",
+    },
+    "Net Profit": {
+      label: "Net Profit",
+      color: "#059669",
+    },
+  } satisfies ChartConfig;
+
+  // Prepare data for bar chart - gộp tất cả thành 1 nhóm
   const chartData = [
     {
-      name: "Revenue",
-      "Subscription Revenue": data.subscriptionRevenue,
-      "Service Revenue": data.serviceRevenue,
-      "Gross Revenue": data.grossRevenue,
+      name: "Subscription Revenue",
+      value: data.subscriptionRevenue,
     },
     {
-      name: "Deductions",
-      "Royalty Payout": data.royaltyPayoutAmount,
-      "Service Payout": data.servicePayoutAmount,
-      "Refund Amount": data.refundAmount,
-      "Total Deductions": data.grossDeductions,
+      name: "Service Revenue",
+      value: data.serviceRevenue,
     },
     {
-      name: "Profit",
-      "Commission Profit": data.commissionProfit,
-      "Net Profit": data.netProfit,
+      name: "Gross Revenue",
+      value: data.grossRevenue,
+    },
+    {
+      name: "Royalty Payout",
+      value: data.royaltyPayoutAmount,
+    },
+    {
+      name: "Service Payout",
+      value: data.servicePayoutAmount,
+    },
+    {
+      name: "Refund Amount",
+      value: data.refundAmount,
+    },
+    {
+      name: "Total Deductions",
+      value: data.grossDeductions,
+    },
+    {
+      name: "Commission Profit",
+      value: data.commissionProfit,
+    },
+    {
+      name: "Net Profit",
+      value: data.netProfit,
     },
   ];
-
-  // Format currency for tooltip
-  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="rounded-lg border bg-background p-3 shadow-lg">
-          <p className="font-semibold mb-2">{payload[0].payload.name}</p>
-          {payload.map((entry, index: number) => (
-            <p key={index} style={{ color: entry.color }} className="text-sm">
-              {entry.name}: {formatCurrencyVND(entry.value || 0)} {data.currency}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="space-y-6">
@@ -67,39 +116,66 @@ export function RevenueChart({ data }: RevenueChartProps) {
             Revenue & Profit Analysis
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+        <CardContent className="p-6">
+          <ChartContainer 
+            config={chartConfig} 
+            className="h-[600px] w-full aspect-auto [&_.recharts-wrapper]:!w-full [&_.recharts-surface]:!w-full"
+          >
+            <BarChart 
+              data={chartData}
+              margin={{ top: 10, right: 30, left: 30, bottom: 60 }}
+              barCategoryGap="10%"
+            >
+              <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="name" 
-                className="text-sm"
-                tick={{ fill: 'currentColor' }}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                height={80}
+                angle={-45}
+                textAnchor="end"
+                interval={0}
               />
               <YAxis 
-                className="text-sm"
-                tick={{ fill: 'currentColor' }}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                width={80}
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}K`}
               />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ paddingTop: '20px' }} />
+              <ChartTooltip 
+                content={
+                  <ChartTooltipContent 
+                    formatter={(value) => [
+                      `${formatCurrencyVND(Number(value))} ${data.currency}`,
+                    ]}
+                    labelFormatter={(label) => {
+                      const entryName = label as string;
+                      return chartConfig[entryName as keyof typeof chartConfig]?.label || entryName;
+                    }}
+                  />
+                }
+              />
+              <ChartLegend 
+                content={<ChartLegendContent />} 
+                wrapperStyle={{ paddingTop: '10px' }}
+              />
               
-              {/* Revenue bars */}
-              <Bar dataKey="Subscription Revenue" fill="#a855f7" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Service Revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Gross Revenue" fill="#10b981" radius={[4, 4, 0, 0]} />
-              
-              {/* Deduction bars */}
-              <Bar dataKey="Royalty Payout" fill="#f97316" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Service Payout" fill="#fb923c" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Refund Amount" fill="#ef4444" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Total Deductions" fill="#9ca3af" radius={[4, 4, 0, 0]} />
-              
-              {/* Profit bars */}
-              <Bar dataKey="Commission Profit" fill="#06b6d4" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Net Profit" fill="#059669" radius={[4, 4, 0, 0]} />
+              <Bar 
+                dataKey="value" 
+                radius={[4, 4, 0, 0]}
+                maxBarSize={250}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`}
+                    fill={chartConfig[entry.name as keyof typeof chartConfig]?.color || "#8884d8"}
+                  />
+                ))}
+              </Bar>
             </BarChart>
-          </ResponsiveContainer>
+          </ChartContainer>
         </CardContent>
       </Card>
 
@@ -163,7 +239,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
                   <span className="text-sm font-medium">Royalty Payouts</span>
                 </div>
                 <span className="font-semibold text-orange-600 dark:text-orange-400">
-                  -{formatCurrencyVND(data.royaltyPayoutAmount)} {data.currency}
+                  {formatCurrencyVND(data.royaltyPayoutAmount)} {data.currency}
                 </span>
               </div>
 
@@ -172,7 +248,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
                   <span className="text-sm font-medium">Service Payouts</span>
                 </div>
                 <span className="font-semibold text-orange-600 dark:text-orange-400">
-                  -{formatCurrencyVND(data.servicePayoutAmount)} {data.currency}
+                  {formatCurrencyVND(data.servicePayoutAmount)} {data.currency}
                 </span>
               </div>
 
@@ -181,7 +257,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
                   <span className="text-sm font-medium">Refunds</span>
                 </div>
                 <span className="font-semibold text-orange-600 dark:text-orange-400">
-                  -{formatCurrencyVND(data.refundAmount)} {data.currency}
+                  {formatCurrencyVND(data.refundAmount)} {data.currency}
                 </span>
               </div>
 
@@ -190,7 +266,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
                   Total Deductions
                 </span>
                 <span className="font-bold">
-                  -{formatCurrencyVND(data.grossDeductions)} {data.currency}
+                  {formatCurrencyVND(data.grossDeductions)} {data.currency}
                 </span>
               </div>
             </div>

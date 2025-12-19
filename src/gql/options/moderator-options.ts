@@ -476,7 +476,7 @@ export const moderatorDisputedPackageOrdersOptions = (
       return result.packageOrders;
     },
     staleTime: 0, // Always fetch fresh data
-    refetchOnMount: false, // Prevent refetch on mount
+    refetchOnMount: true, // Refetch when component mounts to get fresh data
     refetchOnWindowFocus: false, // Prevent refetch on window focus
   });
 
