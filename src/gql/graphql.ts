@@ -119,6 +119,7 @@ export type Album = {
   contributingArtists: Array<ContributingArtist>;
   coverImage: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   isVisible: Scalars['Boolean']['output'];
@@ -151,6 +152,7 @@ export type AlbumFilterInput = {
   contributingArtists?: InputMaybe<ListFilterInputTypeOfContributingArtistFilterInput>;
   coverImage?: InputMaybe<StringOperationFilterInput>;
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  createdBy?: InputMaybe<StringOperationFilterInput>;
   description?: InputMaybe<StringOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   isVisible?: InputMaybe<BooleanOperationFilterInput>;
@@ -167,6 +169,7 @@ export type AlbumFilterInput = {
 export type AlbumSortInput = {
   coverImage?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
+  createdBy?: InputMaybe<SortEnumType>;
   description?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   isVisible?: InputMaybe<SortEnumType>;
@@ -1771,6 +1774,27 @@ export type FeaturedArtistsCollectionSegment = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type FingerprintConfidencePolicy = {
+  __typename?: 'FingerprintConfidencePolicy';
+  id: Scalars['String']['output'];
+  manualReviewThreshold: Scalars['Float']['output'];
+  rejectThreshold: Scalars['Float']['output'];
+};
+
+export type FingerprintConfidencePolicyFilterInput = {
+  and?: InputMaybe<Array<FingerprintConfidencePolicyFilterInput>>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  manualReviewThreshold?: InputMaybe<FloatOperationFilterInput>;
+  or?: InputMaybe<Array<FingerprintConfidencePolicyFilterInput>>;
+  rejectThreshold?: InputMaybe<FloatOperationFilterInput>;
+};
+
+export type FingerprintConfidencePolicySortInput = {
+  id?: InputMaybe<SortEnumType>;
+  manualReviewThreshold?: InputMaybe<SortEnumType>;
+  rejectThreshold?: InputMaybe<SortEnumType>;
+};
+
 export type FloatOperationFilterInput = {
   eq?: InputMaybe<Scalars['Float']['input']>;
   gt?: InputMaybe<Scalars['Float']['input']>;
@@ -2649,6 +2673,7 @@ export type MutationInitialization = {
   updateConversationStatus: Scalars['Boolean']['output'];
   updateCustomPackage: Scalars['Boolean']['output'];
   updateEscrowCommissionPolicy: Scalars['Boolean']['output'];
+  updateFingerprintConfidencePolicy: Scalars['Boolean']['output'];
   updateListenerProfile: Scalars['Boolean']['output'];
   updateMetadataTrack: Scalars['Boolean']['output'];
   updatePlaylist: Scalars['Boolean']['output'];
@@ -3188,6 +3213,11 @@ export type MutationInitializationUpdateCustomPackageArgs = {
 
 export type MutationInitializationUpdateEscrowCommissionPolicyArgs = {
   updateRequest: UpdateEscrowCommissionPolicyRequestInput;
+};
+
+
+export type MutationInitializationUpdateFingerprintConfidencePolicyArgs = {
+  updateRequest: UpdateFingerprintConfidencePolicyRequestInput;
 };
 
 
@@ -4239,6 +4269,7 @@ export type QueryInitialization = {
   favoriteAlbums?: Maybe<FavoriteAlbumsCollectionSegment>;
   favoritePlaylists?: Maybe<FavoritePlaylistsCollectionSegment>;
   favoriteTracks?: Maybe<FavoriteTracksCollectionSegment>;
+  fingerprintConfidencePolicy: FingerprintConfidencePolicy;
   followers?: Maybe<FollowersCollectionSegment>;
   followings?: Maybe<FollowingsCollectionSegment>;
   initialize: Scalars['String']['output'];
@@ -4434,6 +4465,12 @@ export type QueryInitializationFavoriteTracksArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<TrackFilterInput>;
+};
+
+
+export type QueryInitializationFingerprintConfidencePolicyArgs = {
+  order?: InputMaybe<Array<FingerprintConfidencePolicySortInput>>;
+  where?: InputMaybe<FingerprintConfidencePolicyFilterInput>;
 };
 
 
@@ -6498,6 +6535,11 @@ export type UpdateEscrowCommissionPolicyRequestInput = {
   version: Scalars['Long']['input'];
 };
 
+export type UpdateFingerprintConfidencePolicyRequestInput = {
+  manualReviewThreshold: Scalars['Float']['input'];
+  rejectThreshold: Scalars['Float']['input'];
+};
+
 export type UpdateListenerRequestInput = {
   avatarImage?: InputMaybe<Scalars['String']['input']>;
   bannerImage?: InputMaybe<Scalars['String']['input']>;
@@ -7160,6 +7202,13 @@ export type SwitchEscrowCommissionPolicyToLatestVersionMutationVariables = Exact
 
 export type SwitchEscrowCommissionPolicyToLatestVersionMutation = { __typename?: 'MutationInitialization', switchEscrowCommissionPolicyToLatestVersion: boolean };
 
+export type UpdateFingerprintConfidencePolicyMutationVariables = Exact<{
+  updateRequest: UpdateFingerprintConfidencePolicyRequestInput;
+}>;
+
+
+export type UpdateFingerprintConfidencePolicyMutation = { __typename?: 'MutationInitialization', updateFingerprintConfidencePolicy: boolean };
+
 export type CreateRoyaltyPolicyMutationVariables = Exact<{
   createRoyalPolicyRequest: CreateRoyalPolicyRequestInput;
 }>;
@@ -7781,6 +7830,11 @@ export type EscrowCommissionPoliciesQueryVariables = Exact<{
 
 
 export type EscrowCommissionPoliciesQuery = { __typename?: 'QueryInitialization', escrowCommissionPolicies?: { __typename?: 'EscrowCommissionPoliciesCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'EscrowCommissionPolicy', id: string, currency: CurrencyType, platformFeePercentage: any, version: any, status: PolicyStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type FingerprintConfidencePolicyQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FingerprintConfidencePolicyQuery = { __typename?: 'QueryInitialization', fingerprintConfidencePolicy: { __typename?: 'FingerprintConfidencePolicy', id: string, rejectThreshold: number, manualReviewThreshold: number } };
 
 export type RoyaltyPoliciesQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -9167,6 +9221,11 @@ export const SwitchEscrowCommissionPolicyToLatestVersionDocument = new TypedDocu
   switchEscrowCommissionPolicyToLatestVersion
 }
     `) as unknown as TypedDocumentString<SwitchEscrowCommissionPolicyToLatestVersionMutation, SwitchEscrowCommissionPolicyToLatestVersionMutationVariables>;
+export const UpdateFingerprintConfidencePolicyDocument = new TypedDocumentString(`
+    mutation UpdateFingerprintConfidencePolicy($updateRequest: UpdateFingerprintConfidencePolicyRequestInput!) {
+  updateFingerprintConfidencePolicy(updateRequest: $updateRequest)
+}
+    `) as unknown as TypedDocumentString<UpdateFingerprintConfidencePolicyMutation, UpdateFingerprintConfidencePolicyMutationVariables>;
 export const CreateRoyaltyPolicyDocument = new TypedDocumentString(`
     mutation createRoyaltyPolicy($createRoyalPolicyRequest: CreateRoyalPolicyRequestInput!) {
   createRoyaltyPolicy(createRoyalPolicyRequest: $createRoyalPolicyRequest)
@@ -9864,6 +9923,15 @@ export const EscrowCommissionPoliciesDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<EscrowCommissionPoliciesQuery, EscrowCommissionPoliciesQueryVariables>;
+export const FingerprintConfidencePolicyDocument = new TypedDocumentString(`
+    query FingerprintConfidencePolicy {
+  fingerprintConfidencePolicy {
+    id
+    rejectThreshold
+    manualReviewThreshold
+  }
+}
+    `) as unknown as TypedDocumentString<FingerprintConfidencePolicyQuery, FingerprintConfidencePolicyQueryVariables>;
 export const RoyaltyPoliciesDocument = new TypedDocumentString(`
     query RoyaltyPolicies($skip: Int, $take: Int, $where: RoyaltyPolicyFilterInput) {
   royaltyPolicies(
