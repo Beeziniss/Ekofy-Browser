@@ -206,8 +206,10 @@ const AuthButton = () => {
         // Signed in
         <div className="flex items-center">
           <TooltipButton content="Inbox" side="bottom">
-            <Link href={"/inbox"} className="group p-2">
-              <MessageCircleIcon className="text-main-white group-hover:text-main-grey size-5" />
+            <Link href={"/inbox"} className="group">
+              <Button variant={"ghost"} size={"iconLg"} className="rounded-full">
+                <MessageCircleIcon className="text-main-white group-hover:text-main-grey size-5" />
+              </Button>
             </Link>
           </TooltipButton>
 
@@ -219,7 +221,7 @@ const AuthButton = () => {
           >
             <div className="group relative cursor-pointer">
               {unreadCount > 0 ? (
-                <div className="relative p-2">
+                <div className="relative">
                   <BellActive className="size-5" />
                   {/* {unreadCount > 0 && (
                       <div className="absolute -top-1 -right-1 flex h-4 w-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
@@ -228,7 +230,7 @@ const AuthButton = () => {
                     )} */}
                 </div>
               ) : (
-                <div className="p-2">
+                <div>
                   <Bell className="text-main-white group-hover:text-main-grey size-5" />
                 </div>
               )}

@@ -119,6 +119,7 @@ export type Album = {
   contributingArtists: Array<ContributingArtist>;
   coverImage: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   isVisible: Scalars['Boolean']['output'];
@@ -151,6 +152,7 @@ export type AlbumFilterInput = {
   contributingArtists?: InputMaybe<ListFilterInputTypeOfContributingArtistFilterInput>;
   coverImage?: InputMaybe<StringOperationFilterInput>;
   createdAt?: InputMaybe<DateTimeOperationFilterInput>;
+  createdBy?: InputMaybe<StringOperationFilterInput>;
   description?: InputMaybe<StringOperationFilterInput>;
   id?: InputMaybe<StringOperationFilterInput>;
   isVisible?: InputMaybe<BooleanOperationFilterInput>;
@@ -167,6 +169,7 @@ export type AlbumFilterInput = {
 export type AlbumSortInput = {
   coverImage?: InputMaybe<SortEnumType>;
   createdAt?: InputMaybe<SortEnumType>;
+  createdBy?: InputMaybe<SortEnumType>;
   description?: InputMaybe<SortEnumType>;
   id?: InputMaybe<SortEnumType>;
   isVisible?: InputMaybe<SortEnumType>;
@@ -1771,6 +1774,27 @@ export type FeaturedArtistsCollectionSegment = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type FingerprintConfidencePolicy = {
+  __typename?: 'FingerprintConfidencePolicy';
+  id: Scalars['String']['output'];
+  manualReviewThreshold: Scalars['Float']['output'];
+  rejectThreshold: Scalars['Float']['output'];
+};
+
+export type FingerprintConfidencePolicyFilterInput = {
+  and?: InputMaybe<Array<FingerprintConfidencePolicyFilterInput>>;
+  id?: InputMaybe<StringOperationFilterInput>;
+  manualReviewThreshold?: InputMaybe<FloatOperationFilterInput>;
+  or?: InputMaybe<Array<FingerprintConfidencePolicyFilterInput>>;
+  rejectThreshold?: InputMaybe<FloatOperationFilterInput>;
+};
+
+export type FingerprintConfidencePolicySortInput = {
+  id?: InputMaybe<SortEnumType>;
+  manualReviewThreshold?: InputMaybe<SortEnumType>;
+  rejectThreshold?: InputMaybe<SortEnumType>;
+};
+
 export type FloatOperationFilterInput = {
   eq?: InputMaybe<Scalars['Float']['input']>;
   gt?: InputMaybe<Scalars['Float']['input']>;
@@ -2649,6 +2673,7 @@ export type MutationInitialization = {
   updateConversationStatus: Scalars['Boolean']['output'];
   updateCustomPackage: Scalars['Boolean']['output'];
   updateEscrowCommissionPolicy: Scalars['Boolean']['output'];
+  updateFingerprintConfidencePolicy: Scalars['Boolean']['output'];
   updateListenerProfile: Scalars['Boolean']['output'];
   updateMetadataTrack: Scalars['Boolean']['output'];
   updatePlaylist: Scalars['Boolean']['output'];
@@ -3188,6 +3213,11 @@ export type MutationInitializationUpdateCustomPackageArgs = {
 
 export type MutationInitializationUpdateEscrowCommissionPolicyArgs = {
   updateRequest: UpdateEscrowCommissionPolicyRequestInput;
+};
+
+
+export type MutationInitializationUpdateFingerprintConfidencePolicyArgs = {
+  updateRequest: UpdateFingerprintConfidencePolicyRequestInput;
 };
 
 
@@ -4239,6 +4269,7 @@ export type QueryInitialization = {
   favoriteAlbums?: Maybe<FavoriteAlbumsCollectionSegment>;
   favoritePlaylists?: Maybe<FavoritePlaylistsCollectionSegment>;
   favoriteTracks?: Maybe<FavoriteTracksCollectionSegment>;
+  fingerprintConfidencePolicy: FingerprintConfidencePolicy;
   followers?: Maybe<FollowersCollectionSegment>;
   followings?: Maybe<FollowingsCollectionSegment>;
   initialize: Scalars['String']['output'];
@@ -4434,6 +4465,12 @@ export type QueryInitializationFavoriteTracksArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<TrackFilterInput>;
+};
+
+
+export type QueryInitializationFingerprintConfidencePolicyArgs = {
+  order?: InputMaybe<Array<FingerprintConfidencePolicySortInput>>;
+  where?: InputMaybe<FingerprintConfidencePolicyFilterInput>;
 };
 
 
@@ -6498,6 +6535,11 @@ export type UpdateEscrowCommissionPolicyRequestInput = {
   version: Scalars['Long']['input'];
 };
 
+export type UpdateFingerprintConfidencePolicyRequestInput = {
+  manualReviewThreshold: Scalars['Float']['input'];
+  rejectThreshold: Scalars['Float']['input'];
+};
+
 export type UpdateListenerRequestInput = {
   avatarImage?: InputMaybe<Scalars['String']['input']>;
   bannerImage?: InputMaybe<Scalars['String']['input']>;
@@ -8347,6 +8389,13 @@ export type GetListenerInvoicesQueryVariables = Exact<{
 
 
 export type GetListenerInvoicesQuery = { __typename?: 'QueryInitialization', invoices?: { __typename?: 'InvoicesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Invoice', id: string, amount: any, currency: string, email: string, to: string, from: string, paidAt: any, paymentTransactionId: string }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
+
+export type TrackSemanticQueryVariables = Exact<{
+  term: Scalars['String']['input'];
+}>;
+
+
+export type TrackSemanticQuery = { __typename?: 'QueryInitialization', trackBySemanticSearch: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, categoryIds: Array<string>, favoriteCount: any, isExplicit: boolean, createdAt: any, mainArtistIds: Array<string>, streamCount: any, checkTrackInFavorite: boolean, categories?: { __typename?: 'CategoriesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Category', name: string }> | null } | null, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, userId: string }> | null } | null }> };
 
 export type ArtistPackagesQueryVariables = Exact<{
   where: ArtistPackageFilterInput;
@@ -11969,6 +12018,35 @@ export const GetListenerInvoicesDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetListenerInvoicesQuery, GetListenerInvoicesQueryVariables>;
+export const TrackSemanticDocument = new TypedDocumentString(`
+    query TrackSemantic($term: String!) {
+  trackBySemanticSearch(term: $term) {
+    id
+    name
+    coverImage
+    categoryIds
+    categories {
+      totalCount
+      items {
+        name
+      }
+    }
+    favoriteCount
+    isExplicit
+    createdAt
+    mainArtistIds
+    mainArtists {
+      items {
+        id
+        stageName
+        userId
+      }
+    }
+    streamCount
+    checkTrackInFavorite
+  }
+}
+    `) as unknown as TypedDocumentString<TrackSemanticQuery, TrackSemanticQueryVariables>;
 export const ArtistPackagesDocument = new TypedDocumentString(`
     query ArtistPackages($where: ArtistPackageFilterInput!) {
   artistPackages(where: $where) {

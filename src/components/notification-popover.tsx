@@ -59,7 +59,11 @@ export const NotificationPopover = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <TooltipButton content="Notifications" side="bottom">
-        <PopoverTrigger asChild>{children}</PopoverTrigger>
+        <PopoverTrigger asChild>
+          <Button variant={"ghost"} size={"iconLg"} className="rounded-full">
+            {children}
+          </Button>
+        </PopoverTrigger>
       </TooltipButton>
       <PopoverContent className="w-120 p-0" align="end" sideOffset={8}>
         <div className="flex items-center justify-between border-b px-4 py-3">
