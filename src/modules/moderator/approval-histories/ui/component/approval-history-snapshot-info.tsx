@@ -792,7 +792,7 @@ const DisputeResolutionView = ({ snapshot }: { snapshot: DisputeResolutionSnapsh
               <div className="space-y-2">
                 <p className="text-sm text-gray-400">Client Refund</p>
                 <p className="text-2xl font-bold text-gray-200">{formatCurrency(snapshot.RefundAmount)}</p>
-                <p className="text-xs text-gray-500">{snapshot.RequestorPercentage}% of total</p>
+                <p className="text-xs text-gray-500">Net amount</p>
               </div>
             </div>
 
@@ -800,7 +800,7 @@ const DisputeResolutionView = ({ snapshot }: { snapshot: DisputeResolutionSnapsh
               <div className="space-y-2">
                 <p className="text-sm text-gray-400">Artist Escrow Release</p>
                 <p className="text-2xl font-bold text-gray-200">{formatCurrency(snapshot.EscrowReleaseAmount)}</p>
-                <p className="text-xs text-gray-500">{snapshot.ArtistPercentage}% of total</p>
+                <p className="text-xs text-gray-500">Net amount after 10% platform fee</p>
               </div>
             </div>
           </div>

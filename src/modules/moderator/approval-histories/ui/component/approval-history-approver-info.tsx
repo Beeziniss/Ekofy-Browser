@@ -42,7 +42,7 @@ export const ApprovalHistoryApproverInfo = ({ approvedBy }: ApprovalHistoryAppro
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-between">
-          <span className="font-medium">FullName:</span>
+          <span className="font-medium">Full Name:</span>
           {approver.fullName}
         </div>
         <div className="flex justify-between">
