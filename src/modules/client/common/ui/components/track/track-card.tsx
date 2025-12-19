@@ -15,13 +15,16 @@ import {
 import { Ellipsis, Heart, LinkIcon, ListPlus } from "lucide-react";
 import { useAudioStore, useAuthStore } from "@/store";
 import { GraphQLTrack, convertGraphQLTracksToStore } from "@/utils/track-converter";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { favoriteTrackMutationOptions } from "@/gql/options/client-mutation-options";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { PauseButtonMedium, PlayButtonMediumRounded } from "@/assets/icons";
 import PlaylistAddModal from "@/modules/client/playlist/ui/components/playlist-add-modal";
-import { useProcessTrackDiscoveryPopularity, useProcessTrackEngagementPopularity, useProcessArtistDiscoveryPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
+import {
+  useProcessTrackDiscoveryPopularity,
+  useProcessTrackEngagementPopularity,
+  useProcessArtistDiscoveryPopularity,
+} from "@/gql/client-mutation-options/popularity-mutation-option";
 import { PopularityActionType } from "@/gql/graphql";
+import { useFavoriteTrack } from "@/modules/client/track/hooks/use-favorite-track";
 
 type ArtistInfo = {
   id: string;
@@ -39,7 +42,6 @@ interface TrackCardProps {
 
 const TrackCard = React.memo(
   ({ trackId, coverImage, trackName, artists, trackQueue, checkTrackInFavorite }: TrackCardProps) => {
-    const queryClient = useQueryClient();
     const { isAuthenticated } = useAuthStore();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -48,6 +50,7 @@ const TrackCard = React.memo(
     const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
     const { mutate: trackDiscoveryPopularity } = useProcessTrackDiscoveryPopularity();
     const { mutate: artistDiscoveryPopularity } = useProcessArtistDiscoveryPopularity();
+    const { handleFavorite: handleFavoriteTrack } = useFavoriteTrack();
 
     // Selective subscriptions - only subscribe to what affects THIS track
     const isCurrentTrack = useAudioStore((state) => state.currentTrack?.id === trackId);
@@ -127,26 +130,10 @@ const TrackCard = React.memo(
       });
     };
 
-    const { mutate: favoriteTrack } = useMutation({
-      ...favoriteTrackMutationOptions,
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["track-detail", trackId],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["tracks-home"],
-        });
-      },
-      onError: (error) => {
-        console.error("Failed to add track to favorites:", error);
-        toast.error("Failed to add track to favorites. Please try again.");
-      },
-    });
-
     const handleFavorite = (e: React.MouseEvent) => {
       e.preventDefault();
 
-      if (!trackId) return;
+      if (!trackId || !trackName) return;
 
       // Check if user is authenticated
       if (!isAuthenticated) {
@@ -155,21 +142,11 @@ const TrackCard = React.memo(
         return;
       }
 
-      if (checkTrackInFavorite) {
-        favoriteTrack({ trackId, isAdding: false });
-        toast.success(`${trackName} removed from favorites!`);
-        trackEngagementPopularity({
-          trackId,
-          actionType: PopularityActionType.Unfavorite,
-        });
-      } else {
-        favoriteTrack({ trackId, isAdding: true });
-        toast.success(`${trackName} added to favorites!`);
-        trackEngagementPopularity({
-          trackId,
-          actionType: PopularityActionType.Favorite,
-        });
-      }
+      handleFavoriteTrack({
+        id: trackId,
+        name: trackName,
+        checkTrackInFavorite: checkTrackInFavorite || false,
+      });
     };
 
     const handleTrackAddPopularity = () => {
@@ -184,7 +161,7 @@ const TrackCard = React.memo(
         artistId: artists[0]?.id || "",
         actionType: PopularityActionType.Search,
       });
-    }
+    };
     return (
       <div className="w-full rounded-sm">
         <Link
@@ -295,11 +272,11 @@ const TrackCard = React.memo(
               artists.length > 0 &&
               artists.map((artist, index) => (
                 <span key={index}>
-                  <Link 
-                    href={`/artists/${artist?.id}`} 
+                  <Link
+                    href={`/artists/${artist?.id}`}
                     onClick={handleArtistAddPopularity}
                     className="hover:text-main-purple hover:underline"
-                    >
+                  >
                     {artist?.stageName}
                   </Link>
                   {index < artists.length - 1 && ", "}
@@ -318,11 +295,7 @@ const TrackCard = React.memo(
 
         {/* Add to Playlist Modal */}
         {isAuthenticated && trackId && (
-          <PlaylistAddModal
-            open={addToPlaylistModalOpen}
-            onOpenChange={setAddToPlaylistModalOpen}
-            trackId={trackId}
-          />
+          <PlaylistAddModal open={addToPlaylistModalOpen} onOpenChange={setAddToPlaylistModalOpen} trackId={trackId} />
         )}
       </div>
     );

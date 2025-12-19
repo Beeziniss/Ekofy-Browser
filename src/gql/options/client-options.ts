@@ -61,6 +61,7 @@ import { CategoriesChannelQuery } from "@/modules/shared/queries/client/category
 import { NotificationQuery } from "@/modules/shared/queries/client/notification-queries";
 import { AlbumDetailQuery, AlbumQuery } from "@/modules/shared/queries/client/album-queries";
 import { TrackListWithFiltersQuery } from "@/modules/shared/queries/artist";
+import { TrackSemanticQuery } from "@/modules/shared/queries/client/semantic-queries";
 
 // PROFILE QUERIES
 export const userBasicInfoOptions = (userId: string) =>
@@ -693,4 +694,19 @@ export const artistTracksInfiniteOptions = (artistId: string, take: number = 20)
       return lastPage.tracks?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
     },
     enabled: !!artistId,
+  });
+
+// SEMANTIC OPTIONS
+export const trackSemanticOptions = (term: string) =>
+  queryOptions({
+    queryKey: ["track-semantic", term],
+    queryFn: async () => {
+      if (!term) return [];
+      const result = await execute(TrackSemanticQuery, {
+        term,
+      });
+      return result.trackBySemanticSearch || [];
+    },
+    retry: 0,
+    enabled: !!term,
   });
