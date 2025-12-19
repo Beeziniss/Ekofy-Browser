@@ -8402,6 +8402,13 @@ export type GetListenerInvoicesQueryVariables = Exact<{
 
 export type GetListenerInvoicesQuery = { __typename?: 'QueryInitialization', invoices?: { __typename?: 'InvoicesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Invoice', id: string, amount: any, currency: string, email: string, to: string, from: string, paidAt: any, paymentTransactionId: string }> | null, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
+export type TrackSemanticQueryVariables = Exact<{
+  term: Scalars['String']['input'];
+}>;
+
+
+export type TrackSemanticQuery = { __typename?: 'QueryInitialization', trackBySemanticSearch: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, categoryIds: Array<string>, favoriteCount: any, isExplicit: boolean, createdAt: any, mainArtistIds: Array<string>, streamCount: any, checkTrackInFavorite: boolean, categories?: { __typename?: 'CategoriesCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Category', name: string }> | null } | null, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string, userId: string }> | null } | null }> };
+
 export type ArtistPackagesQueryVariables = Exact<{
   where: ArtistPackageFilterInput;
 }>;
@@ -12037,6 +12044,35 @@ export const GetListenerInvoicesDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetListenerInvoicesQuery, GetListenerInvoicesQueryVariables>;
+export const TrackSemanticDocument = new TypedDocumentString(`
+    query TrackSemantic($term: String!) {
+  trackBySemanticSearch(term: $term) {
+    id
+    name
+    coverImage
+    categoryIds
+    categories {
+      totalCount
+      items {
+        name
+      }
+    }
+    favoriteCount
+    isExplicit
+    createdAt
+    mainArtistIds
+    mainArtists {
+      items {
+        id
+        stageName
+        userId
+      }
+    }
+    streamCount
+    checkTrackInFavorite
+  }
+}
+    `) as unknown as TypedDocumentString<TrackSemanticQuery, TrackSemanticQueryVariables>;
 export const ArtistPackagesDocument = new TypedDocumentString(`
     query ArtistPackages($where: ArtistPackageFilterInput!) {
   artistPackages(where: $where) {
