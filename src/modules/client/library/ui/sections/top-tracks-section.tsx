@@ -5,6 +5,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { topTracksOptions } from "@/gql/options/client-options";
 import TopTracksTable, { TopTrack } from "../components/top-tracks-table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuthStore } from "@/store";
 
 const TopTracksSection = () => {
   return (
@@ -38,11 +39,12 @@ const TopTracksSectionSkeleton = () => {
 };
 
 const TopTracksSectionSuspense = () => {
-  const { data } = useSuspenseQuery(topTracksOptions());
+  const { user } = useAuthStore();
+  const { data } = useSuspenseQuery(topTracksOptions(user?.userId || ""));
 
   console.log(JSON.stringify(data, null, 2));
 
-  if (!data?.topTracks || data.topTracks.length === 0) {
+  if (!data?.topTracks?.items || data.topTracks.items.length === 0) {
     return (
       <div className="w-full px-6 py-8">
         <div className="space-y-6">
@@ -61,20 +63,23 @@ const TopTracksSectionSuspense = () => {
 
   // Transform top tracks data to match TopTracksTable expected structure
   // The topTracks query returns an array of TopTrack objects, each with tracksInfo array
-  const topTracksData: TopTrack[] = data.topTracks.flatMap((topTrack) =>
+  const topTracksData: TopTrack[] = (data.topTracks.items || []).flatMap((topTrack) =>
     (topTrack?.tracksInfo || [])
-      .filter((trackInfo): trackInfo is NonNullable<typeof trackInfo> => trackInfo !== null && trackInfo.track !== null)
+      .filter(
+        (trackInfo): trackInfo is NonNullable<typeof trackInfo> & { track: NonNullable<typeof trackInfo.track> } =>
+          trackInfo !== null && trackInfo.track !== null,
+      )
       .map((trackInfo) => ({
-        id: trackInfo.track!.id,
-        name: trackInfo.track!.name || "Unknown Track",
-        coverImage: trackInfo.track!.coverImage || "",
+        id: trackInfo.track.id,
+        name: trackInfo.track.name || "Unknown Track",
+        coverImage: trackInfo.track.coverImage || "",
         artist:
-          trackInfo
-            .track!.mainArtists?.items?.map((artist) => artist?.stageName)
+          trackInfo.track.mainArtists?.items
+            ?.map((artist) => artist?.stageName)
             .filter(Boolean)
             .join(", ") || "Unknown Artist",
-        streamCount: trackInfo.track!.streamCount || 0,
-        checkTrackInFavorite: trackInfo.track!.checkTrackInFavorite,
+        streamCount: trackInfo.track.streamCount || 0,
+        checkTrackInFavorite: trackInfo.track.checkTrackInFavorite,
       })),
   );
 

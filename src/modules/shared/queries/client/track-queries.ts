@@ -124,27 +124,31 @@ export const SuggestedTracksForPlaylistQuery = graphql(`
   }
 `);
 
-// export const TopTracksQuery = graphql(`
-//   query TopTracks {
-//     topTracks {
-//       id
-//       createdAt
-//       tracksInfo {
-//         trackId
-//         track {
-//           id
-//           name
-//           coverImage
-//           streamCount
-//           mainArtistIds
-//           mainArtists {
-//             items {
-//               id
-//               stageName
-//             }
-//           }
-//           checkTrackInFavorite
-//         }
-//       }
-//     }
-//   }`)
+export const TopTracksQuery = graphql(`
+  query TopTracks($userId: String!) {
+    topTracks(take: 50, where: { userId: { eq: $userId } }) {
+      items {
+        id
+        createdAt
+        tracksInfo {
+          trackId
+          track {
+            id
+            name
+            coverImage
+            streamCount
+            mainArtistIds
+            isExplicit
+            mainArtists {
+              items {
+                id
+                stageName
+              }
+            }
+            checkTrackInFavorite
+          }
+        }
+      }
+    }
+  }
+`);

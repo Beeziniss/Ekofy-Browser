@@ -8522,6 +8522,13 @@ export type SuggestedTracksForPlaylistQueryVariables = Exact<{
 
 export type SuggestedTracksForPlaylistQuery = { __typename?: 'QueryInitialization', tracks?: { __typename?: 'TracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, isExplicit: boolean, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
 
+export type TopTracksQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type TopTracksQuery = { __typename?: 'QueryInitialization', topTracks?: { __typename?: 'TopTracksCollectionSegment', items?: Array<{ __typename?: 'TopTrack', id: string, createdAt: any, tracksInfo: Array<{ __typename?: 'TopTrackInfo', trackId: string, track?: { __typename?: 'Track', id: string, name: string, coverImage: string, streamCount: any, mainArtistIds: Array<string>, isExplicit: boolean, checkTrackInFavorite: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null } | null }> }> | null } | null };
+
 export type UserBasicInfoQueryVariables = Exact<{
   userId: Scalars['String']['input'];
 }>;
@@ -12436,6 +12443,34 @@ export const SuggestedTracksForPlaylistDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<SuggestedTracksForPlaylistQuery, SuggestedTracksForPlaylistQueryVariables>;
+export const TopTracksDocument = new TypedDocumentString(`
+    query TopTracks($userId: String!) {
+  topTracks(take: 50, where: {userId: {eq: $userId}}) {
+    items {
+      id
+      createdAt
+      tracksInfo {
+        trackId
+        track {
+          id
+          name
+          coverImage
+          streamCount
+          mainArtistIds
+          isExplicit
+          mainArtists {
+            items {
+              id
+              stageName
+            }
+          }
+          checkTrackInFavorite
+        }
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TopTracksQuery, TopTracksQueryVariables>;
 export const UserBasicInfoDocument = new TypedDocumentString(`
     query UserBasicInfo($userId: String!) {
   users(where: {id: {eq: $userId}}) {

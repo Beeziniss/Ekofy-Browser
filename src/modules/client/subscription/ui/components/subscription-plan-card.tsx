@@ -278,7 +278,7 @@ export function SubscriptionPlanCard({
           </div>
         ) : hasOpenTransaction && openTransaction ? (
           <Link
-            href={`${String(user?.role) === String(UserRole.Artist) ? "/artist/studio" : "/profile"}/transactions/payment-history/${openTransaction.id}`}
+            href={`${String(user?.role) === String(UserRole.Artist) ? "/artist/studio/transactions" : "/profile"}/transaction-history/${openTransaction.id}`}
             className={`inline-flex h-12 w-full items-center justify-center text-base font-semibold transition-all duration-200 ${styling.buttonClass} rounded-md`}
           >
             Continue Payment
