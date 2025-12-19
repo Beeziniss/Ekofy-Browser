@@ -7,16 +7,19 @@ import { TrackApprovalTable } from "../components/track-approval-table";
 import { TrackApprovalFilters } from "../components/track-approval-filters";
 import { ApprovalPriorityStatus } from "@/types/approval-track";
 import { useRouter, useSearchParams } from "next/navigation";
+import { TrackUploadPopup } from "@/components/track-upload-popup";
 
 export function TrackApprovalSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
   // TODO: Uncomment when GraphQL supports search
   // const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const searchTerm = ""; // Temporary: search disabled
-  const [priorityFilter, setPriorityFilter] = useState<ApprovalPriorityStatus | "ALL">((searchParams.get("priority") as ApprovalPriorityStatus) || "ALL");
+  const [priorityFilter, setPriorityFilter] = useState<ApprovalPriorityStatus | "ALL">(
+    (searchParams.get("priority") as ApprovalPriorityStatus) || "ALL",
+  );
   const pageSize = 10;
 
   // Sync URL params
@@ -24,13 +27,13 @@ export function TrackApprovalSection() {
     const params = new URLSearchParams();
     if (currentPage > 1) params.set("page", currentPage.toString());
     if (priorityFilter !== "ALL") params.set("priority", priorityFilter);
-    
+
     const queryString = params.toString();
     router.replace(`/moderator/track-approval${queryString ? `?${queryString}` : ""}`, { scroll: false });
   }, [currentPage, priorityFilter, router]);
 
   const { data, isLoading, error } = useQuery(
-    moderatorPendingTracksOptions(currentPage, pageSize, searchTerm, priorityFilter)
+    moderatorPendingTracksOptions(currentPage, pageSize, searchTerm, priorityFilter),
   );
 
   // TODO: Uncomment when GraphQL supports search
@@ -62,29 +65,34 @@ export function TrackApprovalSection() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      {/* <TrackApprovalStats /> */}
+    <div className="relative">
+      <div className="space-y-6">
+        {/* Stats Cards */}
+        {/* <TrackApprovalStats /> */}
 
-      {/* Filters and Actions */}
-      <div className="flex items-center justify-between">
-        <TrackApprovalFilters
-          searchTerm={searchTerm}
-          onSearchChange={handleSearch}
-          priorityFilter={priorityFilter}
-          onPriorityChange={handlePriorityChange}
+        {/* Filters and Actions */}
+        <div className="flex items-center justify-between">
+          <TrackApprovalFilters
+            searchTerm={searchTerm}
+            onSearchChange={handleSearch}
+            priorityFilter={priorityFilter}
+            onPriorityChange={handlePriorityChange}
+          />
+        </div>
+
+        {/* Table */}
+        <TrackApprovalTable
+          data={data?.pendingTrackUploadRequests?.items || []}
+          totalCount={data?.pendingTrackUploadRequests?.totalCount || 0}
+          isLoading={isLoading}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onViewDetailAction={handleViewDetail}
         />
       </div>
 
-      {/* Table */}
-      <TrackApprovalTable
-        data={data?.pendingTrackUploadRequests?.items || []}
-        totalCount={data?.pendingTrackUploadRequests?.totalCount || 0}
-        isLoading={isLoading}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        onViewDetailAction={handleViewDetail}
-      />
+      {/* Upload Progress Popup */}
+      <TrackUploadPopup />
     </div>
   );
 }
