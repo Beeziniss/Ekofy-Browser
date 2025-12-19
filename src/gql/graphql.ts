@@ -8501,6 +8501,13 @@ export type ApprovalHistoriesCategoryQueryVariables = Exact<{
 
 export type ApprovalHistoriesCategoryQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string, type: CategoryType }> | null } | null };
 
+export type ApprovalHistoriesUserFullInfoQueryVariables = Exact<{
+  where?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type ApprovalHistoriesUserFullInfoQuery = { __typename?: 'QueryInitialization', users?: { __typename?: 'UsersCollectionSegment', items?: Array<{ __typename?: 'User', id: string, fullName: string, email: string }> | null } | null };
+
 export type PendingArtistRegistrationsListQueryVariables = Exact<{
   pageNumber: Scalars['Int']['input'];
   pageSize: Scalars['Int']['input'];
@@ -12508,6 +12515,17 @@ export const ApprovalHistoriesCategoryDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<ApprovalHistoriesCategoryQuery, ApprovalHistoriesCategoryQueryVariables>;
+export const ApprovalHistoriesUserFullInfoDocument = new TypedDocumentString(`
+    query ApprovalHistoriesUserFullInfo($where: UserFilterInput) {
+  users(where: $where) {
+    items {
+      id
+      fullName
+      email
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ApprovalHistoriesUserFullInfoQuery, ApprovalHistoriesUserFullInfoQueryVariables>;
 export const PendingArtistRegistrationsListDocument = new TypedDocumentString(`
     query PendingArtistRegistrationsList($pageNumber: Int!, $pageSize: Int!) {
   pendingArtistRegistrations(pageNumber: $pageNumber, pageSize: $pageSize) {

@@ -93,3 +93,15 @@ export const ApprovalHistoriesCategoryQuery = graphql(`
     }
   }
 `);
+
+export const ApprovalHistoriesUserFullInfoQuery = graphql(`
+  query ApprovalHistoriesUserFullInfo($where: UserFilterInput) {
+    users(where: $where) {
+      items {
+        id
+        fullName
+        email
+      }
+    }
+  }
+`);
