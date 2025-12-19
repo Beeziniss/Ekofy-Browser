@@ -79,7 +79,7 @@ export function OrderReviewCard({ orderId, orderStatus, review, onReviewUpdated 
     // Check permissions
     const isListener = user?.role === UserRole.LISTENER;
     const isArtist = user?.role === UserRole.ARTIST;
-    const isCompleted = orderStatus === "COMPLETED";
+    const isCompleted = orderStatus === "COMPLETED" || orderStatus === "REFUND";
     const canCreateReview = isListener && isCompleted && !review;
     const canEditReview = isListener && isCompleted && !!review;
     const canViewOnly = isArtist || !isCompleted;
@@ -206,8 +206,8 @@ export function OrderReviewCard({ orderId, orderStatus, review, onReviewUpdated 
                     </CardTitle>
                     {review && !isEditing && (
                         <CardDescription>
-                            {review.updatedAt !== review.createdAt
-                                ? `Updated at ${format(new Date(review.updatedAt || ""), "dd/MM/yyyy HH:mm")}`
+                            {review.updatedAt && review.updatedAt !== review.createdAt
+                                ? `Updated at ${format(new Date(review.updatedAt), "dd/MM/yyyy HH:mm")}`
                                 : `Reviewed at ${format(new Date(review.createdAt), "dd/MM/yyyy HH:mm")}`}
                         </CardDescription>
                     )}

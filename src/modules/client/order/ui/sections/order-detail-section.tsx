@@ -148,8 +148,8 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
         </Card>
       )}
 
-      {/* Review Section - Only show for completed orders */}
-      {orderPackageDetail?.status === PackageOrderStatus.Completed && (
+      {/* Review Section - Only show for completed or refund orders */}
+      {(orderPackageDetail?.status === PackageOrderStatus.Completed || orderPackageDetail?.status === PackageOrderStatus.Refund) && (
         <OrderReviewCard
           orderId={orderId}
           orderStatus={orderPackageDetail.status}

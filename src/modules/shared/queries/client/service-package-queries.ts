@@ -19,7 +19,34 @@ export const ArtistPackageQuery = graphql(`
           stageName
           biography
         }
+        review {
+          averageRating
+          totalReviews
+        }
       }
     }
   }
+`);
+
+export const ArtistPackageReviewQuery = graphql(`
+  query ArtistPackageReview($skip: Int, $take: Int, $where: PackageOrderFilterInput) {
+    packageOrders(skip: $skip, take: $take, where: $where) {
+      items {
+            id
+            artistPackageId
+            review {
+                rating
+                content
+                createdAt
+                updatedAt
+            }
+            clientId
+            providerId
+            client {
+                displayName
+                avatarImage
+            }
+        }
+    }
+}
 `);
