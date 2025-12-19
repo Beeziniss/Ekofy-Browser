@@ -7247,6 +7247,13 @@ export type SwitchEscrowCommissionPolicyToLatestVersionMutationVariables = Exact
 
 export type SwitchEscrowCommissionPolicyToLatestVersionMutation = { __typename?: 'MutationInitialization', switchEscrowCommissionPolicyToLatestVersion: boolean };
 
+export type UpdateFingerprintConfidencePolicyMutationVariables = Exact<{
+  updateRequest: UpdateFingerprintConfidencePolicyRequestInput;
+}>;
+
+
+export type UpdateFingerprintConfidencePolicyMutation = { __typename?: 'MutationInitialization', updateFingerprintConfidencePolicy: boolean };
+
 export type CreateRoyaltyPolicyMutationVariables = Exact<{
   createRoyalPolicyRequest: CreateRoyalPolicyRequestInput;
 }>;
@@ -7875,6 +7882,11 @@ export type EscrowCommissionPoliciesQueryVariables = Exact<{
 
 
 export type EscrowCommissionPoliciesQuery = { __typename?: 'QueryInitialization', escrowCommissionPolicies?: { __typename?: 'EscrowCommissionPoliciesCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'EscrowCommissionPolicy', id: string, currency: CurrencyType, platformFeePercentage: any, version: any, status: PolicyStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type FingerprintConfidencePolicyQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FingerprintConfidencePolicyQuery = { __typename?: 'QueryInitialization', fingerprintConfidencePolicy: { __typename?: 'FingerprintConfidencePolicy', id: string, rejectThreshold: number, manualReviewThreshold: number } };
 
 export type RoyaltyPoliciesQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -9272,6 +9284,11 @@ export const SwitchEscrowCommissionPolicyToLatestVersionDocument = new TypedDocu
   switchEscrowCommissionPolicyToLatestVersion
 }
     `) as unknown as TypedDocumentString<SwitchEscrowCommissionPolicyToLatestVersionMutation, SwitchEscrowCommissionPolicyToLatestVersionMutationVariables>;
+export const UpdateFingerprintConfidencePolicyDocument = new TypedDocumentString(`
+    mutation UpdateFingerprintConfidencePolicy($updateRequest: UpdateFingerprintConfidencePolicyRequestInput!) {
+  updateFingerprintConfidencePolicy(updateRequest: $updateRequest)
+}
+    `) as unknown as TypedDocumentString<UpdateFingerprintConfidencePolicyMutation, UpdateFingerprintConfidencePolicyMutationVariables>;
 export const CreateRoyaltyPolicyDocument = new TypedDocumentString(`
     mutation createRoyaltyPolicy($createRoyalPolicyRequest: CreateRoyalPolicyRequestInput!) {
   createRoyaltyPolicy(createRoyalPolicyRequest: $createRoyalPolicyRequest)
@@ -9974,6 +9991,15 @@ export const EscrowCommissionPoliciesDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<EscrowCommissionPoliciesQuery, EscrowCommissionPoliciesQueryVariables>;
+export const FingerprintConfidencePolicyDocument = new TypedDocumentString(`
+    query FingerprintConfidencePolicy {
+  fingerprintConfidencePolicy {
+    id
+    rejectThreshold
+    manualReviewThreshold
+  }
+}
+    `) as unknown as TypedDocumentString<FingerprintConfidencePolicyQuery, FingerprintConfidencePolicyQueryVariables>;
 export const RoyaltyPoliciesDocument = new TypedDocumentString(`
     query RoyaltyPolicies($skip: Int, $take: Int, $where: RoyaltyPolicyFilterInput) {
   royaltyPolicies(

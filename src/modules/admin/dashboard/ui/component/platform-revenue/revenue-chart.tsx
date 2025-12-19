@@ -123,8 +123,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
           >
             <BarChart 
               data={chartData}
-              margin={{ top: 10, right: 30, left: 30, bottom: 60 }}
-              barCategoryGap="10%"
+              margin={{ top: 10, right: 30, left: 30, bottom: 80 }}
+              barCategoryGap="15%"
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
@@ -136,6 +136,15 @@ export function RevenueChart({ data }: RevenueChartProps) {
                 angle={-45}
                 textAnchor="end"
                 interval={0}
+                tick={{ 
+                  fontSize: 12, 
+                  fontWeight: 700,
+                  fill: 'currentColor'
+                }}
+                style={{ 
+                  letterSpacing: '0.05em',
+                  textTransform: 'none'
+                }}
               />
               <YAxis 
                 tickLine={false}

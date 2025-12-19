@@ -116,6 +116,7 @@ export function ArtistReportListSection({ className }: ArtistReportListSectionPr
                   <SelectItem value={ReportType.Spam}>SPAM</SelectItem>
                   <SelectItem value={ReportType.InappropriateContent}>INAPPROPRIATE CONTENT</SelectItem>
                   <SelectItem value={ReportType.SelfHarmOrDangerousContent}>SELF-HARM OR DANGEROUS</SelectItem>
+                  <SelectItem value={ReportType.UnapprovedUploadedTrack}>UNAPPROVED UPLOADED TRACK</SelectItem>
                   <SelectItem value={ReportType.Other}>OTHER</SelectItem>
                 </SelectContent>
               </Select>
