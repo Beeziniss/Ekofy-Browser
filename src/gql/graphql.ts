@@ -7647,6 +7647,13 @@ export type UpdateReviewMutationVariables = Exact<{
 
 export type UpdateReviewMutation = { __typename?: 'MutationInitialization', updateReview: boolean };
 
+export type DeleteReviewHardMutationVariables = Exact<{
+  reviewId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteReviewHardMutation = { __typename?: 'MutationInitialization', deleteReviewHard: boolean };
+
 export type ServiceCreateCheckoutSessionMutationVariables = Exact<{
   createPaymentCheckoutSessionInput: CreatePaymentCheckoutSessionRequestInput;
 }>;
@@ -8231,7 +8238,7 @@ export type OrderPackageQueryVariables = Exact<{
 }>;
 
 
-export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, providerId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, disputedReason?: string | null, requirements: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }>, provider: Array<{ __typename?: 'Artist', avatarImage?: string | null, stageName: string, email: string }> }> | null } | null };
+export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, providerId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, disputedReason?: string | null, requirements: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, review?: { __typename?: 'Review', rating: number, content: string, createdAt: any, updatedAt?: any | null } | null, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }>, provider: Array<{ __typename?: 'Artist', avatarImage?: string | null, stageName: string, email: string }> }> | null } | null };
 
 export type CouponsQueryVariables = Exact<{
   where?: InputMaybe<CouponFilterInput>;
@@ -8459,7 +8466,16 @@ export type ArtistPackagesQueryVariables = Exact<{
 }>;
 
 
-export type ArtistPackagesQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, artistId: string, amount: any, currency: CurrencyType, packageName: string, description?: string | null, serviceDetails: Array<{ __typename?: 'Metadata', value: string }>, artist: Array<{ __typename?: 'Artist', id: string, avatarImage?: string | null, stageName: string, biography?: string | null }> }> | null } | null };
+export type ArtistPackagesQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, artistId: string, amount: any, currency: CurrencyType, packageName: string, description?: string | null, serviceDetails: Array<{ __typename?: 'Metadata', value: string }>, artist: Array<{ __typename?: 'Artist', id: string, avatarImage?: string | null, stageName: string, biography?: string | null }>, review: { __typename?: 'ReviewResponse', averageRating: number, totalReviews: number } }> | null } | null };
+
+export type ArtistPackageReviewQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<PackageOrderFilterInput>;
+}>;
+
+
+export type ArtistPackageReviewQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', items?: Array<{ __typename?: 'PackageOrder', id: string, artistPackageId: string, clientId: string, providerId: string, review?: { __typename?: 'Review', rating: number, content: string, createdAt: any, updatedAt?: any | null } | null, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }> }> | null } | null };
 
 export type TrackThreadCommentsQueryVariables = Exact<{
   targetId: Scalars['String']['input'];
@@ -9572,6 +9588,11 @@ export const UpdateReviewDocument = new TypedDocumentString(`
   updateReview(updateReviewRequest: $updateReviewRequest)
 }
     `) as unknown as TypedDocumentString<UpdateReviewMutation, UpdateReviewMutationVariables>;
+export const DeleteReviewHardDocument = new TypedDocumentString(`
+    mutation DeleteReviewHard($reviewId: String!) {
+  deleteReviewHard(reviewId: $reviewId)
+}
+    `) as unknown as TypedDocumentString<DeleteReviewHardMutation, DeleteReviewHardMutationVariables>;
 export const ServiceCreateCheckoutSessionDocument = new TypedDocumentString(`
     mutation ServiceCreateCheckoutSession($createPaymentCheckoutSessionInput: CreatePaymentCheckoutSessionRequestInput!) {
   createPaymentCheckoutSession(
@@ -11234,6 +11255,12 @@ export const OrderPackageDocument = new TypedDocumentString(`
         deliveryFileUrl
         clientFeedback
       }
+      review {
+        rating
+        content
+        createdAt
+        updatedAt
+      }
       package {
         id
         amount
@@ -12139,10 +12166,36 @@ export const ArtistPackagesDocument = new TypedDocumentString(`
         stageName
         biography
       }
+      review {
+        averageRating
+        totalReviews
+      }
     }
   }
 }
     `) as unknown as TypedDocumentString<ArtistPackagesQuery, ArtistPackagesQueryVariables>;
+export const ArtistPackageReviewDocument = new TypedDocumentString(`
+    query ArtistPackageReview($skip: Int, $take: Int, $where: PackageOrderFilterInput) {
+  packageOrders(skip: $skip, take: $take, where: $where) {
+    items {
+      id
+      artistPackageId
+      review {
+        rating
+        content
+        createdAt
+        updatedAt
+      }
+      clientId
+      providerId
+      client {
+        displayName
+        avatarImage
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ArtistPackageReviewQuery, ArtistPackageReviewQueryVariables>;
 export const TrackThreadCommentsDocument = new TypedDocumentString(`
     query TrackThreadComments($targetId: String!) {
   threadedComments(

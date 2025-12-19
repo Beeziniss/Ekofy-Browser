@@ -20,6 +20,10 @@ export interface ServicePackage {
   currency: string;
   packageName: string;
   description?: string | null | undefined;
+  review?: {
+    averageRating?: number | null;
+    totalReviews?: number | null;
+  } | null | undefined;
 }
 
 const ArtistServiceSection = ({ artistId }: ArtistServiceSectionProps) => {

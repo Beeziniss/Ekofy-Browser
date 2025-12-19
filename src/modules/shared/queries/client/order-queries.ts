@@ -28,6 +28,12 @@ export const OrderPackageQuery = graphql(`
           deliveryFileUrl
           clientFeedback
         }
+        review {
+          rating
+          content
+          createdAt
+          updatedAt
+        }
         package {
           id
           amount

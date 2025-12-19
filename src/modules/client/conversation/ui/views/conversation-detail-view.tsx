@@ -22,7 +22,6 @@ import {
 import { useConversationSignalR } from "@/hooks/use-conversation-signalr";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import Image from "next/image";
 import {
   conversationDetailOptions,
   conversationMessagesOptions,
@@ -50,8 +49,6 @@ import { cn } from "@/lib/utils";
 import { CheckIcon, PackageIcon } from "lucide-react";
 import { formatCurrency } from "@/utils/format-currency";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getUserInitials } from "@/utils/format-shorten-name";
 import Link from "next/link";
 
 interface ConversationDetailViewProps {
