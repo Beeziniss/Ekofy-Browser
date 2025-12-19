@@ -16,10 +16,9 @@ interface EditRequestSectionProps {
   };
   onSubmit: (data: UpdateRequestData) => void;
   onCancel?: () => void;
-  onDelete?: () => void;
 }
 
-export function EditRequestSection({ initialData, onSubmit, onCancel, onDelete }: EditRequestSectionProps) {
+export function EditRequestSection({ initialData, onSubmit, onCancel }: EditRequestSectionProps) {
   // Check if request is closed, blocked, or deleted
   if (initialData.status && initialData.status !== RequestStatus.Open) {
     return (
@@ -47,12 +46,6 @@ export function EditRequestSection({ initialData, onSubmit, onCancel, onDelete }
     onSubmit(data as UpdateRequestData);
   };
 
-  const handleDelete = () => {
-    if (onDelete) {
-      onDelete();
-    }
-  };
-
   // Convert duration to number if needed
   const processedInitialData = {
     ...initialData,
@@ -64,7 +57,6 @@ export function EditRequestSection({ initialData, onSubmit, onCancel, onDelete }
       initialData={processedInitialData}
       onSubmit={handleSubmit}
       onCancel={onCancel}
-      onDelete={handleDelete}
     />
   );
 }

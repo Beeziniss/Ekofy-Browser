@@ -110,6 +110,7 @@ export const PACKAGE_ORDER_DETAIL_QUERY = graphql(`
       requirements
       status
       revisionCount
+      disputedReason
       deliveries {
         deliveryFileUrl
         notes

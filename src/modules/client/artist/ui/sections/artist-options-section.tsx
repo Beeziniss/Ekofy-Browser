@@ -13,7 +13,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { ArtistDetailQuery, ReportRelatedContentType } from "@/gql/graphql";
+import { ArtistDetailQuery, PopularityActionType, ReportRelatedContentType } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
 import {
@@ -39,6 +39,7 @@ import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { addConversationGeneralMutationOptions } from "@/gql/options/client-mutation-options";
+import { useProcessArtistEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
 
 const activeItemStyles = "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
 
@@ -89,12 +90,16 @@ const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProp
     artistId,
   });
   const { mutateAsync: addConversation } = useMutation(addConversationGeneralMutationOptions);
-
+  const { mutate: artistEngagementPopularity } = useProcessArtistEngagementPopularity();
   const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
   const handleCopyLink = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
     toast.success("Copied!");
+    artistEngagementPopularity({
+      artistId: artistId,
+      actionType: PopularityActionType.Share,
+    });
   };
 
   const handleChatWithArtist = async () => {

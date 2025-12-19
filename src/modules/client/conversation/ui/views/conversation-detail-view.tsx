@@ -16,20 +16,24 @@ import {
   SmileIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  NewspaperIcon,
+  ArrowUpRightIcon,
 } from "lucide-react";
 import { useConversationSignalR } from "@/hooks/use-conversation-signalr";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import Image from "next/image";
 import {
   conversationDetailOptions,
   conversationMessagesOptions,
   servicePackageOptions,
   orderPackageOptions,
+  requestByIdOptions,
 } from "@/gql/options/client-options";
 import { sendRequestMutationOptions } from "@/gql/options/client-mutation-options";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store";
-import { Message, CreateDirectRequestInput, PackageOrderStatus } from "@/gql/graphql";
+import { Message, CreateDirectRequestInput, PackageOrderStatus, ConversationStatus } from "@/gql/graphql";
 import { MessageDeletedData } from "@/hooks/use-conversation-signalr";
 import ConversationInfo from "../components/conversation-info";
 import { UserRole } from "@/types/role";
@@ -45,12 +49,17 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { CheckIcon, PackageIcon } from "lucide-react";
 import { formatCurrency } from "@/utils/format-currency";
+import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getUserInitials } from "@/utils/format-shorten-name";
+import Link from "next/link";
 
 interface ConversationDetailViewProps {
   conversationId: string;
 }
 
 const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps) => {
+  const router = useRouter();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState("");
@@ -82,8 +91,66 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
     onException,
   } = useConversationSignalR();
 
-  const { data: conversation } = useQuery(conversationDetailOptions(conversationId));
+  const {
+    data: conversation,
+    error: conversationError,
+    isLoading: conversationLoading,
+  } = useQuery(conversationDetailOptions(conversationId));
   const { data: conversationMessages } = useQuery(conversationMessagesOptions(conversationId));
+
+  // Get conversation request ID and status
+  const conversationRequestId = useMemo(
+    () => conversation?.conversations?.items?.[0]?.requestId,
+    [conversation?.conversations?.items],
+  );
+  const conversationStatus = useMemo(
+    () => conversation?.conversations?.items?.[0]?.status,
+    [conversation?.conversations?.items],
+  );
+
+  // Fetch public request details if conversation has requestId and status is Pending
+  const { data: publicRequest } = useQuery({
+    ...requestByIdOptions(conversationRequestId || ""),
+    enabled: !!conversationRequestId && conversationStatus === ConversationStatus.Pending,
+  });
+
+  // Authentication and Authorization check
+  useEffect(() => {
+    // Check authentication first
+    if (!user) {
+      router.push("/");
+      return;
+    }
+
+    // If there's an error fetching the conversation, redirect to unauthorized
+    if (conversationError) {
+      router.push("/unauthorized");
+      return;
+    }
+
+    // Wait for conversation to load before checking authorization
+    if (conversationLoading) {
+      return;
+    }
+
+    // If conversation loaded but is empty or user is not in the conversation, redirect
+    if (conversation) {
+      const conversationItem = conversation.conversations?.items?.[0];
+
+      if (!conversationItem) {
+        // Conversation doesn't exist or user has no access
+        router.push("/unauthorized");
+        return;
+      }
+
+      const conversationUserIds = conversationItem.userIds;
+      const isAuthorized = conversationUserIds.includes(user.userId);
+
+      if (!isAuthorized) {
+        router.push("/unauthorized");
+      }
+    }
+  }, [conversation, conversationError, conversationLoading, user, router]);
 
   // Get other user ID for service package query
   const { data: servicePackages } = useQuery({
@@ -321,6 +388,32 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
               <EllipsisIcon className="text-main-white size-5" />
             </Button>
           </div>
+
+          {/* Public Request Notification - Only shown when status is Pending */}
+          {conversationStatus === ConversationStatus.Pending && conversationRequestId && publicRequest && (
+            <div className="mx-3 mt-3">
+              <div className="bg-main-white flex items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2 shadow-sm transition-all hover:shadow-md">
+                <div className="flex items-center gap-x-3">
+                  <NewspaperIcon className="text-main-blue size-7 shrink-0" />
+
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 text-sm font-bold text-gray-900">Title: {publicRequest.title}</div>
+                    <div className="text-main-dark-1 text-xs">This conversation belong to a public request.</div>
+                  </div>
+                </div>
+
+                <Link href={`/request-hub/${publicRequest.id}`}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-main-white dark:bg-main-blue dark:hover:bg-main-blue/90"
+                  >
+                    Open <ArrowUpRightIcon className="size-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
 
           <div
             ref={messagesContainerRef}

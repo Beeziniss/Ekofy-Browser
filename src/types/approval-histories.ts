@@ -99,16 +99,36 @@ export interface RecordingUploadSnapshot {
   }>;
 }
 
+// Dispute Resolution Snapshot
+export interface DisputeResolutionSnapshot {
+  // Package Order fields (flat structure from backend)
+  PackageOrderId: string;
+  PackageOrderStatus: string;
+  PackageOrderAmount: number;
+  DisputedReason: string | null;
+  
+  // Refund resolution fields
+  RequestorPercentage: number;
+  ArtistPercentage: number;
+  RefundAmount: number;
+  EscrowReleaseAmount: number;
+  
+  // Related IDs (need to fetch full data separately)
+  ClientId: string;
+  ProviderId: string;
+}
+
 // Union type for all snapshot types
 export type ApprovalHistorySnapshot =
   | ArtistRegistrationSnapshot
   | TrackUploadSnapshot
   | WorkUploadSnapshot
-  | RecordingUploadSnapshot;
+  | RecordingUploadSnapshot
+  | DisputeResolutionSnapshot;
 
 export interface ApprovalHistoryItem {
   id: string;
-  approvalType: "ARTIST_REGISTRATION" | "TRACK_UPLOAD" | "WORK_UPLOAD" | "RECORDING_UPLOAD";
+  approvalType: "ARTIST_REGISTRATION" | "TRACK_UPLOAD" | "WORK_UPLOAD" | "RECORDING_UPLOAD" | "DISPUTE_RESOLUTION";
   actionByUserId: string;
   actionAt: string;
   action: "APPROVED" | "REJECTED" | "PENDING";

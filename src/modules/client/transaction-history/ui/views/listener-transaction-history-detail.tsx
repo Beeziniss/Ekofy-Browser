@@ -1,5 +1,3 @@
-"use client";
-
 import { TransactionDetailSection } from "../sections";
 
 interface ListenerTransactionHistoryDetailProps {

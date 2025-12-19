@@ -26,6 +26,21 @@ export const FollowerInfiniteQuery = graphql(`
       items {
         id
         fullName
+        artists {
+          items {
+            id
+            userId
+            avatarImage
+            stageName
+          }
+        }
+        listeners {
+          items {
+            userId
+            displayName
+            avatarImage
+          }
+        }
         checkUserFollowing
         role
       }
@@ -43,6 +58,21 @@ export const FollowingInfiniteQuery = graphql(`
       items {
         id
         fullName
+        artists {
+          items {
+            id
+            userId
+            avatarImage
+            stageName
+          }
+        }
+        listeners {
+          items {
+            userId
+            displayName
+            avatarImage
+          }
+        }
         checkUserFollowing
         role
       }

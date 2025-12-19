@@ -1,8 +1,8 @@
 import Link from "next/link";
 import SearchBar from "./search-bar";
+import HeaderNav from "./header-nav";
 import AuthButton from "./auth-button";
 import { EkofyLogoText } from "@/assets/icons";
-import HeaderNav from "./header-nav";
 
 const ClientHeader = () => {
   return (

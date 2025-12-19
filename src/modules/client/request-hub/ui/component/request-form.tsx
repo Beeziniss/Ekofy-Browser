@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Editor } from "@/modules/shared/ui/components/editor";
-import { DeleteConfirmModal } from "./delete-confirm-modal";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
 import { CreateRequestData, UpdateRequestData, RequestBudget } from "@/types/request-hub";
@@ -47,10 +46,9 @@ interface RequestFormProps {
   };
   onSubmit: (data: CreateRequestData | UpdateRequestData) => void;
   onCancel?: () => void;
-  onDelete?: () => void;
 }
 
-export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }: RequestFormProps) {
+export function RequestForm({ mode, initialData, onSubmit, onCancel }: RequestFormProps) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [summary, setSummary] = useState(initialData?.summary || "");
   const [detailDescription, setDetailDescription] = useState(initialData?.detailDescription || "");
@@ -76,7 +74,6 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
     }
     return 1;
   });
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [errors, setErrors] = useState<{
     title?: string;
     summary?: string;
@@ -167,16 +164,6 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
 
   return (
     <div className="mx-auto max-w-6xl p-6">
-      <div className="mb-8">
-        <h1 className="mb-2 text-center text-2xl font-bold">Request Hub</h1>
-        {mode === "edit" && initialData?.id && onDelete && (
-          <div className="flex justify-end">
-            <Button type="button" variant="destructive" size="sm" onClick={() => setShowDeleteModal(true)}>
-              Delete
-            </Button>
-          </div>
-        )}
-      </div>
 
       <form onSubmit={handleSubmit} noValidate className="space-y-6">
         <div>
@@ -319,18 +306,6 @@ export function RequestForm({ mode, initialData, onSubmit, onCancel, onDelete }:
           </Button>
         </div>
       </form>
-
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={() => {
-          setShowDeleteModal(false);
-          if (onDelete) {
-            onDelete();
-          }
-        }}
-      />
     </div>
   );
 }

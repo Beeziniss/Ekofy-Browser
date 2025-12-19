@@ -4,23 +4,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { User, Eye, Music, FileText, Disc } from "lucide-react";
+import { User, Eye, Music, FileText, Disc, DollarSign, Package } from "lucide-react";
 import { format } from "date-fns";
-import { 
-  ApprovalHistorySnapshot, 
-  ArtistRegistrationSnapshot, 
+import {
+  ApprovalHistorySnapshot,
+  ArtistRegistrationSnapshot,
   TrackUploadSnapshot,
   WorkUploadSnapshot,
-  RecordingUploadSnapshot
+  RecordingUploadSnapshot,
+  DisputeResolutionSnapshot,
 } from "@/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getImageUrl } from "@/utils/image-utils";
-import { fetchArtistNames, fetchCategoryNames } from "@/utils/approval-history-utils";
+import { fetchArtistNames, fetchCategoryNames, fetchUserFullInfo } from "@/utils/approval-history-utils";
 
 interface ApprovalHistorySnapshotInfoProps {
   snapshot: ApprovalHistorySnapshot;
-  approvalType: "ARTIST_REGISTRATION" | "TRACK_UPLOAD" | "WORK_UPLOAD" | "RECORDING_UPLOAD";
+  approvalType: "ARTIST_REGISTRATION" | "TRACK_UPLOAD" | "WORK_UPLOAD" | "RECORDING_UPLOAD" | "DISPUTE_RESOLUTION";
 }
 
 // Component for Artist Registration
@@ -56,7 +57,7 @@ const ArtistRegistrationView = ({ snapshot }: { snapshot: ArtistRegistrationSnap
               alt="Preview"
               width={1200}
               height={800}
-              className="h-auto w-auto max-h-[90vh] max-w-[90vw] object-contain"
+              className="h-auto max-h-[90vh] w-auto max-w-[90vw] object-contain"
             />
             <button
               onClick={() => setSelectedImage(null)}
@@ -80,13 +81,7 @@ const ArtistRegistrationView = ({ snapshot }: { snapshot: ArtistRegistrationSnap
           {avatarUrl && (
             <div className="flex justify-center">
               <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-gray-700">
-                <Image
-                  src={avatarUrl}
-                  alt="Avatar"
-                  width={128}
-                  height={128}
-                  className="h-full w-full object-cover"
-                />
+                <Image src={avatarUrl} alt="Avatar" width={128} height={128} className="h-full w-full object-cover" />
               </div>
             </div>
           )}
@@ -251,10 +246,7 @@ const ArtistRegistrationView = ({ snapshot }: { snapshot: ArtistRegistrationSnap
                 <div className="mt-2 rounded-lg border p-2">
                   {frontImageUrl ? (
                     <>
-                      <div 
-                        className="cursor-pointer"
-                        onClick={() => setSelectedImage(frontImageUrl)}
-                      >
+                      <div className="cursor-pointer" onClick={() => setSelectedImage(frontImageUrl)}>
                         <Image
                           src={frontImageUrl}
                           alt="ID Front"
@@ -271,7 +263,7 @@ const ArtistRegistrationView = ({ snapshot }: { snapshot: ArtistRegistrationSnap
                       </Button>
                     </>
                   ) : (
-                    <div className="flex h-80 items-center justify-center bg-gray-800 rounded">
+                    <div className="flex h-80 items-center justify-center rounded bg-gray-800">
                       <span className="text-muted-foreground">Loading...</span>
                     </div>
                   )}
@@ -282,10 +274,7 @@ const ArtistRegistrationView = ({ snapshot }: { snapshot: ArtistRegistrationSnap
                 <div className="mt-2 rounded-lg border p-2">
                   {backImageUrl ? (
                     <>
-                      <div 
-                        className="cursor-pointer"
-                        onClick={() => setSelectedImage(backImageUrl)}
-                      >
+                      <div className="cursor-pointer" onClick={() => setSelectedImage(backImageUrl)}>
                         <Image
                           src={backImageUrl}
                           alt="ID Back"
@@ -302,7 +291,7 @@ const ArtistRegistrationView = ({ snapshot }: { snapshot: ArtistRegistrationSnap
                       </Button>
                     </>
                   ) : (
-                    <div className="flex h-80 items-center justify-center bg-gray-800 rounded">
+                    <div className="flex h-80 items-center justify-center rounded bg-gray-800">
                       <span className="text-muted-foreground">Loading...</span>
                     </div>
                   )}
@@ -328,7 +317,7 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
   useEffect(() => {
     const loadData = async () => {
       setIsLoadingData(true);
-      
+
       // Load cover image
       if (snapshot.CoverImage) {
         const url = await getImageUrl(snapshot.CoverImage);
@@ -373,7 +362,7 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
               alt="Preview"
               width={1200}
               height={800}
-              className="h-auto w-auto max-h-[90vh] max-w-[90vw] object-contain"
+              className="h-auto max-h-[90vh] w-auto max-w-[90vw] object-contain"
             />
             <button
               onClick={() => setSelectedImage(null)}
@@ -396,8 +385,8 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
           {/* Cover Image */}
           {coverImageUrl && (
             <div className="flex justify-center">
-              <div 
-                className="relative h-64 w-64 overflow-hidden rounded-lg border-4 border-gray-700 cursor-pointer"
+              <div
+                className="relative h-64 w-64 cursor-pointer overflow-hidden rounded-lg border-4 border-gray-700"
                 onClick={() => setSelectedImage(coverImageUrl)}
               >
                 <Image
@@ -453,19 +442,17 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
               <div>
                 <label className="text-sm font-medium">Main Artists:</label>
                 {isLoadingData ? (
-                  <p className="text-muted-foreground text-sm mt-1">Loading...</p>
+                  <p className="text-muted-foreground mt-1 text-sm">Loading...</p>
                 ) : snapshot.MainArtistIds && snapshot.MainArtistIds.length > 0 ? (
                   <div className="mt-2 space-y-1">
                     {snapshot.MainArtistIds.map((artistId, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <Badge variant="default">
-                          {mainArtists.get(artistId) || artistId}
-                        </Badge>
+                        <Badge variant="default">{mainArtists.get(artistId) || artistId}</Badge>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground text-sm mt-1">No main artists</p>
+                  <p className="text-muted-foreground mt-1 text-sm">No main artists</p>
                 )}
               </div>
 
@@ -473,19 +460,17 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
               <div>
                 <label className="text-sm font-medium">Featured Artists:</label>
                 {isLoadingData ? (
-                  <p className="text-muted-foreground text-sm mt-1">Loading...</p>
+                  <p className="text-muted-foreground mt-1 text-sm">Loading...</p>
                 ) : snapshot.FeaturedArtistIds && snapshot.FeaturedArtistIds.length > 0 ? (
                   <div className="mt-2 space-y-1">
                     {snapshot.FeaturedArtistIds.map((artistId, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <Badge variant="secondary">
-                          {featuredArtists.get(artistId) || artistId}
-                        </Badge>
+                        <Badge variant="secondary">{featuredArtists.get(artistId) || artistId}</Badge>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground text-sm mt-1">No featured artists</p>
+                  <p className="text-muted-foreground mt-1 text-sm">No featured artists</p>
                 )}
               </div>
             </div>
@@ -497,7 +482,7 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
           <div>
             <label className="font-medium">Categories:</label>
             {isLoadingData ? (
-              <p className="text-muted-foreground text-sm mt-2">Loading...</p>
+              <p className="text-muted-foreground mt-2 text-sm">Loading...</p>
             ) : snapshot.CategoryIds && snapshot.CategoryIds.length > 0 ? (
               <div className="mt-2 flex flex-wrap gap-2">
                 {snapshot.CategoryIds.map((categoryId, index) => (
@@ -507,7 +492,7 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm mt-2">No categories</p>
+              <p className="text-muted-foreground mt-2 text-sm">No categories</p>
             )}
           </div>
 
@@ -532,7 +517,9 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
                 <label className="font-medium">Tags:</label>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {snapshot.Tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary">{tag}</Badge>
+                    <Badge key={index} variant="secondary">
+                      {tag}
+                    </Badge>
                   ))}
                 </div>
               </div>
@@ -590,9 +577,9 @@ const WorkUploadView = ({ snapshot }: { snapshot: WorkUploadSnapshot }) => {
   useEffect(() => {
     const loadData = async () => {
       setIsLoadingData(true);
-      
+
       // Get all unique user IDs from work splits
-      const userIds = snapshot.WorkSplits.map(split => split.UserId);
+      const userIds = snapshot.WorkSplits.map((split) => split.UserId);
       if (userIds.length > 0) {
         const artistMap = await fetchArtistNames(userIds);
         setArtists(artistMap);
@@ -631,9 +618,7 @@ const WorkUploadView = ({ snapshot }: { snapshot: WorkUploadSnapshot }) => {
                   <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
                     <div>
                       <span className="text-sm font-medium">Artist:</span>
-                      <p className="text-muted-foreground text-sm">
-                        {artists.get(split.UserId) || split.UserId}
-                      </p>
+                      <p className="text-muted-foreground text-sm">{artists.get(split.UserId) || split.UserId}</p>
                     </div>
                     <div>
                       <span className="text-sm font-medium">Role:</span>
@@ -662,9 +647,9 @@ const RecordingUploadView = ({ snapshot }: { snapshot: RecordingUploadSnapshot }
   useEffect(() => {
     const loadData = async () => {
       setIsLoadingData(true);
-      
+
       // Get all unique user IDs from recording splits
-      const userIds = snapshot.RecordingSplitRequests.map(split => split.UserId);
+      const userIds = snapshot.RecordingSplitRequests.map((split) => split.UserId);
       if (userIds.length > 0) {
         const artistMap = await fetchArtistNames(userIds);
         setArtists(artistMap);
@@ -703,9 +688,7 @@ const RecordingUploadView = ({ snapshot }: { snapshot: RecordingUploadSnapshot }
                   <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
                     <div>
                       <span className="text-sm font-medium">Artist:</span>
-                      <p className="text-muted-foreground text-sm">
-                        {artists.get(split.UserId) || split.UserId}
-                      </p>
+                      <p className="text-muted-foreground text-sm">{artists.get(split.UserId) || split.UserId}</p>
                     </div>
                     <div>
                       <span className="text-sm font-medium">Role:</span>
@@ -726,6 +709,202 @@ const RecordingUploadView = ({ snapshot }: { snapshot: RecordingUploadSnapshot }
   );
 };
 
+// Component for Dispute Resolution
+const DisputeResolutionView = ({ snapshot }: { snapshot: DisputeResolutionSnapshot }) => {
+  const [client, setClient] = useState<{ fullName: string; email: string } | null>(null);
+  const [provider, setProvider] = useState<string>("");
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoadingData(true);
+
+      // Fetch client info (user)
+      const clientMap = await fetchUserFullInfo([snapshot.ClientId]);
+      const clientInfo = clientMap.get(snapshot.ClientId);
+      if (clientInfo) {
+        setClient(clientInfo);
+      }
+
+      // Fetch provider info (artist)
+      const artistMap = await fetchArtistNames([snapshot.ProviderId]);
+      setProvider(artistMap.get(snapshot.ProviderId) || "Unknown Artist");
+
+      setIsLoadingData(false);
+    };
+
+    loadData();
+  }, [snapshot]);
+
+  const formatCurrency = (amount: number, currency: string = "VND") => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Refund Resolution Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <DollarSign className="mr-2 h-5 w-5" />
+            Refund Resolution
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Total Amount */}
+          <div className="rounded-lg border border-gray-700 bg-gray-900/50 p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-300">Total Order Amount</span>
+              <span className="text-xl font-bold text-gray-200">{formatCurrency(snapshot.PackageOrderAmount)}</span>
+            </div>
+          </div>
+
+          {/* Visual Split */}
+          <div className="space-y-2">
+            <div className="flex h-12 overflow-hidden rounded-lg border border-gray-700">
+              {snapshot.RequestorPercentage !== 0 && (
+                <div
+                  className="flex items-center justify-center bg-gray-700 text-sm font-medium text-white"
+                  style={{ width: `${snapshot.RequestorPercentage}%` }}
+                >
+                  Client {snapshot.RequestorPercentage}%
+                </div>
+              )}
+              {snapshot.ArtistPercentage !== 0 && (
+                <div
+                  className="flex items-center justify-center bg-gray-600 text-sm font-medium text-white"
+                  style={{ width: `${snapshot.ArtistPercentage}%` }}
+                >
+                  Artist {snapshot.ArtistPercentage}%
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Amount Details */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="rounded-lg border border-gray-700 bg-gray-900/50 p-4">
+              <div className="space-y-2">
+                <p className="text-sm text-gray-400">Client Refund</p>
+                <p className="text-2xl font-bold text-gray-200">{formatCurrency(snapshot.RefundAmount)}</p>
+                <p className="text-xs text-gray-500">Net amount</p>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-gray-700 bg-gray-900/50 p-4">
+              <div className="space-y-2">
+                <p className="text-sm text-gray-400">Artist Escrow Release</p>
+                <p className="text-2xl font-bold text-gray-200">{formatCurrency(snapshot.EscrowReleaseAmount)}</p>
+                <p className="text-xs text-gray-500">Net amount after 10% platform fee</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Package Order Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Package className="mr-2 h-5 w-5" />
+            Package Order Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <span className="text-sm font-medium text-gray-400">Package Order ID:</span>
+              <p className="mt-1 font-mono text-sm text-gray-200">{snapshot.PackageOrderId}</p>
+            </div>
+            <div>
+              <span className="text-sm font-medium text-gray-400">Status:</span>
+              <div className="mt-1">
+                <Badge variant="outline">{snapshot.PackageOrderStatus}</Badge>
+              </div>
+            </div>
+            <div>
+              <span className="text-sm font-medium text-gray-400">Amount:</span>
+              <p className="mt-1 text-gray-200">{formatCurrency(snapshot.PackageOrderAmount)}</p>
+            </div>
+            {snapshot.DisputedReason && (
+              <div className="md:col-span-2">
+                <span className="text-sm font-medium text-gray-400">Disputed Reason:</span>
+                <p className="text-muted-foreground mt-1 rounded-lg bg-gray-900/50 p-3 text-sm">
+                  {snapshot.DisputedReason}
+                </p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Client and Artist Information */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {/* Client Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <User className="mr-2 h-5 w-5" />
+              Client Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {isLoadingData ? (
+              <p className="text-muted-foreground text-sm">Loading client information...</p>
+            ) : (
+              <div className="space-y-2">
+                <div>
+                  <span className="text-sm font-medium text-gray-400">Name:</span>
+                  <p className="mt-1 text-gray-200">{client?.fullName || "Unknown"}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-400">Email:</span>
+                  <p className="mt-1 text-gray-200">{client?.email || "N/A"}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-400">Client ID:</span>
+                  <p className="mt-1 font-mono text-xs text-gray-500">{snapshot.ClientId}</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Artist Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Music className="mr-2 h-5 w-5" />
+              Artist Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {isLoadingData ? (
+              <p className="text-muted-foreground text-sm">Loading artist information...</p>
+            ) : (
+              <div className="space-y-2">
+                <div>
+                  <span className="text-sm font-medium text-gray-400">Stage Name:</span>
+                  <p className="mt-1 text-gray-200">{provider}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-400">Artist ID:</span>
+                  <p className="mt-1 font-mono text-xs text-gray-500">{snapshot.ProviderId}</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
 export const ApprovalHistorySnapshotInfo = ({ snapshot, approvalType }: ApprovalHistorySnapshotInfoProps) => {
   switch (approvalType) {
     case "ARTIST_REGISTRATION":
@@ -736,11 +915,13 @@ export const ApprovalHistorySnapshotInfo = ({ snapshot, approvalType }: Approval
       return <WorkUploadView snapshot={snapshot as WorkUploadSnapshot} />;
     case "RECORDING_UPLOAD":
       return <RecordingUploadView snapshot={snapshot as RecordingUploadSnapshot} />;
+    case "DISPUTE_RESOLUTION":
+      return <DisputeResolutionView snapshot={snapshot as DisputeResolutionSnapshot} />;
     default:
       return (
         <Card>
           <CardContent className="py-8">
-            <p className="text-center text-muted-foreground">Unknown approval type</p>
+            <p className="text-muted-foreground text-center">Unknown approval type</p>
           </CardContent>
         </Card>
       );

@@ -22,6 +22,8 @@ import {
 import { ListPlus, Flag } from "lucide-react";
 import { ReportRelatedContentType } from "@/gql/graphql";
 import { TrackInfo } from "@/types";
+import { useProcessTrackDiscoveryPopularity, useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
+import { PopularityActionType } from "@/gql/graphql";
 
 interface RelatedTrackCardProps {
   track: TrackInfo;
@@ -36,6 +38,8 @@ const RelatedTrackCard = React.memo(
     const [authDialogAction, setAuthDialogAction] = useState<"play" | "favorite">("play");
     const [playlistModalOpen, setPlaylistModalOpen] = useState(false);
     const [reportDialogOpen, setReportDialogOpen] = useState(false);
+    const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
+    const { mutate: trackDiscoveryPopularity } = useProcessTrackDiscoveryPopularity();
 
     const trackId = track.id || "";
     const trackName = track.name || "Unknown Track";
@@ -128,6 +132,10 @@ const RelatedTrackCard = React.memo(
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["related-tracks"] });
         toast.success(checkTrackInFavorite ? "Removed from favorites" : "Added to favorites");
+        trackEngagementPopularity({
+          trackId,
+          actionType: checkTrackInFavorite ? PopularityActionType.Unfavorite : PopularityActionType.Favorite,
+        });
       },
       onError: (error: Error) => {
         toast.error(error.message || "Failed to update favorite status");
@@ -153,11 +161,17 @@ const RelatedTrackCard = React.memo(
       [isAuthenticated, favoriteTrack, trackId, checkTrackInFavorite],
     );
 
-    const handleCopyLink = useCallback(() => {
-      const trackUrl = `${window.location.origin}/track/${trackId}`;
-      navigator.clipboard.writeText(trackUrl);
-      toast.success("Track link copied to clipboard");
-    }, [trackId]);
+    const onCopy = (e: React.MouseEvent) => {
+      e.stopPropagation();
+
+      navigator.clipboard.writeText(window.location.href + `track/${trackId}`);
+      toast.info("Copied!");
+      // Track popularity for share action
+      trackEngagementPopularity({
+        trackId: trackId,
+        actionType: PopularityActionType.Share,
+      });
+    };
 
     const handleAddToPlaylist = useCallback(() => {
       if (!isAuthenticated) {
@@ -179,6 +193,13 @@ const RelatedTrackCard = React.memo(
 
     // Get the first artist's ID for reporting
     const firstArtistId = allArtists[0]?.id || "";
+
+    const handleTrackAddPopularity = () => {
+      trackDiscoveryPopularity({
+        trackId: trackId,
+        actionType: PopularityActionType.Search,
+      });
+    };
 
     return (
       <>
@@ -285,12 +306,12 @@ const RelatedTrackCard = React.memo(
                   <ListPlus className="mr-2 h-4 w-4" />
                   Add to playlist
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleCopyLink}>
+                <DropdownMenuItem onClick={onCopy}>
                   <LinkIcon className="mr-2 h-4 w-4" />
                   Copy link
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href={`/track/${trackId}`}>
+                  <Link href={`/track/${trackId}`} onClick={handleTrackAddPopularity}>
                     <Eye className="mr-2 h-4 w-4" />
                     View details
                   </Link>

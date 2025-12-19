@@ -11,7 +11,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ReportRelatedContentType, PopularityActionType } from "@/gql/graphql";
 import { formatNumber } from "@/utils/format-number";
-import { CopyIcon, EllipsisIcon, FlagIcon, HeartIcon, ListPlusIcon, UserIcon } from "lucide-react";
+import {
+  CopyIcon,
+  EllipsisIcon,
+  FlagIcon,
+  HeartIcon,
+  ListPlusIcon,
+  UserIcon,
+  BarChart3Icon,
+  InfoIcon,
+} from "lucide-react";
 import { Suspense, useState } from "react";
 import PlaylistAddModal from "@/modules/client/playlist/ui/components/playlist-add-modal";
 import { toast } from "sonner";
@@ -28,6 +37,7 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { artistOptions, trackDetailOptions } from "@/gql/options/client-options";
 import { useAuthStore } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface TrackOwnerSectionProps {
   trackId: string;
@@ -78,6 +88,7 @@ const TrackOwnerSectionSuspense = ({ trackId }: TrackOwnerSectionProps) => {
   const trackDetailArtist = trackDetail?.mainArtists?.items?.[0];
   const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
   const { mutate: trackEngagementPopularity } = useProcessTrackEngagementPopularity();
 
@@ -89,6 +100,9 @@ const TrackOwnerSectionSuspense = ({ trackId }: TrackOwnerSectionProps) => {
   });
 
   const trackData = data.tracks?.items?.[0];
+
+  // Check if current user is the track owner
+  const isTrackOwner = artistData && artistData.artists?.items?.[0]?.userId === trackDetailArtist?.userId;
 
   const handleCopyLink = () => {
     if (trackDetail?.id) {
@@ -130,120 +144,159 @@ const TrackOwnerSectionSuspense = ({ trackId }: TrackOwnerSectionProps) => {
   };
 
   return (
-    <div className="flex w-full items-center justify-between">
-      <div className="flex items-center gap-x-3">
-        <Link href={`/artists/${trackData?.mainArtistIds?.[0]}`}>
-          <Avatar className="size-16">
-            <AvatarImage src={trackDetail?.mainArtists?.items?.[0].avatarImage || "https://github.com/shadcn.png"} />
-            <AvatarFallback>{getUserInitials(trackDetail?.mainArtists?.items?.[0]?.stageName || "")}</AvatarFallback>
-          </Avatar>
-        </Link>
+    <div className="space-y-4">
+      <div className="flex w-full items-center justify-between">
+        <div className="flex items-center gap-x-3">
+          <Link href={`/artists/${trackData?.mainArtistIds?.[0]}`}>
+            <Avatar className="size-16">
+              <AvatarImage src={trackDetail?.mainArtists?.items?.[0].avatarImage || "https://github.com/shadcn.png"} />
+              <AvatarFallback>{getUserInitials(trackDetail?.mainArtists?.items?.[0]?.stageName || "")}</AvatarFallback>
+            </Avatar>
+          </Link>
 
-        <div className="flex items-center gap-x-6">
-          <div className="flex flex-col gap-y-1">
-            <Link
-              href={`/artists/${trackData?.mainArtistIds?.[0]}`}
-              className="text-main-white hover:text-main-purple text-sm font-bold transition-colors"
-            >
-              {data.tracks?.items?.[0]?.mainArtists?.items?.[0]?.stageName || "Unknown Artist"}
-            </Link>
-            <span className="text-main-grey-dark-1 flex items-center gap-x-1 text-sm">
-              <UserIcon className="inline-block size-5" /> {trackData?.mainArtists?.items?.[0]?.followerCount || 0}{" "}
-              followers
-            </span>
-          </div>
-          {/* // TODO: Implement feature for artist here later */}
-          {artistData && artistData.artists?.items?.[0]?.userId === trackDetailArtist?.userId ? null : (
-            <Button
-              variant={trackDetailArtist?.user[0]?.checkUserFollowing ? "reaction" : "default"}
-              className="px-10 py-2 text-sm font-bold"
-              onClick={handleFollowUserToggle}
-            >
-              {trackDetailArtist?.user[0]?.checkUserFollowing ? "Following" : "Follow"}
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-x-4">
-        <Button variant="reaction" className="group text-sm font-bold" onClick={handleFavoriteClick}>
-          <HeartIcon
-            className={cn(
-              `group-hover:text-main-grey group-hover:fill-main-grey inline-block size-4`,
-              trackDetail?.checkTrackInFavorite
-                ? "fill-main-purple text-main-purple"
-                : "text-main-white fill-main-white",
-            )}
-          />
-          <span className="text-main-grey">{formatNumber(trackData?.favoriteCount || 0)}</span>
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="reaction" className="group text-sm font-bold">
-              <EllipsisIcon className="inline-block size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="bottom" className="w-56">
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={handleCopyLink}>
-                <CopyIcon className="text-main-white mr-2 size-4" />
-                <span className="text-main-white text-base">Copy link</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  executeWithAuth(
-                    () => {
-                      setAddToPlaylistModalOpen(true);
-                    },
-                    "playlist",
-                    trackDetail?.name,
-                  );
-                }}
+          <div className="flex items-center gap-x-6">
+            <div className="flex flex-col gap-y-1">
+              <Link
+                href={`/artists/${trackData?.mainArtistIds?.[0]}`}
+                className="text-main-white hover:text-main-purple text-sm font-bold transition-colors"
               >
-                <ListPlusIcon className="text-main-white mr-2 size-4" />
-                <span className="text-main-white text-base">Add to playlist</span>
-              </DropdownMenuItem>
-              {isAuthenticated && trackDetailArtist?.userId && (
+                {data.tracks?.items?.[0]?.mainArtists?.items?.[0]?.stageName || "Unknown Artist"}
+              </Link>
+              <span className="text-main-grey-dark-1 flex items-center gap-x-1 text-sm">
+                <UserIcon className="inline-block size-5" /> {trackData?.mainArtists?.items?.[0]?.followerCount || 0}{" "}
+                followers
+              </span>
+            </div>
+            {/* // TODO: Implement feature for artist here later */}
+            {isTrackOwner ? null : (
+              <Button
+                variant={trackDetailArtist?.user[0]?.checkUserFollowing ? "reaction" : "default"}
+                className="px-10 py-2 text-sm font-bold"
+                onClick={handleFollowUserToggle}
+              >
+                {trackDetailArtist?.user[0]?.checkUserFollowing ? "Following" : "Follow"}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-x-4">
+          <Button variant="reaction" className="group text-sm font-bold" onClick={handleFavoriteClick}>
+            <HeartIcon
+              className={cn(
+                `group-hover:text-main-grey group-hover:fill-main-grey inline-block size-4`,
+                trackDetail?.checkTrackInFavorite
+                  ? "fill-main-purple text-main-purple"
+                  : "text-main-white fill-main-white",
+              )}
+            />
+            <span className="text-main-grey">{formatNumber(trackData?.favoriteCount || 0)}</span>
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="reaction" className="group text-sm font-bold">
+                <EllipsisIcon className="inline-block size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="w-56">
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={handleCopyLink}>
+                  <CopyIcon className="text-main-white mr-2 size-4" />
+                  <span className="text-main-white text-base">Copy link</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
-                    setReportDialogOpen(true);
+                    executeWithAuth(
+                      () => {
+                        setAddToPlaylistModalOpen(true);
+                      },
+                      "playlist",
+                      trackDetail?.name,
+                    );
                   }}
                 >
-                  <FlagIcon className="text-main-white mr-2 size-4" />
-                  <span className="text-main-white text-base">Report</span>
+                  <ListPlusIcon className="text-main-white mr-2 size-4" />
+                  <span className="text-main-white text-base">Add to playlist</span>
                 </DropdownMenuItem>
-              )}
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                {isAuthenticated && trackDetailArtist?.userId && !isTrackOwner && (
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setReportDialogOpen(true);
+                    }}
+                  >
+                    <FlagIcon className="text-main-white mr-2 size-4" />
+                    <span className="text-main-white text-base">Report</span>
+                  </DropdownMenuItem>
+                )}
+                {isTrackOwner && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/artist/studio/tracks/insights/${trackId}`}>
+                        <BarChart3Icon className="text-main-white mr-2 size-4" />
+                        <span className="text-main-white text-base">Insights</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/artist/studio/tracks/detail/${trackId}`}>
+                        <InfoIcon className="text-main-white mr-2 size-4" />
+                        <span className="text-main-white text-base">Details</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {trackDetail?.id && isAuthenticated && (
+          <>
+            <PlaylistAddModal
+              open={addToPlaylistModalOpen}
+              onOpenChange={setAddToPlaylistModalOpen}
+              trackId={trackDetail.id}
+            />
+            {trackDetailArtist?.userId && !isTrackOwner && (
+              <ReportDialog
+                contentType={ReportRelatedContentType.Track}
+                contentId={trackDetail.id}
+                reportedUserId={trackDetailArtist.userId}
+                reportedUserName={trackDetail.name}
+                open={reportDialogOpen}
+                onOpenChange={setReportDialogOpen}
+              />
+            )}
+          </>
+        )}
+
+        <WarningAuthDialog
+          open={showWarningDialog}
+          onOpenChange={setShowWarningDialog}
+          action={warningAction}
+          trackName={trackName}
+        />
       </div>
 
-      {trackDetail?.id && isAuthenticated && (
-        <>
-          <PlaylistAddModal
-            open={addToPlaylistModalOpen}
-            onOpenChange={setAddToPlaylistModalOpen}
-            trackId={trackDetail.id}
-          />
-          {trackDetailArtist?.userId && (
-            <ReportDialog
-              contentType={ReportRelatedContentType.Track}
-              contentId={trackDetail.id}
-              reportedUserId={trackDetailArtist.userId}
-              reportedUserName={trackDetail.name}
-              open={reportDialogOpen}
-              onOpenChange={setReportDialogOpen}
-            />
-          )}
-        </>
+      {/* Track Description Card */}
+      {trackDetail?.description && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="space-y-2">
+              <p className={cn("text-main-white text-sm leading-relaxed", !isDescriptionExpanded && "line-clamp-2")}>
+                {trackDetail.description}
+              </p>
+              {trackDetail.description.length > 100 && (
+                <button
+                  onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                  className="text-main-purple hover:text-main-purple/80 text-sm font-medium transition-colors"
+                >
+                  {isDescriptionExpanded ? "Less" : "More"}
+                </button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       )}
-
-      <WarningAuthDialog
-        open={showWarningDialog}
-        onOpenChange={setShowWarningDialog}
-        action={warningAction}
-        trackName={trackName}
-      />
     </div>
   );
 };

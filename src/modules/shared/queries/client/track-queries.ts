@@ -20,6 +20,7 @@ export const TrackListHomeQuery = graphql(`
           }
         }
         checkTrackInFavorite
+        streamCount
       }
     }
   }
@@ -34,6 +35,7 @@ export const TrackDetailViewQuery = graphql(`
         coverImage
         favoriteCount
         streamCount
+        description
         categoryIds
         categories {
           items {
@@ -41,6 +43,7 @@ export const TrackDetailViewQuery = graphql(`
             id
           }
         }
+        isExplicit
         mainArtistIds
         mainArtists {
           items {
@@ -55,6 +58,10 @@ export const TrackDetailViewQuery = graphql(`
             }
           }
         }
+        releaseInfo {
+          isRelease
+        }
+        createdBy
         checkTrackInFavorite
       }
     }
@@ -76,6 +83,7 @@ export const TrackFavoriteQuery = graphql(`
             stageName
           }
         }
+        streamCount
         checkTrackInFavorite
         createdAt
       }
@@ -83,13 +91,60 @@ export const TrackFavoriteQuery = graphql(`
   }
 `);
 
-// export const TrackCategoriesQuery = graphql(`
-//   query TrackCategories($trackId: String!) {
-//     tracks(where: { id: { eq: $trackId } }) {
-//       items {
-//         id
-//         categoryIds
-//       }
-//     }
-//   }
-// `);
+export const SuggestedTracksForPlaylistQuery = graphql(`
+  query SuggestedTracksForPlaylist($take: Int!, $excludeTrackIds: [String!], $nameUnsigned: String!) {
+    tracks(
+      take: $take
+      order: { createdAt: DESC }
+      where: {
+        and: [
+          { releaseInfo: { isRelease: { eq: true } } }
+          { restriction: { type: { eq: NONE } } }
+          { id: { nin: $excludeTrackIds } }
+        ]
+        nameUnsigned: { contains: $nameUnsigned }
+      }
+    ) {
+      totalCount
+      items {
+        id
+        name
+        coverImage
+        mainArtistIds
+        isExplicit
+        mainArtists {
+          items {
+            id
+            stageName
+          }
+        }
+        checkTrackInFavorite
+      }
+    }
+  }
+`);
+
+export const TopTracksQuery = graphql(`
+  query TopTracks {
+    topTracks {
+      id
+      createdAt
+      tracksInfo {
+        trackId
+        track {
+          id
+          name
+          coverImage
+          streamCount
+          mainArtistIds
+          mainArtists {
+            items {
+              id
+              stageName
+            }
+          }
+          checkTrackInFavorite
+        }
+      }
+    }
+  }`)

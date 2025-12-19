@@ -1,23 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { HeartIcon, PlayIcon } from "lucide-react";
+import { HeartIcon } from "lucide-react";
 import Image from "next/image";
 import { SearchArtistItem } from "@/types/search";
-import { toast } from "sonner";
 import { useSearchAuth } from "../../hooks/use-search-auth";
 import { useRouter } from "next/navigation";
 import { useProcessArtistDiscoveryPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
 import { PopularityActionType } from "@/gql/graphql";
+import { useArtistFollow } from "@/hooks/use-artist-follow";
 
 interface ArtistCardAllProps {
   artist: SearchArtistItem;
 }
 
 export const ArtistCardAll = ({ artist }: ArtistCardAllProps) => {
-  const [isFavorited, setIsFavorited] = useState(false);
   const { executeWithAuth } = useSearchAuth();
   const router = useRouter();
   const { mutate: artistDiscoveryPopularity } = useProcessArtistDiscoveryPopularity();
+  const { handleFollowToggle } = useArtistFollow({
+    artistId: artist.id,
+  });
 
   const handleArtistClick = () => {
     // Track search result click
@@ -29,13 +31,18 @@ export const ArtistCardAll = ({ artist }: ArtistCardAllProps) => {
     router.push(`/artists/${artist.id}`);
   };
 
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const handleFollowClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     executeWithAuth(
       () => {
-        setIsFavorited(!isFavorited);
-        toast.success(isFavorited ? "Removed from favorites" : "Added to favorites");
+        // Get current follow status and artist user ID
+        const isCurrentlyFollowing = artist.user?.[0]?.checkUserFollowing || false;
+        const artistUserId = artist.userId;
+        
+        if (artistUserId) {
+          handleFollowToggle(artistUserId, isCurrentlyFollowing, artist.stageName);
+        }
       },
       "follow",
       artist.stageName,
@@ -62,30 +69,13 @@ export const ArtistCardAll = ({ artist }: ArtistCardAllProps) => {
           </div>
         )}
 
-        {/* Bottom center icons - only show on hover */}
-        <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 transform items-center justify-center gap-x-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+        {/* Bottom center icon - only show on hover */}
+        <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 transform items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              executeWithAuth(
-                () => {
-                  // TODO: Play artist's top tracks
-                  console.log(`Play ${artist.stageName}'s music`);
-                },
-                "play",
-                artist.stageName,
-              );
-            }}
+            onClick={handleFollowClick}
             className="size-12 rounded-full bg-white text-black shadow-lg hover:bg-gray-100"
           >
-            <PlayIcon className="h-8 w-8 fill-current" />
-          </Button>
-
-          <Button
-            onClick={handleFavoriteClick}
-            className="size-12 rounded-full bg-white text-black shadow-lg hover:bg-gray-100"
-          >
-            <HeartIcon className={`h-6 w-6 ${isFavorited ? "fill-red-500 text-red-500" : ""}`} />
+            <HeartIcon className={`h-6 w-6 ${artist.user?.[0]?.checkUserFollowing ? "fill-main-purple text-main-purple" : ""}`} />
           </Button>
         </div>
       </div>

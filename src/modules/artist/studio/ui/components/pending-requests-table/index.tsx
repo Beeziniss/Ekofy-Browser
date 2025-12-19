@@ -21,11 +21,19 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { ArtistType } from "@/gql/graphql";
+import { ArtistType, ReportRelatedContentType, ReportType } from "@/gql/graphql";
+import { MoreHorizontal, Eye, Flag } from "lucide-react";
+import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
 
 export interface PendingTrackUploadRequest {
   id: string;
@@ -102,6 +110,8 @@ const PendingRequestsTable = ({
   hasPreviousPage = false,
 }: PendingRequestsTableProps) => {
   const [rowSelection, setRowSelection] = useState({});
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<PendingTrackUploadRequest | null>(null);
 
   const columns: ColumnDef<PendingTrackUploadRequest>[] = [
     {
@@ -167,11 +177,30 @@ const PendingRequestsTable = ({
       cell: ({ row }) => {
         const request = row.original;
         return (
-          <Link href={`/artist/studio/tracks/pending/${request.id}`}>
-            <Button variant="ghost" size="sm">
-              View
-            </Button>
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={`/artist/studio/tracks/pending/${request.id}`} className="flex items-center cursor-pointer">
+                  <Eye className="mr-2 h-4 w-4" />
+                  <span>View</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setSelectedRequest(request);
+                  setReportDialogOpen(true);
+                }}
+              >
+                <Flag className="mr-2 h-4 w-4" />
+                <span>Report</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
@@ -357,6 +386,18 @@ const PendingRequestsTable = ({
           )}
         </div>
       </div>
+
+      {selectedRequest && (
+        <ReportDialog
+          reportType={ReportType.UnapprovedUploadedTrack}
+          contentType={ReportRelatedContentType.Track}
+          contentId={selectedRequest.track.id}
+          reportedUserId={selectedRequest.createdBy}
+          reportedUserName={selectedRequest.track.name}
+          open={reportDialogOpen}
+          onOpenChange={setReportDialogOpen}
+        />
+      )}
     </div>
   );
 };

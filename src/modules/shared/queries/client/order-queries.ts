@@ -19,6 +19,7 @@ export const OrderPackageQuery = graphql(`
         duration
         startedAt
         freezedTime
+        disputedReason
         requirements
         deliveries {
           notes

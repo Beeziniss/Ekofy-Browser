@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import { requestHubOptions } from "@/gql/options/client-options";
-import { useCreateRequest, useUpdateRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
+import { useCreateRequest, useUpdateRequest, useDeleteRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { RequestHubLayout } from "../layout";
 import { CreateRequestSection, ViewRequestSection, EditRequestSection } from "../section";
 import { Pagination } from "../component";
@@ -40,6 +40,7 @@ export function RequestHubView() {
   // Mutations
   const createRequestMutation = useCreateRequest();
   const updateRequestMutation = useUpdateRequest();
+  const deleteRequestMutation = useDeleteRequest();
 
   // Filter requests based on search (already filtered to OPEN by query)
   const filteredRequests = requests.filter(
@@ -76,6 +77,30 @@ export function RequestHubView() {
   const handleSave = (id: string) => {
     console.log("Save request:", id);
     toast.info("Bookmark feature coming soon!");
+  };
+
+  const handleDelete = async (id: string) => {
+    const request = requests.find((r: RequestItem) => r.id === id);
+    if (!request) {
+      toast.error("Request not found");
+      return;
+    }
+
+    try {
+      await deleteRequestMutation.mutateAsync({
+        id: request.id,
+        title: request.title || "",
+        summary: request.summary || "",
+        detailDescription: request.detailDescription || "",
+        budget: request.budget!,
+        duration: request.duration,
+        status: GqlRequestStatus.Deleted,
+      });
+      toast.success("Request deleted successfully!");
+    } catch (error) {
+      toast.error("Failed to delete request");
+      console.error("Delete request error:", error);
+    }
   };
 
   const handleCreateSubmit = async (data: CreateRequestData) => {
@@ -164,6 +189,7 @@ export function RequestHubView() {
                 isLoading={isLoading}
                 onViewDetails={handleViewDetails}
                 onEdit={handleEdit}
+                onDelete={handleDelete}
                 onSave={handleSave}
               />
 

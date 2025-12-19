@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import { CircleUser, Boxes, Receipt, ClipboardList, ScrollText, LayoutDashboard, FolderCheck } from "lucide-react";
+import { CircleUser, Boxes, Receipt, ClipboardList, ScrollText, LayoutDashboard, FolderCheck, Flag } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
 import { NavProjects } from "../nav-projects";
@@ -53,6 +53,11 @@ const data = {
       name: "Categories",
       url: "/admin/category",
       icon: FolderCheck,
+    },
+    {
+      name: "Reports",
+      url: "/admin/report",
+      icon: Flag,
     }
   ],
 };

@@ -21,6 +21,8 @@ import {
   ConversationStatus,
   UserFilterInput,
   NotificationFilterInput,
+  AlbumFilterInput,
+  TrackFilterInput,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -43,6 +45,8 @@ import {
   RequestHubCommentThreadRepliesQuery,
   RequestHubCommentThreadsQuery,
   SEARCH_REQUESTS_QUERY,
+  SuggestedTracksForPlaylistQuery,
+  TopTracksQuery,
   TrackCommentRepliesQuery,
   TrackCommentsQuery,
   TrackDetailViewQuery,
@@ -55,6 +59,9 @@ import { ConversationMessagesQuery, ConversationQuery } from "@/modules/shared/q
 import { OrderPackageQuery } from "@/modules/shared/queries/client/order-queries";
 import { CategoriesChannelQuery } from "@/modules/shared/queries/client/category-queries";
 import { NotificationQuery } from "@/modules/shared/queries/client/notification-queries";
+import { AlbumDetailQuery, AlbumQuery } from "@/modules/shared/queries/client/album-queries";
+import { TrackListWithFiltersQuery } from "@/modules/shared/queries/artist";
+import { TrackSemanticQuery } from "@/modules/shared/queries/client/semantic-queries";
 
 // PROFILE QUERIES
 export const userBasicInfoOptions = (userId: string) =>
@@ -95,10 +102,26 @@ export const userActiveSubscriptionOptions = (userId: string) =>
           userId: { eq: userId },
           isActive: { eq: true },
         },
-        take: 1,
         skip: 0,
       });
       return result.userSubscriptions?.items?.[0] || null;
+    },
+    retry: 0,
+    enabled: !!userId,
+  });
+
+export const userSubscriptionOptions = (userId: string) =>
+  queryOptions({
+    queryKey: ["user-subscription", userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const result = await execute(GetUserActiveSubscriptionQuery, {
+        where: {
+          userId: { eq: userId },
+        },
+        skip: 0,
+      });
+      return result.userSubscriptions || null;
     },
     retry: 0,
     enabled: !!userId,
@@ -115,6 +138,7 @@ export const trackDetailOptions = (trackId: string) =>
     queryKey: ["track-detail", trackId],
     queryFn: async () => await execute(TrackDetailViewQuery, { trackId }),
     enabled: !!trackId,
+    retry: 0,
   });
 
 export const trackFavoriteOptions = (take: number = 12, skip: number = 0, isAuthenticated: boolean) =>
@@ -122,6 +146,34 @@ export const trackFavoriteOptions = (take: number = 12, skip: number = 0, isAuth
     queryKey: ["track-favorite", take, skip],
     queryFn: async () => await execute(TrackFavoriteQuery, { take, skip }),
     enabled: isAuthenticated,
+  });
+
+export const suggestedTracksForPlaylistOptions = (playlistId: string, nameUnsigned: string = "", take: number = 12) =>
+  queryOptions({
+    queryKey: ["suggested-tracks-for-playlist", playlistId, nameUnsigned],
+    queryFn: async () => {
+      // First, fetch the current tracks in the playlist
+      const playlistData = await execute(PlaylistDetailTrackListQuery, { playlistId });
+      const existingTrackIds =
+        playlistData.playlists?.items?.[0]?.tracks?.items?.map((track) => track?.id).filter(Boolean) || [];
+
+      // Then fetch suggested tracks excluding the existing ones
+      return await execute(SuggestedTracksForPlaylistQuery, {
+        take,
+        excludeTrackIds: existingTrackIds.length > 0 ? existingTrackIds : null,
+        nameUnsigned,
+      });
+    },
+  });
+
+export const topTracksOptions = () =>
+  queryOptions({
+    queryKey: ["top-tracks"],
+    queryFn: async () => {
+      const result = await execute(TopTracksQuery);
+
+      return result || null;
+    },
   });
 
 // PLAYLIST QUERIES
@@ -438,6 +490,7 @@ export const conversationListOptions = (userId: string, status?: ConversationSta
       return result;
     },
     enabled: !!userId,
+    retry: 0,
   });
 
 export const conversationDetailOptions = (coversationId: string) =>
@@ -445,6 +498,30 @@ export const conversationDetailOptions = (coversationId: string) =>
     queryKey: ["conversation-detail", coversationId],
     queryFn: async () => {
       const where: ConversationFilterInput = { id: { eq: coversationId } };
+      const result = await execute(ConversationQuery, { where });
+      return result;
+    },
+    retry: 0,
+  });
+
+export const conversationDetailByRequestOptions = (requestId: string) =>
+  queryOptions({
+    queryKey: ["conversation-detail-by-request", requestId],
+    queryFn: async () => {
+      const where: ConversationFilterInput = { requestId: { eq: requestId } };
+      const result = await execute(ConversationQuery, { where });
+      return result;
+    },
+  });
+
+export const conversationDetailByRequestPublicOptions = (requestId: string) =>
+  queryOptions({
+    queryKey: ["conversation-detail-by-request-public", requestId],
+    queryFn: async () => {
+      const where: ConversationFilterInput = {
+        requestId: { eq: requestId },
+        status: { eq: ConversationStatus.Pending },
+      };
       const result = await execute(ConversationQuery, { where });
       return result;
     },
@@ -551,4 +628,85 @@ export const notificationInfiniteOptions = (userId: string, first: number = 5) =
       return lastPage.notifications?.pageInfo.hasNextPage ? lastPage.notifications?.pageInfo.endCursor : undefined;
     },
     enabled: !!userId,
+  });
+
+// ALBUM QUERIES
+export const albumListOptions = (name?: string, take: number = 12) =>
+  infiniteQueryOptions({
+    queryKey: ["albums", name],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+
+      const where: AlbumFilterInput = {};
+
+      if (name) {
+        where.nameUnsigned = { contains: name };
+        where.isVisible = { eq: true };
+      }
+
+      return await execute(AlbumQuery, {
+        where,
+        take,
+        skip,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.albums?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+  });
+
+export const albumDetailOptions = (albumId: string) =>
+  queryOptions({
+    queryKey: ["album-detail", albumId],
+    queryFn: async () => {
+      const where: AlbumFilterInput = { id: { eq: albumId } };
+
+      const result = await execute(AlbumDetailQuery, {
+        where,
+        take: 1,
+      });
+
+      return result || null;
+    },
+    enabled: !!albumId,
+  });
+
+// TRACK QUERIES FOR ARTIST
+export const artistTracksInfiniteOptions = (artistId: string, take: number = 20) =>
+  infiniteQueryOptions({
+    queryKey: ["artist-tracks", artistId],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+
+      const where: TrackFilterInput = {
+        or: [{ mainArtistIds: { some: { eq: artistId } } }, { featuredArtistIds: { some: { eq: artistId } } }],
+      };
+
+      return await execute(TrackListWithFiltersQuery, {
+        where,
+        take,
+        skip,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.tracks?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+    enabled: !!artistId,
+  });
+
+// SEMANTIC OPTIONS
+export const trackSemanticOptions = (term: string) =>
+  queryOptions({
+    queryKey: ["track-semantic", term],
+    queryFn: async () => {
+      if (!term) return [];
+      const result = await execute(TrackSemanticQuery, {
+        term,
+      });
+      return result.trackBySemanticSearch || [];
+    },
+    retry: 0,
+    enabled: !!term,
   });

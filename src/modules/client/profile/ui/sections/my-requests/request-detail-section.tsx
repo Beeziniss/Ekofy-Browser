@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, MessageSquare, XCircle, ArrowLeftIcon } from "lucide-react";
+import { Calendar, Clock, User, MessageSquare, XCircle, ArrowLeftIcon, Package, MessageCircle } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +20,7 @@ import {
 import { toast } from "sonner";
 import { useChangeRequestStatus } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { requestOptions } from "@/gql/options/listener-request-options";
+import { moderatorPackageOrderDetailOptions } from "@/gql/options/moderator-options";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import {
   RequestStatus as GqlRequestStatus,
@@ -61,6 +62,9 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const { data: request, isLoading } = useQuery(requestOptions(requestId));
   const changeStatusMutation = useChangeRequestStatus();
+
+  // Fetch order details including conversationId when orderId exists
+  const { data: orderData } = useQuery(moderatorPackageOrderDetailOptions(request?.orderId || ""));
 
   // Fetch artist data if not included and artistId exists
   /* const { data: artistData } = useQuery({
@@ -161,30 +165,69 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6">
-      {/* Header with Back Button */}
+      {/* Header with Back Button and Action Buttons */}
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Request Details</h1>
-        <Link
-          href="/profile/my-requests"
-          className="hover:border-main-white flex items-center gap-x-2 pb-0.5 text-sm font-normal transition hover:border-b"
-        >
-          <ArrowLeftIcon className="w-4" /> Back to My Requests
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/profile/my-requests"
+            className="hover:border-main-white flex items-center gap-x-2 pb-0.5 text-sm font-normal transition hover:border-b"
+          >
+            <ArrowLeftIcon className="w-4" /> Back to My Requests
+          </Link>
+        </div>
       </div>
-
       <div className="space-y-6">
         {/* Main Card with all details */}
         <Card>
-          <CardHeader>
+            <CardHeader>
+            {/* Buttons Row - Left aligned */}
+            <div className="flex items-center gap-2 mb-4">
+              {/* View Order Button - Only show when orderId exists */}
+              {request?.orderId && (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/orders/${request.orderId}/details`}>
+                <Package className="mr-2 h-4 w-4" />
+                View Order
+                </Link>
+              </Button>
+              )}
+
+              {/* View Conversation Button - Only show when conversationId exists */}
+              {orderData?.conversationId && (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/conversation/${orderData.conversationId}`}>
+                <MessageCircle className="mr-2 h-4 w-4" />
+                View Conversation
+                </Link>
+              </Button>
+              )}
+              {request.status === "CONFIRMED" && (
+                <Button className="primary_gradient text-white hover:opacity-65">
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Message Artist
+                </Button>
+              )}
+              {request.status === "PENDING" && (
+                <Button
+                  variant="destructive"
+                  onClick={() => setShowCancelDialog(true)}
+                  disabled={changeStatusMutation.isPending}
+                >
+                  <XCircle className="mr-2 h-4 w-4" />
+                  {changeStatusMutation.isPending ? "Canceling..." : "Cancel Request"}
+                </Button>
+              )}
+            </div>
             <div className="flex items-start justify-between space-y-4 rounded-lg border p-4">
               <div className="flex-1">
-                <CardTitle className="mb-2 text-2xl">
-                  {request.title || `Request for ${artist?.[0].stageName || "Service"}`} - {request.type}
-                </CardTitle>
-                <div className="flex items-center gap-2">{requestStatusBadge(request.status)}</div>
+              <CardTitle className="mb-2 text-2xl">
+                {request.title || `Request for ${artist?.[0].stageName || "Service"}`} - {request.type}
+              </CardTitle>
+              <div className="flex items-center gap-2">{requestStatusBadge(request.status)}</div>
               </div>
             </div>
-          </CardHeader>
+            </CardHeader>
           <CardContent className="space-y-6">
             {/* Artist Info & Key Information */}
 
@@ -341,7 +384,7 @@ x              {!request.requirements && <p className="text-gray-400">No require
         </Card>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap gap-3">
+        {/* <div className="flex flex-wrap gap-3">
           {request.status === "CONFIRMED" && (
             <Button className="primary_gradient text-white hover:opacity-65">
               <MessageSquare className="mr-2 h-4 w-4" />
@@ -358,7 +401,7 @@ x              {!request.requirements && <p className="text-gray-400">No require
               {changeStatusMutation.isPending ? "Canceling..." : "Cancel Request"}
             </Button>
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Cancel Confirmation Dialog */}

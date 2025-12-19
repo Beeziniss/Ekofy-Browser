@@ -28,17 +28,34 @@ export function SubscriptionTable({
 }: SubscriptionTableProps) {
 
   function getTierColor(tier: string) {
-  switch (tier.toLowerCase()) {
-    case "free":
-      return "border-main-white text-main-white";
-    case "premium":
-      return "bg-gray-300 border-gray-300 text-black";
-    case "pro":
-      return "bg-red-700 border-red-400 text-red-200";
-    default:
-      return "bg-gray-800 border-white text-white";
+    switch (tier.toLowerCase()) {
+      case "free":
+        return "bg-secondary text-muted-foreground border-border";
+      case "pro":
+        return "text-white border-transparent shadow-md";
+      case "premium":
+        return "text-white border-transparent shadow-lg";
+      default:
+        return "bg-gray-800 border-white text-white";
+    }
   }
-}
+
+  function getTierStyle(tier: string): React.CSSProperties {
+    switch (tier.toLowerCase()) {
+      case "pro":
+        return {
+          background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+          boxShadow: "0 2px 8px rgba(59, 130, 246, 0.4)",
+        };
+      case "premium":
+        return {
+          background: "linear-gradient(135deg, #f59e0b, #ec4899)",
+          boxShadow: "0 2px 12px rgba(245, 158, 11, 0.5)",
+        };
+      default:
+        return {};
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -77,10 +94,9 @@ export function SubscriptionTable({
                 </TableCell>
                 <TableCell>
                   <span
-                    className={`inline-block border px-3 py-1 text-sm font-medium ${getTierColor(
-                      subscription.tier
-                    )}`}
-                  >      
+                    className={`inline-flex items-center justify-center px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-md transition-all duration-300 ${getTierColor(subscription.tier)}`}
+                    style={getTierStyle(subscription.tier)}
+                  >
                     {subscription.tier}
                   </span>
                 </TableCell>

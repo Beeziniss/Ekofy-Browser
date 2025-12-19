@@ -83,13 +83,25 @@ const TrackSectionSuspense = ({ trackId }: TrackSectionProps) => {
 
   return (
     <div className="bg-main-card-bg flex flex-row gap-x-8 p-8">
-      <Image
-        src={data.tracks?.items?.[0]?.coverImage || ""}
-        alt="Cover"
-        width={280}
-        height={280}
-        className="size-70 rounded-md object-cover"
-      />
+      <div className={"relative size-70 shrink-0"}>
+        <Image
+          src={data.tracks?.items?.[0]?.coverImage || ""}
+          alt="Cover"
+          width={280}
+          height={280}
+          className="size-70 rounded-md object-cover"
+        />
+
+        {data.tracks?.items?.[0].isExplicit && (
+          <div
+            className={
+              "bg-main-purple absolute right-2 bottom-2 flex size-10 items-center justify-center rounded-md text-lg font-semibold"
+            }
+          >
+            E
+          </div>
+        )}
+      </div>
 
       <div className="flex flex-col">
         <div className="flex flex-col gap-y-2">

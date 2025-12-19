@@ -91,3 +91,23 @@ export const GetPlatformFeesQuery = graphql(`
     }
   }
 `);
+
+export const ArtistRevenueQuery = graphql(`
+  query ArtistRevenueData($artistId: String!) {
+    artists(where: { id: { eq: $artistId } }) {
+      items {
+        id
+        stageName
+        avatarImage
+        email
+        followerCount
+        popularity
+        grossRevenue
+        netRevenue
+        royaltyEarnings
+        serviceRevenue
+        serviceEarnings
+      }
+    }
+  }
+`)
