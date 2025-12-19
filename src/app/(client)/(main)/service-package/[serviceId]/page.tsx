@@ -1,4 +1,4 @@
-import { servicePackageOptions, servicePackageReviewOptions } from "@/gql/options/client-options";
+import { servicePackageOptions } from "@/gql/options/client-options";
 import ServicePackageView from "@/modules/client/service-package/ui/views/service-package-view";
 import { getQueryClient } from "@/providers/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";

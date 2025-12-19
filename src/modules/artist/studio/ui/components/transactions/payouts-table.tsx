@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useArtistPayouts } from "@/modules/artist/studio/hooks/use-artist-payouts";
@@ -16,8 +16,12 @@ import {
 } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { PayoutTransactionStatus } from "@/gql/graphql";
+import { PayoutTransactionStatus, GetArtistPayoutsQuery } from "@/gql/graphql";
 import { payoutStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
+
+type PayoutTransactionItem = NonNullable<
+  NonNullable<GetArtistPayoutsQuery["payoutTransactions"]>["items"]
+>[number];
 
 interface PayoutsTableProps {
   userId: string;
@@ -59,11 +63,10 @@ function PayoutTypeCell({ platformFee, isLoading }: { platformFee?: number | nul
 export default function PayoutsTable({ userId, pageSize = 10, typeFilter = "all", onTypeFilterChange }: PayoutsTableProps) {
   const [page, setPage] = useState(1);
   const visibleRowsRef = useRef<Set<string>>(new Set());
-  const [hasVisibleRows, setHasVisibleRows] = useState(false);
 
   const { data, isLoading, isError } = useArtistPayouts({ userId, page, pageSize });
 
-  const items = data?.payoutTransactions?.items ?? [];
+  const items = useMemo(() => data?.payoutTransactions?.items ?? [], [data?.payoutTransactions?.items]);
   const totalCount = data?.payoutTransactions?.totalCount ?? 0;
   const hasNext = !!data?.payoutTransactions?.pageInfo?.hasNextPage;
   const hasPrev = !!data?.payoutTransactions?.pageInfo?.hasPreviousPage;
@@ -72,7 +75,6 @@ export default function PayoutsTable({ userId, pageSize = 10, typeFilter = "all"
   // Reset visible rows when items or filter changes
   useEffect(() => {
     visibleRowsRef.current = new Set();
-    setHasVisibleRows(false);
   }, [items, typeFilter]);
 
   // Memoize the callback to prevent infinite loops
@@ -82,14 +84,6 @@ export default function PayoutsTable({ userId, pageSize = 10, typeFilter = "all"
     } else {
       visibleRowsRef.current.delete(payoutId);
     }
-    // Only update state if it changes to prevent unnecessary re-renders
-    const newHasVisible = visibleRowsRef.current.size > 0;
-    setHasVisibleRows(prev => {
-      if (prev !== newHasVisible) {
-        return newHasVisible;
-      }
-      return prev;
-    });
   }, []);
 
   return (
@@ -167,7 +161,7 @@ export default function PayoutsTable({ userId, pageSize = 10, typeFilter = "all"
 }
 
 // Separate component for payout row to handle type filtering
-function PayoutRow({ tx, typeFilter, onVisibilityChange }: { tx: any; typeFilter: string; onVisibilityChange?: (payoutId: string, visible: boolean) => void }) {
+function PayoutRow({ tx, typeFilter, onVisibilityChange }: { tx: PayoutTransactionItem; typeFilter: string; onVisibilityChange?: (payoutId: string, visible: boolean) => void }) {
   const { data: platformFeeData, isLoading: isLoadingType } = useQuery({
     ...platformFeeByPayoutIdOptions({ payoutTransactionId: tx?.id || "" }),
     enabled: !!tx?.id,

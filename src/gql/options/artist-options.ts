@@ -12,7 +12,6 @@ import {
   UserEngagementAction,
   UserEngagementFilterInput,
   UserEngagementTargetType,
-  TrackDailyMetricSortInput,
 } from "@/gql/graphql";
 import {
   ArtistRevenueQuery,
