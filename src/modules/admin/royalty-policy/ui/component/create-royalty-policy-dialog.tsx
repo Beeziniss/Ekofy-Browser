@@ -30,20 +30,54 @@ import { CREATE_ROYALTY_POLICY } from "@/modules/shared/mutations/admin/royalty-
 import { execute } from "@/gql/execute";
 import { Loader2 } from "lucide-react";
 
+// Format number with thousand separator (dot)
+const formatNumber = (value: string | number): string => {
+  const numStr = typeof value === "number" ? value.toString() : value.replace(/\./g, "");
+  const num = Number(numStr);
+  if (isNaN(num) || numStr === "") return "";
+  return num.toLocaleString("vi-VN");
+};
+
+// Parse formatted number to plain number
+const parseNumber = (value: string): string => {
+  return value.replace(/\./g, "");
+};
+
 const formSchema = z.object({
-  ratePerStream: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "Rate must be a positive number",
-  }),
+  ratePerStream: z
+    .string()
+    .refine(
+      (val) => {
+        const numStr = val.replace(/\./g, "");
+        const num = Number(numStr);
+        return !isNaN(num) && num > 0 && num <= 1000 && num % 2 === 0;
+      },
+      {
+        message: "Rate must be a positive even number not exceeding 1.000 VND",
+      }
+    ),
   recordingPercentage: z
     .string()
-    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0 && Number(val) <= 100, {
-      message: "Recording percentage must be between 0 and 100",
-    }),
+    .refine(
+      (val) => {
+        const num = Number(val);
+        return !isNaN(num) && num >= 0 && num <= 100 && num % 2 === 0;
+      },
+      {
+        message: "Recording percentage must be an even number between 0 and 100",
+      }
+    ),
   workPercentage: z
     .string()
-    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0 && Number(val) <= 100, {
-      message: "Work percentage must be between 0 and 100",
-    }),
+    .refine(
+      (val) => {
+        const num = Number(val);
+        return !isNaN(num) && num >= 0 && num <= 100 && num % 2 === 0;
+      },
+      {
+        message: "Work percentage must be an even number between 0 and 100",
+      }
+    ),
 }).refine(
   (data) => {
     const recording = Number(data.recordingPercentage);
@@ -112,8 +146,10 @@ export function CreateRoyaltyPolicyDialog({
 
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
+    // Parse ratePerStream to remove thousand separators
+    const ratePerStreamValue = parseNumber(values.ratePerStream);
     createMutation.mutate({
-      ratePerStream: Number(values.ratePerStream),
+      ratePerStream: Number(ratePerStreamValue),
       recordingPercentage: Number(values.recordingPercentage),
       workPercentage: Number(values.workPercentage),
     });
@@ -124,8 +160,15 @@ export function CreateRoyaltyPolicyDialog({
     const recording = Number(value);
     if (!isNaN(recording) && recording >= 0 && recording <= 100) {
       const work = 100 - recording;
-      form.setValue("workPercentage", work.toFixed(2));
+      // Round to nearest even number
+      const evenWork = Math.round(work / 2) * 2;
+      form.setValue("workPercentage", evenWork.toString());
     }
+  };
+
+  // Round to nearest even number
+  const roundToEven = (value: number): number => {
+    return Math.round(value / 2) * 2;
   };
 
   return (
@@ -147,14 +190,43 @@ export function CreateRoyaltyPolicyDialog({
                   <FormLabel>Rate Per Stream (VND)<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      step="0.0001"
-                      placeholder="0.0001"
-                      {...field}
+                      type="text"
+                      placeholder="0"
+                      value={field.value ? formatNumber(field.value) : ""}
+                      onChange={(e) => {
+                        // Remove all non-digit characters
+                        let plainValue = e.target.value.replace(/[^\d]/g, "");
+                        
+                        // Parse to number for validation
+                        const numValue = Number(plainValue);
+                        
+                        // Validate and adjust
+                        if (plainValue && numValue > 1000) {
+                          plainValue = "1000";
+                        } else if (numValue % 2 !== 0 && numValue !== 0) {
+                          // Round to nearest even number
+                          const evenValue = roundToEven(numValue);
+                          plainValue = evenValue.toString();
+                        }
+                        
+                        // Store plain number (without formatting) in form state
+                        field.onChange(plainValue);
+                      }}
+                      onBlur={(e) => {
+                        const plainValue = parseNumber(e.target.value);
+                        if (plainValue) {
+                          const numValue = Number(plainValue);
+                          if (numValue % 2 !== 0 && numValue !== 0) {
+                            const evenValue = roundToEven(numValue);
+                            field.onChange(evenValue.toString());
+                          }
+                        }
+                        field.onBlur();
+                      }}
                     />
                   </FormControl>
                   <FormDescription>
-                    Payment amount per stream (e.g., 0.0001)
+                    Payment amount per stream (even number, max 1.000 VND)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -170,27 +242,39 @@ export function CreateRoyaltyPolicyDialog({
                   <FormControl>
                     <Input
                       type="number"
-                      step="0.01"
+                      step="2"
                       min="0"
                       max="100"
                       placeholder="50"
                       {...field}
                       onInput={(e) => {
                         const input = e.currentTarget;
-                        if (Number(input.value) > 100) {
+                        const value = Number(input.value);
+                        if (value > 100) {
                           input.value = "100";
-                        } else if (Number(input.value) < 0) {
+                        } else if (value < 0) {
                           input.value = "0";
+                        } else if (value % 2 !== 0 && value !== 0) {
+                          // Round to nearest even number
+                          const evenValue = roundToEven(value);
+                          input.value = evenValue.toString();
                         }
                       }}
                       onChange={(e) => {
-                        field.onChange(e);
-                        handleRecordingChange(e.target.value);
+                        const value = Number(e.target.value);
+                        if (!isNaN(value) && value % 2 !== 0 && value !== 0) {
+                          const evenValue = roundToEven(value);
+                          field.onChange(evenValue.toString());
+                          handleRecordingChange(evenValue.toString());
+                        } else {
+                          field.onChange(e);
+                          handleRecordingChange(e.target.value);
+                        }
                       }}
                     />
                   </FormControl>
                   <FormDescription>
-                    Percentage allocated to recording rights (0-100)
+                    Percentage allocated to recording rights (even number, 0-100)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -206,23 +290,37 @@ export function CreateRoyaltyPolicyDialog({
                   <FormControl>
                     <Input
                       type="number"
-                      step="0.01"
+                      step="2"
                       min="0"
                       max="100"
                       placeholder="50"
                       {...field}
                       onInput={(e) => {
                         const input = e.currentTarget;
-                        if (Number(input.value) > 100) {
+                        const value = Number(input.value);
+                        if (value > 100) {
                           input.value = "100";
-                        } else if (Number(input.value) < 0) {
+                        } else if (value < 0) {
                           input.value = "0";
+                        } else if (value % 2 !== 0 && value !== 0) {
+                          // Round to nearest even number
+                          const evenValue = roundToEven(value);
+                          input.value = evenValue.toString();
+                        }
+                      }}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        if (!isNaN(value) && value % 2 !== 0 && value !== 0) {
+                          const evenValue = roundToEven(value);
+                          field.onChange(evenValue.toString());
+                        } else {
+                          field.onChange(e.target.value);
                         }
                       }}
                     />
                   </FormControl>
                   <FormDescription>
-                    Percentage allocated to composition/work rights (0-100)
+                    Percentage allocated to composition/work rights (even number, 0-100)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

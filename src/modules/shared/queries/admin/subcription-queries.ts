@@ -14,6 +14,7 @@ export const SUBSCRIPTION_QUERIES = graphql(`
         code
         status
         createdAt
+        currency
         tier
         amount
       }

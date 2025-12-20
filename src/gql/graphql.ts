@@ -7902,7 +7902,7 @@ export type SubscriptionsQueryVariables = Exact<{
 }>;
 
 
-export type SubscriptionsQuery = { __typename?: 'QueryInitialization', subscriptions?: { __typename?: 'SubscriptionsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, status: SubscriptionStatus, createdAt: any, tier: SubscriptionTier, amount: any }> | null } | null };
+export type SubscriptionsQuery = { __typename?: 'QueryInitialization', subscriptions?: { __typename?: 'SubscriptionsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Subscription', id: string, name: string, description?: string | null, code: string, status: SubscriptionStatus, createdAt: any, currency: CurrencyType, tier: SubscriptionTier, amount: any }> | null } | null };
 
 export type SubscriptionsDetailQueryVariables = Exact<{
   where?: InputMaybe<SubscriptionFilterInput>;
@@ -10048,6 +10048,7 @@ export const SubscriptionsDocument = new TypedDocumentString(`
       code
       status
       createdAt
+      currency
       tier
       amount
     }

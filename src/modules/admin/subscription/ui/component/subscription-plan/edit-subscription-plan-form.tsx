@@ -295,7 +295,7 @@ export default function EditSubscriptionPlanForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Plan Name</FormLabel>
+                      <FormLabel>Plan Name<span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="Premium Plan" {...field} />
                       </FormControl>
@@ -428,7 +428,7 @@ export default function EditSubscriptionPlanForm({
                         name={`updatePrices.${index}.interval`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Billing Interval</FormLabel>
+                            <FormLabel>Billing Interval<span className="text-red-500">*</span></FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
@@ -452,7 +452,7 @@ export default function EditSubscriptionPlanForm({
                         name={`updatePrices.${index}.intervalCount`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Interval Count</FormLabel>
+                            <FormLabel>Interval Count<span className="text-red-500">*</span></FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -471,7 +471,7 @@ export default function EditSubscriptionPlanForm({
                         name={`updatePrices.${index}.lookupKey`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Lookup Key</FormLabel>
+                            <FormLabel>Lookup Key<span className="text-red-500">*</span></FormLabel>
                             <FormControl>
                               <Input placeholder="premium_monthly" {...field} />
                             </FormControl>
@@ -547,7 +547,7 @@ export default function EditSubscriptionPlanForm({
                         name={`newPrices.${index}.interval`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Billing Interval</FormLabel>
+                            <FormLabel>Billing Interval<span className="text-red-500">*</span></FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
@@ -575,7 +575,7 @@ export default function EditSubscriptionPlanForm({
                         name={`newPrices.${index}.intervalCount`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Interval Count</FormLabel>
+                            <FormLabel>Interval Count<span className="text-red-500">*</span></FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -594,7 +594,7 @@ export default function EditSubscriptionPlanForm({
                         name={`newPrices.${index}.lookupKey`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Lookup Key</FormLabel>
+                            <FormLabel>Lookup Key<span className="text-red-500">*</span></FormLabel>
                             <FormControl>
                               <Input placeholder="premium_monthly" {...field} />
                             </FormControl>

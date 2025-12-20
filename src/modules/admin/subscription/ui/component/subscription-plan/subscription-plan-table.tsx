@@ -71,7 +71,7 @@ export function SubscriptionPlanTable({
               <TableHead>Product Name</TableHead>
               {showSubscriptionInfo && <TableHead>Subscription</TableHead>}
               <TableHead>Stripe Product</TableHead>
-              <TableHead>Pricing</TableHead>
+              <TableHead>Plans</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-[50px]">Actions</TableHead>
             </TableRow>

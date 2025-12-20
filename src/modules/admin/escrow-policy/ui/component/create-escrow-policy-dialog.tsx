@@ -29,9 +29,20 @@ import { useCreateEscrowPolicyMutation } from "@/gql/client-mutation-options/esc
 const formSchema = z.object({
   platformFeePercentage: z
     .string()
-    .refine((val) => !isNaN(Number(val)) && Number(val) >= 1 && Number(val) <= 100, {
-      message: "Platform fee percentage must be between 1 and 100",
-    }),
+    .refine(
+      (val) => {
+        const num = Number(val);
+        return (
+          !isNaN(num) &&
+          Number.isInteger(num) &&
+          num >= 1 &&
+          num <= 100
+        );
+      },
+      {
+        message: "Platform fee percentage must be an integer between 1 and 100",
+      }
+    ),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -100,23 +111,38 @@ export function CreateEscrowPolicyDialog({
                   <FormControl>
                     <Input
                       type="number"
-                      step="0.01"
-                      min="0"
+                      step="1"
+                      min="1"
                       max="100"
-                      placeholder="5.00"
+                      placeholder="5"
                       {...field}
                       onInput={(e) => {
                         const input = e.currentTarget;
-                        if (Number(input.value) > 100) {
+                        const value = Number(input.value);
+                        if (value > 100) {
                           input.value = "100";
-                        } else if (Number(input.value) < 1) {
+                        } else if (value < 1 && input.value !== "") {
                           input.value = "1";
+                        }
+                        // Remove decimal part if user enters decimal
+                        if (!Number.isInteger(value) && !isNaN(value) && input.value !== "") {
+                          input.value = Math.floor(value).toString();
+                        }
+                      }}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        // Round to integer if decimal is entered
+                        if (!isNaN(value) && !Number.isInteger(value) && e.target.value !== "") {
+                          const intValue = Math.floor(value);
+                          field.onChange(intValue.toString());
+                        } else {
+                          field.onChange(e.target.value);
                         }
                       }}
                     />
                   </FormControl>
                   <FormDescription>
-                    The platform commission fee percentage (1-100)
+                    The platform commission fee percentage (integer only, 1-100)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
