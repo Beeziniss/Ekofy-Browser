@@ -57,7 +57,7 @@ function PayoutTypeCell({ platformFee, isLoading }: { platformFee?: number | nul
     return <Badge variant="ekofy">Service</Badge>;
   }
   
-  return <Badge variant="secondary">Escrow Release</Badge>;
+  return <Badge variant="secondary">Streaming</Badge>;
 }
 
 export default function PayoutsTable({ userId, pageSize = 10, typeFilter = "all", onTypeFilterChange }: PayoutsTableProps) {
@@ -97,7 +97,7 @@ export default function PayoutsTable({ userId, pageSize = 10, typeFilter = "all"
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="service">Service</SelectItem>
-              <SelectItem value="escrow">Escrow Release</SelectItem>
+              <SelectItem value="streaming">Streaming</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -168,7 +168,7 @@ function PayoutRow({ tx, typeFilter, onVisibilityChange }: { tx: PayoutTransacti
   });
   
   const platformFee = platformFeeData?.packageOrders?.items?.[0]?.platformFeePercentage;
-  const payoutType = platformFee !== undefined && platformFee !== null ? "service" : "escrow";
+  const payoutType = platformFee !== undefined && platformFee !== null ? "service" : "streaming";
   const isVisible = typeFilter === "all" || typeFilter === payoutType;
   const prevVisibleRef = useRef<boolean | null>(null);
   

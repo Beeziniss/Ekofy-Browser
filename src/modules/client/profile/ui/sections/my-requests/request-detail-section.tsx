@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { useChangeRequestStatus } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { requestOptions } from "@/gql/options/listener-request-options";
 import { moderatorPackageOrderDetailOptions } from "@/gql/options/moderator-options";
+import { conversationDetailByRequestOptions } from "@/gql/options/client-options";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import {
   RequestStatus as GqlRequestStatus,
@@ -65,6 +66,12 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
 
   // Fetch order details including conversationId when orderId exists
   const { data: orderData } = useQuery(moderatorPackageOrderDetailOptions(request?.orderId || ""));
+
+  // Fetch conversation by requestId (conversation may exist even without order)
+  const { data: conversationData } = useQuery(conversationDetailByRequestOptions(requestId));
+
+  // Get conversationId from either order or direct conversation query
+  const conversationId = orderData?.conversationId || conversationData?.conversations?.items?.[0]?.id;
 
   // Fetch artist data if not included and artistId exists
   /* const { data: artistData } = useQuery({
@@ -194,9 +201,9 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
               )}
 
               {/* View Conversation Button - Only show when conversationId exists */}
-              {orderData?.conversationId && (
+              {conversationId && (
               <Button asChild variant="outline" size="sm">
-                <Link href={`/conversation/${orderData.conversationId}`}>
+                <Link href={`/inbox/${conversationId}`}>
                 <MessageCircle className="mr-2 h-4 w-4" />
                 View Conversation
                 </Link>
