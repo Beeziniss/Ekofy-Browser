@@ -19,7 +19,6 @@ import {
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePlaylistPlayback } from "../../hooks/use-playlist-playback";
-import { PauseButtonMedium, PlayButtonMedium } from "@/assets/icons";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuthStore } from "@/store";
 import { useRouter } from "next/navigation";
@@ -56,8 +55,8 @@ const PlaylistInfoSkeleton = () => {
         </div>
       </div>
       <div className="flex items-center gap-x-4">
-        <Button variant="ghost" size="iconLg" className="text-main-white mt-auto duration-0 hover:brightness-90">
-          <PlayButtonMedium className="size-12" />
+        <Button size="lg" className="bg-main-purple hover:bg-main-purple/90 size-12 rounded-full">
+          <PlayIcon className="size-7 fill-white text-white" />
         </Button>
 
         <div className="flex size-12 items-center justify-center">

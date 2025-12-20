@@ -8,12 +8,13 @@ import { getUserInitials } from "@/utils/format-shorten-name";
 import { servicePackageOptions } from "@/gql/options/client-options";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { StarIcon } from "lucide-react";
 import ContactArtistDialog from "./contact-artist-dialog";
 import { formatCurrency } from "@/utils/format-currency";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { useAuthAction } from "@/hooks/use-auth-action";
+import ReviewsCarousel from "./reviews-carousel";
 
 interface ServicePackageSectionProps {
   serviceId: string;
@@ -85,9 +86,9 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
             <div className="flex-1 space-y-4">
               <div className="flex items-center gap-x-3">
                 <h2 className="text-main-purple text-4xl font-bold">{artist?.stageName}</h2>
-                <Badge className="border-0 bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-1 text-xs font-semibold text-white">
+                {/* <Badge className="border-0 bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-1 text-xs font-semibold text-white">
                   PRO
-                </Badge>
+                </Badge> */}
               </div>
 
               <p className="text-main-white/80 max-w-2xl text-base leading-relaxed">
@@ -215,6 +216,14 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
             </div>
           </div>
         </div>
+
+        {/* Reviews Carousel */}
+        {servicePackage?.id && 
+          <ReviewsCarousel 
+            artistPackageId={servicePackage.id} 
+            averageRating={servicePackage.review?.averageRating || 0}
+            totalReviews={servicePackage.review?.totalReviews || 0}
+        />}
 
         {/* Bottom CTA */}
         <div className="text-center">

@@ -1,6 +1,5 @@
 import { InfiniteData } from "@tanstack/react-query";
 import { AlbumsQuery } from "@/gql/graphql";
-import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 

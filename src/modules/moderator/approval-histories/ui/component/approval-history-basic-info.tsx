@@ -53,7 +53,7 @@ export const ApprovalHistoryBasicInfo = ({ history }: ApprovalHistoryBasicInfoPr
         </div>
         {history.notes && (
           <div>
-            <span className="font-medium text-red-500">Reason Reject:</span>
+            <span className="font-medium">Notes:</span>
             <p className="text-muted-foreground mt-1 text-sm">{history.notes}</p>
           </div>
         )}

@@ -10,8 +10,17 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import InfiniteScroll from "@/modules/shared/ui/components/infinite-scroll";
 import AlbumList from "../components/album-list";
 import { AlbumCreate } from "@/modules/artist/albums/ui/components";
+import { useAuthStore } from "@/store";
+import { UserRole } from "@/types/role";
 
 const AlbumSection = () => {
+  const { user } = useAuthStore();
+
+  // Only render for Artist role
+  if (user?.role !== UserRole.ARTIST) {
+    return null;
+  }
+
   return (
     <Suspense fallback={<AlbumSectionSkeleton />}>
       <AlbumSectionSuspense />

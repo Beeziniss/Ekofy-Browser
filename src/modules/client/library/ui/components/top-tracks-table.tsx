@@ -208,6 +208,38 @@ const TopTracksTable = ({ tracks }: TopTracksTableProps) => {
         },
       },
       {
+        id: "favorite",
+        header: "",
+        cell: ({ row }) => {
+          const track = row.original;
+          const isFavorited = track.checkTrackInFavorite || false;
+
+          const handleToggleFavorite = (e: React.MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleFavorite({
+              id: track.id,
+              name: track.name,
+              checkTrackInFavorite: isFavorited,
+            });
+          };
+
+          return (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleToggleFavorite}
+              className="h-8 w-8 p-0 text-gray-400 transition-colors hover:text-white"
+            >
+              <HeartIcon
+                className={`h-5 w-5 transition-colors ${isFavorited ? "fill-main-purple text-main-purple" : ""}`}
+              />
+            </Button>
+          );
+        },
+        enableSorting: false,
+      },
+      {
         id: "actions",
         header: "",
         cell: ({ row }) => {
@@ -320,7 +352,7 @@ const TopTracksTable = ({ tracks }: TopTracksTableProps) => {
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className={`text-main-white ${header.column.id === "name" ? "flex-1" : ""} ${header.column.id === "artist" ? "w-[20%]" : ""} ${header.column.id === "streamCount" ? "w-25" : ""} ${header.column.id === "actions" ? "w-14" : ""} flex items-center`}
+                  className={`text-main-white ${header.column.id === "name" ? "flex-1" : ""} ${header.column.id === "artist" ? "w-[20%]" : ""} ${header.column.id === "streamCount" ? "w-25" : ""} ${header.column.id === "favorite" ? "w-14" : ""} ${header.column.id === "actions" ? "w-14" : ""} flex items-center`}
                 >
                   {header.isPlaceholder ? null : (
                     <div
@@ -352,7 +384,7 @@ const TopTracksTable = ({ tracks }: TopTracksTableProps) => {
                     key={cell.id}
                     className={`py-3 ${cell.column.id === "name" ? "flex-1" : ""} ${
                       cell.column.id === "artist" ? "w-[20%]" : ""
-                    } ${cell.column.id === "streamCount" ? "w-25" : ""} ${cell.column.id === "actions" ? "w-14" : ""}`}
+                    } ${cell.column.id === "streamCount" ? "w-25" : ""} ${cell.column.id === "favorite" ? "w-14" : ""} ${cell.column.id === "actions" ? "w-14" : ""}`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -378,4 +410,3 @@ const TopTracksTable = ({ tracks }: TopTracksTableProps) => {
 };
 
 export default TopTracksTable;
-

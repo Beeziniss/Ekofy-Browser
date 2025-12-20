@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useDebounce } from "use-debounce";
+import SemanticIcon from "./semantic/semantic-icon";
 
 const SearchBar = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -45,21 +46,19 @@ const SearchBar = () => {
     }
   }, [debouncedSearchValue, searchValue]);
 
-   useEffect(() => {
+  useEffect(() => {
     if (!initialized) return;
 
     const trimmed = debouncedSearchValue.trim();
 
     // Only trigger if user typed something
     if (isTyping && trimmed !== "" && !pathname.startsWith("/search")) {
-      router.push(
-        `/search?q=${encodeURIComponent(trimmed)}&type=all`
-      );
+      router.push(`/search?q=${encodeURIComponent(trimmed)}&type=all`);
     }
   }, [debouncedSearchValue, initialized, pathname, router, isTyping]);
 
   // Auto navigate when debounced value changes AND shouldSearch is true
- useEffect(() => {
+  useEffect(() => {
     if (!initialized) return;
 
     if (!pathname.startsWith("/search")) return;
@@ -76,9 +75,7 @@ const SearchBar = () => {
     }
 
     if (trimmed !== currentQuery) {
-      router.push(
-        `/search?q=${encodeURIComponent(trimmed)}&type=${currentType}`
-      );
+      router.push(`/search?q=${encodeURIComponent(trimmed)}&type=${currentType}`);
     }
   }, [debouncedSearchValue, initialized, pathname, router, searchParams]);
 
@@ -89,18 +86,23 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="relative appearance-none">
-      <Search className="absolute top-1/2 left-4 size-6 -translate-y-1/2 text-[#f2f2f2]" />
+    <div className="flex items-center gap-x-2">
+      <div className="relative appearance-none">
+        <Search className="absolute top-1/2 left-4 size-6 -translate-y-1/2 text-[#f2f2f2]" />
 
-      <Separator orientation="vertical" className="absolute top-1/2 left-14 !h-6 -translate-y-1/2 bg-[#f2f2f2]" />
+        <Separator orientation="vertical" className="absolute top-1/2 left-14 !h-6 -translate-y-1/2 bg-[#f2f2f2]" />
 
-      <Input
-        type="text"
-        placeholder="What do you want to play?"
-        value={searchValue}
-        onChange={handleInputChange}
-        className="min-w-[420px] rounded-md border-0 !bg-[#2E2E2E] px-4 !py-2.5 pl-20 text-[#f2f2f2] placeholder:text-[#999999]"
-      />
+        <Input
+          type="text"
+          placeholder="What do you want to play?"
+          value={searchValue}
+          onChange={handleInputChange}
+          className="min-w-[420px] rounded-md border-0 !bg-[#2E2E2E] px-4 !py-2.5 pl-20 text-[#f2f2f2] placeholder:text-[#999999]"
+        />
+      </div>
+
+      {/* Semantic Search -- For Premium only */}
+      <SemanticIcon />
     </div>
   );
 };

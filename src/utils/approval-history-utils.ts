@@ -1,8 +1,12 @@
+
+ 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { execute } from "@/gql/execute";
-import { 
-  ApprovalHistoriesArtistQuery, 
+import {
+  ApprovalHistoriesArtistQuery,
   ApprovalHistoriesUserQuery,
-  ApprovalHistoriesCategoryQuery 
+  ApprovalHistoriesCategoryQuery,
+  ApprovalHistoriesUserFullInfoQuery,
 } from "@/modules/shared/queries/moderator/approval-histories-queries";
 
 interface Artist {
@@ -39,8 +43,8 @@ export async function fetchArtistNames(artistIds: string[]): Promise<Map<string,
     // Try to fetch as artist IDs first
     const artistResult = await execute(ApprovalHistoriesArtistQuery, {
       where: {
-        id: { in: artistIds }
-      }
+        id: { in: artistIds },
+      },
     });
 
     // Add artists to map
@@ -51,13 +55,13 @@ export async function fetchArtistNames(artistIds: string[]): Promise<Map<string,
     });
 
     // For IDs not found as artists, try as user IDs
-    const notFoundIds = artistIds.filter(id => !artistMap.has(id));
-    
+    const notFoundIds = artistIds.filter((id) => !artistMap.has(id));
+
     if (notFoundIds.length > 0) {
       const userResult = await execute(ApprovalHistoriesUserQuery, {
         where: {
-          id: { in: notFoundIds }
-        }
+          id: { in: notFoundIds },
+        },
       });
 
       userResult?.users?.items?.forEach((user: User) => {
@@ -89,8 +93,8 @@ export async function fetchCategoryNames(categoryIds: string[]): Promise<Map<str
   try {
     const result = await execute(ApprovalHistoriesCategoryQuery, {
       where: {
-        id: { in: categoryIds }
-      }
+        id: { in: categoryIds },
+      },
     });
 
     result?.categories?.items?.forEach((category: Category) => {
@@ -138,8 +142,8 @@ export async function fetchUserEmails(userIds: string[]): Promise<Map<string, st
   try {
     const result = await execute(ApprovalHistoriesUserQuery, {
       where: {
-        id: { in: userIds }
-      }
+        id: { in: userIds },
+      },
     });
 
     result?.users?.items?.forEach((user: User) => {
@@ -153,6 +157,54 @@ export async function fetchUserEmails(userIds: string[]): Promise<Map<string, st
   } catch (error) {
     console.error("Error fetching user emails:", error);
   }
+  const notFoundIds = userIds.filter((id) => !emailMap.has(id));
+  if (notFoundIds.length > 0) {
+    try {
+      const userResult = await execute(ApprovalHistoriesUserFullInfoQuery, {
+        where: { id: { in: notFoundIds } },
+      });
+
+      userResult?.users?.items?.forEach((user: any) => {
+        if (user?.id && user?.email) {
+          emailMap.set(user.id, user.email);
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching user emails:", error);
+    }
+  }
 
   return emailMap;
+}
+
+/**
+ * Fetch user full information by user IDs
+ * @param userIds - Array of user IDs
+ * @returns Promise<Map<string, { fullName: string; email: string }>> - Map of user ID to user info
+ */
+export async function fetchUserFullInfo(userIds: string[]): Promise<Map<string, { fullName: string; email: string }>> {
+  if (!userIds || userIds.length === 0) return new Map();
+
+  const userInfoMap = new Map<string, { fullName: string; email: string }>();
+
+  try {
+    const result = await execute(ApprovalHistoriesUserFullInfoQuery, {
+      where: {
+        id: { in: userIds },
+      },
+    });
+
+    result?.users?.items?.forEach((user: any) => {
+      if (user?.id && user?.fullName && user?.email) {
+        userInfoMap.set(user.id, {
+          fullName: user.fullName,
+          email: user.email,
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching user full info:", error);
+  }
+
+  return userInfoMap;
 }

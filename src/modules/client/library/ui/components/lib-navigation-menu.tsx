@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/store";
+import { UserRole } from "@/types/role";
 
 export interface NavItem {
   title: string;
@@ -55,18 +57,28 @@ const mainNavItems: NavItem[] = [
     title: "Top Tracks",
     href: "/library/top-tracks",
     icon: Music2Icon,
-  }
+  },
 ];
 
 const activeItemStyles = "bg-neutral-800 text-neutral-100 rounded-br-none rounded-bl-none";
 
 const LibNavigationMenu = () => {
   const route = usePathname();
+  const { user } = useAuthStore();
+
+  // Filter navigation items based on user role
+  const visibleNavItems = mainNavItems.filter((item) => {
+    // Hide Albums for non-Artist users
+    if (item.href === "/library/albums" && user?.role !== UserRole.ARTIST) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <NavigationMenu className="flex h-full items-stretch">
       <NavigationMenuList className="flex h-full items-stretch space-x-2">
-        {mainNavItems.map((item, index) => (
+        {visibleNavItems.map((item, index) => (
           <NavigationMenuItem key={index} className="relative flex h-full items-center">
             <Link
               href={item.href}

@@ -61,6 +61,8 @@ import { CategoriesChannelQuery } from "@/modules/shared/queries/client/category
 import { NotificationQuery } from "@/modules/shared/queries/client/notification-queries";
 import { AlbumDetailQuery, AlbumQuery } from "@/modules/shared/queries/client/album-queries";
 import { TrackListWithFiltersQuery } from "@/modules/shared/queries/artist";
+import { TrackSemanticQuery } from "@/modules/shared/queries/client/semantic-queries";
+import { ArtistPackageReviewQuery } from "@/modules/shared/queries/client/service-package-queries";
 
 // PROFILE QUERIES
 export const userBasicInfoOptions = (userId: string) =>
@@ -165,12 +167,11 @@ export const suggestedTracksForPlaylistOptions = (playlistId: string, nameUnsign
     },
   });
 
-export const topTracksOptions = () =>
+export const topTracksOptions = (userId: string) =>
   queryOptions({
-    queryKey: ["top-tracks"],
+    queryKey: ["top-tracks", userId],
     queryFn: async () => {
-      const result = await execute(TopTracksQuery);
-
+      const result = await execute(TopTracksQuery, { userId });
       return result || null;
     },
   });
@@ -364,6 +365,31 @@ export const servicePackageOptions = ({ artistId, serviceId }: { artistId?: stri
 
       return await execute(ArtistPackageQuery, { where });
     },
+  });
+
+export const servicePackageReviewOptions = ({
+  artistPackageId,
+  skip = 0,
+  take = 10,
+}: {
+  artistPackageId: string;
+  skip?: number;
+  take?: number;
+}) =>
+  queryOptions({
+    queryKey: ["service-package-reviews", artistPackageId, skip, take],
+    queryFn: async () => {
+      if (!artistPackageId) {
+        throw new Error("artistPackageId is required");
+      }
+      const where: PackageOrderFilterInput = {
+        artistPackageId: { eq: artistPackageId },
+      };
+
+      return await execute(ArtistPackageReviewQuery, { where, skip, take });
+    },
+    // Loại bỏ enabled vì với useSuspenseQuery, nó sẽ tự động handle
+    // enabled: !!artistPackageId,
   });
 
 // Helper function to convert deadline string to Date
@@ -693,4 +719,19 @@ export const artistTracksInfiniteOptions = (artistId: string, take: number = 20)
       return lastPage.tracks?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
     },
     enabled: !!artistId,
+  });
+
+// SEMANTIC OPTIONS
+export const trackSemanticOptions = (term: string) =>
+  queryOptions({
+    queryKey: ["track-semantic", term],
+    queryFn: async () => {
+      if (!term) return [];
+      const result = await execute(TrackSemanticQuery, {
+        term,
+      });
+      return result.trackBySemanticSearch || [];
+    },
+    retry: 0,
+    enabled: !!term,
   });
