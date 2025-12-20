@@ -51,10 +51,8 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
         requirements: request.requirements || "",
         deliveries: [], // Empty array as requested
         conversationId,
-        // successUrl: `${window.location.origin}/profile/my-requests/${request.id}?payment=success`,
-        // cancelUrl: `${window.location.origin}/profile/my-requests/${request.id}?payment=cancelled`,
-        successUrl: `${window.location.origin}`,
-        cancelUrl: `${window.location.origin}`,
+        successUrl: `${window.location.origin}/payment/success`,
+        cancelUrl: `${window.location.origin}/profile/my-requests`,
         isReceiptEmail: true, // Default to true for receipt email
         isSavePaymentMethod: false, // Default to false for saving payment method
       });

@@ -60,6 +60,10 @@ const OrderSubmissionSectionSuspense = ({ orderId }: OrderSubmissionSectionProps
   const isOrderDisputed = orderPackageDetail?.status === PackageOrderStatus.Disputed;
   const isOrderInProgress = orderPackageDetail?.status === PackageOrderStatus.InProgress;
 
+  // Check if latest delivery has feedback
+  const latestDelivery = deliveries[deliveries.length - 1];
+  const latestDeliveryHasFeedback = latestDelivery?.clientFeedback;
+
   // Calculate deadline
   const deadline = orderPackageDetail?.startedAt
     ? calculateDeadline(
@@ -140,8 +144,8 @@ const OrderSubmissionSectionSuspense = ({ orderId }: OrderSubmissionSectionProps
             <div className="overflow-x-auto rounded-md border pb-2">
               <Table>
                 <TableCaption>
-                  <strong>FD:</strong> <strong className="text-main-purple/85">First Delivery</strong> (does not count
-                  as a revision)
+                  <strong>FD:</strong> <strong className="text-main-purple/85">First Draft</strong> (does not count as a
+                  revision)
                 </TableCaption>
                 <TableHeader>
                   <TableRow>
@@ -211,8 +215,8 @@ const OrderSubmissionSectionSuspense = ({ orderId }: OrderSubmissionSectionProps
             </div>
 
             {/* Request Revision Button */}
-            {orderPackageDetail?.clientId === user?.userId && isOrderInProgress && (
-              <Button variant="outline" className="w-full" onClick={handleRequestRevisionClick}>
+            {orderPackageDetail?.clientId === user?.userId && isOrderInProgress && !latestDeliveryHasFeedback && (
+              <Button variant="ekofyBlue" className="w-full" onClick={handleRequestRevisionClick}>
                 <Edit className="mr-2 h-4 w-4" />
                 Request Revision
               </Button>
