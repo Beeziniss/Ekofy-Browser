@@ -14,13 +14,6 @@ import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
 
 const AlbumSection = () => {
-  const { user } = useAuthStore();
-
-  // Only render for Artist role
-  if (user?.role !== UserRole.ARTIST) {
-    return null;
-  }
-
   return (
     <Suspense fallback={<AlbumSectionSkeleton />}>
       <AlbumSectionSuspense />
@@ -59,12 +52,20 @@ const AlbumSectionSkeleton = () => {
 };
 
 const AlbumSectionSuspense = () => {
+  const { user } = useAuthStore();
+
+  // Only render for Artist role
+
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery.toLowerCase(), 300);
 
   const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery(
-    albumListOptions(debouncedSearchQuery, 12),
+    albumListOptions(user?.userId || "", debouncedSearchQuery, 12),
   );
+
+  if (user?.role !== UserRole.ARTIST) {
+    return null;
+  }
 
   return (
     <div className="w-full space-y-6">

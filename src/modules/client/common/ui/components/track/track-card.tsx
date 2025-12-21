@@ -273,7 +273,7 @@ const TrackCard = React.memo(
               artists.map((artist, index) => (
                 <span key={index}>
                   <Link
-                    href={`/artists/${artist?.id}`}
+                    href={`/artists/${artist?.id}/tracks`}
                     onClick={handleArtistAddPopularity}
                     className="hover:text-main-purple hover:underline"
                   >

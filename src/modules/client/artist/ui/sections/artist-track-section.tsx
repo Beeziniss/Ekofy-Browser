@@ -2,38 +2,87 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Heart, Play, Pause, Ellipsis, LinkIcon, ListPlus, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, Heart, LinkIcon, ListPlus, Play, Pause } from "lucide-react";
-import { useAudioStore, useAuthStore } from "@/store";
-import { GraphQLTrack, convertGraphQLTracksToStore } from "@/utils/track-converter";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "@/store";
+import { useAudioStore } from "@/store/stores/audio-store";
+import { formatDistanceToNow } from "date-fns";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import PlaylistAddModal from "@/modules/client/playlist/ui/components/playlist-add-modal";
+import { useFavoriteTrack } from "@/modules/client/track/hooks/use-favorite-track";
 import {
-  useProcessTrackDiscoveryPopularity,
   useProcessTrackEngagementPopularity,
+  useProcessTrackDiscoveryPopularity,
   useProcessArtistDiscoveryPopularity,
 } from "@/gql/client-mutation-options/popularity-mutation-option";
-import { PopularityActionType, TrackSemanticQuery } from "@/gql/graphql";
-import { formatDistanceToNow } from "date-fns";
-import { useFavoriteTrack } from "@/modules/client/track/hooks/use-favorite-track";
+import { PopularityActionType, TrackInfiniteQuery } from "@/gql/graphql";
+import { GraphQLTrack, convertGraphQLTracksToStore } from "@/utils/track-converter";
+import { trackInfiniteOptions } from "@/gql/options/client-options";
+import { artistGetDataOptions } from "@/gql/options/artist-options";
+import InfiniteScroll from "@/modules/shared/ui/components/infinite-scroll";
 
-type SemanticTrack = TrackSemanticQuery["trackBySemanticSearch"][number];
-
-interface SemanticTrackItemProps {
-  track: SemanticTrack;
-  allTracks: SemanticTrack[];
+interface ArtistTrackSectionProps {
+  artistId: string;
 }
 
-const SemanticTrackItem = React.memo(({ track, allTracks }: SemanticTrackItemProps) => {
+const ArtistTrackSection = ({ artistId }: ArtistTrackSectionProps) => {
+  // Fetch artist data to get userId
+  const { data: artistData, isLoading: isArtistLoading } = useQuery(artistGetDataOptions(artistId));
+
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery(
+    trackInfiniteOptions(artistData?.userId || "", 10),
+  );
+
+  // Flatten all tracks from all pages
+  const allTracks = useMemo(() => data?.pages.flatMap((page) => page.tracks?.items || []) || [], [data]);
+
+  if (isLoading || isArtistLoading) {
+    return (
+      <div className="flex h-full items-center justify-center py-12">
+        <Loader2 className="text-main-purple h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!allTracks.length) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <p className="text-main-grey text-lg">No tracks available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {allTracks.map((track) => (
+        <TrackItem key={track.id} track={track} allTracks={allTracks} />
+      ))}
+      <InfiniteScroll
+        hasNextPage={hasNextPage ?? false}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+      />
+    </div>
+  );
+};
+
+type Track = NonNullable<NonNullable<TrackInfiniteQuery["tracks"]>["items"]>[number];
+
+interface TrackItemProps {
+  track: Track;
+  allTracks: Track[];
+}
+
+const TrackItem = React.memo(({ track, allTracks }: TrackItemProps) => {
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuthStore();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -136,9 +185,9 @@ const SemanticTrackItem = React.memo(({ track, allTracks }: SemanticTrackItemPro
       checkTrackInFavorite: track.checkTrackInFavorite,
     });
 
-    // Also invalidate semantic search results
+    // Invalidate artist tracks query
     queryClient.invalidateQueries({
-      queryKey: ["track-semantic"],
+      queryKey: ["tracks-infinite"],
     });
   };
 
@@ -197,7 +246,7 @@ const SemanticTrackItem = React.memo(({ track, allTracks }: SemanticTrackItemPro
         </Button>
       </div>
 
-      {/* Track Info and Waveform */}
+      {/* Track Info */}
       <div className="flex flex-1 flex-col justify-between">
         {/* Top Section - Artist, Title, Time */}
         <div className="flex items-start justify-between gap-4">
@@ -211,9 +260,6 @@ const SemanticTrackItem = React.memo(({ track, allTracks }: SemanticTrackItemPro
                 >
                   {track.mainArtists.items[0].stageName}
                 </Link>
-              )}
-              {track.categories?.items?.[0] && (
-                <span className="text-main-grey text-xs">#{track.categories.items[0].name}</span>
               )}
             </div>
             <Link
@@ -229,21 +275,6 @@ const SemanticTrackItem = React.memo(({ track, allTracks }: SemanticTrackItemPro
           <span className="text-main-grey text-sm">{timeAgo}</span>
         </div>
 
-        {/* Waveform Placeholder */}
-        {/* <div className="relative my-2 flex h-16 items-center gap-[2px] overflow-hidden rounded">
-          {Array.from({ length: 100 }).map((_, i) => {
-            const height = Math.random() * 60 + 20;
-            const isPlayed = isCurrentTrack && globalIsPlaying && i < 30;
-            return (
-              <div
-                key={i}
-                className={`w-[2px] transition-colors ${isPlayed ? "bg-orange-500" : "bg-gray-600"}`}
-                style={{ height: `${height}%` }}
-              />
-            );
-          })}
-        </div> */}
-
         {/* Bottom Section - Actions */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -254,7 +285,7 @@ const SemanticTrackItem = React.memo(({ track, allTracks }: SemanticTrackItemPro
               className="text-main-grey hover:text-main-white flex items-center gap-1 p-0"
             >
               <Heart className={`size-4 ${track.checkTrackInFavorite ? "fill-main-purple text-main-purple" : ""}`} />
-              <span className="text-xs">{formatCount(track.favoriteCount)}</span>
+              <span className="text-xs">{track.favoriteCount}</span>
             </Button>
 
             <DropdownMenu>
@@ -266,7 +297,7 @@ const SemanticTrackItem = React.memo(({ track, allTracks }: SemanticTrackItemPro
               <DropdownMenuContent side="bottom" align="start" className="w-48">
                 <DropdownMenuItem onClick={onCopy}>
                   <LinkIcon className="text-main-white mr-2 size-4" />
-                  <span className="teClickxt-main-white text-sm">Copy link</span>
+                  <span className="text-main-white text-sm">Copy link</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -311,6 +342,6 @@ const SemanticTrackItem = React.memo(({ track, allTracks }: SemanticTrackItemPro
   );
 });
 
-SemanticTrackItem.displayName = "SemanticTrackItem";
+TrackItem.displayName = "TrackItem";
 
-export default SemanticTrackItem;
+export default ArtistTrackSection;

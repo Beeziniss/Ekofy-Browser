@@ -1,27 +1,7 @@
-import {
-  adminPaymentTransactionsOptions,
-  adminPayoutTransactionsOptions,
-  adminRefundTransactionsOptions,
-} from "@/gql/options/transaction-options";
 import { AdminTransactionsList } from "@/modules/admin/transactions/ui/views";
-import { getQueryClient } from "@/providers/get-query-client";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 const AdminTransactionsPage = async () => {
-  const queryClient = getQueryClient();
-
-  // Prefetch all three types of transactions
-  await Promise.all([
-    queryClient.prefetchQuery(adminPaymentTransactionsOptions(1, 10)),
-    queryClient.prefetchQuery(adminPayoutTransactionsOptions(1, 10)),
-    queryClient.prefetchQuery(adminRefundTransactionsOptions(1, 10)),
-  ]);
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <AdminTransactionsList />
-    </HydrationBoundary>
-  );
+  return <AdminTransactionsList />;
 };
 
 export default AdminTransactionsPage;
