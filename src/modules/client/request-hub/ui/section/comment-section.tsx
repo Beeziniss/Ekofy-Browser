@@ -3,17 +3,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { SendIcon, MessageSquare, UserIcon } from "lucide-react";
-import RequestHubCommentUser from "./request-hub-comment-user";
+import RequestHubCommentUser from "../component/request-hub-comment-user";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createRequestHubCommentMutationOptions } from "@/gql/options/client-mutation-options";
 import { CommentType } from "@/gql/graphql";
@@ -103,7 +94,7 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
           <span className="text-lg font-semibold text-white">{totalComments > 0 && `(${totalComments})`} Comments</span>
         </div>
 
-        <Select defaultValue="sort-newest">
+        {/* <Select defaultValue="sort-newest">
           <SelectTrigger className="w-[140px] border-gray-600 bg-gray-800 text-gray-200">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
@@ -118,7 +109,7 @@ const RequestHubCommentSection = ({ requestId }: RequestHubCommentSectionProps) 
               </SelectItem>
             </SelectGroup>
           </SelectContent>
-        </Select>
+        </Select> */}
       </div>
 
       {/* Comment Input */}

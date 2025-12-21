@@ -89,6 +89,7 @@ export function OrderDetailSection({ orderId }: OrderDetailSectionProps) {
             orderId={order.id}
             orderAmount={payment?.amount || 0}
             currency={payment?.currency || "USD"}
+            platformFeePercentage={order.platformFeePercentage || 0}
           />
         </div>
       </div>

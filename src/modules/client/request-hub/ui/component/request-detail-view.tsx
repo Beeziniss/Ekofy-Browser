@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { useAuthDialog } from "../context/auth-dialog-context";
 import { useStripeAccountStatus } from "@/hooks/use-stripe-account-status";
-import RequestHubCommentSection from "./comment-section";
+import RequestHubCommentSection from "../section/comment-section";
 import { StripeAccountRequiredModal } from "@/modules/shared/ui/components/stripe-account-required-modal";
 import { ReportDialog } from "@/modules/shared/ui/components/report-dialog";
 import { ReportRelatedContentType } from "@/gql/graphql";

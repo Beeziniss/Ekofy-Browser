@@ -10,9 +10,11 @@ import {
   PackageOrderFilterInput,
   TrackFilterInput,
   TrackDailyMetricFilterInput,
+  ArtistPackageFilterInput,
 } from "@/gql/graphql";
 import {
   GetArtistInvoicesQuery,
+  GetArtistPackageByIdQuery,
   GetArtistPayoutsQuery,
   GetArtistTransactionsQuery,
   GetPlatformFeesQuery,
@@ -157,5 +159,16 @@ export function artistTrackDailyMetricsOptions(params: { trackIds: string[] }) {
     queryKey: ["artist-track-metrics", trackIds],
     queryFn: async () => execute(TrackDailyMetricsQuery, { where, skip, take }),
     enabled: trackIds.length > 0,
+  };
+}
+export function artistPackageByIdOptions(params: { artistPackageId: string }) {
+  const { artistPackageId } = params;
+  const where: ArtistPackageFilterInput = {
+    id: { eq: artistPackageId },
+  };
+  
+  return {
+    queryKey: ["artist-package", artistPackageId],
+    queryFn: async () => execute(GetArtistPackageByIdQuery, { where }),
   };
 }

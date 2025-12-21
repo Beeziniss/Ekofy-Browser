@@ -65,10 +65,10 @@ export function SimplePlayButton({
   };
 
   const backgroundClasses = {
-    sm: "bg-white/50 hover:bg-white/70 backdrop-blur-sm border border-black/20",
-    md: "bg-white/50 hover:bg-white/70 backdrop-blur-sm border border-black/20",
-    lg: "bg-white/60 hover:bg-white/80 backdrop-blur-md border border-black/30 shadow-lg",
-    full: "bg-white/60 hover:bg-white/80 backdrop-blur-md border border-black/30 shadow-lg",
+    sm: "bg-white hover:bg-white/50 backdrop-blur-sm border border-black/20",
+    md: "bg-white hover:bg-white/50 backdrop-blur-sm border border-black/20",
+    lg: "bg-white hover:bg-white/50 backdrop-blur-md border border-black/30 shadow-lg",
+    full: "bg-white hover:bg-white/50 backdrop-blur-md border border-black/30 shadow-lg",
   };
 
   return (
@@ -89,9 +89,9 @@ export function SimplePlayButton({
       {isLoading && isCurrentTrack ? (
         <div className={cn("border-primary animate-spin rounded-full border-t-transparent", iconSizes[size])} />
       ) : isCurrentlyPlaying ? (
-        <Pause className={cn(iconSizes[size], "text-black")} />
+        <Pause className={cn(iconSizes[size], "text-black fill-black")} />
       ) : (
-        <Play className={cn(iconSizes[size], "text-black")} />
+        <Play className={cn(iconSizes[size], "text-black fill-black")} />
       )}
     </Button>
   );

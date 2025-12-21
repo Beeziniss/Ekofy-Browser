@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { formatNumber } from "@/utils/format-number";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -19,7 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2, Flag } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, SendIcon, MoreVertical, Edit, Trash2, Flag } from "lucide-react";
 import React, { useState } from "react";
 import TrackCommentReply from "./track-comment-reply";
 import { CommentThread, CommentType, ReportRelatedContentType, ArtistQuery, ListenerQuery } from "@/gql/graphql";
@@ -249,11 +248,6 @@ const TrackCommentUser = ({ thread, trackId, level = 0, listenerData, artistData
         )}
 
         <div className="flex items-center gap-x-2">
-          <div className="flex items-center gap-x-2">
-            <HeartIcon className="text-main-white hover:text-main-grey hover:fill-main-grey size-5 hover:cursor-pointer" />
-            <span>{formatNumber(0)}</span>
-          </div>
-
           <Button
             variant={"ghost"}
             onClick={() => executeWithAuth(() => setShowReplyInput(!showReplyInput), "comment")}

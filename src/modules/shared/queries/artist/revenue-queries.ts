@@ -85,13 +85,29 @@ export const GetPlatformFeesQuery = graphql(`
   query PackageOrdersPlatform ($where: PackageOrderFilterInput) {
     packageOrders(where: $where) {
       items {
+        id
         platformFeePercentage
         payoutTransactionId
+        status
+        startedAt
+        completedAt
+        artistPackageId
       }
     }
   }
 `);
-
+export const GetArtistPackageByIdQuery = graphql(`
+  query GetArtistPackageById($where: ArtistPackageFilterInput) {
+    artistPackages(where: $where) {
+      items {
+        id
+        amount
+        currency
+        packageName
+      }
+    }
+  }
+`);
 export const ArtistRevenueQuery = graphql(`
   query ArtistRevenueData($artistId: String!) {
     artists(where: { id: { eq: $artistId } }) {

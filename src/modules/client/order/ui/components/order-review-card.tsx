@@ -166,19 +166,18 @@ export function OrderReviewCard({ orderId, orderStatus, review, onReviewUpdated 
     // If order is not completed and no review exists
     if (!isCompleted && !review) {
         return (
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Star className="h-5 w-5" />
-                        Review
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground text-sm">
-                        You can leave a review after the order is completed.
-                    </p>
-                </CardContent>
-            </Card>
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-main-white text-xl font-bold">
+                    Review
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-muted-foreground text-sm">
+                    You can leave a review after the order is completed.
+                </p>
+            </CardContent>
+        </Card>
         );
     }
 

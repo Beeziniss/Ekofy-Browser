@@ -1,6 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { favoriteTrackMutationOptions, playlistFavoriteMutationOptions } from "@/gql/options/client-mutation-options";
+import {
+  favoriteTrackMutationOptions,
+  playlistFavoriteMutationOptions,
+  albumFavoriteMutationOptions,
+} from "@/gql/options/client-mutation-options";
 import { useProcessTrackEngagementPopularity } from "@/gql/client-mutation-options/popularity-mutation-option";
 import { PopularityActionType } from "@/gql/graphql";
 
@@ -73,10 +77,40 @@ export const useFavoriteSearch = () => {
     favoritePlaylist({ playlistId: playlist.id, isAdding });
   };
 
+  // Album favorite mutation
+  const { mutate: favoriteAlbum, isPending: isFavoriteAlbumPending } = useMutation({
+    ...albumFavoriteMutationOptions,
+    onSuccess: (data, variables) => {
+      const { isAdding } = variables;
+      toast.success(isAdding ? "Album added to favorites!" : "Album removed from favorites!");
+
+      // Invalidate search queries to refresh favorite status
+      queryClient.invalidateQueries({
+        queryKey: ["search"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["searchAlbums"],
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to update album favorites:", error);
+      toast.error("Failed to update favorites. Please try again.");
+    },
+  });
+
+  const handleFavoriteAlbum = (album: { id: string; name: string; checkAlbumInFavorite: boolean }) => {
+    if (!album?.id) return;
+
+    const isAdding = !album.checkAlbumInFavorite;
+    favoriteAlbum({ albumId: album.id, isAdding });
+  };
+
   return {
     handleFavoriteTrack,
     handleFavoritePlaylist,
+    handleFavoriteAlbum,
     isFavoriteTrackPending,
     isFavoritePlaylistPending,
+    isFavoriteAlbumPending,
   };
 };

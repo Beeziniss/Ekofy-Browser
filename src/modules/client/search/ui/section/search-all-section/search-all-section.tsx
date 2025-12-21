@@ -1,19 +1,20 @@
 import React from "react";
 import Link from "next/link";
 import { TableBody } from "@/components/ui/table";
-import { SearchTrackItem, SearchArtistItem, SearchPlaylistItem } from "@/types/search";
+import { SearchTrackItem, SearchArtistItem, SearchPlaylistItem, SearchAlbumItem } from "@/types/search";
 import { AuthDialogProvider } from "../../context/auth-dialog-context";
-import { TrackRowAll, ArtistCardAll, PlaylistCardAll } from "../../component";
+import { TrackRowAll, ArtistCardAll, PlaylistCardAll, AlbumCardAll } from "../../component";
 
 interface SearchAllSectionProps {
   query: string;
   tracks: SearchTrackItem[];
   artists: SearchArtistItem[];
   playlists: SearchPlaylistItem[];
+  albums: SearchAlbumItem[];
   isLoading?: boolean;
 }
 
-export const SearchAllSection: React.FC<SearchAllSectionProps> = ({ query, tracks, artists, playlists, isLoading }) => {
+export const SearchAllSection: React.FC<SearchAllSectionProps> = ({ query, tracks, artists, playlists, albums, isLoading }) => {
   return (
     <AuthDialogProvider>
       <SearchAllSectionContent
@@ -21,6 +22,7 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({ query, track
         tracks={tracks}
         artists={artists}
         playlists={playlists}
+        albums={albums}
         isLoading={isLoading}
       />
     </AuthDialogProvider>
@@ -28,7 +30,7 @@ export const SearchAllSection: React.FC<SearchAllSectionProps> = ({ query, track
 };
 
 // Main content component
-const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({ query, tracks, artists, playlists, isLoading }) => {
+const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({ query, tracks, artists, playlists, albums, isLoading }) => {
   if (isLoading) {
     return (
       <div className="space-y-8">
@@ -52,6 +54,34 @@ const SearchAllSectionContent: React.FC<SearchAllSectionProps> = ({ query, track
 
   return (
     <div className="space-y-8">
+      {/* Albums */}
+      {albums.filter((a) => a.isVisible === true).length > 0 ? (
+        <div>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white">Albums</h2>
+            <Link
+              href={`/search?q=${encodeURIComponent(query)}&type=albums`}
+              className="text-sm font-medium text-gray-400 hover:text-white"
+            >
+              Show all
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {albums
+              .filter((a) => a.isVisible === true)
+              .slice(0, 6)
+              .map((album) => (
+                <AlbumCardAll key={album.id} album={album} />
+              ))}
+          </div>
+        </div>
+      ) : (
+        <div className="py-8">
+          <h2 className="text-xl font-bold text-white">Albums</h2>
+          <p className="py-2 text-center text-gray-400">No albums found</p>
+        </div>
+      )}
+
       {/* Playlists */}
       {playlists.filter((p) => p.isPublic === true).length > 0 ? (
         <div>

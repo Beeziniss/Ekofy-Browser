@@ -6,7 +6,8 @@ import {
   SEARCH_LISTENERS,
   SEARCH_PLAYLISTS,
   SEARCH_TRACKS,
-} from "@/modules/client/search/ui/view/search-view";
+  SEARCH_ALBUMS,
+} from "@/modules/shared/queries/client/search-queries";
 // TODO: Replace with proper GraphQL-generated types
 
 // Infinite Query Options
@@ -54,6 +55,18 @@ export const searchListenersInfiniteOptions = (query: string, take: number = 10)
     getNextPageParam: (lastPage: any, allPages: any[]) => {
       const totalItems = allPages.reduce((sum, page) => sum + (page.searchListeners?.items?.length || 0), 0);
       return totalItems < (lastPage.searchListeners?.totalCount || 0) ? totalItems : undefined;
+    },
+    initialPageParam: 0,
+  });
+
+export const searchAlbumsInfiniteOptions = (query: string, take: number = 10) =>
+  infiniteQueryOptions({
+    queryKey: ["searchAlbums", query],
+    queryFn: ({ pageParam = 0 }) => execute(SEARCH_ALBUMS as any, { name: query, skip: pageParam, take }),
+    enabled: !!query,
+    getNextPageParam: (lastPage: any, allPages: any[]) => {
+      const totalItems = allPages.reduce((sum, page) => sum + (page.searchAlbums?.items?.length || 0), 0);
+      return totalItems < (lastPage.searchAlbums?.totalCount || 0) ? totalItems : undefined;
     },
     initialPageParam: 0,
   });

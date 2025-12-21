@@ -4,7 +4,7 @@ export { RequestCardSkeleton, RequestListSkeleton } from "./request-card-skeleto
 export { RequestDetailView } from "./request-detail-view";
 export { RequestDetailSkeleton } from "./request-detail-skeleton";
 export { DeleteConfirmModal } from "./delete-confirm-modal";
-export { default as RequestHubCommentSection } from "./comment-section";
+export { default as RequestHubCommentSection } from "../section/comment-section";
 export { Pagination } from "./pagination";
 export { default as RequestHubCommentUser } from "./request-hub-comment-user";
 export { default as RequestHubCommentReply } from "./request-hub-comment-reply";
