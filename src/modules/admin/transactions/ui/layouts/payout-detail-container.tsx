@@ -44,7 +44,7 @@ export default function AdminPayoutDetailContainer({
   if (isLoading) return <div className="p-4">Loading payout transaction…</div>;
 if (isError || !data) return <div className="p-4 text-red-500">Failed to load payout transaction.</div>;
 
-  const transaction = (data as any)?.payoutTransactions?.items?.[0];
+  const transaction = data;
   if (!transaction) return <div className="p-4">Payout transaction not found.</div>;
 
   // Determine payout type
