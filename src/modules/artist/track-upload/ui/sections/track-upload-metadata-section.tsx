@@ -16,7 +16,10 @@ import {
   LockIcon,
   FileTextIcon,
   UploadIcon,
+  ExternalLink,
 } from "lucide-react";
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -1176,10 +1179,9 @@ const TrackUploadMetadataSection = () => {
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                       <h4 className="text-sm font-medium text-white">Document {index + 1}</h4>
-                                      {form.formState.isSubmitted &&
-                                        (!doc.name.trim() || !doc.documentFile || !doc.note.trim()) && (
-                                          <span className="text-destructive text-xs font-medium">(Incomplete)</span>
-                                        )}
+                                      {form.formState.isSubmitted && (!doc.name.trim() || !doc.documentFile) && (
+                                        <span className="text-destructive text-xs font-medium">(Incomplete)</span>
+                                      )}
                                     </div>
                                     {legalDocuments.length > 1 && (
                                       <Button
@@ -1281,6 +1283,48 @@ const TrackUploadMetadataSection = () => {
                                         )}
                                       </label>
                                     </div>
+
+                                    {/* Document Preview */}
+                                    {doc.documentFile &&
+                                      (() => {
+                                        const fileUrl = URL.createObjectURL(doc.documentFile);
+                                        const isImage = doc.documentFile.type.startsWith("image/");
+
+                                        return (
+                                          <div className="mt-3 rounded-md border border-white/20 p-3">
+                                            <p className="mb-2 text-xs font-medium text-white">Preview:</p>
+                                            {isImage ? (
+                                              <Zoom>
+                                                <img
+                                                  src={fileUrl}
+                                                  alt={doc.documentFile.name}
+                                                  className="h-auto w-full max-w-xs cursor-zoom-in rounded-md object-contain"
+                                                />
+                                              </Zoom>
+                                            ) : (
+                                              <div className="flex items-center gap-3">
+                                                <FileTextIcon className="h-8 w-8 text-gray-400" />
+                                                <div className="flex-1">
+                                                  <p className="text-sm text-white">{doc.documentFile.name}</p>
+                                                  <p className="text-xs text-gray-400">
+                                                    {(doc.documentFile.size / 1024 / 1024).toFixed(2)} MB
+                                                  </p>
+                                                </div>
+                                                <Button
+                                                  type="button"
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() => window.open(fileUrl, "_blank")}
+                                                  className="flex items-center gap-2"
+                                                >
+                                                  <ExternalLink className="h-4 w-4" />
+                                                  View
+                                                </Button>
+                                              </div>
+                                            )}
+                                          </div>
+                                        );
+                                      })()}
                                   </div>
 
                                   <div className="space-y-1">

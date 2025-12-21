@@ -1,11 +1,16 @@
 "use client";
 
-import DashboardSection from "@/modules/artist/studio/ui/sections/dashboard/dashboard-section";
+import { Suspense } from "react";
+import DashboardSection, {
+  DashboardSectionSkeleton,
+} from "@/modules/artist/studio/ui/sections/dashboard/dashboard-section";
 
 const DashboardView = () => {
   return (
     <div className={"w-full"}>
-      <DashboardSection />
+      <Suspense fallback={<DashboardSectionSkeleton />}>
+        <DashboardSection />
+      </Suspense>
     </div>
   );
 };

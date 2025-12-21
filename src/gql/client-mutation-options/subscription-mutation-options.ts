@@ -1,6 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { execute } from "@/gql/execute";
-import { CREATE_SUBSCRIPTION, CREATE_SUBSCRIPTION_PLAN, ACTIVATE_SUBSCRIPTION, UPDATE_SUBSCRIPTION_PLAN } from "@/modules/shared/mutations/admin/subcription-mutation";
+import {
+  CREATE_SUBSCRIPTION,
+  CREATE_SUBSCRIPTION_PLAN,
+  ACTIVATE_SUBSCRIPTION,
+  UPDATE_SUBSCRIPTION_PLAN,
+} from "@/modules/shared/mutations/admin/subcription-mutation";
 import type {
   CreateSubscriptionInput,
   CreateSubscriptionPlanInput,
@@ -81,9 +86,9 @@ export const useUpdateSubscriptionMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mutationFn: async (input: UpdateSubscriptionInput) => {
       // TODO: Implement when UPDATE_SUBSCRIPTION mutation is available
-      console.log("Update subscription:", input);
       throw new Error("Update subscription mutation not implemented yet");
     },
     onSuccess: () => {
@@ -100,9 +105,9 @@ export const useDeleteSubscriptionMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mutationFn: async (subscriptionId: string) => {
       // TODO: Implement when DELETE_SUBSCRIPTION mutation is available
-      console.log("Delete subscription:", subscriptionId);
       throw new Error("Delete subscription mutation not implemented yet");
     },
     onSuccess: () => {
@@ -139,9 +144,9 @@ export const useDeleteSubscriptionPlanMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mutationFn: async (planId: string) => {
       // TODO: Implement when DELETE_SUBSCRIPTION_PLAN mutation is available
-      console.log("Delete subscription plan:", planId);
       throw new Error("Delete subscription plan mutation not implemented yet");
     },
     onSuccess: () => {

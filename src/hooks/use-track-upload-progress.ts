@@ -1,11 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import {
-  HttpTransportType,
-  HubConnection,
-  HubConnectionBuilder,
-  HubConnectionState,
-  LogLevel,
-} from "@microsoft/signalr";
+import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import { useAuthStore } from "@/store";
 
 export interface UploadProgress {
@@ -45,7 +39,6 @@ export const useTrackUploadProgress = (): UseTrackUploadProgressReturn => {
           skipNegotiation: true,
         })
         .withAutomaticReconnect()
-        .configureLogging(LogLevel.Information)
         .build();
 
       // Connection state handlers

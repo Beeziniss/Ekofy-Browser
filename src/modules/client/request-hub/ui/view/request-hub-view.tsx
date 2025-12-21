@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import { requestHubOptions } from "@/gql/options/client-options";
-import { useCreateRequest, useUpdateRequest, useDeleteRequest } from "@/gql/client-mutation-options/request-hub-mutation-options";
+import {
+  useCreateRequest,
+  useUpdateRequest,
+  useDeleteRequest,
+} from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { RequestHubLayout } from "../layout";
 import { CreateRequestSection, ViewRequestSection, EditRequestSection } from "../section";
 import { Pagination } from "../component";
@@ -74,8 +78,7 @@ export function RequestHubView() {
     }
   };
 
-  const handleSave = (id: string) => {
-    console.log("Save request:", id);
+  const handleSave = () => {
     toast.info("Bookmark feature coming soon!");
   };
 

@@ -29,7 +29,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         } else {
           // User is not authenticated, ensure auth state is cleared
           setAuthenticated(false);
-          console.log("Authenticated false");
         }
       } finally {
         setLoading(false);
