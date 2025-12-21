@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import { CircleUser, Boxes, Receipt, ClipboardList, ScrollText, LayoutDashboard, FolderCheck, Flag, Fingerprint } from "lucide-react";
+import { CircleUser, Boxes, Receipt, ClipboardList, ScrollText, LayoutDashboard, FolderCheck, Flag, Fingerprint, Key } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
 import { NavProjects } from "../nav-projects";
@@ -63,6 +63,11 @@ const data = {
       name: "Fingerprint",
       url: "/admin/fingerprint",
       icon: Fingerprint,
+    },
+    {
+      name: "Entitlements",
+      url: "/admin/entitlement",
+      icon: Key,
     }
   ],
 };

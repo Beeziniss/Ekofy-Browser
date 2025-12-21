@@ -137,9 +137,9 @@ export function RevenueChart({ data }: RevenueChartProps) {
                 textAnchor="end"
                 interval={0}
                 tick={{ 
-                  fontSize: 12, 
+                  fontSize: 14, 
                   fontWeight: 700,
-                  fill: 'currentColor'
+                  fill: '#ffffff'
                 }}
                 style={{ 
                   letterSpacing: '0.05em',
@@ -149,6 +149,11 @@ export function RevenueChart({ data }: RevenueChartProps) {
               <YAxis 
                 tickLine={false}
                 axisLine={false}
+                tick={{ 
+                  fontSize: 14, 
+                  fontWeight: 700,
+                  fill: '#ffffff'
+                }}
                 tickMargin={8}
                 width={80}
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}K`}

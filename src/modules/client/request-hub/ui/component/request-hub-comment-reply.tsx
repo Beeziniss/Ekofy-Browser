@@ -26,10 +26,9 @@ import {
   deleteRequestHubCommentMutationOptions,
 } from "@/gql/options/client-mutation-options";
 import { formatDistanceToNow } from "date-fns";
-import { formatNumber } from "@/utils/format-number";
 import { requestHubCommentRepliesOptions } from "@/gql/options/client-options";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2 } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, SendIcon, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
@@ -269,11 +268,6 @@ const RequestHubCommentReply = ({ reply, requestId, level, rootCommentId, listen
         )}
 
         <div className="flex items-center gap-x-4">
-          <div className="flex items-center gap-x-1">
-            <HeartIcon className="h-4 w-4 cursor-pointer text-gray-400 transition-colors hover:fill-red-400/20 hover:text-red-400" />
-            <span className="text-xs text-gray-500">{formatNumber(0)}</span>
-          </div>
-
           <Button
             variant={"ghost"}
             onClick={handleShowReplyInput}

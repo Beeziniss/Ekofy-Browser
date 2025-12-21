@@ -30,7 +30,7 @@ export const ArtistPackageQuery = graphql(`
 
 export const ArtistPackageReviewQuery = graphql(`
   query ArtistPackageReview($skip: Int, $take: Int, $where: PackageOrderFilterInput) {
-    packageOrders(skip: $skip, take: $take, where: $where) {
+    packageOrders(skip: $skip, take: $take, where: $where, order: { review: { createdAt: DESC } }) {
       items {
             id
             artistPackageId

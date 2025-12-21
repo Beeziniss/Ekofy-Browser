@@ -38,6 +38,7 @@ export const REQUEST_HUB_QUERY = graphql(`
           id
           userId
           displayName
+          avatarImage
         }
       }
     }
@@ -150,6 +151,7 @@ export const OWN_REQUESTS_QUERY = graphql(`
           id
           userId
           displayName
+          avatarImage
         }
       }
     }

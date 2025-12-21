@@ -3,7 +3,6 @@
 import { Input } from "@/components/ui/input";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { formatNumber } from "@/utils/format-number";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -21,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2, Flag } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, SendIcon, MoreVertical, Edit, Trash2, Flag } from "lucide-react";
 import React, { useState } from "react";
 import RequestHubCommentReply from "./request-hub-comment-reply";
 import { ArtistQuery, CommentThread, CommentType, ListenerQuery, ReportRelatedContentType } from "@/gql/graphql";
@@ -267,11 +266,6 @@ const RequestHubCommentUser = ({ thread, requestId, level = 0, listenerData, art
         )}
 
         <div className="flex items-center gap-x-4">
-          <div className="flex items-center gap-x-1">
-            <HeartIcon className="h-4 w-4 cursor-pointer text-gray-400 transition-colors hover:fill-red-400/20 hover:text-red-400" />
-            <span className="text-xs text-gray-500">{formatNumber(0)}</span>
-          </div>
-
           <Button
             variant={"ghost"}
             onClick={handleShowReplyInput}

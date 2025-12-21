@@ -3,15 +3,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { SendIcon, UserIcon } from "lucide-react";
 import TrackCommentUser from "../components/track-comment-user";
 import { useMutation, useQuery, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
@@ -125,15 +116,13 @@ const TrackCommentSectionSuspense = ({ trackId }: TrackCommentSectionProps) => {
     <div className="w-full space-y-8">
       {/* Track Comment Interaction */}
       <div className="space-y-6">
+      {/* // TODO: refractor defaultValue and modify this sorting using api */}
         <div className="flex items-center justify-between">
           <span className="text-main-white text-lg font-bold">{getTotalCommentCount() || 0} Comments</span>
 
-          {/* // TODO: refractor defaultValue and modify this sorting using api */}
-          <Select defaultValue="sort-newest">
+          {/* <Select defaultValue="sort-newest">
             <SelectTrigger className="!bg-main-card-bg w-fit border-none">
               <SelectValue placeholder="Select a sorting option" />
-              {/* Sort by: Newest{" "}
-                <ChevronDownIcon className="text-main-white size-6" /> */}
             </SelectTrigger>
             <SelectContent side="bottom" align="end">
               <SelectGroup>
@@ -142,7 +131,7 @@ const TrackCommentSectionSuspense = ({ trackId }: TrackCommentSectionProps) => {
                 <SelectItem value="sort-most-liked">Sort by: Most Liked</SelectItem>
               </SelectGroup>
             </SelectContent>
-          </Select>
+          </Select> */}
         </div>
 
         <div className="flex items-center gap-x-3">

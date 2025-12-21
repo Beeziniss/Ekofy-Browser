@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState } from "react";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 
 interface AuthDialogContextType {
-  showAuthDialog: (action: "play" | "favorite" | "comment" | "follow" | "playlist", trackName?: string) => void;
+  showAuthDialog: (action: "play" | "favorite" | "comment" | "follow" | "playlist" | "albums", trackName?: string) => void;
 }
 
 const AuthDialogContext = createContext<AuthDialogContextType | null>(null);
@@ -23,10 +23,10 @@ interface AuthDialogProviderProps {
 
 export const AuthDialogProvider: React.FC<AuthDialogProviderProps> = ({ children }) => {
   const [showWarningDialog, setShowWarningDialog] = useState(false);
-  const [warningAction, setWarningAction] = useState<"play" | "favorite" | "comment" | "follow" | "playlist">("play");
+  const [warningAction, setWarningAction] = useState<"play" | "favorite" | "comment" | "follow" | "playlist"| "albums">("play");
   const [trackName, setTrackName] = useState<string | undefined>();
 
-  const showAuthDialog = (action: "play" | "favorite" | "comment" | "follow" | "playlist", trackName?: string) => {
+  const showAuthDialog = (action: "play" | "favorite" | "comment" | "follow" | "playlist" | "albums", trackName?: string) => {
     setWarningAction(action);
     setTrackName(trackName);
     setShowWarningDialog(true);
