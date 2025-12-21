@@ -85,13 +85,13 @@ const OrderSubmissionRevisionDialog = ({
             <Alert className="border-yellow-500/30 bg-yellow-500/10">
               <AlertTriangle className="h-4 w-4 text-yellow-400" />
               <AlertDescription className="text-yellow-400">
-                ⚠️ Warning: Only {Math.max(0, Math.round(hoursRemaining!))} hours remaining until deadline ({formatDate(deadline, "PPp")}).
-                Requesting a revision may impact the delivery timeline.
+                ⚠️ Warning: Only {Math.max(0, Math.round(hoursRemaining!))} hours remaining until deadline (
+                {formatDate(deadline, "PPp")}). Requesting a revision may impact the delivery timeline.
               </AlertDescription>
             </Alert>
           )}
 
-          <div className="space-y-2">
+          <div className="hidden space-y-2">
             <Label htmlFor="revisionNumber">Revision Number</Label>
             <Input id="revisionNumber" type="number" value={revisionNumber} disabled className="bg-gray-50" />
           </div>
@@ -105,9 +105,8 @@ const OrderSubmissionRevisionDialog = ({
               placeholder="Please describe what needs to be revised or changed..."
               value={clientFeedback}
               onChange={(e) => setClientFeedback(e.target.value)}
-              rows={4}
               required
-              className="resize-none"
+              className="h-30 max-h-30 resize-none"
             />
           </div>
 
@@ -115,7 +114,7 @@ const OrderSubmissionRevisionDialog = ({
             <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting || !clientFeedback.trim()}>
+            <Button type="submit" variant={"ekofy"} disabled={isSubmitting || !clientFeedback.trim()}>
               {isSubmitting ? "Sending..." : "Send Request"}
             </Button>
           </div>

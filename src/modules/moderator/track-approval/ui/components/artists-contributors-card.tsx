@@ -11,7 +11,6 @@ interface ArtistsContributorsCardProps {
 }
 
 export function ArtistsContributorsCard({ track }: ArtistsContributorsCardProps) {
-  console.log("ArtistsContributorsCard track data:", track);
   return (
     <Card>
       <CardHeader>

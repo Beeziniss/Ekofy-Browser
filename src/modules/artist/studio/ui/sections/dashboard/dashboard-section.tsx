@@ -2,41 +2,79 @@
 
 import Image from "next/image";
 import { useAuthStore } from "@/store";
-import { useQuery } from "@tanstack/react-query";
-import MainLoader from "@/components/main-loader";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { formatCurrency } from "@/utils/format-currency";
 import { artistRevenueOptions } from "@/gql/options/artist-options";
 import { RevenueStatCard } from "../../components/revenue-stat-card";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Users, DollarSign, TrendingUp, Music2, Wallet } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
+import { Users, DollarSign, TrendingUp, Music2, Wallet, Coins } from "lucide-react";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const DashboardSection = () => {
+  return (
+    <Suspense fallback={<DashboardSectionSkeleton />}>
+      <DashboardSectionSuspense />
+    </Suspense>
+  );
+};
+
+export const DashboardSectionSkeleton = () => {
+  return (
+    <div className="min-h-screen p-6">
+      <div className="container mx-auto max-w-7xl space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-16 w-16 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-64" />
+              <Skeleton className="h-5 w-80" />
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Grid Skeleton - 6 cards */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Card key={index} className="border-slate-700/50 bg-slate-800/30 backdrop-blur">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-5 w-5 rounded" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-32" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Chart Skeleton */}
+        <Card className="border-slate-700/50 bg-slate-800/30 backdrop-blur">
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-64" />
+            <Skeleton className="h-8 w-24" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-[400px] w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+const DashboardSectionSuspense = () => {
   const { user } = useAuthStore();
   const artistId = user?.artistId || "";
 
-  const { data: artistData, isLoading, error } = useQuery(artistRevenueOptions(artistId));
+  const { data: artistData } = useSuspenseQuery(artistRevenueOptions(artistId));
 
-  if (isLoading) {
-    return <MainLoader />;
-  }
-
-  if (error || !artistData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-        <div className="container mx-auto max-w-7xl">
-          <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-4 text-center">
-            <p className="text-red-400">Failed to load dashboard data. Please try again later.</p>
-          </div>
-        </div>
-      </div>
-    );
+  if (!artistData) {
+    return null;
   }
 
   // Chart configuration
@@ -154,7 +192,7 @@ const DashboardSection = () => {
           <RevenueStatCard
             title="Service Earnings"
             value={formatCurrency(artistData.serviceEarnings)}
-            icon={DollarSign}
+            icon={Coins}
             iconColor="text-purple-400"
           />
         </div>
@@ -164,6 +202,10 @@ const DashboardSection = () => {
           <CardHeader>
             <CardTitle className="text-white">Revenue Breakdown</CardTitle>
             <p className="text-sm text-slate-400">Overview of your revenue streams</p>
+            {/* Thêm chú thích đơn vị tiền tệ ở góc phải trên */}
+            <div className="rounded border border-slate-600 bg-slate-700/30 px-2 py-1 text-sm font-medium text-slate-500">
+              Unit: <span className="text-sm font-bold text-purple-400">VND</span>
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="aspect-auto h-[400px] w-full">
@@ -171,10 +213,11 @@ const DashboardSection = () => {
                 <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-slate-700" />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tick={{ fill: "#94a3b8" }} />
                 <YAxis
+                  width={100} // Tăng giá trị này lên (ví dụ 80 hoặc 100 tùy độ dài số)
                   tickLine={false}
                   axisLine={false}
                   tick={{ fill: "#94a3b8" }}
-                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                  tickFormatter={(value) => value.toLocaleString("vi-VN")}
                 />
                 <ChartTooltip
                   // cursor={false}

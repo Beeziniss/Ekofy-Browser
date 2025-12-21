@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import { AlbumIcon, AudioLinesIcon, LayoutDashboardIcon, LayoutPanelLeftIcon, BanknoteIcon, Flag, ListChecksIcon } from "lucide-react";
+import { AudioLinesIcon, LayoutDashboardIcon, LayoutPanelLeftIcon, BanknoteIcon, Flag, ListChecksIcon } from "lucide-react";
 import React from "react";
 import { NavUser } from "../nav-user";
 import { NavProjects } from "../nav-projects";
@@ -29,11 +29,11 @@ const data = {
       url: "/artist/studio/tracks",
       icon: AudioLinesIcon,
     },
-    {
-      name: "Albums",
-      url: "/artist/studio/albums",
-      icon: AlbumIcon,
-    },
+    // {
+    //   name: "Albums",
+    //   url: "/artist/studio/albums",
+    //   icon: AlbumIcon,
+    // },
     {
       name: "Service Packages",
       url: "/artist/studio/service-package",

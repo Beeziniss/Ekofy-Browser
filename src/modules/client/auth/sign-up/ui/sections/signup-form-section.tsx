@@ -86,7 +86,6 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
 
   const handleGoogleSignUp = () => {
     // Handle Google sign up logic here
-    console.log("Google sign up clicked");
   };
 
   return (
@@ -255,11 +254,10 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
                             e.preventDefault();
                             setShowTermsDialog(true);
                           }}
-                          className="text-blue-400 hover:text-blue-300 underline"
+                          className="text-blue-400 underline hover:text-blue-300"
                         >
                           Terms and Conditions
-                        </button>
-                        {" "}
+                        </button>{" "}
                         of Ekofy
                         {/* <Link href="#" className="text-blue-400 hover:text-blue-300">
                           Privacy Policy
@@ -275,7 +273,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
               <Button
                 type="submit"
                 disabled={!agreeTerms}
-                className="primary_gradient w-full rounded-md px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="primary_gradient w-full rounded-md px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                 size="lg"
               >
                 Continue
@@ -307,7 +305,7 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
             variant="outline"
             onClick={handleGoogleSignUp}
             disabled={!agreeTerms}
-            className="w-full rounded-md border-gray-600 bg-transparent px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-md border-gray-600 bg-transparent px-4 py-3 font-medium text-white transition duration-300 ease-in-out hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
             size="lg"
           >
             <svg className="mr-3 h-5 w-5" viewBox="0 0 24 24">
@@ -333,7 +331,8 @@ const SignUpFormSection = ({ onNext, initialData }: ClientSignUpFormSectionProps
         </div>
       </div>
       {/* Terms of Service Dialog */}
-      <TermsOfServiceDialog isOpen={showTermsDialog} onClose={() => setShowTermsDialog(false)} />    </div>
+      <TermsOfServiceDialog isOpen={showTermsDialog} onClose={() => setShowTermsDialog(false)} />{" "}
+    </div>
   );
 };
 

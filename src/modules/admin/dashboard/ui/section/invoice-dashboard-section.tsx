@@ -25,23 +25,18 @@ export function InvoiceDashboardSection() {
   const whereFilter = useMemo(() => {
     const filter: Record<string, unknown> = {};
     return Object.keys(filter).length > 0 ? filter : undefined;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
   const { data, isLoading } = useQuery(
-    invoiceDashboardOptions(
-      (page - 1) * pageSize,
-      pageSize,
-      whereFilter,
-      [{ paidAt: SortEnumType.Desc }],
-    )
+    invoiceDashboardOptions((page - 1) * pageSize, pageSize, whereFilter, [{ paidAt: SortEnumType.Desc }]),
   );
 
   // Client-side filtering by invoice type
   const typeFilteredInvoices = useMemo(() => {
     if (!data?.items) return [];
     if (type === "all") return data.items;
-    
+
     return data.items.filter((invoice) => {
       if (type === "service") {
         return invoice.oneOffSnapshot !== null && invoice.oneOffSnapshot !== undefined;
@@ -59,7 +54,7 @@ export function InvoiceDashboardSection() {
       const transactionStatus = invoice.transaction?.[0]?.paymentStatus;
       return transactionStatus === status;
     });
-    
+
     return filtered;
   }, [typeFilteredInvoices, status]);
 
@@ -77,12 +72,10 @@ export function InvoiceDashboardSection() {
       params.set(key, value);
     }
     const newUrl = `?${params.toString()}`;
-    console.log("Updating URL to:", newUrl);
     router.replace(newUrl, { scroll: false });
   };
 
   const handleStatusChange = (newStatus: string) => {
-    console.log("handleStatusChange called with:", newStatus);
     setStatus(newStatus);
     updateURL("invoiceStatus", newStatus);
     if (newStatus !== status) {
@@ -92,7 +85,6 @@ export function InvoiceDashboardSection() {
   };
 
   const handleTypeChange = (newType: string) => {
-    console.log("handleTypeChange called with:", newType);
     setType(newType);
     updateURL("invoiceType", newType);
     if (newType !== type) {
@@ -132,10 +124,10 @@ export function InvoiceDashboardSection() {
         ) : (
           <>
             <InvoiceTable invoices={filteredInvoices} />
-            
+
             {/* Pagination */}
             <div className="mt-4 flex items-center justify-between">
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 Page {page} of {totalPages || 1} ({filteredTotalCount} total)
               </div>
               <div className="flex gap-2">
@@ -147,12 +139,7 @@ export function InvoiceDashboardSection() {
                 >
                   Previous
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!hasNextPage}
-                  onClick={() => handlePageChange(page + 1)}
-                >
+                <Button variant="outline" size="sm" disabled={!hasNextPage} onClick={() => handlePageChange(page + 1)}>
                   Next
                 </Button>
               </div>

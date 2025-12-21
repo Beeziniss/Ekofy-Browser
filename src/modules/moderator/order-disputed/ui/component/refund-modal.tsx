@@ -26,17 +26,15 @@ interface RefundModalProps {
   orderId: string;
   orderAmount: number;
   currency?: string;
+  platformFeePercentage: number;
 }
 
-export function RefundModal({ open, onClose, orderId, orderAmount, currency }: RefundModalProps) {
+export function RefundModal({ open, onClose, orderId, orderAmount, currency, platformFeePercentage }: RefundModalProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [clientPercentage, setClientPercentage] = useState(50);
   const [artistPercentage, setArtistPercentage] = useState(50);
   const { mutate: refundPartially, isPending } = useRefundPartially();
-  
-  // Platform fee percentage (adjust this based on your business logic)
-  const platformFeePercentage = 10;
 
   const handleClientPercentageChange = (value: number) => {
     setClientPercentage(value);

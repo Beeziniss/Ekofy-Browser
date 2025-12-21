@@ -2,18 +2,10 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Eye} from "lucide-react";
-import { formatNumber } from "@/utils/format-number";
+import { Eye} from "lucide-react";
 import { activeInactiveStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import type { Subscription } from "@/types";
+import { formatCurrencyVND } from "@/utils/format-currency";
 
 interface SubscriptionTableProps {
   subscriptions: Subscription[];
@@ -101,7 +93,7 @@ export function SubscriptionTable({
                   </span>
                 </TableCell>
                 <TableCell className="font-medium text-white">
-                  {formatNumber(subscription.amount)} {subscription.currency}
+                  {formatCurrencyVND(subscription.amount)} {subscription.currency.toUpperCase()}
                 </TableCell>
                 <TableCell>
                   {activeInactiveStatusBadge(subscription.status)}
@@ -113,28 +105,16 @@ export function SubscriptionTable({
                     day: "numeric",
                   })}
                 </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="border-gray-700 bg-gray-800">
-                      <DropdownMenuLabel className="text-gray-300">Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator className="bg-gray-700" />
-                      {onView && (
-                        <DropdownMenuItem 
-                          onClick={() => onView(subscription)}
-                          className="text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer"
-                        >
-                          <Eye className="mr-2 h-4 w-4" />
-                          View Details
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                <TableCell>                
+                  {onView && (
+                    <Button 
+                      onClick={() => onView(subscription)}
+                      variant="ghost"
+                      className="text-gray-300 hover:text-white cursor-pointer"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))

@@ -57,7 +57,7 @@ function PayoutTypeCell({ platformFee, isLoading }: { platformFee?: number | nul
     return <Badge variant="ekofy">Service</Badge>;
   }
   
-  return <Badge variant="secondary">Escrow Release</Badge>;
+  return <Badge variant="secondary">Streaming</Badge>;
 }
 
 export default function PayoutsTable({ userId, pageSize = 10, typeFilter = "all", onTypeFilterChange }: PayoutsTableProps) {
@@ -97,7 +97,7 @@ export default function PayoutsTable({ userId, pageSize = 10, typeFilter = "all"
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="service">Service</SelectItem>
-              <SelectItem value="escrow">Escrow Release</SelectItem>
+              <SelectItem value="streaming">Streaming</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -112,7 +112,7 @@ export default function PayoutsTable({ userId, pageSize = 10, typeFilter = "all"
               <TableHead>Method</TableHead>
               <TableHead>Platform Fee</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Payout</TableHead>
+              <TableHead>Payout ID</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -168,7 +168,7 @@ function PayoutRow({ tx, typeFilter, onVisibilityChange }: { tx: PayoutTransacti
   });
   
   const platformFee = platformFeeData?.packageOrders?.items?.[0]?.platformFeePercentage;
-  const payoutType = platformFee !== undefined && platformFee !== null ? "service" : "escrow";
+  const payoutType = platformFee !== undefined && platformFee !== null ? "service" : "streaming";
   const isVisible = typeFilter === "all" || typeFilter === payoutType;
   const prevVisibleRef = useRef<boolean | null>(null);
   
@@ -194,7 +194,7 @@ function PayoutRow({ tx, typeFilter, onVisibilityChange }: { tx: PayoutTransacti
         {tx?.createdAt ? new Date(tx.createdAt as unknown as string).toLocaleString() : "-"}
       </TableCell>
       <TableCell>
-        {typeof tx?.amount === "number" ? tx.amount.toLocaleString() : tx?.amount} {tx?.currency}
+        {typeof tx?.amount === "number" ? tx.amount.toLocaleString() : tx?.amount} {tx?.currency.toUpperCase() || ""}
       </TableCell>
       <TableCell>
         <PayoutTypeCell platformFee={platformFee} isLoading={isLoadingType} />
@@ -205,9 +205,9 @@ function PayoutRow({ tx, typeFilter, onVisibilityChange }: { tx: PayoutTransacti
       </TableCell>
       <TableCell>{tx?.status ? statusBadge(tx.status as PayoutTransactionStatus) : "-"}</TableCell>
       <TableCell>
-        {tx?.stripeTransferId || tx?.stripePayoutId || tx?.id ? (
-          <Link href={`/artist/studio/transactions/payouts/${tx?.stripeTransferId || tx?.stripePayoutId || tx?.id}`} className="text-primary hover:underline">
-            #{(tx?.stripeTransferId || tx?.stripePayoutId || tx?.id)!.slice(-8)}
+        {tx?.id ? (
+          <Link href={`/artist/studio/transactions/payouts/${tx.id}`} className="text-primary hover:underline">
+            #{tx.id.slice(-8)}
           </Link>
         ) : (
           "-"

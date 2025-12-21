@@ -1,11 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import {
-  HttpTransportType,
-  HubConnection,
-  HubConnectionBuilder,
-  HubConnectionState,
-  LogLevel,
-} from "@microsoft/signalr";
+import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import { useAuthStore } from "@/store";
 import { Message } from "@/gql/graphql";
 
@@ -69,36 +63,30 @@ export const useConversationSignalR = (): UseConversationSignalRReturn => {
           skipNegotiation: true,
         })
         .withAutomaticReconnect()
-        .configureLogging(LogLevel.Information)
         .build();
 
       // Connection state handlers
       newConnection.onclose(() => {
-        console.log("SignalR chat connection closed");
         setIsConnected(false);
       });
 
       newConnection.onreconnecting(() => {
-        console.log("SignalR chat reconnecting...");
         setIsConnected(false);
       });
 
       newConnection.onreconnected(() => {
-        console.log("SignalR chat reconnected");
         setIsConnected(true);
       });
 
       await newConnection.start().then(() => {
         // Set up event listeners
         newConnection.on("ReceiveMessage", (message: Message) => {
-          console.log("Message received:", message);
           if (messageReceivedCallbackRef.current) {
             messageReceivedCallbackRef.current(message);
           }
         });
 
         newConnection.on("MessageSent", (message: Message) => {
-          console.log("Message sent:", message);
           if (messageSentCallbackRef.current) {
             messageSentCallbackRef.current(message);
           }
@@ -120,14 +108,11 @@ export const useConversationSignalR = (): UseConversationSignalRReturn => {
       }); */
 
         newConnection.on("MessageDeleted", (data: MessageDeletedData) => {
-          console.log("Message deleted:", data);
           if (messageDeletedCallbackRef.current) {
             messageDeletedCallbackRef.current(data);
           }
         });
       });
-
-      console.log("SignalR chat connected successfully");
 
       connectionRef.current = newConnection;
       setConnection(newConnection);
@@ -211,7 +196,6 @@ export const useConversationSignalR = (): UseConversationSignalRReturn => {
   useEffect(() => {
     return () => {
       if (connectionRef.current) {
-        console.log("Cleaning up SignalR chat connection");
         connectionRef.current.stop().catch(console.error);
       }
     };

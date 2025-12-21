@@ -42,8 +42,6 @@ const TopTracksSectionSuspense = () => {
   const { user } = useAuthStore();
   const { data } = useSuspenseQuery(topTracksOptions(user?.userId || ""));
 
-  console.log(JSON.stringify(data, null, 2));
-
   if (!data?.topTracks?.items || data.topTracks.items.length === 0) {
     return (
       <div className="w-full px-6 py-8">

@@ -89,7 +89,7 @@ export function EscrowPolicyTable({
             <TableRow key={policy.id}>
               <TableCell>{policies.indexOf(policy) + 1}</TableCell>
               <TableCell className="font-medium">
-                {Number(policy.platformFeePercentage).toFixed(2)}%
+                {Number(policy.platformFeePercentage)}%
               </TableCell>
               <TableCell className="uppercase">{policy.currency}</TableCell>
               <TableCell>

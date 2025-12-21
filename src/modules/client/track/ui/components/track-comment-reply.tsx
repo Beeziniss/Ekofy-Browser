@@ -24,10 +24,9 @@ import {
   deleteTrackCommentMutationOptions,
 } from "@/gql/options/client-mutation-options";
 import { formatDistanceToNow } from "date-fns";
-import { formatNumber } from "@/utils/format-number";
 import { trackCommentRepliesOptions } from "@/gql/options/client-options";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronDownIcon, ChevronUpIcon, HeartIcon, SendIcon, MoreVertical, Edit, Trash2 } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, SendIcon, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "@/store";
 import { toast } from "sonner";
@@ -246,11 +245,6 @@ const TrackCommentReply = ({ reply, trackId, level, rootCommentId, listenerData,
         )}
 
         <div className="flex items-center gap-x-2">
-          <div className="flex items-center gap-x-2">
-            <HeartIcon className="text-main-white hover:text-main-grey hover:fill-main-grey size-4 hover:cursor-pointer" />
-            <span className="text-xs">{formatNumber(0)}</span>
-          </div>
-
           <Button
             variant={"ghost"}
             onClick={() => executeWithAuth(() => setShowReplyInput(!showReplyInput), "comment")}

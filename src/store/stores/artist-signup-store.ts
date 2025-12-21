@@ -272,7 +272,6 @@ export const useArtistSignUpStore = create<ArtistSignUpState>()(
         },
         completeOTPVerification: () => {
           // No longer used - keeping for compatibility
-          console.log("OTP verification is no longer used");
         },
 
         // Clear session data (for security)

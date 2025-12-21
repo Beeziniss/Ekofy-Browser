@@ -23,7 +23,7 @@ import { PeriodTime } from "@/gql/graphql";
 import type { CreateSubscriptionPlanInput } from "@/types";
 
 const priceSchema = z.object({
-  interval: z.nativeEnum(PeriodTime),
+  interval: z.enum([PeriodTime.Day, PeriodTime.Month, PeriodTime.Week, PeriodTime.Year]),
   intervalCount: z.number().min(1, "Interval count must be at least 1"),
   lookupKey: z.string().min(1, "Lookup key is required"),
 });
@@ -34,7 +34,17 @@ const metadataSchema = z.object({
 });
 
 const imageSchema = z.object({
-  url: z.string().url("Must be a valid URL"),
+  url: z.string().refine(
+    (val) => {
+      try {
+        new URL(val);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    { message: "Must be a valid URL" }
+  ),
 });
 
 const createSubscriptionPlanSchema = z.object({
@@ -200,7 +210,7 @@ export default function CreateSubscriptionPlanForm({
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Plan Name</FormLabel>
+                        <FormLabel>Plan Name<span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <Input placeholder="Premium Plan" {...field} />
                         </FormControl>
@@ -214,7 +224,7 @@ export default function CreateSubscriptionPlanForm({
                     name="subscriptionCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Subscription Code</FormLabel>
+                        <FormLabel>Subscription Code<span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <Input placeholder="premium_plan" {...field} />
                         </FormControl>
@@ -367,7 +377,7 @@ export default function CreateSubscriptionPlanForm({
                         name={`prices.${index}.interval`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Billing Interval</FormLabel>
+                            <FormLabel>Billing Interval<span className="text-red-500">*</span></FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
@@ -391,7 +401,7 @@ export default function CreateSubscriptionPlanForm({
                         name={`prices.${index}.intervalCount`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Interval Count</FormLabel>
+                            <FormLabel>Interval Count<span className="text-red-500">*</span></FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -410,7 +420,7 @@ export default function CreateSubscriptionPlanForm({
                         name={`prices.${index}.lookupKey`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Lookup Key</FormLabel>
+                            <FormLabel>Lookup Key<span className="text-red-500">*</span></FormLabel>
                             <FormControl>
                               <Input placeholder="premium_monthly" {...field} />
                             </FormControl>

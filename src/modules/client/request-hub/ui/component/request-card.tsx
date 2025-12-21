@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -137,6 +137,10 @@ export function RequestCard({ request, onViewDetails, onEdit, onDelete, classNam
         <div className="mb-4 flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="h-12 w-12">
+              <AvatarImage 
+                src={request.requestor?.[0]?.avatarImage || undefined} 
+                alt={request.requestor?.[0]?.displayName || "User"}
+              />
               <AvatarFallback className="bg-gray-200 text-gray-600">
                 {request.requestor?.[0]?.displayName?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
@@ -247,7 +251,7 @@ export function RequestCard({ request, onViewDetails, onEdit, onDelete, classNam
 
       {/* Comments Section */}
       {showComments && (
-        <div className="border-t border-gray-100 px-6">
+        <div className="border-t border-gray-100 px-6 pt-6 pb-6">
           <RequestHubCommentSection requestId={request.id} />
         </div>
       )}

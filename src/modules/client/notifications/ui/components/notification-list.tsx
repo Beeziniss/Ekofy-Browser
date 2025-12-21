@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Bell, Loader2 } from "lucide-react";
+import { Bell, Loader2, Music, MessageSquare, ShoppingBag, ListMusic, FileText, Star, Disc3 } from "lucide-react";
 import { formatNotificationTime } from "@/utils/notification-utils";
+import { NotificationRelatedType } from "@/gql/graphql";
 
 interface NotificationEdge {
   cursor: string;
@@ -15,6 +15,7 @@ interface NotificationEdge {
     url?: string | null;
     isRead: boolean;
     readAt?: string | null;
+    relatedType?: NotificationRelatedType | null;
   };
 }
 
@@ -25,6 +26,52 @@ interface NotificationListProps {
   onLoadMore?: () => void;
   onMarkAsRead?: (notificationId: string) => void;
 }
+
+const getNotificationIcon = (relatedType?: NotificationRelatedType | null) => {
+  switch (relatedType) {
+    case NotificationRelatedType.Album:
+      return Disc3;
+    case NotificationRelatedType.Track:
+      return Music;
+    case NotificationRelatedType.Comment:
+      return MessageSquare;
+    case NotificationRelatedType.Order:
+      return ShoppingBag;
+    case NotificationRelatedType.Playlist:
+      return ListMusic;
+    case NotificationRelatedType.Request:
+      return FileText;
+    case NotificationRelatedType.Review:
+      return Star;
+    case NotificationRelatedType.Message:
+      return MessageSquare;
+    default:
+      return Bell;
+  }
+};
+
+const getNotificationIconColor = (relatedType?: NotificationRelatedType | null) => {
+  switch (relatedType) {
+    case NotificationRelatedType.Album:
+      return "bg-purple-500/20 text-purple-400";
+    case NotificationRelatedType.Track:
+      return "bg-blue-500/20 text-blue-400";
+    case NotificationRelatedType.Comment:
+      return "bg-green-500/20 text-green-400";
+    case NotificationRelatedType.Order:
+      return "bg-orange-500/20 text-orange-400";
+    case NotificationRelatedType.Playlist:
+      return "bg-pink-500/20 text-pink-400";
+    case NotificationRelatedType.Request:
+      return "bg-yellow-500/20 text-yellow-400";
+    case NotificationRelatedType.Review:
+      return "bg-amber-500/20 text-amber-400";
+    case NotificationRelatedType.Message:
+      return "bg-cyan-500/20 text-cyan-400";
+    default:
+      return "bg-gray-500/20 text-gray-400";
+  }
+};
 
 export const NotificationList = ({
   notifications,
@@ -58,6 +105,8 @@ export const NotificationList = ({
       {notifications.map((edge) => {
         const notification = edge.node;
         const isRead = notification.isRead;
+        const IconComponent = getNotificationIcon(notification.relatedType);
+        const iconColorClass = getNotificationIconColor(notification.relatedType);
 
         return (
           <div
@@ -67,12 +116,9 @@ export const NotificationList = ({
               !isRead ? "border-l-4 border-l-blue-500 bg-blue-500/5" : ""
             }`}
           >
-            <Avatar className="h-10 w-10 flex-shrink-0">
-              <AvatarImage src={undefined} alt="Notification avatar" />
-              <AvatarFallback>
-                <Bell className="h-5 w-5" />
-              </AvatarFallback>
-            </Avatar>
+            <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${iconColorClass}`}>
+              <IconComponent className="h-5 w-5" />
+            </div>
 
             <div className="flex-1 space-y-1">
               <p className="text-main-white text-sm leading-relaxed">{notification.content}</p>

@@ -1,11 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import {
-  HttpTransportType,
-  HubConnection,
-  HubConnectionBuilder,
-  HubConnectionState,
-  LogLevel,
-} from "@microsoft/signalr";
+import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import { useAuthStore } from "@/store";
 
 export interface NotificationResponse {
@@ -48,7 +42,6 @@ export const useNotificationSignalR = (): UseNotificationSignalRReturn => {
 
   const startConnection = useCallback(async () => {
     if (!accessToken || !user) {
-      console.log("No access token or user, skipping SignalR notification connection");
       return;
     }
 
@@ -64,32 +57,24 @@ export const useNotificationSignalR = (): UseNotificationSignalRReturn => {
           skipNegotiation: true,
         })
         .withAutomaticReconnect()
-        .configureLogging(LogLevel.Information)
         .build();
 
       // Connection state handlers
       newConnection.onclose(() => {
-        console.log("SignalR notification connection closed");
         setIsConnected(false);
       });
 
       newConnection.onreconnecting(() => {
-        console.log("SignalR notification reconnecting...");
         setIsConnected(false);
       });
 
       newConnection.onreconnected(() => {
-        console.log("SignalR notification reconnected");
         setIsConnected(true);
       });
 
       await newConnection.start().then(() => {
-        console.log("SignalR notification connected successfully");
-
         // Set up event listeners
         newConnection.on("ReceiveNotification", (notification: NotificationResponse) => {
-          console.log("Notification received:", notification);
-
           // Create notification with timestamp and read status
           const enhancedNotification: NotificationResponse = {
             ...notification,
@@ -178,7 +163,6 @@ export const useNotificationSignalR = (): UseNotificationSignalRReturn => {
   useEffect(() => {
     return () => {
       if (connectionRef.current) {
-        console.log("Cleaning up SignalR notification connection");
         connectionRef.current.stop().catch(console.error);
       }
     };

@@ -110,7 +110,7 @@ export function CreateSubscriptionForm({ open, onOpenChange, onSuccess }: Create
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Name<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input placeholder="Premium Plan" {...field} />
                   </FormControl>
@@ -124,7 +124,7 @@ export function CreateSubscriptionForm({ open, onOpenChange, onSuccess }: Create
               name="code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Code</FormLabel>
+                  <FormLabel>Code<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input placeholder="premium_plan" {...field} />
                   </FormControl>
@@ -154,7 +154,7 @@ export function CreateSubscriptionForm({ open, onOpenChange, onSuccess }: Create
                 name="tier"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tier</FormLabel>
+                    <FormLabel>Tier<span className="text-red-500">*</span></FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -177,7 +177,7 @@ export function CreateSubscriptionForm({ open, onOpenChange, onSuccess }: Create
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price (VND)</FormLabel>
+                  <FormLabel>Price (VND)<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input
                       type="text"

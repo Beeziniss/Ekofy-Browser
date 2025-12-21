@@ -134,24 +134,19 @@ const AudioPlayer = () => {
               // Check if token refresh is already in progress or in cooldown
               const now = Date.now();
               if (tokenRefreshInProgressRef.current) {
-                console.log("Token refresh already in progress, skipping...");
                 return;
               }
 
               if (now - lastTokenRefreshAttemptRef.current < TOKEN_REFRESH_COOLDOWN) {
-                console.log("Token refresh cooldown active, skipping...");
                 return;
               }
 
               try {
-                console.log("Token expired. Attempting refresh via refreshSignToken...");
                 tokenRefreshInProgressRef.current = true;
                 lastTokenRefreshAttemptRef.current = now;
 
                 // 1. Capture current playback time to preserve user's position
                 const { currentTime: savedTime, wasPlaying } = getCurrentPlaybackState();
-
-                console.log(`Saving playback position: ${savedTime}s, was playing: ${wasPlaying}`);
 
                 // 2. Get the old token from cache
                 const oldToken = streamingApi.getCachedToken(trackId);
@@ -169,15 +164,12 @@ const AudioPlayer = () => {
                 // 4. Construct the new URL with the refreshed token
                 const newStreamingUrl = streamingApi.getStreamingUrl(trackId, newToken);
 
-                console.log("Token refreshed successfully. Reloading source...");
-
                 // 5. Reload the source and seek back to previous position
                 hls.loadSource(newStreamingUrl);
 
                 // 6. Once manifest parses, seek to where we left off
                 hls.once(Hls.Events.MANIFEST_PARSED, () => {
                   if (audioRef.current) {
-                    console.log(`Restoring playback position to: ${savedTime}s`);
                     audioRef.current.currentTime = savedTime;
                     if (wasPlaying) {
                       audioRef.current.play().catch((playError) => {
@@ -195,7 +187,6 @@ const AudioPlayer = () => {
 
                 // Fallback: try force refresh as last resort
                 try {
-                  console.log("Attempting force refresh as fallback...");
                   const { currentTime: fallbackSavedTime, wasPlaying: fallbackWasPlaying } = getCurrentPlaybackState();
 
                   const newStreamingUrl = await streamingApi.forceRefreshStreamingUrl(trackId);

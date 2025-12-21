@@ -147,7 +147,7 @@ const TrackOwnerSectionSuspense = ({ trackId }: TrackOwnerSectionProps) => {
     <div className="space-y-4">
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-x-3">
-          <Link href={`/artists/${trackData?.mainArtistIds?.[0]}`}>
+          <Link href={`/artists/${trackData?.mainArtistIds?.[0]}/tracks`}>
             <Avatar className="size-16">
               <AvatarImage src={trackDetail?.mainArtists?.items?.[0].avatarImage || "https://github.com/shadcn.png"} />
               <AvatarFallback>{getUserInitials(trackDetail?.mainArtists?.items?.[0]?.stageName || "")}</AvatarFallback>
@@ -157,7 +157,7 @@ const TrackOwnerSectionSuspense = ({ trackId }: TrackOwnerSectionProps) => {
           <div className="flex items-center gap-x-6">
             <div className="flex flex-col gap-y-1">
               <Link
-                href={`/artists/${trackData?.mainArtistIds?.[0]}`}
+                href={`/artists/${trackData?.mainArtistIds?.[0]}/tracks`}
                 className="text-main-white hover:text-main-purple text-sm font-bold transition-colors"
               >
                 {data.tracks?.items?.[0]?.mainArtists?.items?.[0]?.stageName || "Unknown Artist"}

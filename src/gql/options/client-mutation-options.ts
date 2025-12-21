@@ -58,6 +58,7 @@ import {
   CreateAlbumMutation,
   DeleteAlbumMutation,
   RemoveTrackFromAlbumMutation,
+  addToFavoriteAlbum,
 } from "@/modules/shared/mutations/client/album-mutation";
 
 // PLAYLIST MUTATIONS
@@ -277,4 +278,10 @@ export const removeTrackFromAlbumMutationOptions = mutationOptions({
 export const addTracksToAlbumMutationOptions = mutationOptions({
   mutationKey: ["add-tracks-to-album"],
   mutationFn: async (data: AddTrackToAlbumRequestInput) => await execute(AddTracksToAlbumMutation, { data }),
+});
+
+export const albumFavoriteMutationOptions = mutationOptions({
+  mutationKey: ["album-favorite"],
+  mutationFn: async (input: { albumId: string; isAdding: boolean }) =>
+    await execute(addToFavoriteAlbum, { ...input }),
 });

@@ -103,6 +103,9 @@ export const useFavoriteTrack = () => {
       queryClient.invalidateQueries({
         queryKey: ["top-tracks"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["tracks-infinite"],
+      });
     },
   });
 

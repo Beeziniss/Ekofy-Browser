@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { useChangeRequestStatus } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { requestOptions } from "@/gql/options/listener-request-options";
 import { moderatorPackageOrderDetailOptions } from "@/gql/options/moderator-options";
+import { conversationDetailByRequestOptions } from "@/gql/options/client-options";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import {
   RequestStatus as GqlRequestStatus,
@@ -65,6 +66,12 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
 
   // Fetch order details including conversationId when orderId exists
   const { data: orderData } = useQuery(moderatorPackageOrderDetailOptions(request?.orderId || ""));
+
+  // Fetch conversation by requestId (conversation may exist even without order)
+  const { data: conversationData } = useQuery(conversationDetailByRequestOptions(requestId));
+
+  // Get conversationId from either order or direct conversation query
+  const conversationId = orderData?.conversationId || conversationData?.conversations?.items?.[0]?.id;
 
   // Fetch artist data if not included and artistId exists
   /* const { data: artistData } = useQuery({
@@ -180,27 +187,27 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
       <div className="space-y-6">
         {/* Main Card with all details */}
         <Card>
-            <CardHeader>
+          <CardHeader>
             {/* Buttons Row - Left aligned */}
-            <div className="flex items-center gap-2 mb-4">
+            <div className="mb-4 flex items-center gap-2">
               {/* View Order Button - Only show when orderId exists */}
               {request?.orderId && (
-              <Button asChild variant="outline" size="sm">
-                <Link href={`/orders/${request.orderId}/details`}>
-                <Package className="mr-2 h-4 w-4" />
-                View Order
-                </Link>
-              </Button>
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/orders/${request.orderId}/details`}>
+                    <Package className="mr-2 h-4 w-4" />
+                    View Order
+                  </Link>
+                </Button>
               )}
 
               {/* View Conversation Button - Only show when conversationId exists */}
-              {orderData?.conversationId && (
-              <Button asChild variant="outline" size="sm">
-                <Link href={`/conversation/${orderData.conversationId}`}>
-                <MessageCircle className="mr-2 h-4 w-4" />
-                View Conversation
-                </Link>
-              </Button>
+              {conversationId && (
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/inbox/${conversationId}`}>
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    View Conversation
+                  </Link>
+                </Button>
               )}
               {request.status === "CONFIRMED" && (
                 <Button className="primary_gradient text-white hover:opacity-65">
@@ -221,13 +228,13 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
             </div>
             <div className="flex items-start justify-between space-y-4 rounded-lg border p-4">
               <div className="flex-1">
-              <CardTitle className="mb-2 text-2xl">
-                {request.title || `Request for ${artist?.[0].stageName || "Service"}`} - {request.type}
-              </CardTitle>
-              <div className="flex items-center gap-2">{requestStatusBadge(request.status)}</div>
+                <CardTitle className="mb-2 text-2xl">
+                  {request.title || `Request for ${artist?.[0].stageName || "Service"}`} - {request.type}
+                </CardTitle>
+                <div className="flex items-center gap-2">{requestStatusBadge(request.status)}</div>
               </div>
             </div>
-            </CardHeader>
+          </CardHeader>
           <CardContent className="space-y-6">
             {/* Artist Info & Key Information */}
 
@@ -239,7 +246,7 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
                   <div className="flex-1">
                     <p className="text-sm text-gray-400">Sent to</p>
                     <Link
-                      href={`/artists/${"userId" in artist && artist.userId ? artist.userId : request.artistId}`}
+                      href={`/artists/${"userId" in artist && artist.userId ? artist.userId : request.artistId}/tracks`}
                       className="hover:text-main-purple text-lg font-semibold text-white transition-colors"
                     >
                       {artist?.[0]?.stageName || "Unknown Artist"}
@@ -289,44 +296,45 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
               </div>
             </div>
             {request.summary && (
-            <div className="space-y-4 rounded-lg border p-4">
-              <h3 className="text-lg font-semibold">Summary</h3>
+              <div className="space-y-4 rounded-lg border p-4">
+                <h3 className="text-lg font-semibold">Summary</h3>
                 <div>
                   <p className="text-white" dangerouslySetInnerHTML={{ __html: request.summary }}></p>
                 </div>
 
-              {!request.summary && <p className="text-gray-400">No summary provided</p>}
-            </div>
-              )}
-              {request.detailDescription && (
-            <div className="space-y-4 rounded-lg border p-4">
-              <h3 className="text-lg font-semibold">Detail Description</h3>
+                {!request.summary && <p className="text-gray-400">No summary provided</p>}
+              </div>
+            )}
+            {request.detailDescription && (
+              <div className="space-y-4 rounded-lg border p-4">
+                <h3 className="text-lg font-semibold">Detail Description</h3>
                 <div>
                   <p className="text-white" dangerouslySetInnerHTML={{ __html: request.detailDescription }}></p>
                 </div>
-              {!request.detailDescription && <p className="text-gray-400">No detail description provided</p>}
-            </div>
-              )}
+                {!request.detailDescription && <p className="text-gray-400">No detail description provided</p>}
+              </div>
+            )}
             {/* Description Section */}
-              {request.requirements && (
-            <div className="space-y-4 rounded-lg border p-4">
-              <h3 className="text-lg font-semibold">Requirements</h3>
+            {request.requirements && (
+              <div className="space-y-4 rounded-lg border p-4">
+                <h3 className="text-lg font-semibold">Requirements</h3>
                 <div>
                   <p className="text-white" dangerouslySetInnerHTML={{ __html: request.requirements }}></p>
                 </div>
-x              {!request.requirements && <p className="text-gray-400">No requirements provided</p>}
-            </div>
-              )}
+                x {!request.requirements && <p className="text-gray-400">No requirements provided</p>}
+              </div>
+            )}
 
             {/* Budget */}
             {request.budget && (
               <div className="space-y-4 rounded-lg border p-4">
-              <h3 className="text-lg font-semibold">Budget</h3>
-              <div>
-                <p className="text-lg font-semibold text-white">
-                {request.budget.min?.toLocaleString()} - {request.budget.max?.toLocaleString()} {request.currency?.toUpperCase() || "USD"}
-                </p>
-              </div>
+                <h3 className="text-lg font-semibold">Budget</h3>
+                <div>
+                  <p className="text-lg font-semibold text-white">
+                    {request.budget.min?.toLocaleString()} - {request.budget.max?.toLocaleString()}{" "}
+                    {request.currency?.toUpperCase() || "USD"}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -338,7 +346,9 @@ x              {!request.requirements && <p className="text-gray-400">No require
                   {/* Package Name */}
                   <div>
                     <p className="text-sm text-gray-400">Package Name</p>
-                    <p className="text-lg font-semibold text-white">{artistPackage?.[0]?.packageName || "Package Name Not Available"}</p>
+                    <p className="text-lg font-semibold text-white">
+                      {artistPackage?.[0]?.packageName || "Package Name Not Available"}
+                    </p>
                   </div>
 
                   {/* Package Details - Single Line */}
@@ -348,7 +358,7 @@ x              {!request.requirements && <p className="text-gray-400">No require
                       <p className="text-sm text-gray-400">Package Price</p>
                       <p className="text-lg font-semibold text-white">
                         {artistPackage?.[0]?.amount?.toLocaleString()}{" "}
-                        {artistPackage?.[0]?.currency?.toUpperCase() ||"USD"}
+                        {artistPackage?.[0]?.currency?.toUpperCase() || "USD"}
                       </p>
                     </div>
 
@@ -365,7 +375,8 @@ x              {!request.requirements && <p className="text-gray-400">No require
                     <div>
                       <p className="text-sm text-gray-400">Revisions Included</p>
                       <p className="text-lg font-semibold text-white">
-                        {artistPackage?.[0]?.maxRevision === -1 ? "Unlimited" : artistPackage?.[0]?.maxRevision || 0} revisions
+                        {artistPackage?.[0]?.maxRevision === -1 ? "Unlimited" : artistPackage?.[0]?.maxRevision || 0}{" "}
+                        revisions
                       </p>
                     </div>
                   </div>

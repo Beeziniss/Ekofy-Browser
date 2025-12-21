@@ -99,8 +99,8 @@ export function RoyaltyPolicyTable({
               <TableCell>
                 <Badge variant="outline">{policy.currency}</Badge>
               </TableCell>
-              <TableCell>{Number(policy.recordingPercentage).toFixed(2)}%</TableCell>
-              <TableCell>{Number(policy.workPercentage).toFixed(2)}%</TableCell>
+              <TableCell>{Number(policy.recordingPercentage)}%</TableCell>
+              <TableCell>{Number(policy.workPercentage)}%</TableCell>
               <TableCell>
                 {policy.version.toString()}
               </TableCell>

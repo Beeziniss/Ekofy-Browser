@@ -42,3 +42,26 @@ export function formatNumber(number: number, decimals = 1): string {
 export function formatPlayCount(count: number): string {
   return formatNumber(count);
 }
+
+/**
+ * Formats a price number to Vietnamese format with dot (.) as thousand separator
+ * Examples:
+ * - 5000 becomes "5.000"
+ * - 120000 becomes "120.000"
+ * - 1296000 becomes "1.296.000"
+ * - 15000000 becomes "15.000.000"
+ *
+ * @param price The price number to format
+ * @returns Formatted string representation of the price in Vietnamese format
+ */
+export function formatPriceVN(price: number): string {
+  if (isNaN(price) || !isFinite(price)) {
+    return "0";
+  }
+
+  // Round to nearest integer (no decimals for prices)
+  const roundedPrice = Math.round(price);
+
+  // Convert to string and add dot separators every 3 digits from right
+  return roundedPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}

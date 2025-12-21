@@ -93,26 +93,26 @@ const ArtistCard = ({ artist }: ArtistCardProps) => {
     e.preventDefault();
     e.stopPropagation();
     // Navigate to artist detail page without auth check for viewing
-    router.push(`/artists/${artist.id}`);
+    router.push(`/artists/${artist.id}/tracks`);
   };
 
   const handleFollowClick = (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      executeWithAuth(
-        () => {
-          // Get current follow status and artist user ID
-          const isCurrentlyFollowing = artist.user?.[0]?.checkUserFollowing || false;
-          const artistUserId = artist.userId;
-          
-          if (artistUserId) {
-            handleFollowToggle(artistUserId, isCurrentlyFollowing, artist.stageName);
-          }
-        },
-        "follow",
-        artist.stageName,
-      );
-    };
+    e.preventDefault();
+    e.stopPropagation();
+    executeWithAuth(
+      () => {
+        // Get current follow status and artist user ID
+        const isCurrentlyFollowing = artist.user?.[0]?.checkUserFollowing || false;
+        const artistUserId = artist.userId;
+
+        if (artistUserId) {
+          handleFollowToggle(artistUserId, isCurrentlyFollowing, artist.stageName);
+        }
+      },
+      "follow",
+      artist.stageName,
+    );
+  };
 
   return (
     <>
@@ -141,7 +141,9 @@ const ArtistCard = ({ artist }: ArtistCardProps) => {
               onClick={handleFollowClick}
               className="size-12 rounded-full bg-white text-black shadow-lg hover:bg-gray-100"
             >
-              <HeartIcon className={`h-6 w-6 ${artist.user?.[0]?.checkUserFollowing ? "fill-main-purple text-main-purple" : ""}`} />
+              <HeartIcon
+                className={`h-6 w-6 ${artist.user?.[0]?.checkUserFollowing ? "fill-main-purple text-main-purple" : ""}`}
+              />
             </Button>
           </div>
         </div>

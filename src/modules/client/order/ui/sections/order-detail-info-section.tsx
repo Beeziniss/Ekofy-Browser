@@ -1,7 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { formatDate } from "date-fns";
 import { useAuthStore } from "@/store";
 import { useParams, useRouter } from "next/navigation";
@@ -13,11 +13,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format-currency";
 import { calculateDeadline } from "@/utils/calculate-deadline";
 import OrderApproveDelivery from "../components/order-approve-delivery";
-import OrderActionsDropdown from "../components/order-actions-dropdown";
+import OrderRefundRequestDialog from "../components/order-refund-request-dialog";
 import { orderPackageDetailOptions } from "@/gql/options/client-options";
 import { CircleQuestionMarkIcon, MoreHorizontalIcon } from "lucide-react";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { acceptRequestByArtistMutationOptions } from "@/gql/options/client-mutation-options";
+import {
+  acceptRequestByArtistMutationOptions,
+  switchStatusByRequestorMutationOptions,
+} from "@/gql/options/client-mutation-options";
+import { RefreshCw, XCircle } from "lucide-react";
 
 const statusBadgeVariants = {
   [PackageOrderStatus.Paid]: "bg-blue-500/20 text-blue-400 border-blue-500/30",
@@ -91,9 +95,13 @@ const OrderDetailInfoSectionSuspense = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { orderId } = useParams<{ orderId: string }>();
+  const [showRefundDialog, setShowRefundDialog] = useState(false);
 
   const { data: orderPackageDetail } = useSuspenseQuery(orderPackageDetailOptions(orderId));
   const { mutateAsync, isPending: isMutationPending } = useMutation(acceptRequestByArtistMutationOptions);
+  const { mutateAsync: switchStatus, isPending: isSwitchingStatus } = useMutation(
+    switchStatusByRequestorMutationOptions,
+  );
 
   useEffect(() => {
     // Check authentication first
@@ -140,6 +148,30 @@ const OrderDetailInfoSectionSuspense = () => {
     });
   };
 
+  const handleStatusChange = async (newStatus: PackageOrderStatus, reason?: string) => {
+    try {
+      await switchStatus({
+        id: orderId,
+        status: newStatus,
+        reason: reason,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["order-packages"] });
+      queryClient.invalidateQueries({ queryKey: ["order-package-detail", orderId] });
+
+      const actionText = newStatus === PackageOrderStatus.Cancelled ? "cancelled" : "refund requested";
+      toast.success(`Order has been ${actionText} successfully.`);
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status. Please try again.");
+    }
+  };
+
+  const handleRefundConfirm = async (reason: string) => {
+    await handleStatusChange(PackageOrderStatus.Disputed, reason);
+    setShowRefundDialog(false);
+  };
+
   const packageData = orderPackageDetail?.package[0];
 
   return (
@@ -149,15 +181,6 @@ const OrderDetailInfoSectionSuspense = () => {
           <div className="flex flex-col">
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-xl font-semibold">Order Details</h3>
-              {user?.userId === orderPackageDetail.clientId && (
-                <OrderActionsDropdown
-                  orderId={orderPackageDetail.id}
-                  status={orderPackageDetail.status}
-                  onSuccess={() => {
-                    // Status has been updated, queries are already invalidated in the component
-                  }}
-                />
-              )}
             </div>
             <div className="border-input bg-main-purple/20 flex flex-col gap-y-1.5 rounded-md border p-2">
               <div className="text-main-white line-clamp-1 text-base">{packageData?.packageName}</div>
@@ -197,8 +220,8 @@ const OrderDetailInfoSectionSuspense = () => {
           </h3>
           <div className="text-main-white/90 mt-2 text-sm">
             If you have any questions or need assistance regarding your order, please contact our support team at{" "}
-            <a href="mailto:support@example.com" className="text-blue-400 underline">
-              support@example.com
+            <a href="mailto:support@ekofy.com" className="text-blue-400 underline">
+              support@ekofy.com
             </a>
             .
           </div>
@@ -217,6 +240,40 @@ const OrderDetailInfoSectionSuspense = () => {
         orderPackageDetail.status === PackageOrderStatus.InProgress &&
         orderPackageDetail.deliveries &&
         orderPackageDetail.deliveries.length > 0 && <OrderApproveDelivery orderId={orderId} />}
+
+      {user?.userId === orderPackageDetail.clientId && orderPackageDetail.status === PackageOrderStatus.Paid && (
+        <Button
+          variant="destructive"
+          onClick={() => handleStatusChange(PackageOrderStatus.Cancelled)}
+          disabled={isSwitchingStatus}
+          size="lg"
+          className="w-full"
+        >
+          <XCircle className="mr-2 h-4 w-4" />
+          {isSwitchingStatus ? "Cancelling..." : "Cancel Order"}
+        </Button>
+      )}
+
+      {user?.userId === orderPackageDetail.clientId && orderPackageDetail.status === PackageOrderStatus.InProgress && (
+        <Button
+          variant="ghost"
+          onClick={() => setShowRefundDialog(true)}
+          disabled={isSwitchingStatus}
+          size="lg"
+          className="w-full border-red-500 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+        >
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Request Refund
+        </Button>
+      )}
+
+      <OrderRefundRequestDialog
+        open={showRefundDialog}
+        onOpenChange={setShowRefundDialog}
+        onConfirm={handleRefundConfirm}
+        isPending={isSwitchingStatus}
+        packageName={packageData?.packageName}
+      />
     </div>
   );
 };

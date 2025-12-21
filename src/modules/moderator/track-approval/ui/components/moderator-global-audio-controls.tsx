@@ -64,14 +64,14 @@ export function ModeratorGlobalAudioControls() {
             size="lg"
             onClick={togglePlayPause}
             disabled={isLoading || !currentTrack}
-            className="h-8 w-8 rounded-full bg-white p-0 text-black hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-8 w-8 rounded-full bg-white p-0 text-black hover:bg-white/50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent" />
             ) : isPlaying ? (
-              <Pause className="h-4 w-4" />
+              <Pause className="h-4 w-4 text-black fill-black" />
             ) : (
-              <Play className="ml-0.5 h-4 w-4" />
+              <Play className="ml-0.5 h-4 w-4 text-black fill-black" />
             )}
           </Button>
         </div>
