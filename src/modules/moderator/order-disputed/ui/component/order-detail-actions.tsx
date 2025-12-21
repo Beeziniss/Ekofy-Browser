@@ -22,9 +22,10 @@ interface OrderDetailActionsProps {
   orderId: string;
   orderAmount: number;
   currency?: string;
+  platformFeePercentage: number;
 }
 
-export function OrderDetailActions({ orderId, orderAmount, currency }: OrderDetailActionsProps) {
+export function OrderDetailActions({ orderId, orderAmount, currency, platformFeePercentage }: OrderDetailActionsProps) {
   const router = useRouter();
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
@@ -111,6 +112,7 @@ export function OrderDetailActions({ orderId, orderAmount, currency }: OrderDeta
         orderId={orderId}
         orderAmount={orderAmount}
         currency={currency}
+        platformFeePercentage={platformFeePercentage}
       />
 
       {/* Cancel Refund Confirmation Modal */}

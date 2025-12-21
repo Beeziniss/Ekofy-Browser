@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatNumber } from "@/utils/format-number";
+import { formatPriceVN } from "@/utils/format-number";
 import { PeriodTime, SubscriptionPlan, UserRole } from "@/gql/graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
@@ -231,7 +231,7 @@ export function SubscriptionPlanCard({
         <div className="text-center">
           <div className="flex items-baseline justify-start space-x-1">
             <span className={`text-2xl font-bold ${styling.priceGradient}`}>
-              {formatNumber(pricePerMonth)} {mainPrice.stripePriceCurrency.toUpperCase()}
+              {formatPriceVN(pricePerMonth)} {mainPrice.stripePriceCurrency.toUpperCase()}
             </span>
             <span className={`text-lg ${styling.subTextColor}`}>
               /{selectedInterval === "yearly" ? "year" : "month"}
@@ -242,7 +242,7 @@ export function SubscriptionPlanCard({
           {shouldApplyCoupon && (
             <div className="mt-2 flex items-center justify-start space-x-2">
               <span className={`text-sm line-through ${styling.subTextColor}`}>
-                {formatNumber(originalPrice)} {mainPrice.stripePriceCurrency.toUpperCase()}
+                {formatPriceVN(originalPrice)} {mainPrice.stripePriceCurrency.toUpperCase()}
               </span>
               <Badge className="border-none bg-green-500 text-xs text-white">Save {couponDiscount}%</Badge>
             </div>

@@ -5,3 +5,4 @@ export { PlayPauseButton } from "./play-pause-button";
 export { TrackRowAll } from "./track-row-all";
 export { ArtistCardAll } from "./artist-card-all";
 export { PlaylistCardAll } from "./playlist-card-all";
+export { AlbumCardAll } from "./album-card-all";

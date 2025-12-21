@@ -28,7 +28,8 @@ interface WarningAuthDialogProps {
     | "post"
     | "edit"
     | "chat"
-    | "contact artist";
+    | "contact artist"
+    | "albums";
   trackName?: string;
 }
 
@@ -59,6 +60,8 @@ export function WarningAuthDialog({ open, onOpenChange, action, trackName }: War
         return "chat with artists";
       case "contact artist":
         return "contact artists";
+      case "albums":
+        return "play album";
       default:
         return "use this feature";
     }
@@ -90,6 +93,8 @@ export function WarningAuthDialog({ open, onOpenChange, action, trackName }: War
         return "Sign up to chat with artists";
       case "contact artist":
         return "Sign up to contact artists";
+      case "albums":
+        return "Sign up to play album";
       default:
         return "Sign up to continue";
     }

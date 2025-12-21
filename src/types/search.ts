@@ -90,6 +90,19 @@ export interface SearchPlaylistItem {
   // Add other playlist properties as needed
 }
 
+export interface SearchAlbumItem {
+  id: string;
+  name: string;
+  nameUnsigned: string;
+  coverImage: string | null;
+  description: string | null;
+  isVisible: boolean;
+  createdAt: string;
+  checkAlbumInFavorite: boolean;
+  createdBy: string;
+  // Add other album properties as needed
+}
+
 export interface SearchListenerItem {
   id: string;
   userId: string;
@@ -124,6 +137,13 @@ export interface SearchPlaylistsResponse {
   playlists: {
     totalCount: number;
     items: SearchPlaylistItem[];
+  };
+}
+
+export interface SearchAlbumsResponse {
+  searchAlbums: {
+    totalCount: number;
+    items: SearchAlbumItem[];
   };
 }
 

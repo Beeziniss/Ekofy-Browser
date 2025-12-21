@@ -109,7 +109,7 @@ const ReviewsCarousel = ({ artistPackageId, averageRating, totalReviews }: Revie
             </div>
           )}
         </div>
-        <p className="text-main-white/70">No reviews yet. Be the first to review this service!</p>
+        <p className="text-main-white/70">No reviews yet.</p>
       </div>
     );
   }

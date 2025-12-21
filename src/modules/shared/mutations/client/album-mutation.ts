@@ -23,3 +23,9 @@ export const AddTracksToAlbumMutation = graphql(`
       addTrackToAlbum(addTrackToAlbumRequest: $data)
     }
 `)
+
+export const addToFavoriteAlbum = graphql(`
+  mutation AddToFavoriteAlbum($albumId: String!, $isAdding: Boolean!) {
+    addToFavoriteAlbum(albumId: $albumId, isAdding: $isAdding)
+  }
+`)
