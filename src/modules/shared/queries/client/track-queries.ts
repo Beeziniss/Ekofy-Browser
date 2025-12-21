@@ -1,9 +1,10 @@
 import { graphql } from "@/gql";
 
 export const TrackListHomeQuery = graphql(`
-  query TrackListHome($take: Int!) {
+  query TrackListHome($take: Int!, $skip: Int!) {
     tracks(
       take: $take
+      skip: $skip
       order: { createdAt: DESC }
       where: { and: [{ releaseInfo: { isRelease: { eq: true } } }, { restriction: { type: { eq: NONE } } }] }
     ) {
@@ -13,6 +14,8 @@ export const TrackListHomeQuery = graphql(`
         name
         coverImage
         mainArtistIds
+        createdAt
+        isExplicit
         mainArtists {
           items {
             id
@@ -21,6 +24,34 @@ export const TrackListHomeQuery = graphql(`
         }
         checkTrackInFavorite
         streamCount
+      }
+    }
+  }
+`);
+
+export const TrackInfiniteQuery = graphql(`
+  query TrackInfinite($take: Int!, $skip: Int!, $where: TrackFilterInput, $order: [TrackSortInput!]) {
+    tracks(take: $take, skip: $skip, order: $order, where: $where) {
+      totalCount
+      items {
+        id
+        name
+        coverImage
+        mainArtistIds
+        createdAt
+        isExplicit
+        mainArtists {
+          items {
+            id
+            stageName
+          }
+        }
+        checkTrackInFavorite
+        streamCount
+        favoriteCount
+      }
+      pageInfo {
+        hasNextPage
       }
     }
   }
@@ -86,6 +117,7 @@ export const TrackFavoriteQuery = graphql(`
         streamCount
         checkTrackInFavorite
         createdAt
+        isExplicit
       }
     }
   }

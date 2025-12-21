@@ -144,6 +144,21 @@ export const artistProfileOptions = (userId: string) =>
     retry: 0,
   });
 
+export const artistGetDataOptions = (artistId: string) =>
+  queryOptions({
+    queryKey: ["artist-get-data", artistId],
+    queryFn: async () => {
+      const result = await execute(GetArtistProfileQuery, {
+        where: { id: { eq: artistId } },
+        take: 1,
+        skip: 0,
+      });
+      return result.artists?.items?.[0] || null;
+    },
+    enabled: !!artistId,
+    retry: 0,
+  });
+
 // ARTIST LIST OPTIONS
 export const trackUploadArtistListOptions = queryOptions({
   queryKey: ["track-upload-artist-list"],
@@ -258,7 +273,7 @@ export const artistRevenueOptions = (artistId: string) =>
     queryKey: ["artist-revenue", artistId],
     queryFn: async () => {
       const result = await execute(ArtistRevenueQuery, {
-       artistId
+        artistId,
       });
       return result.artists?.items?.[0] || null;
     },

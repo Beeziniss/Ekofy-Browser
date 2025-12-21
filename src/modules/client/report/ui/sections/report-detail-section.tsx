@@ -102,7 +102,7 @@ export function ReportDetailSection({ reportId, className }: ReportDetailSection
     if (report.userReported && report.userReported.length > 0) {
       return {
         title: `User: ${report.userReported[0].fullName}`,
-        href: `/artists/${report.userReported[0].id}`,
+        href: `/artists/${report.userReported[0].id}/tracks`,
       };
     }
     return {

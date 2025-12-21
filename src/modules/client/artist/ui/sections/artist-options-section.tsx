@@ -139,41 +139,45 @@ const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProp
             <Button variant={"ekofy"}>View my profile</Button>
           </Link>
         ) : (
-          <Button
-            variant={artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing ? "reaction" : "default"}
-            className="px-10 py-2 text-sm font-bold"
-            onClick={() => {
-              const user = artistData.artists?.items?.[0]?.user[0];
-              const artist = artistData.artists?.items?.[0];
-              if (user?.id && artist?.stageName) {
-                executeWithAuth(
-                  () => handleFollowToggle(user.id, user.checkUserFollowing ?? false, artist.stageName),
-                  "follow",
-                );
-              }
-            }}
-          >
-            {artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing ? "Following" : "Follow"}
-          </Button>
-        )}
-        <TooltipButton content="Chat with Artist" side="top">
-          <Button
-            variant="reaction"
-            className="text-sm font-bold"
-            onClick={() => {
-              executeWithAuth(() => handleChatWithArtist(), "chat");
-            }}
-          >
-            <MessageCircleIcon className={"inline-block size-4"} />
-          </Button>
-        </TooltipButton>
-        <TooltipButton content="Contact Artist" side="top">
-          <Link href={`mailto:${artistData.artists?.items?.[0].email}`} target="_blank">
-            <Button variant="reaction" className="text-sm font-bold">
-              <MailIcon className={"inline-block size-4"} />
+          <>
+            <Button
+              variant={artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing ? "reaction" : "default"}
+              className="px-10 py-2 text-sm font-bold"
+              onClick={() => {
+                const user = artistData.artists?.items?.[0]?.user[0];
+                const artist = artistData.artists?.items?.[0];
+                if (user?.id && artist?.stageName) {
+                  executeWithAuth(
+                    () => handleFollowToggle(user.id, user.checkUserFollowing ?? false, artist.stageName),
+                    "follow",
+                  );
+                }
+              }}
+            >
+              {artistData.artists?.items?.[0]?.user[0]?.checkUserFollowing ? "Following" : "Follow"}
             </Button>
-          </Link>
-        </TooltipButton>
+
+            <TooltipButton content="Chat with Artist" side="top">
+              <Button
+                variant="reaction"
+                className="text-sm font-bold"
+                onClick={() => {
+                  executeWithAuth(() => handleChatWithArtist(), "chat");
+                }}
+              >
+                <MessageCircleIcon className={"inline-block size-4"} />
+              </Button>
+            </TooltipButton>
+            <TooltipButton content="Contact Artist" side="top">
+              <Link href={`mailto:${artistData.artists?.items?.[0].email}`} target="_blank">
+                <Button variant="reaction" className="text-sm font-bold">
+                  <MailIcon className={"inline-block size-4"} />
+                </Button>
+              </Link>
+            </TooltipButton>
+          </>
+        )}
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="reaction" className="group text-sm font-bold">

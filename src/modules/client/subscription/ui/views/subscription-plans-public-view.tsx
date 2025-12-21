@@ -15,7 +15,6 @@ import {
 import { UserRole } from "@/types/role";
 import { PeriodTime } from "@/gql/graphql";
 import { useAuthStore } from "@/store/stores/auth-store";
-import { useCheckoutSession } from "@/hooks/use-checkout-session";
 import SubscriptionFooterSection from "../sections/subscription-footer-section";
 import { SubscriptionHeroSection } from "../sections/subscription-hero-section";
 import { SubscriptionPlansGridSection } from "../sections/subscription-plans-grid-section";
@@ -24,7 +23,6 @@ import { subscriptionCreateCheckoutSessionMutationOptions } from "@/gql/options/
 export function SubscriptionPlansPublicView() {
   const plansRef = useRef<HTMLDivElement>(null);
   const { user } = useAuthStore();
-  const { saveSession } = useCheckoutSession();
 
   const userRole = user?.role;
   const isArtist = userRole === UserRole.ARTIST;
@@ -91,18 +89,6 @@ export function SubscriptionPlansPublicView() {
       });
 
       if (createSubscriptionCheckoutSession?.url) {
-        // Extract session ID from the URL
-        const url = new URL(createSubscriptionCheckoutSession.url);
-        const sessionId = url.pathname.split("/").pop() || "";
-
-        // Save checkout session to cookies
-        if (user?.userId) {
-          await saveSession({
-            url: createSubscriptionCheckoutSession.url,
-            sessionId,
-          });
-        }
-
         // Open checkout in new tab
         window.open(createSubscriptionCheckoutSession.url);
       }

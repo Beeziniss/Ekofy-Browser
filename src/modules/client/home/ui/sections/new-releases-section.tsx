@@ -5,6 +5,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { trackListHomeOptions } from "@/gql/options/client-options";
 import TrackCarousel from "@/modules/client/common/ui/components/track/track-carousel";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const NewReleasesSection = () => {
   return (
@@ -30,9 +31,11 @@ const NewReleasesSectionSuspense = () => {
     <div className="w-full space-y-6 px-4">
       <div className="flex items-center gap-x-3 text-2xl font-semibold">
         <span>New releases for you</span>
-        <Button variant={"outline"} size={"sm"}>
-          View All
-        </Button>
+        <Link href={"/all/tracks"}>
+          <Button variant={"outline"} size={"sm"}>
+            View All
+          </Button>
+        </Link>
       </div>
       <TrackCarousel data={data} isLoading={isPending} />
     </div>

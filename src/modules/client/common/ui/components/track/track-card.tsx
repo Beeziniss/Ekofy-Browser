@@ -38,10 +38,11 @@ interface TrackCardProps {
   artists: (ArtistInfo | null)[];
   trackQueue?: GraphQLTrack[];
   checkTrackInFavorite?: boolean;
+  isExplicit?: boolean;
 }
 
 const TrackCard = React.memo(
-  ({ trackId, coverImage, trackName, artists, trackQueue, checkTrackInFavorite }: TrackCardProps) => {
+  ({ trackId, coverImage, trackName, artists, trackQueue, checkTrackInFavorite, isExplicit }: TrackCardProps) => {
     const { isAuthenticated } = useAuthStore();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -182,6 +183,16 @@ const TrackCard = React.memo(
             unoptimized
           />
 
+          {isExplicit && (
+            <div
+              className={
+                "bg-main-purple absolute right-2 bottom-2 flex size-8 items-center justify-center rounded-md text-base font-semibold"
+              }
+            >
+              E
+            </div>
+          )}
+
           <div className="absolute bottom-2 left-2 flex items-center gap-x-2">
             <Button
               onClick={handlePlayPauseClick}
@@ -273,7 +284,7 @@ const TrackCard = React.memo(
               artists.map((artist, index) => (
                 <span key={index}>
                   <Link
-                    href={`/artists/${artist?.id}`}
+                    href={`/artists/${artist?.id}/tracks`}
                     onClick={handleArtistAddPopularity}
                     className="hover:text-main-purple hover:underline"
                   >

@@ -74,7 +74,7 @@ const ArtistHireCard = ({ artist }: ArtistHireCardProps) => {
         </div>
       </div>
 
-      <Link href={`/artists/${artist.id}`}>
+      <Link href={`/artists/${artist.id}/tracks`}>
         <Button className="mt-6 w-full" variant="ekofy">
           View Profile
         </Button>

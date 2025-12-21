@@ -50,6 +50,7 @@ const TrackCarousel = ({ data, isLoading }: TrackCarouselProps) => {
                   })) || []
                 }
                 trackQueue={data.tracks?.items?.filter((item): item is NonNullable<typeof item> => item !== null) || []}
+                isExplicit={track.isExplicit}
               />
             </CarouselItem>
           ))}
