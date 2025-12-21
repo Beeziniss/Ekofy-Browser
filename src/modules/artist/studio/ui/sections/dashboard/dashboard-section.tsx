@@ -8,14 +8,9 @@ import { formatCurrency } from "@/utils/format-currency";
 import { artistRevenueOptions } from "@/gql/options/artist-options";
 import { RevenueStatCard } from "../../components/revenue-stat-card";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Users, DollarSign, TrendingUp, Music2, Wallet } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
+import { Users, DollarSign, TrendingUp, Music2, Wallet, Coins } from "lucide-react";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 
 const DashboardSection = () => {
   const { user } = useAuthStore();
@@ -154,7 +149,7 @@ const DashboardSection = () => {
           <RevenueStatCard
             title="Service Earnings"
             value={formatCurrency(artistData.serviceEarnings)}
-            icon={DollarSign}
+            icon={Coins}
             iconColor="text-purple-400"
           />
         </div>
@@ -164,6 +159,10 @@ const DashboardSection = () => {
           <CardHeader>
             <CardTitle className="text-white">Revenue Breakdown</CardTitle>
             <p className="text-sm text-slate-400">Overview of your revenue streams</p>
+            {/* Thêm chú thích đơn vị tiền tệ ở góc phải trên */}
+            <div className="rounded border border-slate-600 bg-slate-700/30 px-2 py-1 text-sm font-medium text-slate-500">
+              Unit: <span className="text-sm font-bold text-purple-400">VND</span>
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="aspect-auto h-[400px] w-full">
@@ -171,10 +170,11 @@ const DashboardSection = () => {
                 <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-slate-700" />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tick={{ fill: "#94a3b8" }} />
                 <YAxis
+                  width={100} // Tăng giá trị này lên (ví dụ 80 hoặc 100 tùy độ dài số)
                   tickLine={false}
                   axisLine={false}
                   tick={{ fill: "#94a3b8" }}
-                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                  tickFormatter={(value) => value.toLocaleString("vi-VN")}
                 />
                 <ChartTooltip
                   // cursor={false}
