@@ -32,7 +32,7 @@ interface OrderSection {
   orderId: string;
   orderLink: string;
   status: string;
-  
+  packageName: string;
   startedAt: string;
   completedAt: string;
   totalAmount: string;
@@ -156,13 +156,15 @@ export default function AdminPayoutDetailView({
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-white">
               <Link href={orderSection.orderLink} className="text-primary hover:underline">
-                Order: #{orderSection.orderId}
+                Order Information
               </Link>
              
             </CardTitle>
           </CardHeader>
           <CardContent>
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <DetailRow label="Order ID" value={orderSection.orderId} />
+              <DetailRow label="Package Name" value={orderSection.packageName} />
               <DetailRow label="Started At" value={orderSection.startedAt} />
               <DetailRow label="Completed At" value={orderSection.completedAt} />
               <DetailRow label="Total Amount" value={orderSection.totalAmount} />
