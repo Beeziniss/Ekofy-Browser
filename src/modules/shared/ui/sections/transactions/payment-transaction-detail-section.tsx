@@ -2,21 +2,28 @@
 
 import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { PaymentTransaction, TransactionStatus } from "@/gql/graphql";
+import { PaymentTransaction } from "@/gql/graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { methodBadge, transactionStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
-import { useCheckoutSession } from "@/hooks/use-checkout-session";
-import { useEffect, useState } from "react";
 
 interface PaymentTransactionDetailProps {
   title?: string;
   backHref: string;
   backLabel?: string;
-  transaction: Pick<PaymentTransaction, 
-    "id" | "amount" | "currency" | "createdAt" | "updatedAt" | 
-    "paymentStatus" | "status" | "stripePaymentMethod" | "stripePaymentId" | 
-    "stripeCheckoutSessionId" | "stripeInvoiceId" | "stripeSubscriptionId"
+  transaction: Pick<
+    PaymentTransaction,
+    | "id"
+    | "amount"
+    | "currency"
+    | "createdAt"
+    | "updatedAt"
+    | "paymentStatus"
+    | "status"
+    | "stripePaymentMethod"
+    | "stripePaymentId"
+    | "stripeCheckoutSessionId"
+    | "stripeInvoiceId"
+    | "stripeSubscriptionId"
   >;
 }
 
@@ -26,37 +33,6 @@ export default function PaymentTransactionDetailSection({
   title = "Transaction Detail",
   backLabel = "Back to Payment History",
 }: PaymentTransactionDetailProps) {
-  const { getSession } = useCheckoutSession();
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
-
-  // Load checkout session on component mount
-  useEffect(() => {
-    const loadCheckoutSession = async () => {
-      if (transaction.status === TransactionStatus.Open) {
-        const session = await getSession();
-        if (session?.url) {
-          // Check if session is within 20 minutes
-          const isWithin20Minutes = Date.now() - session.createdAt <= 20 * 60 * 1000;
-          if (isWithin20Minutes) {
-            setCheckoutUrl(session.url);
-          } else {
-            // Session is older than 20 minutes, don't use it
-            setCheckoutUrl(null);
-          }
-        }
-      }
-    };
-
-    loadCheckoutSession();
-  }, [transaction.status, getSession]);
-
-  const handleContinuePayment = async () => {
-    if (checkoutUrl) {
-      // Open checkout URL
-      window.open(checkoutUrl, "_blank");
-    }
-  };
-
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-6 md:px-6">
       <div className="mb-4 flex items-center justify-between">
@@ -108,36 +84,6 @@ export default function PaymentTransactionDetailSection({
               </dd>
             </div>
           </dl>
-
-          {/* Continue Payment Button for Open Transactions */}
-          {transaction.status === TransactionStatus.Open && (
-            <div className="mt-6 border-t pt-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h3 className="font-medium">Payment Required</h3>
-                  <p className="text-muted-foreground text-sm">
-                    This transaction is pending payment. Complete your payment to continue.
-                  </p>
-                </div>
-                {checkoutUrl ? (
-                  <Button onClick={handleContinuePayment} className="bg-blue-600 text-white hover:bg-blue-700">
-                    Continue Payment
-                  </Button>
-                ) : (
-                  <Button disabled className="cursor-not-allowed bg-gray-400 text-white">
-                    Payment Link Expired
-                  </Button>
-                )}
-              </div>
-              {!checkoutUrl && (
-                <div className="mt-3 rounded-md border border-yellow-200 bg-yellow-50 p-3">
-                  <p className="text-sm text-yellow-800">
-                    Payment session has expired (valid for 20 minutes). Please create a new subscription to continue.
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>

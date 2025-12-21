@@ -1,15 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/utils/format-number";
-import { PeriodTime, SubscriptionPlan, UserRole } from "@/gql/graphql";
+import { PeriodTime, SubscriptionPlan } from "@/gql/graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { listenerOpenTransactionsOptions } from "@/gql/options/listener-activity-options";
 import { userActiveSubscriptionOptions } from "@/gql/options/client-options";
 import { useAuthStore } from "@/store";
 
@@ -30,21 +28,11 @@ export function SubscriptionPlanCard({
   const [selectedInterval, setSelectedInterval] = useState<"monthly" | "yearly">("monthly");
   const subscription = plan.subscription?.[0];
 
-  // Check for open transactions
-  const { data: openTransactionData } = useQuery({
-    ...listenerOpenTransactionsOptions({ userId: user?.userId || "" }),
-    enabled: !!user?.userId,
-  });
-
   // Check for active subscription
   const { data: userActiveSubscription } = useQuery({
     ...userActiveSubscriptionOptions(user?.userId || ""),
     enabled: !!user?.userId,
   });
-
-  const hasOpenTransaction =
-    openTransactionData?.paymentTransactions?.items && openTransactionData.paymentTransactions.items.length > 0;
-  const openTransaction = hasOpenTransaction ? openTransactionData?.paymentTransactions?.items?.[0] : null;
 
   // Check if this plan is the user's current active plan
   const isCurrentPlan = userActiveSubscription?.subscription?.[0]?.tier === subscription.tier;
@@ -276,13 +264,6 @@ export function SubscriptionPlanCard({
           >
             Current Plan
           </div>
-        ) : hasOpenTransaction && openTransaction ? (
-          <Link
-            href={`${String(user?.role) === String(UserRole.Artist) ? "/artist/studio/transactions" : "/profile"}/transaction-history/${openTransaction.id}`}
-            className={`inline-flex h-12 w-full items-center justify-center text-base font-semibold transition-all duration-200 ${styling.buttonClass} rounded-md`}
-          >
-            Continue Payment
-          </Link>
         ) : (
           <Button
             className={`h-12 w-full text-base font-semibold transition-all duration-200 ${styling.buttonClass}`}
