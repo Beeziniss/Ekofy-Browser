@@ -91,8 +91,7 @@ export function MyRequestsView() {
     }
   };
 
-  const handleSave = (id: string) => {
-    console.log("Save request:", id);
+  const handleSave = () => {
     toast.info("Bookmark feature coming soon!");
   };
 
@@ -148,7 +147,7 @@ export function MyRequestsView() {
   };
 
   const handleDelete = (id: string) => {
-    const requestToDelete = requests.find(r => r.id === id);
+    const requestToDelete = requests.find((r) => r.id === id);
     if (requestToDelete) {
       setDeletingRequest(requestToDelete);
       setIsDeleteModalOpen(true);
@@ -288,7 +287,7 @@ export function MyRequestsView() {
         onOpenChange={setShowStripeModal}
         onCancel={() => setShowStripeModal(false)}
       />
-      
+
       {/* Delete Confirmation Modal */}
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}

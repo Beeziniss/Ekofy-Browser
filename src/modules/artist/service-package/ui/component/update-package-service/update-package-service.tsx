@@ -50,7 +50,6 @@ const UpdatePackageService = ({
     onSubmit(data);
   };
 
-  console.log("Package details:", pkg);
   return (
     <div className="mx-auto max-w-7xl p-6">
       <Card className="border-gradient-input">
@@ -100,7 +99,9 @@ const UpdatePackageService = ({
                   </div>
                   <div>
                     <span className="text-gray-400">Amount:</span>
-                    <span className="ml-2 text-white">{formattedPrice(pkg.amount.toString())} {pkg.currency}</span>
+                    <span className="ml-2 text-white">
+                      {formattedPrice(pkg.amount.toString())} {pkg.currency}
+                    </span>
                   </div>
                   <div>
                     <span className="text-gray-400">Created:</span>
@@ -108,7 +109,9 @@ const UpdatePackageService = ({
                   </div>
                   <div>
                     <span className="text-gray-400">Updated:</span>
-                    <span className="ml-2 text-white">{pkg.updatedAt ? new Date(pkg.updatedAt).toLocaleDateString() : "No Update Provided"}</span>
+                    <span className="ml-2 text-white">
+                      {pkg.updatedAt ? new Date(pkg.updatedAt).toLocaleDateString() : "No Update Provided"}
+                    </span>
                   </div>
                 </div>
 
@@ -133,7 +136,9 @@ const UpdatePackageService = ({
                 name="packageName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Package Name <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel className="text-white">
+                      Package Name <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}

@@ -13,22 +13,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertTriangle, Flag, X, Upload, Image as ImageIcon } from "lucide-react";
@@ -58,14 +44,14 @@ const reportFormSchema = z.object({
 
 type ReportFormValues = z.infer<typeof reportFormSchema>;
 
-export function ReportDialog({ 
-  contentType, 
-  contentId, 
-  reportedUserId, 
+export function ReportDialog({
+  contentType,
+  contentId,
+  reportedUserId,
   reportedUserName,
   reportType: initialReportType,
   open: controlledOpen,
-  onOpenChange: controlledOnOpenChange
+  onOpenChange: controlledOnOpenChange,
 }: ReportButtonProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -94,9 +80,7 @@ export function ReportDialog({
   }, [open, initialReportType, form]);
 
   // If initialReportType is provided, only show that type, otherwise show all available types
-  const availableReportTypes = initialReportType 
-    ? [initialReportType] 
-    : REPORT_TYPES_BY_CONTENT[contentType];
+  const availableReportTypes = initialReportType ? [initialReportType] : REPORT_TYPES_BY_CONTENT[contentType];
 
   const onSubmit = async (data: ReportFormValues) => {
     if (!user?.userId) {
@@ -111,18 +95,18 @@ export function ReportDialog({
       // Upload all selected images to Cloudinary when submitting
       if (selectedFiles.length > 0) {
         toast.loading(`Uploading ${selectedFiles.length} evidence image(s)...`, { id: "upload-evidence" });
-        
-        const uploadPromises = selectedFiles.map(file =>
+
+        const uploadPromises = selectedFiles.map((file) =>
           uploadImageToCloudinary(file, {
             folder: "report-evidences",
             tags: ["report", "evidence"],
             resourceType: "image",
-          })
+          }),
         );
 
         const results = await Promise.all(uploadPromises);
-        uploadedEvidences = results.map(result => result.secure_url);
-        
+        uploadedEvidences = results.map((result) => result.secure_url);
+
         toast.success(`${uploadedEvidences.length} image(s) uploaded successfully`, { id: "upload-evidence" });
       }
 
@@ -134,8 +118,6 @@ export function ReportDialog({
         relatedContentId: contentId,
         relatedContentType: contentId ? contentType : undefined,
       };
-
-      console.log("📝 Submitting report:", reportData);
 
       await createReport.mutateAsync(reportData);
 
@@ -156,14 +138,14 @@ export function ReportDialog({
     if (!files || files.length === 0) return;
 
     const file = files[0];
-    
+
     // Validate image file
     if (!validateImageFile(file)) {
       return;
     }
 
     setSelectedFiles([...selectedFiles, file]);
-    
+
     // Reset input to allow selecting the same file again
     event.target.value = "";
   };
@@ -182,7 +164,7 @@ export function ReportDialog({
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-yellow-500" />
@@ -202,7 +184,9 @@ export function ReportDialog({
               name="reportType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Reason for Reporting <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    Reason for Reporting <span className="text-red-500">*</span>
+                  </FormLabel>
                   <Select onValueChange={field.onChange} value={field.value} disabled={!!initialReportType}>
                     <FormControl>
                       <SelectTrigger>
@@ -229,7 +213,9 @@ export function ReportDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description <span className="text-red-500">*</span></FormLabel>
+                  <FormLabel>
+                    Description <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Please describe the issue you encountered..."
@@ -248,7 +234,7 @@ export function ReportDialog({
               <FormDescription className="text-xs">
                 Select images as evidence to support your report (will be uploaded when you submit)
               </FormDescription>
-              
+
               {/* Upload Button */}
               <div className="flex items-center gap-3">
                 <input
@@ -269,34 +255,29 @@ export function ReportDialog({
                   <Upload className="h-4 w-4" />
                   Select Image
                 </Button>
-                <span className="text-xs text-muted-foreground">
-                  Max 10MB • JPG, PNG, WEBP
-                </span>
+                <span className="text-muted-foreground text-xs">Max 10MB • JPG, PNG, WEBP</span>
               </div>
 
               {/* Evidence List with Preview */}
               {selectedFiles.length > 0 && (
-                <div className="space-y-3 mt-4">
+                <div className="mt-4 space-y-3">
                   <p className="text-sm font-medium">Selected Evidence ({selectedFiles.length})</p>
                   <div className="grid grid-cols-2 gap-3">
                     {selectedFiles.map((file, index) => {
                       const previewUrl = URL.createObjectURL(file);
                       return (
-                        <div
-                          key={index}
-                          className="relative group rounded-lg border bg-muted/30 overflow-hidden"
-                        >
+                        <div key={index} className="group bg-muted/30 relative overflow-hidden rounded-lg border">
                           {/* Image Preview */}
-                          <div className="aspect-video relative">
+                          <div className="relative aspect-video">
                             <Image
                               src={previewUrl}
                               alt={`Evidence ${index + 1}`}
-                              className="w-full h-full object-cover"
+                              className="h-full w-full object-cover"
                               layout="fill"
                               objectFit="cover"
                             />
                             {/* Overlay on hover */}
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
                               <Button
                                 type="button"
                                 variant="secondary"
@@ -320,10 +301,8 @@ export function ReportDialog({
                             </div>
                           </div>
                           {/* Image Label */}
-                          <div className="p-2 bg-background">
-                            <p className="text-xs text-muted-foreground truncate">
-                              {file.name}
-                            </p>
+                          <div className="bg-background p-2">
+                            <p className="text-muted-foreground truncate text-xs">{file.name}</p>
                           </div>
                         </div>
                       );

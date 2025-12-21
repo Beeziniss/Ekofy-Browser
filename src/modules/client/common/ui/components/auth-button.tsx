@@ -45,6 +45,7 @@ import {
 import { useNotificationSignalR } from "@/hooks/use-notification-signalr";
 import { NotificationPopover } from "@/components/notification-popover";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
+import { toast } from "sonner";
 
 interface ProfileLink {
   label: string;
@@ -68,8 +69,14 @@ const AuthButton = () => {
   // Set up notification event handler to invalidate queries
   useEffect(() => {
     onNotificationReceived((notification) => {
-      console.log("New notification received:", notification);
-      // Invalidate notifications query to refetch
+      toast.info(notification.content || "You have a new notification!", {
+        position: "top-right",
+        style: {
+          top: "50px",
+          color: "#000",
+          backgroundColor: "#f8f8ff",
+        },
+      });
       queryClient.invalidateQueries({ queryKey: ["notifications", user?.userId] });
     });
   }, [onNotificationReceived, queryClient, user?.userId]);

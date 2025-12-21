@@ -38,7 +38,6 @@ export const streamingApi = {
     // Check if there's already an ongoing refresh for this track
     const existingRefreshPromise = refreshPromiseCache.get(trackId);
     if (existingRefreshPromise) {
-      console.log(`Reusing existing refresh promise for track ${trackId}`);
       return existingRefreshPromise;
     }
 
@@ -46,7 +45,6 @@ export const streamingApi = {
     const lastAttempt = lastRefreshAttempt.get(trackId);
     const now = Date.now();
     if (lastAttempt && now - lastAttempt < REFRESH_COOLDOWN_MS) {
-      console.log(`Refresh cooldown active for track ${trackId}. Waiting...`);
       throw new Error(`Refresh cooldown active for track ${trackId}. Please wait before retrying.`);
     }
 
@@ -54,7 +52,6 @@ export const streamingApi = {
     const refreshPromise = (async () => {
       try {
         lastRefreshAttempt.set(trackId, now);
-        console.log(`Starting token refresh for track ${trackId}`);
 
         const response = await axiosInstance.post(
           "/api/media-streaming/refresh-signed-url",
@@ -77,14 +74,12 @@ export const streamingApi = {
 
         // Update the cached token
         tokenCache.set(trackId, newToken);
-        console.log(`Token refresh successful for track ${trackId}`);
         return newToken;
       } catch (error) {
         console.error(`Token refresh failed for track ${trackId}:`, error);
 
         // If refresh fails due to invalid old token, clear the cache
         if (isAxiosError(error) && error.response?.status === 401) {
-          console.log(`Old token was invalid, clearing cache for track ${trackId}`);
           tokenCache.delete(trackId);
         }
 
@@ -127,13 +122,11 @@ export const streamingApi = {
     // Check if there's already an ongoing refresh for this track
     const existingRefreshPromise = refreshPromiseCache.get(trackId);
     if (existingRefreshPromise) {
-      console.log(`Waiting for existing refresh to complete for track ${trackId}`);
       try {
         const newToken = await existingRefreshPromise;
         return streamingApi.getStreamingUrl(trackId, newToken);
       } catch {
         // If the existing refresh failed, continue with force refresh
-        console.log(`Existing refresh failed, proceeding with force refresh for track ${trackId}`);
       }
     }
 
@@ -186,7 +179,6 @@ export const streamingApi = {
       const oldToken = tokenCache.get(trackId);
       if (oldToken) {
         try {
-          console.log("Attempting to refresh token for trackId:", trackId);
           const newToken = await streamingApi.refreshSignToken({ trackId, oldToken });
           return streamingApi.getStreamingUrl(trackId, newToken);
         } catch (refreshError) {

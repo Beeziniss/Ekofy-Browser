@@ -1179,10 +1179,9 @@ const TrackUploadMetadataSection = () => {
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                       <h4 className="text-sm font-medium text-white">Document {index + 1}</h4>
-                                      {form.formState.isSubmitted &&
-                                        (!doc.name.trim() || !doc.documentFile || !doc.note.trim()) && (
-                                          <span className="text-destructive text-xs font-medium">(Incomplete)</span>
-                                        )}
+                                      {form.formState.isSubmitted && (!doc.name.trim() || !doc.documentFile) && (
+                                        <span className="text-destructive text-xs font-medium">(Incomplete)</span>
+                                      )}
                                     </div>
                                     {legalDocuments.length > 1 && (
                                       <Button
