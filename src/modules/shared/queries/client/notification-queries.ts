@@ -9,6 +9,7 @@ export const NotificationQuery = graphql(`
           id
           createdAt
           content
+          relatedType
           url
           isRead
           readAt

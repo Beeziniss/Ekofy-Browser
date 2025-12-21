@@ -83,7 +83,7 @@ const AuthButton = () => {
       isRead: edge.node.isRead,
       url: edge.node.url,
       readAt: edge.node.readAt,
-      avatar: undefined, // Add avatar if available in your schema
+      relatedType: edge.node.relatedType,
     })) || [];
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
