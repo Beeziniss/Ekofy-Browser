@@ -76,7 +76,6 @@ const ModeratorGlobalAudioPlayer = () => {
         // Wait for audio to be ready
         const handleCanPlayThrough = () => {
           if (loadingRef.current && audioRef.current) {
-            console.log("Audio ready to play:", audioUrl);
             setLoading(false);
             loadingRef.current = false;
 
@@ -119,7 +118,6 @@ const ModeratorGlobalAudioPlayer = () => {
         // Fallback timeout
         setTimeout(() => {
           if (loadingRef.current) {
-            console.log("Audio load timeout, assuming ready:", audioUrl);
             setLoading(false);
             loadingRef.current = false;
             audio.removeEventListener("canplaythrough", handleCanPlayThrough);

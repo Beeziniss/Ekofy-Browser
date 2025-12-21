@@ -2,13 +2,13 @@
 
 import React, { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bell, ArrowRight } from "lucide-react";
+import { Bell, ArrowRight, Music, MessageSquare, ShoppingBag, ListMusic, FileText, Star, Disc3 } from "lucide-react";
 import { formatNotificationTime } from "@/utils/notification-utils";
 import TooltipButton from "@/modules/shared/ui/components/tooltip-button";
 import { useRouter } from "next/navigation";
+import { NotificationRelatedType } from "@/gql/graphql";
 
 interface NotificationItem {
   id: string;
@@ -17,7 +17,7 @@ interface NotificationItem {
   isRead: boolean;
   url?: string | null;
   readAt?: string | null;
-  avatar?: string;
+  relatedType?: NotificationRelatedType | null;
 }
 
 interface NotificationPopoverProps {
@@ -27,6 +27,52 @@ interface NotificationPopoverProps {
   onClearNotifications?: () => void;
   children: React.ReactNode;
 }
+
+const getNotificationIcon = (relatedType?: NotificationRelatedType | null) => {
+  switch (relatedType) {
+    case NotificationRelatedType.Album:
+      return Disc3;
+    case NotificationRelatedType.Track:
+      return Music;
+    case NotificationRelatedType.Comment:
+      return MessageSquare;
+    case NotificationRelatedType.Order:
+      return ShoppingBag;
+    case NotificationRelatedType.Playlist:
+      return ListMusic;
+    case NotificationRelatedType.Request:
+      return FileText;
+    case NotificationRelatedType.Review:
+      return Star;
+    case NotificationRelatedType.Message:
+      return MessageSquare;
+    default:
+      return Bell;
+  }
+};
+
+const getNotificationIconColor = (relatedType?: NotificationRelatedType | null) => {
+  switch (relatedType) {
+    case NotificationRelatedType.Album:
+      return "bg-purple-500/20 text-purple-400";
+    case NotificationRelatedType.Track:
+      return "bg-blue-500/20 text-blue-400";
+    case NotificationRelatedType.Comment:
+      return "bg-green-500/20 text-green-400";
+    case NotificationRelatedType.Order:
+      return "bg-orange-500/20 text-orange-400";
+    case NotificationRelatedType.Playlist:
+      return "bg-pink-500/20 text-pink-400";
+    case NotificationRelatedType.Request:
+      return "bg-yellow-500/20 text-yellow-400";
+    case NotificationRelatedType.Review:
+      return "bg-amber-500/20 text-amber-400";
+    case NotificationRelatedType.Message:
+      return "bg-cyan-500/20 text-cyan-400";
+    default:
+      return "bg-gray-500/20 text-gray-400";
+  }
+};
 
 export const NotificationPopover = ({
   notifications,
@@ -84,29 +130,31 @@ export const NotificationPopover = ({
           <>
             <ScrollArea className="h-112">
               <div className="space-y-1 p-2">
-                {notifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={`hover:bg-main-grey/10 flex cursor-pointer items-start gap-3 rounded-lg p-3 transition-colors ${
-                      !notification.isRead ? "border-l-2 border-l-blue-500 bg-blue-500/5" : ""
-                    }`}
-                    onClick={() => notification.url && handleNavigateToLink(notification.url)}
-                  >
-                    <Avatar className="h-8 w-8 flex-shrink-0">
-                      <AvatarImage src={notification.avatar} alt="Notification avatar" />
-                      <AvatarFallback>
-                        <Bell className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
+                {notifications.map((notification) => {
+                  const IconComponent = getNotificationIcon(notification.relatedType);
+                  const iconColorClass = getNotificationIconColor(notification.relatedType);
+                  return (
+                    <div
+                      key={notification.id}
+                      className={`hover:bg-main-grey/10 flex cursor-pointer items-start gap-3 rounded-lg p-3 transition-colors ${
+                        !notification.isRead ? "border-l-2 border-l-blue-500 bg-blue-500/5" : ""
+                      }`}
+                      onClick={() => notification.url && handleNavigateToLink(notification.url)}
+                    >
+                      <div
+                        className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${iconColorClass}`}
+                      >
+                        <IconComponent className="h-4 w-4" />
+                      </div>
 
-                    <div className="flex-1 space-y-1">
-                      <p className="text-main-white text-sm leading-relaxed">{notification.content}</p>
-                      {notification.createdAt && (
-                        <p className="text-main-grey text-xs">{formatNotificationTime(notification.createdAt)}</p>
-                      )}
-                    </div>
+                      <div className="flex-1 space-y-1">
+                        <p className="text-main-white text-sm leading-relaxed">{notification.content}</p>
+                        {notification.createdAt && (
+                          <p className="text-main-grey text-xs">{formatNotificationTime(notification.createdAt)}</p>
+                        )}
+                      </div>
 
-                    {/* {!notification.isRead && (
+                      {/* {!notification.isRead && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -116,8 +164,9 @@ export const NotificationPopover = ({
                         <Check className="h-3 w-3" />
                       </Button>
                     )} */}
-                  </div>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             </ScrollArea>
 

@@ -80,8 +80,6 @@ async function executeRequest<TResult, TVariables>(
         // NOTE: Version 2
         // If we are here, the user HAS "Remember Me", so we try to refresh
         try {
-          console.log("Hello");
-
           const refreshResponse = await authApi.general.refreshToken();
           const newAccessToken = refreshResponse.result.accessToken;
           setAccessTokenToLocalStorage(newAccessToken);

@@ -21,6 +21,8 @@ export const OrderPackageQuery = graphql(`
         freezedTime
         disputedReason
         requirements
+        payoutTransactionId
+        conversationId
         deliveries {
           notes
           revisionNumber

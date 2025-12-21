@@ -8236,7 +8236,7 @@ export type NotificationQueryVariables = Exact<{
 }>;
 
 
-export type NotificationQuery = { __typename?: 'QueryInitialization', notifications?: { __typename?: 'NotificationsConnection', edges?: Array<{ __typename?: 'NotificationsEdge', cursor: string, node: { __typename?: 'Notification', id: string, createdAt: any, content: string, url?: string | null, isRead: boolean, readAt?: any | null } }> | null, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean } } | null };
+export type NotificationQuery = { __typename?: 'QueryInitialization', notifications?: { __typename?: 'NotificationsConnection', edges?: Array<{ __typename?: 'NotificationsEdge', cursor: string, node: { __typename?: 'Notification', id: string, createdAt: any, content: string, relatedType?: NotificationRelatedType | null, url?: string | null, isRead: boolean, readAt?: any | null } }> | null, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean } } | null };
 
 export type OrderPackageQueryVariables = Exact<{
   where?: InputMaybe<PackageOrderFilterInput>;
@@ -8245,7 +8245,7 @@ export type OrderPackageQueryVariables = Exact<{
 }>;
 
 
-export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, providerId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, disputedReason?: string | null, requirements: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, review?: { __typename?: 'Review', rating: number, content: string, createdAt: any, updatedAt?: any | null } | null, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }>, provider: Array<{ __typename?: 'Artist', avatarImage?: string | null, stageName: string, email: string }> }> | null } | null };
+export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, providerId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, disputedReason?: string | null, requirements: string, payoutTransactionId?: string | null, conversationId: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, review?: { __typename?: 'Review', rating: number, content: string, createdAt: any, updatedAt?: any | null } | null, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }>, provider: Array<{ __typename?: 'Artist', avatarImage?: string | null, stageName: string, email: string }> }> | null } | null };
 
 export type CouponsQueryVariables = Exact<{
   where?: InputMaybe<CouponFilterInput>;
@@ -11240,6 +11240,7 @@ export const NotificationDocument = new TypedDocumentString(`
         id
         createdAt
         content
+        relatedType
         url
         isRead
         readAt
@@ -11273,6 +11274,8 @@ export const OrderPackageDocument = new TypedDocumentString(`
       freezedTime
       disputedReason
       requirements
+      payoutTransactionId
+      conversationId
       deliveries {
         notes
         revisionNumber

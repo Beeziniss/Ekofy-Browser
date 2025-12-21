@@ -248,12 +248,7 @@ const EditProfileModal = ({ isOpen, userProfile, onClose }: EditProfileModalProp
               <Button variant="ghost" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button
-                onClick={() => console.log("Save change clicked")}
-                className="primary_gradient text-white hover:opacity-60"
-              >
-                Save change
-              </Button>
+              <Button className="primary_gradient text-white hover:opacity-60">Save change</Button>
             </div>
           </div>
         </DialogContent>

@@ -197,8 +197,8 @@ const OrderDetailInfoSectionSuspense = () => {
           </h3>
           <div className="text-main-white/90 mt-2 text-sm">
             If you have any questions or need assistance regarding your order, please contact our support team at{" "}
-            <a href="mailto:support@example.com" className="text-blue-400 underline">
-              support@example.com
+            <a href="mailto:support@ekofy.com" className="text-blue-400 underline">
+              support@ekofy.com
             </a>
             .
           </div>

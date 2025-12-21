@@ -36,14 +36,7 @@ const ExampleUsage: React.FC = () => {
       </div>
 
       {/* Create mode */}
-      <PlaylistManagementModal
-        mode="create"
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        onSuccess={() => {
-          console.log("Playlist created successfully!");
-        }}
-      />
+      <PlaylistManagementModal mode="create" open={createOpen} onOpenChange={setCreateOpen} onSuccess={() => {}} />
 
       {/* Edit mode with existing cover image - This should now display the cover correctly */}
       <PlaylistManagementModal
@@ -51,9 +44,7 @@ const ExampleUsage: React.FC = () => {
         open={editOpen}
         onOpenChange={setEditOpen}
         initialData={samplePlaylistWithCover}
-        onSuccess={() => {
-          console.log("Playlist updated successfully!");
-        }}
+        onSuccess={() => {}}
       />
     </div>
   );

@@ -218,12 +218,13 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
         </div>
 
         {/* Reviews Carousel */}
-        {servicePackage?.id && 
-          <ReviewsCarousel 
-            artistPackageId={servicePackage.id} 
+        {servicePackage?.id && (
+          <ReviewsCarousel
+            artistPackageId={servicePackage.id}
             averageRating={servicePackage.review?.averageRating || 0}
             totalReviews={servicePackage.review?.totalReviews || 0}
-        />}
+          />
+        )}
 
         {/* Bottom CTA */}
         <div className="text-center">

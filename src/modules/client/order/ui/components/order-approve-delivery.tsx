@@ -48,11 +48,14 @@ const OrderApproveDelivery = ({ orderId }: OrderApproveDeliveryProps) => {
         <AlertDialogHeader>
           <AlertDialogTitle>Approve Delivery</AlertDialogTitle>
           <AlertDialogDescription className="space-y-1">
-            <div>Are you satisfied with the delivered work?</div>{" "}
-            <div>
+            <span className="inline-block">Are you satisfied with the delivered work?</span>
+            <br />
+            <br />
+            <span className="inline-block">
               Once you approve this delivery, the order will be marked as completed and payment will be released to the
               artist.
-            </div>{" "}
+            </span>
+            <br />
             <div>This action cannot be undone.</div>
           </AlertDialogDescription>
         </AlertDialogHeader>
