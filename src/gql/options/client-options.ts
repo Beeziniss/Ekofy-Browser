@@ -24,6 +24,8 @@ import {
   AlbumFilterInput,
   TrackFilterInput,
   RestrictionType,
+  TrackSortInput,
+  SortEnumType,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -189,11 +191,13 @@ export const trackInfiniteOptions = (userId: string, take: number = 12) =>
         restriction: { type: { eq: RestrictionType.None } },
         releaseInfo: { isRelease: { eq: true } },
       };
+      const order: TrackSortInput[] = [{ streamCount: SortEnumType.Desc }];
 
       return await execute(TrackInfiniteQuery, {
         take,
         skip,
         where,
+        order,
       });
     },
     initialPageParam: 1,
@@ -201,6 +205,30 @@ export const trackInfiniteOptions = (userId: string, take: number = 12) =>
       return lastPage.tracks?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
     },
     enabled: !!userId,
+  });
+
+export const trackPublicInfiniteOptions = (take: number = 12) =>
+  infiniteQueryOptions({
+    queryKey: ["tracks-public-infinite"],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+      const where: TrackFilterInput = {
+        and: [{ restriction: { type: { eq: RestrictionType.None } } }, { releaseInfo: { isRelease: { eq: true } } }],
+      };
+
+      const order: TrackSortInput[] = [{ createdAt: SortEnumType.Desc }];
+
+      return await execute(TrackInfiniteQuery, {
+        take,
+        skip,
+        where,
+        order,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.tracks?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
   });
 
 // PLAYLIST QUERIES

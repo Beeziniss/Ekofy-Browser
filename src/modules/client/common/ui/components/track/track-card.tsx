@@ -38,10 +38,11 @@ interface TrackCardProps {
   artists: (ArtistInfo | null)[];
   trackQueue?: GraphQLTrack[];
   checkTrackInFavorite?: boolean;
+  isExplicit?: boolean;
 }
 
 const TrackCard = React.memo(
-  ({ trackId, coverImage, trackName, artists, trackQueue, checkTrackInFavorite }: TrackCardProps) => {
+  ({ trackId, coverImage, trackName, artists, trackQueue, checkTrackInFavorite, isExplicit }: TrackCardProps) => {
     const { isAuthenticated } = useAuthStore();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -181,6 +182,16 @@ const TrackCard = React.memo(
             className="aspect-square h-full w-full rounded-md object-cover"
             unoptimized
           />
+
+          {isExplicit && (
+            <div
+              className={
+                "bg-main-purple absolute right-2 bottom-2 flex size-8 items-center justify-center rounded-md text-base font-semibold"
+              }
+            >
+              E
+            </div>
+          )}
 
           <div className="absolute bottom-2 left-2 flex items-center gap-x-2">
             <Button

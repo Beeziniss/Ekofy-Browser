@@ -3354,6 +3354,8 @@ export enum NotificationActionType {
   OrderCompleted = 'ORDER_COMPLETED',
   OrderCreated = 'ORDER_CREATED',
   OrderDeadline = 'ORDER_DEADLINE',
+  OrderDisputed = 'ORDER_DISPUTED',
+  OrderRefunded = 'ORDER_REFUNDED',
   Other = 'OTHER',
   Release = 'RELEASE',
   Reply = 'REPLY',
@@ -8509,6 +8511,7 @@ export type TrackInfiniteQueryVariables = Exact<{
   take: Scalars['Int']['input'];
   skip: Scalars['Int']['input'];
   where?: InputMaybe<TrackFilterInput>;
+  order?: InputMaybe<Array<TrackSortInput> | TrackSortInput>;
 }>;
 
 
@@ -8527,7 +8530,7 @@ export type TrackFavoriteQueryVariables = Exact<{
 }>;
 
 
-export type TrackFavoriteQuery = { __typename?: 'QueryInitialization', favoriteTracks?: { __typename?: 'FavoriteTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, streamCount: any, checkTrackInFavorite: boolean, createdAt: any, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
+export type TrackFavoriteQuery = { __typename?: 'QueryInitialization', favoriteTracks?: { __typename?: 'FavoriteTracksCollectionSegment', totalCount: number, items?: Array<{ __typename?: 'Track', id: string, name: string, coverImage: string, mainArtistIds: Array<string>, streamCount: any, checkTrackInFavorite: boolean, createdAt: any, isExplicit: boolean, mainArtists?: { __typename?: 'MainArtistsCollectionSegment', items?: Array<{ __typename?: 'Artist', id: string, stageName: string }> | null } | null }> | null } | null };
 
 export type SuggestedTracksForPlaylistQueryVariables = Exact<{
   take: Scalars['Int']['input'];
@@ -12402,8 +12405,8 @@ export const TrackListHomeDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<TrackListHomeQuery, TrackListHomeQueryVariables>;
 export const TrackInfiniteDocument = new TypedDocumentString(`
-    query TrackInfinite($take: Int!, $skip: Int!, $where: TrackFilterInput) {
-  tracks(take: $take, skip: $skip, order: {streamCount: DESC}, where: $where) {
+    query TrackInfinite($take: Int!, $skip: Int!, $where: TrackFilterInput, $order: [TrackSortInput!]) {
+  tracks(take: $take, skip: $skip, order: $order, where: $where) {
     totalCount
     items {
       id
@@ -12487,6 +12490,7 @@ export const TrackFavoriteDocument = new TypedDocumentString(`
       streamCount
       checkTrackInFavorite
       createdAt
+      isExplicit
     }
   }
 }

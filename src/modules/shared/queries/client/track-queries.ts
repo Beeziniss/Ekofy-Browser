@@ -30,8 +30,8 @@ export const TrackListHomeQuery = graphql(`
 `);
 
 export const TrackInfiniteQuery = graphql(`
-  query TrackInfinite($take: Int!, $skip: Int!, $where: TrackFilterInput) {
-    tracks(take: $take, skip: $skip, order: { streamCount: DESC }, where: $where) {
+  query TrackInfinite($take: Int!, $skip: Int!, $where: TrackFilterInput, $order: [TrackSortInput!]) {
+    tracks(take: $take, skip: $skip, order: $order, where: $where) {
       totalCount
       items {
         id
@@ -117,6 +117,7 @@ export const TrackFavoriteQuery = graphql(`
         streamCount
         checkTrackInFavorite
         createdAt
+        isExplicit
       }
     }
   }
