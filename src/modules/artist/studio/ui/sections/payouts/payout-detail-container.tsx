@@ -31,18 +31,18 @@ export default function PayoutDetailContainer({ referenceId, backHref = "/artist
   const payoutTypeBadge = isService ? (
     <Badge variant="ekofy">Service</Badge>
   ) : (
-    <Badge variant="secondary">Escrow Release</Badge>
+    <Badge variant="secondary">Streaming</Badge>
   );
   
   const tx = {
     id: item.id,
-    stripeTransferId: item.stripeTransferId,
+    
     amount: item.amount,
     currency: item.currency,
     createdAt: (item.createdAt as unknown as string),
     status: item.status as PayoutTransactionStatus,
     method: item.method ?? "bank_transfer",
-    destinationAccountId: item.destinationAccountId,
+    
     stripePayoutId: item.stripePayoutId,
   };
 
@@ -51,7 +51,6 @@ export default function PayoutDetailContainer({ referenceId, backHref = "/artist
   return (
     <PayoutDetailSection
       title="Payout Detail"
-      reference={referenceId}
       backHref={backHref}
       backLabel="Back to Payouts"
       headerId={tx.id}
@@ -67,9 +66,7 @@ export default function PayoutDetailContainer({ referenceId, backHref = "/artist
             : "-"
         },
         { label: "Method", value: tx.method },
-        { label: "Destination Account", value: tx.destinationAccountId },
         { label: "Stripe Payout ID", value: tx.stripePayoutId },
-        { label: "Stripe Transfer ID", value: tx.stripeTransferId },
       ]}
     />
   );

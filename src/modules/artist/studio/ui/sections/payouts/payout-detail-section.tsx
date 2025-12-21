@@ -8,7 +8,6 @@ type DetailRow = { label: string; value: string | number | React.ReactNode };
 
 interface PayoutDetailSectionProps {
   title: string;
-  reference: string;
   backHref: string;
   backLabel?: string;
   headerId: string; // shown as #xxxx in header
@@ -18,7 +17,6 @@ interface PayoutDetailSectionProps {
 
 export default function PayoutDetailSection({
   title,
-  reference,
   backHref,
   backLabel = "Back",
   headerId,
@@ -30,7 +28,6 @@ export default function PayoutDetailSection({
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">{title}</h1>
-          <p className="text-muted-foreground text-sm">Reference: {reference}</p>
         </div>
         <Link
           href={backHref}
@@ -44,7 +41,7 @@ export default function PayoutDetailSection({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <span>#{headerId.slice(-8)}</span>
+            <span>Payout: #{headerId}</span>
             {statusBadge}
           </CardTitle>
         </CardHeader>
