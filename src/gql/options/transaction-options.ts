@@ -19,7 +19,10 @@ import {
   PaymentTransactionStatus,
   PayoutTransactionStatus,
   RefundTransactionStatus,
+  PackageOrderFilterInput,
+  ArtistPackageFilterInput,
 } from "@/gql/graphql";
+import { GetArtistPackageByIdQuery, GetPlatformFeesQuery } from "@/modules/shared/queries/artist";
 
 /**
  * Query options for fetching all payment transactions (Admin only)
@@ -140,6 +143,28 @@ export const adminPayoutTransactionByIdOptions = (params: { id: string }) =>
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
   });
+export function platformFeeByPayoutIdOptions(params: { payoutTransactionId: string }) {
+  const { payoutTransactionId } = params;
+  const where: PackageOrderFilterInput = {
+    payoutTransactionId: { eq: payoutTransactionId },
+  };
+
+  return {
+    queryKey: ["platform-fee-by-payout", payoutTransactionId],
+    queryFn: async () => execute(GetPlatformFeesQuery, { where }),
+  };
+}
+export function artistPackageByIdOptions(params: { artistPackageId: string }) {
+  const { artistPackageId } = params;
+  const where: ArtistPackageFilterInput = {
+    id: { eq: artistPackageId },
+  };
+
+  return {
+    queryKey: ["artist-package", artistPackageId],
+    queryFn: async () => execute(GetArtistPackageByIdQuery, { where }),
+  };
+}
 
 /**
  * Query options for fetching all refund transactions (Admin only)

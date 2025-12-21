@@ -8073,7 +8073,14 @@ export type PackageOrdersPlatformQueryVariables = Exact<{
 }>;
 
 
-export type PackageOrdersPlatformQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', items?: Array<{ __typename?: 'PackageOrder', platformFeePercentage: any, payoutTransactionId?: string | null }> | null } | null };
+export type PackageOrdersPlatformQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', items?: Array<{ __typename?: 'PackageOrder', id: string, platformFeePercentage: any, payoutTransactionId?: string | null, status: PackageOrderStatus, startedAt?: any | null, completedAt?: any | null, artistPackageId: string }> | null } | null };
+
+export type GetArtistPackageByIdQueryVariables = Exact<{
+  where?: InputMaybe<ArtistPackageFilterInput>;
+}>;
+
+
+export type GetArtistPackageByIdQuery = { __typename?: 'QueryInitialization', artistPackages?: { __typename?: 'ArtistPackagesCollectionSegment', items?: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, currency: CurrencyType, packageName: string }> | null } | null };
 
 export type ArtistRevenueDataQueryVariables = Exact<{
   artistId: Scalars['String']['input'];
@@ -10599,12 +10606,29 @@ export const PackageOrdersPlatformDocument = new TypedDocumentString(`
     query PackageOrdersPlatform($where: PackageOrderFilterInput) {
   packageOrders(where: $where) {
     items {
+      id
       platformFeePercentage
       payoutTransactionId
+      status
+      startedAt
+      completedAt
+      artistPackageId
     }
   }
 }
     `) as unknown as TypedDocumentString<PackageOrdersPlatformQuery, PackageOrdersPlatformQueryVariables>;
+export const GetArtistPackageByIdDocument = new TypedDocumentString(`
+    query GetArtistPackageById($where: ArtistPackageFilterInput) {
+  artistPackages(where: $where) {
+    items {
+      id
+      amount
+      currency
+      packageName
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetArtistPackageByIdQuery, GetArtistPackageByIdQueryVariables>;
 export const ArtistRevenueDataDocument = new TypedDocumentString(`
     query ArtistRevenueData($artistId: String!) {
   artists(where: {id: {eq: $artistId}}) {

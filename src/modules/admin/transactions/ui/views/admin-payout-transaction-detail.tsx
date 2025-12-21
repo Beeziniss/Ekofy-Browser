@@ -1,7 +1,8 @@
 "use client";
 
 import { TransactionLayout } from "../layouts";
-import { PayoutTransactionDetailSection } from "../sections";
+
+import AdminPayoutDetailContainer from "../layouts/payout-detail-container";
 
 interface AdminPayoutTransactionDetailProps {
   transactionId: string;
@@ -10,7 +11,7 @@ interface AdminPayoutTransactionDetailProps {
 export function AdminPayoutTransactionDetail({ transactionId }: AdminPayoutTransactionDetailProps) {
   return (
     <TransactionLayout showHeader={false}>
-      <PayoutTransactionDetailSection referenceId={transactionId} />
+      <AdminPayoutDetailContainer referenceId={transactionId} />
     </TransactionLayout>
   );
 }

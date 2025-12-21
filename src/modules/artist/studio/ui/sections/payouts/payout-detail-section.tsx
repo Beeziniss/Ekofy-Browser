@@ -13,8 +13,12 @@ interface PayoutDetailSectionProps {
   headerId: string; // shown as #xxxx in header
   statusBadge?: React.ReactNode;
   rows: DetailRow[];
+  orderSection?: OrderSection;
 }
-
+interface OrderSection {
+  orderLink: string;
+  rows: DetailRow[];
+}
 export default function PayoutDetailSection({
   title,
   backHref,
@@ -22,6 +26,7 @@ export default function PayoutDetailSection({
   headerId,
   statusBadge,
   rows,
+  orderSection,
 }: PayoutDetailSectionProps) {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-6 md:px-6">
@@ -56,6 +61,27 @@ export default function PayoutDetailSection({
           </dl>
         </CardContent>
       </Card>
+      {orderSection && (
+        <Card className="mt-4">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3">
+              <Link href={orderSection.orderLink} className="text-primary hover:underline">
+                Order Information
+              </Link>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {orderSection.rows.map((r, i) => (
+                <div key={i}>
+                  <dt className="text-muted-foreground text-sm">{r.label}</dt>
+                  <dd className="text-sm">{r.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
