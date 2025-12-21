@@ -112,7 +112,7 @@ export default function PayoutsTable({ userId, pageSize = 10, typeFilter = "all"
               <TableHead>Method</TableHead>
               <TableHead>Platform Fee</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Payout</TableHead>
+              <TableHead>Payout ID</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -194,7 +194,7 @@ function PayoutRow({ tx, typeFilter, onVisibilityChange }: { tx: PayoutTransacti
         {tx?.createdAt ? new Date(tx.createdAt as unknown as string).toLocaleString() : "-"}
       </TableCell>
       <TableCell>
-        {typeof tx?.amount === "number" ? tx.amount.toLocaleString() : tx?.amount} {tx?.currency}
+        {typeof tx?.amount === "number" ? tx.amount.toLocaleString() : tx?.amount} {tx?.currency.toUpperCase() || ""}
       </TableCell>
       <TableCell>
         <PayoutTypeCell platformFee={platformFee} isLoading={isLoadingType} />
@@ -205,9 +205,9 @@ function PayoutRow({ tx, typeFilter, onVisibilityChange }: { tx: PayoutTransacti
       </TableCell>
       <TableCell>{tx?.status ? statusBadge(tx.status as PayoutTransactionStatus) : "-"}</TableCell>
       <TableCell>
-        {tx?.stripeTransferId || tx?.stripePayoutId || tx?.id ? (
-          <Link href={`/artist/studio/transactions/payouts/${tx?.stripeTransferId || tx?.stripePayoutId || tx?.id}`} className="text-primary hover:underline">
-            #{(tx?.stripeTransferId || tx?.stripePayoutId || tx?.id)!.slice(-8)}
+        {tx?.id ? (
+          <Link href={`/artist/studio/transactions/payouts/${tx.id}`} className="text-primary hover:underline">
+            #{tx.id.slice(-8)}
           </Link>
         ) : (
           "-"
