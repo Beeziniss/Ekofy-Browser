@@ -282,6 +282,5 @@ export const addTracksToAlbumMutationOptions = mutationOptions({
 
 export const albumFavoriteMutationOptions = mutationOptions({
   mutationKey: ["album-favorite"],
-  mutationFn: async (input: { albumId: string; isAdding: boolean }) =>
-    await execute(addToFavoriteAlbum, { ...input }),
+  mutationFn: async (input: { albumId: string; isAdding: boolean }) => await execute(addToFavoriteAlbum, { ...input }),
 });
