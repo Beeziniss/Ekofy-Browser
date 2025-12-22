@@ -16,11 +16,10 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useAuthStore } from "@/store";
 import { UserRole } from "@/types/role";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { SparklesColorful, Crown, BellActive } from "@/assets/icons";
 import { authApi } from "@/services/auth-services";
 import { getUserInitials } from "@/utils/format-shorten-name";
+import { SparklesColorful, Crown, BellActive } from "@/assets/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -53,7 +52,6 @@ interface ProfileLink {
 }
 
 const AuthButton = () => {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { isAuthenticated, user, clearUserData } = useAuthStore();
 
@@ -111,20 +109,23 @@ const AuthButton = () => {
     queryClient.invalidateQueries({ queryKey: ["notifications", user?.userId] });
   }; */
 
+  const cleanupAndRedirect = () => {
+    // 1. Wipe Zustand/LocalStorage
+    clearUserData();
+
+    // 2. Wipe TanStack Query
+    queryClient.clear();
+
+    // 3. Redirect
+    // Use window.location to ensure Middleware doesn't get stuck in a logic loop
+    window.location.href = "/landing";
+  };
+
   // Logout mutation
   const { mutate: logout } = useMutation({
     mutationFn: authApi.general.logout,
-    onSuccess: () => {
-      router.replace("/landing");
-      clearUserData();
-      queryClient.clear();
-    },
-    onError: (error) => {
-      console.error("Logout failed:", error);
-      // Still clear local data even if server logout fails
-      router.replace("/landing");
-      clearUserData();
-      queryClient.clear();
+    onSettled: () => {
+      cleanupAndRedirect();
     },
   });
 

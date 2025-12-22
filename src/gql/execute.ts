@@ -1,7 +1,7 @@
 import axiosInstance from "@/config/axios-instance";
 import type { TypedDocumentString } from "./graphql";
 import { AxiosError } from "axios";
-import { setAccessTokenToLocalStorage, clearAuthData } from "@/utils/auth-utils";
+import { setAccessTokenToLocalStorage } from "@/utils/auth-utils";
 import { GraphQLError, GraphQLErrorWithDetails } from "@/types/graphql-error";
 import { getErrorDetailsFromArray } from "@/utils/graphql-error-utils";
 
@@ -56,12 +56,22 @@ async function executeRequest<TResult, TVariables>(
         const user = useAuthStore.getState().user;
 
         if (!user?.isRememberMe) {
-          // 1. Clear auth data (logging them out locally)
-          clearAuthData();
+          // Import query client to clear cache
+          const { getQueryClient } = await import("@/providers/get-query-client");
 
-          // 2. Return null casted as TResult.
-          // This stops execution here, prevents the code from reaching the 'throw' below,
-          // and satisfies the TypeScript compiler.
+          // 1. Clear user data from auth store
+          useAuthStore.getState().clearUserData();
+
+          // 2. Clear query client cache
+          const queryClient = getQueryClient();
+          queryClient.clear();
+
+          // 3. Redirect to landing page
+          if (typeof window !== "undefined") {
+            window.location.href = "/landing";
+          }
+
+          // 4. Return null to prevent further execution
           return null as TResult;
         }
 
@@ -87,8 +97,16 @@ async function executeRequest<TResult, TVariables>(
         } catch (error) {
           console.error(error);
 
-          // If refresh fails, clear data and fall through to error
-          clearAuthData();
+          // If refresh fails, clear all data and redirect
+          const { getQueryClient } = await import("@/providers/get-query-client");
+          useAuthStore.getState().clearUserData();
+
+          const queryClient = getQueryClient();
+          queryClient.clear();
+
+          if (typeof window !== "undefined") {
+            window.location.href = "/landing";
+          }
         }
       }
 
@@ -185,10 +203,33 @@ async function executeFileUploadRequest<TResult, TVariables>(
     if (result.errors) {
       // Check if it's an authentication error and we haven't already retried
       if (!isRetry && isAuthenticationError(result.errors)) {
-        try {
-          // Import the auth service here to avoid circular dependency
-          const { authApi } = await import("@/services/auth-services");
+        const { authApi } = await import("@/services/auth-services");
+        const { useAuthStore } = await import("@/store/stores/auth-store");
 
+        const user = useAuthStore.getState().user;
+
+        if (!user?.isRememberMe) {
+          // Import query client to clear cache
+          const { getQueryClient } = await import("@/providers/get-query-client");
+
+          // 1. Clear user data from auth store
+          useAuthStore.getState().clearUserData();
+
+          // 2. Clear query client cache
+          const queryClient = getQueryClient();
+          queryClient.clear();
+
+          // 3. Redirect to landing page
+          if (typeof window !== "undefined") {
+            window.location.href = "/landing";
+          }
+
+          // 4. Return null to prevent further execution
+          return null as TResult;
+        }
+
+        // If we are here, the user HAS "Remember Me", so we try to refresh
+        try {
           // Attempt to refresh the token
           const refreshResponse = await authApi.general.refreshToken();
           const newAccessToken = refreshResponse.result.accessToken;
@@ -198,15 +239,19 @@ async function executeFileUploadRequest<TResult, TVariables>(
 
           // Retry the original request with the new token
           return executeFileUploadRequest(query, variables, true);
-        } catch {
-          // Refresh failed, clear auth data and redirect to login
-          clearAuthData();
+        } catch (error) {
+          console.error(error);
+
+          // If refresh fails, clear all data and redirect
+          const { getQueryClient } = await import("@/providers/get-query-client");
+          useAuthStore.getState().clearUserData();
+
+          const queryClient = getQueryClient();
+          queryClient.clear();
 
           if (typeof window !== "undefined") {
-            window.location.href = "/";
+            window.location.href = "/landing";
           }
-
-          throw new Error("Authentication failed and token refresh unsuccessful");
         }
       }
 
