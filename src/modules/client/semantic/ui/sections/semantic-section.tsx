@@ -2,9 +2,13 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { trackSemanticOptions, userActiveSubscriptionOptions } from "@/gql/options/client-options";
+import {
+  trackSemanticOptions,
+  userActiveSubscriptionOptions,
+  trackSongCatcherOptions,
+} from "@/gql/options/client-options";
 import { Input } from "@/components/ui/input";
-import { Search, Lock } from "lucide-react";
+import { Search, Lock, Mic, FileMusic } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import SemanticTrackItem from "@/modules/client/semantic/ui/components/semantic-track-item";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -12,6 +16,9 @@ import { useAuthStore } from "@/store";
 import { SubscriptionTier } from "@/gql/graphql";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import AudioRecorderDialog from "@/modules/client/semantic/ui/components/audio-recorder-dialog";
+import AudioUploadDialog from "@/modules/client/semantic/ui/components/audio-upload-dialog";
+import SongMatchResultDialog from "@/modules/client/semantic/ui/components/song-match-result-dialog";
 
 const SemanticSection = () => {
   const router = useRouter();
@@ -33,6 +40,46 @@ const SemanticSection = () => {
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
 
+  // Song identification states
+  const [isRecorderOpen, setIsRecorderOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [songMatchResult, setSongMatchResult] = useState<{
+    trackId?: string | null;
+    trackName?: string | null;
+    artistId?: string | null;
+    artistName?: string | null;
+    queryCoverage?: number | null;
+    trackCoverage?: number | null;
+    minConfidence?: number | null;
+  } | null>(null);
+  const [isResultOpen, setIsResultOpen] = useState(false);
+  const [identificationError, setIdentificationError] = useState<string | null>(null);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+
+  // Song catcher query (enabled only when audioFile exists)
+  const { data: songCatcherData, isFetching: isSongCatcherFetching } = useQuery({
+    ...trackSongCatcherOptions(audioFile!),
+    enabled: !!audioFile,
+  });
+
+  // Handle song catcher result
+  useEffect(() => {
+    if (!isSongCatcherFetching && audioFile) {
+      if (songCatcherData && songCatcherData.queryTrack) {
+        setSongMatchResult(songCatcherData.queryTrack);
+        setIsResultOpen(true);
+      } else {
+        setSongMatchResult(null);
+        setIsResultOpen(true);
+      }
+
+      // Reset states
+      setAudioFile(null);
+      setIsRecorderOpen(false);
+      setIsUploadOpen(false);
+    }
+  }, [songCatcherData, isSongCatcherFetching, audioFile]);
+
   const { data, isLoading, error } = useQuery({
     ...trackSemanticOptions(debouncedSearchTerm),
     enabled: hasAccess, // Only fetch if user has access
@@ -43,6 +90,13 @@ const SemanticSection = () => {
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   }, []);
+
+  // Handle audio file identification
+  const handleAudioIdentification = (file: File) => {
+    setIdentificationError(null);
+    setSongMatchResult(null);
+    setAudioFile(file);
+  };
 
   // Update URL when debounced search term changes
   useEffect(() => {
@@ -111,15 +165,40 @@ const SemanticSection = () => {
     <div className="mx-auto w-full max-w-6xl px-4 py-8">
       {/* Search Bar */}
       <div className="mb-8">
-        <div className="relative">
-          <Search className="absolute top-1/2 left-3 size-5 -translate-y-1/2 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search tracks by natural language (e.g., 'sad songs about love', 'upbeat workout music')..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="bg-main-dark-bg border-main-grey text-main-white placeholder:text-main-grey focus-visible:ring-main-purple h-12 rounded-full border pr-4 pl-11"
-          />
+        <div className="relative flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute top-1/2 left-3 size-5 -translate-y-1/2 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search tracks by natural language (e.g., 'sad songs about love', 'upbeat workout music')..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="bg-main-dark-bg border-main-grey text-main-white placeholder:text-main-grey focus-visible:ring-main-purple h-12 rounded-full border pr-4 pl-11"
+            />
+          </div>
+
+          {/* Audio Identification Buttons */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setIsRecorderOpen(true)}
+            disabled={isSongCatcherFetching}
+            className="border-main-grey hover:bg-main-purple/20 hover:border-main-purple text-main-grey hover:text-main-purple size-12 shrink-0 rounded-full"
+            title="Record audio to identify song"
+          >
+            <Mic className="size-5" />
+          </Button>
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setIsUploadOpen(true)}
+            disabled={isSongCatcherFetching}
+            className="border-main-grey hover:bg-main-purple/20 hover:border-main-purple text-main-grey hover:text-main-purple size-12 shrink-0 rounded-full"
+            title="Upload audio file to identify song"
+          >
+            <FileMusic className="size-5" />
+          </Button>
         </div>
       </div>
 
@@ -179,6 +258,27 @@ const SemanticSection = () => {
           <p className="text-sm">Use natural language to describe the music you&apos;re looking for</p>
         </div>
       )}
+
+      {/* Dialogs */}
+      <AudioRecorderDialog
+        open={isRecorderOpen}
+        onOpenChange={setIsRecorderOpen}
+        onRecordingComplete={handleAudioIdentification}
+      />
+
+      <AudioUploadDialog
+        open={isUploadOpen}
+        onOpenChange={setIsUploadOpen}
+        onFileSelect={handleAudioIdentification}
+        isProcessing={isSongCatcherFetching}
+      />
+
+      <SongMatchResultDialog
+        open={isResultOpen}
+        onOpenChange={setIsResultOpen}
+        result={songMatchResult}
+        error={identificationError}
+      />
     </div>
   );
 };

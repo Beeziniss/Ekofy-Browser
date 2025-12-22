@@ -157,7 +157,17 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
                 <p className="text-muted-foreground text-sm">Chat with the other party about this order</p>
               </div>
               <Button asChild variant="outline" size="sm">
-                <Link href={`/inbox/${orderPackageDetail.conversationId}`} className="flex items-center gap-x-2">
+                <Link
+                  href={`/inbox/${orderPackageDetail.conversationId}${
+                    orderPackageDetail.status === PackageOrderStatus.InProgress ||
+                    orderPackageDetail.status === PackageOrderStatus.Paid
+                      ? "?t=IN_PROGRESS"
+                      : orderPackageDetail.status === PackageOrderStatus.Completed
+                        ? "?t=COMPLETED"
+                        : ""
+                  }`}
+                  className="flex items-center gap-x-2"
+                >
                   <MessageSquare className="size-4" />
                   Open Chat
                 </Link>
