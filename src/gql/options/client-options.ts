@@ -539,6 +539,19 @@ export const conversationDetailByRequestOptions = (requestId: string) =>
     },
   });
 
+export const conversationDetailByRequestAndArtistOptions = (requestId: string, artistUserId: string) =>
+  queryOptions({
+    queryKey: ["conversation-detail-by-request-and-artist", requestId, artistUserId],
+    queryFn: async () => {
+      const where: ConversationFilterInput = {
+        requestId: { eq: requestId },
+        userIds: { some: { eq: artistUserId } },
+      };
+      const result = await execute(ConversationQuery, { where });
+      return result;
+    },
+  });
+
 export const conversationDetailByRequestPublicOptions = (requestId: string) =>
   queryOptions({
     queryKey: ["conversation-detail-by-request-public", requestId],

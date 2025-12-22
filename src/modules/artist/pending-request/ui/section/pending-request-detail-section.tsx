@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { pendingRequestDetailOptions } from "@/gql/options/pending-request-option";
 import { moderatorPackageOrderDetailOptions } from "@/gql/options/moderator-options";
+import { conversationDetailByRequestAndArtistOptions } from "@/gql/options/client-options";
 import { useChangeRequestStatusMutation } from "@/gql/client-mutation-options/pending-request-mutation";
 import { PendingRequestInfoCard } from "../component/pending-request-info-card";
 import { PendingRequestActions } from "../component/pending-request-actions";
@@ -29,9 +30,19 @@ export function PendingRequestDetailSection({ requestId }: PendingRequestDetailS
 
   const request = data?.requests?.items?.[0];
   const orderId = request?.orderId;
+  const artistUserId = request?.artist?.[0]?.userId;
 
   // Fetch order details including conversationId when orderId exists
   const { data: orderData } = useQuery(moderatorPackageOrderDetailOptions(orderId || ""));
+
+  // Fetch conversation by requestId and artistUserId
+  const { data: conversationData } = useQuery({
+    ...conversationDetailByRequestAndArtistOptions(requestId, artistUserId || ""),
+    enabled: !!artistUserId,
+  });
+
+  // Get conversationId from conversation query first, then from order data
+  const conversationId = conversationData?.conversations?.items?.[0]?.id || orderData?.conversationId;
 
   // Handlers
   const handleApprove = async () => {
@@ -122,7 +133,7 @@ export function PendingRequestDetailSection({ requestId }: PendingRequestDetailS
             status={data.requests.items?.[0]?.status || RequestStatus.Pending}
             requestTitle={data.requests.items?.[0]?.title || 'Untitled Request'}
             orderId={orderId}
-            conversationId={orderData?.conversationId}
+            conversationId={conversationId}
             onApprove={handleApprove}
             onReject={handleReject}
             isProcessing={changeStatusMutation.isPending}

@@ -24,7 +24,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "@/utils/format-date";
-import { conversationDetailByRequestOptions } from "@/gql/options/client-options";
+import { conversationDetailByRequestAndArtistOptions } from "@/gql/options/client-options";
 
 type PendingRequestItem = NonNullable<NonNullable<GetPendingArtistRequestQuery["requests"]>["items"]>[0];
 
@@ -104,7 +104,11 @@ export function PendingRequestTable({
 
   // Component to render each request row with conversation query
   const RequestTableRow = ({ request }: { request: PendingRequestItem }) => {
-    const { data: conversationData } = useQuery(conversationDetailByRequestOptions(request.id));
+    const artistUserId = request.artist?.[0]?.userId;
+    const { data: conversationData } = useQuery({
+      ...conversationDetailByRequestAndArtistOptions(request.id, artistUserId || ""),
+      enabled: !!artistUserId,
+    });
     const conversationId = conversationData?.conversations?.items?.[0]?.id;
 
     return (
