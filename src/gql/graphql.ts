@@ -11103,7 +11103,7 @@ export const CategoriesChannelDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<CategoriesChannelQuery, CategoriesChannelQueryVariables>;
 export const ConversationsDocument = new TypedDocumentString(`
     query Conversations($where: ConversationFilterInput) {
-  conversations(where: $where, order: {lastMessage: {sentAt: DESC}}) {
+  conversations(where: $where, order: {lastMessage: {sentAt: DESC}}, take: 50) {
     items {
       id
       userIds
