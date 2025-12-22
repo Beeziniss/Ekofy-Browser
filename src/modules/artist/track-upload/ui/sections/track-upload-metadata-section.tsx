@@ -515,7 +515,7 @@ const TrackUploadMetadataSection = () => {
             const uploadResult = await uploadLegalDocument(doc.documentFile);
             uploadedLegalDocuments.push({
               documentType: doc.documentType as DocumentType,
-              documentUrl: uploadResult.fileUrl,
+              documentUrl: uploadResult.fileKey,
               name: doc.name,
               note: doc.note,
             });
