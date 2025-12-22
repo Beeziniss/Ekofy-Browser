@@ -18,7 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Eye, CheckCircle, XCircle, MoreHorizontal, ShoppingCart, MessageSquare } from "lucide-react";
+import { Eye, CheckCircle, XCircle, MoreHorizontal, Package, MessageSquare } from "lucide-react";
 import { RequestStatus, GetPendingArtistRequestQuery } from "@/gql/graphql";
 import Link from "next/link";
 import { useState } from "react";
@@ -178,7 +178,7 @@ export function PendingRequestTable({
                 {request.orderId && (
                   <DropdownMenuItem asChild>
                     <Link href={`/orders/${request.orderId}/details`} className="flex items-center">
-                      <ShoppingCart className="mr-2 h-4 w-4" />
+                      <Package className="mr-2 h-4 w-4" />
                       View Order
                     </Link>
                   </DropdownMenuItem>
