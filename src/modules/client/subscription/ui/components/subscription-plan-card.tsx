@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPriceVN } from "@/utils/format-number";
-import { PeriodTime, SubscriptionPlan, UserRole } from "@/gql/graphql";
+import { PeriodTime, SubscriptionPlan } from "@/gql/graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { userActiveSubscriptionOptions } from "@/gql/options/client-options";

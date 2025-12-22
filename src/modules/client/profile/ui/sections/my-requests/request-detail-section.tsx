@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import { useChangeRequestStatus } from "@/gql/client-mutation-options/request-hub-mutation-options";
 import { requestOptions } from "@/gql/options/listener-request-options";
 import { moderatorPackageOrderDetailOptions } from "@/gql/options/moderator-options";
-import { conversationDetailByRequestOptions } from "@/gql/options/client-options";
+import { conversationDetailByRequestAndArtistOptions } from "@/gql/options/client-options";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import {
   RequestStatus as GqlRequestStatus,
@@ -63,15 +63,20 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const { data: request, isLoading } = useQuery(requestOptions(requestId));
   const changeStatusMutation = useChangeRequestStatus();
+  const artist = useFragment(RequestArtistFragmentDoc, request?.artist);
 
   // Fetch order details including conversationId when orderId exists
   const { data: orderData } = useQuery(moderatorPackageOrderDetailOptions(request?.orderId || ""));
 
-  // Fetch conversation by requestId (conversation may exist even without order)
-  const { data: conversationData } = useQuery(conversationDetailByRequestOptions(requestId));
+  // Fetch conversation by requestId and requestor userId
+  const artistUserId = artist?.[0]?.userId;
+  const { data: conversationData } = useQuery({
+    ...conversationDetailByRequestAndArtistOptions(requestId, artistUserId || ""),
+    enabled: !!artistUserId,
+  });
 
-  // Get conversationId from either order or direct conversation query
-  const conversationId = orderData?.conversationId || conversationData?.conversations?.items?.[0]?.id;
+  // Get conversationId from conversation query first, then from order data
+  const conversationId = conversationData?.conversations?.items?.[0]?.id || orderData?.conversationId;
 
   // Fetch artist data if not included and artistId exists
   /* const { data: artistData } = useQuery({
@@ -81,7 +86,6 @@ export default function RequestDetailSection({ requestId }: RequestDetailSection
 
   // Use artist from request or fetched artist data
   // const artist = request?.artist?.[0] || artistData?.artists?.items?.[0];
-  const artist = useFragment(RequestArtistFragmentDoc, request?.artist);
 
   // Get artist package (API returns as array)
   const artistPackage = useFragment(RequestArtistPackageFragmentDoc, request?.artistPackage);

@@ -11,7 +11,7 @@ import { Clock, Calendar, User, DollarSign } from "lucide-react";
 import { requestStatusBadge } from "@/modules/shared/ui/components/status/status-badges";
 import { serviceCreateCheckoutSessionMutationOptions } from "@/gql/options/client-mutation-options";
 import { Request, RequestArtistFragmentDoc, RequestArtistPackageFragmentDoc, RequestStatus } from "@/gql/graphql";
-import { conversationDetailByRequestOptions } from "@/gql/options/client-options";
+import { conversationDetailByRequestAndArtistOptions } from "@/gql/options/client-options";
 
 interface RequestListItemProps {
   request: Omit<Request, "requestor" | "artist" | "artistPackage"> & {
@@ -31,8 +31,12 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
   // Payment mutation
   const createCheckoutSessionMutation = useMutation(serviceCreateCheckoutSessionMutationOptions);
 
-  // Conversation query
-  const { data: conversationData } = useQuery(conversationDetailByRequestOptions(request.id));
+  // Conversation query - use requestor userId to filter conversation
+  const artistUserId = artist?.[0]?.userId;
+  const { data: conversationData } = useQuery({
+    ...conversationDetailByRequestAndArtistOptions(request.id, artistUserId || ""),
+    enabled: !!artistUserId,
+  });
 
   const handlePayment = async () => {
     if (!request.packageId) {
