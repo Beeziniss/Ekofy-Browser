@@ -164,9 +164,12 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
               <h3 className="text-sm font-medium">Requirements</h3>
             </div>
             <div className="prose prose-sm mb-4 max-w-none">
-              <p className="text-muted-foreground text-xl whitespace-pre-wrap">
-                {request?.[0]?.requirements || "No requirements provided"}
-              </p>
+              <div 
+              className="text-muted-foreground text-xl whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ 
+                  __html: request?.[0]?.requirements || "No requirements provided" 
+                }}
+              />
             </div>
           </>
         )}
@@ -190,9 +193,12 @@ export function PendingRequestInfoCard({ request }: PendingRequestInfoCardProps)
               <h3 className="text-sm font-medium">Description</h3>
             </div>
             <div className="prose prose-sm max-w-none">
-              <p className="text-muted-foreground text-xl whitespace-pre-wrap">
-                {request?.[0]?.detailDescription || "No description provided"}
-              </p>
+              <div
+               className="text-muted-foreground text-xl whitespace-pre-wrap"
+               dangerouslySetInnerHTML={{ 
+                  __html: request?.[0]?.detailDescription || "No description provided" 
+                }}
+               />
             </div>
           </>
         )}

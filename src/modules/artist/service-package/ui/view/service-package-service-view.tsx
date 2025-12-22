@@ -71,14 +71,7 @@ const ServicePackageServiceView = () => {
           />
         );
       case "detail":
-        return (
-          <ServicePackageDetailSection
-            packageId={selectedPackageId}
-            onBack={handleBackToList}
-            onEdit={() => handleEditPackage(selectedPackageId)}
-            onDelete={handleDeletePackage}
-          />
-        );
+        return <ServicePackageDetailSection packageId={selectedPackageId} />;
       case "list":
       default:
         return (

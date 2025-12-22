@@ -26,6 +26,7 @@ import {
   RestrictionType,
   TrackSortInput,
   SortEnumType,
+  PackageOrderStatus,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -613,6 +614,19 @@ export const conversationDetailByRequestOptions = (requestId: string) =>
     },
   });
 
+export const conversationDetailByRequestAndArtistOptions = (requestId: string, artistUserId: string) =>
+  queryOptions({
+    queryKey: ["conversation-detail-by-request-and-artist", requestId, artistUserId],
+    queryFn: async () => {
+      const where: ConversationFilterInput = {
+        requestId: { eq: requestId },
+        userIds: { some: { eq: artistUserId } },
+      };
+      const result = await execute(ConversationQuery, { where });
+      return result;
+    },
+  });
+
 export const conversationDetailByRequestPublicOptions = (requestId: string) =>
   queryOptions({
     queryKey: ["conversation-detail-by-request-public", requestId],
@@ -645,6 +659,7 @@ export const orderPackageOptions = ({
   otherUserId,
   isArtist,
   conversationId,
+  status,
 }: {
   skip?: number;
   take?: number;
@@ -652,9 +667,10 @@ export const orderPackageOptions = ({
   otherUserId?: string;
   isArtist?: boolean;
   conversationId?: string;
+  status?: PackageOrderStatus;
 }) =>
   queryOptions({
-    queryKey: ["order-packages", skip, take, currentUserId, otherUserId, isArtist, conversationId],
+    queryKey: ["order-packages", skip, take, currentUserId, otherUserId, isArtist, conversationId, status],
     queryFn: async () => {
       const where: PackageOrderFilterInput = {};
 
@@ -670,6 +686,10 @@ export const orderPackageOptions = ({
 
       if (conversationId) {
         where.conversationId = { eq: conversationId };
+      }
+
+      if (status) {
+        where.status = { eq: status };
       }
 
       const result = await execute(OrderPackageQuery, { where, skip, take });
