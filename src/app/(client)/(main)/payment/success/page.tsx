@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, CircleStarIcon, Home } from "lucide-react";
+import { CheckCircle2, Home, PackageIcon } from "lucide-react";
 
 const Page = () => {
   const router = useRouter();
@@ -45,7 +45,7 @@ const Page = () => {
                   }
                 }}
               >
-                <CircleStarIcon className="h-5 w-5" />
+                <PackageIcon className="h-5 w-5" />
                 View Orders
               </Button>
 

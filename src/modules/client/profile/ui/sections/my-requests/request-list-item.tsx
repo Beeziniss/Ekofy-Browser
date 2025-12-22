@@ -140,7 +140,7 @@ export function RequestListItem({ request, className }: RequestListItemProps) {
                 <span className="text-gray-300">
                   To:{" "}
                   <Link
-                    href={`/artists/${"userId" in artist && artist.userId ? artist.userId : request.artistId}`}
+                    href={`/artists/${"userId" in artist && artist.userId ? artist.userId : request.artistId}/tracks`}
                     className="hover:text-main-purple font-medium text-white transition-colors"
                   >
                     {artist?.[0]?.stageName}

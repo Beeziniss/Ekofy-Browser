@@ -197,7 +197,7 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
                     onClick={() => {
                       executeWithAuth(() => setSubscribeDialogOpen(true), "contact artist", artist?.stageName);
                     }}
-                    className="text-main-white gap-x-2 bg-gradient-to-r from-purple-500 to-purple-600 px-8 text-base font-semibold shadow-lg shadow-purple-500/30 hover:from-purple-600 hover:to-purple-700"
+                    className="text-main-white bg-gradient-t o-r gap-x-2 from-purple-500 to-purple-600 px-8 text-base font-semibold shadow-lg shadow-purple-500/30 hover:from-purple-600 hover:to-purple-700"
                   >
                     <MicIcon className="size-5" />
                     Contact Now

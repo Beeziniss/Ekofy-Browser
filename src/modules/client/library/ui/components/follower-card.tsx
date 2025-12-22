@@ -180,7 +180,7 @@ const FollowerCard = ({ follower }: FollowerCardProps) => {
 
       <div className="flex flex-col gap-y-1 text-center">
         <Link
-          href={`/artists/${follower.artists?.items?.[0]?.id || follower.listeners?.items?.[0]?.userId || ""}`}
+          href={`/artists/${follower.artists?.items?.[0]?.id || ""}/tracks`}
           className="text-main-white hover:text-main-purple cursor-pointer text-sm hover:underline"
         >
           {displayName}

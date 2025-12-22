@@ -205,7 +205,7 @@ const SemanticTrackItem = React.memo(({ track, allTracks }: SemanticTrackItemPro
             <div className="mb-1 flex items-center gap-2">
               {track.mainArtists?.items?.[0] && (
                 <Link
-                  href={`/artists/${track.mainArtists.items[0].id}`}
+                  href={`/artists/${track.mainArtists.items[0].id}/tracks`}
                   onClick={handleArtistAddPopularity}
                   className="text-main-grey hover:text-main-white text-sm transition-colors"
                 >

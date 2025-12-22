@@ -23,6 +23,9 @@ import {
   NotificationFilterInput,
   AlbumFilterInput,
   TrackFilterInput,
+  RestrictionType,
+  TrackSortInput,
+  SortEnumType,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -40,6 +43,7 @@ import {
   PlaylistsFavoriteQuery,
   PlaylistsHomeQuery,
   PlaylistsPersonalQuery,
+  PlaylistsPublicQuery,
   REQUEST_BY_ID_QUERY,
   REQUEST_HUB_QUERY,
   RequestHubCommentThreadRepliesQuery,
@@ -51,6 +55,7 @@ import {
   TrackCommentsQuery,
   TrackDetailViewQuery,
   TrackFavoriteQuery,
+  TrackInfiniteQuery,
   TrackListHomeQuery,
   USER_QUERY_FOR_REQUESTS,
   UserBasicInfoQuery,
@@ -131,7 +136,7 @@ export const userSubscriptionOptions = (userId: string) =>
 // TRACK QUERIES
 export const trackListHomeOptions = queryOptions({
   queryKey: ["tracks-home"],
-  queryFn: async () => await execute(TrackListHomeQuery, { take: 12 }),
+  queryFn: async () => await execute(TrackListHomeQuery, { take: 12, skip: 0 }),
 });
 
 export const trackDetailOptions = (trackId: string) =>
@@ -176,6 +181,56 @@ export const topTracksOptions = (userId: string) =>
     },
   });
 
+export const trackInfiniteOptions = (userId: string, take: number = 12) =>
+  infiniteQueryOptions({
+    queryKey: ["tracks-infinite", userId],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+      const where: TrackFilterInput = {
+        createdBy: { eq: userId },
+        restriction: { type: { eq: RestrictionType.None } },
+        releaseInfo: { isRelease: { eq: true } },
+      };
+      const order: TrackSortInput[] = [{ streamCount: SortEnumType.Desc }];
+
+      return await execute(TrackInfiniteQuery, {
+        take,
+        skip,
+        where,
+        order,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.tracks?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+    enabled: !!userId,
+  });
+
+export const trackPublicInfiniteOptions = (take: number = 12) =>
+  infiniteQueryOptions({
+    queryKey: ["tracks-public-infinite"],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+      const where: TrackFilterInput = {
+        and: [{ restriction: { type: { eq: RestrictionType.None } } }, { releaseInfo: { isRelease: { eq: true } } }],
+      };
+
+      const order: TrackSortInput[] = [{ createdAt: SortEnumType.Desc }];
+
+      return await execute(TrackInfiniteQuery, {
+        take,
+        skip,
+        where,
+        order,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.tracks?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+  });
+
 // PLAYLIST QUERIES
 export const playlistsHomeOptions = queryOptions({
   queryKey: ["playlists-home"],
@@ -188,6 +243,25 @@ export const playlistOptions = (userId: string, name?: string, take: number = 12
     queryFn: async ({ pageParam }) => {
       const skip = (pageParam - 1) * take;
       return await execute(PlaylistsPersonalQuery, {
+        userId,
+        name,
+        take,
+        skip,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.playlists?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+    enabled: !!userId,
+  });
+
+export const playlistPublicOptions = (userId: string, name?: string, take: number = 12) =>
+  infiniteQueryOptions({
+    queryKey: ["playlists", userId, name],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+      return await execute(PlaylistsPublicQuery, {
         userId,
         name,
         take,
@@ -669,13 +743,15 @@ export const notificationInfiniteOptions = (userId: string, first: number = 5) =
   });
 
 // ALBUM QUERIES
-export const albumListOptions = (name?: string, take: number = 12) =>
+export const albumListOptions = (userId: string, name?: string, take: number = 12) =>
   infiniteQueryOptions({
-    queryKey: ["albums", name],
+    queryKey: ["albums", userId, name],
     queryFn: async ({ pageParam }) => {
       const skip = (pageParam - 1) * take;
 
-      const where: AlbumFilterInput = {};
+      const where: AlbumFilterInput = {
+        createdBy: { eq: userId },
+      };
 
       if (name) {
         where.nameUnsigned = { contains: name };
@@ -692,6 +768,34 @@ export const albumListOptions = (name?: string, take: number = 12) =>
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.albums?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
     },
+  });
+
+export const artistAlbumOptions = (userId: string, name?: string, take: number = 12) =>
+  infiniteQueryOptions({
+    queryKey: ["artist-albums", userId, name],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+
+      const where: AlbumFilterInput = {
+        createdBy: { eq: userId },
+        isVisible: { eq: true },
+      };
+
+      if (name) {
+        where.nameUnsigned = { contains: name };
+      }
+
+      return await execute(AlbumQuery, {
+        where,
+        take,
+        skip,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.albums?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+    enabled: !!userId,
   });
 
 export const albumDetailOptions = (albumId: string) =>

@@ -1,9 +1,4 @@
-import { use } from "react";
-import { notFound } from "next/navigation";
-import { getQueryClient } from "@/providers/get-query-client";
-import { subscriptionPlanDetailQueryOptions } from "@/gql/options/subscription-options";
 import { AdminSubscriptionPlanDetail } from "@/modules/admin/subscription/ui/view";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 interface SubscriptionPlanDetailPageProps {
   params: Promise<{
@@ -12,21 +7,10 @@ interface SubscriptionPlanDetailPageProps {
   }>;
 }
 
-export default function SubscriptionPlanDetailPage({ params }: SubscriptionPlanDetailPageProps) {
-  const { subscriptionId, planId } = use(params);
+const SubscriptionPlanDetailPage = async ({ params }: SubscriptionPlanDetailPageProps) => {
+  const { subscriptionId, planId } = await params;
 
-  if (!planId || !subscriptionId) {
-    notFound();
-  }
+  return <AdminSubscriptionPlanDetail subscriptionId={subscriptionId} planId={planId} />;
+};
 
-  const queryClient = getQueryClient();
-
-  // Prefetch the subscription plan detail data
-  queryClient.prefetchQuery(subscriptionPlanDetailQueryOptions(planId));
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <AdminSubscriptionPlanDetail subscriptionId={subscriptionId} planId={planId} />
-    </HydrationBoundary>
-  );
-}
+export default SubscriptionPlanDetailPage;
