@@ -26,6 +26,7 @@ import {
   RestrictionType,
   TrackSortInput,
   SortEnumType,
+  PackageOrderStatus,
 } from "../graphql";
 import {
   ArtistDetailQuery,
@@ -658,6 +659,7 @@ export const orderPackageOptions = ({
   otherUserId,
   isArtist,
   conversationId,
+  status,
 }: {
   skip?: number;
   take?: number;
@@ -665,9 +667,10 @@ export const orderPackageOptions = ({
   otherUserId?: string;
   isArtist?: boolean;
   conversationId?: string;
+  status?: PackageOrderStatus;
 }) =>
   queryOptions({
-    queryKey: ["order-packages", skip, take, currentUserId, otherUserId, isArtist, conversationId],
+    queryKey: ["order-packages", skip, take, currentUserId, otherUserId, isArtist, conversationId, status],
     queryFn: async () => {
       const where: PackageOrderFilterInput = {};
 
@@ -683,6 +686,10 @@ export const orderPackageOptions = ({
 
       if (conversationId) {
         where.conversationId = { eq: conversationId };
+      }
+
+      if (status) {
+        where.status = { eq: status };
       }
 
       const result = await execute(OrderPackageQuery, { where, skip, take });

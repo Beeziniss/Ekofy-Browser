@@ -6,19 +6,17 @@ import { useQuery } from "@tanstack/react-query";
 import ServicePackageDetail from "../component/service-package-detail/service-package-detail";
 // import { execute } from '@/gql/execute';
 import { packageDetailOptions } from "@/gql/options/artist-options";
+import { useRouter } from "next/navigation";
 // import { changeArtistPackageStatusMutation } from '@/gql/client-mutation-options/service-package-mutation';
 // import { ArtistPackageStatus } from '@/gql/graphql';
 
 interface ServicePackageDetailSectionProps {
   packageId: string;
-  onBack: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
 }
 
-const ServicePackageDetailSection = ({ packageId, onBack }: ServicePackageDetailSectionProps) => {
+const ServicePackageDetailSection = ({ packageId }: ServicePackageDetailSectionProps) => {
   // const queryClient = useQueryClient();
-
+  const router = useRouter();
   // Query for package detail using options
   const { data: packageData, isLoading } = useQuery(packageDetailOptions(packageId));
 
@@ -46,6 +44,10 @@ const ServicePackageDetailSection = ({ packageId, onBack }: ServicePackageDetail
   //   changeStatusMutation.mutate(status);
   // };
 
+  const handleBack = () => {
+    router.push("/artist/studio/service-package");
+  };
+
   const packageItem = packageData?.artistPackages?.items?.[0];
 
   if (isLoading) {
@@ -68,7 +70,7 @@ const ServicePackageDetailSection = ({ packageId, onBack }: ServicePackageDetail
     );
   }
 
-  return <ServicePackageDetail package={packageItem} onBack={onBack} />;
+  return <ServicePackageDetail package={packageItem} onBack={handleBack} />;
 };
 
 export default ServicePackageDetailSection;
