@@ -53,10 +53,11 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Plus, Trash2 } from "lucide-react";
+import { CalendarIcon, Plus, Trash2, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import TrackUserCombobox from "../components/track-user-combobox";
 import { TrackUploadArtist } from "../../types";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const FormSchema = z
   .object({
@@ -510,14 +511,14 @@ const TrackUploadMetadataSection = () => {
       // Upload legal documents to S3
       const uploadedLegalDocuments = [];
       for (const doc of legalDocuments) {
-        if (doc.documentFile && doc.name && doc.note) {
+        if (doc.documentFile && doc.name.trim()) {
           try {
             const uploadResult = await uploadLegalDocument(doc.documentFile);
             uploadedLegalDocuments.push({
               documentType: doc.documentType as DocumentType,
               documentUrl: uploadResult.fileKey,
               name: doc.name,
-              note: doc.note,
+              note: doc.note || null,
             });
           } catch (error) {
             console.error("Failed to upload document:", error);
@@ -1171,7 +1172,7 @@ const TrackUploadMetadataSection = () => {
                                   className={cn(
                                     "space-y-3 rounded-md border p-4 transition-colors",
                                     form.formState.isSubmitted &&
-                                      (!doc.name.trim() || !doc.documentFile || !doc.note.trim())
+                                      (!doc.name.trim() || !doc.documentFile)
                                       ? "border-destructive/50 bg-destructive/5"
                                       : "border-white/20",
                                   )}
@@ -1385,6 +1386,13 @@ const TrackUploadMetadataSection = () => {
                 </AccordionTrigger>
                 <AccordionContent className="pl-9">
                   <div className="flex w-full flex-col space-y-6">
+                    {/* Warning Alert */}
+                    <Alert className="border-red-500/30 bg-red-500/10">
+                      <AlertTriangle className="h-4 w-4 stroke-red-500" />
+                      <AlertDescription className="text-red-500">
+                        Warning: Royalty Splits cannot be updated after the track is uploaded. Please double-check the information before proceeding.
+                      </AlertDescription>
+                    </Alert>
                     {/* Original Content */}
                     <FormField
                       control={form.control}

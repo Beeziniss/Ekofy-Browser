@@ -57,13 +57,13 @@ const ArtistHireCard = ({ artist }: ArtistHireCardProps) => {
         </div>
       </div>
 
-      <div className="mt-4">
-        <p className="text-main-white line-clamp-3 min-h-[60px] text-base">
+      <div className="mt-4 mb-6">
+        <p className="text-main-white line-clamp-2 text-base">
           {artist.biography || "No biography available."}
         </p>
       </div>
 
-      <div className="mt-6 w-full">
+      <div className="mt-auto w-full">
         <div className="flex flex-wrap justify-center gap-2">
           <Badge variant="secondary" className="text-xs">
             {location}
