@@ -233,6 +233,31 @@ export const trackPublicInfiniteOptions = (take: number = 12) =>
     },
   });
 
+export const trackPublicInfiniteWithCategoryOptions = (take: number = 12, categoryId: string) =>
+  infiniteQueryOptions({
+    queryKey: ["tracks-public-infinite-with-category", categoryId],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+      const where: TrackFilterInput = {
+        and: [{ restriction: { type: { eq: RestrictionType.None } } }, { releaseInfo: { isRelease: { eq: true } } }],
+        categoryIds: { some: { eq: categoryId } },
+      };
+
+      const order: TrackSortInput[] = [{ createdAt: SortEnumType.Desc }];
+
+      return await execute(TrackInfiniteQuery, {
+        take,
+        skip,
+        where,
+        order,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.tracks?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+  });
+
 // PLAYLIST QUERIES
 export const playlistsHomeOptions = queryOptions({
   queryKey: ["playlists-home"],

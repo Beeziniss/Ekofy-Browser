@@ -3352,6 +3352,7 @@ export enum NotificationActionType {
   Mention = 'MENTION',
   Message = 'MESSAGE',
   OrderCompleted = 'ORDER_COMPLETED',
+  OrderContinued = 'ORDER_CONTINUED',
   OrderCreated = 'ORDER_CREATED',
   OrderDeadline = 'ORDER_DEADLINE',
   OrderDisputed = 'ORDER_DISPUTED',
@@ -3599,6 +3600,7 @@ export type PackageOrder = {
   platformFeePercentage: Scalars['Decimal']['output'];
   provider: Array<Artist>;
   providerId: Scalars['String']['output'];
+  refundReason?: Maybe<Scalars['String']['output']>;
   requirements: Scalars['String']['output'];
   review?: Maybe<Review>;
   revisionCount: Scalars['Int']['output'];
@@ -3683,6 +3685,7 @@ export type PackageOrderFilterInput = {
   payoutTransactionId?: InputMaybe<StringOperationFilterInput>;
   platformFeePercentage?: InputMaybe<DecimalOperationFilterInput>;
   providerId?: InputMaybe<StringOperationFilterInput>;
+  refundReason?: InputMaybe<StringOperationFilterInput>;
   requirements?: InputMaybe<StringOperationFilterInput>;
   review?: InputMaybe<ReviewFilterInput>;
   revisionCount?: InputMaybe<IntOperationFilterInput>;
@@ -3694,6 +3697,7 @@ export type PackageOrderFilterInput = {
 export type PackageOrderRefundRequestInput = {
   artistPercentageAmount: Scalars['Decimal']['input'];
   id: Scalars['String']['input'];
+  refundReason: Scalars['String']['input'];
   requestorPercentageAmount: Scalars['Decimal']['input'];
 };
 
@@ -3716,6 +3720,7 @@ export type PackageOrderSortInput = {
   payoutTransactionId?: InputMaybe<SortEnumType>;
   platformFeePercentage?: InputMaybe<SortEnumType>;
   providerId?: InputMaybe<SortEnumType>;
+  refundReason?: InputMaybe<SortEnumType>;
   requirements?: InputMaybe<SortEnumType>;
   review?: InputMaybe<ReviewSortInput>;
   revisionCount?: InputMaybe<SortEnumType>;
@@ -8637,7 +8642,7 @@ export type TrackSongCatcherQueryVariables = Exact<{
 }>;
 
 
-export type TrackSongCatcherQuery = { __typename?: 'QueryInitialization', queryTrack: { __typename?: 'QueryAudioFingerprintResponse', trackId: string, trackName: string, artistId: string, artistName: string, mediaType: string, queryMatchStartsAt: number, queryMatchEndsAt: number, trackMatchStartsAt: number, trackMatchEndsAt: number, queryCoverageLength: number, trackCoverageLength: number, queryCoverage: number, trackCoverage: number, minConfidence: number, minCoverage: number } };
+export type TrackSongCatcherQuery = { __typename?: 'QueryInitialization', queryTracks: Array<{ __typename?: 'QueryAudioFingerprintResponse', trackId: string, trackName: string, artistName: string, trackMatchStartsAt: number, trackMatchEndsAt: number }> };
 
 export type UserBasicInfoQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -12784,22 +12789,12 @@ export const TopTracksDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<TopTracksQuery, TopTracksQueryVariables>;
 export const TrackSongCatcherDocument = new TypedDocumentString(`
     query TrackSongCatcher($file: Upload!) {
-  queryTrack(file: $file) {
+  queryTracks(file: $file) {
     trackId
     trackName
-    artistId
     artistName
-    mediaType
-    queryMatchStartsAt
-    queryMatchEndsAt
     trackMatchStartsAt
     trackMatchEndsAt
-    queryCoverageLength
-    trackCoverageLength
-    queryCoverage
-    trackCoverage
-    minConfidence
-    minCoverage
   }
 }
     `) as unknown as TypedDocumentString<TrackSongCatcherQuery, TrackSongCatcherQueryVariables>;

@@ -1,3 +1,5 @@
+import ChannelDetailView from "@/modules/client/channels/ui/views/channel-detail-view";
+
 interface PageProps {
   params: Promise<{ channelId: string }>;
 }
@@ -5,7 +7,7 @@ interface PageProps {
 const Page = async ({ params }: PageProps) => {
   const { channelId } = await params;
 
-  return <div>Channel about {channelId}</div>;
+  return <ChannelDetailView channelId={channelId} />;
 };
 
 export default Page;

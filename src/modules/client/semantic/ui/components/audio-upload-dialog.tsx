@@ -140,7 +140,7 @@ const AudioUploadDialog = ({ open, onOpenChange, onFileSelect, isProcessing = fa
             <Button
               onClick={handleSubmit}
               disabled={!selectedFile || isProcessing}
-              className="bg-main-purple hover:bg-main-purple/90 flex-1 gap-2"
+              className="bg-main-purple hover:bg-main-purple/90 text-main-white flex-1 gap-2"
             >
               {isProcessing ? (
                 <>
@@ -149,7 +149,7 @@ const AudioUploadDialog = ({ open, onOpenChange, onFileSelect, isProcessing = fa
                 </>
               ) : (
                 <>
-                  <FileMusic className="size-4" />
+                  <FileMusic className="text-main-white size-4" />
                   Identify Song
                 </>
               )}

@@ -46,11 +46,9 @@ const SemanticSection = () => {
   const [songMatchResult, setSongMatchResult] = useState<{
     trackId?: string | null;
     trackName?: string | null;
-    artistId?: string | null;
     artistName?: string | null;
-    queryCoverage?: number | null;
-    trackCoverage?: number | null;
-    minConfidence?: number | null;
+    trackMatchStartsAt?: number | null;
+    trackMatchEndsAt?: number | null;
   } | null>(null);
   const [isResultOpen, setIsResultOpen] = useState(false);
   const [identificationError, setIdentificationError] = useState<string | null>(null);
@@ -65,8 +63,9 @@ const SemanticSection = () => {
   // Handle song catcher result
   useEffect(() => {
     if (!isSongCatcherFetching && audioFile) {
-      if (songCatcherData && songCatcherData.queryTrack) {
-        setSongMatchResult(songCatcherData.queryTrack);
+      if (songCatcherData && songCatcherData.queryTracks && songCatcherData.queryTracks.length > 0) {
+        // Take the first (best) match from the array
+        setSongMatchResult(songCatcherData.queryTracks[0]);
         setIsResultOpen(true);
       } else {
         setSongMatchResult(null);
