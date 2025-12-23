@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CouponTable } from "../components/coupon-table";
 import { CouponForm } from "../components/coupon-form";
-import { adminCouponsOptions, createCouponMutationOptions, deprecateCouponMutationOptions } from "@/gql/options/admin-options";
+import { adminCouponsOptions, createCouponMutationOptions } from "@/gql/options/admin-options";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CouponStatus, CreateCouponRequestInput } from "@/gql/graphql";
 import { toast } from "sonner";
