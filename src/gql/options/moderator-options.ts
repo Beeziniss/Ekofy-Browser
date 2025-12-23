@@ -215,12 +215,11 @@ export const moderatorUserDetailOptions = (userId: string) =>
 export const moderatorApprovalHistoriesOptions = (
   page: number = 1, 
   pageSize: number = 10, 
-  searchTerm: string = "",
   approvalType: string = "ALL",
   action: string = "ALL"
 ) =>
   queryOptions({
-    queryKey: ["moderator-approval-histories", page, pageSize, searchTerm, approvalType, action],
+    queryKey: ["moderator-approval-histories", page, pageSize, approvalType, action],
     queryFn: async () => {
       const skip = (page - 1) * pageSize;
       const where: ApprovalHistoryFilterInput = {};
@@ -233,13 +232,6 @@ export const moderatorApprovalHistoriesOptions = (
       // Filter by action if not "ALL"
       if (action !== "ALL") {
         where.action = { eq: action as HistoryActionType };
-      }
-      
-      // Add search filter if search term is provided
-      if (searchTerm.trim()) {
-        where.snapshot = {
-          contains: searchTerm,
-        };
       }
       
       const result = (await execute(ApprovalHistoriesListQuery, {

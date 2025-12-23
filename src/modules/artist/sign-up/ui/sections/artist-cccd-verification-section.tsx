@@ -7,10 +7,9 @@ import { VerificationHeader, IDUploadComponent, PersonalInformationComponent } f
 import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import { useFPTAI } from "../../hooks/use-fpt-ai";
 import { useS3Upload } from "../../hooks/use-s3-upload";
-// import { isValidPhoneNumber, formatPhoneNumber } from "@/utils/signup-utils";
 import { toast } from "sonner";
 import { validateImageFile } from "@/utils/cloudinary-utils";
-import { convertDateToISO, convertISOToDisplayDate } from "@/utils/signup-utils";
+import { convertDateToISO, convertISOToDisplayDate, validatePhoneNumber } from "@/utils/signup-utils";
 import { UserGender } from "@/gql/graphql";
 import { ArtistCCCDData, ArtistSignUpSectionProps } from "@/types/artist_type";
 import { FilePath } from "@/types/file";
@@ -65,12 +64,6 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
   const [isManager] = useState(initialData?.hasManager || false);
   const [authorizationLetter, setAuthorizationLetter] = useState<File | null>(initialData?.authorizationLetter || null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Phone number validation (must be exactly 10 digits)
-  const validatePhoneNumber = (phone: string) => {
-    const phoneRegex = /^[0-9]{10}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ""));
-  };
 
   // Date formatting function - keeps DD/MM/YYYY format
   // const formatDate = (date: Date | string) => {
@@ -249,7 +242,7 @@ const ArtistCCCDVerificationSection = ({ onNext, onBack, initialData }: ArtistCC
     if (!phoneNumber.trim()) {
       newErrors.phoneNumber = "Please enter your phone number";
     } else if (!validatePhoneNumber(phoneNumber)) {
-      newErrors.phoneNumber = "Phone number must be exactly 10 digits";
+      newErrors.phoneNumber = "Invalid phone number format. Please enter a valid Vietnamese phone number (e.g., 0987654321)";
     }
 
     // Check if CCCD processing is still in progress

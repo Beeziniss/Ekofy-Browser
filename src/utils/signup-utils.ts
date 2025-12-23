@@ -56,6 +56,25 @@ export const validatePassword = (password: string): string[] => {
   return errors;
 };
 
+/**
+ * Validate Vietnamese phone number according to BE regex pattern
+ * Pattern: ^(0|\+84)(32|33|34|35|36|37|38|39|86|96|97|98|81|82|83|84|85|88|91|94|70|76|77|78|79|89|90|93|52|56|58|92|059|099|095)[0-9]{7}$
+ * @param phone - Phone number string
+ * @returns boolean - true if valid, false otherwise
+ */
+export const validatePhoneNumber = (phone: string): boolean => {
+  if (!phone) return false;
+
+  // Remove spaces and special characters for validation
+  const cleanedPhone = phone.replace(/\s/g, "");
+
+  // Vietnamese phone number regex matching BE validation
+  // Must start with 0 or +84, followed by valid area code, then 7 digits
+  const phoneRegex = /^(0|\+84)(32|33|34|35|36|37|38|39|86|96|97|98|81|82|83|84|85|88|91|94|70|76|77|78|79|89|90|93|52|56|58|92|059|099|095)[0-9]{7}$/;
+
+  return phoneRegex.test(cleanedPhone);
+};
+
 export const handleAPIError = (error: unknown): string => {
   if (isAxiosError(error)) {
     const data = error.response?.data;

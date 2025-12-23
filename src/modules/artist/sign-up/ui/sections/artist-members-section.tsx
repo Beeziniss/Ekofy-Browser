@@ -7,8 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, X, Plus } from "lucide-react";
 import { useArtistSignUpStore } from "@/store/stores/artist-signup-store";
 import useArtistSignUp from "../../hooks/use-artist-sign-up";
-import { convertArtistStoreDataToAPIFormat } from "@/utils/signup-utils";
-// import { isValidPhoneNumber } from '@/utils/signup-utils';
+import { convertArtistStoreDataToAPIFormat, validatePhoneNumber } from "@/utils/signup-utils";
 import { toast } from "sonner";
 import { UserGender } from "@/gql/graphql";
 import { useRouter } from "next/navigation";
@@ -94,8 +93,8 @@ const ArtistMembersSection = ({ onNext, onBack, initialData }: ArtistMembersSect
       }
       if (!member.phoneNumber.trim()) {
         newErrors[`member-${index}-phoneNumber`] = "Phone number is required";
-      } else if (member.phoneNumber.length !== 10) {
-        newErrors[`member-${index}-phoneNumber`] = "Invalid phone number format. It must contain exactly 10 digits.";
+      } else if (!validatePhoneNumber(member.phoneNumber)) {
+        newErrors[`member-${index}-phoneNumber`] = "Invalid phone number format. Please enter a valid Vietnamese phone number (e.g., 0987654321)";
       }
       if (!member.gender) {
         newErrors[`member-${index}-gender`] = "Gender is required";
