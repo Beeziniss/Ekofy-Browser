@@ -7185,6 +7185,20 @@ export type SoftDeleteCategoryMutationVariables = Exact<{
 
 export type SoftDeleteCategoryMutation = { __typename?: 'MutationInitialization', softDeleteCategory: boolean };
 
+export type CreateCouponMutationVariables = Exact<{
+  createCouponRequest: CreateCouponRequestInput;
+}>;
+
+
+export type CreateCouponMutation = { __typename?: 'MutationInitialization', createCoupon: boolean };
+
+export type DeprecateCouponMutationVariables = Exact<{
+  couponIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type DeprecateCouponMutation = { __typename?: 'MutationInitialization', deprecateCoupon: boolean };
+
 export type ComputePlatformRevenueMutationVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -7772,6 +7786,16 @@ export type CategoryDetailAdminQueryVariables = Exact<{
 
 
 export type CategoryDetailAdminQuery = { __typename?: 'QueryInitialization', categories?: { __typename?: 'CategoriesCollectionSegment', items?: Array<{ __typename?: 'Category', id: string, name: string, slug: string, type: CategoryType, aliases: Array<string>, popularity: number, description?: string | null, isVisible: boolean, createdAt: any, updatedAt?: any | null }> | null } | null };
+
+export type CouponListQueryVariables = Exact<{
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<CouponFilterInput>;
+  order?: InputMaybe<Array<CouponSortInput> | CouponSortInput>;
+}>;
+
+
+export type CouponListQuery = { __typename?: 'QueryInitialization', coupons?: { __typename?: 'CouponsCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'Coupon', id: string, stripeCouponId: string, name: string, description?: string | null, code: string, percentOff: any, duration: CouponDurationType, purpose: CouponPurposeType, status: CouponStatus, createdAt: any, updatedAt?: any | null }> | null } | null };
 
 export type PaymentTransactionsQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -9222,6 +9246,16 @@ export const SoftDeleteCategoryDocument = new TypedDocumentString(`
   softDeleteCategory(categoryId: $categoryId)
 }
     `) as unknown as TypedDocumentString<SoftDeleteCategoryMutation, SoftDeleteCategoryMutationVariables>;
+export const CreateCouponDocument = new TypedDocumentString(`
+    mutation CreateCoupon($createCouponRequest: CreateCouponRequestInput!) {
+  createCoupon(createCouponRequest: $createCouponRequest)
+}
+    `) as unknown as TypedDocumentString<CreateCouponMutation, CreateCouponMutationVariables>;
+export const DeprecateCouponDocument = new TypedDocumentString(`
+    mutation DeprecateCoupon($couponIds: [String!]!) {
+  deprecateCoupon(couponIds: $couponIds)
+}
+    `) as unknown as TypedDocumentString<DeprecateCouponMutation, DeprecateCouponMutationVariables>;
 export const ComputePlatformRevenueDocument = new TypedDocumentString(`
     mutation ComputePlatformRevenue {
   computePlatformRevenue {
@@ -9724,6 +9758,30 @@ export const CategoryDetailAdminDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<CategoryDetailAdminQuery, CategoryDetailAdminQueryVariables>;
+export const CouponListDocument = new TypedDocumentString(`
+    query CouponList($skip: Int, $take: Int, $where: CouponFilterInput, $order: [CouponSortInput!]) {
+  coupons(skip: $skip, take: $take, where: $where, order: $order) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
+      id
+      stripeCouponId
+      name
+      description
+      code
+      percentOff
+      duration
+      purpose
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CouponListQuery, CouponListQueryVariables>;
 export const PaymentTransactionsDocument = new TypedDocumentString(`
     query PaymentTransactions($skip: Int, $take: Int, $where: PaymentTransactionFilterInput, $order: [PaymentTransactionSortInput!]) {
   paymentTransactions(skip: $skip, take: $take, where: $where, order: $order) {
