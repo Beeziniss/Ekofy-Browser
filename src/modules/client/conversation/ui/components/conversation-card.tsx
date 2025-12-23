@@ -5,7 +5,7 @@ import { Conversation } from "@/gql/graphql";
 import { getUserInitials } from "@/utils/format-shorten-name";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface ConversationCardProps {
@@ -14,15 +14,19 @@ interface ConversationCardProps {
 
 const ConversationCard = ({ conversation }: ConversationCardProps) => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const otherUserProfile = conversation.otherProfileConversation;
   const lastMessage = conversation.lastMessage;
 
-  // Check if the current conversation is active (URL matches conversation ID)
+  // Check if the current conversation is active (URL matches conversation ID, ignoring params)
   const isActive = pathname === `/inbox/${conversation.id}`;
+
+  // Build the href with current search params
+  const href = `/inbox/${conversation.id}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
 
   return (
     <Link
-      href={`/inbox/${conversation.id}`}
+      href={href}
       className={cn(
         "text-main-white hover:bg-main-grey-1 flex w-full cursor-pointer items-center justify-between rounded-md p-2 transition-colors",
         isActive && "bg-main-grey-1 border-main-purple border-l-2",
@@ -34,8 +38,8 @@ const ConversationCard = ({ conversation }: ConversationCardProps) => {
           <AvatarFallback>{getUserInitials(otherUserProfile?.nickname)}</AvatarFallback>
         </Avatar>
 
-        <div className="flex flex-col max-w-[200px]">
-          <div className="text-sm font-semibold line-clamp-1">{otherUserProfile.nickname}</div>
+        <div className="flex max-w-[200px] flex-col">
+          <div className="line-clamp-1 text-sm font-semibold">{otherUserProfile.nickname}</div>
           <div className="line-clamp-1 text-xs text-gray-400">{lastMessage?.text || "No messages yet"}</div>
         </div>
       </div>

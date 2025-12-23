@@ -44,18 +44,23 @@ export function NavUser({
   const queryClient = useQueryClient();
   const [isRevenueDialogOpen, setIsRevenueDialogOpen] = useState(false);
 
+  const cleanupAndRedirect = () => {
+    // 1. Wipe Zustand/LocalStorage
+    clearUserData();
+
+    // 2. Wipe TanStack Query
+    queryClient.clear();
+
+    // 3. Redirect
+    // Use window.location to ensure Middleware doesn't get stuck in a logic loop
+    window.location.href = "/admin/login";
+  };
+
   // Logout mutation
   const { mutate: logout } = useMutation({
     mutationFn: authApi.general.logout,
-    onSuccess: () => {
-      clearUserData();
-      queryClient.clear();
-      router.push("/admin/login");
-    },
-    onError: (error) => {
-      console.error("Logout failed:", error);
-      // Still clear local data even if server logout fails
-      clearUserData();
+    onSettled: () => {
+      cleanupAndRedirect();
     },
   });
 
@@ -109,9 +114,8 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
-           
-            <DropdownMenuGroup>
-            </DropdownMenuGroup>
+
+            <DropdownMenuGroup></DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => router.push("/admin/profile")}>
@@ -131,12 +135,10 @@ export function NavUser({
                     Platform Revenue
                   </DropdownMenuItem>
                 </DialogTrigger>
-                <DialogContent className="!max-w-6xl max-h-[80vh] overflow-y-auto">
+                <DialogContent className="max-h-[80vh] !max-w-6xl overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Platform Revenue Dashboard</DialogTitle>
-                    <DialogDescription>
-                      View comprehensive platform financial metrics
-                    </DialogDescription>
+                    <DialogDescription>View comprehensive platform financial metrics</DialogDescription>
                   </DialogHeader>
                   {isComputingRevenue ? (
                     <div className="flex justify-center py-8">
@@ -146,19 +148,19 @@ export function NavUser({
                     <div className="space-y-6">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="rounded-lg border p-4">
-                          <div className="text-sm text-muted-foreground">Subscription Revenue</div>
+                          <div className="text-muted-foreground text-sm">Subscription Revenue</div>
                           <div className="text-2xl font-bold">
                             {revenueData.subscriptionRevenue?.toLocaleString()} {revenueData.currency || "VND"}
                           </div>
                         </div>
                         <div className="rounded-lg border p-4">
-                          <div className="text-sm text-muted-foreground">Service Revenue</div>
+                          <div className="text-muted-foreground text-sm">Service Revenue</div>
                           <div className="text-2xl font-bold">
                             {revenueData.serviceRevenue?.toLocaleString()} {revenueData.currency || "VND"}
                           </div>
                         </div>
-                        <div className="col-span-2 rounded-lg border border-green-500 p-4 bg-green-500/5">
-                          <div className="text-sm text-muted-foreground">Gross Revenue</div>
+                        <div className="col-span-2 rounded-lg border border-green-500 bg-green-500/5 p-4">
+                          <div className="text-muted-foreground text-sm">Gross Revenue</div>
                           <div className="text-3xl font-bold text-green-500">
                             {revenueData.grossRevenue?.toLocaleString()} {revenueData.currency || "VND"}
                           </div>
@@ -166,34 +168,34 @@ export function NavUser({
                       </div>
 
                       <div className="border-t pt-4">
-                        <h3 className="font-semibold mb-3">Deductions</h3>
+                        <h3 className="mb-3 font-semibold">Deductions</h3>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="rounded-lg border p-4">
-                            <div className="text-sm text-muted-foreground">Royalty Payouts</div>
+                            <div className="text-muted-foreground text-sm">Royalty Payouts</div>
                             <div className="text-xl font-semibold text-red-500">
                               -{revenueData.royaltyPayoutAmount?.toLocaleString()} {revenueData.currency || "VND"}
                             </div>
                           </div>
                           <div className="rounded-lg border p-4">
-                            <div className="text-sm text-muted-foreground">Service Payouts</div>
+                            <div className="text-muted-foreground text-sm">Service Payouts</div>
                             <div className="text-xl font-semibold text-red-500">
                               -{revenueData.servicePayoutAmount?.toLocaleString()} {revenueData.currency || "VND"}
                             </div>
                           </div>
                           <div className="rounded-lg border p-4">
-                            <div className="text-sm text-muted-foreground">Refund Amount</div>
+                            <div className="text-muted-foreground text-sm">Refund Amount</div>
                             <div className="text-xl font-semibold text-red-500">
                               -{revenueData.refundAmount?.toLocaleString()} {revenueData.currency || "VND"}
                             </div>
                           </div>
                           <div className="rounded-lg border p-4">
-                            <div className="text-sm text-muted-foreground">Total Payout Amount</div>
+                            <div className="text-muted-foreground text-sm">Total Payout Amount</div>
                             <div className="text-xl font-semibold text-red-500">
                               -{revenueData.totalPayoutAmount?.toLocaleString()} {revenueData.currency || "VND"}
                             </div>
                           </div>
-                          <div className="col-span-2 rounded-lg border border-red-500 p-4 bg-red-500/5">
-                            <div className="text-sm text-muted-foreground">Gross Deductions</div>
+                          <div className="col-span-2 rounded-lg border border-red-500 bg-red-500/5 p-4">
+                            <div className="text-muted-foreground text-sm">Gross Deductions</div>
                             <div className="text-2xl font-bold text-red-500">
                               -{revenueData.grossDeductions?.toLocaleString()} {revenueData.currency || "VND"}
                             </div>
@@ -202,17 +204,17 @@ export function NavUser({
                       </div>
 
                       <div className="border-t pt-4">
-                        <h3 className="font-semibold mb-3">Profit</h3>
+                        <h3 className="mb-3 font-semibold">Profit</h3>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="rounded-lg border p-4">
-                            <div className="text-sm text-muted-foreground">Commission Profit</div>
+                            <div className="text-muted-foreground text-sm">Commission Profit</div>
                             <div className="text-2xl font-bold text-blue-500">
                               {revenueData.commissionProfit?.toLocaleString()} {revenueData.currency || "VND"}
                             </div>
                           </div>
-                          <div className="rounded-lg border border-primary p-4 bg-primary/5">
-                            <div className="text-sm text-muted-foreground">Net Profit</div>
-                            <div className="text-3xl font-bold text-primary">
+                          <div className="border-primary bg-primary/5 rounded-lg border p-4">
+                            <div className="text-muted-foreground text-sm">Net Profit</div>
+                            <div className="text-primary text-3xl font-bold">
                               {revenueData.netProfit?.toLocaleString()} {revenueData.currency || "VND"}
                             </div>
                           </div>
@@ -220,12 +222,12 @@ export function NavUser({
                       </div>
 
                       {revenueData.createdAt && (
-                        <div className="text-xs text-muted-foreground text-center pt-4">
+                        <div className="text-muted-foreground pt-4 text-center text-xs">
                           Computed at: {new Date(revenueData.createdAt as unknown as string).toLocaleString()}
                         </div>
                       )}
 
-                      <div className="flex justify-end gap-2 pt-4 border-t">
+                      <div className="flex justify-end gap-2 border-t pt-4">
                         <Button
                           variant="outline"
                           onClick={() => computePlatformRevenue()}

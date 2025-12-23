@@ -31,18 +31,24 @@ export function NavUser({
   const { clearUserData } = useAuthStore();
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const cleanupAndRedirect = () => {
+    // 1. Wipe Zustand/LocalStorage
+    clearUserData();
+
+    // 2. Wipe TanStack Query
+    queryClient.clear();
+
+    // 3. Redirect
+    // Use window.location to ensure Middleware doesn't get stuck in a logic loop
+    window.location.href = "/moderator/login";
+  };
+
   // Logout mutation
   const { mutate: logout } = useMutation({
     mutationFn: authApi.general.logout,
-    onSuccess: () => {
-      clearUserData();
-      queryClient.clear();
-      router.push("/moderator/login");
-    },
-    onError: (error) => {
-      console.error("Logout failed:", error);
-      // Still clear local data even if server logout fails
-      clearUserData();
+    onSettled: () => {
+      cleanupAndRedirect();
     },
   });
 

@@ -30,14 +30,13 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { authApi } from "@/services/auth-services";
-import { useAuthStore } from "@/store";
-import { useRouter } from "next/navigation";
-import { useArtistProfile } from "@/modules/artist/profile/hooks/use-artist-profile";
 import Link from "next/link";
 import { useState } from "react";
+import { useAuthStore } from "@/store";
+import { authApi } from "@/services/auth-services";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useArtistProfile } from "@/modules/artist/profile/hooks/use-artist-profile";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import {
   Dialog,
   DialogContent,
@@ -60,7 +59,6 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const { clearUserData } = useAuthStore();
-  const router = useRouter();
   const { header, data } = useArtistProfile();
   const queryClient = useQueryClient();
   const displayName = header?.name || user.name;
@@ -69,18 +67,23 @@ export function NavUser({
   const { user: userStore } = useAuthStore();
   const [isRevenueDialogOpen, setIsRevenueDialogOpen] = useState(false);
 
+  const cleanupAndRedirect = () => {
+    // 1. Wipe Zustand/LocalStorage
+    clearUserData();
+
+    // 2. Wipe TanStack Query
+    queryClient.clear();
+
+    // 3. Redirect
+    // Use window.location to ensure Middleware doesn't get stuck in a logic loop
+    window.location.href = "/artist/login";
+  };
+
   // Logout mutation
   const { mutate: logout } = useMutation({
     mutationFn: authApi.general.logout,
-    onSuccess: () => {
-      clearUserData();
-      queryClient.clear();
-      router.push("/artist/login");
-    },
-    onError: (error) => {
-      console.error("Logout failed:", error);
-      // Still clear local data even if server logout fails
-      clearUserData();
+    onSettled: () => {
+      cleanupAndRedirect();
     },
   });
 
@@ -186,9 +189,7 @@ export function NavUser({
                 <DialogContent className="max-w-2xl">
                   <DialogHeader>
                     <DialogTitle>Artist Revenue Dashboard</DialogTitle>
-                    <DialogDescription>
-                      View your earnings and revenue breakdown
-                    </DialogDescription>
+                    <DialogDescription>View your earnings and revenue breakdown</DialogDescription>
                   </DialogHeader>
                   {isComputingRevenue ? (
                     <div className="flex justify-center py-8">
@@ -198,32 +199,24 @@ export function NavUser({
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="rounded-lg border p-4">
-                          <div className="text-sm text-muted-foreground">Royalty Earnings</div>
-                          <div className="text-2xl font-bold">
-                            {revenueData.royaltyEarnings?.toLocaleString()} VND
-                          </div>
+                          <div className="text-muted-foreground text-sm">Royalty Earnings</div>
+                          <div className="text-2xl font-bold">{revenueData.royaltyEarnings?.toLocaleString()} VND</div>
                         </div>
                         <div className="rounded-lg border p-4">
-                          <div className="text-sm text-muted-foreground">Service Revenue</div>
-                          <div className="text-2xl font-bold">
-                            {revenueData.serviceRevenue?.toLocaleString()} VND
-                          </div>
+                          <div className="text-muted-foreground text-sm">Service Revenue</div>
+                          <div className="text-2xl font-bold">{revenueData.serviceRevenue?.toLocaleString()} VND</div>
                         </div>
                         <div className="rounded-lg border p-4">
-                          <div className="text-sm text-muted-foreground">Service Earnings</div>
-                          <div className="text-2xl font-bold">
-                            {revenueData.serviceEarnings?.toLocaleString()} VND
-                          </div>
+                          <div className="text-muted-foreground text-sm">Service Earnings</div>
+                          <div className="text-2xl font-bold">{revenueData.serviceEarnings?.toLocaleString()} VND</div>
                         </div>
                         <div className="rounded-lg border p-4">
-                          <div className="text-sm text-muted-foreground">Gross Revenue</div>
-                          <div className="text-2xl font-bold">
-                            {revenueData.grossRevenue?.toLocaleString()} VND
-                          </div>
+                          <div className="text-muted-foreground text-sm">Gross Revenue</div>
+                          <div className="text-2xl font-bold">{revenueData.grossRevenue?.toLocaleString()} VND</div>
                         </div>
-                        <div className="col-span-2 rounded-lg border border-primary p-4 bg-primary/5">
-                          <div className="text-sm text-muted-foreground">Net Revenue</div>
-                          <div className="text-3xl font-bold text-primary">
+                        <div className="border-primary bg-primary/5 col-span-2 rounded-lg border p-4">
+                          <div className="text-muted-foreground text-sm">Net Revenue</div>
+                          <div className="text-primary text-3xl font-bold">
                             {revenueData.netRevenue?.toLocaleString()} VND
                           </div>
                         </div>
