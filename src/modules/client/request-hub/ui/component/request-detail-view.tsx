@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ArrowLeft,
   //   Bookmark,
@@ -159,6 +159,10 @@ export function RequestDetailView({ request, onBack, onEdit, onDelete, className
             {/* Author and Post Info */}
             <div className="flex items-center space-x-3">
               <Avatar className="h-10 w-10">
+                <AvatarImage 
+                  src={request.requestor?.[0]?.avatarImage || undefined} 
+                  alt={request.requestor?.[0]?.displayName || "User"}
+                />
                 <AvatarFallback className="bg-gray-200 text-gray-600">
                   {request.requestor?.[0]?.displayName?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>

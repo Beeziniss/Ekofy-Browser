@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, Search, Filter } from "lucide-react";
+import { MoreHorizontal, ChevronLeft, ChevronRight, Eye, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ApprovalHistoryItem } from "@/types";
@@ -25,12 +24,10 @@ interface ApprovalHistoriesTableProps {
   currentPage: number;
   pageSize: number;
   onPageChange: (page: number) => void;
-  onSearch: (searchTerm: string) => void;
   onApprovalTypeFilter: (type: string) => void;
   onActionFilter: (action: string) => void;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
-  searchTerm: string;
   approvalTypeFilter: string;
   actionFilter: string;
   isLoading?: boolean;
@@ -43,12 +40,10 @@ export function ApprovalHistoriesTable({
   currentPage,
   pageSize,
   onPageChange,
-  onSearch,
   onApprovalTypeFilter,
   onActionFilter,
   hasNextPage,
   hasPreviousPage,
-  searchTerm,
   approvalTypeFilter,
   actionFilter,
   isLoading = false,
@@ -243,18 +238,8 @@ export function ApprovalHistoriesTable({
 
   return (
     <div className="space-y-4">
-      {/* Search and Filters */}
+      {/* Filters */}
       <div className="flex items-center gap-3">
-        <div className="relative max-w-sm flex-1">
-          <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
-          <Input
-            placeholder="Search histories..."
-            value={searchTerm}
-            onChange={(e) => onSearch(e.target.value)}
-            className="pl-8"
-          />
-        </div>
-
         <Select value={approvalTypeFilter} onValueChange={onApprovalTypeFilter}>
           <SelectTrigger className="w-[200px]">
             <Filter className="mr-2 h-4 w-4" />

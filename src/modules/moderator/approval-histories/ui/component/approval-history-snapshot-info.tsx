@@ -30,6 +30,7 @@ const ArtistRegistrationView = ({ snapshot }: { snapshot: ArtistRegistrationSnap
   const [backImageUrl, setBackImageUrl] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [documentUrls, setDocumentUrls] = useState<Record<number, string>>({});
 
   useEffect(() => {
     if (snapshot.IdentityCard.FrontImage) {
@@ -42,6 +43,30 @@ const ArtistRegistrationView = ({ snapshot }: { snapshot: ArtistRegistrationSnap
       getImageUrl(snapshot.AvatarImage).then(setAvatarUrl);
     }
   }, [snapshot]);
+
+  // Fetch presigned URLs for legal documents
+  useEffect(() => {
+    const fetchDocumentUrls = async () => {
+      if (!snapshot.LegalDocuments || snapshot.LegalDocuments.length === 0) return;
+
+      const urls: Record<number, string> = {};
+      await Promise.all(
+        snapshot.LegalDocuments.map(async (doc, index) => {
+          try {
+            const url = await getImageUrl(doc.DocumentUrl);
+            if (url) {
+              urls[index] = url;
+            }
+          } catch (error) {
+            console.error(`Error fetching URL for document ${index}:`, error);
+          }
+        })
+      );
+      setDocumentUrls(urls);
+    };
+
+    fetchDocumentUrls();
+  }, [snapshot.LegalDocuments]);
 
   return (
     <>
@@ -180,11 +205,22 @@ const ArtistRegistrationView = ({ snapshot }: { snapshot: ArtistRegistrationSnap
                           <p className="text-muted-foreground text-sm">{doc.Note}</p>
                         </div>
                         <div className="md:col-span-2">
-                          <Button variant="outline" size="sm" asChild>
-                            <a href={doc.DocumentUrl} target="_blank" rel="noopener noreferrer">
-                              <Eye className="mr-2 h-4 w-4" />
-                              View Document
-                            </a>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              try {
+                                const url = documentUrls[index] || (await getImageUrl(doc.DocumentUrl));
+                                if (url) {
+                                  window.open(url, "_blank", "noopener,noreferrer");
+                                }
+                              } catch (error) {
+                                console.error("Error opening document:", error);
+                              }
+                            }}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Document
                           </Button>
                         </div>
                       </div>
@@ -313,6 +349,7 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
   const [featuredArtists, setFeaturedArtists] = useState<Map<string, string>>(new Map());
   const [categories, setCategories] = useState<Map<string, string>>(new Map());
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [documentUrls, setDocumentUrls] = useState<Record<number, string>>({});
 
   useEffect(() => {
     const loadData = async () => {
@@ -347,6 +384,30 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
 
     loadData();
   }, [snapshot]);
+
+  // Fetch presigned URLs for legal documents
+  useEffect(() => {
+    const fetchDocumentUrls = async () => {
+      if (!snapshot.LegalDocuments || snapshot.LegalDocuments.length === 0) return;
+
+      const urls: Record<number, string> = {};
+      await Promise.all(
+        snapshot.LegalDocuments.map(async (doc, index) => {
+          try {
+            const url = await getImageUrl(doc.DocumentUrl);
+            if (url) {
+              urls[index] = url;
+            }
+          } catch (error) {
+            console.error(`Error fetching URL for document ${index}:`, error);
+          }
+        })
+      );
+      setDocumentUrls(urls);
+    };
+
+    fetchDocumentUrls();
+  }, [snapshot.LegalDocuments]);
 
   return (
     <>
@@ -549,11 +610,22 @@ const TrackUploadView = ({ snapshot }: { snapshot: TrackUploadSnapshot }) => {
                           <p className="text-muted-foreground text-sm">{doc.Note}</p>
                         </div>
                         <div className="md:col-span-2">
-                          <Button variant="outline" size="sm" asChild>
-                            <a href={doc.DocumentUrl} target="_blank" rel="noopener noreferrer">
-                              <Eye className="mr-2 h-4 w-4" />
-                              View Document
-                            </a>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              try {
+                                const url = documentUrls[index] || (await getImageUrl(doc.DocumentUrl));
+                                if (url) {
+                                  window.open(url, "_blank", "noopener,noreferrer");
+                                }
+                              } catch (error) {
+                                console.error("Error opening document:", error);
+                              }
+                            }}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Document
                           </Button>
                         </div>
                       </div>

@@ -53,10 +53,11 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Plus, Trash2 } from "lucide-react";
+import { CalendarIcon, Plus, Trash2, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import TrackUserCombobox from "../components/track-user-combobox";
 import { TrackUploadArtist } from "../../types";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const FormSchema = z
   .object({
@@ -510,14 +511,14 @@ const TrackUploadMetadataSection = () => {
       // Upload legal documents to S3
       const uploadedLegalDocuments = [];
       for (const doc of legalDocuments) {
-        if (doc.documentFile && doc.name && doc.note) {
+        if (doc.documentFile && doc.name.trim()) {
           try {
             const uploadResult = await uploadLegalDocument(doc.documentFile);
             uploadedLegalDocuments.push({
               documentType: doc.documentType as DocumentType,
               documentUrl: uploadResult.fileKey,
               name: doc.name,
-              note: doc.note,
+              note: doc.note || null,
             });
           } catch (error) {
             console.error("Failed to upload document:", error);
@@ -1170,8 +1171,7 @@ const TrackUploadMetadataSection = () => {
                                   key={index}
                                   className={cn(
                                     "space-y-3 rounded-md border p-4 transition-colors",
-                                    form.formState.isSubmitted &&
-                                      (!doc.name.trim() || !doc.documentFile || !doc.note.trim())
+                                    form.formState.isSubmitted && (!doc.name.trim() || !doc.documentFile)
                                       ? "border-destructive/50 bg-destructive/5"
                                       : "border-white/20",
                                   )}
@@ -1385,6 +1385,14 @@ const TrackUploadMetadataSection = () => {
                 </AccordionTrigger>
                 <AccordionContent className="pl-9">
                   <div className="flex w-full flex-col space-y-6">
+                    {/* Warning Alert */}
+                    <Alert className="border-yellow-500/30 bg-yellow-500/10">
+                      <AlertTriangle className="h-4 w-4 stroke-yellow-500" />
+                      <AlertDescription className="text-yellow-500">
+                        Warning: Royalty Splits cannot be updated after the track is uploaded. Please double-check the
+                        information before proceeding.
+                      </AlertDescription>
+                    </Alert>
                     {/* Original Content */}
                     <FormField
                       control={form.control}
@@ -1422,7 +1430,7 @@ const TrackUploadMetadataSection = () => {
                       render={({ field }) => (
                         <FormItem>
                           <div>
-                            <p className="text-main-white text-xs font-bold">Bypass Fingerprint</p>
+                            <p className="text-main-white text-xs font-bold">Bypass Fingerprint Check</p>
                             <p className="text-main-grey-dark-1 text-xs font-normal">
                               Check this to bypass fingerprint matching for testing purposes. This should only be used
                             </p>
@@ -1436,7 +1444,7 @@ const TrackUploadMetadataSection = () => {
                                 />
                               </FormControl>
                               <Label htmlFor="bypass-fingerprint-checkbox" className="text-sm font-bold">
-                                Bypass Fingerprint
+                                Bypass Fingerprint Check
                               </Label>
                             </div>
                           </div>
@@ -1449,7 +1457,7 @@ const TrackUploadMetadataSection = () => {
                     <div>
                       <p className="text-main-white mb-2 text-xs font-bold">Work Splits (Songwriting)</p>
                       <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
-                        Define how songwriting credits are split. Total must equal 100%.
+                        Define how songwriting credits are split. Total must equal 100%.{" "}
                         <span className="text-yellow-400">
                           All selected artists must appear in at least one work or recording split.
                         </span>
@@ -1658,7 +1666,7 @@ const TrackUploadMetadataSection = () => {
                     <div>
                       <p className="text-main-white mb-2 text-xs font-bold">Recording Splits (Performance)</p>
                       <p className="text-main-grey-dark-1 mb-4 text-xs font-normal">
-                        Define how recording performance credits are split. Total must equal 100%.
+                        Define how recording performance credits are split. Total must equal 100%.{" "}
                         <span className="text-yellow-400">
                           All selected artists must appear in at least one work or recording split.
                         </span>

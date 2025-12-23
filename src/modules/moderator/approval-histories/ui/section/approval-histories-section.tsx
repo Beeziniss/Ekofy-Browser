@@ -12,39 +12,20 @@ export function ApprovalHistoriesSection() {
   const searchParams = useSearchParams();
   
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
-  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const [approvalTypeFilter, setApprovalTypeFilter] = useState(searchParams.get("type") || "ALL");
   const [actionFilter, setActionFilter] = useState(searchParams.get("action") || "ALL");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchParams.get("search") || "");
-  const [isSearching, setIsSearching] = useState(false);
   const pageSize = 10;
 
   // Sync URL params
   useEffect(() => {
     const params = new URLSearchParams();
     if (currentPage > 1) params.set("page", currentPage.toString());
-    if (debouncedSearchTerm) params.set("search", debouncedSearchTerm);
     if (approvalTypeFilter !== "ALL") params.set("type", approvalTypeFilter);
     if (actionFilter !== "ALL") params.set("action", actionFilter);
     
     const queryString = params.toString();
     router.replace(`/moderator/approval-histories${queryString ? `?${queryString}` : ""}`, { scroll: false });
-  }, [currentPage, debouncedSearchTerm, approvalTypeFilter, actionFilter, router]);
-
-  // Debounce search term
-  useEffect(() => {
-    if (searchTerm !== debouncedSearchTerm) {
-      setIsSearching(true);
-    }
-
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-      setCurrentPage(1); // Reset to first page when search term changes
-      setIsSearching(false);
-    }, 500); // Wait 500ms after user stops typing
-
-    return () => clearTimeout(timer);
-  }, [searchTerm, debouncedSearchTerm]);
+  }, [currentPage, approvalTypeFilter, actionFilter, router]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -55,14 +36,10 @@ export function ApprovalHistoriesSection() {
     data: approvalHistoriesData,
     isLoading,
     error,
-  } = useQuery(moderatorApprovalHistoriesOptions(currentPage, pageSize, debouncedSearchTerm, approvalTypeFilter, actionFilter));
+  } = useQuery(moderatorApprovalHistoriesOptions(currentPage, pageSize, approvalTypeFilter, actionFilter));
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-  };
-
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
   };
 
   const handleApprovalTypeFilter = (type: string) => {
@@ -90,9 +67,6 @@ export function ApprovalHistoriesSection() {
   const hasNextPage = currentPage < totalPages;
   const hasPreviousPage = currentPage > 1;
 
-  // Show loading state for table or searching state
-  const isTableLoading = isLoading || isSearching;
-
   return (
     <div className="space-y-6">
       <ApprovalHistoriesTable
@@ -101,15 +75,13 @@ export function ApprovalHistoriesSection() {
         currentPage={currentPage}
         pageSize={pageSize}
         onPageChange={handlePageChange}
-        onSearch={handleSearch}
         onApprovalTypeFilter={handleApprovalTypeFilter}
         onActionFilter={handleActionFilter}
         hasNextPage={hasNextPage}
         hasPreviousPage={hasPreviousPage}
-        searchTerm={searchTerm}
         approvalTypeFilter={approvalTypeFilter}
         actionFilter={actionFilter}
-        isLoading={isTableLoading}
+        isLoading={isLoading}
         error={error}
       />
     </div>
