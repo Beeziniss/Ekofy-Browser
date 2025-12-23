@@ -1422,7 +1422,7 @@ const TrackUploadMetadataSection = () => {
                       render={({ field }) => (
                         <FormItem>
                           <div>
-                            <p className="text-main-white text-xs font-bold">Bypass Fingerprint</p>
+                            <p className="text-main-white text-xs font-bold">Bypass Fingerprint Check</p>
                             <p className="text-main-grey-dark-1 text-xs font-normal">
                               Check this to bypass fingerprint matching for testing purposes. This should only be used
                             </p>
@@ -1436,7 +1436,7 @@ const TrackUploadMetadataSection = () => {
                                 />
                               </FormControl>
                               <Label htmlFor="bypass-fingerprint-checkbox" className="text-sm font-bold">
-                                Bypass Fingerprint
+                                Bypass Fingerprint Check
                               </Label>
                             </div>
                           </div>
