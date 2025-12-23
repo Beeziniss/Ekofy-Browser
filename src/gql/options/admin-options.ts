@@ -1,14 +1,20 @@
 import { GetAdminProfileQuery } from "@/modules/shared/queries/admin/admin-profile-queries";
 import { AdminGetListUser, AdminGetStatistics } from "@/modules/admin/user-management/ui/views/admin-user-managenent";
 import { execute } from "../execute";
-import { queryOptions } from "@tanstack/react-query";
+import { queryOptions, mutationOptions } from "@tanstack/react-query";
 import { GetAllTransactionsQuery, SearchTransactionsQuery } from "@/modules/shared/queries/admin/transaction-queries";
 import {
   PaymentTransactionFilterInput,
   PaymentTransactionSortInput,
   SortEnumType,
   PaymentTransactionStatus,
+  CouponFilterInput,
+  CouponSortInput,
+  CouponStatus,
+  CreateCouponRequestInput,
 } from "@/gql/graphql";
+import { CouponListQuery } from "@/modules/shared/queries/admin/coupon-queries";
+import { CREATE_COUPON_MUTATION, DEPRECATE_COUPON } from "@/modules/shared/mutations/admin/coupon-mutaion";
 
 export const adminProfileOptions = (userId: string) =>
   queryOptions({
@@ -161,4 +167,99 @@ export const adminTransactionByIdOptions = (params: { id: string }) =>
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
   });
+
+/**
+ * Query options for fetching coupons list (Admin only)
+ * @param page - Current page number (1-indexed)
+ * @param pageSize - Number of items per page
+ * @param searchTerm - Optional search by coupon name or code
+ * @param statusFilter - Optional filter by coupon status
+ */
+export const adminCouponsOptions = (
+  page: number = 1,
+  pageSize: number = 10,
+  searchTerm: string = "",
+  statusFilter?: CouponStatus
+) =>
+  queryOptions({
+    queryKey: ["admin-coupons", page, pageSize, searchTerm, statusFilter],
+    queryFn: async () => {
+      const skip = (page - 1) * pageSize;
+      const take = pageSize;
+
+      // Build filter conditions
+      const where: CouponFilterInput = {
+        ...(statusFilter ? { status: { eq: statusFilter } } : {}),
+        ...(searchTerm
+          ? {
+              or: [
+                { name: { contains: searchTerm } },
+                { code: { contains: searchTerm } },
+                { description: { contains: searchTerm } },
+              ],
+            }
+          : {}),
+      };
+
+      // Default sorting: newest first
+      const order: CouponSortInput[] = [{ createdAt: SortEnumType.Desc }];
+
+      const result = await execute(CouponListQuery, {
+        skip,
+        take,
+        where,
+        order,
+      });
+
+      return result;
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+/**
+ * Query options for fetching a single coupon by ID (Admin only)
+ */
+export const adminCouponByIdOptions = (couponId: string) =>
+  queryOptions({
+    queryKey: ["admin-coupon", couponId],
+    queryFn: async () => {
+      const where: CouponFilterInput = {
+        id: { eq: couponId },
+      };
+      const take = 1;
+      const skip = 0;
+
+      const result = await execute(CouponListQuery, { where, skip, take });
+      return result.coupons?.items?.[0] || null;
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
+
+/**
+ * Mutation options for creating a coupon (Admin only)
+ */
+export const createCouponMutationOptions = mutationOptions({
+  mutationKey: ["create-coupon"],
+  mutationFn: async (createCouponRequest: CreateCouponRequestInput) => {
+    const result = await execute(CREATE_COUPON_MUTATION, {
+      createCouponRequest,
+    });
+    return result;
+  },
+});
+
+/**
+ * Mutation options for deprecating coupons (Admin only)
+ */
+export const deprecateCouponMutationOptions = mutationOptions({
+  mutationKey: ["deprecate-coupon"],
+  mutationFn: async (couponIds: string[]) => {
+    const result = await execute(DEPRECATE_COUPON, {
+      couponIds,
+    });
+    return result;
+  },
+});
 

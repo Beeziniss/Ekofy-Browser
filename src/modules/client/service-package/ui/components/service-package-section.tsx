@@ -15,6 +15,8 @@ import { formatCurrency } from "@/utils/format-currency";
 import { WarningAuthDialog } from "@/modules/shared/ui/components/warning-auth-dialog";
 import { useAuthAction } from "@/hooks/use-auth-action";
 import ReviewsCarousel from "./reviews-carousel";
+import { useAuthStore } from "@/store";
+import { UserRole } from "@/types/role";
 
 interface ServicePackageSectionProps {
   serviceId: string;
@@ -44,9 +46,12 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
   const { data } = useSuspenseQuery(servicePackageOptions({ serviceId }));
   const [subscribeDialogOpen, setSubscribeDialogOpen] = useState(false);
   const { showWarningDialog, setShowWarningDialog, warningAction, trackName, executeWithAuth } = useAuthAction();
+  const { user } = useAuthStore();
 
   const servicePackage = data?.artistPackages?.items?.[0];
   const artist = servicePackage?.artist?.[0];
+  
+  const isCurrentUserArtist = user?.role === UserRole.ARTIST;
 
   return (
     <div className="from-main-blue/20 to-main-purple/20 min-h-screen bg-gradient-to-br via-slate-900 px-6 py-8">
@@ -173,6 +178,7 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
               </div>
 
               {/* CTA Section */}
+              {!isCurrentUserArtist && (
               <div className="flex items-center justify-between rounded-xl border border-slate-700/50 bg-gradient-to-r from-slate-800/80 to-slate-900/80 p-6">
                 <div className="flex items-center gap-x-4">
                   <div className="bg-main-purple/10 flex size-14 items-center justify-center rounded-full">
@@ -193,17 +199,18 @@ const ServicePackageSectionSuspense = ({ serviceId }: ServicePackageSectionProps
                       View More Services
                     </Button>
                   </Link>
-                  <Button
-                    onClick={() => {
-                      executeWithAuth(() => setSubscribeDialogOpen(true), "contact artist", artist?.stageName);
-                    }}
-                    className="text-main-white gap-x-2 bg-gradient-to-r from-purple-500 to-purple-600 px-8 text-base font-semibold shadow-lg shadow-purple-500/30 hover:from-purple-600 hover:to-purple-700"
-                  >
-                    <MicIcon className="size-5" />
-                    Contact Now
-                  </Button>
+                    <Button
+                      onClick={() => {
+                        executeWithAuth(() => setSubscribeDialogOpen(true), "contact artist", artist?.stageName);
+                      }}
+                      className="text-main-white gap-x-2 bg-gradient-to-r from-purple-500 to-purple-600 px-8 text-base font-semibold shadow-lg shadow-purple-500/30 hover:from-purple-600 hover:to-purple-700"
+                    >
+                      <MicIcon className="size-5" />
+                      Contact Now
+                    </Button>
                 </div>
               </div>
+              )}
             </div>
 
             <div className="absolute -top-2 -right-2 flex flex-col items-end">
