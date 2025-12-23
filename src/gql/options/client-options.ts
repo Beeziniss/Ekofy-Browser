@@ -1,4 +1,4 @@
-import { execute } from "../execute";
+import { execute, executeWithFileUpload } from "../execute";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import {
   CheckTrackInPlaylistQuery,
@@ -58,6 +58,7 @@ import {
   TrackFavoriteQuery,
   TrackInfiniteQuery,
   TrackListHomeQuery,
+  TrackSongCatcherQuery,
   USER_QUERY_FOR_REQUESTS,
   UserBasicInfoQuery,
 } from "@/modules/shared/queries/client";
@@ -858,4 +859,19 @@ export const trackSemanticOptions = (term: string) =>
     },
     retry: 0,
     enabled: !!term,
+  });
+
+// SONG CATCHER OPTIONS
+export const trackSongCatcherOptions = (file: File) =>
+  queryOptions({
+    queryKey: ["track-song-catcher", file],
+    queryFn: async () => {
+      if (!file) return null;
+      const result = await executeWithFileUpload(TrackSongCatcherQuery, {
+        file,
+      });
+      return result || null;
+    },
+    retry: 0,
+    enabled: !!file,
   });

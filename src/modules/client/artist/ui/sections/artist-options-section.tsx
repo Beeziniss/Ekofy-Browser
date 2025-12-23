@@ -105,7 +105,7 @@ const ArtistOptionsSection = ({ artistData, artistId }: ArtistOptionsSectionProp
   const handleChatWithArtist = async () => {
     const { addConversationGeneral } = await addConversation(artist!.userId!);
 
-    router.push(`/inbox/${addConversationGeneral}`);
+    router.push(`/inbox/${addConversationGeneral}?t=NONE`);
   };
 
   return (

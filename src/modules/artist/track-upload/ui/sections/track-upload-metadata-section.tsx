@@ -1422,21 +1422,21 @@ const TrackUploadMetadataSection = () => {
                       render={({ field }) => (
                         <FormItem>
                           <div>
-                            <p className="text-main-white text-xs font-bold">For Testing Only</p>
+                            <p className="text-main-white text-xs font-bold">Bypass Fingerprint</p>
                             <p className="text-main-grey-dark-1 text-xs font-normal">
-                              Please check this if this track is for testing only. This helps us identify test content.
+                              Check this to bypass fingerprint matching for testing purposes. This should only be used
                             </p>
 
                             <div className="mt-2 flex items-center gap-x-4">
                               <FormControl>
                                 <Checkbox
-                                  id="testing-only-checkbox"
+                                  id="bypass-fingerprint-checkbox"
                                   checked={field.value}
                                   onCheckedChange={field.onChange}
                                 />
                               </FormControl>
-                              <Label htmlFor="testing-only-checkbox" className="text-sm font-bold">
-                                For Testing Only
+                              <Label htmlFor="bypass-fingerprint-checkbox" className="text-sm font-bold">
+                                Bypass Fingerprint
                               </Label>
                             </div>
                           </div>

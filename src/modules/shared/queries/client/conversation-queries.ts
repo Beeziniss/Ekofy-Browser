@@ -2,7 +2,7 @@ import { graphql } from "@/gql";
 
 export const ConversationQuery = graphql(`
   query Conversations($where: ConversationFilterInput) {
-    conversations(where: $where, order: { lastMessage: { sentAt: DESC } }) {
+    conversations(where: $where, order: { lastMessage: { sentAt: DESC } }, take: 50) {
       items {
         id
         userIds

@@ -88,16 +88,19 @@ const SearchBar = () => {
   return (
     <div className="flex items-center gap-x-2">
       <div className="relative appearance-none">
-        <Search className="absolute top-1/2 left-4 size-6 -translate-y-1/2 text-[#f2f2f2]" />
+        <Search className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-[#f2f2f2] lg:size-6" />
 
-        <Separator orientation="vertical" className="absolute top-1/2 left-14 !h-6 -translate-y-1/2 bg-[#f2f2f2]" />
+        <Separator
+          orientation="vertical"
+          className="absolute top-1/2 left-11 !h-6 -translate-y-1/2 bg-[#f2f2f2] lg:left-14"
+        />
 
         <Input
           type="text"
           placeholder="What do you want to play?"
           value={searchValue}
           onChange={handleInputChange}
-          className="min-w-[420px] rounded-md border-0 !bg-[#2E2E2E] px-4 !py-2.5 pl-20 text-[#f2f2f2] placeholder:text-[#999999]"
+          className="w-[200px] rounded-md border-0 !bg-[#2E2E2E] px-4 !py-2.5 pl-14 text-sm text-[#f2f2f2] placeholder:text-[#999999] lg:w-[420px] lg:pl-20"
         />
       </div>
 

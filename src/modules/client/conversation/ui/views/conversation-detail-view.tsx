@@ -1,19 +1,11 @@
 "use client";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import ConversationItem from "../components/conversation-item";
 import {
   ArrowUpIcon,
   BadgeDollarSignIcon,
   EllipsisIcon,
-  PlusIcon,
-  SmileIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   NewspaperIcon,
@@ -104,6 +96,9 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
     () => conversation?.conversations?.items?.[0]?.status,
     [conversation?.conversations?.items],
   );
+
+  // Check if conversation is cancelled
+  const isCancelled = useMemo(() => conversationStatus === ConversationStatus.Cancelled, [conversationStatus]);
 
   // Fetch public request details if conversation has requestId and status is Pending
   const { data: publicRequest } = useQuery({
@@ -282,6 +277,12 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
       return;
     }
 
+    // Don't allow sending messages if conversation is cancelled
+    if (isCancelled) {
+      toast.error("This conversation has been cancelled");
+      return;
+    }
+
     if (isConnected && newMessage.trim() && conversation?.conversations?.items?.[0]) {
       try {
         const conversationData = conversation.conversations.items[0];
@@ -386,6 +387,39 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
             </Button>
           </div>
 
+          {/* Cancelled Conversation Notification */}
+          {isCancelled && (
+            <div className="mx-3 mt-3">
+              <div className="flex items-center gap-3 rounded-lg border border-red-500/30 bg-red-950/20 px-4 py-3 shadow-sm">
+                <div className="flex items-center gap-x-3">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-red-500/20">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="size-5 text-red-500"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="15" y1="9" x2="9" y2="15" />
+                      <line x1="9" y1="9" x2="15" y2="15" />
+                    </svg>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 text-sm font-bold text-red-400">Conversation Cancelled</div>
+                    <div className="text-xs text-red-300/80">
+                      This conversation has been cancelled. No further interactions are allowed.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Public Request Notification - Only shown when status is Pending */}
           {conversationStatus === ConversationStatus.Pending && conversationRequestId && publicRequest && (
             <div className="mx-3 mt-3">
@@ -426,11 +460,17 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
           <div className="px-3 pb-3">
             <InputGroup>
               <InputGroupTextarea
-                placeholder={isOrderDisputed ? "Chat is disabled due to disputed order" : "Send a message..."}
+                placeholder={
+                  isOrderDisputed
+                    ? "Chat is disabled due to disputed order"
+                    : isCancelled
+                      ? "This conversation has been cancelled"
+                      : "Send a message..."
+                }
                 className="max-h-48"
                 autoFocus
                 value={newMessage}
-                disabled={isOrderDisputed}
+                disabled={isOrderDisputed || isCancelled}
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   if (inputValue.length <= maxCharacters) {
@@ -446,7 +486,7 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
                 maxLength={maxCharacters}
               />
               <InputGroupAddon align="block-end">
-                <InputGroupButton variant="outline" className="rounded-full" size="icon-xs" disabled={isOrderDisputed}>
+                {/* <InputGroupButton variant="outline" className="rounded-full" size="icon-xs" disabled={isOrderDisputed}>
                   <PlusIcon />
                 </InputGroupButton>
                 <DropdownMenu>
@@ -460,13 +500,17 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
                     <DropdownMenuItem>Agent</DropdownMenuItem>
                     <DropdownMenuItem>Manual</DropdownMenuItem>
                   </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
 
                 <InputGroupButton
                   variant={"default"}
                   onClick={() => setShowCreateRequestDialog(true)}
                   disabled={
-                    !currentUserId || !conversation?.conversations?.items?.[0]?.requestId || isArtist || isOrderDisputed
+                    !currentUserId ||
+                    !conversation?.conversations?.items?.[0]?.requestId ||
+                    isArtist ||
+                    isOrderDisputed ||
+                    isCancelled
                   }
                 >
                   <BadgeDollarSignIcon className="size-4.5" /> Create request
@@ -477,7 +521,7 @@ const ConversationDetailView = ({ conversationId }: ConversationDetailViewProps)
                   className="ml-auto rounded-full"
                   size="icon-xs"
                   onClick={sendMessage}
-                  disabled={!newMessage.trim() || isOrderDisputed}
+                  disabled={!newMessage.trim() || isOrderDisputed || isCancelled}
                 >
                   <ArrowUpIcon />
                   <span className="sr-only">Send</span>
