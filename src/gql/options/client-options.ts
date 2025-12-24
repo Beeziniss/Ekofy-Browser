@@ -59,6 +59,7 @@ import {
   TrackInfiniteQuery,
   TrackListHomeQuery,
   TrackSongCatcherQuery,
+  TrackSongCatcherRecordingQuery,
   USER_QUERY_FOR_REQUESTS,
   UserBasicInfoQuery,
 } from "@/modules/shared/queries/client";
@@ -893,6 +894,20 @@ export const trackSongCatcherOptions = (file: File) =>
     queryFn: async () => {
       if (!file) return null;
       const result = await executeWithFileUpload(TrackSongCatcherQuery, {
+        file,
+      });
+      return result || null;
+    },
+    retry: 0,
+    enabled: !!file,
+  });
+
+export const trackSongCatcherRecordingOptions = (file: File) =>
+  queryOptions({
+    queryKey: ["track-song-catcher-recording", file],
+    queryFn: async () => {
+      if (!file) return null;
+      const result = await executeWithFileUpload(TrackSongCatcherRecordingQuery, {
         file,
       });
       return result || null;
