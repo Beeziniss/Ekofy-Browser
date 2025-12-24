@@ -17,7 +17,7 @@ import {
 import { TrackUploadCloud } from "@/assets/icons";
 import { AlertTriangle } from "lucide-react";
 // TODO: Uncomment later
-// import { auddApi } from "@/services/audd-services";
+import { auddApi } from "@/services/audd-services";
 import { toast } from "sonner";
 
 const TrackUploadSection = () => {
@@ -47,7 +47,7 @@ const TrackUploadSection = () => {
         toast.info("Checking track for copyright compliance...");
 
         // TODO: Uncomment later
-        /* const recognitionResult = await auddApi.recognizeSong(file);
+        const recognitionResult = await auddApi.recognizeSong(file);
 
         // Check if the song recognition found a match (potential copyright issue)
         if (
@@ -83,7 +83,7 @@ const TrackUploadSection = () => {
           }
           setShowCopyrightDialog(true);
           return;
-        } */
+        }
 
         setUploading(false);
 
