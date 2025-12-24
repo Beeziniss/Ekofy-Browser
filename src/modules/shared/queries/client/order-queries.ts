@@ -20,6 +20,7 @@ export const OrderPackageQuery = graphql(`
         startedAt
         freezedTime
         disputedReason
+        refundReason
         requirements
         payoutTransactionId
         conversationId

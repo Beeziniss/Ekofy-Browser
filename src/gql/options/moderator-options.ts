@@ -42,6 +42,7 @@ import {
   PACKAGE_ORDERS_LIST_QUERY,
   PACKAGE_ORDER_DETAIL_QUERY,
   ORDER_CONVERSATION_MESSAGES_QUERY,
+  ORDER_PACKAGE_REQUEST_QUERY,
 } from "@/modules/shared/queries/moderator/order-disputed-querties";
 
 export const moderatorProfileOptions = (userId: string) =>
@@ -515,4 +516,24 @@ export const moderatorOrderConversationMessagesOptions = (conversationId: string
         : undefined;
     },
     enabled: !!conversationId,
+  });
+
+// Order Package Request query options for moderator
+export const moderatorOrderPackageRequestOptions = (orderId: string) =>
+  queryOptions({
+    queryKey: ["moderator-order-package-request", orderId],
+    queryFn: async () => {
+      try {
+        console.log('Fetching request for orderId:', orderId);
+        const result = await execute(ORDER_PACKAGE_REQUEST_QUERY, {
+          where: { orderId: { eq: orderId } },
+        });
+        console.log('Request result:', result);
+        return result.requests?.items?.[0] || null;
+      } catch (error) {
+        console.error('Error fetching request:', error);
+        return null;
+      }
+    },
+    enabled: !!orderId,
   });
