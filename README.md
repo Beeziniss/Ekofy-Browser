@@ -2,6 +2,8 @@
 
 A modern music streaming and management platform built with Next.js, featuring artist dashboards, track uploads, real-time notifications, and comprehensive admin controls.
 
+.
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
@@ -25,6 +27,7 @@ Before you begin, ensure you have the following installed on your local machine:
 - **Git**: For cloning the repository
 
 Optional:
+
 - **Bun**: Alternative package manager (the project includes `bun.lock`)
 
 ## Getting Started
@@ -39,11 +42,13 @@ cd Ekofy-Browser
 ### 2. Install Dependencies
 
 Using npm:
+
 ```bash
 npm install
 ```
 
 Or using Bun (if you prefer):
+
 ```bash
 bun install
 ```
@@ -127,6 +132,7 @@ This project uses **npm** as the primary package manager. You can also use **Bun
 ### Dependencies Overview
 
 The project uses:
+
 - **UI Framework**: Next.js 15.4.8 with React 19
 - **Styling**: Tailwind CSS 4.0 with shadcn/ui components
 - **State Management**: Zustand for global state
@@ -140,15 +146,19 @@ The project uses:
 ### Development Workflow
 
 1. **Start the development server**:
+
    ```bash
    npm run dev
    ```
+
    This starts Next.js in development mode with hot-reload enabled.
 
 2. **Run GraphQL code generation in watch mode** (in a separate terminal):
+
    ```bash
    npm run codegen
    ```
+
    This watches for GraphQL query/mutation changes and regenerates TypeScript types.
 
 3. **Run both concurrently**:
@@ -160,15 +170,18 @@ The project uses:
 ### Code Style and Formatting
 
 The project uses:
+
 - **ESLint**: For code linting
 - **Prettier**: For code formatting with Tailwind CSS class sorting
 
 Format your code:
+
 ```bash
 npm run format
 ```
 
 Lint your code:
+
 ```bash
 npm run lint
 ```
@@ -183,15 +196,15 @@ npm run lint
 
 ## Available Scripts
 
-| Script | Command | Description |
-|--------|---------|-------------|
-| `dev` | `npm run dev` | Starts the Next.js development server on port 3000 |
-| `build` | `npm run build` | Creates an optimized production build |
-| `start` | `npm start` | Starts the production server (run `build` first) |
-| `lint` | `npm run lint` | Runs ESLint to check for code issues |
-| `format` | `npm run format` | Formats code with Prettier |
-| `codegen` | `npm run codegen` | Generates GraphQL TypeScript types in watch mode |
-| `dev:all` | `npm run dev:all` | Runs dev server and codegen concurrently |
+| Script    | Command           | Description                                        |
+| --------- | ----------------- | -------------------------------------------------- |
+| `dev`     | `npm run dev`     | Starts the Next.js development server on port 3000 |
+| `build`   | `npm run build`   | Creates an optimized production build              |
+| `start`   | `npm start`       | Starts the production server (run `build` first)   |
+| `lint`    | `npm run lint`    | Runs ESLint to check for code issues               |
+| `format`  | `npm run format`  | Formats code with Prettier                         |
+| `codegen` | `npm run codegen` | Generates GraphQL TypeScript types in watch mode   |
+| `dev:all` | `npm run dev:all` | Runs dev server and codegen concurrently           |
 
 ## Project Structure
 
@@ -255,33 +268,40 @@ Ekofy-Browser/
 ## Technology Stack
 
 ### Core Framework
+
 - **Next.js 15.4.8**: React framework with App Router
 - **React 19.1.2**: UI library
 - **TypeScript 5**: Type-safe development
 
 ### Styling & UI
+
 - **Tailwind CSS 4**: Utility-first CSS framework
 - **shadcn/ui**: High-quality React components built on Radix UI
 - **Lucide React**: Icon library
 
 ### State & Data Management
+
 - **Zustand**: Lightweight state management
 - **TanStack Query**: Server state management and caching
 - **GraphQL Code Generator**: Type-safe GraphQL operations
 
 ### Real-time & Communication
+
 - **SignalR**: WebSocket-based real-time communication
 - **Axios**: HTTP client for REST APIs
 
 ### Forms & Validation
+
 - **React Hook Form**: Performant form library
 - **Zod**: TypeScript-first schema validation
 
 ### Cloud Services
+
 - **AWS S3**: File storage
 - **Cloudinary**: Media management and optimization
 
 ### Development Tools
+
 - **ESLint**: Code linting
 - **Prettier**: Code formatting
 - **GraphQLSP**: GraphQL language server for IDE support
@@ -291,45 +311,56 @@ Ekofy-Browser/
 ### Common Issues
 
 #### 1. "Module not found" errors after cloning
+
 **Solution**: Make sure you've installed all dependencies:
+
 ```bash
 rm -rf node_modules
 npm install
 ```
 
 #### 2. GraphQL codegen fails
+
 **Problem**: `NEXT_PUBLIC_URL_ENDPOINT` is not set or backend is not running.
 
-**Solution**: 
+**Solution**:
+
 - Ensure `.env` file exists with correct `NEXT_PUBLIC_URL_ENDPOINT`
 - Verify the backend API is running and accessible
 - Check if the GraphQL endpoint returns a valid schema
 
 #### 3. "Cannot find module '@/...' " errors
+
 **Problem**: TypeScript path aliases not recognized.
 
-**Solution**: 
+**Solution**:
+
 - Restart your IDE/editor
 - Ensure `tsconfig.json` has correct paths configuration
 - Run `npm run build` to check for TypeScript errors
 
 #### 4. Environment variables not loading
+
 **Problem**: Using `process.env.VARIABLE_NAME` returns `undefined`.
 
 **Solution**:
+
 - Ensure `.env` file is in the root directory
 - Restart the dev server after changing `.env`
 - Variables must start with `NEXT_PUBLIC_` to be accessible in browser
 
 #### 5. SSL/TLS certificate errors in development
+
 **Problem**: "self-signed certificate" error when connecting to backend.
 
 **Solution**: The `codegen.ts` file sets `NODE_TLS_REJECT_UNAUTHORIZED=0` for development. If you still face issues, verify your backend API's SSL configuration.
 
 #### 6. SignalR connection failures
+
 **Problem**: Real-time features (chat, notifications) not working.
 
 **Solution**:
+
 - Check that `NEXT_PUBLIC_URL_ENDPOINT` is correctly set
 - Verify the backend SignalR hubs are running at:
   - `/hub/chat`
@@ -339,6 +370,7 @@ npm install
 ### Getting Help
 
 If you encounter issues not covered here:
+
 1. Check the [Next.js documentation](https://nextjs.org/docs)
 2. Review [shadcn/ui documentation](https://ui.shadcn.com)
 3. Open an issue in the repository
@@ -347,6 +379,7 @@ If you encounter issues not covered here:
 ## Additional Resources
 
 ### Documentation
+
 - [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API
 - [React Documentation](https://react.dev) - React 19 documentation
 - [Tailwind CSS](https://tailwindcss.com/docs) - Utility-first CSS framework
@@ -355,12 +388,14 @@ If you encounter issues not covered here:
 - [Zustand](https://zustand-demo.pmnd.rs/) - State management
 
 ### Tools & Services
+
 - [GraphQL Code Generator](https://the-guild.dev/graphql/codegen) - Type-safe GraphQL
 - [Cloudinary](https://cloudinary.com/documentation) - Media management
 - [AWS S3 Documentation](https://docs.aws.amazon.com/s3/) - File storage
 - [Google OAuth Setup](https://developers.google.com/identity/protocols/oauth2) - Authentication
 
 ### Community & Support
+
 - [Next.js GitHub](https://github.com/vercel/next.js) - Report issues and contribute
 - [shadcn/ui GitHub](https://github.com/shadcn-ui/ui) - UI component issues
 
