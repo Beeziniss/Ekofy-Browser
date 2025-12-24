@@ -59,6 +59,7 @@ import {
   TrackInfiniteQuery,
   TrackListHomeQuery,
   TrackSongCatcherQuery,
+  TrackSongCatcherRecordingQuery,
   USER_QUERY_FOR_REQUESTS,
   UserBasicInfoQuery,
 } from "@/modules/shared/queries/client";
@@ -216,6 +217,31 @@ export const trackPublicInfiniteOptions = (take: number = 12) =>
       const skip = (pageParam - 1) * take;
       const where: TrackFilterInput = {
         and: [{ restriction: { type: { eq: RestrictionType.None } } }, { releaseInfo: { isRelease: { eq: true } } }],
+      };
+
+      const order: TrackSortInput[] = [{ createdAt: SortEnumType.Desc }];
+
+      return await execute(TrackInfiniteQuery, {
+        take,
+        skip,
+        where,
+        order,
+      });
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.tracks?.pageInfo.hasNextPage ? allPages.length + 1 : undefined;
+    },
+  });
+
+export const trackPublicInfiniteWithCategoryOptions = (take: number = 12, categoryId: string) =>
+  infiniteQueryOptions({
+    queryKey: ["tracks-public-infinite-with-category", categoryId],
+    queryFn: async ({ pageParam }) => {
+      const skip = (pageParam - 1) * take;
+      const where: TrackFilterInput = {
+        and: [{ restriction: { type: { eq: RestrictionType.None } } }, { releaseInfo: { isRelease: { eq: true } } }],
+        categoryIds: { some: { eq: categoryId } },
       };
 
       const order: TrackSortInput[] = [{ createdAt: SortEnumType.Desc }];
@@ -868,6 +894,20 @@ export const trackSongCatcherOptions = (file: File) =>
     queryFn: async () => {
       if (!file) return null;
       const result = await executeWithFileUpload(TrackSongCatcherQuery, {
+        file,
+      });
+      return result || null;
+    },
+    retry: 0,
+    enabled: !!file,
+  });
+
+export const trackSongCatcherRecordingOptions = (file: File) =>
+  queryOptions({
+    queryKey: ["track-song-catcher-recording", file],
+    queryFn: async () => {
+      if (!file) return null;
+      const result = await executeWithFileUpload(TrackSongCatcherRecordingQuery, {
         file,
       });
       return result || null;

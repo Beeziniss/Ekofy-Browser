@@ -7,6 +7,12 @@ import TrackCarousel from "@/modules/client/common/ui/components/track/track-car
 import { useAuthStore } from "@/store";
 
 const TracksYouLoveSection = () => {
+  const { isAuthenticated } = useAuthStore();
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <Suspense fallback={<TracksYouLoveSkeleton />}>
       <TracksYouLoveSectionSuspense />
@@ -24,12 +30,7 @@ const TracksYouLoveSkeleton = () => {
 };
 
 const TracksYouLoveSectionSuspense = () => {
-  const { isAuthenticated } = useAuthStore();
-  const { data, isPending } = useSuspenseQuery(trackFavoriteOptions(12, 0, isAuthenticated));
-
-  if (!isAuthenticated) {
-    return null;
-  }
+  const { data, isPending } = useSuspenseQuery(trackFavoriteOptions(12, 0, true));
 
   if (!data || data?.favoriteTracks?.items?.length === 0) {
     return null;

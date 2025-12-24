@@ -104,9 +104,7 @@ async function executeRequest<TResult, TVariables>(
           const queryClient = getQueryClient();
           queryClient.clear();
 
-          if (typeof window !== "undefined") {
-            window.location.href = "/landing";
-          }
+          window.location.href = "/landing";
         }
       }
 

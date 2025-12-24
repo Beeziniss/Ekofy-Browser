@@ -6,6 +6,7 @@ import {
   trackSemanticOptions,
   userActiveSubscriptionOptions,
   trackSongCatcherOptions,
+  trackSongCatcherRecordingOptions,
 } from "@/gql/options/client-options";
 import { Input } from "@/components/ui/input";
 import { Search, Lock, Mic, FileMusic } from "lucide-react";
@@ -46,27 +47,41 @@ const SemanticSection = () => {
   const [songMatchResult, setSongMatchResult] = useState<{
     trackId?: string | null;
     trackName?: string | null;
-    artistId?: string | null;
     artistName?: string | null;
-    queryCoverage?: number | null;
-    trackCoverage?: number | null;
-    minConfidence?: number | null;
+    trackMatchStartsAt?: number | null;
+    trackMatchEndsAt?: number | null;
   } | null>(null);
   const [isResultOpen, setIsResultOpen] = useState(false);
   const [identificationError, setIdentificationError] = useState<string | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [isRecordedAudio, setIsRecordedAudio] = useState(false);
 
-  // Song catcher query (enabled only when audioFile exists)
-  const { data: songCatcherData, isFetching: isSongCatcherFetching } = useQuery({
-    ...trackSongCatcherOptions(audioFile!),
-    enabled: !!audioFile,
+  // Song catcher query for recorded audio
+  const { data: recordedSongCatcherData, isFetching: isRecordedSongCatcherFetching } = useQuery({
+    ...trackSongCatcherRecordingOptions(audioFile!),
+    enabled: !!audioFile && isRecordedAudio,
   });
+
+  // Song catcher query for uploaded audio
+  const { data: uploadedSongCatcherData, isFetching: isUploadedSongCatcherFetching } = useQuery({
+    ...trackSongCatcherOptions(audioFile!),
+    enabled: !!audioFile && !isRecordedAudio,
+  });
+
+  // Combine the data and fetching states
+  const isSongCatcherFetching = isRecordedSongCatcherFetching || isUploadedSongCatcherFetching;
 
   // Handle song catcher result
   useEffect(() => {
     if (!isSongCatcherFetching && audioFile) {
-      if (songCatcherData && songCatcherData.queryTrack) {
-        setSongMatchResult(songCatcherData.queryTrack);
+      // Get the correct data field based on whether it's recorded or uploaded
+      const results = isRecordedAudio
+        ? recordedSongCatcherData?.queryTracksForRecording
+        : uploadedSongCatcherData?.queryTracks;
+
+      if (results && results.length > 0) {
+        // Take the first (best) match from the array
+        setSongMatchResult(results[0]);
         setIsResultOpen(true);
       } else {
         setSongMatchResult(null);
@@ -78,7 +93,7 @@ const SemanticSection = () => {
       setIsRecorderOpen(false);
       setIsUploadOpen(false);
     }
-  }, [songCatcherData, isSongCatcherFetching, audioFile]);
+  }, [recordedSongCatcherData, uploadedSongCatcherData, isSongCatcherFetching, audioFile, isRecordedAudio]);
 
   const { data, isLoading, error } = useQuery({
     ...trackSemanticOptions(debouncedSearchTerm),
@@ -91,10 +106,19 @@ const SemanticSection = () => {
     setSearchTerm(e.target.value);
   }, []);
 
-  // Handle audio file identification
-  const handleAudioIdentification = (file: File) => {
+  // Handle audio file identification from recording
+  const handleRecordedAudioIdentification = (file: File) => {
     setIdentificationError(null);
     setSongMatchResult(null);
+    setIsRecordedAudio(true);
+    setAudioFile(file);
+  };
+
+  // Handle audio file identification from upload
+  const handleUploadedAudioIdentification = (file: File) => {
+    setIdentificationError(null);
+    setSongMatchResult(null);
+    setIsRecordedAudio(false);
     setAudioFile(file);
   };
 
@@ -263,13 +287,13 @@ const SemanticSection = () => {
       <AudioRecorderDialog
         open={isRecorderOpen}
         onOpenChange={setIsRecorderOpen}
-        onRecordingComplete={handleAudioIdentification}
+        onRecordingComplete={handleRecordedAudioIdentification}
       />
 
       <AudioUploadDialog
         open={isUploadOpen}
         onOpenChange={setIsUploadOpen}
-        onFileSelect={handleAudioIdentification}
+        onFileSelect={handleUploadedAudioIdentification}
         isProcessing={isSongCatcherFetching}
       />
 
