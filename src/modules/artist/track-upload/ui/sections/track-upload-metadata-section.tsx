@@ -235,7 +235,12 @@ const TrackUploadMetadataSection = () => {
 
   const { data: artistsData } = useQuery(trackUploadArtistListOptions);
   const { data: categoriesData } = useQuery(categoriesOptions());
-  const uploadTrackMutation = useMutation(trackUploadMutationOptions);
+  const uploadTrackMutation = useMutation({
+    ...trackUploadMutationOptions,
+    onError: (error) => {
+      toast.error((error as Error).message);
+    },
+  });
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -469,8 +474,8 @@ const TrackUploadMetadataSection = () => {
     } catch (error) {
       // Stop loading state on error
       setUploading(false);
+
       console.error("Upload failed:", error);
-      toast.error("Failed to upload track. Please try again.");
     }
   }
 
@@ -582,7 +587,6 @@ const TrackUploadMetadataSection = () => {
       // Clear loading state on upload error
       setUploading(false);
       console.error("Upload failed:", error);
-      toast.error("Failed to upload track. Please try again.");
     }
   };
 
