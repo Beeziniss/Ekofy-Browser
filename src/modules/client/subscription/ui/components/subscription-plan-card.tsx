@@ -246,7 +246,7 @@ export function SubscriptionPlanCard({
         <div className="space-y-4">
           <h4 className={`flex justify-start font-semibold ${styling.textColor}`}>Key features:</h4>
           <ul className="space-y-3">
-            {features.slice(0, 4).map((feature, index) => (
+            {features.map((feature, index) => (
               <li key={index} className="flex items-start space-x-3">
                 <div className={`rounded-full p-1 ${styling.featureIconBg}`}>
                   <Check className={`h-3 w-3 ${styling.featureIconColor}`} />

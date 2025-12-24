@@ -11,7 +11,21 @@ export const subscriptionsPremiumQueryOptions = () =>
       const response = await execute(SUBSCRIPTION_QUERIES, {
         where: {
           tier: { eq: SubscriptionTier.Premium },
-          // status: { eq: SubscriptionStatus.Active },
+          status: { eq: SubscriptionStatus.Active },
+        },
+      });
+      return response;
+    },
+  });
+
+  export const subscriptionsPremiumInactiveQueryOptions = () =>
+  queryOptions({
+    queryKey: ["subscriptions-premium-inactive"],
+    queryFn: async () => {
+      const response = await execute(SUBSCRIPTION_QUERIES, {
+        where: {
+          tier: { eq: SubscriptionTier.Premium },
+          // status: { eq: SubscriptionStatus.Inactive },
         },
       });
       return response;
@@ -79,14 +93,14 @@ export const proSubscriptionPlansQueryOptions = (subscriptionId: string) =>
   });
 
 // Get key features for premium subscription
-export const listenerPremiumEntitlementsQueryOptions = () =>
+export const listenerPremiumEntitlementsQueryOptions = (subscriptionCode: string) =>
   queryOptions({
-    queryKey: ["premium-entitlements"],
+    queryKey: ["premium-entitlements", subscriptionCode],
     queryFn: async () => {
       const response = await execute(ENTITLEMENT_QUERIES, {
         where: {
           subscriptionOverrides: {
-            some: { subscriptionCode: { eq: "listener_premium" } },
+            some: { subscriptionCode: { eq: subscriptionCode } },
           },
           isActive: { eq: true },
         },
@@ -95,14 +109,14 @@ export const listenerPremiumEntitlementsQueryOptions = () =>
     },
   });
 
-export const artistProEntitlementsQueryOptions = () =>
+export const artistProEntitlementsQueryOptions = (subscriptionCode: string) =>
   queryOptions({
-    queryKey: ["pro-entitlements"],
+    queryKey: ["pro-entitlements", subscriptionCode],
     queryFn: async () => {
       const response = await execute(ENTITLEMENT_QUERIES, {
         where: {
           subscriptionOverrides: {
-            some: { subscriptionCode: { eq: "artist_pro" } },
+            some: { subscriptionCode: { eq: subscriptionCode } },
           },
           isActive: { eq: true },
         },
