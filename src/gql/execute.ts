@@ -253,6 +253,12 @@ async function executeFileUploadRequest<TResult, TVariables>(
         }
       }
 
+      if (result.errors) {
+        if (result.errors[0].extensions.detail === "The given key was not present in the dictionary.") {
+          throw new Error("This track already exists in the platform. Please upload a different track.");
+        }
+      }
+
       // Create a custom error that preserves GraphQL error details
       const errorMessage = getErrorDetailsFromArray(result.errors);
       const graphqlError: GraphQLErrorWithDetails = new Error(errorMessage);
