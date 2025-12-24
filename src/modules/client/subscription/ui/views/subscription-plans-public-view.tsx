@@ -31,9 +31,6 @@ export function SubscriptionPlansPublicView() {
   const { data: subscriptionsData, isLoading: subscriptionsLoading } = useQuery(
     isArtist ? subscriptionsProQueryOptions() : subscriptionsPremiumQueryOptions(),
   );
-  const { data: entitlementsData, isLoading: entitlementsLoading } = useQuery(
-    isArtist ? artistProEntitlementsQueryOptions() : listenerPremiumEntitlementsQueryOptions(),
-  );
   const { data: couponsData, isLoading: couponsLoading } = useQuery(
     isArtist ? availableCouponsQueryARTIST20FOREVEROptions() : availableCouponsQueryLISTENER10FOREVEROptions(),
   );
@@ -41,6 +38,15 @@ export function SubscriptionPlansPublicView() {
   // Get subscription ID from subscriptions data
   const subscription = subscriptionsData?.subscriptions?.items?.[0];
   const subscriptionId = subscription?.id;
+  const subscriptionCode = subscription?.code;
+
+  const { data: entitlementsData, isLoading: entitlementsLoading } = useQuery({
+    ...( subscriptionCode 
+      ? (isArtist ? artistProEntitlementsQueryOptions(subscriptionCode) : listenerPremiumEntitlementsQueryOptions(subscriptionCode))
+      : { queryKey: [], queryFn: async () => ({ entitlements: { items: [] } }) }
+    ),
+    enabled: !!subscriptionCode,
+  });
 
   // Query for subscription plans based on subscription ID and user role
   const {

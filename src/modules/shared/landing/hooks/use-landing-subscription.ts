@@ -17,6 +17,7 @@ export const useLandingSubscription = () => {
 
   const subscription = subscriptionData?.subscriptions?.items?.[0];
   const subscriptionId = subscription?.id;
+  const subscriptionCode = subscription?.code;
 
   // Fetch Premium plan details
   const {
@@ -33,7 +34,12 @@ export const useLandingSubscription = () => {
     data: featuresData,
     isLoading: featuresLoading,
     error: featuresError,
-  } = useQuery(listenerPremiumEntitlementsQueryOptions());
+  } = useQuery({
+    ...(subscriptionCode
+      ? listenerPremiumEntitlementsQueryOptions(subscriptionCode)
+      : { queryKey: [], queryFn: async () => ({ entitlements: { items: [] } }) }),
+    enabled: !!subscriptionCode,
+  });
 
   const plan = planData?.subscriptionPlans?.items?.[0];
   const features = featuresData?.entitlements?.items?.map((item) => item.name) || [];
