@@ -196,3 +196,15 @@ export const TrackSongCatcherQuery = graphql(`
     }
   }
 `);
+
+export const TrackSongCatcherRecordingQuery = graphql(`
+  query TrackSongCatcherRecording($file: Upload!) {
+    queryTracksForRecording(file: $file) {
+      trackId
+      trackName
+      artistName
+      trackMatchStartsAt
+      trackMatchEndsAt
+    }
+  }
+`);
