@@ -186,3 +186,18 @@ export const PACKAGE_ORDER_DETAIL_QUERY = graphql(`
     }
   }
 `);
+
+export const ORDER_PACKAGE_REQUEST_QUERY = graphql(`
+  query OrderPackageRequest($where: RequestFilterInput) {
+    requests(where: $where) {
+      items {
+            id
+            orderId
+            title
+            summary
+            detailDescription
+            requirements
+        }
+    }
+}
+`);

@@ -19,6 +19,7 @@ import { useRefundPartially } from "@/gql/client-mutation-options/moderator-muta
 import { toast } from "sonner";
 import { formatCurrencyVND } from "@/utils/format-currency";
 import { Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface RefundModalProps {
   open: boolean;
@@ -34,6 +35,8 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency, pla
   const queryClient = useQueryClient();
   const [clientPercentage, setClientPercentage] = useState(50);
   const [artistPercentage, setArtistPercentage] = useState(50);
+  const [reason, setReason] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const { mutate: refundPartially, isPending } = useRefundPartially();
 
   const handleClientPercentageChange = (value: number) => {
@@ -47,11 +50,18 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency, pla
   };
 
   const handleConfirm = () => {
+    // Check validation first
+    if (clientPercentage + artistPercentage !== 100 || !isClientAmountValid || !isArtistAmountValid || reason.trim() === "") {
+      setSubmitted(true);
+      return;
+    }
+    
     refundPartially(
       {
         id: orderId,
         artistPercentageAmount: artistPercentage,
         requestorPercentageAmount: clientPercentage,
+        refundReason: reason,
       },
       {
         onSuccess: async () => {
@@ -130,8 +140,11 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency, pla
   const minimumAmountWarning = getMinimumAmountWarning();
   
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="border-gray-700 bg-gray-800 sm:max-w-[500px]">
+    <Dialog open={open} onOpenChange={() => {
+      setSubmitted(false);
+      onClose();
+    }}>
+      <DialogContent className="border-gray-700 bg-gray-800 sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-gray-100">Process Partial Refund</DialogTitle>
           <DialogDescription className="text-gray-400">
@@ -167,7 +180,7 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency, pla
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label htmlFor="client-percentage" className="text-gray-300">
-                Listener Refund
+                Listener Refund <span className="text-red-400">*</span>
               </Label>
               <div className="flex items-center space-x-2">
                 <Input
@@ -197,7 +210,7 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency, pla
             <div className="flex items-center justify-between">
               <div className="flex flex-col">
                 <Label htmlFor="artist-percentage" className="text-gray-300">
-                  Artist Payout
+                  Artist Payout <span className="text-red-400">*</span>
                 </Label>
                 <div className="mt-1 space-y-1">
                   <p className="text-xs text-gray-400">
@@ -247,15 +260,39 @@ export function RefundModal({ open, onClose, orderId, orderAmount, currency, pla
               <p className="text-sm text-red-400">Total must equal 100%. Currently: {clientPercentage + artistPercentage}%</p>
             </div>
           )}
+
+          {/* Reason */}
+          <div className="space-y-1">
+            <Label htmlFor="reason" className="text-white">
+              Reason for refund <span className="text-red-400">*</span>
+            </Label>
+            <Textarea 
+              id="reason" 
+              value={reason} 
+              onChange={(e) => setReason(e.target.value)} 
+              placeholder="Please provide a detailed reason for the refund..."
+              className={`min-h-[100px] bg-gray-800 text-white placeholder-gray-400 ${
+                submitted && reason.trim() === "" 
+                  ? "border-red-500 border-2" 
+                  : "border-gray-600"
+              }`}
+            />
+            {submitted && reason.trim() === "" && (
+              <p className="text-xs text-red-400">Reason for refund is required</p>
+            )}
+          </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isPending} className="border-gray-700 text-gray-300">
+          <Button variant="outline" onClick={() => {
+            setSubmitted(false);
+            onClose();
+          }} disabled={isPending} className="border-gray-700 text-gray-300">
             Cancel
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={isPending || clientPercentage + artistPercentage !== 100 || !isClientAmountValid || !isArtistAmountValid}
+            disabled={isPending}
             className="bg-main-blue hover:bg-blue-700 text-main-white"
           >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

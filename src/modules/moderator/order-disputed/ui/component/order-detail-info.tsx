@@ -20,6 +20,14 @@ import { useGetS3File } from "@/hooks/use-get-s3-file";
 
 interface OrderDetailInfoProps {
   order: PackageOrderDetail;
+  request?: {
+    id?: string | null;
+    orderId?: string | null;
+    title?: string | null;
+    summary?: string | null;
+    detailDescription?: string | null;
+    requirements?: string | null;
+  } | null;
   conversationMessages?: Array<{
     id: string;
     conversationId?: string | null;
@@ -40,6 +48,7 @@ interface OrderDetailInfoProps {
 
 export function OrderDetailInfo({ 
   order, 
+  request,
   conversationMessages = [],
   hasMoreMessages,
   loadMoreMessages,
@@ -259,26 +268,73 @@ export function OrderDetailInfo({
         </CardContent>
       </Card>
 
-      {/* Requirements */}
-      <Card className="border-gray-700 bg-gray-800/50">
-        <CardHeader>
-          <CardTitle className="text-lg text-gray-100">Client Requirements</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-300">{order.requirements || "No specific requirements provided."}</p>
-        </CardContent>
-      </Card>
+      {/* Request Title */}
+      {request && request.title && (
+        <Card className="border-gray-700 bg-gray-800/50">
+          <CardHeader>
+            <CardTitle className="text-lg text-gray-100">Request Title</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-300">{request.title}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Request Summary */}
+      {request && request.summary && (
+        <Card className="border-gray-700 bg-gray-800/50">
+          <CardHeader>
+            <CardTitle className="text-lg text-gray-100">Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-300">{request.summary}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Request Detailed Description */}
+      {request && request.detailDescription && (
+        <Card className="border-gray-700 bg-gray-800/50">
+          <CardHeader>
+            <CardTitle className="text-lg text-gray-100">Description</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-gray-300 whitespace-pre-wrap"
+            dangerouslySetInnerHTML={{
+                  __html: request.detailDescription,
+                }}
+            ></div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Requirements (fallback if no request) */}
+      {order.requirements && (
+        <Card className="border-gray-700 bg-gray-800/50">
+          <CardHeader>
+            <CardTitle className="text-lg text-gray-100">Client Requirements</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-gray-300"
+            dangerouslySetInnerHTML={{
+                  __html: order.requirements,
+                }}
+            ></div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Disputed Reason */}
+      {order.disputedReason && (
       <Card className="border-gray-700 bg-gray-800/50">
         <CardHeader>
-          <CardTitle className="text-lg text-gray-100">Disputed Reason</CardTitle>
+          <CardTitle className="text-lg text-gray-100">Refund Request Reason</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-gray-300">{order.disputedReason || "No specific reason provided."}</p>
         </CardContent>
       </Card>
-
+      )}
       {/* Deliveries */}
       {order.deliveries && order.deliveries.length > 0 && (
         <Card className="border-gray-700 bg-gray-800/50">

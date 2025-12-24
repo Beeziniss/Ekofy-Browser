@@ -4310,6 +4310,7 @@ export type QueryInitialization = {
   playlists?: Maybe<PlaylistsCollectionSegment>;
   queryTrack: QueryAudioFingerprintResponse;
   queryTracks: Array<QueryAudioFingerprintResponse>;
+  queryTracksForRecording: Array<QueryAudioFingerprintResponse>;
   recommendedTracksByTrackId?: Maybe<RecommendedTracksByTrackIdCollectionSegment>;
   recordings?: Maybe<RecordingsCollectionSegment>;
   refundTransactions?: Maybe<RefundTransactionsCollectionSegment>;
@@ -4698,6 +4699,11 @@ export type QueryInitializationQueryTrackArgs = {
 
 
 export type QueryInitializationQueryTracksArgs = {
+  file: Scalars['Upload']['input'];
+};
+
+
+export type QueryInitializationQueryTracksForRecordingArgs = {
   file: Scalars['Upload']['input'];
 };
 
@@ -8280,7 +8286,7 @@ export type OrderPackageQueryVariables = Exact<{
 }>;
 
 
-export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, providerId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, disputedReason?: string | null, requirements: string, payoutTransactionId?: string | null, conversationId: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, review?: { __typename?: 'Review', rating: number, content: string, createdAt: any, updatedAt?: any | null } | null, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }>, provider: Array<{ __typename?: 'Artist', avatarImage?: string | null, stageName: string, email: string }> }> | null } | null };
+export type OrderPackageQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', totalCount: number, pageInfo: { __typename?: 'CollectionSegmentInfo', hasNextPage: boolean, hasPreviousPage: boolean }, items?: Array<{ __typename?: 'PackageOrder', id: string, status: PackageOrderStatus, clientId: string, providerId: string, artistPackageId: string, createdAt: any, revisionCount: number, duration: number, startedAt?: any | null, freezedTime: any, disputedReason?: string | null, refundReason?: string | null, requirements: string, payoutTransactionId?: string | null, conversationId: string, deliveries: Array<{ __typename?: 'PackageOrderDelivery', notes?: string | null, revisionNumber: number, deliveredAt?: any | null, deliveryFileUrl: string, clientFeedback?: string | null }>, review?: { __typename?: 'Review', rating: number, content: string, createdAt: any, updatedAt?: any | null } | null, package: Array<{ __typename?: 'ArtistPackage', id: string, amount: any, packageName: string, estimateDeliveryDays: number, maxRevision: number, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', displayName: string, avatarImage?: string | null }>, provider: Array<{ __typename?: 'Artist', avatarImage?: string | null, stageName: string, email: string }> }> | null } | null };
 
 export type CouponsQueryVariables = Exact<{
   where?: InputMaybe<CouponFilterInput>;
@@ -8796,6 +8802,13 @@ export type PackageOrderDetailQueryVariables = Exact<{
 
 
 export type PackageOrderDetailQuery = { __typename?: 'QueryInitialization', packageOrders?: { __typename?: 'PackageOrdersCollectionSegment', items?: Array<{ __typename?: 'PackageOrder', id: string, clientId: string, providerId: string, artistPackageId: string, paymentTransactionId: string, conversationId: string, requirements: string, status: PackageOrderStatus, revisionCount: number, disputedReason?: string | null, duration: number, freezedTime: any, startedAt?: any | null, disputedAt?: any | null, completedAt?: any | null, isEscrowReleased: boolean, platformFeePercentage: any, artistFeePercentage: any, createdAt: any, deliveries: Array<{ __typename?: 'PackageOrderDelivery', deliveryFileUrl: string, notes?: string | null, revisionNumber: number, clientFeedback?: string | null, requestedAt?: any | null, deliveredAt?: any | null }>, review?: { __typename?: 'Review', rating: number, content: string, createdAt: any, updatedAt?: any | null } | null, package: Array<{ __typename?: 'ArtistPackage', id: string, packageName: string, amount: any, estimateDeliveryDays: number, maxRevision: number, currency: CurrencyType, serviceDetails: Array<{ __typename?: 'Metadata', value: string }> }>, client: Array<{ __typename?: 'Listener', id: string, displayName: string, avatarImage?: string | null, email: string }>, provider: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null, email: string }>, paymentTransaction: Array<{ __typename?: 'PaymentTransaction', id: string, userId: string, stripeCheckoutSessionId?: string | null, stripeSubscriptionId?: string | null, stripeInvoiceId?: string | null, stripePaymentId?: string | null, stripePaymentMethod: Array<string>, amount: any, currency: string, paymentStatus: PaymentTransactionStatus, status: TransactionStatus, createdAt: any, updatedAt?: any | null, listener: Array<{ __typename?: 'Listener', displayName: string, id: string, avatarImage?: string | null }>, artist: Array<{ __typename?: 'Artist', id: string, stageName: string, avatarImage?: string | null }> }> }> | null } | null };
+
+export type OrderPackageRequestQueryVariables = Exact<{
+  where?: InputMaybe<RequestFilterInput>;
+}>;
+
+
+export type OrderPackageRequestQuery = { __typename?: 'QueryInitialization', requests?: { __typename?: 'RequestsCollectionSegment', items?: Array<{ __typename?: 'Request', id: string, orderId?: string | null, title?: string | null, summary?: string | null, detailDescription?: string | null, requirements?: string | null }> | null } | null };
 
 export type RequestsPublicQueryVariables = Exact<{
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -11359,6 +11372,7 @@ export const OrderPackageDocument = new TypedDocumentString(`
       startedAt
       freezedTime
       disputedReason
+      refundReason
       requirements
       payoutTransactionId
       conversationId
@@ -13310,6 +13324,20 @@ export const PackageOrderDetailDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PackageOrderDetailQuery, PackageOrderDetailQueryVariables>;
+export const OrderPackageRequestDocument = new TypedDocumentString(`
+    query OrderPackageRequest($where: RequestFilterInput) {
+  requests(where: $where) {
+    items {
+      id
+      orderId
+      title
+      summary
+      detailDescription
+      requirements
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<OrderPackageRequestQuery, OrderPackageRequestQueryVariables>;
 export const RequestsPublicDocument = new TypedDocumentString(`
     query RequestsPublic($skip: Int, $take: Int, $where: RequestFilterInput) {
   requests(
