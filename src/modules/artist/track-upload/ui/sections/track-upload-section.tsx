@@ -30,6 +30,7 @@ const TrackUploadSection = () => {
     type: "match" | "verification_failed" | "check_failed";
     message: string | React.ReactNode;
   } | null>(null);
+  const [bypassCopyright, setBypassCopyright] = useState(false);
 
   // Handle copyright dialog close
   const handleCopyrightDialogClose = () => {
@@ -43,6 +44,16 @@ const TrackUploadSection = () => {
       setUploading(true);
 
       try {
+        // Skip copyright check if bypass is enabled
+        if (bypassCopyright) {
+          toast.info("Copyright check bypassed. Proceeding with upload...");
+          setUploading(false);
+          clearAllTracks();
+          startUpload(file);
+          router.push("/artist/track-upload/detail");
+          return;
+        }
+
         // Check for copyright violations using song recognition
         toast.info("Checking track for copyright compliance...");
 
@@ -53,6 +64,7 @@ const TrackUploadSection = () => {
         if (
           recognitionResult.status !== "success" ||
           recognitionResult.result !== null ||
+          recognitionResult.result?.title === file.name ||
           recognitionResult.result?.apple_music ||
           recognitionResult.result?.spotify ||
           recognitionResult.result?.deezer ||
@@ -106,7 +118,7 @@ const TrackUploadSection = () => {
         setShowCopyrightDialog(true);
       }
     },
-    [setUploading, clearAllTracks, startUpload, router],
+    [setUploading, clearAllTracks, startUpload, router, bypassCopyright],
   );
 
   const onDrop = useCallback(
@@ -166,6 +178,20 @@ const TrackUploadSection = () => {
         >
           {isUploading ? "Uploading..." : "Upload Now"}
         </Button>
+
+        <div className="mt-4 flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="bypass-copyright"
+            checked={bypassCopyright}
+            onChange={(e) => setBypassCopyright(e.target.checked)}
+            className="text-main-purple focus:ring-main-purple h-4 w-4 cursor-pointer rounded border-white/30 bg-transparent focus:ring-2"
+            disabled={isUploading}
+          />
+          <label htmlFor="bypass-copyright" className="text-main-grey cursor-pointer text-sm select-none">
+            Bypass copyright check (for testing)
+          </label>
+        </div>
       </div>
 
       {/* Copyright Warning Dialog */}
