@@ -4310,6 +4310,7 @@ export type QueryInitialization = {
   playlists?: Maybe<PlaylistsCollectionSegment>;
   queryTrack: QueryAudioFingerprintResponse;
   queryTracks: Array<QueryAudioFingerprintResponse>;
+  queryTracksForRecording: Array<QueryAudioFingerprintResponse>;
   recommendedTracksByTrackId?: Maybe<RecommendedTracksByTrackIdCollectionSegment>;
   recordings?: Maybe<RecordingsCollectionSegment>;
   refundTransactions?: Maybe<RefundTransactionsCollectionSegment>;
@@ -4698,6 +4699,11 @@ export type QueryInitializationQueryTrackArgs = {
 
 
 export type QueryInitializationQueryTracksArgs = {
+  file: Scalars['Upload']['input'];
+};
+
+
+export type QueryInitializationQueryTracksForRecordingArgs = {
   file: Scalars['Upload']['input'];
 };
 
@@ -8643,6 +8649,13 @@ export type TrackSongCatcherQueryVariables = Exact<{
 
 
 export type TrackSongCatcherQuery = { __typename?: 'QueryInitialization', queryTracks: Array<{ __typename?: 'QueryAudioFingerprintResponse', trackId: string, trackName: string, artistName: string, trackMatchStartsAt: number, trackMatchEndsAt: number }> };
+
+export type TrackSongCatcherRecordingQueryVariables = Exact<{
+  file: Scalars['Upload']['input'];
+}>;
+
+
+export type TrackSongCatcherRecordingQuery = { __typename?: 'QueryInitialization', queryTracksForRecording: Array<{ __typename?: 'QueryAudioFingerprintResponse', trackId: string, trackName: string, artistName: string, trackMatchStartsAt: number, trackMatchEndsAt: number }> };
 
 export type UserBasicInfoQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -12798,6 +12811,17 @@ export const TrackSongCatcherDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<TrackSongCatcherQuery, TrackSongCatcherQueryVariables>;
+export const TrackSongCatcherRecordingDocument = new TypedDocumentString(`
+    query TrackSongCatcherRecording($file: Upload!) {
+  queryTracksForRecording(file: $file) {
+    trackId
+    trackName
+    artistName
+    trackMatchStartsAt
+    trackMatchEndsAt
+  }
+}
+    `) as unknown as TypedDocumentString<TrackSongCatcherRecordingQuery, TrackSongCatcherRecordingQueryVariables>;
 export const UserBasicInfoDocument = new TypedDocumentString(`
     query UserBasicInfo($userId: String!) {
   users(where: {id: {eq: $userId}}) {
