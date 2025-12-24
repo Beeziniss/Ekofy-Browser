@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
-import { moderatorPackageOrderDetailOptions, moderatorOrderConversationMessagesOptions } from "@/gql/options/moderator-options";
+import { moderatorPackageOrderDetailOptions, moderatorOrderConversationMessagesOptions, moderatorOrderPackageRequestOptions } from "@/gql/options/moderator-options";
 import { OrderDetailInfo, OrderDetailActions } from "../component";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ interface OrderDetailSectionProps {
 
 export function OrderDetailSection({ orderId }: OrderDetailSectionProps) {
   const { data: order, isLoading, error } = useQuery(moderatorPackageOrderDetailOptions(orderId));
+  const { data: request, error: requestError } = useQuery(moderatorOrderPackageRequestOptions(orderId));
 
   // Fetch conversation messages using infinite query with cursor pagination
   const conversationId = order?.conversationId || "";
@@ -57,6 +58,10 @@ export function OrderDetailSection({ orderId }: OrderDetailSectionProps) {
     );
   }
 
+  if (requestError) {
+    toast.error("Failed to load request details");
+  }
+
   if (!order) {
     return (
       <div className="flex h-96 items-center justify-center">
@@ -75,6 +80,7 @@ export function OrderDetailSection({ orderId }: OrderDetailSectionProps) {
       <div className="lg:col-span-2">
         <OrderDetailInfo 
           order={order as PackageOrderDetail} 
+          request={request}
           conversationMessages={messages}
           hasMoreMessages={hasNextPage}
           loadMoreMessages={fetchNextPage}

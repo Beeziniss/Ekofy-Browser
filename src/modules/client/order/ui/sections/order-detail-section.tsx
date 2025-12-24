@@ -179,7 +179,7 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
       {orderPackageDetail?.disputedReason && (
         <Card>
           <CardContent className="rounded-md">
-            <h3 className="text-xl font-semibold">Disputed Reason</h3>
+            <h3 className="text-xl font-semibold">Refund Request Reason</h3>
             <div className="text-main-white/90 mt-2 text-sm whitespace-pre-wrap">
               {orderPackageDetail?.disputedReason}
             </div>
@@ -206,6 +206,18 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
                   View Payout <ExternalLink className="size-4" />
                 </Link>
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Refund Reason Section - Show if refundReason exists */}
+      {orderPackageDetail?.refundReason && (
+        <Card>
+          <CardContent className="rounded-md">
+            <h3 className="text-xl font-semibold">Moderator&apos;s Decision</h3>
+            <div className="text-main-white/90 mt-2 text-sm whitespace-pre-wrap">
+              {orderPackageDetail?.refundReason}
             </div>
           </CardContent>
         </Card>

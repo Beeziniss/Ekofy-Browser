@@ -125,6 +125,7 @@ export const useRefundPartially = () => {
       id: string;
       artistPercentageAmount: number;
       requestorPercentageAmount: number;
+      refundReason: string;
     }) => {
       return await execute(REFUND_PARTIALLY_MUTATION, { request });
     },
