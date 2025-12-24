@@ -69,7 +69,9 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
   const providerData = orderPackageDetail?.provider?.[0];
 
   const isArtist = user?.role === UserRole.ARTIST;
-  const isCompleted = orderPackageDetail?.status === PackageOrderStatus.Completed;
+  // const isCompleted =
+  //   orderPackageDetail?.status === PackageOrderStatus.Completed ||
+  //   orderPackageDetail?.status === PackageOrderStatus.Refund;
   const hasPayoutTransaction = !!orderPackageDetail?.payoutTransactionId;
 
   const handleReviewUpdated = () => {
@@ -188,7 +190,7 @@ const OrderDetailSectionSuspense = ({ orderId }: OrderDetailSectionProps) => {
       )}
 
       {/* Payout Transaction Link - Only show for artists with completed orders */}
-      {isArtist && isCompleted && hasPayoutTransaction && (
+      {isArtist && hasPayoutTransaction && (
         <Card>
           <CardContent className="rounded-md">
             <div className="flex items-center justify-between">
