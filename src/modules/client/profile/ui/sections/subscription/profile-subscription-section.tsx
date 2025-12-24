@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { userSubscriptionOptions } from "@/gql/options/client-options";
 import {
   listenerPremiumEntitlementsQueryOptions,
-  subscriptionsPremiumQueryOptions,
+  subscriptionsPremiumInactiveQueryOptions,
 } from "@/gql/options/subscription-clients-options";
 import {
   subscriptionCancelMutationOptions,
@@ -87,8 +87,7 @@ const ProfileSubscriptionSectionSuspense = () => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [resumeDialogOpen, setResumeDialogOpen] = useState(false);
 
-  const { data: subscriptionsPremium } = useSuspenseQuery(subscriptionsPremiumQueryOptions());
-  const { data: listenerPremiumEntitlements } = useSuspenseQuery(listenerPremiumEntitlementsQueryOptions());
+  const { data: subscriptionsPremium } = useSuspenseQuery(subscriptionsPremiumInactiveQueryOptions());
   const { data: userSubscriptions } = useQuery({
     ...userSubscriptionOptions(user?.userId || ""),
     enabled: !!user?.userId && !!user.listenerId && isAuthenticated,
@@ -108,6 +107,15 @@ const ProfileSubscriptionSectionSuspense = () => {
     (planSub) => planSub?.id === userSubscription?.subscriptionId
   ) || availableSubscriptions[0];
 
+  // Get subscription code for entitlements query
+  const subscriptionCode = subscription?.code;
+
+  const { data: listenerPremiumEntitlements } = useSuspenseQuery({
+    ...(subscriptionCode
+      ? listenerPremiumEntitlementsQueryOptions(subscriptionCode)
+      : { queryKey: [], queryFn: async () => ({ entitlements: { items: [] } }) }),
+  });
+
   // Cancel subscription mutation
   const { mutate: cancelSubscription, isPending: isCanceling } = useMutation({
     ...subscriptionCancelMutationOptions,
@@ -116,6 +124,7 @@ const ProfileSubscriptionSectionSuspense = () => {
       queryClient.invalidateQueries({ queryKey: ["user-subscription"] });
       queryClient.invalidateQueries({ queryKey: ["subscriptions-premium"] });
       queryClient.invalidateQueries({ queryKey: ["listener-premium-entitlements"] });
+      queryClient.invalidateQueries({ queryKey: ["subscriptions-premium-inactive"] });
 
       toast.success("Subscription cancelled successfully");
       router.push("/profile/cancel/success");
@@ -134,7 +143,8 @@ const ProfileSubscriptionSectionSuspense = () => {
       queryClient.invalidateQueries({ queryKey: ["user-subscription"] });
       queryClient.invalidateQueries({ queryKey: ["subscriptions-premium"] });
       queryClient.invalidateQueries({ queryKey: ["listener-premium-entitlements"] });
-
+      queryClient.invalidateQueries({ queryKey: ["subscriptions-premium-inactive"] });
+      
       toast.success("Subscription resumed successfully");
       router.push("/profile/resume/success");
     },
