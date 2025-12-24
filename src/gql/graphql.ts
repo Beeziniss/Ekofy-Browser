@@ -8648,7 +8648,7 @@ export type TrackSongCatcherQueryVariables = Exact<{
 }>;
 
 
-export type TrackSongCatcherQuery = { __typename?: 'QueryInitialization', queryTrack: { __typename?: 'QueryAudioFingerprintResponse', trackId: string, trackName: string, artistId: string, artistName: string, mediaType: string, queryMatchStartsAt: number, queryMatchEndsAt: number, trackMatchStartsAt: number, trackMatchEndsAt: number, queryCoverageLength: number, trackCoverageLength: number, queryCoverage: number, trackCoverage: number, minConfidence: number, minCoverage: number } };
+export type TrackSongCatcherQuery = { __typename?: 'QueryInitialization', queryTracks: Array<{ __typename?: 'QueryAudioFingerprintResponse', trackId: string, trackName: string, artistName: string, trackMatchStartsAt: number, trackMatchEndsAt: number }> };
 
 export type UserBasicInfoQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -12803,22 +12803,12 @@ export const TopTracksDocument = new TypedDocumentString(`
     `) as unknown as TypedDocumentString<TopTracksQuery, TopTracksQueryVariables>;
 export const TrackSongCatcherDocument = new TypedDocumentString(`
     query TrackSongCatcher($file: Upload!) {
-  queryTrack(file: $file) {
+  queryTracks(file: $file) {
     trackId
     trackName
-    artistId
     artistName
-    mediaType
-    queryMatchStartsAt
-    queryMatchEndsAt
     trackMatchStartsAt
     trackMatchEndsAt
-    queryCoverageLength
-    trackCoverageLength
-    queryCoverage
-    trackCoverage
-    minConfidence
-    minCoverage
   }
 }
     `) as unknown as TypedDocumentString<TrackSongCatcherQuery, TrackSongCatcherQueryVariables>;

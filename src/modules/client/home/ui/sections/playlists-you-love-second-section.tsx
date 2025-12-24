@@ -7,6 +7,12 @@ import PlaylistCarousel from "@/modules/client/common/ui/components/playlist/pla
 import { useAuthStore } from "@/store";
 
 const PlaylistsYouLoveSecondSection = () => {
+  const { isAuthenticated } = useAuthStore();
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <Suspense fallback={<PlaylistsYouLoveSecondSkeleton />}>
       <PlaylistsYouLoveSecondSectionSuspense />
@@ -24,12 +30,7 @@ const PlaylistsYouLoveSecondSkeleton = () => {
 };
 
 const PlaylistsYouLoveSecondSectionSuspense = () => {
-  const { isAuthenticated } = useAuthStore();
-  const { data, isPending } = useSuspenseQuery(playlistsFavoriteOptions(12, isAuthenticated));
-
-  if (!isAuthenticated) {
-    return null;
-  }
+  const { data, isPending } = useSuspenseQuery(playlistsFavoriteOptions(12, true));
 
   if (!data || data?.favoritePlaylists?.items?.length === 0) {
     return null;

@@ -28,9 +28,9 @@ export function useEntitlements({ pageSize = 10 }: UseEntitlementsProps = {}) {
       ];
     }
 
-    if (filters.isActive !== undefined) {
+    /* if (filters.isActive !== undefined) {
       where.isActive = { eq: filters.isActive };
-    }
+    } */
 
     if (filters.valueType) {
       where.valueType = { eq: filters.valueType };
@@ -40,9 +40,7 @@ export function useEntitlements({ pageSize = 10 }: UseEntitlementsProps = {}) {
   }, [filters]);
 
   const { data, isLoading, refetch } = useQuery({
-    ...entitlementsQueryOptions(skip, pageSize, buildWhereClause(), [
-      { createdAt: SortEnumType.Desc },
-    ]),
+    ...entitlementsQueryOptions(skip, pageSize, buildWhereClause(), [{ createdAt: SortEnumType.Desc }]),
   });
 
   const entitlements = data?.items || [];
@@ -83,4 +81,3 @@ export function useEntitlements({ pageSize = 10 }: UseEntitlementsProps = {}) {
     refetch,
   };
 }
-

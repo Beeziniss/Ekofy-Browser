@@ -4,15 +4,23 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Check, Music, X, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { trackDetailOptions } from "@/gql/options/client-options";
+import Image from "next/image";
+
+// Helper function to format seconds to MM:SS
+const formatTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
 
 interface SongMatchResult {
   trackId?: string | null;
   trackName?: string | null;
-  artistId?: string | null;
   artistName?: string | null;
-  queryCoverage?: number | null;
-  trackCoverage?: number | null;
-  minConfidence?: number | null;
+  trackMatchStartsAt?: number | null;
+  trackMatchEndsAt?: number | null;
 }
 
 interface SongMatchResultDialogProps {
@@ -25,9 +33,20 @@ interface SongMatchResultDialogProps {
 const SongMatchResultDialog = ({ open, onOpenChange, result, error }: SongMatchResultDialogProps) => {
   const isMatch = result && result.trackId;
 
+  // Fetch track details if we have a trackId
+  const { data: trackData } = useQuery({
+    ...trackDetailOptions(result?.trackId || ""),
+    enabled: !!result?.trackId && open,
+  });
+
+  const trackDetail = trackData?.tracks?.items?.[0];
+  const coverImage = trackDetail?.coverImage;
+  const categories = trackDetail?.categories?.items || [];
+  const mainArtists = trackDetail?.mainArtists?.items || [];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-main-dark-bg border-main-grey max-w-md">
+      <DialogContent className="border-main-white/30 w-full sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="text-main-white text-2xl">Song Identification Result</DialogTitle>
         </DialogHeader>
@@ -61,56 +80,115 @@ const SongMatchResultDialog = ({ open, onOpenChange, result, error }: SongMatchR
                   <p className="text-main-grey text-sm">We identified your song</p>
                 </div>
 
-                {/* Song Details */}
+                {/* Cover Image and Song Details */}
                 <div className="bg-main-grey/10 space-y-3 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-main-purple/20 flex size-12 shrink-0 items-center justify-center rounded-lg">
-                      <Music className="text-main-purple size-6" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-main-grey text-xs">Track Name</p>
-                      <p className="text-main-white truncate font-semibold">{result.trackName || "Unknown"}</p>
+                  <div className="flex items-start gap-4">
+                    {/* Cover Image */}
+                    {coverImage ? (
+                      <div className="relative size-36 shrink-0 overflow-hidden rounded-lg">
+                        <Image src={coverImage} alt={result.trackName || "Track cover"} fill className="object-cover" />
+                      </div>
+                    ) : (
+                      <div className="bg-main-purple/20 flex size-36 shrink-0 items-center justify-center rounded-lg">
+                        <Music className="text-main-purple size-12" />
+                      </div>
+                    )}
+
+                    {/* Track Info */}
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div>
+                        <p className="text-main-grey text-xs">Track Name</p>
+                        <p className="text-main-white text-lg font-semibold">{result.trackName || "Unknown"}</p>
+                      </div>
+
+                      {result.artistName && (
+                        <div>
+                          <p className="text-main-grey text-xs">Artist</p>
+                          <p className="text-main-white font-medium">{result.artistName}</p>
+                        </div>
+                      )}
+
+                      {/* Display additional artists if available from track detail */}
+                      {mainArtists.length > 0 && !result.artistName && (
+                        <div>
+                          <p className="text-main-grey text-xs">Artist{mainArtists.length > 1 ? "s" : ""}</p>
+                          <p className="text-main-white font-medium">
+                            {mainArtists.map((artist) => artist.stageName).join(", ")}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Categories */}
+                      {categories.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {categories.slice(0, 3).map((category) => (
+                            <span
+                              key={category.id}
+                              className="bg-main-purple/20 text-main-purple rounded-full px-2 py-0.5 text-xs"
+                            >
+                              {category.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  {result.artistName && (
-                    <div className="border-main-grey/30 border-t pt-3">
-                      <p className="text-main-grey mb-1 text-xs">Artist</p>
-                      <p className="text-main-white font-medium">{result.artistName}</p>
+                  {/* Stream/Favorite Count */}
+                  {trackDetail && (
+                    <div className="border-main-grey/30 flex gap-4 border-t pt-3 text-xs">
+                      {trackDetail.streamCount !== undefined && (
+                        <div>
+                          <span className="text-main-grey">Streams: </span>
+                          <span className="text-main-white font-medium">
+                            {trackDetail.streamCount.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                      {trackDetail.favoriteCount !== undefined && (
+                        <div>
+                          <span className="text-main-grey">Favorites: </span>
+                          <span className="text-main-white font-medium">
+                            {trackDetail.favoriteCount.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
 
-                {/* Confidence Metrics */}
-                {(result.queryCoverage !== null || result.trackCoverage !== null || result.minConfidence !== null) && (
+                {/* Track Match Timing */}
+                {result.trackMatchStartsAt !== null && result.trackMatchStartsAt !== undefined && (
                   <div className="bg-main-grey/10 space-y-2 rounded-lg p-4">
-                    <p className="text-main-white mb-2 text-sm font-medium">Match Quality</p>
+                    <p className="text-main-white mb-2 text-sm font-medium">Match Position</p>
                     <div className="space-y-2 text-xs">
-                      {result.queryCoverage !== null && result.queryCoverage !== undefined && (
+                      <div className="flex justify-between">
+                        <span className="text-main-grey">Starts At</span>
+                        <span className="text-main-white font-medium">{formatTime(result.trackMatchStartsAt)}</span>
+                      </div>
+                      {result.trackMatchEndsAt !== null && result.trackMatchEndsAt !== undefined && (
                         <div className="flex justify-between">
-                          <span className="text-main-grey">Query Coverage</span>
-                          <span className="text-main-white font-medium">
-                            {(result.queryCoverage * 100).toFixed(1)}%
-                          </span>
+                          <span className="text-main-grey">Ends At</span>
+                          <span className="text-main-white font-medium">{formatTime(result.trackMatchEndsAt)}</span>
                         </div>
                       )}
-                      {result.trackCoverage !== null && result.trackCoverage !== undefined && (
-                        <div className="flex justify-between">
-                          <span className="text-main-grey">Track Coverage</span>
-                          <span className="text-main-white font-medium">
-                            {(result.trackCoverage * 100).toFixed(1)}%
-                          </span>
-                        </div>
-                      )}
-                      {result.minConfidence !== null && result.minConfidence !== undefined && (
-                        <div className="flex justify-between">
-                          <span className="text-main-grey">Confidence</span>
-                          <span className="text-main-white font-medium">
-                            {(result.minConfidence * 100).toFixed(1)}%
-                          </span>
+                      {result.trackMatchEndsAt !== null && result.trackMatchEndsAt !== undefined && (
+                        <div className="border-main-grey/30 mt-2 border-t pt-2">
+                          <div className="flex justify-between">
+                            <span className="text-main-grey">Duration</span>
+                            <span className="text-main-purple font-medium">
+                              {formatTime(result.trackMatchEndsAt - result.trackMatchStartsAt)}
+                            </span>
+                          </div>
                         </div>
                       )}
                     </div>
+                    <p className="text-main-grey mt-3 text-xs italic">
+                      Your audio matches this track from {formatTime(result.trackMatchStartsAt)}
+                      {result.trackMatchEndsAt !== null && result.trackMatchEndsAt !== undefined && (
+                        <> to {formatTime(result.trackMatchEndsAt)}</>
+                      )}
+                    </p>
                   </div>
                 )}
 
@@ -120,7 +198,7 @@ const SongMatchResultDialog = ({ open, onOpenChange, result, error }: SongMatchR
                     Close
                   </Button>
                   {result.trackId && (
-                    <Button asChild className="bg-main-purple hover:bg-main-purple/90 flex-1 gap-2">
+                    <Button asChild className="bg-main-purple hover:bg-main-purple/90 text-main-white flex-1 gap-2">
                       <Link href={`/track/${result.trackId}`}>
                         View Track
                         <ExternalLink className="size-4" />

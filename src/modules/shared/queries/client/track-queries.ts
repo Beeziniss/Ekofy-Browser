@@ -187,22 +187,12 @@ export const TopTracksQuery = graphql(`
 
 export const TrackSongCatcherQuery = graphql(`
   query TrackSongCatcher($file: Upload!) {
-    queryTrack(file: $file) {
+    queryTracks(file: $file) {
       trackId
       trackName
-      artistId
       artistName
-      mediaType
-      queryMatchStartsAt
-      queryMatchEndsAt
       trackMatchStartsAt
       trackMatchEndsAt
-      queryCoverageLength
-      trackCoverageLength
-      queryCoverage
-      trackCoverage
-      minConfidence
-      minCoverage
     }
   }
 `);

@@ -15,6 +15,7 @@ import { artistTrackDetailOptions, categoriesOptions } from "@/gql/options/artis
 import { updateTrackMetadataMutationOptions } from "@/gql/options/artist-mutation-options";
 import { toast } from "sonner";
 import { SaveIcon, XIcon, GlobeIcon, LockIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TrackMetadataFormSectionProps {
   trackId: string;
@@ -93,18 +94,18 @@ const TrackMetadataFormSection = ({ trackId, isEditing, onCancel, onSuccess }: T
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="mb-2 h-4 w-1/4 rounded bg-gray-300" />
-          <div className="mb-4 h-10 rounded bg-gray-300" />
+          <Skeleton className="mb-2 h-4 w-1/4 rounded-md" />
+          <Skeleton className="mb-4 h-10 rounded-md" />
 
-          <div className="mb-2 h-4 w-1/4 rounded bg-gray-300" />
-          <div className="mb-4 h-10 rounded bg-gray-300" />
+          <Skeleton className="mb-2 h-4 w-1/4 rounded-md" />
+          <Skeleton className="mb-4 h-10 rounded-md" />
 
-          <div className="mb-2 h-4 w-1/4 rounded bg-gray-300" />
-          <div className="mb-4 h-24 rounded bg-gray-300" />
+          <Skeleton className="mb-2 h-4 w-1/4 rounded-md" />
+          <Skeleton className="mb-4 h-24 rounded-md" />
 
           <div className="flex gap-2">
-            <div className="h-10 w-20 rounded bg-gray-300" />
-            <div className="h-10 w-20 rounded bg-gray-300" />
+            <Skeleton className="h-10 w-20 rounded-md" />
+            <Skeleton className="h-10 w-20 rounded-md" />
           </div>
         </div>
       </div>

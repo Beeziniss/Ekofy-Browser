@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import RecordRTC from "recordrtc";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Mic, Square, Loader2 } from "lucide-react";
+import { Mic, Square, Loader2, RotateCcw, Send } from "lucide-react";
 
 interface AudioRecorderDialogProps {
   open: boolean;
@@ -16,9 +16,11 @@ const AudioRecorderDialog = ({ open, onOpenChange, onRecordingComplete }: AudioR
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [recordedAudio, setRecordedAudio] = useState<{ file: File; url: string } | null>(null);
   const recorderRef = useRef<RecordRTC | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const stopRecording = useCallback(() => {
     if (recorderRef.current && isRecording) {
@@ -30,10 +32,11 @@ const AudioRecorderDialog = ({ open, onOpenChange, onRecordingComplete }: AudioR
           const file = new File([blob], `recording-${Date.now()}.webm`, {
             type: "audio/webm",
           });
-          onRecordingComplete(file);
+          const url = URL.createObjectURL(blob);
+          setRecordedAudio({ file, url });
         }
 
-        // Cleanup
+        // Cleanup stream
         if (streamRef.current) {
           streamRef.current.getTracks().forEach((track) => track.stop());
           streamRef.current = null;
@@ -45,27 +48,37 @@ const AudioRecorderDialog = ({ open, onOpenChange, onRecordingComplete }: AudioR
         }
 
         setIsRecording(false);
-        setRecordingTime(0);
         setIsProcessing(false);
-        onOpenChange(false);
       });
     }
-  }, [isRecording, onRecordingComplete, onOpenChange]);
+  }, [isRecording]);
 
   useEffect(() => {
-    // Cleanup on unmount
+    // Cleanup on unmount only
     return () => {
-      stopRecording();
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      if (recordedAudio?.url) {
+        URL.revokeObjectURL(recordedAudio.url);
+      }
     };
-  }, [stopRecording]);
+  }, [recordedAudio]);
 
   // Reset recording state when dialog closes
   useEffect(() => {
-    if (!open && !isRecording) {
+    if (!open) {
       setRecordingTime(0);
       setIsProcessing(false);
+      setRecordedAudio(null);
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
     }
-  }, [open, isRecording]);
+  }, [open]);
 
   const startRecording = async () => {
     try {
@@ -101,6 +114,24 @@ const AudioRecorderDialog = ({ open, onOpenChange, onRecordingComplete }: AudioR
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const handleProcess = () => {
+    if (recordedAudio) {
+      onRecordingComplete(recordedAudio.file);
+      onOpenChange(false);
+    }
+  };
+
+  const handleReRecord = () => {
+    if (recordedAudio?.url) {
+      URL.revokeObjectURL(recordedAudio.url);
+    }
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    setRecordedAudio(null);
+    setRecordingTime(0);
+  };
+
   const handleClose = () => {
     if (isRecording) {
       if (streamRef.current) {
@@ -114,6 +145,13 @@ const AudioRecorderDialog = ({ open, onOpenChange, onRecordingComplete }: AudioR
       setIsRecording(false);
       setRecordingTime(0);
     }
+    if (recordedAudio?.url) {
+      URL.revokeObjectURL(recordedAudio.url);
+    }
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    setRecordedAudio(null);
     onOpenChange(false);
   };
 
@@ -153,17 +191,21 @@ const AudioRecorderDialog = ({ open, onOpenChange, onRecordingComplete }: AudioR
 
           {/* Status Text */}
           <p className="text-main-grey text-sm">
-            {isRecording ? "Recording in progress..." : "Click the button below to start recording"}
+            {isRecording
+              ? "Recording in progress..."
+              : recordedAudio
+                ? "Preview your recording below"
+                : "Click the button below to start recording"}
           </p>
 
           {/* Control Buttons */}
-          <div className="flex gap-4">
-            {!isRecording ? (
+          <div className="flex w-full flex-col gap-4">
+            {!isRecording && !recordedAudio ? (
               <Button
                 onClick={startRecording}
                 disabled={isProcessing}
                 size="lg"
-                className="bg-main-purple hover:bg-main-purple/90 gap-2"
+                className="bg-main-purple hover:bg-main-purple/90 text-main-white w-full gap-2"
               >
                 {isProcessing ? (
                   <>
@@ -172,21 +214,60 @@ const AudioRecorderDialog = ({ open, onOpenChange, onRecordingComplete }: AudioR
                   </>
                 ) : (
                   <>
-                    <Mic className="size-5" />
+                    <Mic className="text-main-white size-5" />
                     Start Recording
                   </>
                 )}
               </Button>
-            ) : (
+            ) : isRecording ? (
               <Button
                 onClick={stopRecording}
                 disabled={isProcessing}
                 size="lg"
-                className="gap-2 bg-red-600 hover:bg-red-700"
+                className="w-full gap-2 bg-red-600 hover:bg-red-700"
               >
                 <Square className="size-5" />
                 Stop Recording
               </Button>
+            ) : (
+              <div className="flex w-full flex-col gap-3">
+                {/* Native Audio Player */}
+                <div className="bg-main-grey/10 w-full rounded-lg p-4">
+                  <div className="mb-3 flex items-center justify-between text-sm">
+                    <span className="text-main-white font-medium">Recorded Audio</span>
+                  </div>
+                  {recordedAudio && (
+                    <audio
+                      ref={audioRef}
+                      src={recordedAudio.url}
+                      controls
+                      className="w-full"
+                      controlsList="nodownload"
+                    />
+                  )}
+                </div>
+
+                {/* Action Buttons Row */}
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleReRecord}
+                    size="lg"
+                    variant="outline"
+                    className="border-main-grey hover:bg-main-grey/10 flex-1 gap-2"
+                  >
+                    <RotateCcw className="size-5" />
+                    Re-record
+                  </Button>
+                  <Button
+                    onClick={handleProcess}
+                    size="lg"
+                    className="bg-main-purple hover:bg-main-purple/90 text-main-white flex-1 gap-2"
+                  >
+                    <Send className="text-main-white size-5" />
+                    Process
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
 
